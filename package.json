@@ -1,0 +1,30 @@
+{
+  "name": "rubiks-cube-vis",
+  "version": "1.0.0",
+  "description": "Visualize different solution algorithms of Rubik’s Cube states",
+  "scripts": {
+    "start": "http-server",
+    "build": "npm run prebuild && npm run copy",
+    "prebuild": "rm -rf dist && mkdir -p dist && mkdir -p dist/bac_rubiks_cube/csv",
+    "copy": "cp index.html dist/ && cp rubics.png dist/ && cp d3CheckBox.js dist/ && cp info.png dist/ && cp -a ./bac_rubiks_cube/csv/. dist/bac_rubiks_cube/csv/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JKU-ICG/rubiks-cube-vis.git"
+  },
+  "keywords": [
+    "rubik's",
+    "cube",
+    "visualization"
+  ],
+  "author": "JKU",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JKU-ICG/rubiks-cube-vis/issues"
+  },
+  "homepage": "https://github.com/JKU-ICG/rubiks-cube-vis#readme",
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  }
+}
