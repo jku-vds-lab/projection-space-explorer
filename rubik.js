@@ -15,10 +15,9 @@ function cubieToColour(str) {
 
 
 function createRubik2(d) {
-  var ttCubieSize = 15;
-  var ttCubieMargin = 8;
-  var sideMargin = 10;
-  var distance = 3*ttCubieSize+2*ttCubieMargin;
+  var ttCubieSize = 1.3;
+  var ttCubieMargin = 0.2;
+  var distance = 3*ttCubieSize+4*ttCubieMargin;
   var svgWidth = 3*distance;
   var svgHeight = 4*distance;
 
@@ -41,18 +40,18 @@ function createRubik2(d) {
 
 
   var container = d3.create("div")
-
+  var size = ttCubieSize * 9 + ttCubieMargin * 10;
   var board = container.append("div")
   .style("position", "absolute")
-  .style("width", "18rem")
-  .style("height", "18rem")
+  .style("width", size + "rem")
+  .style("height", (size + ttCubieSize * 3 + ttCubieMargin * 4) + "rem")
 
   for(side = 0; side < sides.length; side++) {
     for (i1 = 0; i1 < 3; i1++) {
       for(j = 0; j < 3; j++) {
         board.append("div")
-        .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "px")
-        .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "px")
+        .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "rem")
+        .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "rem")
         .style("background-color", cubieToColour(eval("d."+sides[side]+i1.toString()+j.toString())))
         .attr("class", "colorbox")
       }
@@ -70,10 +69,9 @@ function aggregateRubik(vectors) {
     return ""
   }
 
-  var ttCubieSize = 30;
-  var ttCubieMargin = 8;
-  var sideMargin = 20;
-  var distance = 3*ttCubieSize+2*ttCubieMargin+sideMargin;
+  var ttCubieSize = 1.3;
+  var ttCubieMargin = 0.2;
+  var distance = 3*ttCubieSize+4*ttCubieMargin;
   var svgWidth = 3*distance;
   var svgHeight = 4*distance;
 
@@ -116,7 +114,11 @@ function aggregateRubik(vectors) {
 
   var container = d3.create("div")
 
+  var size = ttCubieSize * 9 + ttCubieMargin * 10;
   var board = container.append("div")
+  .style("position", "absolute")
+  .style("width", size + "rem")
+  .style("height", (size + ttCubieSize * 3 + ttCubieMargin * 4) + "rem")
 
   for(side = 0; side < sides.length; side++) {
     for (i1 = 0; i1 < 3; i1++) {
@@ -129,8 +131,8 @@ function aggregateRubik(vectors) {
         }
 
         board.append("div")
-        .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "px")
-        .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "px")
+        .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "rem")
+        .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "rem")
         .style("background-color", col)
         .attr("class", "colorbox")
       }

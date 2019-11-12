@@ -40,9 +40,9 @@
     <script src="Line2.js"></script>
   </head>
 
-  <body>
+  <body onresize="onWindowResize()">
     <div class="d-flex align-items-stretch" style="width: 100vw; height: 100vh">
-      <div id="container" class="flex-grow-1"></div>
+      <div id="container" class="flex-shrink-1 flex-grow-1"></div>
 
       <div style="width: 18rem; margin: 0.5rem" class="card flex-shrink-0">
         <div id="info" class="d-flex align-items-center justify-content-center" style="height: 50%"></div>
@@ -127,7 +127,7 @@
 
           var loaded = null;
           var segments = null;
-    			var renderer, camera;
+    			var camera;
     			var particles;
     			var PARTICLE_SIZE = 20;
     			var raycaster, intersects;
@@ -268,7 +268,6 @@
           if (vectors.length > 0) {
             var html = problem.aggregate(vectors)
 
-            console.log(html)
             document.getElementById('aggregate').innerHTML = html
           }
 
@@ -718,9 +717,10 @@ function intToComponents(colorBeginner) {
 
 
 				//
-				renderer = new THREE.WebGLRenderer({
+				var renderer = new THREE.WebGLRenderer({
           antialias: true
         });
+        problem.renderer = renderer
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize(width, height);
         renderer.setClearColor( 0xffffff, 1);
@@ -747,7 +747,10 @@ function intToComponents(colorBeginner) {
 				container.addEventListener( 'mousemove', onDocumentMouseMove, false );
         container.addEventListener('mousedown', onDocumentMouseDown, false);
         container.addEventListener('mouseup', onDocumentMouseUp, false);
-        container.addEventListener( 'mousewheel', onDocumentMouseWheel, { passive: false } );
+
+
+        container.addEventListener( 'wheel', onDocumentMouseWheel, false );
+
 			}
 
       function dist(x1, y1, x2, y2) {
@@ -782,7 +785,7 @@ function intToComponents(colorBeginner) {
 
       function onDocumentMouseWheel(event) {
         event.preventDefault()
-        camera.zoom = camera.zoom + event.wheelDeltaY * 0.01;
+        camera.zoom = camera.zoom + event.deltaY * 0.02;
         if (camera.zoom < 1) {
           camera.zoom = 1;
         }
@@ -799,9 +802,19 @@ function intToComponents(colorBeginner) {
 
 
 			function onWindowResize() {
-				//camera.aspect = window.innerWidth / window.innerHeight;
-				//camera.updateProjectionMatrix();
-				//renderer.setSize( window.innerWidth, window.innerHeight );
+        var container = document.getElementById( 'container' );
+
+        var width = container.offsetWidth;
+        var height = container.offsetHeight;
+
+				problem.renderer.setSize(width, height);
+
+        camera.left = width / - 2
+        camera.right = width / 2
+        camera.top = height / 2
+        camera.bottom = height / - 2
+
+        camera.updateProjectionMatrix();
 			}
 
 			function animate() {
@@ -812,7 +825,7 @@ function intToComponents(colorBeginner) {
 			function render() {
         var t0 = performance.now()
 
-				renderer.render(problem.scene, camera);
+				problem.renderer.render(problem.scene, camera);
 
         var t1 = performance.now()
 			}
