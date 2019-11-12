@@ -15,10 +15,10 @@ function cubieToColour(str) {
 
 
 function createRubik2(d) {
-  var ttCubieSize = 30;
+  var ttCubieSize = 15;
   var ttCubieMargin = 8;
-  var sideMargin = 20;
-  var distance = 3*ttCubieSize+2*ttCubieMargin+sideMargin;
+  var sideMargin = 10;
+  var distance = 3*ttCubieSize+2*ttCubieMargin;
   var svgWidth = 3*distance;
   var svgHeight = 4*distance;
 
@@ -43,6 +43,9 @@ function createRubik2(d) {
   var container = d3.create("div")
 
   var board = container.append("div")
+  .style("position", "absolute")
+  .style("width", "18rem")
+  .style("height", "18rem")
 
   for(side = 0; side < sides.length; side++) {
     for (i1 = 0; i1 < 3; i1++) {

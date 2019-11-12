@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>General Visualization</title>
 
+
+
     <script src="util.js"></script>
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
 
@@ -28,42 +30,47 @@
     <link rel="stylesheet" href="chess.css">
     <link rel="stylesheet" href="styling.css">
     <link href="rubics.png" rel="shortcut icon" type="image/x-icon" />
+
+
+
+    <script src="LineSegmentsGeometry.js"></script>
+    <script src="LineMaterial.js"></script>
+    <script src="LineGeometry.js"></script>
+    <script src="LineSegments2.js"></script>
+    <script src="Line2.js"></script>
   </head>
 
   <body>
+    <div class="d-flex align-items-stretch" style="width: 100vw; height: 100vh">
+      <div id="container" class="flex-grow-1"></div>
 
-
-    <div style="display: inline-block; width: 50vw; height: 100vh">
-  		<div id="container" style="width:100%;height:100%"></div>
-    </div>
-
-    <div class="bordered" style="display: inline-block; position: absolute; width: 320px; height: 800px; margin-left: auto; right: 0px">
-
-      <div class="container">
-        <select name="cars" class="custom-select" onchange="selectDataset(this)">
-          <option selected>Choose data set</option>
-          <option value="chess_chess16k.csv">Chess 16k Games</option>
-          <option value="chess_chess16k.csv">Chess 40k Games</option>
-          <option value="rubik_cube1x2_different_origins.csv">Rubik 1x2 Different Origins</option>
-          <option value="rubik_cube5x2_different_origins.csv">Rubik 5x2 Different Origins</option>
-          <option value="rubik_cube10x2_different_origins.csv">Rubik 10x2 Different Origins</option>
-          <option value="rubik_cube100x2_different_origins.csv">Rubik 100x2 Different Origins</option>
-        </select>
-
-        <div class="custom-file">
-          <input type="file" class="custom-file-input" id="customFile">
-          <label class="custom-file-label" for="customFile">Choose file</label>
-        </div>
+      <div style="width: 18rem; margin: 0.5rem" class="card flex-shrink-0">
+        <div id="info" class="d-flex align-items-center justify-content-center" style="height: 50%"></div>
+        <div id="aggregate" class="d-flex align-items-center justify-content-center" style="height: 50%"></div>
       </div>
 
-      <div id="legend"></div>
+      <div class="card flex-shrink-0" style="width: 18rem; margin: 0.5rem;">
 
+        <div class="container" style="padding-top: 1rem;">
+          <select name="cars" class="custom-select" onchange="selectDataset(this)">
+            <option selected>Choose data set</option>
+            <option value="chess_chess16k.csv">Chess 16k Games</option>
+            <option value="chess_chess16k.csv">Chess 40k Games</option>
+            <option value="rubik_cube1x2_different_origins.csv">Rubik 1x2 Different Origins</option>
+            <option value="rubik_cube5x2_different_origins.csv">Rubik 5x2 Different Origins</option>
+            <option value="rubik_cube10x2_different_origins.csv">Rubik 10x2 Different Origins</option>
+            <option value="rubik_cube100x2_different_origins.csv">Rubik 100x2 Different Origins</option>
+          </select>
+
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" id="customFile">
+            <label class="custom-file-label" for="customFile">Choose file</label>
+          </div>
+        </div>
+
+        <div id="legend"></div>
+      </div>
     </div>
-
-    <div id="info" class="bordered" style="position: absolute; display: inline-block; width:600px;height:500px"></div>
-    <div id="aggregate" class="bordered" style="position: absolute; top: 500px; display: inline-block; width:600px;height:600px"></div>
-
-
 
 
 
@@ -384,6 +391,66 @@
         return points
     }
 
+
+
+
+function intToComponents(colorBeginner) {
+    var compBeginner = {
+      r: (colorBeginner & 0xff0000) >> 16,
+      g: (colorBeginner & 0x00ff00) >> 8,
+      b: (colorBeginner & 0x0000ff)
+    };
+
+    return compBeginner
+}
+
+    function fatLines(segments) {
+      segments.forEach(function(segment, index) {
+        var colors = []
+        var positions = []
+
+        var geometry = new THREE.LineGeometry();
+
+        var matLine = new THREE.LineMaterial({
+                linewidth: 10, // in pixels
+                vertexColors: THREE.VertexColors,
+                transparent: true,
+                opacity: 0.5,
+                depthWrite: false
+            });
+        matLine.resolution.set(776, 695);
+
+        var da = []
+        segment.vectors.forEach(function(vector, vi) {
+
+          da.push(new THREE.Vector2(vector.x, vector.y))
+          //geometry.vertices.push(new THREE.Vector3(vector.x, vector.y, -1.0));
+        })
+
+        var curve = new THREE.SplineCurve(da)
+        var color = algorithms[segment.vectors[0].algo].color
+        var rgb = intToComponents(color)
+
+        curve.getPoints(1000).forEach(function(p, i) {
+          positions.push(p.x, p.y, -1.0)
+          colors.push(rgb.r / 255.0, rgb.g / 255.0, rgb.b / 255.0)
+        })
+
+        geometry.setPositions(positions)
+        geometry.setColors(colors)
+
+        var line = new THREE.Line2(geometry, matLine);
+
+        // Store line data in segment...
+        segment.line = line
+
+
+        problem.scene.add(line)
+      })
+    }
+
+
+
     function renderLines(segments) {
       segments.forEach(function(segment, index) {
         var geometry = new THREE.Geometry();
@@ -393,7 +460,7 @@
             transparent: true,
 
             // Calculate opacity
-            opacity: 0.05 + 0.95 / segments.length
+            opacity: 0.3 + 0.7 / segments.length
             // 1 - 1     100 - 0.1    200 - 0.05      50 - 0.2     25 - 0.4
         });
         var da = []
@@ -670,6 +737,7 @@
 
         // First add lines to scene... so they get drawn first
         renderLines(segments)
+        //fatLines(segments)
 
         updatePointGeometry()
         // Then add particles

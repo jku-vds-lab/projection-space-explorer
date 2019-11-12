@@ -30,8 +30,7 @@ function createChess(d) {
   var container = d3.create("div")
 
   var board = container.append("div")
-  .style("width", "480px")
-  .style("height", "480px")
+  .attr("class", "chessboard")
 
   // horizontal chess keys
   var keys = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ]
@@ -94,8 +93,7 @@ function aggregateChess(vectors) {
   var container = d3.create("div")
 
   var board = container.append("div")
-  .style("width", "480px")
-  .style("height", "480px")
+  .attr("class", "chessboard")
 
   // horizontal chess keys
   var keys = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ]
@@ -129,8 +127,19 @@ function aggregateChess(vectors) {
   return container.html()
 }
 
+function intToComponents(colorBeginner) {
+    var compBeginner = {
+      r: (colorBeginner & 0xff0000) >> 16,
+      g: (colorBeginner & 0x00ff00) >> 8,
+      b: (colorBeginner & 0x0000ff)
+    };
 
-function chessLegend(move1, move2, move3) {
+    return compBeginner
+}
+
+function chessLegend(colorFridrich, colorBeginner) {
+  var compFridrich = intToComponents(colorFridrich)
+  var compBeginner = intToComponents(colorBeginner)
 
   var template = `
     <div class="container">
@@ -160,6 +169,14 @@ function chessLegend(move1, move2, move3) {
 
       <hr />
 
+      <div style="width: 100%; height: 3vh; background-image: linear-gradient(to right, rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b}, 0.2), rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b},1))">
+      </div>
+
+      <div style="width: 100%; height: 1vh; background-image: linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,1))">
+      </div>
+
+      <div style="width: 100%; height: 3vh; background-image: linear-gradient(to right, rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},0.2), rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},1))">
+      </div>
 
 
 

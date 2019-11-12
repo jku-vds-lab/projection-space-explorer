@@ -6,8 +6,8 @@
 
 .colorbox {
   position: absolute;
-  width:32px;
-  height:32px;
+  width:1rem;
+  height:1rem;
   background-color: red;
 }
 
