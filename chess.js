@@ -83,8 +83,10 @@ function aggregateChess(vectors) {
         aggregation[key] = []
       }
 
-      if (!aggregation[key].includes(vector[key])) {
-        aggregation[key].push(vector[key])
+      if (!aggregation[key].some((e) => e.key == vector[key])) {
+        aggregation[key].push({ key: vector[key], count: 1 })
+      } else {
+        aggregation[key].filter(e => e.key == vector[key])[0].count += 1
       }
     })
   })
@@ -101,7 +103,6 @@ function aggregateChess(vectors) {
   // variable determining the current field color
   var col = "white"
 
-  console.log(aggregation)
 
   for (var i = 0; i < 64; i++) {
     if (i % 8 != 0) {
@@ -114,13 +115,29 @@ function aggregateChess(vectors) {
 
     var key = "" + keys[i % 8] + (8 - ((i / 8) >> 0))
     var content = ""
+    var opacity = 1.0
 
     if (aggregation[key].length == 1) {
-      content = symbols[aggregation[key][0]]
+      content = symbols[aggregation[key][0].key]
+    } else {
+      var max = 0.0
+      var total = 0
+      for (k in aggregation[key]) {
+        var v = aggregation[key][k]
+        total += v.count
+
+        if (v.count > max) {
+          max = v.count
+          content = symbols[aggregation[key][k].key]
+        }
+      }
+
+      opacity = (max / total)
     }
 
     board.append("div")
     .attr("class", col)
+    .style("opacity", opacity)
     .html(content)
   }
 

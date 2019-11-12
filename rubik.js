@@ -124,12 +124,14 @@ function aggregateRubik(vectors) {
   .style("height", (size + ttCubieSize * 3 + ttCubieMargin * 4) + "rem")
 
   console.log(aggregation)
+
   for(side = 0; side < sides.length; side++) {
     for (i1 = 0; i1 < 3; i1++) {
       for(j = 0; j < 3; j++) {
         var key = sides[side] + i1 + j
         var col = 'white'
         var opacity = 1
+
 
         if (aggregation[key].length == 1) {
           col = cubieToColour(aggregation[key][0].key)
