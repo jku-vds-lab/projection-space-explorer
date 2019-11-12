@@ -106,8 +106,11 @@ function aggregateRubik(vectors) {
         aggregation[key] = []
       }
 
-      if (!aggregation[key].includes(vector[key])) {
-        aggregation[key].push(vector[key])
+      if (!aggregation[key].some((e) => e.key == vector[key])) {
+        aggregation[key].push({ key: vector[key], count: 1 })
+      } else {
+
+        aggregation[key].filter(e => e.key == vector[key])[0].count += 1
       }
     })
   })
@@ -120,20 +123,38 @@ function aggregateRubik(vectors) {
   .style("width", size + "rem")
   .style("height", (size + ttCubieSize * 3 + ttCubieMargin * 4) + "rem")
 
+  console.log(aggregation)
   for(side = 0; side < sides.length; side++) {
     for (i1 = 0; i1 < 3; i1++) {
       for(j = 0; j < 3; j++) {
         var key = sides[side] + i1 + j
         var col = 'white'
+        var opacity = 1
 
         if (aggregation[key].length == 1) {
-          col = cubieToColour(aggregation[key][0])
+          col = cubieToColour(aggregation[key][0].key)
+        } else {
+
+          var max = 0.0
+          var total = 0
+          for (k in aggregation[key]) {
+            var v = aggregation[key][k]
+            total += v.count
+
+            if (v.count > max) {
+              max = v.count
+              col = cubieToColour(aggregation[key][k].key)
+            }
+          }
+
+          opacity = (max / total)
         }
 
         board.append("div")
         .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "rem")
         .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "rem")
         .style("background-color", col)
+        .style("opacity", opacity)
         .attr("class", "colorbox")
       }
     }
