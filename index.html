@@ -626,7 +626,7 @@ function intToComponents(colorBeginner) {
 
         segments.forEach(function(segment, si) {
           segment.vectors.forEach(function(vector, t) {
-            if ((settings.showIntPoints || loaded[i].cp == 1) && vector.visible) {
+            if ((settings.showIntPoints || loaded[i].cp == 1 || vector.age == 0 || vector.age == segment.vectors.length - 1) && vector.visible) {
               colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
             } else {
               colors[i * 4 + 3] = 0.0
@@ -635,8 +635,6 @@ function intToComponents(colorBeginner) {
             i++
           })
         })
-
-        console.log(colors)
 
         pointGeometry.attributes.customColor.needsUpdate = true;
 
@@ -767,7 +765,7 @@ function intToComponents(colorBeginner) {
 
         // First add lines to scene... so they get drawn first
         renderLines(segments)
-        //fatLines(segments)
+        fatLines(segments)
 
         updatePointGeometry()
         // Then add particles
