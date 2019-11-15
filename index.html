@@ -572,7 +572,7 @@ function intToComponents(colorBeginner) {
           document.getElementById('info').innerHTML = createChess(loaded[idx]);
         }
         if (problem.type == ProblemType.RUBIK) {
-          document.getElementById('info').innerHTML = createRubik2(loaded[idx]);
+          document.getElementById('info').innerHTML = aggregateRubik([loaded[idx]]);
         }
       }, 10);
 

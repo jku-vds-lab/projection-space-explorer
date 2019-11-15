@@ -11,56 +11,6 @@ function cubieToColour(str) {
   }
 }
 
-
-
-
-function createRubik2(d) {
-  var ttCubieSize = 1.3;
-  var ttCubieMargin = 0.2;
-  var distance = 3*ttCubieSize+4*ttCubieMargin;
-  var svgWidth = 3*distance;
-  var svgHeight = 4*distance;
-
-  var offsetMap = {
-    "upXOffset": distance,
-    "upYOffset": 0,
-    "frontXOffset": distance,
-    "frontYOffset": distance,
-    "leftXOffset": 0,
-    "leftYOffset": distance,
-    "rightXOffset": 2* distance,
-    "rightYOffset": distance,
-    "downXOffset": distance,
-    "downYOffset": 2*distance,
-    "backXOffset": distance,
-    "backYOffset": 3*distance
-  }
-  var sides = ["front", "up", "left", "right", "down", "back"]
-
-
-
-  var container = d3.create("div")
-  var size = ttCubieSize * 9 + ttCubieMargin * 10;
-  var board = container.append("div")
-  .style("position", "absolute")
-  .style("width", size + "rem")
-  .style("height", (size + ttCubieSize * 3 + ttCubieMargin * 4) + "rem")
-
-  for(side = 0; side < sides.length; side++) {
-    for (i1 = 0; i1 < 3; i1++) {
-      for(j = 0; j < 3; j++) {
-        board.append("div")
-        .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "rem")
-        .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "rem")
-        .style("background-color", cubieToColour(eval("d."+sides[side]+i1.toString()+j.toString())))
-        .attr("class", "colorbox")
-      }
-    }
-  }
-  return container.html()
-}
-
-
 /**
  * Aggregates vectors of rubik data and returns a representation of it.
  */
@@ -70,8 +20,8 @@ function aggregateRubik(vectors) {
   }
 
   var ttCubieSize = 1.3;
-  var ttCubieMargin = 0.2;
-  var distance = 3*ttCubieSize+4*ttCubieMargin;
+  var ttCubieMargin = 0.09;
+  var distance = 3*ttCubieSize+3*ttCubieMargin;
   var svgWidth = 3*distance;
   var svgHeight = 4*distance;
 
@@ -154,21 +104,23 @@ function aggregateRubik(vectors) {
         .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "rem")
         .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "rem")
         .style("background-color", col)
-        .style("opacity", opacity)
+
+
+        //.style("opacity", opacity)
         .attr("class", "colorbox")
 
         if (opacity != 1) {
           colorbox
-          .style("border", "1px solid gray")
+          //.style("border", "1px solid gray")
           .style("opacity", 1)
 
-          colorbox.style("background-color", "transparent")
+          colorbox.style("background-color", "#F0F0F0")
           colorbox.append("div")
           .style("background-color", col)
           .style("transform", "scale(" + opacity + ")")
-          .style("left", "-1px")
-          .style("top", "-1px")
           .style("opacity", opacity)
+          //.style("left", "-1px")
+          //.style("top", "-1px")
           .attr("class", "colorbox")
 
         }
