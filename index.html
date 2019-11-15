@@ -46,6 +46,9 @@
   </head>
 
   <body onresize="onWindowResize()">
+
+
+
     <div class="d-flex align-items-stretch" style="width: 100vw; height: 100vh">
       <div id="container" class="flex-shrink-1 flex-grow-1"></div>
 
@@ -57,6 +60,8 @@
       <div class="card flex-shrink-0" style="width: 18rem; margin: 0.5rem;">
 
         <div class="container" style="padding-top: 1rem;">
+          <a href="#" onclick="showGuide()">show controls</a>
+
           <select name="cars" class="custom-select" onchange="selectDataset(this)">
             <option selected>Choose data set</option>
             <option value="chess_chess16k.csv">Chess 16k Games</option>
@@ -76,7 +81,23 @@
 
         <div id="legend"></div>
       </div>
+
+
+      <div id="guide" style="position: absolute; right: 18rem; top: 2rem; display: none">
+        <div class="card bg-dark text-white" style="width: 20rem; height: 20rem">
+          <div class="card-body">
+            <h5 class="card-title">Basic Controls</h5>
+
+            <p class="card-text">You can move the camera by pressing the left mouse button and dragging the image.</p>
+            <p class="card-text">Use your mousewheel to zoom in and out of the projection.</p>
+            <p class="card-text">You can select multiple states by dragging a rectangle while pressing the ALT key.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
+
+
 
 
 
@@ -98,7 +119,7 @@
 				vColor = customColor;
         vType = type;
 				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-				gl_PointSize = 6.0 + (size / 16.0) * (zoom / 3.0);
+				gl_PointSize = (size / 2.0) + (size / 16.0) * (zoom / 3.0);
 				gl_Position = projectionMatrix * mvPosition;
 			}
 		</script>
@@ -128,6 +149,16 @@
 		<script>
 
 
+    function showGuide() {
+      if (document.getElementById("guide").style.display == "none") {
+        document.getElementById("guide").style.display = "block"
+      } else {
+        document.getElementById("guide").style.display = "none"
+      }
+
+    }
+
+
           var problem = null
 
 
@@ -145,7 +176,7 @@
           var pointMaterial = null;
 
           var settings = {
-            showIntPoints: false
+            showIntPoints: true
           }
 
           var currentHoverIdx = null;
@@ -443,10 +474,10 @@ function intToComponents(colorBeginner) {
         var geometry = new THREE.LineGeometry();
 
         var matLine = new THREE.LineMaterial({
-                linewidth: 10, // in pixels
+                linewidth: 2, // in pixels
                 vertexColors: THREE.VertexColors,
                 transparent: true,
-                opacity: 0.5,
+                opacity: 0.1,
                 depthWrite: false
             });
         matLine.resolution.set(776, 695);
@@ -483,6 +514,8 @@ function intToComponents(colorBeginner) {
 
 
     function renderLines(segments) {
+      var opacity = getLineOpacity(segments.length)
+
       segments.forEach(function(segment, index) {
         var geometry = new THREE.Geometry();
 
@@ -491,7 +524,7 @@ function intToComponents(colorBeginner) {
             transparent: true,
 
             // Calculate opacity
-            opacity: 0.3 + 0.7 / segments.length
+            opacity: opacity
             // 1 - 1     100 - 0.1    200 - 0.05      50 - 0.2     25 - 0.4
         });
         var da = []
@@ -659,7 +692,7 @@ function intToComponents(colorBeginner) {
         //camera.position.set(30,0,0);
         //camera.up = new THREE.Vector3(0,0,1);
         //camera.lookAt(new THREE.Vector3(0,0,0));
-        camera.zoom = normalizeVectors(loaded, width, height);
+        camera.zoom = getDefaultZoom(loaded, width, height);
 				camera.position.z = 1;
         camera.lookAt(new THREE.Vector3(0,0,0));
 

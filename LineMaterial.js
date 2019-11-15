@@ -145,7 +145,7 @@ THREE.ShaderLib[ 'line' ] = {
 			vec4 diffuseColor = vec4( diffuse, opacity );
 			#include <logdepthbuf_fragment>
 			#include <color_fragment>
-			gl_FragColor = vec4( diffuseColor.rgb, 0.5 );
+			gl_FragColor = vec4( diffuseColor.rgb, 0.1 );
 			#include <premultiplied_alpha_fragment>
 			#include <tonemapping_fragment>
 			#include <encodings_fragment>
