@@ -22,6 +22,8 @@
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
+    <script src="lib/visualization.js"></script>
+
     <link rel="stylesheet" href="problem_specific/chess.css">
     <link rel="stylesheet" href="problem_specific/rubik.css">
 
@@ -657,7 +659,7 @@ function intToComponents(colorBeginner) {
         //camera.position.set(30,0,0);
         //camera.up = new THREE.Vector3(0,0,1);
         //camera.lookAt(new THREE.Vector3(0,0,0));
-        camera.zoom = 4;
+        camera.zoom = normalizeVectors(loaded, width, height);
 				camera.position.z = 1;
         camera.lookAt(new THREE.Vector3(0,0,0));
 
@@ -765,7 +767,7 @@ function intToComponents(colorBeginner) {
 
         // First add lines to scene... so they get drawn first
         renderLines(segments)
-        fatLines(segments)
+        //fatLines(segments)
 
         updatePointGeometry()
         // Then add particles

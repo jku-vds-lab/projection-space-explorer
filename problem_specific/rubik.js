@@ -14,7 +14,7 @@ function cubieToColour(str) {
 /**
  * Aggregates vectors of rubik data and returns a representation of it.
  */
-function aggregateRubik(vectors) {
+function aggregateRubik(vectors, width, height) {
   if (vectors.length == 0) {
     return ""
   }
