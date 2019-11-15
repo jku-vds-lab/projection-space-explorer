@@ -22,12 +22,15 @@
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
+    <link rel="stylesheet" href="problem_specific/chess.css">
+    <link rel="stylesheet" href="problem_specific/rubik.css">
 
-    <script src="rubik.js"></script>
-    <script src="chess.js"></script>
+    <script src="problem_specific/rubik.js"></script>
+    <script src="problem_specific/chess.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.min.js" integrity="sha256-Wua0LsQkGDEeIkbmBNjj9wcThJh5uCD6R8+5YQhXveQ=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/three.meshline@1.2.0/src/THREE.MeshLine.min.js"></script>
-    <link rel="stylesheet" href="chess.css">
+
     <link rel="stylesheet" href="styling.css">
     <link href="rubics.png" rel="shortcut icon" type="image/x-icon" />
 
@@ -60,6 +63,7 @@
             <option value="rubik_cube5x2_different_origins.csv">Rubik 5x2 Different Origins</option>
             <option value="rubik_cube10x2_different_origins.csv">Rubik 10x2 Different Origins</option>
             <option value="rubik_cube100x2_different_origins.csv">Rubik 100x2 Different Origins</option>
+            <option value="neural_rand_weights.csv">Neural Random Weights</option>
           </select>
 
           <div class="custom-file">
@@ -92,7 +96,7 @@
 				vColor = customColor;
         vType = type;
 				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-				gl_PointSize = size + (zoom / 15.0);
+				gl_PointSize = 6.0 + (size / 16.0) * (zoom / 3.0);
 				gl_Position = projectionMatrix * mvPosition;
 			}
 		</script>
@@ -129,7 +133,7 @@
           var segments = null;
     			var camera;
     			var particles;
-    			var PARTICLE_SIZE = 20;
+    			var PARTICLE_SIZE = parseFloat(getComputedStyle(document.documentElement).fontSize);
     			var raycaster, intersects;
     			var mouse, INTERSECTED;
           var pointGeometry = null;
@@ -215,6 +219,9 @@
       } else if (select.value.startsWith("rubik")) {
         problem = new Problem(ProblemType.RUBIK)
         loadData(problem, "datasets/rubik/" + select.value.substring(6));
+      } else if (select.value.startsWidth("neural")) {
+        problem = new Problem(ProblemType.NEURAL)
+        loadData(problem, "datasets/neural/" + select.value.substring(7))
       }
     }
 
@@ -543,14 +550,9 @@ function intToComponents(colorBeginner) {
 
       var test = mouseToWorld(event)
 
-
-
       if (rectangleSelection != null) {
         rectangleSelection.mouseMove(test.x, test.y)
       }
-
-
-
 
       if (window.infoTimeout != null) {
         clearTimeout(window.infoTimeout)
