@@ -123,8 +123,6 @@ function aggregateRubik(vectors) {
   .style("width", size + "rem")
   .style("height", (size + ttCubieSize * 3 + ttCubieMargin * 4) + "rem")
 
-  console.log(aggregation)
-
   for(side = 0; side < sides.length; side++) {
     for (i1 = 0; i1 < 3; i1++) {
       for(j = 0; j < 3; j++) {
@@ -152,12 +150,28 @@ function aggregateRubik(vectors) {
           opacity = (max / total)
         }
 
-        board.append("div")
+        var colorbox = board.append("div")
         .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "rem")
         .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "rem")
         .style("background-color", col)
         .style("opacity", opacity)
         .attr("class", "colorbox")
+
+        if (opacity != 1) {
+          colorbox
+          .style("border", "1px solid gray")
+          .style("opacity", 1)
+
+          colorbox.style("background-color", "transparent")
+          colorbox.append("div")
+          .style("background-color", col)
+          .style("transform", "scale(" + opacity + ")")
+          .style("left", "-1px")
+          .style("top", "-1px")
+          .style("opacity", opacity)
+          .attr("class", "colorbox")
+
+        }
       }
     }
   }
