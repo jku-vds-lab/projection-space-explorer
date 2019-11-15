@@ -219,7 +219,7 @@
       } else if (select.value.startsWith("rubik")) {
         problem = new Problem(ProblemType.RUBIK)
         loadData(problem, "datasets/rubik/" + select.value.substring(6));
-      } else if (select.value.startsWidth("neural")) {
+      } else if (select.value.startsWith("neural")) {
         problem = new Problem(ProblemType.NEURAL)
         loadData(problem, "datasets/neural/" + select.value.substring(7))
       }
@@ -331,13 +331,33 @@
               // Convert generic attributes
               d.y = +d.y
               d.x = +d.x
-              d.cubeNum = +d.cubeNum
-              d.cp = +d.cp
-              d.algo = +d.algo
-              d.age = +d.age
+
+              if ("cubeNum" in d) {
+                d.cubeNum = +d.cubeNum
+              }
+              if ("ep" in d) {
+                d.cubeNum = +d.ep
+              }
+
+
+              if ("cp" in d) {
+                d.cp = +d.cp
+              }
+
+              if ("algo" in d) {
+                d.algo = +d.algo
+              }
+
+              if ("age" in d) {
+                d.age = +d.age
+              }
+
+
+
 
               // Attribute that specifies if this vector should be visible or not
               d.visible = true
+
 
               if (!(d.algo in algorithms)) {
                 algorithms[d.algo] = {
@@ -345,6 +365,7 @@
                 }
               }
             });
+
             loaded = data;
 
             segments = getSegments(loaded);
@@ -362,8 +383,10 @@
       function loadLegend(problem) {
         if (problem.type == ProblemType.RUBIK) {
           document.getElementById('legend').innerHTML = rubikLegend(algorithms[1].color, algorithms[0].color)
-        } else {
+        } else if (problem.type == ProblemType.CHESS) {
           document.getElementById('legend').innerHTML = chessLegend(algorithms[1].color, algorithms[0].color)
+        } else if (problem.type == ProblemType.NEURAL) {
+
         }
       }
 
@@ -612,6 +635,9 @@ function intToComponents(colorBeginner) {
             i++
           })
         })
+
+        console.log(colors)
+
         pointGeometry.attributes.customColor.needsUpdate = true;
 
       }
@@ -649,6 +675,7 @@ function intToComponents(colorBeginner) {
 				var color = new THREE.Color();
 
         var i = 0
+        console.log(segments)
 
         segments.forEach(function(segment, si) {
           segment.vectors.forEach(function(vector, t) {
@@ -679,6 +706,7 @@ function intToComponents(colorBeginner) {
               // Checkpoint
               types[i] = 1
             } else {
+              // Intermediate
               types[i] = 2
             }
 
