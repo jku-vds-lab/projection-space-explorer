@@ -132,6 +132,7 @@ function aggregateChess(vectors) {
         }
       }
 
+      if (opacity < 0.05) console.log("he")
       opacity = (max / total)
     }
 
