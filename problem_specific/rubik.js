@@ -15,12 +15,8 @@ function cubieToColour(str) {
  * Aggregates vectors of rubik data and returns a representation of it.
  */
 function aggregateRubik(vectors, width, height) {
-  if (vectors.length == 0) {
-    return ""
-  }
-
-  var ttCubieSize = 1.3;
-  var ttCubieMargin = 0.09;
+  var ttCubieSize = 1.125;
+  var ttCubieMargin = 0.0625;
   var distance = 3*ttCubieSize+3*ttCubieMargin;
   var svgWidth = 3*distance;
   var svgHeight = 4*distance;
@@ -80,8 +76,10 @@ function aggregateRubik(vectors, width, height) {
         var col = 'white'
         var opacity = 1
 
-
-        if (aggregation[key].length == 1) {
+        if (vectors.length == 0) {
+          col = "#F0F0F0"
+        }
+        else if (aggregation[key].length == 1) {
           col = cubieToColour(aggregation[key][0].key)
         } else {
 
@@ -104,8 +102,6 @@ function aggregateRubik(vectors, width, height) {
         .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "rem")
         .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "rem")
         .style("background-color", col)
-
-
         //.style("opacity", opacity)
         .attr("class", "colorbox")
 
@@ -149,7 +145,7 @@ function rubikLegend(colorFridrich, colorBeginner) {
   var compBeginner = intToComponents(colorBeginner)
 
   var template = `
-    <div class="container">
+    <div>
       <div class="custom-control custom-checkbox">
           <input type="checkbox" checked class="custom-control-input" id="showFridrich" onclick="onShowFridrichMethodChanged(this)">
           <label style="color: rgb(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b})" class="custom-control-label" for="showFridrich" >Fridrich method</label>

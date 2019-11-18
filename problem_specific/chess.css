@@ -4,15 +4,15 @@
   border-width: 0.5rem;
   border-color: black;
   border-style: solid;
-  width: 17rem;
-  height: 17rem;
+  width: 13rem;
+  height: 13rem;
 }
 
 .black {
 
     float: left;
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
     background-color: #999;
     font-size:1rem;
     text-align:center;
@@ -23,8 +23,8 @@
 
 .white {
     float: left;
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
     background-color: #fff;
     font-size:1rem;
     text-align:center;

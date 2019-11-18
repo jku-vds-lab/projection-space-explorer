@@ -27,6 +27,8 @@ var symbols = {
  * @return a string representing a dom element
  */
 function createChess(d) {
+  if (d == null) return ""
+
   var container = d3.create("div")
 
   var board = container.append("div")
@@ -63,6 +65,8 @@ function createChess(d) {
 
 
 function aggregateChess(vectors) {
+  if (vectors.length == 1) return createChess(vectors[0])
+
   // Generate chess keys
   var keys = []
 
@@ -117,7 +121,10 @@ function aggregateChess(vectors) {
     var content = ""
     var opacity = 1.0
 
-    if (aggregation[key].length == 1) {
+    if (vectors.length == 0) {
+      content = ""
+    }
+    else if (aggregation[key].length == 1) {
       content = symbols[aggregation[key][0].key]
     } else {
       var max = 0.0
@@ -160,7 +167,7 @@ function chessLegend(colorFridrich, colorBeginner) {
   var compBeginner = intToComponents(colorBeginner)
 
   var template = `
-    <div class="container">
+    <div>
       <hr />
 
       <div>

@@ -4,12 +4,7 @@ class Problem {
   }
 
   aggregate(vectors) {
-    if (this.type == ProblemType.CHESS) {
-      return aggregateChess(vectors)
-    }
-    if (this.type == ProblemType.RUBIK) {
-      return aggregateRubik(vectors)
-    }
+    setAggregateView(document.getElementById('aggregate'), vectors)
   }
 }
 
