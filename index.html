@@ -551,7 +551,7 @@ function intToComponents(colorBeginner) {
 
         camera = getDefaultCamera(width, height, loaded)
 
-        particles = new PointVisualization()
+        particles = new PointVisualization(settings)
         particles.createMesh(loaded, segments)
         particles.zoom(camera.zoom)
 
