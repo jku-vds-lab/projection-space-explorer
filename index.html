@@ -87,7 +87,7 @@
 
           <div class="form-group">
             <label for="exampleFormControlSelect1">Select Dataset</label>
-            <select id="setselect" name="cars" class="custom-select" onchange="selectDataset(this)">
+            <select id="setselect" name="cars" class="custom-select" onchange="selectDataset(this.value)">
               <option value="chess_chess16k.csv">Chess 16k Games</option>
               <option value="chess_chess40k.csv">Chess 40k Games</option>
               <option value="rubik_cube1x2_different_origins.csv">Rubik 1x2 Different Origins</option>
@@ -271,18 +271,18 @@
 
 
 
-    function selectDataset(select) {
+    function selectDataset(value) {
       cleanup()
 
-      if (select.value.startsWith("chess")) {
+      if (value.startsWith("chess")) {
         problem = new Problem(ProblemType.CHESS)
-        loadData(problem, "datasets/chess/" + select.value.substring(6))
-      } else if (select.value.startsWith("rubik")) {
+        loadData(problem, "datasets/chess/" + value.substring(6))
+      } else if (value.startsWith("rubik")) {
         problem = new Problem(ProblemType.RUBIK)
-        loadData(problem, "datasets/rubik/" + select.value.substring(6));
-      } else if (select.value.startsWith("neural")) {
+        loadData(problem, "datasets/rubik/" + value.substring(6));
+      } else if (value.startsWith("neural")) {
         problem = new Problem(ProblemType.NEURAL)
-        loadData(problem, "datasets/neural/" + select.value.substring(7))
+        loadData(problem, "datasets/neural/" + value.substring(7))
       }
     }
 
@@ -675,7 +675,25 @@ function intToComponents(colorBeginner) {
 			}
 
 
-      selectDataset(document.getElementById("setselect"))
+
+  var url = new URL(window.location);
+  var set = url.searchParams.get("set");
+
+
+  if (set != null) {
+    if (set == "neural") {
+      document.getElementById("setselect").value = "neural_rand_weights.csv"
+    } else if (set == "rubik") {
+      document.getElementById("setselect").value = "rubik_cube10x2_different_origins.csv"
+    } else if (set == "chess") {
+      document.getElementById("setselect").value = "chess_chess16k.csv"
+    }
+  }
+  console.log(document.getElementById("setselect").value)
+
+  selectDataset(document.getElementById("setselect").value)
+
+
 		</script>
 
 	</body>
