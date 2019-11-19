@@ -94,9 +94,9 @@
               <option value="rubik_cube5x2_different_origins.csv">Rubik 5x2 Different Origins</option>
               <option selected value="rubik_cube10x2_different_origins.csv">Rubik 10x2 Different Origins</option>
               <option value="rubik_cube100x2_different_origins.csv">Rubik 100x2 Different Origins</option>
-              <option value="neural_rand_weights.csv">Neural Random Weights</option>
+              <!--<option value="neural_rand_weights.csv">Neural Random Weights</option>-->
               <option value="neural_rand_confmat.csv">Neural Confusion Matrix</option>
-              <option value="neural_lr_weights.csv">Neural Learning Weights</option>
+              <!--<option value="neural_lr_weights.csv">Neural Learning Weights</option>-->
               <option value="neural_lr_confmat.csv">Neural Learning Confusion Matrix</option>
             </select>
           </div>
@@ -682,7 +682,7 @@ function intToComponents(colorBeginner) {
 
   if (set != null) {
     if (set == "neural") {
-      document.getElementById("setselect").value = "neural_rand_weights.csv"
+      document.getElementById("setselect").value = "neural_lr_confmat.csv"
     } else if (set == "rubik") {
       document.getElementById("setselect").value = "rubik_cube10x2_different_origins.csv"
     } else if (set == "chess") {

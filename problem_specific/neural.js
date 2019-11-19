@@ -1,7 +1,8 @@
-var interpolator = d3.interpolateRgb("white", "blue")
+var interpolator = d3.interpolateRgb("rgb(255, 255, 255)", "rgb(150,150,255)")
+var max = 20;
 
 function interpolate(value) {
-  return interpolator(Math.log(1 + value * 1000) / 7)
+  return interpolator(Math.min(1.0, value))
 }
 
 function aggregateNeural(vectors) {
@@ -10,16 +11,6 @@ function aggregateNeural(vectors) {
   }
   var vector = vectors[0]
 
-  var max = 0
-  for (var y = 0; y < 9; y++) {
-    for (var x = 0; x < 9; x++) {
-      var value = vector[`cf${y}${x}`]
-      if (value > max) {
-        max = value
-      }
-    }
-  }
-
   var container = d3.create('div')
   var table = container.append('table')
   .attr("class", "neural")
@@ -27,9 +18,16 @@ function aggregateNeural(vectors) {
   for (var y = 0; y < 9; y++) {
     var row = table.append('tr')
     for (var x = 0; x < 9; x++) {
-      row.append('td')
-      .attr("class", "neuralcell")
-      .style("background-color", interpolate(vector[`cf${y}${x}`] / max))
+      if (x != y) {
+        row.append('td')
+        .attr("class", "neuralcell")
+        .style("background-color", interpolate(vector[`cf${y}${x}`] / max))
+        .text(vector[`cf${y}${x}`])
+      } else {
+        row.append('td')
+        .attr("class", "neuralcell")
+        .style("background-color", "transparent")
+      }
     }
   }
 
@@ -64,13 +62,13 @@ function aggregateNeural(vectors) {
 
   <defs>
     <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
+      <stop offset="0%" style="stop-color:rgb(150,150,255);stop-opacity:1" />
       <stop offset="100%" style="stop-color:rgb(255,255,255);stop-opacity:1" />
     </linearGradient>
   </defs>
   <rect x="218" y="20" width="10" height="182" stroke="black" stroke-width="1" fill="url(#grad2)" />
 
-  <foreignObject x="20" y="20" width="180" height="180">
+  <foreignObject x="21" y="21" width="180" height="180">
 
   ${content}
 
