@@ -1,0 +1,10 @@
+.neural {
+  border-collapse: separate;
+  border-spacing: 0px 0;
+  background-color: gray;
+}
+
+.neuralcell {
+  width: 20px;
+  height: 20px;
+}
