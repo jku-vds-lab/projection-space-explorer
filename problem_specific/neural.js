@@ -32,7 +32,7 @@ function aggregateNeural(vectors, aggregation) {
       if (x != y) {
         row.append('td')
         .attr("class", "neuralcell")
-        .style("background-color", interpolate(vector[`cf${y}${x}`] / max))
+        //.style("background-color", interpolate(vector[`cf${y}${x}`] / max))
         .text(vector[`cf${y}${x}`])
       } else {
         row.append('td')

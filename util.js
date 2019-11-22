@@ -10,13 +10,13 @@ function intToComponents(colorBeginner) {
 
 function * colorGenerator() {
   while (true) {
-    yield 0x148F77 // Elf green
-    yield 0x7D3C98 // Vivid violet
-    yield 0xFFC300 // Yellow
-    yield 0xff5733 // Orange
-    yield 0x95A5A6 // Gray
-    yield 0x581845
-    yield 0x00fff0
+    yield 0x2d7864 // Elf green
+    yield 0x943b80 // Vivid violet
+    yield 0xff6600 // Yellow
+    yield 0x0084c8 // Orange
+    yield 0xb88100 // Gray
+    yield 0xdc0000
+    yield 0x364e59
   }
 }
 
