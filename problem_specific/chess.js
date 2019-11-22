@@ -154,31 +154,51 @@ function aggregateChess(vectors) {
 
 
 
-function chessLegend(colorFridrich, colorBeginner) {
-  var compFridrich = intToComponents(colorFridrich)
-  var compBeginner = intToComponents(colorBeginner)
+function chessLegend(colors) {
+  var switches = ""
+
+  var content = ""
+  colors.forEach(color => {
+    var comp = intToComponents(color.color)
+
+    switches = switches +
+    `
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" checked class="custom-control-input" id="chessSwitch${color.color}" onclick="toggleData(this, ${color.algo})">
+        <label style="color: rgb(${comp.r}, ${comp.g}, ${comp.b})" class="custom-control-label" for="chessSwitch${color.color}" >${color.name}</label>
+    </div>`
+
+    content = content +
+    `<div style="width: 100%; height: 1rem; background-image: linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))">
+     </div>`
+  })
+
+
+
 
   var template = `
     <div>
+      ${switches}
+
       <hr />
 
       <div>
-        <img src="./textures/sprites/cross.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/cross.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Starting point</span><br>
       </div>
 
       <div>
-        <img src="./textures/sprites/circle.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/circle.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="showIntermediatePoints()">toggle</a><br>
       </div>
 
       <div>
-        <img src="./textures/sprites/square.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/square.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Checkpoint</span><br>
       </div>
 
       <div>
-        <img src="./textures/sprites/star.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/star.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Solution</span><br>
       </div>
 
@@ -186,16 +206,7 @@ function chessLegend(colorFridrich, colorBeginner) {
 
       <hr />
 
-      <div style="width: 100%; height: 3vh; background-image: linear-gradient(to right, rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b}, 0.2), rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b},1))">
-      </div>
-
-      <div style="width: 100%; height: 1vh; background-image: linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,1))">
-      </div>
-
-      <div style="width: 100%; height: 3vh; background-image: linear-gradient(to right, rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},0.2), rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},1))">
-      </div>
-
-
+      ${content}
 
       <div class="d-flex justify-content-between">
             <div>

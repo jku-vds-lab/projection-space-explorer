@@ -233,16 +233,14 @@
     }
 
 
-
-    function onShowBeginnerMethodChanged(element) {
-      // show/hide lines that belong to fridrich method
+    function toggleData(element, algo) {
       segments.forEach((segment) => {
-        if (segment.algo == 0) {
+        if (segment.algo == algo) {
           segment.line.visible = element.checked
 
 
           segment.vectors.forEach((vector) => {
-            if (vector.algo == 0) {
+            if (vector.algo == algo) {
               vector.visible = element.checked
             }
           })
@@ -251,29 +249,6 @@
 
       problem.particles.update()
     }
-
-    function onShowFridrichMethodChanged(element) {
-      var show = element.checked
-
-      // show/hide lines that belong to fridrich method
-      segments.forEach((segment) => {
-        if (segment.algo == 1) {
-          segment.line.visible = show
-
-
-          segment.vectors.forEach((vector) => {
-            if (vector.algo == 1) {
-              vector.visible = element.checked
-            }
-          })
-        }
-      })
-
-
-      problem.particles.update()
-    }
-
-
 
     function selectDataset(value) {
       cleanup()
@@ -360,12 +335,14 @@
       }
 
       function loadLegend(problem) {
+        var chessOpeners = [ "Barnes Hut Opening", "Kings Pawn Opening", "English Opening" ]
+
         if (problem.type == ProblemType.RUBIK) {
           document.getElementById('legend').innerHTML = rubikLegend(algorithms[1].color, algorithms[0].color)
         } else if (problem.type == ProblemType.CHESS) {
-          document.getElementById('legend').innerHTML = chessLegend(algorithms[1].color, algorithms[0].color)
+          document.getElementById('legend').innerHTML = chessLegend(Object.keys(algorithms).sort().map(function (key, index) {return { 'color': algorithms[key].color, 'name': chessOpeners[key], 'algo': key } }))
         } else if (problem.type == ProblemType.NEURAL) {
-          document.getElementById('legend').innerHTML = neuralLegend(Object.keys(algorithms).map((key, index) => algorithms[key].color))
+          document.getElementById('legend').innerHTML = neuralLegend(Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'learningRate': key } }))
         }
       }
 

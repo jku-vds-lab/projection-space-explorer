@@ -137,34 +137,34 @@ function rubikLegend(colorFridrich, colorBeginner) {
   var template = `
     <div>
       <div class="custom-control custom-checkbox">
-          <input type="checkbox" checked class="custom-control-input" id="showFridrich" onclick="onShowFridrichMethodChanged(this)">
+          <input type="checkbox" checked class="custom-control-input" id="showFridrich" onclick="toggleData(this, 0)">
           <label style="color: rgb(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b})" class="custom-control-label" for="showFridrich" >Fridrich method</label>
       </div>
 
       <div class="custom-control custom-checkbox">
-          <input type="checkbox" checked class="custom-control-input" id="showBeginner" onclick="onShowBeginnerMethodChanged(this)">
+          <input type="checkbox" checked class="custom-control-input" id="showBeginner" onclick="toggleData(this, 1)">
           <label style="color: rgb(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b})" class="custom-control-label" for="showBeginner">Beginner's method</label>
       </div>
 
       <hr />
 
       <div>
-        <img src="./textures/sprites/cross.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/cross.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Starting point</span><br>
       </div>
 
       <div>
-        <img src="./textures/sprites/circle.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/circle.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="showIntermediatePoints()">toggle</a><br>
       </div>
 
       <div>
-        <img src="./textures/sprites/square.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/square.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Checkpoint</span><br>
       </div>
 
       <div>
-        <img src="./textures/sprites/star.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/star.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Solution</span><br>
       </div>
 
@@ -172,13 +172,10 @@ function rubikLegend(colorFridrich, colorBeginner) {
 
       <hr />
 
-      <div style="width: 100%; height: 3vh; background-image: linear-gradient(to right, rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b}, 0.2), rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b},1))">
+      <div style="width: 100%; height: 1rem; background-image: linear-gradient(to right, rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b}, 0.2), rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b},1))">
       </div>
 
-      <div style="width: 100%; height: 1vh; background-image: linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,1))">
-      </div>
-
-      <div style="width: 100%; height: 3vh; background-image: linear-gradient(to right, rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},0.2), rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},1))">
+      <div style="width: 100%; height: 1rem; background-image: linear-gradient(to right, rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},0.2), rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},1))">
       </div>
 
       <div class="d-flex justify-content-between">

@@ -32,7 +32,7 @@ function aggregateNeural(vectors, aggregation) {
       if (x != y) {
         row.append('td')
         .attr("class", "neuralcell")
-        //.style("background-color", interpolate(vector[`cf${y}${x}`] / max))
+        .style("background-color", interpolate(vector[`cf${y}${x}`] / max))
         .text(vector[`cf${y}${x}`])
       } else {
         row.append('td')
@@ -111,10 +111,12 @@ function aggregateNeural(vectors, aggregation) {
 function neuralLegend(color) {
   var content = ""
   for (var key in color) {
-    var comp = intToComponents(color[key])
+    var comp = intToComponents(color[key].color)
 
     content = content +
-    `<div style="width: 100%; height: 2vh; background-image: linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))">
+    `<div class="d-flex" style="width: 100%; height: 1rem">
+      <small class="small flex-shrink-0" style="width: 2.5rem">${color[key].learningRate == "undefined" ? '-' : color[key].learningRate}</small>
+      <div class="flex-grow-1" style="background-image: linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))"></div>
      </div>`
   }
 
@@ -122,17 +124,17 @@ function neuralLegend(color) {
   var template = `
     <div>
       <div>
-        <img src="./textures/sprites/cross.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/cross.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Starting point</span><br>
       </div>
 
       <div>
-        <img src="./textures/sprites/circle.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/circle.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="showIntermediatePoints()">toggle</a><br>
       </div>
 
       <div>
-        <img src="./textures/sprites/star.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <img src="./textures/sprites/star.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
         <span style="vertical-align: middle">Solution</span><br>
       </div>
 
@@ -140,14 +142,16 @@ function neuralLegend(color) {
 
       <hr />
 
+      <h6 class="text-center">Learning Rate</h6>
+
       ${content}
 
       <div class="d-flex justify-content-between">
-            <div>
-               high
+            <div style='margin-left: 2.5rem'>
+               early
             </div>
             <div>
-               low
+               late
             </div>
        </div>
 
