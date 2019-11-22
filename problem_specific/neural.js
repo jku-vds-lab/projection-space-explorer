@@ -5,11 +5,22 @@ function interpolate(value) {
   return interpolator(Math.min(1.0, value))
 }
 
-function aggregateNeural(vectors) {
-  if (vectors.length != 1) {
+function aggregateNeural(vectors, aggregation) {
+  var vector = null
+  console.log(aggregation)
+  if (vectors.length != 1 && aggregation) {
     return "<h5>Not applicable</h5>"
+  } else if (vectors.length != 1 && !aggregation) {
+    vector = { }
+    for (var y = 0; y < 9; y++) {
+      for (var x = 0; x < 9; x++) {
+        vector[`cf${y}${x}`] = ""
+      }
+    }
+  } else {
+    vector = vectors[0]
   }
-  var vector = vectors[0]
+
 
   var container = d3.create('div')
   var table = container.append('table')

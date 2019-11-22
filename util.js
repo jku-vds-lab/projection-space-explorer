@@ -4,7 +4,7 @@ class Problem {
   }
 
   aggregate(vectors) {
-    setAggregateView(document.getElementById('aggregate'), vectors)
+    setAggregateView(document.getElementById('aggregate'), vectors, true)
   }
 }
 

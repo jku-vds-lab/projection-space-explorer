@@ -342,8 +342,8 @@
         chooseColor = colorGenerator();
         algorithms = {}
 
-        setAggregateView(document.getElementById('info'), [])
-        setAggregateView(document.getElementById('aggregate'), [])
+        setAggregateView(document.getElementById('info'), [], false)
+        setAggregateView(document.getElementById('aggregate'), [], true)
 
 
 
@@ -377,7 +377,7 @@
 
 
 
-  function setAggregateView(element, list) {
+  function setAggregateView(element, list, aggregation) {
     element.innerHTML = ""
 
     if (problem.type == ProblemType.CHESS) {
@@ -387,7 +387,7 @@
       element.innerHTML = aggregateRubik(list)
     }
     if (problem.type == ProblemType.NEURAL) {
-      element.innerHTML = aggregateNeural(list)
+      element.innerHTML = aggregateNeural(list, aggregation)
     }
   }
 
@@ -556,7 +556,7 @@ function intToComponents(colorBeginner) {
 
         var list = []
         if (idx >= 0) list.push(loaded[idx])
-        setAggregateView(document.getElementById('info'), list)
+        setAggregateView(document.getElementById('info'), list, false)
       }, 10);
 
 
@@ -638,7 +638,7 @@ function intToComponents(colorBeginner) {
       }
 
       function choose(position) {
-        var best = 5
+        var best = 30 / (camera.zoom * 2.0)
         var res = -1
 
         for (var index = 0; index < loaded.length; index++) {
