@@ -607,7 +607,7 @@ function intToComponents(colorBeginner) {
 
 
         // First add lines to scene... so they get drawn first
-        problem.lines = renderLines(segments, algorithms)
+        problem.lines = renderLines2(segments, algorithms)
         problem.lines.forEach(line => problem.scene.add(line.line))
         //fatLines(segments)
 
