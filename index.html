@@ -357,8 +357,6 @@ var stats = null;
           problem.particles.update()
 
           loadLegend(problem);
-
-          animate();
         })
       }
 
@@ -619,8 +617,7 @@ function intToComponents(colorBeginner) {
 
         console.log(problem.renderer.info)
 
-        stats = createStats();
-        document.body.appendChild(stats.domElement)
+
 
         window.onwheel = function(){ return false; }
 				container.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -696,11 +693,14 @@ function intToComponents(colorBeginner) {
 			}
 
 			function animate() {
+        render();
+
 				requestAnimationFrame( animate );
-				render();
 			}
 
 			function render() {
+        if (problem == null) return;
+
         var t0 = performance.now()
 
         if (problem != null && "renderer" in problem) {
@@ -730,8 +730,11 @@ function intToComponents(colorBeginner) {
     }
   }
 
-  selectDataset(document.getElementById("setselect").value)
+  stats = createStats();
+  document.body.appendChild(stats.domElement)
 
+  selectDataset(document.getElementById("setselect").value)
+  animate();
 
 		</script>
 
