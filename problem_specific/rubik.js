@@ -128,16 +128,6 @@ function aggregateRubik(vectors, width, height) {
 }
 
 
-function intToComponents(colorBeginner) {
-    var compBeginner = {
-      r: (colorBeginner & 0xff0000) >> 16,
-      g: (colorBeginner & 0x00ff00) >> 8,
-      b: (colorBeginner & 0x0000ff)
-    };
-
-    return compBeginner
-}
-
 
 
 function rubikLegend(colorFridrich, colorBeginner) {

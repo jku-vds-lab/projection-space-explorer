@@ -44,7 +44,7 @@ function aggregateNeural(vectors, aggregation) {
 
   var content = container.html()
 
-  var svg = `<svg width="240px" height="240px" viewBox="0 0 240 240">
+  var svg = `<svg width="260" height="240" viewBox="0 0 260 240">
   <rect x="20", y="20" width="182" height="182" fill="transparent" stroke="black" stroke-width="1"></rect>
 
   <g font-size="10" style="text-anchor: middle">
@@ -71,13 +71,22 @@ function aggregateNeural(vectors, aggregation) {
     <text x="190" y="218">9</text>
   </g>
 
+  <g font-size="10" style="text-anchor: left">
+    <text x="232" y="23">50+</text>
+    <text x="232" y="205">0</text>
+  </g>
+
+  <line x1="222" y1="20" x2="227" y2="20" style="stroke:black;stroke-width:1" />
+  <line x1="222" y1="202" x2="227" y2="202" style="stroke:black;stroke-width:1" />
+
   <defs>
     <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" style="stop-color:rgb(150,150,255);stop-opacity:1" />
       <stop offset="100%" style="stop-color:rgb(255,255,255);stop-opacity:1" />
     </linearGradient>
   </defs>
-  <rect x="218" y="20" width="10" height="182" stroke="black" stroke-width="1" fill="url(#grad2)" />
+
+  <rect x="212" y="20" width="10" height="182" stroke="black" stroke-width="1" fill="url(#grad2)" />
 
   <foreignObject x="21" y="21" width="180" height="180">
 
@@ -91,4 +100,58 @@ function aggregateNeural(vectors, aggregation) {
 
 
   return svg
+}
+
+
+
+
+
+
+
+function neuralLegend(color) {
+  var content = ""
+  for (var key in color) {
+    var comp = intToComponents(color[key])
+
+    content = content +
+    `<div style="width: 100%; height: 2vh; background-image: linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))">
+     </div>`
+  }
+
+
+  var template = `
+    <div>
+      <div>
+        <img src="./textures/sprites/cross.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <span style="vertical-align: middle">Starting point</span><br>
+      </div>
+
+      <div>
+        <img src="./textures/sprites/circle.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="showIntermediatePoints()">toggle</a><br>
+      </div>
+
+      <div>
+        <img src="./textures/sprites/star.png" style="width:2vh;height:2vh; vertical-align: middle"></img>
+        <span style="vertical-align: middle">Solution</span><br>
+      </div>
+
+
+
+      <hr />
+
+      ${content}
+
+      <div class="d-flex justify-content-between">
+            <div>
+               high
+            </div>
+            <div>
+               low
+            </div>
+       </div>
+
+    </div>`
+
+  return template
 }

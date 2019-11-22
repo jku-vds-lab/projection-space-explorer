@@ -77,10 +77,10 @@
               <option value="rubik_cube10x2.csv">Rubik: 10x2 Same Origins</option>
               <option value="rubik_cube100x2_different_origins.csv">Rubik: 100x2 Different Origins</option>
               <option value="rubik_cube100x2.csv">Rubik: 100x2 Same Origins</option>
-              <!--<option value="neural_rand_weights.csv">Neural Random Weights</option>-->
-              <option value="neural_rand_confmat.csv">Neural: Confusion Matrix</option>
-              <!--<option value="neural_lr_weights.csv">Neural Learning Weights</option>-->
-              <option value="neural_lr_confmat.csv">Neural: Learning Confusion Matrix</option>
+              <option value="neural_random_weights.csv">Neural: Random Weights</option>
+              <option value="neural_random_confmat.csv">Neural: Confusion Matrix</option>
+              <option value="neural_learning_weights.csv">Neural: Learning Weights</option>
+              <option value="neural_learning_confmat.csv">Neural: Learning Confusion Matrix</option>
             </select>
           </div>
 
@@ -113,7 +113,11 @@
 
 
 
-      <div id="container" class="flex-shrink-1 flex-grow-1"></div>
+      <div id="container" class="flex-shrink-1 flex-grow-1">
+
+      </div>
+
+      <button type="button" class="btn"><span class="glyphicon glyphicon-star"></span></button>
 
 
       <div id="guide" style="position: absolute; left: 18rem; top: 2rem; display: none">
@@ -214,13 +218,7 @@
 
           var currentHoverIdx = null;
 
-          function * colorGenerator() {
-            while (true) {
-              yield 0x148F77
-              yield 0x7D3C98
-              yield 0xFFC300
-            }
-          }
+
           var chooseColor = colorGenerator();
 
           var algorithms = { };
@@ -370,7 +368,7 @@
         } else if (problem.type == ProblemType.CHESS) {
           document.getElementById('legend').innerHTML = chessLegend(algorithms[1].color, algorithms[0].color)
         } else if (problem.type == ProblemType.NEURAL) {
-
+          document.getElementById('legend').innerHTML = neuralLegend(Object.keys(algorithms).map((key, index) => algorithms[key].color))
         }
       }
 
@@ -720,7 +718,7 @@ function intToComponents(colorBeginner) {
 
   if (set != null) {
     if (set == "neural") {
-      document.getElementById("setselect").value = "neural_lr_confmat.csv"
+      document.getElementById("setselect").value = "neural_learning_confmat.csv"
     } else if (set == "rubik") {
       document.getElementById("setselect").value = "rubik_cube10x2_different_origins.csv"
     } else if (set == "chess") {
