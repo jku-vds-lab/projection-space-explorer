@@ -7,7 +7,7 @@ function interpolate(value) {
 
 function aggregateNeural(vectors) {
   if (vectors.length != 1) {
-    return "<h5>Not useful</h5>"
+    return "<h5>Not applicable</h5>"
   }
   var vector = vectors[0]
 

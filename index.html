@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>General Visualization</title>
+    <title>Projection Explorer</title>
 
 
 
@@ -91,6 +91,7 @@
               <option value="chess_chess16k.csv">Chess 16k Games</option>
               <option value="chess_chess40k.csv">Chess 40k Games</option>
               <option value="rubik_cube1x2_different_origins.csv">Rubik 1x2 Different Origins</option>
+              <option value="rubik_cube1x2.csv">Rubik 1x2 Same Origins</option>
               <option value="rubik_cube5x2_different_origins.csv">Rubik 5x2 Different Origins</option>
               <option selected value="rubik_cube10x2_different_origins.csv">Rubik 10x2 Different Origins</option>
               <option value="rubik_cube100x2_different_origins.csv">Rubik 100x2 Different Origins</option>
@@ -192,9 +193,8 @@
           var loaded = null;
           var segments = null;
     			var camera;
-    			var particles;
 
-    			var raycaster, intersects;
+    			var intersects;
     			var mouse, INTERSECTED;
 
           var mouseDownPosition = null;
@@ -225,7 +225,7 @@
     function showIntermediatePoints() {
       settings.showIntPoints = !settings.showIntPoints
 
-      particles.update()
+      problem.particles.update()
     }
 
 
@@ -245,7 +245,7 @@
         }
       })
 
-      particles.update()
+      problem.particles.update()
     }
 
     function onShowFridrichMethodChanged(element) {
@@ -266,13 +266,19 @@
       })
 
 
-      particles.update()
+      problem.particles.update()
     }
 
 
 
     function selectDataset(value) {
       cleanup()
+
+      if (problem != null) {
+        console.log("cleanup ----")
+        console.log(problem.renderer.info)
+        console.log("-------")
+      }
 
       if (value.startsWith("chess")) {
         problem = new Problem(ProblemType.CHESS)
@@ -284,6 +290,8 @@
         problem = new Problem(ProblemType.NEURAL)
         loadData(problem, "datasets/neural/" + value.substring(7))
       }
+
+
     }
 
 
@@ -296,6 +304,24 @@
 
       function cleanup() {
         if (problem != null) {
+
+          if (problem.lines != null) {
+            console.log("disposing lines")
+            problem.lines.forEach(line => {
+              line.dispose()
+            })
+          }
+
+          if (problem.particles != null) {
+            console.log("get rid of particles")
+            problem.particles.dispose()
+          }
+
+          if (problem.renderer != null) {
+            problem.renderer.renderLists.dispose()
+            console.log("disposed render lists")
+          }
+
           problem.scene.dispose()
         }
       }
@@ -323,7 +349,7 @@
 
           init(loaded, problem);
 
-          particles.update()
+          problem.particles.update()
 
           loadLegend(problem);
 
@@ -517,9 +543,10 @@ function intToComponents(colorBeginner) {
       window.infoTimeout = setTimeout(function() {
         window.infoTimeout = null
 
+        return;
         // Get index of selected node
         var idx = choose(test)
-        particles.highlight(idx)
+        problem.particles.highlight(idx)
 
         var list = []
         if (idx >= 0) list.push(loaded[idx])
@@ -543,17 +570,16 @@ function intToComponents(colorBeginner) {
 			function init(data, problem) {
 				var container = document.getElementById( 'container' );
 
-				scene = new THREE.Scene();
-        problem.scene = scene
+        problem.scene = new THREE.Scene();
 
         var width = container.offsetWidth;
         var height = container.offsetHeight;
 
         camera = getDefaultCamera(width, height, loaded)
 
-        particles = new PointVisualization(settings)
-        particles.createMesh(loaded, segments)
-        particles.zoom(camera.zoom)
+        problem.particles = new PointVisualization(settings)
+        problem.particles.createMesh(loaded, segments)
+        problem.particles.zoom(camera.zoom)
 
 
 
@@ -571,19 +597,24 @@ function intToComponents(colorBeginner) {
         container.innerHTML = ""
 				container.appendChild( renderer.domElement );
 				//
-				raycaster = new THREE.Raycaster();
 				mouse = new THREE.Vector2();
 
 
 
 
         // First add lines to scene... so they get drawn first
-        renderLines(segments, algorithms).forEach(line => problem.scene.add(line))
+        problem.lines = renderLines2(segments, algorithms)
+        problem.lines.forEach(line => problem.scene.add(line.line))
         //fatLines(segments)
 
-        particles.update()
+        problem.particles.update()
         // Then add particles
-        scene.add( particles.mesh );
+        problem.scene.add( problem.particles.mesh );
+
+
+
+        console.log(problem.renderer.info)
+
 
         window.onwheel = function(){ return false; }
 				container.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -629,7 +660,7 @@ function intToComponents(colorBeginner) {
           camera.zoom = 1;
         }
 
-        particles.zoom(camera.zoom);
+        problem.particles.zoom(camera.zoom);
 
         camera.updateProjectionMatrix();
       }
@@ -672,6 +703,7 @@ function intToComponents(colorBeginner) {
 
 
         var t1 = performance.now()
+
 			}
 
 
@@ -689,7 +721,6 @@ function intToComponents(colorBeginner) {
       document.getElementById("setselect").value = "chess_chess16k.csv"
     }
   }
-  console.log(document.getElementById("setselect").value)
 
   selectDataset(document.getElementById("setselect").value)
 
