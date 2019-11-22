@@ -542,17 +542,20 @@ function intToComponents(colorBeginner) {
       if (window.infoTimeout != null) {
         clearTimeout(window.infoTimeout)
       }
-      window.infoTimeout = setTimeout(function() {
-        window.infoTimeout = null
+      if (!mouseDown) {
+        window.infoTimeout = setTimeout(function() {
+          window.infoTimeout = null
 
-        // Get index of selected node
-        var idx = choose(test)
-        problem.particles.highlight(idx)
+          // Get index of selected node
+          var idx = choose(test)
+          problem.particles.highlight(idx)
 
-        var list = []
-        if (idx >= 0) list.push(loaded[idx])
-        setAggregateView(document.getElementById('info'), list, false)
-      }, 10);
+          var list = []
+          if (idx >= 0) list.push(loaded[idx])
+          setAggregateView(document.getElementById('info'), list, false)
+        }, 10);
+      }
+
 
 
       // Dragging
@@ -692,23 +695,18 @@ function intToComponents(colorBeginner) {
 			}
 
 			function animate() {
-        render();
+
 
 				requestAnimationFrame( animate );
+        render();
 			}
 
 			function render() {
         if (problem == null) return;
 
-        var t0 = performance.now()
-
         if (problem != null && "renderer" in problem) {
           problem.renderer.render(problem.scene, camera);
         }
-
-
-        var t1 = performance.now()
-
 			}
 
 
