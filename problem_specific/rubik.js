@@ -23,17 +23,17 @@ function aggregateRubik(vectors, width, height) {
 
   var offsetMap = {
     "upXOffset": distance,
-    "upYOffset": 0,
+    "upYOffset": distance,
     "frontXOffset": distance,
-    "frontYOffset": distance,
+    "frontYOffset": 2*distance,
     "leftXOffset": 0,
     "leftYOffset": distance,
     "rightXOffset": 2* distance,
     "rightYOffset": distance,
     "downXOffset": distance,
-    "downYOffset": 2*distance,
+    "downYOffset": 3*distance,
     "backXOffset": distance,
-    "backYOffset": 3*distance
+    "backYOffset": 0*distance
   }
   var sides = ["front", "up", "left", "right", "down", "back"]
 
