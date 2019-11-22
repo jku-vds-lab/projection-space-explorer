@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Projection Path Explorer</title>
 
-    <script src="lib/Stats.js"></script>
 
     <script src="util.js"></script>
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
@@ -207,7 +206,7 @@
 
     			var intersects;
     			var mouse, INTERSECTED;
-var stats = null;
+
           var mouseDownPosition = null;
           var mouseDown = false;
           var strokeTexture = null;
@@ -710,8 +709,6 @@ function intToComponents(colorBeginner) {
 
         var t1 = performance.now()
 
-        stats.update();
-
 			}
 
 
@@ -730,8 +727,6 @@ function intToComponents(colorBeginner) {
     }
   }
 
-  stats = createStats();
-  document.body.appendChild(stats.domElement)
 
   selectDataset(document.getElementById("setselect").value)
   animate();
