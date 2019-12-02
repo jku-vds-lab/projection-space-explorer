@@ -1,7 +1,7 @@
 /**
  * Data loading routines.
  */
-
+var d3v5 = require('d3')
 
 
 
@@ -17,8 +17,8 @@ class Vector {
  * @param type the type of the problem, eg ProblemType.CHESS or ProblemType.RUBIK.
  *
  */
-function loadSet(file, type, callback) {
-  d3.csv(file, function loadCallback(error, data) {
+function loadSet(file, type, algorithms, chooseColor, callback) {
+  d3v5.csv(file).then(function(data) {
     data.forEach(function(d) { // convert strings to numbers
       // Convert generic attributes
       d.y = +d.y
@@ -54,8 +54,11 @@ function loadSet(file, type, callback) {
       }
     })
 
-    console.log(data)
-
     callback(data)
   })
+}
+
+
+module.exports = {
+  load: loadSet
 }

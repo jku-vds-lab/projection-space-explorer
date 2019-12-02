@@ -1,3 +1,15 @@
+var d3 = require('d3')
+
+function intToComponents(colorBeginner) {
+    var compBeginner = {
+      r: (colorBeginner & 0xff0000) >> 16,
+      g: (colorBeginner & 0x00ff00) >> 8,
+      b: (colorBeginner & 0x0000ff)
+    };
+
+    return compBeginner
+}
+
 var interpolator = d3.interpolateRgb("rgb(255, 255, 255)", "rgb(150,150,255)")
 var max = 20;
 
@@ -130,7 +142,7 @@ function neuralLegend(color) {
 
       <div>
         <img src="./textures/sprites/circle.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
-        <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="showIntermediatePoints()">toggle</a><br>
+        <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="window.showIntermediatePoints()">toggle</a><br>
       </div>
 
       <div>
@@ -158,4 +170,9 @@ function neuralLegend(color) {
     </div>`
 
   return template
+}
+
+module.exports = {
+  aggregate: aggregateNeural,
+  legend: neuralLegend
 }

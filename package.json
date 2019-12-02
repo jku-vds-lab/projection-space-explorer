@@ -25,6 +25,13 @@
   },
   "homepage": "https://github.com/JKU-ICG/rubiks-cube-vis#readme",
   "devDependencies": {
-    "http-server": "^0.11.1"
+    "http-server": "^0.11.1",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "@webpack-cli/init": "^0.3.0",
+    "d3": "^5.14.2",
+    "density-clustering": "^1.3.0",
+    "three": "^0.111.0"
   }
 }

@@ -1,3 +1,15 @@
+var d3 = require('d3')
+
+function intToComponents(colorBeginner) {
+    var compBeginner = {
+      r: (colorBeginner & 0xff0000) >> 16,
+      g: (colorBeginner & 0x00ff00) >> 8,
+      b: (colorBeginner & 0x0000ff)
+    };
+
+    return compBeginner
+}
+
 // method to convert cube.csv data to colours
 function cubieToColour(str) {
   switch(str) {
@@ -137,12 +149,12 @@ function rubikLegend(colorFridrich, colorBeginner) {
   var template = `
     <div>
       <div class="custom-control custom-checkbox">
-          <input type="checkbox" checked class="custom-control-input" id="showFridrich" onclick="toggleData(this, 0)">
+          <input type="checkbox" checked class="custom-control-input" id="showFridrich" onclick="window.toggleData(this, 0)">
           <label style="color: rgb(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b})" class="custom-control-label" for="showFridrich" >Fridrich method</label>
       </div>
 
       <div class="custom-control custom-checkbox">
-          <input type="checkbox" checked class="custom-control-input" id="showBeginner" onclick="toggleData(this, 1)">
+          <input type="checkbox" checked class="custom-control-input" id="showBeginner" onclick="window.toggleData(this, 1)">
           <label style="color: rgb(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b})" class="custom-control-label" for="showBeginner">Beginner's method</label>
       </div>
 
@@ -155,7 +167,7 @@ function rubikLegend(colorFridrich, colorBeginner) {
 
       <div>
         <img src="./textures/sprites/circle.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
-        <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="showIntermediatePoints()">toggle</a><br>
+        <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="window.showIntermediatePoints()">toggle</a><br>
       </div>
 
       <div>
@@ -190,4 +202,9 @@ function rubikLegend(colorFridrich, colorBeginner) {
     </div>`
 
   return template
+}
+
+module.exports = {
+  aggregate: aggregateRubik,
+  legend: rubikLegend
 }

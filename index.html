@@ -6,10 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Projection Path Explorer</title>
 
-
-    <script src="util.js"></script>
-    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-
     <script
       src="https://code.jquery.com/jquery-3.4.1.min.js"
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -21,35 +17,17 @@
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-    <script src="lib/visualization.js"></script>
 
 
     <link rel="stylesheet" href="problem_specific/chess.css">
     <link rel="stylesheet" href="problem_specific/rubik.css">
     <link rel="stylesheet" href="problem_specific/neural.css">
 
-    <script src="lib/loader.js"></script>
-
-    <script src="problem_specific/neural.js"></script>
-    <script src="problem_specific/rubik.js"></script>
-    <script src="problem_specific/chess.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.min.js" integrity="sha256-Wua0LsQkGDEeIkbmBNjj9wcThJh5uCD6R8+5YQhXveQ=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three.meshline@1.2.0/src/THREE.MeshLine.min.js"></script>
-
     <link rel="stylesheet" href="styling.css">
     <link href="rubics.png" rel="shortcut icon" type="image/x-icon" />
-
-
-
-    <script src="LineSegmentsGeometry.js"></script>
-    <script src="LineMaterial.js"></script>
-    <script src="LineGeometry.js"></script>
-    <script src="LineSegments2.js"></script>
-    <script src="Line2.js"></script>
   </head>
 
-  <body onresize="onWindowResize()">
+  <body>
 
 
 
@@ -59,7 +37,7 @@
       <div class="card flex-shrink-0" style="width: 18rem; margin: 0.5rem;">
 
         <div class="container" style="padding-top: 1rem;">
-          <a href="#" onclick="showGuide()">show control guide</a>
+          <a href="#" onclick="window.showGuide()">show control guide</a>
 
           <hr>
 
@@ -112,12 +90,9 @@
 
 
 
-      <div id="container" class="flex-shrink-1 flex-grow-1">
+      <div id="container" class="flex-grow-1" style="overflow: hidden;">
 
       </div>
-
-      <button type="button" class="btn"><span class="glyphicon glyphicon-star"></span></button>
-
 
       <div id="guide" style="position: absolute; left: 18rem; top: 2rem; display: none">
         <div class="card bg-dark text-white" style="width: 20rem; height: 20rem; opacity: 90%">
@@ -168,6 +143,9 @@
 
 			void main() {
         gl_FragColor = vColor;
+
+
+
         if (vType == 0.0) {
           gl_FragColor = gl_FragColor * texture2D(pointTexture[0], gl_PointCoord);
         } else if (vType == 1.0) {
@@ -178,535 +156,16 @@
           gl_FragColor = gl_FragColor * texture2D(pointTexture[3], gl_PointCoord);
         }
 
-				if ( gl_FragColor.a < ALPHATEST ) discard;
+        if ( gl_FragColor.a < ALPHATEST ) discard;
 			}
 		</script>
 
 		<script>
 
 
-
-
-    function showGuide() {
-      if (document.getElementById("guide").style.display == "none") {
-        document.getElementById("guide").style.display = "block"
-      } else {
-        document.getElementById("guide").style.display = "none"
-      }
-
-    }
-
-
-          var problem = null
-
-
-          var loaded = null;
-          var segments = null;
-    			var camera;
-
-    			var intersects;
-    			var mouse, INTERSECTED;
-
-          var mouseDownPosition = null;
-          var mouseDown = false;
-          var strokeTexture = null;
-
-          var settings = {
-            showIntPoints: true
-          }
-
-          var currentHoverIdx = null;
-
-
-          var chooseColor = colorGenerator();
-
-          var algorithms = { };
-
-
-    /**
-     * Checkbox determining if intermediate points should be drawn.
-     */
-    function showIntermediatePoints() {
-      settings.showIntPoints = !settings.showIntPoints
-
-      problem.particles.update()
-    }
-
-
-    function toggleData(element, algo) {
-      segments.forEach((segment) => {
-        if (segment.algo == algo) {
-          segment.line.visible = element.checked
-
-
-          segment.vectors.forEach((vector) => {
-            if (vector.algo == algo) {
-              vector.visible = element.checked
-            }
-          })
-        }
-      })
-
-      problem.particles.update()
-    }
-
-    function selectDataset(value) {
-      cleanup()
-
-      if (problem != null) {
-        console.log("cleanup ----")
-        console.log(problem.renderer.info)
-        console.log("-------")
-      }
-
-      if (value.startsWith("chess")) {
-        problem = new Problem(ProblemType.CHESS)
-        loadData(problem, "datasets/chess/" + value.substring(6))
-      } else if (value.startsWith("rubik")) {
-        problem = new Problem(ProblemType.RUBIK)
-        loadData(problem, "datasets/rubik/" + value.substring(6));
-      } else if (value.startsWith("neural")) {
-        problem = new Problem(ProblemType.NEURAL)
-        loadData(problem, "datasets/neural/" + value.substring(7))
-      }
-
-
-    }
-
-
-
-
-
-      var rectangleSelection = null
-
-
-
-      function cleanup() {
-        if (problem != null) {
-
-          if (problem.lines != null) {
-            console.log("disposing lines")
-            problem.lines.forEach(line => {
-              line.dispose()
-            })
-          }
-
-          if (problem.particles != null) {
-            console.log("get rid of particles")
-            problem.particles.dispose()
-          }
-
-          if (problem.renderer != null) {
-            problem.renderer.renderLists.dispose()
-            console.log("disposed render lists")
-          }
-
-          problem.scene.dispose()
-        }
-      }
-
-
-
-      /**
-       * Loads a specific problem set, creating menus, displaying vectors etc.
-       */
-      function loadData(problem, file) {
-        chooseColor = colorGenerator();
-        algorithms = {}
-
-        setAggregateView(document.getElementById('info'), [], false)
-        setAggregateView(document.getElementById('aggregate'), [], true)
-
-
-
-
-        // Load csv file
-        loadSet(file, problem, data => {
-          loaded = data;
-
-          segments = getSegments(loaded);
-
-          init(loaded, problem);
-
-          problem.particles.update()
-
-          loadLegend(problem);
-        })
-      }
-
-      function loadLegend(problem) {
-        var chessOpeners = [ "Barnes Hut Opening", "Kings Pawn Opening", "English Opening" ]
-
-        if (problem.type == ProblemType.RUBIK) {
-          document.getElementById('legend').innerHTML = rubikLegend(algorithms[1].color, algorithms[0].color)
-        } else if (problem.type == ProblemType.CHESS) {
-          document.getElementById('legend').innerHTML = chessLegend(Object.keys(algorithms).sort().map(function (key, index) {return { 'color': algorithms[key].color, 'name': chessOpeners[key], 'algo': key } }))
-        } else if (problem.type == ProblemType.NEURAL) {
-          document.getElementById('legend').innerHTML = neuralLegend(Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'learningRate': key } }))
-        }
-      }
-
-
-
-
-  function setAggregateView(element, list, aggregation) {
-    element.innerHTML = ""
-
-    if (problem.type == ProblemType.CHESS) {
-      element.innerHTML = aggregateChess(list)
-    }
-    if (problem.type == ProblemType.RUBIK) {
-      element.innerHTML = aggregateRubik(list)
-    }
-    if (problem.type == ProblemType.NEURAL) {
-      element.innerHTML = aggregateNeural(list, aggregation)
-    }
-  }
-
-
-      function getSegments(data) {
-        //creating an array holding arrays of x,y,cubenum,algo,age for each cube
-
-        // Sort data by cubeNum
-        data.sort((a, b) => a.cubeNum - b.cubeNum)
-
-
-        var n = data.length
-        var points = new Array()
-        var currentCube = 0
-        var newArray = { vectors: new Array(), algo: data[0].algo }
-        for (var i = 0; i < n; i++) {
-          if(data[i].cubeNum != currentCube) {
-            points.push(newArray)
-            currentCube = data[i].cubeNum
-
-            newArray = { vectors: new Array(), algo: data[i].algo }
-          }
-
-          newArray.vectors.push(data[i])
-        }
-        points.push(newArray)
-        return points
-    }
-
-
-
-
-function intToComponents(colorBeginner) {
-    var compBeginner = {
-      r: (colorBeginner & 0xff0000) >> 16,
-      g: (colorBeginner & 0x00ff00) >> 8,
-      b: (colorBeginner & 0x0000ff)
-    };
-
-    return compBeginner
-}
-
-    function fatLines(segments) {
-      segments.forEach(function(segment, index) {
-        var colors = []
-        var positions = []
-
-        var geometry = new THREE.LineGeometry();
-
-        var matLine = new THREE.LineMaterial({
-                linewidth: 2, // in pixels
-                vertexColors: THREE.VertexColors,
-                transparent: true,
-                opacity: 0.1,
-                depthWrite: false
-            });
-        matLine.resolution.set(776, 695);
-
-        var da = []
-        segment.vectors.forEach(function(vector, vi) {
-
-          da.push(new THREE.Vector2(vector.x, vector.y))
-          //geometry.vertices.push(new THREE.Vector3(vector.x, vector.y, -1.0));
-        })
-
-        var curve = new THREE.SplineCurve(da)
-        var color = algorithms[segment.vectors[0].algo].color
-        var rgb = intToComponents(color)
-
-        curve.getPoints(1000).forEach(function(p, i) {
-          positions.push(p.x, p.y, -1.0)
-          colors.push(rgb.r / 255.0, rgb.g / 255.0, rgb.b / 255.0)
-        })
-
-        geometry.setPositions(positions)
-        geometry.setColors(colors)
-
-        var line = new THREE.Line2(geometry, matLine);
-
-        // Store line data in segment...
-        segment.line = line
-
-
-        problem.scene.add(line)
-      })
-    }
-
-
-
-
-
-
-    function onDocumentMouseUp(e) {
-
-      var test = mouseToWorld(e)
-
-      if (rectangleSelection != null) {
-        rectangleSelection.mouseUp(test.x, test.y)
-        rectangleSelection = null
-      }
-
-
-      mouseDown = false;
-    }
-
-    function onDocumentMouseDown(e) {
-      e.preventDefault();
-
-      var container = document.getElementById( 'container' );
-      var width = container.offsetWidth;
-      var height = container.offsetHeight;
-
-      if (e.altKey) {
-        // Selection processing
-        if (rectangleSelection != null) {
-          rectangleSelection.dispose()
-          rectangleSelection = null
-        }
-
-        rectangleSelection = new RectangleSelection(loaded, settings, problem)
-
-        var test = mouseToWorld(event)
-
-        rectangleSelection.mouseDown(test.x, test.y)
-
-      } else {
-        // Dragging data around
-        mouseDownPosition = normaliseMouse(e)
-        mouseDown = true;
-      }
-    }
-
-    function mouseToWorld(event) {
-      var container = document.getElementById( 'container' );
-      var width = container.offsetWidth;
-      var height = container.offsetHeight;
-
-      const rect = container.getBoundingClientRect();
-
-      var test = {
-        x: (event.clientX - rect.left - width / 2) / camera.zoom + camera.position.x,
-        y: -(event.clientY - rect.top - height / 2) / camera.zoom + camera.position.y
-      }
-
-      return test
-    }
-
-    function onDocumentMouseMove( event ) {
-      event.preventDefault();
-
-      var test = mouseToWorld(event)
-
-      if (rectangleSelection != null) {
-        rectangleSelection.mouseMove(test.x, test.y)
-      }
-
-      if (window.infoTimeout != null) {
-        clearTimeout(window.infoTimeout)
-      }
-      if (!mouseDown) {
-        window.infoTimeout = setTimeout(function() {
-          window.infoTimeout = null
-
-          // Get index of selected node
-          var idx = choose(test)
-          problem.particles.highlight(idx)
-
-          var list = []
-          if (idx >= 0) list.push(loaded[idx])
-          setAggregateView(document.getElementById('info'), list, false)
-        }, 10);
-      }
-
-
-
-      // Dragging
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-      if (mouseDown) {
-        camera.position.x = camera.position.x - (mouse.x - mouseDownPosition.x) * (600 / camera.zoom);
-        camera.position.y = camera.position.y - (mouse.y - mouseDownPosition.y) * (600 / camera.zoom);
-        mouseDownPosition = normaliseMouse(event)
-        camera.updateProjectionMatrix()
-      }
-    }
-
-
-			function init(data, problem) {
-				var container = document.getElementById( 'container' );
-
-        problem.scene = new THREE.Scene();
-
-        var width = container.offsetWidth;
-        var height = container.offsetHeight;
-
-        camera = getDefaultCamera(width, height, loaded)
-
-        problem.particles = new PointVisualization(settings)
-        problem.particles.createMesh(loaded, segments)
-        problem.particles.zoom(camera.zoom)
-
-
-
-
-				//
-				var renderer = new THREE.WebGLRenderer({
-          antialias: true
-        });
-        problem.renderer = renderer
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize(width, height);
-        renderer.setClearColor( 0xffffff, 1);
-        renderer.sortObjects = false;
-
-        container.innerHTML = ""
-				container.appendChild( renderer.domElement );
-				//
-				mouse = new THREE.Vector2();
-
-
-
-
-        // First add lines to scene... so they get drawn first
-        problem.lines = renderLines2(segments, algorithms)
-        problem.lines.forEach(line => problem.scene.add(line.line))
-        //fatLines(segments)
-
-        problem.particles.update()
-        // Then add particles
-        problem.scene.add( problem.particles.mesh );
-
-
-
-        console.log(problem.renderer.info)
-
-
-
-        window.onwheel = function(){ return false; }
-				container.addEventListener( 'mousemove', onDocumentMouseMove, false );
-        container.addEventListener('mousedown', onDocumentMouseDown, false);
-        container.addEventListener('mouseup', onDocumentMouseUp, false);
-        container.addEventListener( 'wheel', onDocumentMouseWheel, false );
-			}
-
-      function dist(x1, y1, x2, y2) {
-        var a = x1 - x2;
-        var b = y1 - y2;
-
-        var c = Math.sqrt( a*a + b*b );
-        return c
-      }
-
-      function choose(position) {
-        var best = 30 / (camera.zoom * 2.0)
-        var res = -1
-
-        for (var index = 0; index < loaded.length; index++) {
-          var value = loaded[index]
-
-          // Skip points matching some criteria
-          if ((!settings.showIntPoints && value.cp == 0) || value.visible == false) {
-            continue
-          }
-
-          var d = dist(position.x, position.y, value.x, value.y)
-
-          if (d < best) {
-            best = d
-            res = index
-          }
-        }
-        return res
-      }
-
-      function onDocumentMouseWheel(event) {
-        event.preventDefault()
-        camera.zoom = camera.zoom + event.deltaY * 0.02;
-        if (camera.zoom < 1) {
-          camera.zoom = 1;
-        }
-
-        problem.particles.zoom(camera.zoom);
-
-        camera.updateProjectionMatrix();
-      }
-
-      function normaliseMouse(event) {
-        var vec = {}
-        vec.x = (event.clientX / window.innerWidth) * 2 - 1;
-        vec.y = - (event.clientY / window.innerHeight) * 2 + 1;
-        return vec
-      }
-
-
-			function onWindowResize() {
-        var container = document.getElementById( 'container' );
-
-        var width = container.offsetWidth;
-        var height = container.offsetHeight;
-
-				problem.renderer.setSize(width, height);
-
-        camera.left = width / - 2
-        camera.right = width / 2
-        camera.top = height / 2
-        camera.bottom = height / - 2
-
-        camera.updateProjectionMatrix();
-			}
-
-			function animate() {
-
-
-				requestAnimationFrame( animate );
-        render();
-			}
-
-			function render() {
-        if (problem == null) return;
-
-        if (problem != null && "renderer" in problem) {
-          problem.renderer.render(problem.scene, camera);
-        }
-			}
-
-
-
-  var url = new URL(window.location);
-  var set = url.searchParams.get("set");
-
-
-  if (set != null) {
-    if (set == "neural") {
-      document.getElementById("setselect").value = "neural_learning_confmat.csv"
-    } else if (set == "rubik") {
-      document.getElementById("setselect").value = "rubik_cube10x2_different_origins.csv"
-    } else if (set == "chess") {
-      document.getElementById("setselect").value = "chess_chess16k.csv"
-    }
-  }
-
-
-  selectDataset(document.getElementById("setselect").value)
-  animate();
-
 		</script>
+
+    <script src="dist/main.js"></script>
 
 	</body>
 </html>

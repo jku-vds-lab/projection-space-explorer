@@ -1,17 +1,31 @@
+var d3 = require('d3')
+
+function intToComponents(colorBeginner) {
+    var compBeginner = {
+      r: (colorBeginner & 0xff0000) >> 16,
+      g: (colorBeginner & 0x00ff00) >> 8,
+      b: (colorBeginner & 0x0000ff)
+    };
+
+    return compBeginner
+}
+
+
+
 // Lookup table for chess UNICODE symbols
 var symbols = {
-  'wr': '&#9814;',
-  'wn': '&#9816;',
-  'wb': '&#9815;',
-  'wk': '&#9812;',
-  'wq': '&#9813;',
-  'wp': '&#9817;',
-  'br': '&#9820;',
-  'bn': '&#9822;',
-  'bb': '&#9821;',
-  'bk': '&#9818;',
-  'bq': '&#9819;',
-  'bp': '&#9823;',
+  'wr': '../textures/chess/Chess_rlt45.svg',
+  'wn': '../textures/chess/Chess_nlt45.svg',
+  'wb': '../textures/chess/Chess_blt45.svg',
+  'wk': '../textures/chess/Chess_klt45.svg',
+  'wq': '../textures/chess/Chess_qlt45.svg',
+  'wp': '../textures/chess/Chess_plt45.svg',
+  'br': '../textures/chess/Chess_rdt45.svg',
+  'bn': '../textures/chess/Chess_ndt45.svg',
+  'bb': '../textures/chess/Chess_bdt45.svg',
+  'bk': '../textures/chess/Chess_kdt45.svg',
+  'bq': '../textures/chess/Chess_qdt45.svg',
+  'bp': '../textures/chess/Chess_pdt45.svg',
   '': ''
 }
 
@@ -38,23 +52,28 @@ function createChess(d) {
   var keys = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ]
 
   // variable determining the current field color
-  var col = "white"
+  var col = "white d-flex align-items-center justify-content-center"
 
   for (var i = 0; i < 64; i++) {
     if (i % 8 != 0) {
-      if (col == "white") {
-        col = "black"
+      if (col == "white d-flex align-items-center justify-content-center") {
+        col = "black d-flex align-items-center justify-content-center"
       } else {
-        col = "white"
+        col = "white d-flex align-items-center justify-content-center"
       }
     }
 
     var key = keys[i % 8]
     var num = 8 - ((i / 8) >> 0)
 
-    board.append("div")
+    var imgwrap = board.append("div")
     .attr("class", col)
-    .html(symbols[d["" + key + num]])
+
+    if (symbols[d["" + key + num]] != "") {
+      imgwrap.append("img")
+      .attr("src", symbols[d["" + key + num]])
+      .attr("class", "figure")
+    }
   }
 
   return container.html()
@@ -105,15 +124,15 @@ function aggregateChess(vectors) {
   var keys = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ]
 
   // variable determining the current field color
-  var col = "white"
+  var col = "white d-flex align-items-center justify-content-center"
 
 
   for (var i = 0; i < 64; i++) {
     if (i % 8 != 0) {
-      if (col == "white") {
-        col = "black"
+      if (col == "white d-flex align-items-center justify-content-center") {
+        col = "black d-flex align-items-center justify-content-center"
       } else {
-        col = "white"
+        col = "white d-flex align-items-center justify-content-center"
       }
     }
 
@@ -143,10 +162,16 @@ function aggregateChess(vectors) {
       opacity = (max / total)
     }
 
-    board.append("div")
+    var imgwrap = board.append("div")
     .attr("class", col)
-    .style("opacity", opacity)
-    .html(content)
+    .style("color", `rgba(1.0, 1.0, 1.0, ${opacity})`)
+
+    if (content != "") {
+      imgwrap.append("img")
+      .attr("src", content)
+      .attr("class", "figure")
+      .style("opacity", opacity)
+    }
   }
 
   return container.html()
@@ -164,7 +189,7 @@ function chessLegend(colors) {
     switches = switches +
     `
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" checked class="custom-control-input" id="chessSwitch${color.color}" onclick="toggleData(this, ${color.algo})">
+        <input type="checkbox" checked class="custom-control-input" id="chessSwitch${color.color}" onclick="window.toggleData(this, ${color.algo})">
         <label style="color: rgb(${comp.r}, ${comp.g}, ${comp.b})" class="custom-control-label" for="chessSwitch${color.color}" >${color.name}</label>
     </div>`
 
@@ -189,7 +214,7 @@ function chessLegend(colors) {
 
       <div>
         <img src="./textures/sprites/circle.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
-        <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="showIntermediatePoints()">toggle</a><br>
+        <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="window.showIntermediatePoints()">toggle</a><br>
       </div>
 
       <div>
@@ -220,4 +245,9 @@ function chessLegend(colors) {
     </div>`
 
   return template
+}
+
+module.exports = {
+  aggregate: aggregateChess,
+  legend: chessLegend
 }

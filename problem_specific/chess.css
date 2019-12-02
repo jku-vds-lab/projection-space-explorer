@@ -4,8 +4,15 @@
   border-width: 0.5rem;
   border-color: black;
   border-style: solid;
+  border-radius: 0.5rem;
   width: 13rem;
   height: 13rem;
+}
+
+.helper {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
 }
 
 .black {
@@ -13,21 +20,24 @@
     float: left;
     width: 1.5rem;
     height: 1.5rem;
-    background-color: #999;
-    font-size:1rem;
-    text-align:center;
-    display: table-cell;
-    vertical-align:middle;
+
+    -background-color: #999;
+    background-color: #ffce9e;
+    margin: 0px;
+    padding: 0px;
 }
 
+.figure {
+    width: 1.5rem;
+    height: 1.5rem;
+}
 
 .white {
     float: left;
     width: 1.5rem;
     height: 1.5rem;
-    background-color: #fff;
-    font-size:1rem;
-    text-align:center;
-    display: table-cell;
-    vertical-align:middle;
+    -background-color: #fff;
+    background-color: #d18b47;
+    margin: 0px;
+    padding: 0px;
 }
