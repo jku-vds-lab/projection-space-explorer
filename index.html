@@ -29,7 +29,7 @@
 
   <body>
 
-
+    <div id="test"></div>
 
     <div class="d-flex align-items-stretch" style="width: 100vw; height: 100vh">
 
@@ -108,64 +108,7 @@
 
     </div>
 
-
-
-
-
-		<script type="x-shader/x-vertex" id="vertexshader">
-
-      // Uniforms
-      uniform float zoom;
-
-      // Attributes of point sprites
-      attribute float size;
-      attribute vec4 customColor;
-      attribute float type;
-
-      // Varying of point sprites
-			varying vec4 vColor;
-      varying float vType;
-
-			void main() {
-				vColor = customColor;
-        vType = type;
-				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-				gl_PointSize = (size / 2.0) + (size / 16.0) * (zoom / 3.0);
-				gl_Position = projectionMatrix * mvPosition;
-			}
-		</script>
-
-		<script type="x-shader/x-fragment" id="fragmentshader">
-			uniform vec3 color;
-			uniform sampler2D pointTexture[4];
-			varying vec4 vColor;
-      varying float vType;
-
-			void main() {
-        gl_FragColor = vColor;
-
-
-
-        if (vType == 0.0) {
-          gl_FragColor = gl_FragColor * texture2D(pointTexture[0], gl_PointCoord);
-        } else if (vType == 1.0) {
-          gl_FragColor = gl_FragColor * texture2D(pointTexture[1], gl_PointCoord);
-        } else if (vType == 2.0) {
-          gl_FragColor = gl_FragColor * texture2D(pointTexture[2], gl_PointCoord);
-        } else {
-          gl_FragColor = gl_FragColor * texture2D(pointTexture[3], gl_PointCoord);
-        }
-
-        if ( gl_FragColor.a < ALPHATEST ) discard;
-			}
-		</script>
-
-		<script>
-
-
-		</script>
-
+    <!-- distribution script -->
     <script src="dist/main.js"></script>
-
 	</body>
 </html>

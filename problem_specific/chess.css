@@ -20,8 +20,6 @@
     float: left;
     width: 1.5rem;
     height: 1.5rem;
-
-    -background-color: #999;
     background-color: #ffce9e;
     margin: 0px;
     padding: 0px;
@@ -36,7 +34,6 @@
     float: left;
     width: 1.5rem;
     height: 1.5rem;
-    -background-color: #fff;
     background-color: #d18b47;
     margin: 0px;
     padding: 0px;

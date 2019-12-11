@@ -8,7 +8,7 @@ var rubik = require('./problems/rubik')
 var neural = require('./problems/neural')
 
 var loader = require('./util/loader')
-
+var colors = require('./util/colors')
 
 
 class Problem {
@@ -42,37 +42,6 @@ const ProblemType = Object.freeze({
       element.innerHTML = neural.aggregate(list, aggregation)
     }
   }
-
-
-
-  function intToComponents(colorBeginner) {
-      var compBeginner = {
-        r: (colorBeginner & 0xff0000) >> 16,
-        g: (colorBeginner & 0x00ff00) >> 8,
-        b: (colorBeginner & 0x0000ff)
-      };
-
-      return compBeginner
-  }
-
-  function * colorGenerator() {
-    while (true) {
-      yield 0x2d7864 // Elf green
-      yield 0x943b80 // Vivid violet
-      yield 0xff6600 // Yellow
-      yield 0x0084c8 // Orange
-      yield 0xb88100 // Gray
-      yield 0xdc0000
-      yield 0x364e59
-    }
-  }
-
-
-
-
-
-
-
 
 
 
@@ -274,7 +243,7 @@ class RectangleSelection {
           var currentHoverIdx = null;
 
 
-          var chooseColor = colorGenerator();
+          var chooseColor = colors.generator();
 
           var algorithms = { };
 
@@ -365,7 +334,7 @@ class RectangleSelection {
        * Loads a specific problem set, creating menus, displaying vectors etc.
        */
       function loadData(problem, file) {
-        chooseColor = colorGenerator();
+        chooseColor = colors.generator();
         algorithms = {}
 
         setAggregateView(document.getElementById('info'), [], false)

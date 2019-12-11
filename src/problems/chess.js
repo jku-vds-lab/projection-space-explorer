@@ -1,15 +1,9 @@
 var d3 = require('d3')
+var util = require('../util/colors')
 
-function intToComponents(colorBeginner) {
-    var compBeginner = {
-      r: (colorBeginner & 0xff0000) >> 16,
-      g: (colorBeginner & 0x00ff00) >> 8,
-      b: (colorBeginner & 0x0000ff)
-    };
-
-    return compBeginner
-}
-
+var React = require('react')
+var ReactDOM = require('react-dom')
+const e = React.createElement;
 
 
 // Lookup table for chess UNICODE symbols
@@ -28,9 +22,6 @@ var symbols = {
   'bp': '../textures/chess/Chess_pdt45.svg',
   '': ''
 }
-
-
-
 
 
 /**
@@ -184,7 +175,7 @@ function chessLegend(colors) {
 
   var content = ""
   colors.forEach(color => {
-    var comp = intToComponents(color.color)
+    var comp = util.hexToRGB(color.color)
 
     switches = switches +
     `
