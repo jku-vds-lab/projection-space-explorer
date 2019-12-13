@@ -8,18 +8,18 @@ const e = React.createElement;
 
 // Lookup table for chess UNICODE symbols
 var symbols = {
-  'wr': '../textures/chess/Chess_rlt45.svg',
-  'wn': '../textures/chess/Chess_nlt45.svg',
-  'wb': '../textures/chess/Chess_blt45.svg',
-  'wk': '../textures/chess/Chess_klt45.svg',
-  'wq': '../textures/chess/Chess_qlt45.svg',
-  'wp': '../textures/chess/Chess_plt45.svg',
-  'br': '../textures/chess/Chess_rdt45.svg',
-  'bn': '../textures/chess/Chess_ndt45.svg',
-  'bb': '../textures/chess/Chess_bdt45.svg',
-  'bk': '../textures/chess/Chess_kdt45.svg',
-  'bq': '../textures/chess/Chess_qdt45.svg',
-  'bp': '../textures/chess/Chess_pdt45.svg',
+  'wr': 'textures/chess/Chess_rlt45.svg',
+  'wn': 'textures/chess/Chess_nlt45.svg',
+  'wb': 'textures/chess/Chess_blt45.svg',
+  'wk': 'textures/chess/Chess_klt45.svg',
+  'wq': 'textures/chess/Chess_qlt45.svg',
+  'wp': 'textures/chess/Chess_plt45.svg',
+  'br': 'textures/chess/Chess_rdt45.svg',
+  'bn': 'textures/chess/Chess_ndt45.svg',
+  'bb': 'textures/chess/Chess_bdt45.svg',
+  'bk': 'textures/chess/Chess_kdt45.svg',
+  'bq': 'textures/chess/Chess_qdt45.svg',
+  'bp': 'textures/chess/Chess_pdt45.svg',
   '': ''
 }
 
