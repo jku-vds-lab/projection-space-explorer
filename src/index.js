@@ -136,7 +136,6 @@ class RectangleSelection {
       transparent: true,
       opacity: 0.5
     });
-    console.log(this.material)
     this.plane = new THREE.Mesh(this.geometry, this.material);
     this.plane.position.x = 0
     this.plane.position.y = 0
@@ -356,6 +355,14 @@ class RectangleSelection {
           init(loaded, problem);
 
           problem.particles.update()
+          categorical.render(loaded, document.getElementById('test'), function(event) {
+            console.log("EVENT GOT")
+            console.log(event)
+            if (event.class == 'shape') {
+              problem.particles.shapeCat(event.category)
+            }
+            
+          })
 
           loadLegend(problem);
         })
@@ -546,7 +553,6 @@ class RectangleSelection {
         }
         rectangleSelection = new RectangleSelection(loaded, settings, problem)
 
-        console.log(data)
         // Transform data into [ [], [], ... ] structure
         //var dataset = []
         //data.forEach(vector => {

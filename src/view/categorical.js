@@ -2,37 +2,103 @@ var React = require('react')
 var ReactDOM = require('react-dom')
 
 
-function UI() {
+function testLEG(vectors) {
+  var categories = [
+    {
+      vectorKey: "algo",
+        "name": "Algorithm",
+        "type": "categorical",
+        "allowed": [ "color", "size", "shape" ],
+        "values": [
+          {
+            value: 0,
+            display: "Beginner",
+            shapeType: "star"
+          },
+          {
+            value: 1,
+            display: "Fridrich",
+            shapeType: "circle" 
+          }
+        ]
+    },
+    {
+      vectorKey: "cp",
+        "name": "Checkpoint",
+        "type": "categorical",
+        "allowed": [ "shape", "size" ],
+        "values": [
+          {
+            value: 0,
+            display: "",
+            shapeType: "circle"
+          },
+          {
+            value: 1,
+            display: "",
+            shapeType: "star"
+          }
+        ]
+    }
+  ]
+
+  var set = {
+  }
+
+  // Map to better structure
+  categories.forEach(category => {
+    var distinct = undefined
+    if (category.type == 'categorical') {
+      // Generate distinct set from values
+      distinct = [ ... new Set(vectors.map(value => value[category.vectorKey])) ]
+
+    }
+
+    category.allowed.forEach(allowedValue => {
+
+      if (!(allowedValue in set)) {
+        set[allowedValue] = { attributes: [] }
+      }
+
+      set[allowedValue].attributes.push({
+        key: category.vectorKey,
+        name: category.name,
+        type: category.type,
+        category: category,
+        distinct: distinct
+      })
+    })
+  })
+  return set
+}
+
+
+function UI(set, callback) {
+
+  var s = `
+  `
+  console.log(set)
     return <div>
-        <div>Color</div>
-        <div class="form-group">
-            <label for="exampleFormControlSelect1">Select Dataset</label>
-            <select id="setselect" name="cars" class="custom-select" onchange="selectDataset(this.value)">
-              <option value="chess_chess16k.csv">Chess: 190 Games</option>
-              <option value="chess_chess40k.csv">Chess: 450 Games</option>
-              <option value="rubik_cube1x2_different_origins.csv">Rubik: 1x2 Different Origins</option>
-              <option value="rubik_cube1x2.csv">Rubik: 1x2 Same Origins</option>
-              <option value="rubik_cube5x2_different_origins.csv">Rubik: 5x2 Different Origins</option>
-              <option value="rubik_cube5x2.csv">Rubik: 5x2 Same Origins</option>
-              <option selected value="rubik_cube10x2_different_origins.csv">Rubik: 10x2 Different Origins</option>
-              <option value="rubik_cube10x2.csv">Rubik: 10x2 Same Origins</option>
-              <option value="rubik_cube100x2_different_origins.csv">Rubik: 100x2 Different Origins</option>
-              <option value="rubik_cube100x2.csv">Rubik: 100x2 Same Origins</option>
-              <option value="neural_random_weights.csv">Neural: Random Weights</option>
-              <option value="neural_random_confmat.csv">Neural: Confusion Matrix</option>
-              <option value="neural_learning_weights.csv">Neural: Learning Weights</option>
-              <option value="neural_learning_confmat.csv">Neural: Learning Confusion Matrix</option>
-            </select>
-          </div>
+        { Object.keys(set).map(key => {
+          return <div class="form-group">
+          <label for={key}>{ key }</label>
+          <select id={key} name="cars" class="custom-select" onChange={e => callback({ class: key, category: set[key].attributes.filter(v => v.key == e.target.value)[0].category })}>
+            { set[key].attributes.map(attribute => {
+              return <option value={ attribute.key }>{ attribute.name }</option>
+            }) }
+          </select>
+        </div>
+        }) }
+
     </div>
 }
 
-console.log("BEFORE")
-console.log(UI())
-console.log("AFTER")
+function renderUI(vectors, element, callback) {
+  ReactDOM.render(UI(testLEG(vectors), callback), element)
+}
 
-ReactDOM.render(UI(), document.getElementById('test'))
+
 
 module.exports = {
-    test: 'hello'
+    render: renderUI
 }

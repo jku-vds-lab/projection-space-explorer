@@ -235,7 +235,33 @@ class PointVisualization {
     this.sizeAttribute = this.mesh.geometry.attributes.size
   }
 
+  /**
+   * @param {*} category a feature to select the shape for
+   */
+  shapeCat(category) {
+    var type = this.mesh.geometry.attributes.type.array
+    console.log("TYPES")
+    console.log(type)
+    var shapeDict = {
+      circle: 0,
+      star: 1,
+      rectangle: 2
+    }
 
+    if (category.type == 'categorical') {
+      this.loaded.forEach(vector, index => {
+        console.log(vector)
+        var select = category.values.filter(value => value.value == vector[category.vectorKey])[0]
+        
+        type[index] = shapeDict[select.shapeType]
+      })
+    }
+
+    
+
+    // mark types array to receive an update
+    this.mesh.geometry.attributes.type.needsUpdate = true
+  }
 
   update() {
     var i = 0
