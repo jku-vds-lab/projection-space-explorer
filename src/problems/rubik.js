@@ -140,11 +140,44 @@ function aggregateRubik(vectors, width, height) {
 }
 
 
+function testLEG() {
+  var categories = {
+    "algo": {
+        "type": "categorical",
+        "allowed": [ "color", "size" ],
+        "values": [ 0, 1 ]
+    },
+    "cp": {
+        "type": "categorical",
+        "allowed": [ "shape", "size" ],
+        "values": [ 0, 1 ]
+    }
+  }
 
+  var set = {    
+  }
+
+  // Map to better structure
+  Object.keys(categories).forEach(key => {
+    categories[key].allowed.forEach(allowedValue => {
+      console.log(allowedValue)
+      if (!(allowedValue in set)) {
+        set[allowedValue] = { attributes: [] }
+      }
+
+      set[allowedValue].attributes.push({ name: key, type: categories[key].type })
+    })
+  })
+
+  console.log(set)
+}
 
 function rubikLegend(colorFridrich, colorBeginner) {
   var compFridrich = intToComponents(colorFridrich)
   var compBeginner = intToComponents(colorBeginner)
+
+
+  testLEG()
 
   var template = `
     <div>

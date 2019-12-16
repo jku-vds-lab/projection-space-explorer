@@ -238,6 +238,20 @@ function chessLegend(colors) {
   return template
 }
 
+class Loader {
+  constructor() {
+  }
+
+  
+}
+
+class ChessLoader extends Loader {
+  constructor() {
+  }
+
+
+}
+
 module.exports = {
   aggregate: aggregateChess,
   legend: chessLegend

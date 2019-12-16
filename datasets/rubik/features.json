@@ -1,0 +1,10 @@
+{
+    "algo": {
+        "type": "categorical",
+        "allowed": [ "color" ]
+    },
+    "cp": {
+        "type": "categorical",
+        "allowed": [ "shape" ]
+    }
+}

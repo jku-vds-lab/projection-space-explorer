@@ -1,3 +1,4 @@
+import "regenerator-runtime/runtime";
 var clustering = require('density-clustering');
 var THREE = require('three');
 
@@ -9,6 +10,9 @@ var neural = require('./problems/neural')
 
 var loader = require('./util/loader')
 var colors = require('./util/colors')
+var categorical = require('./view/categorical')
+
+
 
 
 class Problem {
