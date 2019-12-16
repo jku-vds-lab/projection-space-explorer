@@ -1,7 +1,6 @@
 /**
  * Generates a line mesh
  */
-var THREE = require('three')
 var convex = require('three/examples/jsm/geometries/ConvexGeometry')
 
 var fragmentShaders = require('./fragmentshaders')
@@ -240,8 +239,7 @@ class PointVisualization {
    */
   shapeCat(category) {
     var type = this.mesh.geometry.attributes.type.array
-    console.log("TYPES")
-    console.log(type)
+
     var shapeDict = {
       circle: 0,
       star: 1,
@@ -249,18 +247,57 @@ class PointVisualization {
     }
 
     if (category.type == 'categorical') {
-      this.loaded.forEach(vector, index => {
-        console.log(vector)
+      this.loaded.forEach((vector, index) => {
+
         var select = category.values.filter(value => value.value == vector[category.vectorKey])[0]
-        
         type[index] = shapeDict[select.shapeType]
       })
     }
 
-    
-
     // mark types array to receive an update
     this.mesh.geometry.attributes.type.needsUpdate = true
+  }
+
+  colorCat(category) {
+
+
+    if (category.type == 'categorical') {
+      this.loaded.forEach((vector, index) => {
+        var select = category.values.filter(value => value.value == vector[category.vectorKey])[0]
+        var threeColor = new THREE.Color()
+        threeColor.setHex(select.color);
+
+        color[index * 4 + 0] = threeColor.r
+        color[index * 4 + 1] = threeColor.g
+        color[index * 4 + 2] = threeColor.b
+        color[index * 4 + 3] = 1.0
+      })
+    }
+
+    this.mesh.geometry.attributes.customColor.needsUpdate = true
+  }
+
+  transparencyCat(category) {
+    var color = this.mesh.geometry.attributes.customColor.array
+
+    if (category.type == 'quantitative') {
+      this.segments.forEach(segment => {
+        console.log("testing...")
+        console.log(segment)
+        var filtered = segment.vectors.map(vector => vector[category.vectorKey])
+        var max = Math.max(...filtered)
+        var min = Math.min(...filtered)
+        console.log("max is...")
+        console.log(max)
+        console.log(min)
+
+        segment.vectors.forEach(vector => {
+          color[vector.globalIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.vectorKey] - min) / (max - min))
+        })
+      })
+    }
+
+    this.mesh.geometry.attributes.customColor.needsUpdate = true
   }
 
   update() {
@@ -270,9 +307,9 @@ class PointVisualization {
     this.segments.forEach(segment => {
       segment.vectors.forEach(vector => {
         if ((this.settings.showIntPoints || this.loaded[i].cp == 1 || vector.age == 0 || vector.age == segment.vectors.length - 1) && vector.visible) {
-          colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
+          //colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
         } else {
-          colors[i * 4 + 3] = 0.0
+          //colors[i * 4 + 3] = 0.0
         }
 
         i++

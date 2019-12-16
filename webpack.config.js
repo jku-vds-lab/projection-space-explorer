@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   entry: './src/index.js', // relative path
@@ -14,5 +15,12 @@ module.exports = {
         loader: 'babel-loader'
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.ProvidePlugin({
+      THREE: 'three',
+      ReactDOM: 'react-dom',
+      React: 'react'
+    })
+  ]
 };
