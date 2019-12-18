@@ -17,7 +17,7 @@ class Vector {
  * @param type the type of the problem, eg ProblemType.CHESS or ProblemType.RUBIK.
  *
  */
-function loadSet(file, type, algorithms, chooseColor, callback) {
+function loadSet(file, algorithms, chooseColor, callback) {
   d3v5.csv(file).then(function(data) {
     data.forEach(function(d) { // convert strings to numbers
       // Convert generic attributes

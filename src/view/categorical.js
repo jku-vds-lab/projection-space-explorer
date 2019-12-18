@@ -1,14 +1,11 @@
-var React = require('react')
-var ReactDOM = require('react-dom')
 
-
-function testLEG(vectors) {
+function calculateOptions(vectors) {
   var categories = [
     {
       vectorKey: "algo",
       name: "Algorithm",
       type: "categorical",
-      allowed: [ "color", "size", "shape" ],
+      allowed: ["color", "size", "shape"],
       values: [
         {
           value: 0,
@@ -28,7 +25,7 @@ function testLEG(vectors) {
       vectorKey: "cp",
       name: "Checkpoint",
       type: "categorical",
-      allowed: [ "transparency", "shape", "size", "color" ],
+      allowed: ["transparency", "shape", "size", "color"],
       values: [
         {
           value: 0,
@@ -48,9 +45,9 @@ function testLEG(vectors) {
       vectorKey: "age",
       name: "Age",
       type: "quantitative",
-      allowed: [ "transparency" ],
+      allowed: ["transparency"],
       values: {
-        range: [ 0.3, 1.0 ],
+        range: [0.3, 1.0],
         interpolation: "linear"
       }
     }
@@ -64,7 +61,7 @@ function testLEG(vectors) {
     var distinct = undefined
     if (category.type == 'categorical') {
       // Generate distinct set from values
-      distinct = [ ... new Set(vectors.map(value => value[category.vectorKey])) ]
+      distinct = [... new Set(vectors.map(value => value[category.vectorKey]))]
 
     }
 
@@ -87,32 +84,65 @@ function testLEG(vectors) {
 }
 
 
-function UI(set, callback) {
 
-  var s = `
-  `
-  console.log(set)
+class CategorySelection extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      options: {},
+      selection: {
+        "color": "cp",
+        "transparency": "",
+        "shape": "",
+        "size": ""
+      }
+    }
+
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  setData(vectors) {
+    this.vectors = vectors
+    this.setState({
+      options: calculateOptions(vectors)
+    })
+  }
+
+  handleChange(event) {
+    var state = this.state
+    state.selection[event.target.id] = event.target.value
+    this.setState(state)
+
+    this.props.onChange(event.target.id, this.state.options[event.target.id].attributes.filter(a => a.key == event.target.value)[0].category)
+  }
+
+  render() {
+//e => callback({ class: key, category: set[key].attributes.filter(v => v.key == e.target.value)[0].category })
+
     return <div>
-        { Object.keys(set).map(key => {
-          return <div class="form-group">
-          <label for={key}>{ key }</label>
-          <select id={key} name="cars" class="custom-select" onChange={e => callback({ class: key, category: set[key].attributes.filter(v => v.key == e.target.value)[0].category })}>
-            { set[key].attributes.map(attribute => {
-              return <option value={ attribute.key }>{ attribute.name }</option>
-            }) }
+      {Object.keys(this.state.options).map(key => {
+        return <div class="form-group">
+          <label for={key}>{key}</label>
+          <select id={key} value={this.state.selection[key]} class="custom-select" onChange={this.handleChange}>
+            {this.state.options[key].attributes.map(attribute => {
+              return <option value={attribute.key}>{attribute.name}</option>
+            })}
           </select>
         </div>
-        }) }
-
+      })}
     </div>
+  }
 }
 
 function renderUI(vectors, element, callback) {
-  ReactDOM.render(UI(testLEG(vectors), callback), element)
+  ReactDOM.render(<CategorySelection options={calculateOptions(vectors)}/>, element)
 }
 
 
 
 module.exports = {
-    render: renderUI
+  render: renderUI,
+  calculateOptions: calculateOptions,
+  CategorySelection: CategorySelection
 }

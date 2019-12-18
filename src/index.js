@@ -8,47 +8,26 @@ var neural = require('./problems/neural')
 
 var loader = require('./util/loader')
 var colors = require('./util/colors')
-var categorical = require('./view/categorical')
+import { CategorySelection } from './view/categorical'
 
-var tools = require('./util/tools')
-
-
-class Problem {
-  constructor(type) {
-    this.type = type
-  }
-
-  aggregate(vectors) {
-    setAggregateView(document.getElementById('aggregate'), vectors, true)
-  }
-}
-
-
-const ProblemType = Object.freeze({
-  "CHESS": 1,
-  "RUBIK": 2
-})
+import DatasetSelector from './util/datasetselector'
+import ThreeView from './view/view'
 
 
 
-function setAggregateView(element, list, aggregation) {
+function setAggregateView(element, list, aggregation, type) {
   element.innerHTML = ""
 
-  if (problem.type == ProblemType.CHESS) {
+  if (type == "chess") {
     element.innerHTML = chess.aggregate(list)
   }
-  if (problem.type == ProblemType.RUBIK) {
+  if (type == "rubik") {
     element.innerHTML = rubik.aggregate(list)
   }
-  if (problem.type == ProblemType.NEURAL) {
+  if (type == "neural") {
     element.innerHTML = neural.aggregate(list, aggregation)
   }
 }
-
-
-
-
-
 
 
 
@@ -94,26 +73,9 @@ window.showGuide = function () {
 
 }
 
-
-var problem = null
-
-
-var loaded = null;
-var segments = null;
-var camera;
-
-var intersects;
-var mouse, INTERSECTED;
-
-var mouseDownPosition = null;
-var mouseDown = false;
-var strokeTexture = null;
-
 var settings = {
   showIntPoints: true
 }
-
-var currentHoverIdx = null;
 
 
 var chooseColor = colors.generator();
@@ -126,6 +88,7 @@ var algorithms = {};
  */
 window.showIntermediatePoints = function () {
   settings.showIntPoints = !settings.showIntPoints
+
 
   problem.particles.update()
 }
@@ -148,111 +111,24 @@ window.toggleData = function (element, algo) {
   problem.particles.update()
 }
 
-window.selectDataset = function (value) {
-  cleanup()
-
-  if (problem != null) {
-    console.log("cleanup ----")
-    console.log(problem.renderer.info)
-    console.log("-------")
-  }
-
-  if (value.startsWith("chess")) {
-    problem = new Problem(ProblemType.CHESS)
-    loadData(problem, "datasets/chess/" + value.substring(6))
-  } else if (value.startsWith("rubik")) {
-    problem = new Problem(ProblemType.RUBIK)
-    loadData(problem, "datasets/rubik/" + value.substring(6));
-  } else if (value.startsWith("neural")) {
-    problem = new Problem(ProblemType.NEURAL)
-    loadData(problem, "datasets/neural/" + value.substring(7))
-  }
-}
 
 
 
 
 
-var rectangleSelection = null
-
-
-
-function cleanup() {
-  if (problem != null) {
-
-    if (problem.lines != null) {
-      console.log("disposing lines")
-      problem.lines.forEach(line => {
-        line.dispose()
-      })
-    }
-
-    if (problem.particles != null) {
-      console.log("get rid of particles")
-      problem.particles.dispose()
-    }
-
-    if (problem.renderer != null) {
-      problem.renderer.renderLists.dispose()
-      console.log("disposed render lists")
-    }
-
-    problem.scene.dispose()
-  }
-}
-
-
-
-/**
- * Loads a specific problem set, creating menus, displaying vectors etc.
- */
-function loadData(problem, file) {
-  chooseColor = colors.generator();
-  algorithms = {}
-
-  setAggregateView(document.getElementById('info'), [], false)
-  setAggregateView(document.getElementById('aggregate'), [], true)
 
 
 
 
-  // Load csv file
-  loader.load(file, problem, algorithms, chooseColor, data => {
-    loaded = data;
-
-    segments = getSegments(loaded);
-
-    init(loaded, problem);
-
-    problem.particles.update()
-    categorical.render(loaded, document.getElementById('test'), function (event) {
-      console.log("EVENT GOT")
-      console.log(event)
-      if (event.class == 'shape') {
-        problem.particles.shapeCat(event.category)
-      }
-      if (event.class == 'color') {
-        problem.particles.colorCat(event.category)
-      }
-      if (event.class == 'transparency') {
-        problem.particles.transparencyCat(event.category)
-      }
-
-    })
-
-
-    loadLegend(problem);
-  })
-}
-
-function loadLegend(problem) {
+function loadLegend(type) {
   var chessOpeners = ["Barnes Hut Opening", "Kings Pawn Opening", "English Opening"]
 
-  if (problem.type == ProblemType.RUBIK) {
+  if (type == "rubik") {
     document.getElementById('legend').innerHTML = rubik.legend(algorithms[1].color, algorithms[0].color)
-  } else if (problem.type == ProblemType.CHESS) {
+  } else if (type == "chess") {
+    console.log("chess loaded")
     document.getElementById('legend').innerHTML = chess.legend(Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'name': chessOpeners[key], 'algo': key } }))
-  } else if (problem.type == ProblemType.NEURAL) {
+  } else if (type == "neural") {
     document.getElementById('legend').innerHTML = neural.legend(Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'learningRate': key } }))
   }
 }
@@ -288,331 +164,185 @@ function getSegments(data) {
 }
 
 
+class Application extends React.Component {
 
+  constructor(props) {
+    super(props)
 
+    this.state = {}
 
+    this.categoryRef = React.createRef()
+    this.threeRef = React.createRef()
+    this.onDatasetSelected = this.onDatasetSelected.bind(this)
+    this.onHover = this.onHover.bind(this)
+    this.onAggregate = this.onAggregate.bind(this)
+    this.onCategoryChange = this.onCategoryChange.bind(this)
 
+    var url = new URL(window.location);
+    var set = url.searchParams.get("set");
 
-function onDocumentMouseUp(e) {
-
-  var test = mouseToWorld(e)
-
-  if (rectangleSelection != null) {
-    rectangleSelection.mouseUp(test.x, test.y)
-  }
-
-
-  mouseDown = false;
-}
-
-function onDocumentMouseDown(e) {
-  e.preventDefault();
-
-  var container = document.getElementById('container');
-  var width = container.offsetWidth;
-  var height = container.offsetHeight;
-
-  if (e.altKey && rectangleSelection != null) {
-    var test = mouseToWorld(event)
-    rectangleSelection.mouseDown(test.x, test.y)
-
-  } else {
-    // Dragging data around
-    mouseDownPosition = normaliseMouse(e)
-    mouseDown = true;
-  }
-}
-
-function mouseToWorld(event) {
-  var container = document.getElementById('container');
-  var width = container.offsetWidth;
-  var height = container.offsetHeight;
-
-  const rect = container.getBoundingClientRect();
-
-  var test = {
-    x: (event.clientX - rect.left - width / 2) / camera.zoom + camera.position.x,
-    y: -(event.clientY - rect.top - height / 2) / camera.zoom + camera.position.y
-  }
-
-  return test
-}
-
-function onDocumentMouseMove(event) {
-  event.preventDefault();
-
-  var test = mouseToWorld(event)
-
-  if (rectangleSelection != null) {
-    rectangleSelection.mouseMove(test.x, test.y)
-  }
-
-  if (window.infoTimeout != null) {
-    clearTimeout(window.infoTimeout)
-  }
-  if (!mouseDown) {
-    window.infoTimeout = setTimeout(function () {
-      window.infoTimeout = null
-
-      // Get index of selected node
-      var idx = choose(test)
-      problem.particles.highlight(idx)
-
-      var list = []
-      if (idx >= 0) list.push(loaded[idx])
-      setAggregateView(document.getElementById('info'), list, false)
-    }, 10);
-  }
-
-
-
-  // Dragging
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-  if (mouseDown) {
-    camera.position.x = camera.position.x - (mouse.x - mouseDownPosition.x) * (600 / camera.zoom);
-    camera.position.y = camera.position.y - (mouse.y - mouseDownPosition.y) * (600 / camera.zoom);
-    mouseDownPosition = normaliseMouse(event)
-    camera.updateProjectionMatrix()
-  }
-}
-
-
-
-function init(data, problem) {
-  var container = document.getElementById('container');
-
-  problem.scene = new THREE.Scene();
-
-  var width = container.offsetWidth;
-  var height = container.offsetHeight;
-
-  camera = tools.getDefaultCamera(width, height, loaded)
-
-  problem.particles = new meshes.PointVisualization(settings)
-  problem.particles.createMesh(loaded, segments, algorithms)
-  problem.particles.zoom(camera.zoom)
-
-
-
-
-  //
-  var renderer = new THREE.WebGLRenderer({
-    antialias: true
-  });
-  problem.renderer = renderer
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(width, height);
-  renderer.setClearColor(0xffffff, 1);
-  renderer.sortObjects = false;
-
-  container.innerHTML = ""
-  container.appendChild(renderer.domElement);
-  //
-  mouse = new THREE.Vector2();
-
-
-
-
-  // First add lines to scene... so they get drawn first
-  problem.lines = meshes.renderLines2(segments, algorithms)
-  problem.lines.forEach(line => problem.scene.add(line.line))
-  //fatLines(segments)
-
-  problem.particles.update()
-  // Then add particles
-  problem.scene.add(problem.particles.mesh);
-
-
-  if (rectangleSelection != null) {
-    rectangleSelection.dispose()
-  }
-  rectangleSelection = new tools.Selection(loaded, settings, problem)
-
-
-
-  container.addEventListener('mousemove', onDocumentMouseMove, false);
-  container.addEventListener('mousedown', onDocumentMouseDown, false);
-  container.addEventListener('mouseup', onDocumentMouseUp, false);
-  container.addEventListener('wheel', onDocumentMouseWheel, false);
-}
-
-function dist(x1, y1, x2, y2) {
-  var a = x1 - x2;
-  var b = y1 - y2;
-
-  var c = Math.sqrt(a * a + b * b);
-  return c
-}
-
-function choose(position) {
-  var best = 30 / (camera.zoom * 2.0)
-  var res = -1
-
-  for (var index = 0; index < loaded.length; index++) {
-    var value = loaded[index]
-
-    // Skip points matching some criteria
-    if ((!settings.showIntPoints && value.cp == 0) || value.visible == false) {
-      continue
-    }
-
-    var d = dist(position.x, position.y, value.x, value.y)
-
-    if (d < best) {
-      best = d
-      res = index
+    if (set != null) {
+      if (set == "neural") {
+        this.preselect = "datasets/neural/learning_confmat.csv"
+      } else if (set == "rubik") {
+        this.preselect = "datasets/rubik/cube10x2_different_origins.csv"
+      } else if (set == "chess") {
+        this.preselect = "datasets/chess/chess16k.csv"
+      }
     }
   }
-  return res
-}
 
-function onDocumentMouseWheel(event) {
-  event.preventDefault()
-  camera.zoom = camera.zoom + event.deltaY * 0.02;
-  if (camera.zoom < 1) {
-    camera.zoom = 1;
+  componentDidMount() {
+    var url = new URL(window.location);
+    var set = url.searchParams.get("set");
+    if (set != null) {
+      if (set == "neural") {
+        this.preselect = "datasets/neural/learning_confmat.csv"
+      } else if (set == "rubik") {
+        this.preselect = "datasets/rubik/cube10x2_different_origins.csv"
+      } else if (set == "chess") {
+        this.preselect = "datasets/chess/chess16k.csv"
+      }
+      this.dataset = { path: this.preselect, type: set }
+      this.loadData()
+    }
   }
 
-  problem.particles.zoom(camera.zoom);
 
-  camera.updateProjectionMatrix();
-}
-
-function normaliseMouse(event) {
-  var vec = {}
-  vec.x = (event.clientX / window.innerWidth) * 2 - 1;
-  vec.y = - (event.clientY / window.innerHeight) * 2 + 1;
-  return vec
-}
+  onHover(selected) {
+    setAggregateView(document.getElementById('info'), selected, false, this.dataset.type)
 
 
-function onWindowResize() {
-  var container = document.getElementById('container');
-
-  var width = container.offsetWidth;
-  var height = container.offsetHeight;
-
-  problem.renderer.setSize(width, height);
-
-  camera.left = width / - 2
-  camera.right = width / 2
-  camera.top = height / 2
-  camera.bottom = height / - 2
-
-  camera.updateProjectionMatrix();
-}
-
-function animate() {
-
-
-  requestAnimationFrame(animate);
-  render();
-}
-
-function render() {
-  if (problem == null) return;
-
-  if (problem != null && "renderer" in problem) {
-    problem.renderer.render(problem.scene, camera);
   }
-}
+
+  onAggregate(selected) {
+    setAggregateView(document.getElementById('aggregate'), selected, true, this.dataset.type)
+  }
+
+  /**
+   * 
+   * @param {*} type a category type eg. transparency or color
+   * @param {*} value a category value eg. algo or cp
+   */
+  onCategoryChange(type, value) {
+    console.log(type)
+    console.log(value)
+    if (type == 'shape') {
+      this.threeRef.current.particles.shapeCat(value)
+    }
+  }
 
 
-class WelcomeA extends React.Component {
+
+  /**
+   * Loads a specific problem set, creating menus, displaying vectors etc.
+   */
+  loadData() {
+    chooseColor = colors.generator();
+    algorithms = {}
+
+
+
+    setAggregateView(document.getElementById('info'), [], false, this.dataset.type)
+    setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.type)
+
+
+
+
+    // Load csv file
+    loader.load(this.dataset.path, algorithms, chooseColor, data => {
+      this.algorithms = algorithms
+      this.segments = getSegments(data)
+      this.vectors = data
+
+      this.threeRef.current.createVisualization(this.vectors, this.segments, this.algorithms, settings)
+
+
+      this.categoryRef.current.setData(this.vectors)
+      /**categorical.render(loaded, document.getElementById('test'), function (event) {
+        if (event.class == 'shape') {
+          problem.particles.shapeCat(event.category)
+        }
+        if (event.class == 'color') {
+          problem.particles.colorCat(event.category)
+        }
+        if (event.class == 'transparency') {
+          problem.particles.transparencyCat(event.category)
+        }
+
+      })**/
+
+
+      loadLegend(this.dataset.type);
+    })
+  }
+
+  onDatasetSelected(event) {
+
+    this.dataset = event
+
+    this.threeRef.current.disposeScene()
+
+    this.loadData(event)
+  }
+
   render() {
-    return <div class="d-flex align-items-stretch" style={{width: "100vw", height: "100vh"}}>
-    <div class="card flex-shrink-0" style={{width: "18rem", margin: "0.5rem"}}>
+    return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
+      <div class="card flex-shrink-0" style={{ width: "18rem", margin: "0.5rem" }}>
 
-      <div class="container" style={{'padding-top': "1rem"}}>
-        <a href="#" onclick="window.showGuide()">show control guide</a>
+        <div class="container" style={{ 'padding-top': "1rem" }}>
+          <a href="#" onclick="window.showGuide()">show control guide</a>
 
-        <hr/>
+          <hr />
 
-        <div class="form-group">
-          <label for="exampleFormControlSelect1">Select Dataset</label>
-          <select id="setselect" name="cars" class="custom-select" onChange={e => selectDataset(e.target.value)}>
-            <option value="chess_chess16k.csv">Chess: 190 Games</option>
-            <option value="chess_chess40k.csv">Chess: 450 Games</option>
-            <option value="rubik_cube1x2_different_origins.csv">Rubik: 1x2 Different Origins</option>
-            <option value="rubik_cube1x2.csv">Rubik: 1x2 Same Origins</option>
-            <option value="rubik_cube5x2_different_origins.csv">Rubik: 5x2 Different Origins</option>
-            <option value="rubik_cube5x2.csv">Rubik: 5x2 Same Origins</option>
-            <option selected value="rubik_cube10x2_different_origins.csv">Rubik: 10x2 Different Origins</option>
-            <option value="rubik_cube10x2.csv">Rubik: 10x2 Same Origins</option>
-            <option value="rubik_cube100x2_different_origins.csv">Rubik: 100x2 Different Origins</option>
-            <option value="rubik_cube100x2.csv">Rubik: 100x2 Same Origins</option>
-            <option value="neural_random_weights.csv">Neural: Random Weights</option>
-            <option value="neural_random_confmat.csv">Neural: Confusion Matrix</option>
-            <option value="neural_learning_weights.csv">Neural: Learning Weights</option>
-            <option value="neural_learning_confmat.csv">Neural: Learning Confusion Matrix</option>
-          </select>
+          <DatasetSelector preselect={this.preselect} onChange={this.onDatasetSelected} />
+
+          <hr />
+
+          <div id="legend"></div>
+
+          <CategorySelection ref={this.categoryRef} onChange={this.onCategoryChange}></CategorySelection>
         </div>
-
-        <hr/>
-
-        <div id="legend"></div>
       </div>
-    </div>
 
-    <div style={{width: "18rem", margin: "0.5rem"}} class="card flex-shrink-0">
-      <div class="d-flex align-items-center justify-content-center" style={{height: "50%"}}>
-        <div class="text-center" style={{width: "100%", height: "100%", position: "relative"}}>
-          <div class="card-body p-2">
-            <h6 class="card-title">Selected State</h6>
-            <div id="info" class="d-flex align-items-stretch justify-content-center"></div>
+      <div style={{ width: "18rem", margin: "0.5rem" }} class="card flex-shrink-0">
+        <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
+          <div class="text-center" style={{ width: "100%", height: "100%", position: "relative" }}>
+            <div class="card-body p-2">
+              <h6 class="card-title">Selected State</h6>
+              <div id="info" class="d-flex align-items-stretch justify-content-center"></div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
+          <div class="text-center" style={{ width: "100%", height: "100%", position: "relative" }}>
+            <div class="card-body p-2">
+              <h6 class="card-title">State Similiarity</h6>
+              <div id="aggregate" class="d-flex align-items-stretch justify-content-center"></div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="d-flex align-items-center justify-content-center" style={{height: "50%"}}>
-        <div class="text-center" style={{width: "100%", height: "100%", position: "relative"}}>
-          <div class="card-body p-2">
-            <h6 class="card-title">State Similiarity</h6>
-            <div id="aggregate" class="d-flex align-items-stretch justify-content-center"></div>
+
+      <ThreeView ref={this.threeRef} onHover={this.onHover} onAggregate={this.onAggregate} />
+
+      <div id="guide" style={{ position: "absolute", left: "18rem", top: "2rem", display: "none" }}>
+        <div class="card bg-dark text-white" style={{ width: "20rem", height: "20rem", opacity: "90%" }}>
+          <div class="card-body">
+            <h5 class="card-title">Basic Controls</h5>
+
+            <p class="card-text">You can move the camera by pressing the left mouse button and dragging the image.</p>
+            <p class="card-text">Use your mousewheel to zoom in and out of the projection.</p>
+            <p class="card-text">You can select multiple states by dragging a rectangle while pressing the ALT key.</p>
           </div>
         </div>
       </div>
+
     </div>
-
-    <div id="container" class="flex-grow-1" style={{overflow: "hidden"}}>
-    </div>
-
-    <div id="guide" style={{position: "absolute", left: "18rem", top: "2rem", display: "none"}}>
-      <div class="card bg-dark text-white" style={{width: "20rem", height: "20rem", opacity: "90%"}}>
-        <div class="card-body">
-          <h5 class="card-title">Basic Controls</h5>
-
-          <p class="card-text">You can move the camera by pressing the left mouse button and dragging the image.</p>
-          <p class="card-text">Use your mousewheel to zoom in and out of the projection.</p>
-          <p class="card-text">You can select multiple states by dragging a rectangle while pressing the ALT key.</p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-  }
-}
-console.log(document.getElementById("test"))
-console.log(document.getElementById("test2"))
-ReactDOM.render(<WelcomeA />, document.getElementById("test2"))
-
-
-
-var url = new URL(window.location);
-var set = url.searchParams.get("set");
-
-
-if (set != null) {
-  if (set == "neural") {
-    document.getElementById("setselect").value = "neural_learning_confmat.csv"
-  } else if (set == "rubik") {
-    document.getElementById("setselect").value = "rubik_cube10x2_different_origins.csv"
-  } else if (set == "chess") {
-    document.getElementById("setselect").value = "chess_chess16k.csv"
   }
 }
 
 
-window.selectDataset(document.getElementById("setselect").value)
-animate();
+
+
+ReactDOM.render(<Application />, document.getElementById("test2"))

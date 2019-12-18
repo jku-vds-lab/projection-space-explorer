@@ -5,6 +5,7 @@ var convex = require('three/examples/jsm/geometries/ConvexGeometry')
 
 var fragmentShaders = require('./fragmentshaders')
 var vertexShaders = require('./vertexshaders')
+var Meshy = require('three.meshline');
 
 /**
  * Returns the line opacity for a given line count.
@@ -125,6 +126,7 @@ function renderLines2(segments, algorithms) {
 class LineVis {
   constructor(line) {
     this.line = line
+    this.color = this.line.material.color
   }
 
   dispose() {
@@ -139,7 +141,121 @@ class LineVis {
 
 
 
+class LineVisualization {
+  constructor(segments, algorithms) {
+    this.segments = segments
+    this.algorithms = algorithms
+    this.highlightIndices = null
+  }
 
+  dispose(scene) {
+    this.meshes.forEach(mesh => {
+      scene.remove(mesh.line)
+      mesh.dispose()
+    })
+  }
+
+  setZoom(zoom) {
+    this.zoom = zoom
+
+    if (this.highlightMeshes != null) {
+      this.highlightMeshes.forEach(mesh => {
+        mesh.material.lineWidth = 0.002 + 0.0001 * this.zoom
+      })
+    }
+  }
+
+  /**
+   * Highlights the given lines that correspond to the indices
+   * 
+   * @param {*} indices 
+   * @param {*} width 
+   * @param {*} height 
+   * @param {*} scene 
+   */
+  highlight(indices, width, height, scene) {
+
+    // Undo previous highlight
+    if (this.highlightIndices != null) {
+      this.highlightIndices.forEach(index => {
+        this.meshes[index].line.visible = true
+      })
+      this.highlightMeshes.forEach(mesh => {
+        mesh.material.dispose()
+        mesh.geometry.dispose()
+        scene.remove(mesh)
+      })
+    }
+
+    this.highlightIndices = indices
+    this.highlightMeshes = []
+    this.highlightIndices.forEach(index => {
+      this.meshes[index].line.visible = false
+
+      var geometry = new THREE.Geometry();
+      this.meshes[index].line.geometry.vertices.forEach((vertex, i) => {
+        geometry.vertices.push(vertex)
+      })
+  
+  
+      var line = new Meshy.MeshLine();
+      line.setGeometry(geometry, function (p) { return 1; });
+      var material = new Meshy.MeshLineMaterial({
+        color: new THREE.Color(this.meshes[index].color),
+        resolution: new THREE.Vector2(width, height),
+        lineWidth: 0.002 + 0.0001 * this.zoom,
+        sizeAttenuation: true,
+        transparent: true,
+        opacity: 0.5,
+        depthTest: false
+      });
+
+      var m = new THREE.Mesh(line.geometry, material)
+      this.highlightMeshes.push(m);
+      scene.add(m);
+    })
+  }
+
+
+  createMesh() {
+    var opacity = getLineOpacity(this.segments.length)
+    var lines = []
+
+    this.segments.forEach((segment, index) => {
+
+      var geometry = new THREE.Geometry();
+      var material = new THREE.LineBasicMaterial({
+        color: this.algorithms[segment.vectors[0].algo].color,
+        transparent: true,
+
+        // Calculate opacity
+        opacity: opacity
+        // 1 - 1     100 - 0.1    200 - 0.05      50 - 0.2     25 - 0.4
+      });
+      var da = []
+      segment.vectors.forEach(function (vector, vi) {
+        vector.lineIndex = index
+        da.push(new THREE.Vector2(vector.x, vector.y))
+        //geometry.vertices.push(new THREE.Vector3(vector.x, vector.y, -1.0));
+      })
+
+      var curve = new THREE.SplineCurve(da)
+
+      curve.getPoints(1000).forEach(function (p, i) {
+        geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
+      })
+      var line = new THREE.Line(geometry, material);
+
+      // Store line data in segment...
+      segment.line = line
+
+      lines.push(new LineVis(line))
+    })
+
+    this.meshes = lines
+    return lines
+  }
+}
 
 
 
@@ -165,7 +281,7 @@ class PointVisualization {
 
     segments.forEach(segment => {
       segment.vectors.forEach(vector => {
-        vertices.push(new THREE.Vector3(vector.x, vector.y, -0.5))
+        vertices.push(new THREE.Vector3(vector.x, vector.y, 0.0))
 
         vertex = vertices[i];
         vertex.toArray(positions, i * 3);
@@ -233,6 +349,9 @@ class PointVisualization {
 
     this.sizeAttribute = this.mesh.geometry.attributes.size
   }
+
+
+
 
   /**
    * @param {*} category a feature to select the shape for
@@ -307,9 +426,9 @@ class PointVisualization {
     this.segments.forEach(segment => {
       segment.vectors.forEach(vector => {
         if ((this.settings.showIntPoints || this.loaded[i].cp == 1 || vector.age == 0 || vector.age == segment.vectors.length - 1) && vector.visible) {
-          //colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
+          colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
         } else {
-          //colors[i * 4 + 3] = 0.0
+          colors[i * 4 + 3] = 0.0
         }
 
         i++
@@ -389,12 +508,9 @@ class ConvexHull {
 
 
 
-
-
-
-
 module.exports = {
   renderLines2: renderLines2,
   PointVisualization: PointVisualization,
+  LineVisualization: LineVisualization,
   ConvexHull: ConvexHull
 }

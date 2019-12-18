@@ -1,13 +1,12 @@
-var THREE = require('three')
 
 /**
  * Rectangle selection tool.
  */
 class RectangleSelection {
-    constructor(vectors, settings, problem) {
+    constructor(vectors, settings, scene) {
         this.vectors = vectors
         this.settings = settings
-        this.problem = problem
+        this.scene = scene
 
         this.create = false
 
@@ -21,13 +20,15 @@ class RectangleSelection {
         this.plane = new THREE.Mesh(this.geometry, this.material);
         this.plane.position.x = 0
         this.plane.position.y = 0
+        this.plane.position.z = -0.5
+        
         this.plane.scale.x = 0
         this.plane.scale.y = 0
     }
 
     mouseDown(x, y) {
         // dispose old selection
-        this.problem.scene.remove(this.plane)
+        this.scene.remove(this.plane)
 
         if (this.create == false) {
             this.startX = x
@@ -38,7 +39,7 @@ class RectangleSelection {
             this.plane.scale.x = 0
             this.plane.scale.y = 0
 
-            this.problem.scene.add(this.plane);
+            this.scene.add(this.plane);
 
             this.create = true
         }
@@ -62,16 +63,18 @@ class RectangleSelection {
             var height = Math.abs(this.plane.scale.y)
             var vectors = this.select({ x: this.plane.position.x - width / 2, y: this.plane.position.y - height / 2, w: width, h: height })
 
-            // Create aggregation
-            this.problem.aggregate(vectors)
-
             this.create = false
+
+            // Create aggregation
+            return vectors
         }
+        return null
     }
 
     dispose() {
+        console.log("disposing rectangle selection")
         if (this.plane != null) {
-            this.problem.scene.remove(this.plane)
+            this.scene.remove(this.plane)
         }
 
         this.geometry.dispose()
