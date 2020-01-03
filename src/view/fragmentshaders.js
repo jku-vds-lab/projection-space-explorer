@@ -4,6 +4,7 @@
 var pointSprite = `
     uniform vec3 color;
     uniform sampler2D pointTexture[4];
+    
     varying vec4 vColor;
     varying float vType;
 

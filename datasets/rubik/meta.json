@@ -1,0 +1,34 @@
+[
+    {
+      "vectorKey": "cp",
+      "name": "Checkpoint",
+      "type": "categorical",
+      "allowed": ["shape"],
+      "values": [
+        {
+          "value": 0,
+          "display": "Starting Point",
+          "shapeType": "cross",
+          "color": "0x00ff00"
+        },
+        {
+          "value": 1,
+          "display": "Intermediate",
+          "shapeType": "circle",
+          "color": "0x00ff00"
+        },
+        {
+          "value": 2,
+          "display": "Checkpoint",
+          "shapeType": "square",
+          "color": "0x00ff00"
+        },
+        {
+          "value": 3,
+          "display": "Solution",
+          "shapeType": "star",
+          "color": "0xff0000"
+        }
+      ]
+    }
+  ]

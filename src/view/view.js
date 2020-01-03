@@ -1,5 +1,70 @@
 var meshes = require('./meshes')
 var tools = require('../util/tools')
+import Typography from '@material-ui/core/Typography';
+import Slider from '@material-ui/core/Slider';
+import IconButton from '@material-ui/core/IconButton';
+import SettingsIcon from '@material-ui/icons/Settings';
+import Popover from '@material-ui/core/Popover';
+import Container from '@material-ui/core/Container';
+import Box from '@material-ui/core/Box';
+
+
+
+const SettingsPopover = ({ onChangeSlider }) => {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = event => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
+    return (
+        <div>
+            <IconButton onClick={handleClick}>
+                <SettingsIcon />
+            </IconButton>
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            >
+                <Container style={{ width: '10rem', height: '8rem' }}>
+                    <Typography id="discrete-slider" gutterBottom>
+                        Point Scale
+                    </Typography>
+                    <Slider
+                        onChange={(event, value) => { onChangeSlider(value / 100.0) }}
+                        defaultValue={100}
+                        aria-labelledby="discrete-slider"
+                        valueLabelDisplay="auto"
+                        step={10}
+                        marks
+                        min={50}
+                        max={150}
+                    />
+                </Container>
+            </Popover>
+        </div>
+    );
+}
+
+
+
 
 
 /**
@@ -25,7 +90,6 @@ function getDefaultZoom(vectors, width, height) {
     // Divide the height/width through the biggest axis of the data points
     return Math.min(width, height) / Math.max(horizontal, vertical) / 2
 }
-
 
 
 
@@ -137,9 +201,11 @@ export default class ThreeView extends React.Component {
                 var idx = this.choose(coords)
                 this.particles.highlight(idx)
                 if (idx >= 0 && this.currentAggregation == null) {
-                    this.lines.highlight([ this.vectors[idx].lineIndex ], this.width, this.height, this.scene)
+                    this.lines.highlight([this.vectors[idx].lineIndex], this.width, this.height, this.scene)
+                } else {
+                    this.lines.highlight([], this.width, this.height, this.scene)
                 }
-               
+
 
                 var list = []
                 if (idx >= 0) list.push(this.vectors[idx])
@@ -170,9 +236,9 @@ export default class ThreeView extends React.Component {
                     // Highlight aggregation
                     var uniqueIndices = new Set(result.map(vector => vector.lineIndex))
                     this.lines.highlight(uniqueIndices, this.width, this.height, this.scene)
-    
+
                     this.currentAggregation = result
-    
+
                     this.props.onAggregate(result)
                 } else {
                     this.currentAggregation = null
@@ -234,10 +300,6 @@ export default class ThreeView extends React.Component {
 
     }
 
-    onKeyDown(event) {
-        console.log(event)
-    }
-
     createVisualization(vectors, segments, algorithms, settings) {
         this.scene = new THREE.Scene()
         this.pointScene = new THREE.Scene()
@@ -263,7 +325,7 @@ export default class ThreeView extends React.Component {
         this.lines.meshes.forEach(line => this.scene.add(line.line))
         //this.scene.add(this.particles.mesh);
         this.pointScene.add(this.particles.mesh)
-        
+
 
         this.rectangleSelection = new tools.Selection(this.vectors, this.settings, this.scene)
 
@@ -287,6 +349,22 @@ export default class ThreeView extends React.Component {
         container.addEventListener('wheel', this.wheelListener, false);
     }
 
+    filterLines(algo, show) {
+        this.segments.forEach((segment) => {
+            if (segment.algo == algo) {
+                segment.line.visible = show
+
+
+                segment.vectors.forEach((vector) => {
+                    if (vector.algo == algo) {
+                        vector.visible = show
+                    }
+                })
+            }
+        })
+
+        this.particles.update()
+    }
 
     disposeScene() {
         if (this.lines != null) {
@@ -322,7 +400,32 @@ export default class ThreeView extends React.Component {
         }
     }
 
+
+
+
+
+
+
+
+
+
+
     render() {
-        return <div id="container" class="flex-grow-1" style={{ overflow: "hidden" }} ref={this.containerRef}></div>
+        const containerStyle = {
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            width: "100%",
+            height: "100%"
+        }
+
+        return <div class="flex-grow-1 d-flex" style={{ overflow: "hidden", position: "relative" }}>
+            <div id="container" style={containerStyle} ref={this.containerRef}>
+            </div>
+
+            <div style={{ position: 'absolute', top: '0px', left: '0px' }}>
+                <SettingsPopover onChangeSlider={(ratio) => this.particles.setPointScaling(ratio)}></SettingsPopover>
+            </div>
+        </div>
     }
 }

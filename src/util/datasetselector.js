@@ -1,3 +1,9 @@
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+
 class DatasetDatabase {
     constructor() {
         this.data = [
@@ -58,7 +64,7 @@ class DatasetDatabase {
             },
             {
                 display: "Neural: Random Confusion Matrix",
-                path: "neural/random_confmat.csv",
+                path: "datasets/neural/random_confmat.csv",
                 type: "neural"
             },
             {
@@ -79,6 +85,7 @@ class DatasetDatabase {
     }
 }
 
+
 export default class DatasetSelector extends React.Component {
     constructor(props) {
         super(props)
@@ -87,8 +94,6 @@ export default class DatasetSelector extends React.Component {
         this.database = new DatasetDatabase()
 
         this.state = { value: this.props.preselect }
-        console.log("state is")
-        console.log(this.state)
     }
 
     handleChange(event) {
@@ -101,12 +106,18 @@ export default class DatasetSelector extends React.Component {
 
     render() {
         return <div class="form-group">
-            <label for="exampleFormControlSelect1">Select Dataset</label>
-            <select id="setselect" value={this.state.value} class="custom-select" onChange={this.handleChange}>
-                {this.database.data.map(entry => {
-                    return <option value={entry.path}>{entry.display}</option>
-                })}
-            </select>
+            <FormControl>
+                <InputLabel id="demo-simple-select-placeholder-label-label">Dataset</InputLabel>
+                <Select labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={this.state.value}
+                    onChange={this.handleChange}>
+                        
+                    {this.database.data.map(entry => {
+                        return <MenuItem value={entry.path}>{entry.display}</MenuItem>
+                    })}
+                </Select>
+            </FormControl>
         </div>
     }
 }

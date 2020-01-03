@@ -1,0 +1,55 @@
+[
+    {
+        "vectorKey": "cp",
+        "name": "Checkpoint",
+        "type": "categorical",
+        "allowed": [
+            "shape"
+        ],
+        "values": [
+            {
+                "value": 0,
+                "display": "Intermediate",
+                "shapeType": "circle",
+                "color": "0x00ff00"
+            },
+            {
+                "value": 1,
+                "display": "End",
+                "shapeType": "star",
+                "color": "0xff0000"
+            },
+            {
+                "value": 2,
+                "display": "Opener",
+                "shapeType": "cross",
+                "color": "0xff0000"
+            }
+        ]
+    },
+    {
+      "vectorKey": "algo",
+      "name": "Algorithm",
+      "type": "categorical",
+      "allowed": [
+        "shape"
+      ],
+      "values": [
+        {
+          "value": "0",
+          "display": "Opener 1",
+          "shapeType": "cross"
+        },
+        {
+          "value": "1",
+          "display": "Opener 2",
+          "shapeType": "star"
+        },
+        {
+          "value": "2",
+          "display": "Opener 3",
+          "shapeType": "square"
+        }
+      ]
+    }
+]

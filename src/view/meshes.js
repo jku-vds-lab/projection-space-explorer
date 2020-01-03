@@ -330,6 +330,7 @@ class PointVisualization {
       uniforms: {
         zoom: { value: 1.0 },
         color: { value: new THREE.Color(0xffffff) },
+        scale: { value: 1.0 },
         pointTexture: {
           value: [
             new THREE.TextureLoader().load("textures/sprites/cross_texture.png"),
@@ -350,7 +351,9 @@ class PointVisualization {
     this.sizeAttribute = this.mesh.geometry.attributes.size
   }
 
-
+  setPointScaling(pointScaling) {
+    this.mesh.material.uniforms.scale.value = pointScaling
+  }
 
 
   /**
@@ -401,14 +404,9 @@ class PointVisualization {
 
     if (category.type == 'quantitative') {
       this.segments.forEach(segment => {
-        console.log("testing...")
-        console.log(segment)
         var filtered = segment.vectors.map(vector => vector[category.vectorKey])
         var max = Math.max(...filtered)
         var min = Math.min(...filtered)
-        console.log("max is...")
-        console.log(max)
-        console.log(min)
 
         segment.vectors.forEach(vector => {
           color[vector.globalIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.vectorKey] - min) / (max - min))

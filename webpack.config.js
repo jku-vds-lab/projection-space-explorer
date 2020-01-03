@@ -20,7 +20,8 @@ module.exports = {
     new webpack.ProvidePlugin({
       THREE: 'three',
       ReactDOM: 'react-dom',
-      React: 'react'
+      React: 'react',
+      d3: 'd3'
     })
   ]
 };

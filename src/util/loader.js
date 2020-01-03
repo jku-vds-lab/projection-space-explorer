@@ -38,6 +38,8 @@ function loadSet(file, algorithms, chooseColor, callback) {
 
       if ("algo" in d) {
         d.algo = +d.algo
+      } else {
+        d.algo = "default"
       }
 
       if ("age" in d) {
