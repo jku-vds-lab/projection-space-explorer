@@ -5,6 +5,38 @@ var d3v5 = require('d3')
 
 
 
+
+
+
+function getSegments(data) {
+  //creating an array holding arrays of x,y,cubenum,algo,age for each cube
+
+  // Sort data by cubeNum
+  data.sort((a, b) => a.cubeNum - b.cubeNum)
+
+
+  var n = data.length
+  var points = new Array()
+  var currentCube = 0
+  var newArray = { vectors: new Array(), algo: data[0].algo }
+  for (var i = 0; i < n; i++) {
+    if (data[i].cubeNum != currentCube) {
+      points.push(newArray)
+      currentCube = data[i].cubeNum
+
+      newArray = { vectors: new Array(), algo: data[i].algo }
+    }
+
+    newArray.vectors.push(data[i])
+  }
+  points.push(newArray)
+  return points
+}
+
+
+
+
+
 class Vector {
   constructor() {
   }
@@ -33,13 +65,13 @@ function loadSet(file, algorithms, chooseColor, callback) {
 
 
       if ("cp" in d) {
-        d.cp = +d.cp
+        d.cp = d.cp
       }
 
       if ("algo" in d) {
         d.algo = +d.algo
       } else {
-        d.algo = "default"
+        d.algo = "all"
       }
 
       if ("age" in d) {
@@ -62,5 +94,6 @@ function loadSet(file, algorithms, chooseColor, callback) {
 
 
 module.exports = {
-  load: loadSet
+  load: loadSet,
+  getSegments: getSegments
 }

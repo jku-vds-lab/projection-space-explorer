@@ -30,48 +30,6 @@ function getLineOpacity(count) {
   return 0.3 + 0.7 / count
 }
 
-
-function renderLines(segments, algorithms) {
-  var opacity = getLineOpacity(segments.length)
-  var lines = []
-
-  segments.forEach(function (segment, index) {
-    var geometry = new THREE.Geometry();
-
-
-
-    var material = new THREE.LineBasicMaterial({
-      color: algorithms[segment.vectors[0].algo].color,
-      transparent: true,
-
-      // Calculate opacity
-      opacity: opacity
-      // 1 - 1     100 - 0.1    200 - 0.05      50 - 0.2     25 - 0.4
-    });
-    var da = []
-    segment.vectors.forEach(function (vector, vi) {
-      da.push(new THREE.Vector2(vector.x, vector.y))
-      //geometry.vertices.push(new THREE.Vector3(vector.x, vector.y, -1.0));
-    })
-
-    var curve = new THREE.SplineCurve(da)
-
-    curve.getPoints(10000).forEach(function (p, i) {
-      geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
-    })
-    var line = new THREE.Line(geometry, material);
-
-    // Store line data in segment...
-    segment.line = line
-
-    lines.push(new LineVis(line))
-  })
-
-  return lines
-}
-
-
-
 function renderLines2(segments, algorithms) {
   var opacity = getLineOpacity(segments.length)
   var lines = []
@@ -167,11 +125,11 @@ class LineVisualization {
 
   /**
    * Highlights the given lines that correspond to the indices
-   * 
-   * @param {*} indices 
-   * @param {*} width 
-   * @param {*} height 
-   * @param {*} scene 
+   *
+   * @param {*} indices
+   * @param {*} width
+   * @param {*} height
+   * @param {*} scene
    */
   highlight(indices, width, height, scene) {
 
@@ -196,8 +154,8 @@ class LineVisualization {
       this.meshes[index].line.geometry.vertices.forEach((vertex, i) => {
         geometry.vertices.push(vertex)
       })
-  
-  
+
+
       var line = new Meshy.MeshLine();
       line.setGeometry(geometry, function (p) { return 1; });
       var material = new Meshy.MeshLineMaterial({
@@ -275,6 +233,7 @@ class PointVisualization {
     var colors = new Float32Array(data.length * 4);
     var sizes = new Float32Array(data.length);
     var types = new Float32Array(data.length);
+    var show = new Float32Array(data.length)
     var vertex;
     var color = new THREE.Color();
     var i = 0
@@ -294,7 +253,9 @@ class PointVisualization {
         colors[i * 4] = color.r;
         colors[i * 4 + 1] = color.g;
         colors[i * 4 + 2] = color.b;
-        colors[i * 4 + 3] = 0.0;
+        colors[i * 4 + 3] = 1.0;
+
+        show[i] = 1.0
 
         //color.toArray( colors, i * 4 );
         sizes[i] = this.particleSize;
@@ -305,9 +266,6 @@ class PointVisualization {
         } else if (vector.age == segment.vectors.length - 1) {
           // Ending point
           types[i] = 3
-        } else if (vector.cp == 1) {
-          // Checkpoint
-          types[i] = 1
         } else {
           // Intermediate
           types[i] = 2
@@ -324,6 +282,7 @@ class PointVisualization {
     pointGeometry.setAttribute('customColor', new THREE.BufferAttribute(colors, 4));
     pointGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
     pointGeometry.setAttribute('type', new THREE.BufferAttribute(types, 1));
+    pointGeometry.setAttribute('show', new THREE.BufferAttribute(show, 1))
 
     //
     var pointMaterial = new THREE.ShaderMaterial({
@@ -362,18 +321,42 @@ class PointVisualization {
   shapeCat(category) {
     var type = this.mesh.geometry.attributes.type.array
 
-    var shapeDict = {
-      circle: 0,
-      star: 1,
-      rectangle: 2
-    }
+    // default shapes used
+    if (category == null) {
+      this.segments.forEach(segment => {
+        segment.vectors.forEach(vector => {
+          var shape = 2
+          if (vector.age == 0) {
+            // Starting point
+            shape = 0
+          } else if (vector.age == segment.vectors.length - 1) {
+            // Ending point
+            shape = 3
+          } else if (vector.cp == 1) {
+            // Checkpoint
+            shape = 1
+          } else {
+            // Intermediate
+            shape = 2
+          }
 
-    if (category.type == 'categorical') {
-      this.loaded.forEach((vector, index) => {
-
-        var select = category.values.filter(value => value.value == vector[category.vectorKey])[0]
-        type[index] = shapeDict[select.shapeType]
+          type[vector.globalIndex] = shape
+        })
       })
+    } else {
+      var shapeDict = {
+        circle: 2,
+        star: 3,
+        cross: 0,
+        square: 1
+      }
+
+      if (category.type == 'categorical') {
+        this.loaded.forEach((vector, index) => {
+          var select = category.values.filter(value => value.value == vector[category.key])[0]
+          type[index] = shapeDict[select.shapeType]
+        })
+      }
     }
 
     // mark types array to receive an update
@@ -402,38 +385,71 @@ class PointVisualization {
   transparencyCat(category) {
     var color = this.mesh.geometry.attributes.customColor.array
 
-    if (category.type == 'quantitative') {
+    if (category == null) {
+      // default transparency
       this.segments.forEach(segment => {
-        var filtered = segment.vectors.map(vector => vector[category.vectorKey])
-        var max = Math.max(...filtered)
-        var min = Math.min(...filtered)
-
         segment.vectors.forEach(vector => {
-          color[vector.globalIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.vectorKey] - min) / (max - min))
+          color[vector.globalIndex * 4 + 3] = 1.0;
         })
       })
+    } else {
+      if (category.type == 'quantitative') {
+        this.segments.forEach(segment => {
+          var filtered = segment.vectors.map(vector => vector[category.key])
+          var max = Math.max(...filtered)
+          var min = Math.min(...filtered)
+  
+          segment.vectors.forEach(vector => {
+            color[vector.globalIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+          })
+        })
+      }
     }
 
     this.mesh.geometry.attributes.customColor.needsUpdate = true
   }
 
+  sizeCat(category) {
+    var size = this.mesh.geometry.attributes.size.array
+
+    if (category == null) {
+      this.loaded.forEach(vector => {
+        size[vector.globalIndex] = this.particleSize
+      })
+    } else {
+      this.segments.forEach(segment => {
+        var filtered = segment.vectors.map(vector => vector[category.key])
+        var max = Math.max(...filtered)
+        var min = Math.min(...filtered)
+
+        segment.vectors.forEach(vector => {
+          size[vector.globalIndex] = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
+        })
+      })
+    }
+
+    this.mesh.geometry.attributes.size.needsUpdate = true
+  }
+
   update() {
     var i = 0
-    var colors = this.mesh.geometry.attributes.customColor.array
+    var show = this.mesh.geometry.attributes.show.array
 
     this.segments.forEach(segment => {
       segment.vectors.forEach(vector => {
         if ((this.settings.showIntPoints || this.loaded[i].cp == 1 || vector.age == 0 || vector.age == segment.vectors.length - 1) && vector.visible) {
-          colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
+          //colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
+          show[vector.globalIndex] = 1.0
         } else {
-          colors[i * 4 + 3] = 0.0
+          //colors[i * 4 + 3] = 0.0
+          show[vector.globalIndex] = 0.0
         }
 
         i++
       })
     })
 
-    this.mesh.geometry.attributes.customColor.needsUpdate = true;
+    this.mesh.geometry.attributes.show.needsUpdate = true;
   }
 
   /**
@@ -494,7 +510,6 @@ class ConvexHull {
   }
 
   createMesh() {
-    console.log(convex)
     this.geometry = new convex.ConvexBufferGeometry(this.vectors)
     this.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
     this.mesh = new THREE.Mesh(this.geometry, this.material)

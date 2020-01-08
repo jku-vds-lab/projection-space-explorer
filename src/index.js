@@ -14,28 +14,13 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { CategorySelection, ShapeLegend, calculateOptions, Legend } from './view/categorical'
+import { CategorySelection, ShapeLegend, calculateOptions, Legend, LegendFun } from './view/categorical'
 import { makeStyles } from '@material-ui/core/styles';
 import DatasetSelector from './util/datasetselector'
 import ThreeView from './view/view'
-
-
-
-
-const useStyles = makeStyles(theme => ({
-  heading: {
-    fontSize: theme.typography.pxToRem(16),
-    fontWeight: theme.typography.fontWeightRegular,
-  },
-  text: {
-    fontSize: theme.typography.pxToRem(10),
-    fontWeight: theme.typography.fontWeightRegular,
-  }
-}))
-
-
-
-
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 
 
 
@@ -104,8 +89,6 @@ var settings = {
 
 var chooseColor = colors.generator();
 
-var algorithms = {};
-
 
 /**
  * Checkbox determining if intermediate points should be drawn.
@@ -118,74 +101,16 @@ window.showIntermediatePoints = function () {
 }
 
 
-window.toggleData = function (element, algo) {
-  segments.forEach((segment) => {
-    if (segment.algo == algo) {
-      segment.line.visible = element.checked
 
 
-      segment.vectors.forEach((vector) => {
-        if (vector.algo == algo) {
-          vector.visible = element.checked
-        }
-      })
-    }
-  })
 
-  problem.particles.update()
+
+const AggregationComponent = ({ aggregation }) => {
 }
 
 
 
 
-
-
-
-
-
-
-function loadLegend(type) {
-  var chessOpeners = ["Barnes Hut Opening", "Kings Pawn Opening", "English Opening"]
-
-  if (type == "rubik") {
-    document.getElementById('legend').innerHTML = rubik.legend(algorithms[1].color, algorithms[0].color)
-  } else if (type == "chess") {
-    console.log("chess loaded")
-    document.getElementById('legend').innerHTML = chess.legend(Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'name': chessOpeners[key], 'algo': key } }))
-  } else if (type == "neural") {
-    //document.getElementById('legend').innerHTML = neural.legend(Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'learningRate': key } }))
-  }
-}
-
-
-
-
-
-
-function getSegments(data) {
-  //creating an array holding arrays of x,y,cubenum,algo,age for each cube
-
-  // Sort data by cubeNum
-  data.sort((a, b) => a.cubeNum - b.cubeNum)
-
-
-  var n = data.length
-  var points = new Array()
-  var currentCube = 0
-  var newArray = { vectors: new Array(), algo: data[0].algo }
-  for (var i = 0; i < n; i++) {
-    if (data[i].cubeNum != currentCube) {
-      points.push(newArray)
-      currentCube = data[i].cubeNum
-
-      newArray = { vectors: new Array(), algo: data[i].algo }
-    }
-
-    newArray.vectors.push(data[i])
-  }
-  points.push(newArray)
-  return points
-}
 
 
 class Application extends React.Component {
@@ -193,17 +118,22 @@ class Application extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {}
+    this.state = {
+      selectedCategory: null,
+      algorithms: {},
+      legendSelected: {},
+      checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
+    }
 
     this.categoryRef = React.createRef()
     this.threeRef = React.createRef()
-    this.shapeLegend = React.createRef()
     this.legend = React.createRef()
     this.onDatasetSelected = this.onDatasetSelected.bind(this)
     this.onHover = this.onHover.bind(this)
     this.onAggregate = this.onAggregate.bind(this)
     this.onCategoryChange = this.onCategoryChange.bind(this)
     this.onLineSelect = this.onLineSelect.bind(this)
+
 
     var url = new URL(window.location);
     var set = url.searchParams.get("set");
@@ -243,6 +173,16 @@ class Application extends React.Component {
       // Load new view
       this.loadData()
     }
+
+    window.addEventListener('resize', this.onResize.bind(this))
+  }
+
+  convertRemToPixels(rem) {
+    return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+  }
+
+  onResize() {
+    this.threeRef.current.resize(window.innerWidth - this.convertRemToPixels(18 * 1), window.innerHeight)
   }
 
 
@@ -257,15 +197,31 @@ class Application extends React.Component {
   }
 
   /**
-   * 
+   *
    * @param {*} type a category type eg. transparency or color
    * @param {*} value a category value eg. algo or cp
    */
   onCategoryChange(type, value) {
     // if the shape changed, we need to update the legend and update the particles
     if (type == 'shape') {
-      this.shapeLegend.current.setState({ category: value })
+      this.setState({
+        selectedCategory: value
+      })
+      console.log("SELECTED")
+      console.log(value)
       this.threeRef.current.particles.shapeCat(value)
+    }
+    if (type == "transparency") {
+      console.log("transparency selected")
+      this.threeRef.current.particles.transparencyCat(value)
+    }
+    if (type == "size") {
+      console.log("size selected")
+      this.threeRef.current.particles.sizeCat(value)
+    }
+    if (type == "color") {
+      console.log("color selected")
+      this.threeRef.current.particles.colorCat(value)
     }
   }
 
@@ -276,39 +232,49 @@ class Application extends React.Component {
    */
   loadData() {
     chooseColor = colors.generator();
-    algorithms = {}
-
-
 
     setAggregateView(document.getElementById('info'), [], false, this.dataset.type)
     setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.type)
 
-
-
-
+    var algorithms = {}
     // Load csv file
     loader.load(this.dataset.path, algorithms, chooseColor, data => {
-      this.algorithms = algorithms
-      this.segments = getSegments(data)
+      this.segments = loader.getSegments(data)
       this.vectors = data
 
-      this.threeRef.current.createVisualization(this.vectors, this.segments, this.algorithms, settings)
+      this.threeRef.current.createVisualization(this.vectors, this.segments, algorithms, settings)
 
       d3.json(`datasets/${this.dataset.type}/meta.json`).then(categories => {
-        this.categorySelection = { "shape": "cp" }
+        this.categorySelection = {
+          "color": "",
+          "transparency": "",
+          "shape": "",
+          "size": ""
+        }
         // Get categorical information about data set
         this.categoryOptions = calculateOptions(this.vectors, categories)
 
-        this.categoryRef.current.setData(this.vectors, this.categoryOptions)
+        this.categoryRef.current.setData(this.vectors, this.categoryOptions, this.categorySelection)
 
-
-
-        this.shapeLegend.current.setSelection(this.categorySelection, this.categoryOptions)
-
-
-        this.legend.current.load(this.dataset.type, this.algorithms)
-
-        //loadLegend(this.dataset.type);
+        // Update shape legend        
+        var category = []
+        if ("shape" in this.categoryOptions) {
+          category = this.categoryOptions["shape"].attributes.filter(a => a.key == this.categorySelection.shape)
+        }
+        if (category.length > 0) {
+          this.setState({
+            selectedCategory: category[0]
+          })
+        } else {
+          this.setState({
+            selectedCategory: null
+          })
+        }
+        this.setState({
+          algorithms: algorithms,
+          checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
+        })
+        this.legend.current.load(this.dataset.type, algorithms)
       })
     })
   }
@@ -328,14 +294,23 @@ class Application extends React.Component {
     this.threeRef.current.filterLines(algo, show)
   }
 
+  legendOnChange(event) {
+    var select = this.legendSelected
+    select
+    var newState = {
+      legendSelected: {}
+    }
+    var col = newState.colors.filter(c => c.color == event.target.id)[0]
+    col.checked = event.target.checked
+
+    this.setState(newState)
+
+    this.props.onLineSelect(col.algo, event.target.checked)
+  }
+
   render() {
     return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
-      <div class="flex-shrink-0" style={{ width: "18rem", margin: "0.5rem", 'overflow-y': 'scroll' }}>
-
-
-        <DatasetSelector preselect={this.preselect} onChange={this.onDatasetSelected} />
-
-        <hr />
+      <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto' }}>
 
         <ExpansionPanel defaultExpanded>
           <ExpansionPanelSummary
@@ -343,13 +318,26 @@ class Application extends React.Component {
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            <Typography>Lines</Typography>
+            <Typography>Dataset Selector</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-          <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
+            <DatasetSelector preselect={this.preselect} onChange={this.onDatasetSelected} />
           </ExpansionPanelDetails>
         </ExpansionPanel>
-      
+
+
+        <ExpansionPanel defaultExpanded>
+          <ExpansionPanelSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography>Lines and Points</Typography>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
 
         <ExpansionPanel defaultExpanded>
           <ExpansionPanelSummary
@@ -360,7 +348,11 @@ class Application extends React.Component {
             <Typography>Shapes</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
-            <ShapeLegend ref={this.shapeLegend}></ShapeLegend>
+            <ShapeLegend category={this.state.selectedCategory} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
+              var state = this.state
+              state.checkboxes[symbol] = event.target.checked
+              this.setState({ checkboxes: state.checkboxes })
+            }}></ShapeLegend>
           </ExpansionPanelDetails>
         </ExpansionPanel>
 
@@ -379,7 +371,15 @@ class Application extends React.Component {
 
       </div>
 
-      <div style={{ width: "18rem", margin: "0.5rem" }} class="card flex-shrink-0">
+
+
+
+
+      <ThreeView ref={this.threeRef} onHover={this.onHover} onAggregate={this.onAggregate} />
+
+
+
+      <div style={{ width: "18rem", height: '100%', position: 'absolute', left: '18rem', top: '0px', pointerEvents: 'none' }} class="flex-shrink-0">
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
           <div class="text-center" style={{ width: "100%", height: "100%", position: "relative" }}>
             <div class="card-body p-2">
@@ -397,8 +397,6 @@ class Application extends React.Component {
           </div>
         </div>
       </div>
-
-      <ThreeView ref={this.threeRef} onHover={this.onHover} onAggregate={this.onAggregate} />
 
       <div id="guide" style={{ position: "absolute", left: "18rem", top: "2rem", display: "none" }}>
         <div class="card bg-dark text-white" style={{ width: "20rem", height: "20rem", opacity: "90%" }}>

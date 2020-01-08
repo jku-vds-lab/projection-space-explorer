@@ -4,14 +4,22 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 
-
+const useStyles = makeStyles(theme => ({
+    margin: {
+        height: theme.spacing(3),
+    }
+}));
 
 const SettingsPopover = ({ onChangeSlider }) => {
+    const classes = useStyles();
+
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [value, setValue] = React.useState(100);
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget);
@@ -23,6 +31,29 @@ const SettingsPopover = ({ onChangeSlider }) => {
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
+
+    const marks = [
+        {
+          value: 50,
+          label: '50%',
+        },
+        {
+          value: 75,
+          label: '75%',
+        },
+        {
+          value: 100,
+          label: '100%',
+        },
+        {
+          value: 125,
+          label: '125%',
+        },
+        {
+            value: 150,
+            label: '150%'
+        }
+      ];
 
     return (
         <div>
@@ -43,21 +74,29 @@ const SettingsPopover = ({ onChangeSlider }) => {
                     horizontal: 'center',
                 }}
             >
-                <Container style={{ width: '10rem', height: '8rem' }}>
-                    <Typography id="discrete-slider" gutterBottom>
-                        Point Scale
-                    </Typography>
-                    <Slider
-                        onChange={(event, value) => { onChangeSlider(value / 100.0) }}
-                        defaultValue={100}
-                        aria-labelledby="discrete-slider"
-                        valueLabelDisplay="auto"
-                        step={10}
-                        marks
-                        min={50}
-                        max={150}
-                    />
-                </Container>
+                <Grid
+                    container
+                    direction="column"
+                    justify="center"
+                    alignItems="stretch"
+                    
+                    style={{ width: '16rem', height: '16rem', margin: '2rem' }}>
+                    <div>
+                        <Typography id="discrete-slider" gutterBottom>
+                            Point Scale
+                        </Typography>
+                        <Slider
+                            onChange={(event, val) => { setValue(val); onChangeSlider(val / 100.0) }}
+                            value={value}
+                            aria-labelledby="discrete-slider"
+                            valueLabelDisplay="auto"
+                            step={5}
+                            marks={marks}
+                            min={50}
+                            max={150}
+                        />
+                    </div>
+                </Grid>
             </Popover>
         </div>
     );
@@ -167,10 +206,19 @@ export default class ThreeView extends React.Component {
         return vec
     }
 
+    resize(width, height) {
+        this.camera.left = width / -2
+        this.camera.right = width / 2
+        this.camera.top = height / 2
+        this.camera.bottom = height / -2
+
+        this.camera.updateProjectionMatrix()
+        this.renderer.setSize(width, height)
+    }
+
     onMouseDown(event) {
         event.preventDefault();
 
-        console.log(event)
         if (event.altKey && this.rectangleSelection != null) {
             var test = this.mouseToWorld(event)
             this.rectangleSelection.mouseDown(test.x, test.y)
@@ -201,9 +249,9 @@ export default class ThreeView extends React.Component {
                 var idx = this.choose(coords)
                 this.particles.highlight(idx)
                 if (idx >= 0 && this.currentAggregation == null) {
-                    this.lines.highlight([this.vectors[idx].lineIndex], this.width, this.height, this.scene)
-                } else {
-                    this.lines.highlight([], this.width, this.height, this.scene)
+                    this.lines.highlight([this.vectors[idx].lineIndex], this.getWidth(), this.getHeight(), this.scene)
+                } else if (this.currentAggregation == null) {
+                    this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
                 }
 
 
@@ -235,14 +283,14 @@ export default class ThreeView extends React.Component {
                 if (result != null && result.length > 0) {
                     // Highlight aggregation
                     var uniqueIndices = new Set(result.map(vector => vector.lineIndex))
-                    this.lines.highlight(uniqueIndices, this.width, this.height, this.scene)
+                    this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
 
                     this.currentAggregation = result
 
                     this.props.onAggregate(result)
                 } else {
                     this.currentAggregation = null
-                    this.lines.highlight([], this.width, this.height, this.scene)
+                    this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
                 }
             }
 
@@ -267,28 +315,31 @@ export default class ThreeView extends React.Component {
 
     }
 
-    setupRenderer() {
-        var container = this.containerRef.current
-        this.width = container.offsetWidth
-        this.height = container.offsetHeight
+    getWidth() {
+        return this.containerRef.current.offsetWidth
+    }
 
+    getHeight() {
+        return this.containerRef.current.offsetHeight
+    }
+
+    setupRenderer() {
         this.renderer = new THREE.WebGLRenderer({
             antialias: true
         });
         this.renderer.autoClear = true
         this.renderer.autoClearColor = false
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setSize(this.width, this.height);
-        this.renderer.setClearColor(0xffffff, 1);
+        this.renderer.setSize(this.getWidth(), this.getHeight());
+        this.renderer.setClearColor(0xf9f9f9, 1);
         this.renderer.sortObjects = false;
 
-        this.camera = new THREE.OrthographicCamera(this.width / - 2, this.width / 2, this.height / 2, this.height / - 2, 1, 1000);
-        //this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 0, 1000);
+        this.camera = new THREE.OrthographicCamera(this.getWidth() / - 2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / - 2, 1, 1000);
         this.camera.position.z = 1;
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         this.camera.updateProjectionMatrix();
 
-        container.appendChild(this.renderer.domElement);
+        this.containerRef.current.appendChild(this.renderer.domElement);
 
 
         this.scene = new THREE.Scene()
@@ -309,7 +360,9 @@ export default class ThreeView extends React.Component {
         this.settings = settings
 
         // Update camera zoom to fit the problem
-        this.camera.zoom = getDefaultZoom(this.vectors, this.width, this.height)
+        this.camera.zoom = getDefaultZoom(this.vectors, this.getWidth(), this.getHeight())
+        this.camera.position.x = 0.0
+        this.camera.position.y = 0.0
         this.camera.updateProjectionMatrix()
 
         this.lines = new meshes.LineVisualization(this.segments, this.algorithms)
@@ -368,7 +421,6 @@ export default class ThreeView extends React.Component {
 
     disposeScene() {
         if (this.lines != null) {
-            console.log("dispose lines")
             this.lines.dispose(this.scene)
         }
 
@@ -382,7 +434,6 @@ export default class ThreeView extends React.Component {
         }
 
         if (this.rectangleSelection != null) {
-            console.log("dispose rectangle selection")
             this.rectangleSelection.dispose()
         }
 

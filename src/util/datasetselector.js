@@ -1,8 +1,8 @@
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
+import Grid from '@material-ui/core/Grid';
 
 class DatasetDatabase {
     constructor() {
@@ -58,22 +58,22 @@ class DatasetDatabase {
                 type: "rubik"
             },
             {
-                display: "Neural: Random Weights",
+                display: "NN: Rnd Weights",
                 path: "datasets/neural/random_weights.csv",
                 type: "neural"
             },
             {
-                display: "Neural: Random Confusion Matrix",
+                display: "NN: Rnd Confusion Matrix",
                 path: "datasets/neural/random_confmat.csv",
                 type: "neural"
             },
             {
-                display: "Neural: Learning Weights",
+                display: "NN: Weights",
                 path: "datasets/neural/learning_weights.csv",
                 type: "neural"
             },
             {
-                display: "Neural: Learning Confusion Matrix",
+                display: "NN: Confusion Matrix",
                 path: "datasets/neural/learning_confmat.csv",
                 type: "neural"
             }
@@ -105,19 +105,24 @@ export default class DatasetSelector extends React.Component {
 
 
     render() {
-        return <div class="form-group">
+        return <Grid
+        container
+        justify="center"
+        alignItems="stretch"
+        direction="column">
             <FormControl>
                 <InputLabel id="demo-simple-select-placeholder-label-label">Dataset</InputLabel>
                 <Select labelId="demo-simple-select-label"
                     id="demo-simple-select"
+
                     value={this.state.value}
                     onChange={this.handleChange}>
-                        
+
                     {this.database.data.map(entry => {
                         return <MenuItem value={entry.path}>{entry.display}</MenuItem>
                     })}
                 </Select>
             </FormControl>
-        </div>
+        </Grid>
     }
 }

@@ -7,9 +7,14 @@ var pointSprite = `
     
     varying vec4 vColor;
     varying float vType;
+    varying float vShow;
 
     void main() {
         gl_FragColor = vColor;
+
+        if (vShow <= 0.1) {
+            discard;
+        }
 
         if (vType == 0.0) {
             gl_FragColor = gl_FragColor * texture2D(pointTexture[0], gl_PointCoord);

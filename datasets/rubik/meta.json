@@ -1,34 +1,62 @@
 [
-    {
-      "vectorKey": "cp",
-      "name": "Checkpoint",
-      "type": "categorical",
-      "allowed": ["shape"],
-      "values": [
-        {
-          "value": 0,
-          "display": "Starting Point",
-          "shapeType": "cross",
-          "color": "0x00ff00"
-        },
-        {
-          "value": 1,
-          "display": "Intermediate",
-          "shapeType": "circle",
-          "color": "0x00ff00"
-        },
-        {
-          "value": 2,
-          "display": "Checkpoint",
-          "shapeType": "square",
-          "color": "0x00ff00"
-        },
-        {
-          "value": 3,
-          "display": "Solution",
-          "shapeType": "star",
-          "color": "0xff0000"
+  {
+    "category": "shape",
+    "attributes": [
+      {
+        "key": "cp",
+        "name": "Checkpoint",
+        "type": "categorical",
+        "values": [
+          {
+            "value": "start",
+            "display": "Starting Point",
+            "shapeType": "cross"
+          },
+          {
+            "value": "state",
+            "display": "Intermediate",
+            "shapeType": "circle"
+          },
+          {
+            "value": "checkpoint",
+            "display": "Checkpoint",
+            "shapeType": "square"
+          },
+          {
+            "value": "end",
+            "display": "Solution",
+            "shapeType": "star"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "size",
+    "attributes": [
+      {
+        "key": "age",
+        "name": "Age",
+        "type": "quantitative",
+        "values": {
+          "range": [ 0.5, 1.5 ],
+          "interpolation": "linear"
         }
-      ]
-    }
-  ]
+      }
+    ]
+  },
+  {
+    "category": "transparency",
+    "attributes": [
+      {
+        "key": "age",
+        "name": "Age",
+        "type": "quantitative",
+        "values": {
+          "range": [ 0.3, 1.0 ],
+          "interpolation": "linear"
+        }
+      }
+    ]
+  }
+]
