@@ -238,6 +238,7 @@ class Application extends React.Component {
 
     var algorithms = {}
     // Load csv file
+    console.log("INTI")
     loader.load(this.dataset.path, algorithms, chooseColor, data => {
       this.segments = loader.getSegments(data)
       this.vectors = data
@@ -352,6 +353,8 @@ class Application extends React.Component {
               var state = this.state
               state.checkboxes[symbol] = event.target.checked
               this.setState({ checkboxes: state.checkboxes })
+              console.log(state.checkboxes)
+              this.threeRef.current.filterPoints(state.checkboxes)
             }}></ShapeLegend>
           </ExpansionPanelDetails>
         </ExpansionPanel>

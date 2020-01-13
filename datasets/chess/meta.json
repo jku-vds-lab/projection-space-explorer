@@ -1,9 +1,11 @@
 [
   {
     "category": "shape",
+
     "attributes": [
       {
         "key": "cp",
+        
         "name": "Checkpoint",
         "type": "categorical",
         "values": [

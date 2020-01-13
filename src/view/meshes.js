@@ -7,6 +7,39 @@ var fragmentShaders = require('./fragmentshaders')
 var vertexShaders = require('./vertexshaders')
 var Meshy = require('three.meshline');
 
+var Shapes = {
+  CIRCLE: "circle",
+  STAR: "star",
+  SQUARE: "square",
+  CROSS: "cross",
+
+  fromInt: function (value) {
+    if (value == 0) {
+      return Shapes.CROSS
+    }
+    if (value == 1) {
+      return Shapes.SQUARE
+    }
+    if (value == 2) {
+      return Shapes.CIRCLE
+    }
+    if (value == 3) {
+      return Shapes.STAR
+    }
+  },
+
+  toInt: function (value) {
+    const mapping = {
+      "cross": 0,
+      "square": 1,
+      "circle": 2,
+      "star": 3
+    }
+
+    return mapping[value]
+  }
+}
+
 /**
  * Returns the line opacity for a given line count.
  */
@@ -222,6 +255,7 @@ class PointVisualization {
     this.settings = settings
     this.highlightIndex = null
     this.particleSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
+    this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
   }
 
   createMesh(data, segments, algorithms) {
@@ -270,6 +304,7 @@ class PointVisualization {
           // Intermediate
           types[i] = 2
         }
+        vector.shapeType = types[i]
 
         i++
       })
@@ -332,14 +367,12 @@ class PointVisualization {
           } else if (vector.age == segment.vectors.length - 1) {
             // Ending point
             shape = 3
-          } else if (vector.cp == 1) {
-            // Checkpoint
-            shape = 1
           } else {
             // Intermediate
             shape = 2
           }
 
+          vector.shapeType = shape
           type[vector.globalIndex] = shape
         })
       })
@@ -355,6 +388,7 @@ class PointVisualization {
         this.loaded.forEach((vector, index) => {
           var select = category.values.filter(value => value.value == vector[category.key])[0]
           type[index] = shapeDict[select.shapeType]
+          vector.shapeType = select.shapeType
         })
       }
     }

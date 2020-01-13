@@ -419,6 +419,11 @@ export default class ThreeView extends React.Component {
         this.particles.update()
     }
 
+    filterPoints(checkboxes) {
+        this.particles.showSymbols = checkboxes
+        this.particles.update()
+    }
+
     disposeScene() {
         if (this.lines != null) {
             this.lines.dispose(this.scene)

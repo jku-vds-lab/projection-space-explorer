@@ -51,11 +51,27 @@ class Vector {
  */
 function loadSet(file, algorithms, chooseColor, callback) {
   d3v5.csv(file).then(function(data) {
-    data.forEach(function(d) { // convert strings to numbers
-      // Convert generic attributes
-      d.y = +d.y
-      d.x = +d.x
+    var header = Object.keys(data[0])
 
+    // If data contains no x and y attributes, its invalid
+    if ("x" in header && "y" in header) {
+      data.forEach(vector => {
+        vector.x = +vector.x.trim()
+        vector.y = +vector.y.trim()
+      })
+    } else {
+      throw Exception("Need at least x and y")
+    }
+
+    // If data contains no line attribute, add one
+    if (!("line" in header)) {
+      data.forEach(vector => {
+        vector.line = 1
+      })
+    }
+
+
+    data.forEach(function(d) { // convert strings to numbers
       if ("cubeNum" in d) {
         d.cubeNum = +d.cubeNum
       }
