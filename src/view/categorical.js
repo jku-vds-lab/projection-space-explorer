@@ -12,50 +12,69 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 
-export function calculateOptions(vectors, categories) {
-  var set = {
+
+class CategoryOptions {
+  constructor(vectors, json) {
+    this.vectors = vectors
+    this.json = json
+
+    if (this.json == null || this.json == "") {
+      this.infer()
+    } else if (this.vectors != null && this.vectors.length > 0) {
+      this.init()
+    }
   }
 
-  categories.forEach(category => {
-    category.attributes.forEach(attribute => {
-      var distinct = undefined
-      if (attribute.type == 'categorical') {
-        attribute.distinct = [... new Set(vectors.map(value => value[attribute.key]))]
-      }
+  isCategorical(key) {
+    var values = this.vectors.map(vector => vector[key])
+    var distinct = [ ... new Set(values) ]
 
-    })
-  })
-
-  console.log(categories)
-
-  return categories
-
-  // Map to better structure
-  categories.forEach(category => {
-    var distinct = undefined
-    if (category.type == 'categorical') {
-      // Generate distinct set from values
-      distinct = [... new Set(vectors.map(value => value[category.vectorKey]))]
-
+    if (distinct.length < 10) {
+      return true
+    } else {
+      return false
     }
+  }
 
-    category.allowed.forEach(allowedValue => {
+  // Automatically infer categories from this file
+  infer() {
+    this.json = []
 
-      if (!(allowedValue in set)) {
-        set[allowedValue] = { attributes: [] }
+    var header = Object.keys(this.vectors[0]).filter(key => key != 'x' && key != 'y' && key != 'line')
+    header.forEach(key => {
+      if (this.isCategorical(key)) {
+
       }
+    })
+  }
 
-      set[allowedValue].attributes.push({
-        key: category.vectorKey,
-        name: category.name,
-        type: category.type,
-        category: category,
-        distinct: distinct
+  init() {
+    this.json.forEach(category => {
+      category.attributes.forEach(attribute => {
+        if (attribute.type == 'categorical') {
+          attribute.distinct = [... new Set(this.vectors.map(value => value[attribute.key]))]
+        }
       })
     })
-  })
-  console.log(set)
-  return set
+  }
+
+  hasCategory(catName) {
+    if (this.json == null) return false
+    return this.json.filter(a => a.category == catName).length > 0
+  }
+
+  getCategory(catName) {
+    if (this.json == null) return null
+    return this.json.filter(a => a.category == catName)[0]
+  }
+
+  asArray() {
+    return this.json
+  }
+}
+
+export function calculateOptions(vectors, categories) {
+  return new CategoryOptions(vectors, categories)
 }
 
 
@@ -120,8 +139,6 @@ export var LegendFun = ({ algorithms, onChange, type }) => {
 }
 
 export var Checky = ({ checked, onChange, id, name, comp }) => {
-
-
   return <FormControlLabel
     style={{ margin: '0px', padding: '0px' }}
     control={<Checkbox size='small' checked={checked} onChange={onChange} id={id}></Checkbox>}
@@ -137,29 +154,28 @@ export class Legend extends React.Component {
     this.onCheckbox = this.onCheckbox.bind(this)
   }
 
-  load(type, algorithms, colors) {
-    var chessOpeners = ["Barnes Hut Opening", "Kings Pawn Opening", "English Opening"]
-    var rubikNames = ["Beginner", "Fridrich"]
+  load(type, lineColorScheme, colors) {
+
+    this.lineColorScheme = lineColorScheme
     this.type = type
 
-    var colors = []
-    if (type == "rubik") {
-      colors = Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'name': rubikNames[key], 'checked': true, 'algo': key } })
-    } else if (type == "chess") {
-      colors = Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'name': chessOpeners[key], 'algo': key, 'checked': true } })
-    } else if (type == "neural") {
-      colors = Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'learningRate': key, name: key, checked: true, algo: key } })
-    }
+    var lineChecks = Object.keys(this.lineColorScheme.getMapping()).map((key) => {
+      return {
+        color: this.lineColorScheme.map(key),
+        name: key,
+        checked: true,
+        algo: key
+      }
+    })
 
-    this.setState({ algorithms: algorithms, colors: colors })
+    this.setState({ lineChecks: lineChecks })
   }
 
   onCheckbox(event) {
     var newState = {
-      algorithms: this.state.algorithms,
-      colors: this.state.colors
+      lineChecks: this.state.lineChecks
     }
-    var col = newState.colors.filter(c => c.color == event.target.id)[0]
+    var col = newState.lineChecks.filter(c => c.color.hex == event.target.id)[0]
     col.checked = event.target.checked
 
     this.setState(newState)
@@ -168,32 +184,32 @@ export class Legend extends React.Component {
   }
 
   render() {
-    if (this.state.colors == undefined) return <div id="legend"></div>
+    if (this.state.lineChecks == undefined) return <div id="legend"></div>
 
     var colorLegend = null
     if (this.type == 'neural') {
-      colorLegend = this.state.colors.map(color => {
-        var comp = util.hexToRGB(color.color)
+      colorLegend = this.state.lineChecks.map(line => {
+        var comp = line.color.rgb
         return <div class="d-flex" style={{ width: "100%", height: "1rem" }}>
-          <small class="small flex-shrink-0" style={{ width: '2.5rem' }}>{color.learningRate == "undefined" ? '-' : color.learningRate}</small>
+          <small class="small flex-shrink-0" style={{ width: '2.5rem' }}>{line.name == "undefined" ? '-' : line.name}</small>
           <div class="flex-grow-1" style={{ "background-image": `linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))` }}></div>
         </div>
       })
     } else {
-      colorLegend = this.state.colors.map(color => {
-        var comp = util.hexToRGB(color.color)
+      colorLegend = this.state.lineChecks.map(line => {
+        var comp = line.color.rgb
         return <div style={{ width: "100%", height: "1rem", "background-image": `linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))` }}>
         </div>
       })
     }
 
     return <div id="legend" style={{ width: "100%" }}>
-      {this.state.colors.map(color => {
+      {this.state.lineChecks.map(line => {
 
-        var comp = util.hexToRGB(color.color)
+        var comp = line.color.rgb
 
         return <Checky
-          checked={color.checked} onChange={this.onCheckbox} id={color.color} comp={comp} name={color.name}
+          checked={line.checked} onChange={this.onCheckbox} id={line.color.hex} comp={comp} name={line.name}
         ></Checky>
 
         return <FormControlLabel
@@ -237,9 +253,10 @@ const ShapeSymbol = ({ symbol, text, checked, onCheck }) => {
   }
 
   return <div>
+    <Checkbox size='small' checked={checked} onChange={(event) => { onCheck(event, symbol) }}></Checkbox>
     <img src={paths[symbol]} style={{ "width": "1rem", "height": "1rem", "vertical-align": "middle" }}></img>
     <span style={{ "vertical-align": "middle", "margin-left": "0.5rem" }}>{text}</span>
-    <Checkbox size='small' checked={checked} onChange={(event) => { onCheck(event, symbol) }}></Checkbox>
+    
   </div>
 }
 
@@ -272,7 +289,7 @@ export class CategorySelection extends React.Component {
     super(props)
 
     this.state = {
-      options: [],
+      options: null,
       selection: {
         "color": "",
         "transparency": "",
@@ -291,6 +308,8 @@ export class CategorySelection extends React.Component {
   }
 
   render() {
+    if (this.state.options == null) return <div></div>
+
     return <Grid
       container
       justify="center"
@@ -299,7 +318,7 @@ export class CategorySelection extends React.Component {
 
 
 
-      {this.state.options.map(option => {
+      {this.state.options.asArray().map(option => {
         const handler = event => {
           var state = this.state
           state.selection[option.category] = event.target.value

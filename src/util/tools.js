@@ -3,9 +3,8 @@
  * Rectangle selection tool.
  */
 class RectangleSelection {
-    constructor(vectors, settings, scene) {
+    constructor(vectors, scene) {
         this.vectors = vectors
-        this.settings = settings
         this.scene = scene
 
         this.create = false
@@ -72,7 +71,6 @@ class RectangleSelection {
     }
 
     dispose() {
-        console.log("disposing rectangle selection")
         if (this.plane != null) {
             this.scene.remove(this.plane)
         }
@@ -85,7 +83,7 @@ class RectangleSelection {
         var set = []
 
         this.vectors.forEach(vector => {
-            if (vector.visible && (this.settings.showIntPoints || vector.cp == 1)) {
+            if (vector.visible) {
                 if (vector.x > rect.x && vector.y > rect.y && vector.x < rect.x + rect.w && vector.y < rect.y + rect.h) {
                     set.push(vector)
                 }

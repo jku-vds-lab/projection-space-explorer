@@ -7,6 +7,9 @@ var fragmentShaders = require('./fragmentshaders')
 var vertexShaders = require('./vertexshaders')
 var Meshy = require('three.meshline');
 
+import { SequentialColorScheme, DefaultVectorColorScheme } from '../util/colors'
+
+
 var Shapes = {
   CIRCLE: "circle",
   STAR: "star",
@@ -63,56 +66,6 @@ function getLineOpacity(count) {
   return 0.3 + 0.7 / count
 }
 
-function renderLines2(segments, algorithms) {
-  var opacity = getLineOpacity(segments.length)
-  var lines = []
-
-  Object.keys(algorithms).forEach(key => {
-    var geometry = new THREE.Geometry();
-
-    var material = new THREE.LineBasicMaterial({
-      color: algorithms[key].color,
-      transparent: true,
-
-      // Calculate opacity
-      opacity: opacity
-      // 1 - 1     100 - 0.1    200 - 0.05      50 - 0.2     25 - 0.4
-    });
-
-    var line = new THREE.LineSegments(geometry, material);
-
-    segments.filter(e => e.algo == key || e.algo == undefined).forEach(function (segment, index) {
-
-      var da = []
-      segment.vectors.forEach(function (vector, vi) {
-        da.push(new THREE.Vector2(vector.x, vector.y))
-      })
-
-      var curve = new THREE.SplineCurve(da)
-      var n = 700
-
-      curve.getPoints(n).forEach(function (p, i) {
-        if (i != 0 && i != n - 1) {
-          geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
-        }
-        geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
-      })
-
-
-      // Store line data in segment...
-      segment.line = line
-
-
-    })
-    lines.push(new LineVis(line))
-  })
-
-
-  return lines
-}
-
-
-
 
 class LineVis {
   constructor(line) {
@@ -132,11 +85,11 @@ class LineVis {
 
 
 
-class LineVisualization {
-  constructor(segments, algorithms) {
+export class LineVisualization {
+  constructor(segments, lineColorScheme) {
     this.segments = segments
-    this.algorithms = algorithms
     this.highlightIndices = null
+    this.lineColorScheme = lineColorScheme
   }
 
   dispose(scene) {
@@ -214,9 +167,10 @@ class LineVisualization {
 
     this.segments.forEach((segment, index) => {
 
+      console.log(segment)
       var geometry = new THREE.Geometry();
       var material = new THREE.LineBasicMaterial({
-        color: this.algorithms[segment.vectors[0].algo].color,
+        color: this.lineColorScheme.map(segment.vectors[0].algo).hex,
         transparent: true,
 
         // Calculate opacity
@@ -227,7 +181,6 @@ class LineVisualization {
       segment.vectors.forEach(function (vector, vi) {
         vector.lineIndex = index
         da.push(new THREE.Vector2(vector.x, vector.y))
-        //geometry.vertices.push(new THREE.Vector3(vector.x, vector.y, -1.0));
       })
 
       var curve = new THREE.SplineCurve(da)
@@ -250,17 +203,17 @@ class LineVisualization {
 
 
 
-class PointVisualization {
-  constructor(settings) {
-    this.settings = settings
+export class PointVisualization {
+  constructor(vectorColorScheme) {
     this.highlightIndex = null
     this.particleSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
+    this.vectorColorScheme = vectorColorScheme
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
   }
 
-  createMesh(data, segments, algorithms) {
+  createMesh(data, segments) {
     this.segments = segments
-    this.loaded = data
+    this.vectors = data
 
     var vertices = new THREE.Geometry().vertices;
     var positions = new Float32Array(data.length * 3);
@@ -279,7 +232,7 @@ class PointVisualization {
         vertex = vertices[i];
         vertex.toArray(positions, i * 3);
 
-        color.setHex(algorithms[data[i].algo].color);
+        color.setHex(this.vectorColorScheme.map(data[i].algo).hex);
 
         // Set the globalIndex which belongs to a specific vertex
         vector.globalIndex = i
@@ -304,7 +257,7 @@ class PointVisualization {
           // Intermediate
           types[i] = 2
         }
-        vector.shapeType = types[i]
+        vector.shapeType = Shapes.fromInt(types[i])
 
         i++
       })
@@ -372,22 +325,15 @@ class PointVisualization {
             shape = 2
           }
 
-          vector.shapeType = shape
+          vector.shapeType = Shapes.fromInt(shape)
           type[vector.globalIndex] = shape
         })
       })
     } else {
-      var shapeDict = {
-        circle: 2,
-        star: 3,
-        cross: 0,
-        square: 1
-      }
-
       if (category.type == 'categorical') {
-        this.loaded.forEach((vector, index) => {
+        this.vectors.forEach((vector, index) => {
           var select = category.values.filter(value => value.value == vector[category.key])[0]
-          type[index] = shapeDict[select.shapeType]
+          type[index] = Shapes.toInt(select.shapeType)
           vector.shapeType = select.shapeType
         })
       }
@@ -398,22 +344,20 @@ class PointVisualization {
   }
 
   colorCat(category) {
+    this.colorAttribute = category
 
-
-    if (category.type == 'categorical') {
-      this.loaded.forEach((vector, index) => {
-        var select = category.values.filter(value => value.value == vector[category.vectorKey])[0]
-        var threeColor = new THREE.Color()
-        threeColor.setHex(select.color);
-
-        color[index * 4 + 0] = threeColor.r
-        color[index * 4 + 1] = threeColor.g
-        color[index * 4 + 2] = threeColor.b
-        color[index * 4 + 3] = 1.0
-      })
+    if (category == null) {
+      this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
+    } else {
+      if (category.type == 'categorical') {
+        this.vectorColorScheme = new DefaultVectorColorScheme().createMapping(category.values)
+      }
+      if (category.type == 'sequential') {
+        this.vectorColorScheme = new SequentialColorScheme().createMapping(category.range)
+      }
     }
 
-    this.mesh.geometry.attributes.customColor.needsUpdate = true
+    this.updateColor()
   }
 
   transparencyCat(category) {
@@ -432,7 +376,7 @@ class PointVisualization {
           var filtered = segment.vectors.map(vector => vector[category.key])
           var max = Math.max(...filtered)
           var min = Math.min(...filtered)
-  
+
           segment.vectors.forEach(vector => {
             color[vector.globalIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
           })
@@ -447,7 +391,7 @@ class PointVisualization {
     var size = this.mesh.geometry.attributes.size.array
 
     if (category == null) {
-      this.loaded.forEach(vector => {
+      this.vectors.forEach(vector => {
         size[vector.globalIndex] = this.particleSize
       })
     } else {
@@ -465,13 +409,41 @@ class PointVisualization {
     this.mesh.geometry.attributes.size.needsUpdate = true
   }
 
+  updateColor() {
+    if (this.vectorColorScheme == null) {
+      return null
+    }
+
+    var color = this.mesh.geometry.attributes.customColor.array
+
+    this.vectors.forEach(vector => {
+      var i = vector.globalIndex
+      var rgb = null
+      if (this.colorAttribute != null) {
+        rgb = this.vectorColorScheme.map(vector[this.colorAttribute.key]).rgb
+      } else {
+        rgb = this.vectorColorScheme.map(vector.algo).rgb
+      }
+      
+      
+
+      color[i * 4 + 0] = rgb.r / 255.0;
+      color[i * 4 + 1] = rgb.g / 255.0;
+      color[i * 4 + 2] = rgb.b / 255.0;
+      color[i * 4 + 3] = 1.0;
+    })
+
+    this.mesh.geometry.attributes.customColor.needsUpdate = true
+  }
+
   update() {
     var i = 0
     var show = this.mesh.geometry.attributes.show.array
 
     this.segments.forEach(segment => {
       segment.vectors.forEach(vector => {
-        if ((this.settings.showIntPoints || this.loaded[i].cp == 1 || vector.age == 0 || vector.age == segment.vectors.length - 1) && vector.visible) {
+        if (vector.visible
+          && this.showSymbols[vector.shapeType]) {
           //colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
           show[vector.globalIndex] = 1.0
         } else {
@@ -482,6 +454,8 @@ class PointVisualization {
         i++
       })
     })
+
+    this.updateColor()
 
     this.mesh.geometry.attributes.show.needsUpdate = true;
   }
@@ -518,7 +492,7 @@ class PointVisualization {
    */
   dispose() {
     this.segments = null
-    this.loaded = null
+    this.vectors = null
 
     this.mesh.material.uniforms.pointTexture.value.forEach(tex => tex.dispose())
 
@@ -538,7 +512,7 @@ class PointVisualization {
 
 
 
-class ConvexHull {
+export class ConvexHull {
   constructor(vectors) {
     this.vectors = vectors
   }
@@ -550,14 +524,4 @@ class ConvexHull {
 
     return this.mesh
   }
-}
-
-
-
-
-module.exports = {
-  renderLines2: renderLines2,
-  PointVisualization: PointVisualization,
-  LineVisualization: LineVisualization,
-  ConvexHull: ConvexHull
 }

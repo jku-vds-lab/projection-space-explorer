@@ -1,0 +1,16 @@
+[
+    {
+        "category": "color",
+        "attributes": [
+            {
+                "key": "sequential",
+                "name": "Sequential",
+                "type": "sequential",
+                "range": {
+                    "min": "0",
+                    "max": "2"
+                }
+            }
+        ]
+    }
+]

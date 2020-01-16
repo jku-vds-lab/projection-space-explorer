@@ -1,27 +1,24 @@
 import "regenerator-runtime/runtime";
 
-var meshes = require('./view/meshes')
-
 var chess = require('./problems/chess')
 var rubik = require('./problems/rubik')
 var neural = require('./problems/neural')
 
 var loader = require('./util/loader')
-var colors = require('./util/colors')
 
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { CategorySelection, ShapeLegend, calculateOptions, Legend, LegendFun } from './view/categorical'
+import { ShapeLegend, calculateOptions, Legend, LegendFun } from './view/categorical'
 import { makeStyles } from '@material-ui/core/styles';
 import DatasetSelector from './util/datasetselector'
 import ThreeView from './view/view'
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Slider from '@material-ui/core/Slider';
+import { DefaultLineColorScheme, TableuVectorColorScheme } from "./util/colors";
+import { DefaultVectorColorScheme } from "./util/colors";
 
 
 function setAggregateView(element, list, aggregation, type) {
@@ -39,40 +36,6 @@ function setAggregateView(element, list, aggregation, type) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 window.showGuide = function () {
   if (document.getElementById("guide").style.display == "none") {
     document.getElementById("guide").style.display = "block"
@@ -81,33 +44,6 @@ window.showGuide = function () {
   }
 
 }
-
-var settings = {
-  showIntPoints: true
-}
-
-
-var chooseColor = colors.generator();
-
-
-/**
- * Checkbox determining if intermediate points should be drawn.
- */
-window.showIntermediatePoints = function () {
-  settings.showIntPoints = !settings.showIntPoints
-
-
-  problem.particles.update()
-}
-
-
-
-
-
-
-const AggregationComponent = ({ aggregation }) => {
-}
-
 
 
 
@@ -119,19 +55,27 @@ class Application extends React.Component {
     super(props)
 
     this.state = {
-      selectedCategory: null,
-      algorithms: {},
+      vectorByShape: null,
+      selectedVectorByShape: "",
+
+      vectorByTransparency: null,
+      selectedVectorByTransparency: "",
+
+      vectorBySize: null,
+      selectedVectorBySize: "",
+
+      vectorByColor: null,
+      selectedVectorByColor: "",
+
       legendSelected: {},
       checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
     }
 
-    this.categoryRef = React.createRef()
     this.threeRef = React.createRef()
     this.legend = React.createRef()
     this.onDatasetSelected = this.onDatasetSelected.bind(this)
     this.onHover = this.onHover.bind(this)
     this.onAggregate = this.onAggregate.bind(this)
-    this.onCategoryChange = this.onCategoryChange.bind(this)
     this.onLineSelect = this.onLineSelect.bind(this)
 
 
@@ -196,88 +140,56 @@ class Application extends React.Component {
     setAggregateView(document.getElementById('aggregate'), selected, true, this.dataset.type)
   }
 
-  /**
-   *
-   * @param {*} type a category type eg. transparency or color
-   * @param {*} value a category value eg. algo or cp
-   */
-  onCategoryChange(type, value) {
-    // if the shape changed, we need to update the legend and update the particles
-    if (type == 'shape') {
-      this.setState({
-        selectedCategory: value
-      })
-      console.log("SELECTED")
-      console.log(value)
-      this.threeRef.current.particles.shapeCat(value)
-    }
-    if (type == "transparency") {
-      console.log("transparency selected")
-      this.threeRef.current.particles.transparencyCat(value)
-    }
-    if (type == "size") {
-      console.log("size selected")
-      this.threeRef.current.particles.sizeCat(value)
-    }
-    if (type == "color") {
-      console.log("color selected")
-      this.threeRef.current.particles.colorCat(value)
-    }
-  }
-
-
 
   /**
    * Loads a specific problem set, creating menus, displaying vectors etc.
    */
   loadData() {
-    chooseColor = colors.generator();
-
     setAggregateView(document.getElementById('info'), [], false, this.dataset.type)
     setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.type)
 
-    var algorithms = {}
     // Load csv file
-    console.log("INTI")
-    loader.load(this.dataset.path, algorithms, chooseColor, data => {
+
+    loader.load(this.dataset.path, data => {
       this.segments = loader.getSegments(data)
       this.vectors = data
 
-      this.threeRef.current.createVisualization(this.vectors, this.segments, algorithms, settings)
+      this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
+
+      this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
+
+
+      this.threeRef.current.createVisualization(this.vectors, this.segments, this.lineColorScheme, this.vectorColorScheme)
 
       d3.json(`datasets/${this.dataset.type}/meta.json`).then(categories => {
-        this.categorySelection = {
-          "color": "",
-          "transparency": "",
-          "shape": "",
-          "size": ""
-        }
-        // Get categorical information about data set
-        this.categoryOptions = calculateOptions(this.vectors, categories)
-
-        this.categoryRef.current.setData(this.vectors, this.categoryOptions, this.categorySelection)
-
-        // Update shape legend        
-        var category = []
-        if ("shape" in this.categoryOptions) {
-          category = this.categoryOptions["shape"].attributes.filter(a => a.key == this.categorySelection.shape)
-        }
-        if (category.length > 0) {
-          this.setState({
-            selectedCategory: category[0]
-          })
-        } else {
-          this.setState({
-            selectedCategory: null
-          })
-        }
-        this.setState({
-          algorithms: algorithms,
-          checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
-        })
-        this.legend.current.load(this.dataset.type, algorithms)
+        this.categories = categories
+        this.finite()
+      }).catch(() => {
+        this.categories = []
+        this.finite()
       })
     })
+  }
+
+  finite() {
+    // Get categorical information about data set
+    this.categoryOptions = calculateOptions(this.vectors, this.categories)
+
+
+    // Update shape legend
+    this.setState({
+      selectedVectorByShape: "",
+      vectorByShape: null,
+      vectorByTransparency: null,
+      selectedVectorByTransparency: "",
+      vectorBySize: null,
+      vectorByColor: null,
+      selectedVectorByColor: "",
+      selectedVectorBySize: "",
+      checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
+    })
+
+    this.legend.current.load(this.dataset.type, this.lineColorScheme)
   }
 
   onDatasetSelected(event) {
@@ -312,65 +224,179 @@ class Application extends React.Component {
   render() {
     return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
       <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto' }}>
+        <Grid
+          container
+          justify="center"
+          alignItems="stretch"
+          direction="column"
+          style={{ padding: '10px' }}>
 
-        <ExpansionPanel defaultExpanded>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography>Dataset Selector</Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <DatasetSelector preselect={this.preselect} onChange={this.onDatasetSelected} />
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+          <Typography style={{ padding: '10px 0px 10px 0px' }}>Dataset</Typography>
+          <DatasetSelector preselect={this.preselect} onChange={this.onDatasetSelected} />
 
 
-        <ExpansionPanel defaultExpanded>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography>Lines and Points</Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
 
-        <ExpansionPanel defaultExpanded>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography>Shapes</Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <ShapeLegend category={this.state.selectedCategory} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
-              var state = this.state
-              state.checkboxes[symbol] = event.target.checked
-              this.setState({ checkboxes: state.checkboxes })
-              console.log(state.checkboxes)
-              this.threeRef.current.filterPoints(state.checkboxes)
-            }}></ShapeLegend>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+          <Typography style={{ padding: '10px 0px 10px 0px' }}>Lines</Typography>
 
-        <ExpansionPanel>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography>Categorisation</Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <CategorySelection ref={this.categoryRef} onChange={this.onCategoryChange}></CategorySelection>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+          <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
+
+
+
+          <Typography style={{ padding: '10px 0px 10px 0px' }}>Vectors</Typography>
+
+          {
+            this.categoryOptions != null && this.categoryOptions.hasCategory("shape") ?
+              <Grid
+                container
+                justify="center"
+                alignItems="stretch"
+                direction="column">
+                <FormControl>
+                  <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
+                  <Select labelId="vectorByShapeSelectLabel"
+                    id="vectorByShapeSelect"
+                    displayEmpty
+
+                    value={this.state.selectedVectorByShape}
+                    onChange={(event) => {
+                      var attribute = this.categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
+
+                      this.setState({
+                        selectedVectorByShape: event.target.value,
+                        vectorByShape: attribute
+                      })
+
+                      this.threeRef.current.particles.shapeCat(attribute)
+                    }}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    {this.categoryOptions.getCategory("shape").attributes.map(attribute => {
+                      return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              :
+              <div></div>
+          }
+
+          {
+            this.categoryOptions != null && this.categoryOptions.hasCategory("transparency") ?
+              <Grid
+                container
+                justify="center"
+                alignItems="stretch"
+                direction="column">
+                <FormControl>
+                  <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
+                  <Select labelId="vectorByTransparencySelectLabel"
+                    id="vectorByTransparencySelect"
+                    displayEmpty
+                    value={this.state.selectedVectorByTransparency}
+                    onChange={(event) => {
+                      var attribute = this.categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
+
+                      this.setState({
+                        selectedVectorByTransparency: event.target.value,
+                        vectorByTransparency: attribute
+                      })
+
+                      this.threeRef.current.particles.transparencyCat(attribute)
+                    }}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    {this.categoryOptions.getCategory("transparency").attributes.map(attribute => {
+                      return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>
+              </Grid>
+              :
+              <div></div>
+          }
+
+          {
+            this.categoryOptions != null && this.categoryOptions.hasCategory("size") ?
+              <Grid
+                container
+                justify="center"
+                alignItems="stretch"
+                direction="column">
+                <FormControl>
+                  <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
+                  <Select labelId="vectorBySizeSelectLabel"
+                    id="vectorBySizeSelect"
+                    displayEmpty
+                    value={this.state.selectedVectorBySize}
+                    onChange={(event) => {
+                      var attribute = this.categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+
+                      this.setState({
+                        selectedVectorBySize: event.target.value,
+                        vectorBySize: attribute
+                      })
+
+                      this.threeRef.current.particles.sizeCat(attribute)
+                    }}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    {this.categoryOptions.getCategory("size").attributes.map(attribute => {
+                      return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>
+              </Grid>
+              :
+              <div></div>
+          }
+
+          {
+            this.categoryOptions != null && this.categoryOptions.hasCategory("color") ?
+              <Grid
+                container
+                justify="center"
+                alignItems="stretch"
+                direction="column">
+                <FormControl>
+                  <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
+                  <Select labelId="vectorByColorSelectLabel"
+                    id="vectorByColorSelect"
+                    displayEmpty
+                    value={this.state.selectedVectorByColor}
+                    onChange={(event) => {
+                      var attribute = null
+                      if (event.target.value != "") {
+                        attribute = this.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+                      }
+
+                      this.setState({
+                        selectedVectorByColor: event.target.value,
+                        vectorByColor: attribute
+                      })
+
+                      this.threeRef.current.particles.colorCat(attribute)
+                    }}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    {this.categoryOptions.getCategory("color").attributes.map(attribute => {
+                      return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>
+              </Grid>
+              :
+              <div></div>
+          }
+
+
+          <ShapeLegend category={this.state.vectorByShape} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
+            var state = this.state
+            state.checkboxes[symbol] = event.target.checked
+            this.setState({ checkboxes: state.checkboxes })
+            this.threeRef.current.filterPoints(state.checkboxes)
+          }}></ShapeLegend>
+        </Grid>
 
       </div>
 
@@ -379,6 +405,7 @@ class Application extends React.Component {
 
 
       <ThreeView ref={this.threeRef} onHover={this.onHover} onAggregate={this.onAggregate} />
+
 
 
 
@@ -413,7 +440,7 @@ class Application extends React.Component {
         </div>
       </div>
 
-    </div>
+    </div >
   }
 }
 

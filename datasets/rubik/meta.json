@@ -6,6 +6,9 @@
         "key": "cp",
         "name": "Checkpoint",
         "type": "categorical",
+        "scale": {
+          "type": "sequential"
+        },
         "values": [
           {
             "value": "start",

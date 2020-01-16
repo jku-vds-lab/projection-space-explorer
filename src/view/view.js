@@ -162,7 +162,7 @@ export default class ThreeView extends React.Component {
             var value = this.vectors[index]
 
             // Skip points matching some criteria
-            if ((!this.settings.showIntPoints && value.cp == 0) || value.visible == false) {
+            if (value.visible == false || this.particles.showSymbols[value.shapeType] == false) {
                 continue
             }
 
@@ -351,13 +351,14 @@ export default class ThreeView extends React.Component {
 
     }
 
-    createVisualization(vectors, segments, algorithms, settings) {
+    createVisualization(vectors, segments, lineColorScheme, vectorColorScheme) {
         this.scene = new THREE.Scene()
         this.pointScene = new THREE.Scene()
         this.vectors = vectors
         this.segments = segments
-        this.algorithms = algorithms
-        this.settings = settings
+        this.lineColorScheme = lineColorScheme
+        this.vectorColorScheme = vectorColorScheme
+        
 
         // Update camera zoom to fit the problem
         this.camera.zoom = getDefaultZoom(this.vectors, this.getWidth(), this.getHeight())
@@ -365,12 +366,12 @@ export default class ThreeView extends React.Component {
         this.camera.position.y = 0.0
         this.camera.updateProjectionMatrix()
 
-        this.lines = new meshes.LineVisualization(this.segments, this.algorithms)
+        this.lines = new meshes.LineVisualization(this.segments, this.lineColorScheme)
         this.lines.createMesh()
         this.lines.setZoom(this.camera.zoom)
 
-        this.particles = new meshes.PointVisualization(this.settings)
-        this.particles.createMesh(this.vectors, this.segments, this.algorithms)
+        this.particles = new meshes.PointVisualization(this.vectorColorScheme)
+        this.particles.createMesh(this.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
 
@@ -380,7 +381,7 @@ export default class ThreeView extends React.Component {
         this.pointScene.add(this.particles.mesh)
 
 
-        this.rectangleSelection = new tools.Selection(this.vectors, this.settings, this.scene)
+        this.rectangleSelection = new tools.Selection(this.vectors, this.scene)
 
 
         // Remove old listeners
@@ -404,14 +405,12 @@ export default class ThreeView extends React.Component {
 
     filterLines(algo, show) {
         this.segments.forEach((segment) => {
-            if (segment.algo == algo) {
+            if (segment.vectors[0].algo == algo) {
                 segment.line.visible = show
 
 
                 segment.vectors.forEach((vector) => {
-                    if (vector.algo == algo) {
-                        vector.visible = show
-                    }
+                    vector.visible = show
                 })
             }
         })

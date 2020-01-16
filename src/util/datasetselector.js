@@ -8,9 +8,14 @@ class DatasetDatabase {
     constructor() {
         this.data = [
             {
+                display: "Minimal X,Y",
+                path: "datasets/test/x_y.csv",
+                type: "test"
+            },
+            {
                 display: "Minimal Example",
                 path: "datasets/test/minimal.csv",
-                type: "none"
+                type: "test"
             },
             {
                 display: "Chess: 190 Games",

@@ -5,8 +5,28 @@ var d3v5 = require('d3')
 
 
 
+const DEFAULT_LINE = "L"
+const DEFAULT_ALGO = "all"
 
 
+function getSegs(vectors) {
+  // Sort vectors by line, and then by age
+  vectors.sort((a, b) => {
+    if (a == b) {
+      return b.age - a.age
+    } else {
+      return a.line.toString().localeCompare(b.line.toString())
+    }
+  })
+
+  var lineKeys = [ ... new Set(vectors.map(vector => vector.line)) ]
+  
+  var segments = lineKeys.map(lineKey => {
+    return { vectors: vectors.filter(vector => vector.line == lineKey) }
+  })
+
+  return segments
+}
 
 function getSegments(data) {
   //creating an array holding arrays of x,y,cubenum,algo,age for each cube
@@ -49,24 +69,43 @@ class Vector {
  * @param type the type of the problem, eg ProblemType.CHESS or ProblemType.RUBIK.
  *
  */
-function loadSet(file, algorithms, chooseColor, callback) {
+function loadSet(file, callback) {
   d3v5.csv(file).then(function(data) {
     var header = Object.keys(data[0])
 
     // If data contains no x and y attributes, its invalid
-    if ("x" in header && "y" in header) {
+    if (header.includes("x") && header.includes("y")) {
       data.forEach(vector => {
-        vector.x = +vector.x.trim()
-        vector.y = +vector.y.trim()
+        vector.x = +vector.x
+        vector.y = +vector.y
       })
     } else {
-      throw Exception("Need at least x and y")
+      
     }
 
     // If data contains no line attribute, add one
-    if (!("line" in header)) {
+    if (!header.includes("line")) {
+      // Add age attribute as index and line as DEFAULT_LINE
+      data.forEach((vector, index) => {
+        vector.line = DEFAULT_LINE
+        if (!header.includes("age")) {
+          vector.age = index
+        }
+      })
+    } else if (header.includes("line") && !header.includes("age")) {
+      var segs = {}
+      var distinct = [ ... new Set(data.map(vector => vector.line)) ]
+      distinct.forEach(a => segs[a] = 0)
       data.forEach(vector => {
-        vector.line = 1
+        vector.age = segs[vector.line]
+        segs[vector.line] = segs[vector.line] + 1
+      })
+    }
+
+    // If data has no algo attribute, add DEFAULT_ALGO
+    if (!header.includes("algo")) {
+      data.forEach(vector => {
+        vector.algo = DEFAULT_ALGO
       })
     }
 
@@ -84,24 +123,12 @@ function loadSet(file, algorithms, chooseColor, callback) {
         d.cp = d.cp
       }
 
-      if ("algo" in d) {
-        d.algo = +d.algo
-      } else {
-        d.algo = "all"
-      }
-
       if ("age" in d) {
         d.age = +d.age
       }
 
       // Attribute that specifies if this vector should be visible or not
       d.visible = true
-
-      if (!(d.algo in algorithms)) {
-        algorithms[d.algo] = {
-          color: chooseColor.next().value
-        }
-      }
     })
 
     callback(data)
@@ -111,5 +138,5 @@ function loadSet(file, algorithms, chooseColor, callback) {
 
 module.exports = {
   load: loadSet,
-  getSegments: getSegments
+  getSegments: getSegs
 }
