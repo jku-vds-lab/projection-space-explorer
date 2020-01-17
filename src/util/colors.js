@@ -102,9 +102,17 @@ export class SequentialColorScheme {
   }
 }
 
-export class DivergingColorScheme extends ColorScheme {
+export class DivergingColorScheme {
   constructor() {
+  }
 
+  createMapping(range) {
+    return new SequentialScaleMapping(this, range)
+  }
+
+  map(value) {
+    var d3color = d3v5.color(d3v5.interpolatePRGn(value))
+    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
   }
 }
 

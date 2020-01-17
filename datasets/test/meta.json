@@ -10,6 +10,15 @@
                     "min": "0",
                     "max": "2"
                 }
+            },
+            {
+                "key": "diverging",
+                "name": "Diverging",
+                "type": "diverging",
+                "range": {
+                    "min": "-5",
+                    "max": "5"
+                }
             }
         ]
     }

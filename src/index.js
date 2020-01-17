@@ -4,7 +4,6 @@ var chess = require('./problems/chess')
 var rubik = require('./problems/rubik')
 var neural = require('./problems/neural')
 
-var loader = require('./util/loader')
 
 import Typography from '@material-ui/core/Typography';
 import { ShapeLegend, calculateOptions, Legend, LegendFun } from './view/categorical'
@@ -19,6 +18,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Slider from '@material-ui/core/Slider';
 import { DefaultLineColorScheme, TableuVectorColorScheme } from "./util/colors";
 import { DefaultVectorColorScheme } from "./util/colors";
+import { Input } from "@material-ui/core";
+import MaskedInput from "react-text-mask";
 
 
 function setAggregateView(element, list, aggregation, type) {
@@ -32,6 +33,9 @@ function setAggregateView(element, list, aggregation, type) {
   }
   if (type == "neural") {
     element.innerHTML = neural.aggregate(list, aggregation)
+  }
+  if (type == "none" && list.length > 0) {
+    element.innerHTML = `<div>${list[0].legend}</div>`
   }
 }
 
@@ -73,49 +77,31 @@ class Application extends React.Component {
 
     this.threeRef = React.createRef()
     this.legend = React.createRef()
-    this.onDatasetSelected = this.onDatasetSelected.bind(this)
+    this.setSelector = React.createRef()
     this.onHover = this.onHover.bind(this)
     this.onAggregate = this.onAggregate.bind(this)
     this.onLineSelect = this.onLineSelect.bind(this)
-
-
-    var url = new URL(window.location);
-    var set = url.searchParams.get("set");
-
-    if (set != null) {
-      if (set == "neural") {
-        this.preselect = "datasets/neural/learning_confmat.csv"
-      } else if (set == "rubik") {
-        this.preselect = "datasets/rubik/cube10x2_different_origins.csv"
-      } else if (set == "chess") {
-        this.preselect = "datasets/chess/chess16k.csv"
-      }
-    } else {
-      this.preselect = "datasets/rubik/cube10x2_different_origins.csv"
-    }
+    this.onDataSelected = this.onDataSelected.bind(this)
   }
 
   componentDidMount() {
     var url = new URL(window.location);
     var set = url.searchParams.get("set");
+    var preselect = "datasets/rubik/cube10x2_different_origins.csv"
     if (set != null) {
+
       if (set == "neural") {
-        this.preselect = "datasets/neural/learning_confmat.csv"
+        preselect = "datasets/neural/learning_confmat.csv"
       } else if (set == "rubik") {
-        this.preselect = "datasets/rubik/cube10x2_different_origins.csv"
+        preselect = "datasets/rubik/cube10x2_different_origins.csv"
       } else if (set == "chess") {
-        this.preselect = "datasets/chess/chess16k.csv"
+        preselect = "datasets/chess/chess16k.csv"
       }
-      this.dataset = { path: this.preselect, type: set }
-      this.loadData()
+
+      this.setSelector.current.init(preselect)
     } else {
 
-      // Set new dataset as variable
-
-      this.dataset = { path: this.preselect, type: "rubik" }
-
-      // Load new view
-      this.loadData()
+      this.setSelector.current.init(preselect)
     }
 
     window.addEventListener('resize', this.onResize.bind(this))
@@ -141,34 +127,19 @@ class Application extends React.Component {
   }
 
 
-  /**
-   * Loads a specific problem set, creating menus, displaying vectors etc.
-   */
-  loadData() {
+  loadData2() {
     setAggregateView(document.getElementById('info'), [], false, this.dataset.type)
     setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.type)
 
-    // Load csv file
 
-    loader.load(this.dataset.path, data => {
-      this.segments = loader.getSegments(data)
-      this.vectors = data
+    this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
 
-      this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
-
-      this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
+    this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
 
 
-      this.threeRef.current.createVisualization(this.vectors, this.segments, this.lineColorScheme, this.vectorColorScheme)
+    this.threeRef.current.createVisualization(this.vectors, this.segments, this.lineColorScheme, this.vectorColorScheme)
 
-      d3.json(`datasets/${this.dataset.type}/meta.json`).then(categories => {
-        this.categories = categories
-        this.finite()
-      }).catch(() => {
-        this.categories = []
-        this.finite()
-      })
-    })
+    this.finite()
   }
 
   finite() {
@@ -192,15 +163,18 @@ class Application extends React.Component {
     this.legend.current.load(this.dataset.type, this.lineColorScheme)
   }
 
-  onDatasetSelected(event) {
+  onDataSelected(vectors, segments, json, dataset) {
     // Dispose old view
     this.threeRef.current.disposeScene()
 
     // Set new dataset as variable
-    this.dataset = event
+    this.dataset = dataset
+    this.vectors = vectors
+    this.segments = segments
+    this.categories = json
 
     // Load new view
-    this.loadData()
+    this.loadData2()
   }
 
   onLineSelect(algo, show) {
@@ -232,7 +206,7 @@ class Application extends React.Component {
           style={{ padding: '10px' }}>
 
           <Typography style={{ padding: '10px 0px 10px 0px' }}>Dataset</Typography>
-          <DatasetSelector preselect={this.preselect} onChange={this.onDatasetSelected} />
+          <DatasetSelector ref={this.setSelector} onChange={this.onDataSelected} />
 
 
 
@@ -384,6 +358,16 @@ class Application extends React.Component {
                     })}
                   </Select>
                 </FormControl>
+
+                <MaskedInput
+                  mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
+                  className="form-control"
+                  placeholder="(0, 1) -> (0, 1)"
+                  guide={false}
+                  id="my-input-id"
+                  onBlur={() => { }}
+                  onChange={() => { }}
+                ></MaskedInput>
               </Grid>
               :
               <div></div>

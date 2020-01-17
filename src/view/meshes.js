@@ -7,7 +7,7 @@ var fragmentShaders = require('./fragmentshaders')
 var vertexShaders = require('./vertexshaders')
 var Meshy = require('three.meshline');
 
-import { SequentialColorScheme, DefaultVectorColorScheme } from '../util/colors'
+import { SequentialColorScheme, DefaultVectorColorScheme, DivergingColorScheme } from '../util/colors'
 
 
 var Shapes = {
@@ -167,7 +167,6 @@ export class LineVisualization {
 
     this.segments.forEach((segment, index) => {
 
-      console.log(segment)
       var geometry = new THREE.Geometry();
       var material = new THREE.LineBasicMaterial({
         color: this.lineColorScheme.map(segment.vectors[0].algo).hex,
@@ -354,6 +353,9 @@ export class PointVisualization {
       }
       if (category.type == 'sequential') {
         this.vectorColorScheme = new SequentialColorScheme().createMapping(category.range)
+      }
+      if (category.type == 'diverging') {
+        this.vectorColorScheme = new DivergingColorScheme().createMapping(category.range)
       }
     }
 
