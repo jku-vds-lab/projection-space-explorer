@@ -19,6 +19,12 @@
                     "min": "-5",
                     "max": "5"
                 }
+            },
+            {
+                "key": "categorical",
+                "name": "Categorical",
+                "type": "categorical",
+                "values": [ "A", "B", "C" ]
             }
         ]
     }

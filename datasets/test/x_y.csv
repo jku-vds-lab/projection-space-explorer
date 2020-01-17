@@ -1,6 +1,6 @@
-x,y,sequential,diverging
--1,-1,0,-4
-1,-1,0.5,-3
-1,1,1,1
-2,1,1.5,3
-3,1,2,5
+x,y,sequential,diverging,categorical
+-1,-1,0,-4,A
+1,-1,0.5,-3,B
+1,1,1,1,B
+2,1,1.5,3,B
+3,1,2,5,C

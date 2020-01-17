@@ -18,11 +18,6 @@ class DatasetDatabase {
                 type: "test"
             },
             {
-                display: "Minimal Example",
-                path: "datasets/test/minimal.csv",
-                type: "test"
-            },
-            {
                 display: "Chess: 190 Games",
                 path: "datasets/chess/chess16k.csv",
                 type: "chess"
