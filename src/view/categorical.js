@@ -267,7 +267,7 @@ export var ShapeLegend = ({ category, checkboxes, onChange }) => {
   return <div>
     {
       category.values.map(v => {
-        return <ShapeSymbol symbol={v.shapeType} text={v.display} checked={checkboxes[v.shapeType]} onCheck={onChange}></ShapeSymbol>
+        return <ShapeSymbol symbol={v.to} text={v.display} checked={checkboxes[v.to]} onCheck={onChange}></ShapeSymbol>
       })
     }
   </div>

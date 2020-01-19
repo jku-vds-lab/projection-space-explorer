@@ -11,24 +11,24 @@
         },
         "values": [
           {
-            "value": "start",
+            "from": "start",
             "display": "Starting Point",
-            "shapeType": "cross"
+            "to": "cross"
           },
           {
-            "value": "state",
+            "from": "state",
             "display": "Intermediate",
-            "shapeType": "circle"
+            "to": "circle"
           },
           {
-            "value": "checkpoint",
+            "from": "checkpoint",
             "display": "Checkpoint",
-            "shapeType": "square"
+            "to": "square"
           },
           {
-            "value": "end",
+            "from": "end",
             "display": "Solution",
-            "shapeType": "star"
+            "to": "star"
           }
         ]
       }

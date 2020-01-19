@@ -4,6 +4,10 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
 var d3v5 = require('d3')
 
 const DEFAULT_LINE = "L"
@@ -101,7 +105,77 @@ class DatasetDatabase {
 }
 
 
-export default class DatasetSelector extends React.Component {
+
+function loadFromPath(path, callback) {
+    var entry = new DatasetDatabase().getByPath(path)
+
+    // Load csv file
+    d3v5.csv(path).then(vectors => {
+        // Add missing attributes
+        preprocess(vectors)
+
+        // Split vectors into segments
+        var segments = getSegs(vectors)
+
+        // Load json file if present
+        d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
+            callback(vectors, segments, categories, entry)
+        }).catch(() => {
+            callback(vectors, segments, "", entry)
+        })
+    })
+}
+
+
+
+export var DatasetList = ({ onChange }) => {
+    var database = new DatasetDatabase()
+
+    var handleClick = (path) => {
+        loadFromPath(path, onChange)
+    }
+
+    return <Grid container direction="row" justify="center" alignItems="center">
+        <List>
+            {database.data.map(entry => {
+                return <ListItem key={entry.path} value={entry.path} button onClick={() => handleClick(entry.path)}>
+                    <ListItemText primary={entry.display}></ListItemText>
+                </ListItem>
+            })}
+        </List>
+        <input
+                accept="image/*"
+                id="raised-button-file"
+                multiple
+                type="file"
+                onChange={(e) => {
+                    var files = e.target.files
+                    if (files == null || files.length <= 0) {
+                        return;
+                    }
+
+                    var file = files[0]
+
+                    var reader = new FileReader()
+                    reader.onload = (event) => {
+                        var content = event.target.result
+
+
+                        var vectors = d3v5.csvParse(content)
+
+                        preprocess(vectors)
+
+                        var segments = getSegs(vectors)
+
+                        onChange(vectors, segments, "", { type: "none" })
+                    }
+                    reader.readAsText(file)
+                }}
+            />
+    </Grid>
+}
+
+export class DatasetSelector extends React.Component {
     constructor(props) {
         super(props)
 
@@ -118,16 +192,11 @@ export default class DatasetSelector extends React.Component {
         // Load csv file
 
         d3v5.csv(event.target.value).then(vectors => {
-            console.log("fresh from csv")
-            console.log(vectors)
             var copy = vectors.map(v => v.line)
-            console.log(copy)
             preprocess(vectors)
             copy = vectors.map(v => v.line)
-            console.log(copy)
             var segments = getSegs(vectors)
             copy = vectors.map(v => v.line)
-            console.log(copy)
 
             d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
                 this.props.onChange(vectors, segments, categories, entry)
@@ -146,7 +215,7 @@ export default class DatasetSelector extends React.Component {
 
         d3v5.csv(path).then(vectors => {
 
-            
+
             preprocess(vectors)
 
             var segments = getSegs(vectors)
@@ -160,7 +229,7 @@ export default class DatasetSelector extends React.Component {
     }
 
     loadFileContent(content) {
-        
+
     }
 
     render() {
@@ -170,7 +239,7 @@ export default class DatasetSelector extends React.Component {
             alignItems="stretch"
             direction="column">
             <FormControl>
-                <InputLabel id="demo-simple-select-placeholder-label-label">Dataset</InputLabel>
+                <InputLabel id="demo-simple-select-placeholder-label-label">Select Predefined</InputLabel>
                 <Select labelId="demo-simple-select-label"
                     id="demo-simple-select"
 
@@ -221,14 +290,14 @@ export default class DatasetSelector extends React.Component {
 
 function getSegs(vectors) {
     // Get a list of lines that are in the set
-    var lineKeys = [ ... new Set(vectors.map(vector => vector.line)) ]    
-    
+    var lineKeys = [... new Set(vectors.map(vector => vector.line))]
+
     var segments = lineKeys.map(lineKey => {
-      return { vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) }
+        return { vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) }
     })
-  
+
     return segments
-  }
+}
 
 
 

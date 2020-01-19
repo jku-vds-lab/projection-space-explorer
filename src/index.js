@@ -8,7 +8,7 @@ var neural = require('./problems/neural')
 import Typography from '@material-ui/core/Typography';
 import { ShapeLegend, calculateOptions, Legend, LegendFun } from './view/categorical'
 import { makeStyles } from '@material-ui/core/styles';
-import DatasetSelector from './util/datasetselector'
+import { DatasetSelector, DatasetList } from './util/datasetselector'
 import ThreeView from './view/view'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -19,25 +19,17 @@ import Slider from '@material-ui/core/Slider';
 import { DefaultLineColorScheme, TableuVectorColorScheme } from "./util/colors";
 import { DefaultVectorColorScheme } from "./util/colors";
 import { Input } from "@material-ui/core";
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import MaskedInput from "react-text-mask";
+import { StoryLegend } from "./legends/story";
 
 
-function setAggregateView(element, list, aggregation, type) {
-  element.innerHTML = ""
 
-  if (type == "chess") {
-    element.innerHTML = chess.aggregate(list)
-  }
-  if (type == "rubik") {
-    element.innerHTML = rubik.aggregate(list)
-  }
-  if (type == "neural") {
-    element.innerHTML = neural.aggregate(list, aggregation)
-  }
-  if (type == "none" && list.length > 0) {
-    element.innerHTML = `<div>${list[0].legend}</div>`
-  }
-}
+
 
 
 window.showGuide = function () {
@@ -53,12 +45,26 @@ window.showGuide = function () {
 
 
 
+var ChooseFileDialog = ({ open, onChange }) => {
+  return <Dialog open={open}>
+    <DatasetList onChange={onChange}></DatasetList>
+  </Dialog>
+}
+
+
+console.log(ChooseFileDialog)
+
+
 class Application extends React.Component {
 
   constructor(props) {
     super(props)
 
     this.state = {
+      selectionState: null,
+
+      fileDialogOpen: true,
+
       vectorByShape: null,
       selectedVectorByShape: "",
 
@@ -116,20 +122,40 @@ class Application extends React.Component {
   }
 
 
+  setAggregateView(element, list, aggregation, type) {
+    element.innerHTML = ""
+
+    if (type == "chess") {
+      element.innerHTML = chess.aggregate(list)
+    }
+    if (type == "rubik") {
+      element.innerHTML = rubik.aggregate(list)
+    }
+    if (type == "neural") {
+      element.innerHTML = neural.aggregate(list, aggregation)
+    }
+    if (type == "none" && list.length > 0) {
+      element.innerHTML = `<div>${list[0].legend}</div>`
+    }
+    if (type == 'story' && list.length > 0) {
+      this.setState({ selectionState: list[0] })
+    }
+  }
+
   onHover(selected) {
-    setAggregateView(document.getElementById('info'), selected, false, this.dataset.type)
+    this.setAggregateView(document.getElementById('info'), selected, false, this.dataset.type)
 
 
   }
 
   onAggregate(selected) {
-    setAggregateView(document.getElementById('aggregate'), selected, true, this.dataset.type)
+    this.setAggregateView(document.getElementById('aggregate'), selected, true, this.dataset.type)
   }
 
 
   loadData2() {
-    setAggregateView(document.getElementById('info'), [], false, this.dataset.type)
-    setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.type)
+    this.setAggregateView(document.getElementById('info'), [], false, this.dataset.type)
+    this.setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.type)
 
     this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
 
@@ -163,6 +189,8 @@ class Application extends React.Component {
   }
 
   onDataSelected(vectors, segments, json, dataset) {
+    this.setState({ fileDialogOpen: false })
+
     // Dispose old view
     this.threeRef.current.disposeScene()
 
@@ -195,6 +223,7 @@ class Application extends React.Component {
   }
 
   render() {
+    //<ChooseFileDialog onChange={this.onDataSelected} open={this.state.fileDialogOpen}></ChooseFileDialog>
     return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
       <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto' }}>
         <Grid
@@ -205,6 +234,8 @@ class Application extends React.Component {
           style={{ padding: '10px' }}>
 
           <Typography style={{ padding: '10px 0px 10px 0px' }}>Dataset</Typography>
+
+          
           <DatasetSelector ref={this.setSelector} onChange={this.onDataSelected} />
 
 
@@ -395,6 +426,8 @@ class Application extends React.Component {
           <div class="text-center" style={{ width: "100%", height: "100%", position: "relative" }}>
             <div class="card-body p-2">
               <h6 class="card-title">State Similiarity</h6>
+
+              <StoryLegend selectionState={this.state.selectionState}></StoryLegend>
               <div id="aggregate" class="d-flex align-items-stretch justify-content-center"></div>
             </div>
           </div>

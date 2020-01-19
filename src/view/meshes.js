@@ -244,7 +244,7 @@ export class PointVisualization {
         show[i] = 1.0
 
         //color.toArray( colors, i * 4 );
-        sizes[i] = this.particleSize;
+        vector.baseSize = this.particleSize
 
         if (vector.age == 0) {
           // Starting point
@@ -257,6 +257,7 @@ export class PointVisualization {
           types[i] = 2
         }
         vector.shapeType = Shapes.fromInt(types[i])
+        vector.highlighted = false
 
         i++
       })
@@ -331,9 +332,9 @@ export class PointVisualization {
     } else {
       if (category.type == 'categorical') {
         this.vectors.forEach((vector, index) => {
-          var select = category.values.filter(value => value.value == vector[category.key])[0]
-          type[index] = Shapes.toInt(select.shapeType)
-          vector.shapeType = select.shapeType
+          var select = category.values.filter(value => value.from == vector[category.key])[0]
+          type[index] = Shapes.toInt(select.to)
+          vector.shapeType = select.to
         })
       }
     }
@@ -394,7 +395,7 @@ export class PointVisualization {
 
     if (category == null) {
       this.vectors.forEach(vector => {
-        size[vector.globalIndex] = this.particleSize
+        vector.baseSize = this.particleSize
       })
     } else {
       if (category.type == 'quantitative') {
@@ -404,16 +405,28 @@ export class PointVisualization {
           var min = Math.min(...filtered)
   
           segment.vectors.forEach(vector => {
-            size[vector.globalIndex] = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
+            vector.baseSize = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
           })
         })
       }
       if (category.type == 'categorical') {
         this.vectors.forEach(vector => {
-          size[vector.globalIndex] = this.particleSize * category.values.filter(v => v.from == vector[category.key])[0].to
+          vector.baseSize = this.particleSize * category.values.filter(v => v.from == vector[category.key])[0].to
         })
       }
     }
+
+    this.mesh.geometry.attributes.size.needsUpdate = true
+
+    this.updateSize()
+  }
+
+  updateSize() {
+    var size = this.mesh.geometry.attributes.size.array
+
+    this.vectors.forEach(vector => {
+      size[vector.globalIndex] = vector.baseSize * (vector.highlighted ? 2.0 : 1.0)
+    })
 
     this.mesh.geometry.attributes.size.needsUpdate = true
   }
@@ -465,6 +478,7 @@ export class PointVisualization {
     })
 
     this.updateColor()
+    this.updateSize()
 
     this.mesh.geometry.attributes.show.needsUpdate = true;
   }
@@ -473,16 +487,20 @@ export class PointVisualization {
    * Highlights a specific point index.
    */
   highlight(index) {
-    if (this.highlightIndex != null) {
-      this.sizeAttribute.array[this.highlightIndex] = this.particleSize
+    if (this.highlightIndex != null && this.highlightIndex >= 0) {
+      this.vectors[this.highlightIndex].highlighted = false
+      //this.sizeAttribute.array[this.highlightIndex] = this.particleSize
     }
 
     this.highlightIndex = index
 
-    if (this.highlightIndex != null) {
-      this.sizeAttribute.array[this.highlightIndex] = this.particleSize * 2
-      this.sizeAttribute.needsUpdate = true
+    if (this.highlightIndex != null && this.highlightIndex >= 0) {
+      this.vectors[this.highlightIndex].highlighted = true
+      //this.sizeAttribute.array[this.highlightIndex] = this.particleSize * 2
+      //this.sizeAttribute.needsUpdate = true
     }
+
+    this.updateSize()
   }
 
 

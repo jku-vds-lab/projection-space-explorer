@@ -18,5 +18,25 @@
                 ]
             }
         ]
+    },
+    {
+        "category": "shape",
+        "attributes": [
+            {
+                "key": "optimal",
+                "name": "Optimal?",
+                "type": "categorical",
+                "values": [
+                    {
+                        "from": "yes",
+                        "to": "star"
+                    },
+                    {
+                        "from": "no",
+                        "to": "circle"
+                    }
+                ]
+            }
+        ]
     }
 ]

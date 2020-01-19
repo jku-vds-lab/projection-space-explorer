@@ -10,19 +10,19 @@
         "type": "categorical",
         "values": [
           {
-            "value": 0,
+            "from": 0,
             "display": "Intermediate",
-            "shapeType": "circle"
+            "to": "circle"
           },
           {
-            "value": 1,
+            "from": 1,
             "display": "End",
-            "shapeType": "star"
+            "to": "star"
           },
           {
-            "value": 2,
+            "from": 2,
             "display": "Opener",
-            "shapeType": "cross"
+            "to": "cross"
           }
         ]
       },
@@ -32,19 +32,19 @@
         "type": "categorical",
         "values": [
           {
-            "value": "0",
+            "from": "0",
             "display": "Opener 1",
-            "shapeType": "cross"
+            "to": "cross"
           },
           {
-            "value": "1",
+            "from": "1",
             "display": "Opener 2",
-            "shapeType": "star"
+            "to": "star"
           },
           {
-            "value": "2",
+            "from": "2",
             "display": "Opener 3",
-            "shapeType": "square"
+            "to": "square"
           }
         ]
       }
