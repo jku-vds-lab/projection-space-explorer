@@ -86,6 +86,11 @@ class DatasetDatabase {
                 display: "NN: Confusion Matrix",
                 path: "datasets/neural/learning_confmat.csv",
                 type: "neural"
+            },
+            {
+                display: "Stories: All",
+                path: "datasets/story/all.csv",
+                type: "story"
             }
         ]
     }
@@ -113,8 +118,16 @@ export default class DatasetSelector extends React.Component {
         // Load csv file
 
         d3v5.csv(event.target.value).then(vectors => {
+            console.log("fresh from csv")
+            console.log(vectors)
+            var copy = vectors.map(v => v.line)
+            console.log(copy)
             preprocess(vectors)
+            copy = vectors.map(v => v.line)
+            console.log(copy)
             var segments = getSegs(vectors)
+            copy = vectors.map(v => v.line)
+            console.log(copy)
 
             d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
                 this.props.onChange(vectors, segments, categories, entry)
@@ -132,7 +145,10 @@ export default class DatasetSelector extends React.Component {
         // Load csv file
 
         d3v5.csv(path).then(vectors => {
+
+            
             preprocess(vectors)
+
             var segments = getSegs(vectors)
 
             d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
@@ -185,8 +201,11 @@ export default class DatasetSelector extends React.Component {
                     reader.onload = (event) => {
                         var content = event.target.result
 
+
                         var vectors = d3v5.csvParse(content)
+
                         preprocess(vectors)
+
                         var segments = getSegs(vectors)
 
                         this.props.onChange(vectors, segments, "", { type: "none" })
@@ -201,19 +220,11 @@ export default class DatasetSelector extends React.Component {
 
 
 function getSegs(vectors) {
-    // Sort vectors by line, and then by age
-    vectors.sort((a, b) => {
-      if (a == b) {
-        return b.age - a.age
-      } else {
-        return a.line.toString().localeCompare(b.line.toString())
-      }
-    })
-  
-    var lineKeys = [ ... new Set(vectors.map(vector => vector.line)) ]
+    // Get a list of lines that are in the set
+    var lineKeys = [ ... new Set(vectors.map(vector => vector.line)) ]    
     
     var segments = lineKeys.map(lineKey => {
-      return { vectors: vectors.filter(vector => vector.line == lineKey) }
+      return { vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) }
     })
   
     return segments

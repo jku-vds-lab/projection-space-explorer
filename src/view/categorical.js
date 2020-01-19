@@ -211,17 +211,6 @@ export class Legend extends React.Component {
         return <Checky
           checked={line.checked} onChange={this.onCheckbox} id={line.color.hex} comp={comp} name={line.name}
         ></Checky>
-
-        return <FormControlLabel
-
-          control={<Checkbox size='small' checked={color.checked} onChange={this.onCheckbox} id={color.color}></Checkbox>}
-          label={<Typography style={{ color: `rgb(${comp.r}, ${comp.g}, ${comp.b})` }}>{color.name}</Typography>}
-        ></FormControlLabel>
-
-        return <div class="custom-control custom-checkbox">
-          <input type="checkbox" checked={color.checked} class="custom-control-input" id={color.color} onClick={this.onCheckbox}></input>
-          <label style={{ color: `rgb(${comp.r}, ${comp.g}, ${comp.b})` }} class="custom-control-label" for={color.color} >{color.name}</label>
-        </div>
       })}
 
       {colorLegend}

@@ -131,7 +131,6 @@ class Application extends React.Component {
     setAggregateView(document.getElementById('info'), [], false, this.dataset.type)
     setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.type)
 
-
     this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
 
     this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
@@ -358,16 +357,6 @@ class Application extends React.Component {
                     })}
                   </Select>
                 </FormControl>
-
-                <MaskedInput
-                  mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
-                  className="form-control"
-                  placeholder="(0, 1) -> (0, 1)"
-                  guide={false}
-                  id="my-input-id"
-                  onBlur={() => { }}
-                  onChange={() => { }}
-                ></MaskedInput>
               </Grid>
               :
               <div></div>

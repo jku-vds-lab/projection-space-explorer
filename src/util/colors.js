@@ -9,7 +9,7 @@ export class QualitativeScaleMapping {
 
   getMapping() {
     return this.values.reduce((map, value) => {
-      map[value] = this.scale.map(value)
+      map[value] = this.scale.map(this.values.indexOf(value))
       return map
     }, {})
   }
@@ -72,6 +72,7 @@ export class ColorScheme {
   }
 
   createMapping(values) {
+    
     var i = 0
     this.mapping = values.reduce((map, obj) => {
       map[obj] = this.colors[i]

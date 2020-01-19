@@ -1,0 +1,22 @@
+[
+    {
+        "category": "size",
+        "attributes": [
+            {
+                "key": "optimal",
+                "name": "Optimal?",
+                "type": "categorical",
+                "values": [
+                    {
+                        "from": "yes",
+                        "to": "2"
+                    },
+                    {
+                        "from": "no",
+                        "to": "1"
+                    }
+                ]
+            }
+        ]
+    }
+]

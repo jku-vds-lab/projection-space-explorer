@@ -397,15 +397,22 @@ export class PointVisualization {
         size[vector.globalIndex] = this.particleSize
       })
     } else {
-      this.segments.forEach(segment => {
-        var filtered = segment.vectors.map(vector => vector[category.key])
-        var max = Math.max(...filtered)
-        var min = Math.min(...filtered)
-
-        segment.vectors.forEach(vector => {
-          size[vector.globalIndex] = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
+      if (category.type == 'quantitative') {
+        this.segments.forEach(segment => {
+          var filtered = segment.vectors.map(vector => vector[category.key])
+          var max = Math.max(...filtered)
+          var min = Math.min(...filtered)
+  
+          segment.vectors.forEach(vector => {
+            size[vector.globalIndex] = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
+          })
         })
-      })
+      }
+      if (category.type == 'categorical') {
+        this.vectors.forEach(vector => {
+          size[vector.globalIndex] = this.particleSize * category.values.filter(v => v.from == vector[category.key])[0].to
+        })
+      }
     }
 
     this.mesh.geometry.attributes.size.needsUpdate = true
