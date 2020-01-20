@@ -1,7 +1,7 @@
 [
   {
     "category": "shape",
-
+    "selected": "cp",
     "attributes": [
       {
         "key": "cp",
@@ -52,6 +52,7 @@
   },
   {
     "category": "transparency",
+    "selected": "age",
     "attributes": [
       {
         "key": "age",

@@ -13,6 +13,83 @@ var d3v5 = require('d3')
 const DEFAULT_LINE = "L"
 const DEFAULT_ALGO = "all"
 
+
+
+
+
+class InferCategory {
+    constructor(vectors) {
+        this.vectors = vectors
+    }
+
+    load() {
+        if (this.vectors.length <= 0) {
+            return []
+        }
+
+        var options = [
+            {
+                "category": "shape",
+                "attributes": []
+            },
+            {
+                "category": "size",
+                "attributes": []
+            },
+            {
+                "category": "transparency",
+                "attributes": []
+            },
+            {
+                "category": "color",
+                "attributes": []
+            }
+        ]
+
+        var header = Object.keys(this.vectors[0]).filter(a => !(a in [ "x", "y", "line" ]))
+        header.forEach(key => {
+            // Check for given header key if its categorical, sequential or diverging
+            var distinct = [... new Set(this.vectors.map(vector => vector[key]))]
+            if (distinct.length > 8) {
+                // Check if values are numeric
+                if (!distinct.find(value => isNaN(value))) {
+                    // If we have a lot of different values, the values or probably sequential data
+                    var category = options.find(e => e.category == "color")
+
+                    var min = Math.min(...distinct)
+                    var max = Math.max(...distinct)
+
+                    category.attributes.push({
+                        "key": key,
+                        "name": key,
+                        "type": "sequential",
+                        "range": {
+                            "min": min,
+                            "max": max
+                        }
+                    })
+                }
+            } else {
+                if (distinct.find(value => isNaN(value))) {
+                    options.find(e => e.category == 'color').attributes.push({
+                        "key": key,
+                        "name": key,
+                        "type": "categorical"
+                    })
+
+                    
+                }
+            }
+        })
+        console.log(options)
+
+        return options
+    }
+}
+
+
+
+
 class DatasetDatabase {
     constructor() {
         this.data = [
@@ -144,34 +221,34 @@ export var DatasetList = ({ onChange }) => {
             })}
         </List>
         <input
-                accept="image/*"
-                id="raised-button-file"
-                multiple
-                type="file"
-                onChange={(e) => {
-                    var files = e.target.files
-                    if (files == null || files.length <= 0) {
-                        return;
-                    }
+            accept="image/*"
+            id="raised-button-file"
+            multiple
+            type="file"
+            onChange={(e) => {
+                var files = e.target.files
+                if (files == null || files.length <= 0) {
+                    return;
+                }
 
-                    var file = files[0]
+                var file = files[0]
 
-                    var reader = new FileReader()
-                    reader.onload = (event) => {
-                        var content = event.target.result
+                var reader = new FileReader()
+                reader.onload = (event) => {
+                    var content = event.target.result
 
 
-                        var vectors = d3v5.csvParse(content)
+                    var vectors = d3v5.csvParse(content)
 
-                        preprocess(vectors)
+                    preprocess(vectors)
 
-                        var segments = getSegs(vectors)
+                    var segments = getSegs(vectors)
 
-                        onChange(vectors, segments, "", { type: "none" })
-                    }
-                    reader.readAsText(file)
-                }}
-            />
+                    onChange(vectors, segments, "", { type: "none" })
+                }
+                reader.readAsText(file)
+            }}
+        />
     </Grid>
 }
 
@@ -187,45 +264,15 @@ export class DatasetSelector extends React.Component {
 
     handleChange(event) {
         this.setState({ value: event.target.value })
-        var entry = this.database.getByPath(event.target.value)
 
-        // Load csv file
-
-        d3v5.csv(event.target.value).then(vectors => {
-            var copy = vectors.map(v => v.line)
-            preprocess(vectors)
-            copy = vectors.map(v => v.line)
-            var segments = getSegs(vectors)
-            copy = vectors.map(v => v.line)
-
-            d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
-                this.props.onChange(vectors, segments, categories, entry)
-            }).catch(() => {
-                this.props.onChange(vectors, segments, "", entry)
-            })
-        })
+        loadFromPath(event.target.value, this.props.onChange)
     }
 
 
     init(path) {
         this.setState({ value: path })
-        var entry = this.database.getByPath(path)
 
-        // Load csv file
-
-        d3v5.csv(path).then(vectors => {
-
-
-            preprocess(vectors)
-
-            var segments = getSegs(vectors)
-
-            d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
-                this.props.onChange(vectors, segments, categories, entry)
-            }).catch(() => {
-                this.props.onChange(vectors, segments, "", entry)
-            })
-        })
+        loadFromPath(path, this.props.onChange)
     }
 
     loadFileContent(content) {
@@ -277,7 +324,9 @@ export class DatasetSelector extends React.Component {
 
                         var segments = getSegs(vectors)
 
-                        this.props.onChange(vectors, segments, "", { type: "none" })
+
+
+                        this.props.onChange(vectors, segments, new InferCategory(vectors).load(), { type: "none" })
                     }
                     reader.readAsText(file)
                 }}

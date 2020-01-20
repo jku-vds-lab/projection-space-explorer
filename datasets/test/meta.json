@@ -23,8 +23,7 @@
             {
                 "key": "categorical",
                 "name": "Categorical",
-                "type": "categorical",
-                "values": [ "A", "B", "C" ]
+                "type": "categorical"
             }
         ]
     }

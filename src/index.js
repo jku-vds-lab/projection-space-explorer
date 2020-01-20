@@ -18,7 +18,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Slider from '@material-ui/core/Slider';
 import { DefaultLineColorScheme, TableuVectorColorScheme } from "./util/colors";
 import { DefaultVectorColorScheme } from "./util/colors";
-import { Input } from "@material-ui/core";
+import { Input, Divider } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -124,6 +124,7 @@ class Application extends React.Component {
 
   setAggregateView(element, list, aggregation, type) {
     element.innerHTML = ""
+    this.setState({ selectionState: null })
 
     if (type == "chess") {
       element.innerHTML = chess.aggregate(list)
@@ -238,13 +239,14 @@ class Application extends React.Component {
           
           <DatasetSelector ref={this.setSelector} onChange={this.onDataSelected} />
 
-
+          <Divider></Divider>
 
           <Typography style={{ padding: '10px 0px 10px 0px' }}>Lines</Typography>
 
           <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
 
 
+          <Divider></Divider>
 
           <Typography style={{ padding: '10px 0px 10px 0px' }}>Vectors</Typography>
 

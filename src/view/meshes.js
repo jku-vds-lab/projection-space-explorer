@@ -350,7 +350,12 @@ export class PointVisualization {
       this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
     } else {
       if (category.type == 'categorical') {
-        this.vectorColorScheme = new DefaultVectorColorScheme().createMapping(category.values)
+        if ("values" in category) {
+          this.vectorColorScheme = new DefaultVectorColorScheme().createMapping(category.values)
+        } else {
+          this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector[category.key]))])
+        }
+        
       }
       if (category.type == 'sequential') {
         this.vectorColorScheme = new SequentialColorScheme().createMapping(category.range)
