@@ -1,4 +1,34 @@
 var d3v5 = require('d3')
+import { makeStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+
+export var Scales = ({ }) => {
+  var scales = [
+    new LinearColorScale(new SchemeColor('#a6611a'), new SchemeColor('#018571')),
+    new LinearColorScale(new SchemeColor('#ff0000'), new SchemeColor('#00ff00')),
+    new LinearColorScale(new SchemeColor('#a6611a'), new SchemeColor('#018571')),
+    new LinearColorScale(new SchemeColor('#a6611a'), new SchemeColor('#018571'))
+  ]
+
+  return <List component="nav" aria-label="main mailbox folders">
+    {scales.map(scale => {
+      return <ListItem button>
+        <ColorScaleChooser scale={scale}></ColorScaleChooser>
+
+      </ListItem>
+    })}
+
+  </List>
+}
+
+export var ColorScaleChooser = ({ scale }) => {
+  return <div style={{ width: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stop1.hex}, ${scale.stop2.hex})` }}>
+  </div>
+}
+
 
 
 export class QualitativeScaleMapping {
@@ -16,6 +46,17 @@ export class QualitativeScaleMapping {
 
   map(value) {
     return this.scale.map(this.values.indexOf(value))
+  }
+}
+
+
+export class NoMapping {
+  constructor(scale) {
+    this.scale = scale
+  }
+
+  map(value) {
+    return this.scale.map[0]
   }
 }
 
@@ -72,7 +113,7 @@ export class ColorScheme {
   }
 
   createMapping(values) {
-    
+
     var i = 0
     this.mapping = values.reduce((map, obj) => {
       map[obj] = this.colors[i]
@@ -88,9 +129,26 @@ export class ColorScheme {
   }
 }
 
+export class LinearColorScale {
+  constructor(stop1, stop2) {
+    this.interpolator = d3v5.interpolateRgb(stop1.hex, stop2.hex)
+    this.stop1 = stop1
+    this.stop2 = stop2
+  }
+
+  createMapping(range) {
+    return new SequentialScaleMapping(this, range)
+  }
+
+  map(value) {
+    var d3color = d3v5.color(this.interpolator(value))
+    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
+  }
+}
+
 export class SequentialColorScheme {
   constructor() {
-    this.interpolator = d3v5.interpolateRgb("red", "blue")
+    this.interpolator = d3v5.interpolateRgb("#ff0000", "blue")
   }
 
   createMapping(range) {

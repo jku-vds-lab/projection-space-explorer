@@ -5,20 +5,12 @@
             {
                 "key": "sequential",
                 "name": "Sequential",
-                "type": "sequential",
-                "range": {
-                    "min": "0",
-                    "max": "2"
-                }
+                "type": "sequential"
             },
             {
                 "key": "diverging",
                 "name": "Diverging",
-                "type": "diverging",
-                "range": {
-                    "min": "-5",
-                    "max": "5"
-                }
+                "type": "diverging"
             },
             {
                 "key": "categorical",

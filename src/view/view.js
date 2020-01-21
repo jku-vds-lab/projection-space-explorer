@@ -351,11 +351,12 @@ export default class ThreeView extends React.Component {
 
     }
 
-    createVisualization(vectors, segments, lineColorScheme, vectorColorScheme) {
+    createVisualization(dataset, lineColorScheme, vectorColorScheme) {
         this.scene = new THREE.Scene()
         this.pointScene = new THREE.Scene()
-        this.vectors = vectors
-        this.segments = segments
+        this.vectors = dataset.vectors
+        this.segments = dataset.segments
+        this.dataset = dataset
         this.lineColorScheme = lineColorScheme
         this.vectorColorScheme = vectorColorScheme
         
@@ -370,7 +371,7 @@ export default class ThreeView extends React.Component {
         this.lines.createMesh()
         this.lines.setZoom(this.camera.zoom)
 
-        this.particles = new meshes.PointVisualization(this.vectorColorScheme)
+        this.particles = new meshes.PointVisualization(this.vectorColorScheme, this.dataset)
         this.particles.createMesh(this.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()

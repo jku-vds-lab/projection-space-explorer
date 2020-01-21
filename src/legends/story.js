@@ -78,8 +78,8 @@ const marks = [
 
 
 export var YearComp = ({ oldYear, newYear }) => {
-    var lineStart = 16
-    var lineEnd = 256
+    var lineStart = 60
+    var lineEnd = 272-60
     var oldX = lineStart + (lineEnd - lineStart) * ((oldYear - 1800) / 215)
     var newX = lineStart + (lineEnd - lineStart) * ((newYear - 1800) / 215)
 
@@ -87,15 +87,15 @@ export var YearComp = ({ oldYear, newYear }) => {
 
         <line x1={lineStart} y1="48" x2={lineEnd} y2="48" stroke="black" />
 
-        <circle cx={newX} cy="48" r="16" stroke="black" stroke-width="1" fill="#70AD47" />
+        <circle cx={newX} cy="48" r="14" stroke="black" stroke-width="1" fill="#70AD47" />
 
         <circle cx={oldX} cy="48" r="10" stroke="black" stroke-width="1" fill="#D9D9D9" />
 
-        <text x={newX} y="30" text-anchor="middle">{newYear}</text>
-        <text x={oldX} y="30" text-anchor="middle">{oldYear}</text>
+        <text x={newX} y="20" font-size="14" text-anchor="middle">{newYear}</text>
+        <text x={oldX} y="32" font-size="14" text-anchor="middle">{oldYear}</text>
 
-        <text x="0" y="70">1800</text>
-        <text x="234" y="70">2015</text>
+        <text x="38" y="52" font-size="14" text-anchor="end">1800</text>
+        <text x="230" y="52" font-size="14">2015</text>
     </svg>
 }
 

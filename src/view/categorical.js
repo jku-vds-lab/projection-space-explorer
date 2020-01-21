@@ -71,6 +71,15 @@ class CategoryOptions {
   asArray() {
     return this.json
   }
+
+  getAttribute(category, attribute, type) {
+    try {
+      return this.json.find(c => c.category == category)
+      .attributes.find(a => a.key == attribute && a.type == type)
+    } catch(e) {
+      return null
+    }
+  }
 }
 
 export function calculateOptions(vectors, categories) {
@@ -267,7 +276,7 @@ export var ShapeLegend = ({ category, checkboxes, onChange }) => {
   return <div>
     {
       category.values.map(v => {
-        return <ShapeSymbol symbol={v.to} text={v.display} checked={checkboxes[v.to]} onCheck={onChange}></ShapeSymbol>
+        return <ShapeSymbol symbol={v.to} text={"display" in v ? v.display : v.from} checked={checkboxes[v.to]} onCheck={onChange}></ShapeSymbol>
       })
     }
   </div>

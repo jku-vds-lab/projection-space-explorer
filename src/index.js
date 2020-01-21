@@ -16,7 +16,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Slider from '@material-ui/core/Slider';
-import { DefaultLineColorScheme, TableuVectorColorScheme } from "./util/colors";
+import { DefaultLineColorScheme, TableuVectorColorScheme, Scales, LinearColorScale, SchemeColor } from "./util/colors";
 import { DefaultVectorColorScheme } from "./util/colors";
 import { Input, Divider } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
@@ -78,7 +78,9 @@ class Application extends React.Component {
       selectedVectorByColor: "",
 
       legendSelected: {},
-      checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
+      checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true },
+
+      testScale : new LinearColorScale(new SchemeColor('#a6611a'), new SchemeColor('#018571'))
     }
 
     this.threeRef = React.createRef()
@@ -144,26 +146,26 @@ class Application extends React.Component {
   }
 
   onHover(selected) {
-    this.setAggregateView(document.getElementById('info'), selected, false, this.dataset.type)
+    this.setAggregateView(document.getElementById('info'), selected, false, this.dataset.info.type)
 
 
   }
 
   onAggregate(selected) {
-    this.setAggregateView(document.getElementById('aggregate'), selected, true, this.dataset.type)
+    this.setAggregateView(document.getElementById('aggregate'), selected, true, this.dataset.info.type)
   }
 
 
   loadData2() {
-    this.setAggregateView(document.getElementById('info'), [], false, this.dataset.type)
-    this.setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.type)
+    this.setAggregateView(document.getElementById('info'), [], false, this.dataset.info.type)
+    this.setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.info.type)
 
     this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
 
     this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
 
 
-    this.threeRef.current.createVisualization(this.vectors, this.segments, this.lineColorScheme, this.vectorColorScheme)
+    this.threeRef.current.createVisualization(this.dataset, this.lineColorScheme, this.vectorColorScheme)
 
     this.finite()
   }
@@ -186,10 +188,35 @@ class Application extends React.Component {
       checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
     })
 
-    this.legend.current.load(this.dataset.type, this.lineColorScheme)
+    this.legend.current.load(this.dataset.info.type, this.lineColorScheme)
+
+    this.initializeEncodings()
   }
 
-  onDataSelected(vectors, segments, json, dataset) {
+  initializeEncodings() {
+    var state = {}
+
+    var defaultColorAttribute = this.categoryOptions.getAttribute("color", "algo", "categorical")
+    if (defaultColorAttribute) {
+      state.selectedVectorByColor = defaultColorAttribute.key
+      state.vectorByColor = defaultColorAttribute
+    }
+
+    var defaultBrightnessAttribute = this.categoryOptions.getAttribute("transparency", "age", "sequential")
+    if (defaultBrightnessAttribute) {
+      state.selectedVectorByTransparency = defaultBrightnessAttribute.key
+      state.vectorByTransparency = defaultBrightnessAttribute
+    }
+
+    this.setState(state)
+
+    this.threeRef.current.particles.colorCat(defaultColorAttribute)
+    this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute)
+  }
+
+  onDataSelected(dataset, json) {
+    console.log("test")
+    console.log(dataset)
     this.setState({ fileDialogOpen: false })
 
     // Dispose old view
@@ -197,8 +224,8 @@ class Application extends React.Component {
 
     // Set new dataset as variable
     this.dataset = dataset
-    this.vectors = vectors
-    this.segments = segments
+    this.vectors = dataset.vectors
+    this.segments = dataset.segments
     this.categories = json
 
     // Load new view
@@ -224,6 +251,7 @@ class Application extends React.Component {
   }
 
   render() {
+    //<Scales scale={this.state.testScale}></Scales>
     //<ChooseFileDialog onChange={this.onDataSelected} open={this.state.fileDialogOpen}></ChooseFileDialog>
     return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
       <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto' }}>
@@ -390,6 +418,8 @@ class Application extends React.Component {
                     })}
                   </Select>
                 </FormControl>
+
+                
               </Grid>
               :
               <div></div>

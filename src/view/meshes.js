@@ -7,7 +7,7 @@ var fragmentShaders = require('./fragmentshaders')
 var vertexShaders = require('./vertexshaders')
 var Meshy = require('three.meshline');
 
-import { SequentialColorScheme, DefaultVectorColorScheme, DivergingColorScheme } from '../util/colors'
+import { SequentialColorScheme, DefaultVectorColorScheme, DivergingColorScheme, NoMapping } from '../util/colors'
 
 
 var Shapes = {
@@ -203,10 +203,11 @@ export class LineVisualization {
 
 
 export class PointVisualization {
-  constructor(vectorColorScheme) {
+  constructor(vectorColorScheme, dataset) {
     this.highlightIndex = null
     this.particleSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
     this.vectorColorScheme = vectorColorScheme
+    this.dataset = dataset
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
   }
 
@@ -225,7 +226,7 @@ export class PointVisualization {
     var i = 0
 
     segments.forEach(segment => {
-      segment.vectors.forEach(vector => {
+      segment.vectors.forEach((vector, idx) => {
         vertices.push(new THREE.Vector3(vector.x, vector.y, 0.0))
 
         vertex = vertices[i];
@@ -249,7 +250,7 @@ export class PointVisualization {
         if (vector.age == 0) {
           // Starting point
           types[i] = 0
-        } else if (vector.age == segment.vectors.length - 1) {
+        } else if (idx == segment.vectors.length - 1) {
           // Ending point
           types[i] = 3
         } else {
@@ -312,12 +313,12 @@ export class PointVisualization {
     // default shapes used
     if (category == null) {
       this.segments.forEach(segment => {
-        segment.vectors.forEach(vector => {
+        segment.vectors.forEach((vector, index) => {
           var shape = 2
           if (vector.age == 0) {
             // Starting point
             shape = 0
-          } else if (vector.age == segment.vectors.length - 1) {
+          } else if (index == segment.vectors.length - 1) {
             // Ending point
             shape = 3
           } else {
@@ -347,6 +348,7 @@ export class PointVisualization {
     this.colorAttribute = category
 
     if (category == null) {
+      
       this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
     } else {
       if (category.type == 'categorical') {
@@ -357,11 +359,23 @@ export class PointVisualization {
         }
         
       }
+
+      var min = null, max = null
+      if (category.key in this.dataset.ranges) {
+        min = this.dataset.ranges[category.key].min
+        max = this.dataset.ranges[category.key].max
+      } else {
+        var filtered = this.vectors.map(vector => vector[category.key])
+        max = Math.max(...filtered)
+        min = Math.min(...filtered)
+      }
+
       if (category.type == 'sequential') {
-        this.vectorColorScheme = new SequentialColorScheme().createMapping(category.range)
+        console.log([ min, max ])
+        this.vectorColorScheme = new SequentialColorScheme().createMapping({ min: min, max: max })
       }
       if (category.type == 'diverging') {
-        this.vectorColorScheme = new DivergingColorScheme().createMapping(category.range)
+        this.vectorColorScheme = new DivergingColorScheme().createMapping({ min: min, max: max })
       }
     }
 
@@ -379,11 +393,18 @@ export class PointVisualization {
         })
       })
     } else {
-      if (category.type == 'quantitative') {
+      if (category.type == 'sequential') {
         this.segments.forEach(segment => {
-          var filtered = segment.vectors.map(vector => vector[category.key])
-          var max = Math.max(...filtered)
-          var min = Math.min(...filtered)
+          var min = null, max = null
+          if (category.key in this.dataset.ranges) {
+            min = this.dataset.ranges[category.key].min
+            max = this.dataset.ranges[category.key].max
+            console.log("took range transparency")
+          } else {
+            var filtered = segment.vectors.map(vector => vector[category.key])
+            max = Math.max(...filtered)
+            min = Math.min(...filtered)
+          }
 
           segment.vectors.forEach(vector => {
             color[vector.globalIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
@@ -403,11 +424,18 @@ export class PointVisualization {
         vector.baseSize = this.particleSize
       })
     } else {
-      if (category.type == 'quantitative') {
+      if (category.type == 'sequential') {
         this.segments.forEach(segment => {
-          var filtered = segment.vectors.map(vector => vector[category.key])
-          var max = Math.max(...filtered)
-          var min = Math.min(...filtered)
+          var min = null, max = null
+          if (category.key in this.dataset.ranges) {
+            min = this.dataset.ranges[category.key].min
+            max = this.dataset.ranges[category.key].max
+            console.log("took range transparency")
+          } else {
+            var filtered = segment.vectors.map(vector => vector[category.key])
+            max = Math.max(...filtered)
+            min = Math.min(...filtered)
+          }
   
           segment.vectors.forEach(vector => {
             vector.baseSize = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
@@ -454,10 +482,9 @@ export class PointVisualization {
       
       
 
-      color[i * 4 + 0] = rgb.r / 255.0;
-      color[i * 4 + 1] = rgb.g / 255.0;
-      color[i * 4 + 2] = rgb.b / 255.0;
-      color[i * 4 + 3] = 1.0;
+      color[i * 4 + 0] = rgb.r / 255.0
+      color[i * 4 + 1] = rgb.g / 255.0
+      color[i * 4 + 2] = rgb.b / 255.0
     })
 
     this.mesh.geometry.attributes.customColor.needsUpdate = true

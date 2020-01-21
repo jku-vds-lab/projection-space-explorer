@@ -15,14 +15,23 @@ const DEFAULT_ALGO = "all"
 
 
 
-
+function parseRange(str) {
+    var range = str.match(/-?\d+\.?\d*/g)
+    return { min: range[0], max: range[1] }
+}
 
 class InferCategory {
-    constructor(vectors) {
+    constructor(vectors, segments) {
         this.vectors = vectors
+        this.segments = segments
     }
 
-    load() {
+
+    loadLine(ranges) {
+        
+    }
+
+    load(ranges) {
         if (this.vectors.length <= 0) {
             return []
         }
@@ -46,7 +55,8 @@ class InferCategory {
             }
         ]
 
-        var header = Object.keys(this.vectors[0]).filter(a => !(a in [ "x", "y", "line" ]))
+        var header = Object.keys(this.vectors[0]).filter(a => a != "line")
+
         header.forEach(key => {
             // Check for given header key if its categorical, sequential or diverging
             var distinct = [... new Set(this.vectors.map(vector => vector[key]))]
@@ -56,8 +66,15 @@ class InferCategory {
                     // If we have a lot of different values, the values or probably sequential data
                     var category = options.find(e => e.category == "color")
 
-                    var min = Math.min(...distinct)
-                    var max = Math.max(...distinct)
+                    var min = null, max = null
+
+                    if (key in ranges) {
+                        min = ranges[key].min
+                        max = ranges[key].max
+                    } else {
+                        min = Math.min(...distinct)
+                        max = Math.max(...distinct)
+                    }
 
                     category.attributes.push({
                         "key": key,
@@ -66,6 +83,32 @@ class InferCategory {
                         "range": {
                             "min": min,
                             "max": max
+                        }
+                    })
+
+                    options.find(e => e.category == "transparency").attributes.push({
+                        "key": key,
+                        "name": key,
+                        "type": "sequential",
+                        "range": {
+                            "min": min,
+                            "max": max
+                        },
+                        "values": {
+                            range: [ 0.3, 1.0 ]
+                        }
+                    })
+
+                    options.find(e => e.category == "size").attributes.push({
+                        "key": key,
+                        "name": key,
+                        "type": "sequential",
+                        "range": {
+                            "min": min,
+                            "max": max
+                        },
+                        "values": {
+                            range: [ 0.5, 1.5 ]
                         }
                     })
                 }
@@ -77,11 +120,23 @@ class InferCategory {
                         "type": "categorical"
                     })
 
-                    
+                    if (distinct.length <= 4) {
+                        var shapes = ["star", "cross", "circle", "square"]
+                        options.find(e => e.category == 'shape').attributes.push({
+                            "key": key,
+                            "name": key,
+                            "type": "categorical",
+                            "values": distinct.map((value, index) => {
+                                return {
+                                    from: value,
+                                    to: shapes[index]
+                                }
+                            })
+                        })
+                    }
                 }
             }
         })
-        console.log(options)
 
         return options
     }
@@ -189,16 +244,16 @@ function loadFromPath(path, callback) {
     // Load csv file
     d3v5.csv(path).then(vectors => {
         // Add missing attributes
-        preprocess(vectors)
+        var ranges = preprocess(vectors)
 
         // Split vectors into segments
         var segments = getSegs(vectors)
 
         // Load json file if present
         d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
-            callback(vectors, segments, categories, entry)
+            callback(new Dataset(vectors, segments, ranges, entry), categories)
         }).catch(() => {
-            callback(vectors, segments, "", entry)
+            callback(new Dataset(vectors, segments, ranges, entry), "")
         })
     })
 }
@@ -240,11 +295,11 @@ export var DatasetList = ({ onChange }) => {
 
                     var vectors = d3v5.csvParse(content)
 
-                    preprocess(vectors)
+                    var ranges = preprocess(vectors)
 
                     var segments = getSegs(vectors)
 
-                    onChange(vectors, segments, "", { type: "none" })
+                    onChange(new Dataset(vectors, segments, ranges, { type: "none" }), "")
                 }
                 reader.readAsText(file)
             }}
@@ -305,7 +360,6 @@ export class DatasetSelector extends React.Component {
                 multiple
                 type="file"
                 onChange={(e) => {
-                    console.log("file selected")
                     var files = e.target.files
                     if (files == null || files.length <= 0) {
                         return;
@@ -320,13 +374,13 @@ export class DatasetSelector extends React.Component {
 
                         var vectors = d3v5.csvParse(content)
 
-                        preprocess(vectors)
+                        var ranges = preprocess(vectors)
 
                         var segments = getSegs(vectors)
 
 
 
-                        this.props.onChange(vectors, segments, new InferCategory(vectors).load(), { type: "none" })
+                        this.props.onChange(new Dataset(vectors, segments, ranges, { type: "none" }), new InferCategory(vectors, segments).load(ranges))
                     }
                     reader.readAsText(file)
                 }}
@@ -353,14 +407,26 @@ function getSegs(vectors) {
 function preprocess(vectors) {
     var header = Object.keys(vectors[0])
 
+    var ranges = header.reduce((map, value) => {
+        var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
+        if (matches != null) {
+            var cutHeader = value.substring(0, value.length - matches[0].length)
+            vectors.forEach(vector => {
+                vector[cutHeader] = vector[value]
+                delete vector[value]
+            })
+            header[header.indexOf(value)] = cutHeader
+            map[cutHeader] = parseRange(matches[0])
+        }
+        return map
+    }, {})
+
     // If data contains no x and y attributes, its invalid
     if (header.includes("x") && header.includes("y")) {
         vectors.forEach(vector => {
             vector.x = +vector.x
             vector.y = +vector.y
         })
-    } else {
-
     }
 
     // If data contains no line attribute, add one
@@ -377,9 +443,16 @@ function preprocess(vectors) {
         var distinct = [... new Set(vectors.map(vector => vector.line))]
         distinct.forEach(a => segs[a] = 0)
         vectors.forEach(vector => {
-            vector.age = segs[vector.line]
+            //vector.age = segs[vector.line]
             segs[vector.line] = segs[vector.line] + 1
         })
+        var cur = {}
+        distinct.forEach(a => cur[a] = 0)
+        vectors.forEach(vector => {
+            vector.age = cur[vector.line] / segs[vector.line]
+            cur[vector.line] = cur[vector.line] + 1
+        })
+        ranges["age"] = { min: 0, max: 1 }
     }
 
     // If data has no algo attribute, add DEFAULT_ALGO
@@ -411,4 +484,17 @@ function preprocess(vectors) {
         d.visible = true
     })
 
+    return ranges
+}
+
+
+
+
+export class Dataset {
+    constructor(vectors, segments, ranges, info) {
+        this.vectors = vectors
+        this.ranges = ranges
+        this.segments = segments
+        this.info = info
+    }
 }

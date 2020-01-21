@@ -1,5 +1,15 @@
 [
     {
+        "category": "color",
+        "attributes": [
+            {
+                "key": "algo",
+                "name": "Algorithm",
+                "type": "categorical"
+            }
+        ]
+    },
+    {
         "category": "size",
         "attributes": [
             {

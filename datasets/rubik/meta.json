@@ -1,5 +1,20 @@
 [
   {
+    "category": "color",
+    "attributes": [
+      {
+        "key": "algo",
+        "name": "Algorithm",
+        "type": "categorical"
+      },
+      {
+        "key": "age",
+        "name": "Age",
+        "type": "sequential"
+      }
+    ]
+  },
+  {
     "category": "shape",
     "attributes": [
       {
@@ -40,10 +55,12 @@
       {
         "key": "age",
         "name": "Age",
-        "type": "quantitative",
+        "type": "sequential",
         "values": {
-          "range": [ 0.5, 1.5 ],
-          "interpolation": "linear"
+          "range": [
+            0.5,
+            1.5
+          ]
         }
       }
     ]
@@ -54,10 +71,12 @@
       {
         "key": "age",
         "name": "Age",
-        "type": "quantitative",
+        "type": "sequential",
         "values": {
-          "range": [ 0.3, 1.0 ],
-          "interpolation": "linear"
+          "range": [
+            0.3,
+            1.0
+          ]
         }
       }
     ]
