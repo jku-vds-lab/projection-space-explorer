@@ -4,9 +4,7 @@
   "description": "Visualize different solution algorithms of Rubik’s Cube states",
   "scripts": {
     "start": "http-server",
-    "build": "npm run prebuild && npm run copy",
-    "prebuild": "rm -rf dist && mkdir -p dist && mkdir -p dist/bac_rubiks_cube/csv",
-    "copy": "cp index.html dist/ && cp rubics.png dist/ && cp d3CheckBox.js dist/ && cp info.png dist/ && cp -a ./bac_rubiks_cube/csv/. dist/bac_rubiks_cube/csv/",
+    "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
