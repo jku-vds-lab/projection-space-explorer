@@ -284,20 +284,27 @@ class Application extends React.Component {
           new SchemeColor("#666666")
         ]),
         new DiscreteScale([
-          new SchemeColor("#1b9e77"),
-          new SchemeColor("#d95f02"),
-          new SchemeColor("#7570b3"),
-          new SchemeColor("#e7298a"),
-          new SchemeColor("#66a61e"),
-          new SchemeColor("#e6ab02"),
-          new SchemeColor("#a6761d"),
-          new SchemeColor("#666666")
+          new SchemeColor("#a6cee3"),
+          new SchemeColor("#1f78b4"),
+          new SchemeColor("#b2df8a"),
+          new SchemeColor("#33a02c"),
+          new SchemeColor("#fb9a99"),
+          new SchemeColor("#e31a1c"),
+          new SchemeColor("#fdbf6f"),
+          new SchemeColor("#ff7f00")
         ])
       ]
     } else {
       return [
-        new ContinuosScale([new SchemeColor('#a6611a'), new SchemeColor('#018571'), new SchemeColor('#018571')]),
-        new ContinuosScale([new SchemeColor('#ff0000'), new SchemeColor('#ffffff'), new SchemeColor('#00ff00')])
+        new ContinuosScale([
+          new SchemeColor('#fef0d9'),
+          new SchemeColor('#990000')
+        ]),
+        new ContinuosScale([
+          new SchemeColor('#c51b7d'),
+          new SchemeColor('#4d9221'),
+        ])
+
       ]
     }
   }

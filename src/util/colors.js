@@ -64,7 +64,7 @@ export var ColorScaleChooser = ({ scale }) => {
     return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map(stop => stop.hex).join(',')})` }}>
     </div>
   } else {
-    return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map((stop, index) => `${stop.hex} ${(float(index) / float(scale.stops.length)) / 100.0}%, ${stop.hex} ${(float(index + 1) / float(scale.stops.length)) / 100.0}%`).join(',')})` }}>
+    return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map((stop, index) => `${stop.hex} ${(index / scale.stops.length) * 100.0}%, ${stop.hex} ${((index + 1) / scale.stops.length) * 100.0}%`).join(',')})` }}>
     </div>
   }
 
