@@ -4,29 +4,70 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 
-export var Scales = ({ }) => {
-  var scales = [
-    new LinearColorScale(new SchemeColor('#a6611a'), new SchemeColor('#018571')),
-    new LinearColorScale(new SchemeColor('#ff0000'), new SchemeColor('#00ff00')),
-    new LinearColorScale(new SchemeColor('#a6611a'), new SchemeColor('#018571')),
-    new LinearColorScale(new SchemeColor('#a6611a'), new SchemeColor('#018571'))
-  ]
+export var Scales = ({ selectedScaleIndex, onChange, definedScales }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  return <List component="nav" aria-label="main mailbox folders">
-    {scales.map(scale => {
-      return <ListItem button>
-        <ColorScaleChooser scale={scale}></ColorScaleChooser>
+  const handleClickListItem = event => {
+    setAnchorEl(event.currentTarget);
+  };
 
-      </ListItem>
-    })}
+  const handleMenuItemClick = (event, index) => {
+    setAnchorEl(null);
 
-  </List>
+    onChange(definedScales[index], index)
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <List component="nav" aria-label="Device settings">
+        <ListItem
+          button
+          aria-haspopup="true"
+          aria-controls="lock-menu"
+          aria-label="when device is locked"
+          onClick={handleClickListItem}
+        >
+          <ColorScaleChooser scale={definedScales[selectedScaleIndex]}></ColorScaleChooser>
+          
+        </ListItem>
+      </List>
+      <Menu
+        id="lock-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {definedScales.map((scale, index) => (
+          <MenuItem
+            key={index}
+            selected={index === selectedScaleIndex}
+            onClick={event => handleMenuItemClick(event, index)}
+          >
+            <ColorScaleChooser scale={scale}></ColorScaleChooser>
+          </MenuItem>
+        ))}
+      </Menu>
+    </div>
+  )
 }
 
 export var ColorScaleChooser = ({ scale }) => {
-  return <div style={{ width: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stop1.hex}, ${scale.stop2.hex})` }}>
-  </div>
+  if (scale.type == "continuous") {
+    return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map(stop => stop.hex).join(',')})` }}>
+    </div>
+  } else {
+    return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map((stop, index) => `${stop.hex} ${(float(index) / float(scale.stops.length)) / 100.0}%, ${stop.hex} ${(float(index + 1) / float(scale.stops.length)) / 100.0}%`).join(',')})` }}>
+    </div>
+  }
+
 }
 
 
@@ -129,20 +170,67 @@ export class ColorScheme {
   }
 }
 
+
+
 export class LinearColorScale {
-  constructor(stop1, stop2) {
-    this.interpolator = d3v5.interpolateRgb(stop1.hex, stop2.hex)
-    this.stop1 = stop1
-    this.stop2 = stop2
+  constructor(stops, type) {
+    this.stops = stops
+    this.type = type
+    this.interpolator = d3v5.scaleLinear()
+      .domain([0, 1]).range(this.stops.map(stop => stop.hex))
+
   }
 
   createMapping(range) {
-    return new SequentialScaleMapping(this, range)
+    if (this.type == "continuous") {
+      return new SequentialScaleMapping(this, range)
+    } else {
+      return new QualitativeScaleMapping(this, range)
+    }
   }
 
   map(value) {
-    var d3color = d3v5.color(this.interpolator(value))
-    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
+    if (this.type == "continuous") {
+      var d3color = d3v5.color(this.interpolator(value))
+      return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
+    } else {
+      return this.stops[value]
+    }
+  }
+}
+
+export class ContinuosScale extends LinearColorScale {
+  constructor(stops) {
+    super(stops, "continuous");
+  }
+}
+
+export class DiscreteScale extends LinearColorScale {
+  constructor(stops) {
+    super(stops, "discrete")
+  }
+}
+
+export class DiscreteMapping {
+  constructor(scale, values) {
+    this.scale = scale
+    this.values = values
+  }
+
+  map(value) {
+    return this.scale.map(this.values.indexOf(value) % this.values.length)
+  }
+}
+
+export class ContinuousMapping {
+  constructor(scale, range) {
+    this.scale = scale
+    this.range = range
+  }
+
+  map(value) {
+    var normalized = (value - this.range.min) / (this.range.max - this.range.min)
+    return this.scale.map(normalized)
   }
 }
 
@@ -152,6 +240,7 @@ export class SequentialColorScheme {
   }
 
   createMapping(range) {
+    
     return new SequentialScaleMapping(this, range)
   }
 
@@ -172,20 +261,6 @@ export class DivergingColorScheme {
   map(value) {
     var d3color = d3v5.color(d3v5.interpolatePRGn(value))
     return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
-  }
-}
-
-export class TableuVectorColorScheme extends ColorScheme {
-  constructor() {
-    super([
-      new SchemeColor("#a6cee3"),
-      new SchemeColor("#1f78b4"),
-      new SchemeColor("#b2df8a"),
-      new SchemeColor("#33a02c"),
-      new SchemeColor("#fb9a99"),
-      new SchemeColor("#e31a1c"),
-      new SchemeColor("#fdbf6f")
-    ])
   }
 }
 

@@ -16,7 +16,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Slider from '@material-ui/core/Slider';
-import { DefaultLineColorScheme, TableuVectorColorScheme, Scales, LinearColorScale, SchemeColor } from "./util/colors";
+import { DefaultLineColorScheme, TableuVectorColorScheme, Scales, LinearColorScale, SchemeColor, ContinuosScale, DiscreteScale } from "./util/colors";
 import { DefaultVectorColorScheme } from "./util/colors";
 import { Input, Divider } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
@@ -80,7 +80,9 @@ class Application extends React.Component {
       legendSelected: {},
       checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true },
 
-      testScale : new LinearColorScale(new SchemeColor('#a6611a'), new SchemeColor('#018571'))
+      selectedScaleIndex: 0,
+      selectedScale: null,
+      definedScales: null
     }
 
     this.threeRef = React.createRef()
@@ -90,6 +92,7 @@ class Application extends React.Component {
     this.onAggregate = this.onAggregate.bind(this)
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
+    this.onColorScaleChanged = this.onColorScaleChanged.bind(this)
   }
 
   componentDidMount() {
@@ -173,7 +176,7 @@ class Application extends React.Component {
   finite() {
     // Get categorical information about data set
     this.categoryOptions = calculateOptions(this.vectors, this.categories)
-
+    console.log("hi")
 
     // Update shape legend
     this.setState({
@@ -198,8 +201,13 @@ class Application extends React.Component {
 
     var defaultColorAttribute = this.categoryOptions.getAttribute("color", "algo", "categorical")
     if (defaultColorAttribute) {
+      state.definedScales = this.defaultScalesForAttribute(defaultColorAttribute)
+      state.selectedScaleIndex = 0
       state.selectedVectorByColor = defaultColorAttribute.key
       state.vectorByColor = defaultColorAttribute
+
+
+      this.threeRef.current.particles.colorCat(defaultColorAttribute, state.definedScales[state.selectedScaleIndex])
     }
 
     var defaultBrightnessAttribute = this.categoryOptions.getAttribute("transparency", "age", "sequential")
@@ -210,8 +218,19 @@ class Application extends React.Component {
 
     this.setState(state)
 
-    this.threeRef.current.particles.colorCat(defaultColorAttribute)
+
+
     this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute)
+  }
+
+  onColorScaleChanged(scale, index) {
+    this.setState({
+      selectedScale: scale,
+      selectedScaleIndex: index
+    })
+
+    this.threeRef.current.particles.setColorScale(scale)
+    this.threeRef.current.particles.updateColor()
   }
 
   onDataSelected(dataset, json) {
@@ -250,8 +269,41 @@ class Application extends React.Component {
     this.props.onLineSelect(col.algo, event.target.checked)
   }
 
+
+  defaultScalesForAttribute(attribute) {
+    if (attribute.type == 'categorical') {
+      return [
+        new DiscreteScale([
+          new SchemeColor("#1b9e77"),
+          new SchemeColor("#d95f02"),
+          new SchemeColor("#7570b3"),
+          new SchemeColor("#e7298a"),
+          new SchemeColor("#66a61e"),
+          new SchemeColor("#e6ab02"),
+          new SchemeColor("#a6761d"),
+          new SchemeColor("#666666")
+        ]),
+        new DiscreteScale([
+          new SchemeColor("#1b9e77"),
+          new SchemeColor("#d95f02"),
+          new SchemeColor("#7570b3"),
+          new SchemeColor("#e7298a"),
+          new SchemeColor("#66a61e"),
+          new SchemeColor("#e6ab02"),
+          new SchemeColor("#a6761d"),
+          new SchemeColor("#666666")
+        ])
+      ]
+    } else {
+      return [
+        new ContinuosScale([new SchemeColor('#a6611a'), new SchemeColor('#018571'), new SchemeColor('#018571')]),
+        new ContinuosScale([new SchemeColor('#ff0000'), new SchemeColor('#ffffff'), new SchemeColor('#00ff00')])
+      ]
+    }
+  }
+
   render() {
-    //<Scales scale={this.state.testScale}></Scales>
+    //
     //<ChooseFileDialog onChange={this.onDataSelected} open={this.state.fileDialogOpen}></ChooseFileDialog>
     return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
       <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto' }}>
@@ -264,7 +316,7 @@ class Application extends React.Component {
 
           <Typography style={{ padding: '10px 0px 10px 0px' }}>Dataset</Typography>
 
-          
+
           <DatasetSelector ref={this.setSelector} onChange={this.onDataSelected} />
 
           <Divider></Divider>
@@ -409,7 +461,25 @@ class Application extends React.Component {
                         vectorByColor: attribute
                       })
 
-                      this.threeRef.current.particles.colorCat(attribute)
+                      var mapping = null
+                      var state = {}
+                      if (attribute != null && attribute.type == 'categorical') {
+                        state = {
+                          selectedScaleIndex: 0,
+                          definedScales: this.defaultScalesForAttribute(attribute)
+                        }
+
+                        this.setState(state)
+                      } else if (attribute != null) {
+                        state = {
+                          selectedScaleIndex: 0,
+                          definedScales: this.defaultScalesForAttribute(attribute)
+                        }
+
+                        this.setState(state)
+                      }
+
+                      this.threeRef.current.particles.colorCat(attribute, attribute == null ? null : state.definedScales[state.selectedScaleIndex])
                     }}
                   >
                     <MenuItem value="">None</MenuItem>
@@ -419,7 +489,9 @@ class Application extends React.Component {
                   </Select>
                 </FormControl>
 
-                
+                {this.state.definedScales != null && this.state.definedScales.length > 0 ?
+                  <Scales selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></Scales>
+                  : <div></div>}
               </Grid>
               :
               <div></div>

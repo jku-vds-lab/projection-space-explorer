@@ -7,7 +7,7 @@ var fragmentShaders = require('./fragmentshaders')
 var vertexShaders = require('./vertexshaders')
 var Meshy = require('three.meshline');
 
-import { SequentialColorScheme, DefaultVectorColorScheme, DivergingColorScheme, NoMapping } from '../util/colors'
+import { SequentialColorScheme, DefaultVectorColorScheme, DivergingColorScheme, NoMapping, DiscreteMapping, ContinuousMapping } from '../util/colors'
 
 
 var Shapes = {
@@ -344,42 +344,40 @@ export class PointVisualization {
     this.mesh.geometry.attributes.type.needsUpdate = true
   }
 
-  colorCat(category) {
+  colorCat(category, scale) {
     this.colorAttribute = category
 
     if (category == null) {
       
-      this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
+      //this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
     } else {
       if (category.type == 'categorical') {
-        if ("values" in category) {
-          this.vectorColorScheme = new DefaultVectorColorScheme().createMapping(category.values)
-        } else {
-          this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector[category.key]))])
-        }
-        
-      }
-
-      var min = null, max = null
-      if (category.key in this.dataset.ranges) {
-        min = this.dataset.ranges[category.key].min
-        max = this.dataset.ranges[category.key].max
+        this.vectorColorScheme = new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[category.key]))])
       } else {
-        var filtered = this.vectors.map(vector => vector[category.key])
-        max = Math.max(...filtered)
-        min = Math.min(...filtered)
-      }
-
-      if (category.type == 'sequential') {
-        console.log([ min, max ])
-        this.vectorColorScheme = new SequentialColorScheme().createMapping({ min: min, max: max })
-      }
-      if (category.type == 'diverging') {
-        this.vectorColorScheme = new DivergingColorScheme().createMapping({ min: min, max: max })
+        var min = null, max = null
+        if (category.key in this.dataset.ranges) {
+          min = this.dataset.ranges[category.key].min
+          max = this.dataset.ranges[category.key].max
+        } else {
+          var filtered = this.vectors.map(vector => vector[category.key])
+          max = Math.max(...filtered)
+          min = Math.min(...filtered)
+        }
+  
+        if (category.type != 'categorical') {
+          console.log([ min, max ])
+          this.vectorColorScheme = new ContinuousMapping(scale, { min: min, max: max })
+        }
       }
     }
 
     this.updateColor()
+  }
+
+  setColorScale(colorScale) {
+    if (this.vectorColorScheme != null) {
+      this.vectorColorScheme.scale = colorScale
+    }
   }
 
   transparencyCat(category) {
