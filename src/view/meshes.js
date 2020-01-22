@@ -232,7 +232,7 @@ export class PointVisualization {
         vertex = vertices[i];
         vertex.toArray(positions, i * 3);
 
-        color.setHex(this.vectorColorScheme.map(data[i].algo).hex);
+        color.setHex('#000000');
 
         // Set the globalIndex which belongs to a specific vertex
         vector.globalIndex = i
@@ -348,7 +348,7 @@ export class PointVisualization {
     this.colorAttribute = category
 
     if (category == null) {
-      
+      this.vectorColorScheme = null
       //this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
     } else {
       if (category.type == 'categorical') {
@@ -463,10 +463,6 @@ export class PointVisualization {
   }
 
   updateColor() {
-    if (this.vectorColorScheme == null) {
-      return null
-    }
-
     var color = this.mesh.geometry.attributes.customColor.array
 
     this.vectors.forEach(vector => {
@@ -475,7 +471,12 @@ export class PointVisualization {
       if (this.colorAttribute != null) {
         rgb = this.vectorColorScheme.map(vector[this.colorAttribute.key]).rgb
       } else {
-        rgb = this.vectorColorScheme.map(vector.algo).rgb
+        var col = this.segments[vector.lineIndex].line.material.color
+        rgb = {
+          r: col.r * 255.0,
+          g: col.g * 255.0,
+          b: col.b * 255.0
+        }
       }
       
       

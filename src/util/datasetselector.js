@@ -358,54 +358,61 @@ export class DatasetSelector extends React.Component {
     render() {
         return <Grid
             container
-            justify="center"
+            item
             alignItems="stretch"
-            direction="column">
-            <FormControl>
-                <InputLabel id="demo-simple-select-placeholder-label-label">Select Predefined</InputLabel>
-                <Select labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+            direction="column"
+            style={{padding: '0 16px'}}>
 
-                    value={this.state.value}
-                    onChange={this.handleChange}>
+            <Grid container item alignItems="stretch" direction="column">
+                <FormControl>
+                    <InputLabel id="demo-simple-select-placeholder-label-label">Select Predefined</InputLabel>
+                    <Select labelId="demo-simple-select-label"
+                        id="demo-simple-select"
 
-                    {this.database.data.map(entry => {
-                        return <MenuItem value={entry.path}>{entry.display}</MenuItem>
-                    })}
-                </Select>
-            </FormControl>
+                        value={this.state.value}
+                        onChange={this.handleChange}>
 
-            <input
-                accept="image/*"
-                id="raised-button-file"
-                multiple
-                type="file"
-                onChange={(e) => {
-                    var files = e.target.files
-                    if (files == null || files.length <= 0) {
-                        return;
-                    }
+                        {this.database.data.map(entry => {
+                            return <MenuItem value={entry.path}>{entry.display}</MenuItem>
+                        })}
+                    </Select>
+                </FormControl>
+            </Grid>
 
-                    var file = files[0]
+            <Grid container item>
+                <input
+                style={{width:'100%'}}
+                    accept="image/*"
+                    id="raised-button-file"
+                    multiple
+                    type="file"
+                    onChange={(e) => {
+                        var files = e.target.files
+                        if (files == null || files.length <= 0) {
+                            return;
+                        }
 
-                    var reader = new FileReader()
-                    reader.onload = (event) => {
-                        var content = event.target.result
+                        var file = files[0]
+
+                        var reader = new FileReader()
+                        reader.onload = (event) => {
+                            var content = event.target.result
 
 
-                        var vectors = d3v5.csvParse(content)
+                            var vectors = d3v5.csvParse(content)
 
-                        var ranges = preprocess(vectors)
+                            var ranges = preprocess(vectors)
 
-                        var segments = getSegs(vectors)
+                            var segments = getSegs(vectors)
 
 
-                        var infer = new InferCategory(vectors, segments)
-                        this.props.onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType(Object.keys(vectors[0])) }), infer.load(ranges))
-                    }
-                    reader.readAsText(file)
-                }}
-            />
+                            var infer = new InferCategory(vectors, segments)
+                            this.props.onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType(Object.keys(vectors[0])) }), infer.load(ranges))
+                        }
+                        reader.readAsText(file)
+                    }}
+                />
+            </Grid>
         </Grid>
     }
 }

@@ -4,7 +4,10 @@ var chess = require('./problems/chess')
 var rubik = require('./problems/rubik')
 var neural = require('./problems/neural')
 
-
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import { ShapeLegend, calculateOptions, Legend, LegendFun } from './view/categorical'
 import { makeStyles } from '@material-ui/core/styles';
@@ -324,24 +327,42 @@ class Application extends React.Component {
           container
           justify="center"
           alignItems="stretch"
-          direction="column"
-          style={{ padding: '10px' }}>
-
-          <Typography style={{ padding: '10px 0px 10px 0px' }}>Dataset</Typography>
-
+          direction="column">
 
           <DatasetSelector ref={this.setSelector} onChange={this.onDataSelected} />
 
-          <Divider></Divider>
+          <Divider style={{ padding: '0 4px' }} />
+          <div>
+            <Typography
+              style={{ margin: '5px 0 0px 16px' }}
+              variant="button"
+              display="block"
+            >
+              Lines
+        </Typography>
+          </div>
 
-          <Typography style={{ padding: '10px 0px 10px 0px' }}>Lines</Typography>
 
-          <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
+          <Grid
+            container
+            justify="center"
+            alignItems="stretch"
+            direction="column"
+            style={{ padding: '0 16px' }}>
+            <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
+          </Grid>
 
-
-          <Divider></Divider>
-
-          <Typography style={{ padding: '10px 0px 10px 0px' }}>Vectors</Typography>
+          <Divider style={{ padding: '0 4px' }} />
+          <div>
+            <Typography
+              style={{ margin: '0px 0 0px 16px' }}
+              color="textPrimary"
+              variant="button"
+              display="block"
+            >
+              Points
+        </Typography>
+          </div>
 
           {
             this.categoryOptions != null && this.categoryOptions.hasCategory("shape") ?
@@ -349,7 +370,8 @@ class Application extends React.Component {
                 container
                 justify="center"
                 alignItems="stretch"
-                direction="column">
+                direction="column"
+                style={{ padding: '0 16px' }}>
                 <FormControl>
                   <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
                   <Select labelId="vectorByShapeSelectLabel"
@@ -386,7 +408,8 @@ class Application extends React.Component {
                 container
                 justify="center"
                 alignItems="stretch"
-                direction="column">
+                direction="column"
+                style={{ padding: '0 16px' }}>
                 <FormControl>
                   <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
                   <Select labelId="vectorByTransparencySelectLabel"
@@ -421,7 +444,8 @@ class Application extends React.Component {
                 container
                 justify="center"
                 alignItems="stretch"
-                direction="column">
+                direction="column"
+                style={{ padding: '0 16px' }}>
                 <FormControl>
                   <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
                   <Select labelId="vectorBySizeSelectLabel"
@@ -454,69 +478,71 @@ class Application extends React.Component {
             this.categoryOptions != null && this.categoryOptions.hasCategory("color") ?
               <Grid
                 container
-                justify="center"
+                item
                 alignItems="stretch"
-                direction="column">
-                <FormControl>
-                  <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
-                  <Select labelId="vectorByColorSelectLabel"
-                    id="vectorByColorSelect"
-                    displayEmpty
-                    value={this.state.selectedVectorByColor}
-                    onChange={(event) => {
-                      var attribute = null
-                      if (event.target.value != "") {
-                        attribute = this.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
-                      }
+                direction="column"
+                style={{ padding: '0 16px' }}
+              >
 
-                      this.setState({
-                        selectedVectorByColor: event.target.value,
-                        vectorByColor: attribute
-                      })
-
-                      var mapping = null
-                      var state = {}
-                      if (attribute != null && attribute.type == 'categorical') {
-                        state = {
-                          selectedScaleIndex: 0,
-                          definedScales: this.defaultScalesForAttribute(attribute)
+                <Grid container item alignItems="stretch" direction="column">
+                  <FormControl>
+                    <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
+                    <Select labelId="vectorByColorSelectLabel"
+                      id="vectorByColorSelect"
+                      displayEmpty
+                      value={this.state.selectedVectorByColor}
+                      onChange={(event) => {
+                        var attribute = null
+                        if (event.target.value != "") {
+                          attribute = this.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+                        }
+                        var state = {
+                          selectedVectorByColor: event.target.value,
+                          vectorByColor: attribute,
+                          definedScales: [],
+                          selectedScaleIndex: 0
                         }
 
-                        this.setState(state)
-                      } else if (attribute != null) {
-                        state = {
-                          selectedScaleIndex: 0,
-                          definedScales: this.defaultScalesForAttribute(attribute)
+                        if (attribute != null && attribute.type == 'categorical') {
+                          state.selectedScaleIndex = 0
+                          state.definedScales = this.defaultScalesForAttribute(attribute)
+                        } else if (attribute != null) {
+                          state.selectedScaleIndex = 0
+                          state.definedScales = this.defaultScalesForAttribute(attribute)
                         }
-
                         this.setState(state)
-                      }
+                        this.threeRef.current.particles.colorCat(attribute, attribute == null ? null : state.definedScales[state.selectedScaleIndex])
 
-                      this.threeRef.current.particles.colorCat(attribute, attribute == null ? null : state.definedScales[state.selectedScaleIndex])
-                    }}
-                  >
-                    <MenuItem value="">None</MenuItem>
-                    {this.categoryOptions.getCategory("color").attributes.map(attribute => {
-                      return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
-                    })}
-                  </Select>
-                </FormControl>
-
-                {this.state.definedScales != null && this.state.definedScales.length > 0 ?
-                  <Scales selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></Scales>
-                  : <div></div>}
+                      }}
+                    >
+                      <MenuItem value="">None</MenuItem>
+                      {this.categoryOptions.getCategory("color").attributes.map(attribute => {
+                        return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                      })}
+                    </Select>
+                  </FormControl>
+                </Grid>
               </Grid>
               :
               <div></div>
           }
 
+          <Grid item>
+            {this.state.definedScales != null && this.state.definedScales.length > 0 ?
+              <Scales selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></Scales>
+              : <div></div>}
+          </Grid>
 
-          <ShapeLegend category={this.state.vectorByShape} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
-            var state = this.state
-            state.checkboxes[symbol] = event.target.checked
-            this.setState({ checkboxes: state.checkboxes })
-            this.threeRef.current.filterPoints(state.checkboxes)
-          }}></ShapeLegend>
+          <Divider></Divider>
+
+          <Grid item style={{ padding: '0 16px' }}>
+            <ShapeLegend category={this.state.vectorByShape} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
+              var state = this.state
+              state.checkboxes[symbol] = event.target.checked
+              this.setState({ checkboxes: state.checkboxes })
+              this.threeRef.current.filterPoints(state.checkboxes)
+            }}></ShapeLegend>
+          </Grid>
         </Grid>
 
       </div>
