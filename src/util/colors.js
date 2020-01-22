@@ -35,7 +35,7 @@ export var Scales = ({ selectedScaleIndex, onChange, definedScales }) => {
           onClick={handleClickListItem}
         >
           <ColorScaleChooser scale={definedScales[selectedScaleIndex]}></ColorScaleChooser>
-          
+
         </ListItem>
       </List>
       <Menu
@@ -177,7 +177,7 @@ export class LinearColorScale {
     this.stops = stops
     this.type = type
     this.interpolator = d3v5.scaleLinear()
-      .domain([0, 1]).range(this.stops.map(stop => stop.hex))
+      .domain(this.stops.map((stop, index) => (1 / (this.stops.length - 1)) * index)).range(this.stops.map(stop => stop.hex))
 
   }
 
@@ -203,11 +203,20 @@ export class ContinuosScale extends LinearColorScale {
   constructor(stops) {
     super(stops, "continuous");
   }
+
+  map(value) {
+    var d3color = d3v5.color(this.interpolator(value))
+    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
+  }
 }
 
 export class DiscreteScale extends LinearColorScale {
   constructor(stops) {
     super(stops, "discrete")
+  }
+
+  map(value) {
+    return this.stops[value]
   }
 }
 
@@ -240,7 +249,7 @@ export class SequentialColorScheme {
   }
 
   createMapping(range) {
-    
+
     return new SequentialScaleMapping(this, range)
   }
 

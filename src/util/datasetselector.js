@@ -26,9 +26,25 @@ class InferCategory {
         this.segments = segments
     }
 
+    inferType(header) {
+        if (header.includes('up00') && header.contains('back00')) {
+            return "rubik"
+        }
+        if (header.includes('cf00')) {
+            return 'neural'
+        }
+        if (header.includes('a8')) {
+            return 'chess'
+        }
+        if (header.includes('new_y')) {
+            return 'story'
+        }
+
+        return 'none'
+    }
 
     loadLine(ranges) {
-        
+
     }
 
     load(ranges) {
@@ -60,6 +76,8 @@ class InferCategory {
         header.forEach(key => {
             // Check for given header key if its categorical, sequential or diverging
             var distinct = [... new Set(this.vectors.map(vector => vector[key]))]
+            console.log(key)
+            console.log(distinct)
             if (distinct.length > 8) {
                 // Check if values are numeric
                 if (!distinct.find(value => isNaN(value))) {
@@ -95,7 +113,7 @@ class InferCategory {
                             "max": max
                         },
                         "values": {
-                            range: [ 0.3, 1.0 ]
+                            range: [0.3, 1.0]
                         }
                     })
 
@@ -108,12 +126,12 @@ class InferCategory {
                             "max": max
                         },
                         "values": {
-                            range: [ 0.5, 1.5 ]
+                            range: [0.5, 1.5]
                         }
                     })
                 }
             } else {
-                if (distinct.find(value => isNaN(value))) {
+                if (distinct.find(value => isNaN(value)) || key == 'algo') {
                     options.find(e => e.category == 'color').attributes.push({
                         "key": key,
                         "name": key,
@@ -138,6 +156,7 @@ class InferCategory {
             }
         })
 
+        console.log(options)
         return options
     }
 }
@@ -249,11 +268,13 @@ function loadFromPath(path, callback) {
         // Split vectors into segments
         var segments = getSegs(vectors)
 
+
+        callback(new Dataset(vectors, segments, ranges, entry), new InferCategory(vectors, segments).load(ranges))
         // Load json file if present
         d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
-            callback(new Dataset(vectors, segments, ranges, entry), categories)
+            //callback(new Dataset(vectors, segments, ranges, entry), categories)
         }).catch(() => {
-            callback(new Dataset(vectors, segments, ranges, entry), "")
+            //callback(new Dataset(vectors, segments, ranges, entry), "")
         })
     })
 }
@@ -379,8 +400,8 @@ export class DatasetSelector extends React.Component {
                         var segments = getSegs(vectors)
 
 
-
-                        this.props.onChange(new Dataset(vectors, segments, ranges, { type: "none" }), new InferCategory(vectors, segments).load(ranges))
+                        var infer = new InferCategory(vectors, segments)
+                        this.props.onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType(Object.keys(vectors[0])) }), infer.load(ranges))
                     }
                     reader.readAsText(file)
                 }}

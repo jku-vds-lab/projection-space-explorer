@@ -297,12 +297,18 @@ class Application extends React.Component {
     } else {
       return [
         new ContinuosScale([
-          new SchemeColor('#fef0d9'),
-          new SchemeColor('#990000')
+          new SchemeColor('#fdcc8a'),
+          new SchemeColor('#b30000')
         ]),
         new ContinuosScale([
-          new SchemeColor('#c51b7d'),
-          new SchemeColor('#4d9221'),
+          new SchemeColor('#a6611a'),
+          new SchemeColor('#f5f5f5'),
+          new SchemeColor('#018571')
+        ]),
+        new ContinuosScale([
+          new SchemeColor('#ca0020'),
+          new SchemeColor('#f7f7f7'),
+          new SchemeColor('#0571b0')
         ])
 
       ]
