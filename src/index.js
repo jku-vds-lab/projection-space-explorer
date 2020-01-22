@@ -322,7 +322,7 @@ class Application extends React.Component {
     //
     //<ChooseFileDialog onChange={this.onDataSelected} open={this.state.fileDialogOpen}></ChooseFileDialog>
     return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
-      <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto' }}>
+      <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto', 'overflow-x': 'hidden' }}>
         <Grid
           container
           justify="center"
@@ -561,6 +561,7 @@ class Application extends React.Component {
           <div class="text-center" style={{ width: "100%", height: "100%", position: "relative" }}>
             <div class="card-body p-2">
               <h6 class="card-title">Selected State</h6>
+              <StoryLegend selectionState={this.state.selectionState}></StoryLegend>
               <div id="info" class="d-flex align-items-stretch justify-content-center"></div>
             </div>
           </div>
@@ -570,7 +571,7 @@ class Application extends React.Component {
             <div class="card-body p-2">
               <h6 class="card-title">State Similiarity</h6>
 
-              <StoryLegend selectionState={this.state.selectionState}></StoryLegend>
+
               <div id="aggregate" class="d-flex align-items-stretch justify-content-center"></div>
             </div>
           </div>
