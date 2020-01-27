@@ -9,6 +9,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import DragAndDrop from './draganddrop';
+import { LinearProgress } from '@material-ui/core';
 var d3v5 = require('d3')
 
 const DEFAULT_LINE = "L"
@@ -307,63 +308,77 @@ export function loadFromPath(path, callback) {
 export var DatasetList = ({ onChange }) => {
     var database = new DatasetDatabase()
 
+    const [loading, setLoad] = React.useState(false)
+
     var handleClick = (path) => {
         loadFromPath(path, onChange)
     }
 
     var database = new DatasetDatabase()
     var types = database.getTypes()
-    console.log(types)
 
-    return <Grid container direction="row" justify="center" alignItems="center">
-        <Grid item style={{ width: 300, maxHeight: 400, overflow: 'auto' }}>
-            <List subheader={<li />} style={{ backgroundColor: 'white' }}>
-                {
-                    types.map(type => (
-                        <li style={{ backgroundColor: 'inherit' }}>
-                            <ul style={{ backgroundColor: 'inherit' }}>
-                                <ListSubheader>{type}</ListSubheader>
-                                {
-                                    database.data.filter(value => value.type == type).map(entry => {
-                                        return <ListItem key={entry.path} value={entry.path} button onClick={() => handleClick(entry.path)}>
-                                            <ListItemText primary={entry.display}></ListItemText>
-                                        </ListItem>
-                                    })
-                                }
-                            </ul>
-                        </li>
-                    ))
-                }
+    {
 
-            </List>
-        </Grid>
-        <Grid style={{ width: 300, padding: '0 30px' }} item container justify="center" alignItems="stretch" direction="column">
-            <DragAndDrop accept="image/*" handleDrop={(files) => {
-                if (files == null || files.length <= 0) {
-                    return;
-                }
+        return loading ?
+            <Grid container direction="column" justify="center" alignItems="center" style={{ width: 600, height: 400 }}>
+                <LinearProgress style={{ width: 500 }} />
+            </Grid>
+            :
+            <Grid container direction="row" justify="center" alignItems="center" style={{ width: 600, height: 400 }}>
+                <Grid item style={{ width: '50%', maxHeight: 400, overflow: 'auto' }}>
+                    <List subheader={<li />} style={{ backgroundColor: 'white' }}>
+                        {
+                            types.map(type => (
+                                <li style={{ backgroundColor: 'inherit' }}>
+                                    <ul style={{ backgroundColor: 'inherit' }}>
+                                        <ListSubheader>{type}</ListSubheader>
+                                        {
+                                            database.data.filter(value => value.type == type).map(entry => {
+                                                return <ListItem key={entry.path} value={entry.path} button onClick={() => {
+                                                    setLoad(true)
+                                                    handleClick(entry.path)
+                                                }
+                                                }>
+                                                    <ListItemText primary={entry.display}></ListItemText>
+                                                </ListItem>
+                                            })
+                                        }
+                                    </ul>
+                                </li>
+                            ))
+                        }
 
-                var file = files[0]
+                    </List>
+                </Grid>
+                <Grid style={{ width: '50%', padding: '0 30px' }} item container justify="center" alignItems="stretch" direction="column">
+                    <DragAndDrop accept="image/*" handleDrop={(files) => {
+                        if (files == null || files.length <= 0) {
+                            return;
+                        }
 
-                var reader = new FileReader()
-                reader.onload = (event) => {
-                    var content = event.target.result
+                        var file = files[0]
+
+                        var reader = new FileReader()
+                        reader.onload = (event) => {
+                            var content = event.target.result
 
 
-                    var vectors = d3v5.csvParse(content)
+                            var vectors = d3v5.csvParse(content)
 
-                    var ranges = preprocess(vectors)
+                            var ranges = preprocess(vectors)
 
-                    var segments = getSegs(vectors)
+                            var segments = getSegs(vectors)
 
-                    onChange(new Dataset(vectors, segments, ranges, { type: "none" }), "")
-                }
-                reader.readAsText(file)
-            }}>
-                <div style={{ height: 200 }}></div>
-            </DragAndDrop>
-        </Grid>
-    </Grid>
+                            onChange(new Dataset(vectors, segments, ranges, { type: "none" }), "")
+                        }
+                        reader.readAsText(file)
+                    }}>
+                        <div style={{ height: 200 }}></div>
+                    </DragAndDrop>
+                </Grid>
+            </Grid>
+    }
+
 }
 
 export class DatasetSelector extends React.Component {

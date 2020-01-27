@@ -62,7 +62,7 @@ var ChooseFileDialog = ({ onChange }) => {
     <Button variant="contained" onClick={(event) => {
       setOpen(true)
     }}>Load Dataset</Button>
-    <Dialog open={open}>
+    <Dialog open={open} onClose={() => { setOpen(false) }}>
       <DatasetList onChange={(dataset, json) => {
         setOpen(false)
         onChange(dataset, json)
