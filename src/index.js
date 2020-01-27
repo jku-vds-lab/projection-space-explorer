@@ -21,7 +21,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Slider from '@material-ui/core/Slider';
 import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, LinearColorScale, SchemeColor, ContinuosScale, DiscreteScale } from "./util/colors";
 import { DefaultVectorColorScheme } from "./util/colors";
-import { Input, Divider } from "@material-ui/core";
+import { Input, Divider, Card, CardContent } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -31,10 +31,27 @@ import MaskedInput from "react-text-mask";
 import { StoryLegend } from "./legends/story";
 import DragAndDrop from "./util/draganddrop";
 import { loadFromPath, testFromPath } from './util/datasetselector'
+import { thresholdFreedmanDiaconis } from "d3";
+import { RubikLegend } from "./legends/rubik";
+import { NeuralLegend } from "./legends/neural";
+import { ChessLegend } from "./legends/chess";
 
 
 
 
+var GenericLegend = ({ type, vectors, aggregate }) => {
+  if (type == 'story') {
+    return <StoryLegend selection={vectors}></StoryLegend>
+  } else if (type == 'rubik') {
+    return <RubikLegend selection={vectors}></RubikLegend>
+  } else if (type == 'neural') {
+    return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
+  } else if (type == 'chess') {
+    return <ChessLegend selection={vectors}></ChessLegend>
+  } else {
+    return <div></div>
+  }
+}
 
 
 window.showGuide = function () {
@@ -79,7 +96,8 @@ class Application extends React.Component {
     super(props)
 
     this.state = {
-      selectionState: null,
+      selectionState: [],
+      selectionAggregation: [],
 
       fileDialogOpen: true,
 
@@ -100,7 +118,9 @@ class Application extends React.Component {
 
       selectedScaleIndex: 0,
       selectedScale: null,
-      definedScales: null
+      definedScales: null,
+
+      datasetType: 'none'
     }
 
     this.threeRef = React.createRef()
@@ -146,35 +166,28 @@ class Application extends React.Component {
   }
 
 
-  setAggregateView(element, list, aggregation, type) {
-    element.innerHTML = ""
-    this.setState({ selectionState: null })
+  setAggregateView(element, list, type) {
+    if (list == null || list.length <= 0) {
+      this.setState({ selectionAggregation: [] })
+    } else {
+      this.setState({ selectionAggregation: list })
+    }
+  }
 
-    if (type == "chess") {
-      element.innerHTML = chess.aggregate(list)
-    }
-    if (type == "rubik") {
-      element.innerHTML = rubik.aggregate(list)
-    }
-    if (type == "neural") {
-      element.innerHTML = neural.aggregate(list, aggregation)
-    }
-    if (type == "none" && list.length > 0) {
-      element.innerHTML = `<div>${list[0].legend}</div>`
-    }
-    if (type == 'story' && list.length > 0) {
-      this.setState({ selectionState: list[0] })
+  setSelectionView(element, list, type) {
+    if (list == null || list.length <= 0) {
+      this.setState({ selectionState: [] })
+    } else {
+      this.setState({ selectionState: list })
     }
   }
 
   onHover(selected) {
-    this.setAggregateView(document.getElementById('info'), selected, false, this.dataset.info.type)
-
-
+    this.setSelectionView(document.getElementById('info'), selected, this.dataset.info.type)
   }
 
   onAggregate(selected) {
-    this.setAggregateView(document.getElementById('aggregate'), selected, true, this.dataset.info.type)
+    this.setAggregateView(document.getElementById('aggregate'), selected, this.dataset.info.type)
   }
 
 
@@ -262,6 +275,8 @@ class Application extends React.Component {
     this.vectors = dataset.vectors
     this.segments = dataset.segments
     this.categories = json
+
+    this.setState({ datasetType: this.dataset.info.type })
 
     // Load new view
     this.loadData2()
@@ -573,23 +588,26 @@ class Application extends React.Component {
 
       <div style={{ width: "18rem", height: '100%', position: 'absolute', left: '18rem', top: '0px', pointerEvents: 'none' }} class="flex-shrink-0">
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
-          <div class="text-center" style={{ width: "100%", height: "100%", position: "relative" }}>
-            <div class="card-body p-2">
-              <h6 class="card-title">Selected State</h6>
-              <StoryLegend selectionState={this.state.selectionState}></StoryLegend>
-              <div id="info" class="d-flex align-items-stretch justify-content-center"></div>
-            </div>
-          </div>
+
+          <Card>
+            <CardContent>
+              <Typography gutterBottom variant="h6">Hover State</Typography>
+              <GenericLegend aggregate={false} type={this.state.datasetType} vectors={this.state.selectionState}></GenericLegend>
+              
+            </CardContent>
+          </Card>
+
         </div>
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
-          <div class="text-center" style={{ width: "100%", height: "100%", position: "relative" }}>
-            <div class="card-body p-2">
-              <h6 class="card-title">State Similiarity</h6>
+          <Card>
+            <CardContent>
+              <Typography gutterBottom variant="h6">Aggregation</Typography>
+              <GenericLegend aggregate={true} type={this.state.datasetType} vectors={this.state.selectionAggregation}></GenericLegend>
+              
+            </CardContent>
+          </Card>
 
 
-              <div id="aggregate" class="d-flex align-items-stretch justify-content-center"></div>
-            </div>
-          </div>
         </div>
       </div>
 

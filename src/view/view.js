@@ -291,6 +291,8 @@ export default class ThreeView extends React.Component {
                 } else {
                     this.currentAggregation = null
                     this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+
+                    this.props.onAggregate([])
                 }
             }
 

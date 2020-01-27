@@ -76,14 +76,27 @@ const marks = [
     },
 ];
 
+export var YearAggComp = ({}) => {
+    var lineStart = 60
+    var lineEnd = 232 - 60
+
+    return <svg width="232" height="96" viewBox="0 0 232 96">
+
+        <line x1={lineStart} y1="48" x2={lineEnd} y2="48" stroke="black" />
+
+        <text x="38" y="52" font-size="14" text-anchor="end">1800</text>
+        <text x="190" y="52" font-size="14">2015</text>
+    </svg>
+}
 
 export var YearComp = ({ oldYear, newYear }) => {
+    
     var lineStart = 60
-    var lineEnd = 272-60
+    var lineEnd = 232 - 60
     var oldX = lineStart + (lineEnd - lineStart) * ((oldYear - 1800) / 215)
     var newX = lineStart + (lineEnd - lineStart) * ((newYear - 1800) / 215)
 
-    return <svg width="272" height="96" viewBox="0 0 272 96">
+    return <svg width="232" height="96" viewBox="0 0 232 96">
 
         <line x1={lineStart} y1="48" x2={lineEnd} y2="48" stroke="black" />
 
@@ -95,18 +108,16 @@ export var YearComp = ({ oldYear, newYear }) => {
         <text x={oldX} y="32" font-size="14" text-anchor="middle">{oldYear}</text>
 
         <text x="38" y="52" font-size="14" text-anchor="end">1800</text>
-        <text x="230" y="52" font-size="14">2015</text>
+        <text x="190" y="52" font-size="14">2015</text>
     </svg>
 }
 
 
-export var StoryLegend = ({ selectionState }) => {
-    if (selectionState == null) {
+export var StoryLegend = ({ selection }) => {
+    if (selection == null) {
         return <div>
-
         </div>
     }
-
 
     var vertical = ["gdp", "child_mortality", "fertility", "life_expect", "population"]
     var horizontal = ["x", "y", "size"]
@@ -131,26 +142,72 @@ export var StoryLegend = ({ selectionState }) => {
                         <Typography component="div" fontWeight="fontWeightBold">Size</Typography>
                     </TableCell>
                 </TableRow>
-                {vertical.map(row => (
-                    <TableRow key={row.name}>
-                        <TableCell className={classes.rowtextcell} align="right">{row}</TableCell>
-                        {horizontal.map(col => {
-                            var newVal = selectionState[`new_${col}`]
-                            var oldVal = selectionState[`old_${col}`]
-                            if (newVal == row) {
-                                return <TableCell className={classes.cell} align="right"></TableCell>
-                            } else if (newVal != oldVal && oldVal == row) {
-                                return <TableCell className={classes.oldcell} align="right"></TableCell>
-                            }
-                            else {
-                                return <TableCell className={classes.nocell} align="right"></TableCell>
-                            }
-                        })}
-                    </TableRow>
-                ))}
+
+                {
+                    selection.length == 1 ?
+                        vertical.map(row => {
+                            var selectionState = selection[0]
+                            return <TableRow key={row.name}>
+                                <TableCell className={classes.rowtextcell} align="right">{row}</TableCell>
+                                {horizontal.map(col => {
+
+                                    var newVal = selectionState[`new_${col}`]
+                                    var oldVal = selectionState[`old_${col}`]
+                                    if (newVal == row) {
+                                        return <TableCell className={classes.cell} align="right"></TableCell>
+                                    } else if (newVal != oldVal && oldVal == row) {
+                                        return <TableCell className={classes.oldcell} align="right"></TableCell>
+                                    }
+                                    else {
+                                        return <TableCell className={classes.nocell} align="right"></TableCell>
+                                    }
+                                })}
+                            </TableRow>
+                        })
+                        :
+                        vertical.map(row => {
+                            return <TableRow key={row.name}>
+                                <TableCell className={classes.rowtextcell} align="right">{row}</TableCell>
+
+                                {horizontal.map(col => {
+
+                                    // col is x, y, size
+                                    // row is child_mortality... fertility
+
+                                    var percent =
+                                        selection.length > 0 ? selection.filter(value => value[`new_${col}`] == row).length / selection.length : 0
+
+
+
+                                    var A = WIDTH * HEIGHT
+                                    var A2 = (WIDTH * HEIGHT) * percent
+
+                                    return <TableCell className={classes.nocell} align="right">
+                                        <Grid align="center" justify="center" direction="column" container>
+                                            <Grid item>
+                                                <div style={{
+                                                    background: '#70AD47',
+                                                    width: Math.sqrt(((A / (A / A2)) * WIDTH) / HEIGHT),
+                                                    height: Math.sqrt(((A / (A / A2)) * HEIGHT) / WIDTH)
+                                                }}></div>
+                                            </Grid>
+                                        </Grid>
+                                    </TableCell>
+                                })}
+                            </TableRow>
+                        })
+                }
+
+
             </TableBody>
         </Table>
 
-        <YearComp oldYear={selectionState.old_year} newYear={selectionState.new_year}></YearComp>
+        {
+            selection.length == 1 ?
+                <YearComp oldYear={selection[0].old_year} newYear={selection[0].new_year}></YearComp>
+                :
+                <YearAggComp></YearAggComp>
+        }
+
     </Grid>
 }
