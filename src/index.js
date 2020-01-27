@@ -4,7 +4,7 @@ var chess = require('./problems/chess')
 var rubik = require('./problems/rubik')
 var neural = require('./problems/neural')
 
-import List from '@material-ui/core/List';
+import Button from '@material-ui/core/Button';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -19,7 +19,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Slider from '@material-ui/core/Slider';
-import { DefaultLineColorScheme, TableuVectorColorScheme, Scales, LinearColorScale, SchemeColor, ContinuosScale, DiscreteScale } from "./util/colors";
+import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, LinearColorScale, SchemeColor, ContinuosScale, DiscreteScale } from "./util/colors";
 import { DefaultVectorColorScheme } from "./util/colors";
 import { Input, Divider } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
@@ -29,6 +29,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MaskedInput from "react-text-mask";
 import { StoryLegend } from "./legends/story";
+import DragAndDrop from "./util/draganddrop";
+import { loadFromPath, testFromPath } from './util/datasetselector'
 
 
 
@@ -48,14 +50,27 @@ window.showGuide = function () {
 
 
 
-var ChooseFileDialog = ({ open, onChange }) => {
-  return <Dialog open={open}>
-    <DatasetList onChange={onChange}></DatasetList>
-  </Dialog>
+var ChooseFileDialog = ({ onChange }) => {
+  const [open, setOpen] = React.useState(false)
+
+  return <Grid
+    container
+    justify="center"
+    alignItems="stretch"
+    direction="column"
+    style={{ padding: '8px 16px' }}>
+    <Button variant="contained" onClick={(event) => {
+      setOpen(true)
+    }}>Load Dataset</Button>
+    <Dialog open={open}>
+      <DatasetList onChange={(dataset, json) => {
+        setOpen(false)
+        onChange(dataset, json)
+      }}></DatasetList>
+    </Dialog>
+  </Grid>
 }
 
-
-console.log(ChooseFileDialog)
 
 
 class Application extends React.Component {
@@ -112,10 +127,11 @@ class Application extends React.Component {
         preselect = "datasets/chess/chess16k.csv"
       }
 
-      this.setSelector.current.init(preselect)
+      loadFromPath(preselect, this.onDataSelected)
+      //this.setSelector.current.init(preselect)
     } else {
-
-      this.setSelector.current.init(preselect)
+      loadFromPath(preselect, (dataset, json) => { this.onDataSelected(dataset, json) })
+      //this.setSelector.current.init(preselect)
     }
 
     window.addEventListener('resize', this.onResize.bind(this))
@@ -179,7 +195,6 @@ class Application extends React.Component {
   finite() {
     // Get categorical information about data set
     this.categoryOptions = calculateOptions(this.vectors, this.categories)
-    console.log("hi")
 
     // Update shape legend
     this.setState({
@@ -237,8 +252,6 @@ class Application extends React.Component {
   }
 
   onDataSelected(dataset, json) {
-    console.log("test")
-    console.log(dataset)
     this.setState({ fileDialogOpen: false })
 
     // Dispose old view
@@ -320,7 +333,7 @@ class Application extends React.Component {
 
   render() {
     //
-    //<ChooseFileDialog onChange={this.onDataSelected} open={this.state.fileDialogOpen}></ChooseFileDialog>
+    //
     return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
       <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto', 'overflow-x': 'hidden' }}>
         <Grid
@@ -329,7 +342,9 @@ class Application extends React.Component {
           alignItems="stretch"
           direction="column">
 
-          <DatasetSelector ref={this.setSelector} onChange={this.onDataSelected} />
+          <Grid item>
+            <ChooseFileDialog ref={this.setSelector} onChange={this.onDataSelected}></ChooseFileDialog>
+          </Grid>
 
           <Divider style={{ padding: '0 4px' }} />
           <div>
@@ -341,7 +356,6 @@ class Application extends React.Component {
               Lines
         </Typography>
           </div>
-
 
           <Grid
             container
@@ -401,6 +415,15 @@ class Application extends React.Component {
               :
               <div></div>
           }
+
+          <Grid item style={{ padding: '0 16px' }}>
+            <ShapeLegend category={this.state.vectorByShape} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
+              var state = this.state
+              state.checkboxes[symbol] = event.target.checked
+              this.setState({ checkboxes: state.checkboxes })
+              this.threeRef.current.filterPoints(state.checkboxes)
+            }}></ShapeLegend>
+          </Grid>
 
           {
             this.categoryOptions != null && this.categoryOptions.hasCategory("transparency") ?
@@ -529,20 +552,12 @@ class Application extends React.Component {
 
           <Grid item>
             {this.state.definedScales != null && this.state.definedScales.length > 0 ?
-              <Scales selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></Scales>
+              <ColorScaleSelect selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></ColorScaleSelect>
               : <div></div>}
           </Grid>
 
-          <Divider></Divider>
 
-          <Grid item style={{ padding: '0 16px' }}>
-            <ShapeLegend category={this.state.vectorByShape} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
-              var state = this.state
-              state.checkboxes[symbol] = event.target.checked
-              this.setState({ checkboxes: state.checkboxes })
-              this.threeRef.current.filterPoints(state.checkboxes)
-            }}></ShapeLegend>
-          </Grid>
+
         </Grid>
 
       </div>

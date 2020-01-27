@@ -7,7 +7,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 
-export var Scales = ({ selectedScaleIndex, onChange, definedScales }) => {
+/**
+ * Component that lets user pick from a list of color scales.
+ */
+export var ColorScaleSelect = ({ selectedScaleIndex, onChange, definedScales }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClickListItem = event => {
@@ -34,7 +37,7 @@ export var Scales = ({ selectedScaleIndex, onChange, definedScales }) => {
           aria-label="when device is locked"
           onClick={handleClickListItem}
         >
-          <ColorScaleChooser scale={definedScales[selectedScaleIndex]}></ColorScaleChooser>
+          <ColorScaleMenuItem scale={definedScales[selectedScaleIndex]}></ColorScaleMenuItem>
 
         </ListItem>
       </List>
@@ -51,7 +54,7 @@ export var Scales = ({ selectedScaleIndex, onChange, definedScales }) => {
             selected={index === selectedScaleIndex}
             onClick={event => handleMenuItemClick(event, index)}
           >
-            <ColorScaleChooser scale={scale}></ColorScaleChooser>
+            <ColorScaleMenuItem scale={scale}></ColorScaleMenuItem>
           </MenuItem>
         ))}
       </Menu>
@@ -59,7 +62,7 @@ export var Scales = ({ selectedScaleIndex, onChange, definedScales }) => {
   )
 }
 
-export var ColorScaleChooser = ({ scale }) => {
+export var ColorScaleMenuItem = ({ scale }) => {
   if (scale.type == "continuous") {
     return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map(stop => stop.hex).join(',')})` }}>
     </div>
@@ -67,7 +70,6 @@ export var ColorScaleChooser = ({ scale }) => {
     return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map((stop, index) => `${stop.hex} ${(index / scale.stops.length) * 100.0}%, ${stop.hex} ${((index + 1) / scale.stops.length) * 100.0}%`).join(',')})` }}>
     </div>
   }
-
 }
 
 
@@ -87,17 +89,6 @@ export class QualitativeScaleMapping {
 
   map(value) {
     return this.scale.map(this.values.indexOf(value))
-  }
-}
-
-
-export class NoMapping {
-  constructor(scale) {
-    this.scale = scale
-  }
-
-  map(value) {
-    return this.scale.map[0]
   }
 }
 
@@ -186,15 +177,6 @@ export class LinearColorScale {
       return new SequentialScaleMapping(this, range)
     } else {
       return new QualitativeScaleMapping(this, range)
-    }
-  }
-
-  map(value) {
-    if (this.type == "continuous") {
-      var d3color = d3v5.color(this.interpolator(value))
-      return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
-    } else {
-      return this.stops[value]
     }
   }
 }

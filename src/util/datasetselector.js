@@ -8,6 +8,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import DragAndDrop from './draganddrop';
 var d3v5 = require('d3')
 
 const DEFAULT_LINE = "L"
@@ -76,8 +77,7 @@ class InferCategory {
         header.forEach(key => {
             // Check for given header key if its categorical, sequential or diverging
             var distinct = [... new Set(this.vectors.map(vector => vector[key]))]
-            console.log(key)
-            console.log(distinct)
+
             if (distinct.length > 8) {
                 // Check if values are numeric
                 if (!distinct.find(value => isNaN(value))) {
@@ -156,7 +156,6 @@ class InferCategory {
             }
         })
 
-        console.log(options)
         return options
     }
 }
@@ -164,7 +163,7 @@ class InferCategory {
 
 
 
-class DatasetDatabase {
+export class DatasetDatabase {
     constructor() {
         this.data = [
             {
@@ -250,14 +249,38 @@ class DatasetDatabase {
         ]
     }
 
+    getTypes() {
+        return [... new Set(this.data.map(value => value.type))]
+    }
+
     getByPath(path) {
         return this.data.filter(e => e.path == path)[0]
     }
 }
 
+export function testFromPath(path, callback) {
+    var entry = new DatasetDatabase().getByPath(path)
+
+    d3v5.csv(path).then(vectors => {
+        // Add missing attributes
+        var ranges = preprocess(vectors)
+
+        // Split vectors into segments
+        var segments = getSegs(vectors)
 
 
-function loadFromPath(path, callback) {
+        callback(new Dataset(vectors, segments, ranges, entry), new InferCategory(vectors, segments).load(ranges))
+        // Load json file if present
+        d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
+            //callback(new Dataset(vectors, segments, ranges, entry), categories)
+        }).catch(() => {
+            //callback(new Dataset(vectors, segments, ranges, entry), "")
+        })
+    })
+}
+
+export function loadFromPath(path, callback) {
+
     var entry = new DatasetDatabase().getByPath(path)
 
     // Load csv file
@@ -288,21 +311,34 @@ export var DatasetList = ({ onChange }) => {
         loadFromPath(path, onChange)
     }
 
+    var database = new DatasetDatabase()
+    var types = database.getTypes()
+    console.log(types)
+
     return <Grid container direction="row" justify="center" alignItems="center">
-        <List>
-            {database.data.map(entry => {
-                return <ListItem key={entry.path} value={entry.path} button onClick={() => handleClick(entry.path)}>
-                    <ListItemText primary={entry.display}></ListItemText>
-                </ListItem>
-            })}
-        </List>
-        <input
-            accept="image/*"
-            id="raised-button-file"
-            multiple
-            type="file"
-            onChange={(e) => {
-                var files = e.target.files
+        <Grid item style={{ width: 300, maxHeight: 400, overflow: 'auto' }}>
+            <List subheader={<li />} style={{ backgroundColor: 'white' }}>
+                {
+                    types.map(type => (
+                        <li style={{ backgroundColor: 'inherit' }}>
+                            <ul style={{ backgroundColor: 'inherit' }}>
+                                <ListSubheader>{type}</ListSubheader>
+                                {
+                                    database.data.filter(value => value.type == type).map(entry => {
+                                        return <ListItem key={entry.path} value={entry.path} button onClick={() => handleClick(entry.path)}>
+                                            <ListItemText primary={entry.display}></ListItemText>
+                                        </ListItem>
+                                    })
+                                }
+                            </ul>
+                        </li>
+                    ))
+                }
+
+            </List>
+        </Grid>
+        <Grid style={{ width: 300, padding: '0 30px' }} item container justify="center" alignItems="stretch" direction="column">
+            <DragAndDrop accept="image/*" handleDrop={(files) => {
                 if (files == null || files.length <= 0) {
                     return;
                 }
@@ -323,8 +359,10 @@ export var DatasetList = ({ onChange }) => {
                     onChange(new Dataset(vectors, segments, ranges, { type: "none" }), "")
                 }
                 reader.readAsText(file)
-            }}
-        />
+            }}>
+                <div style={{ height: 200 }}></div>
+            </DragAndDrop>
+        </Grid>
     </Grid>
 }
 
@@ -361,7 +399,7 @@ export class DatasetSelector extends React.Component {
             item
             alignItems="stretch"
             direction="column"
-            style={{padding: '0 16px'}}>
+            style={{ padding: '0 16px' }}>
 
             <Grid container item alignItems="stretch" direction="column">
                 <FormControl>
@@ -381,7 +419,7 @@ export class DatasetSelector extends React.Component {
 
             <Grid container item>
                 <input
-                style={{width:'100%'}}
+                    style={{ width: '100%' }}
                     accept="image/*"
                     id="raised-button-file"
                     multiple
