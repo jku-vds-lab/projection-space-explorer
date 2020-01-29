@@ -409,7 +409,7 @@ export var DatasetList = ({ onChange }) => {
 
                             var segments = getSegs(vectors)
 
-                            onChange(new Dataset(vectors, segments, ranges, { type: "none" }), "")
+                            onChange(new Dataset(vectors, segments, ranges, { type: "none" }), new InferCategory(vectors, segments).load(ranges))
                         }
                         reader.readAsText(file)
                     }}>
