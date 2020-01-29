@@ -150,12 +150,12 @@ function rubikLegend(colorFridrich, colorBeginner) {
     <div>
       <div class="custom-control custom-checkbox">
           <input type="checkbox" checked class="custom-control-input" id="showFridrich" onclick="window.toggleData(this, 0)">
-          <label style="color: rgb(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b})" class="custom-control-label" for="showFridrich" >Fridrich method</label>
+          <label style="color: rgb(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b})" class="custom-control-label" for="showFridrich" >Beginner's method</label>
       </div>
 
       <div class="custom-control custom-checkbox">
           <input type="checkbox" checked class="custom-control-input" id="showBeginner" onclick="window.toggleData(this, 1)">
-          <label style="color: rgb(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b})" class="custom-control-label" for="showBeginner">Beginner's method</label>
+          <label style="color: rgb(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b})" class="custom-control-label" for="showBeginner">Fridrich method</label>
       </div>
 
       <hr />

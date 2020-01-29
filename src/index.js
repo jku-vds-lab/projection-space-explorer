@@ -361,7 +361,7 @@ class RectangleSelection {
         var chessOpeners = [ "Barnes Hut Opening", "Kings Pawn Opening", "English Opening" ]
 
         if (problem.type == ProblemType.RUBIK) {
-          document.getElementById('legend').innerHTML = rubik.legend(algorithms[1].color, algorithms[0].color)
+          document.getElementById('legend').innerHTML = rubik.legend(algorithms[0].color, algorithms[1].color)
         } else if (problem.type == ProblemType.CHESS) {
           document.getElementById('legend').innerHTML = chess.legend(Object.keys(algorithms).sort().map(function (key, index) {return { 'color': algorithms[key].color, 'name': chessOpeners[key], 'algo': key } }))
         } else if (problem.type == ProblemType.NEURAL) {
