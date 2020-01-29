@@ -20,8 +20,8 @@ The file name is irrelevant, however the data needs to be formatted as **csv** f
 
 The minimal columns a file needs are
 
- - **x**: the x coordinates of the coordinates (floating point format)
- - **y**: the y coordinates of the coordinates (floating point format)
+ - **x**: the x value of the coordinates (floating point format)
+ - **y**: the y value of the coordinates (floating point format)
  - **line**: the unique identifier for one line (string format)
  - **algo**: the unique identifier for the algorithm/linegroup (string format)
 
