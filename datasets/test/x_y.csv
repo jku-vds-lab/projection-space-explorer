@@ -1,6 +1,5 @@
-x,y,sequential[-1;1],diverging,categorical
--1,-1,-1,-4,A
-1,-1,0.5,-3,B
-1,1,1,1,B
-2,1,1.5,3,B
-3,1,2,5,C
+x,y,line,algo
+-1,-1,L0,A0
+1,1,L0,A0
+1,-1,L1,A0
+-1,1,L1,A0

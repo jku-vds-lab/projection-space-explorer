@@ -2,6 +2,50 @@
 
 This is the documentation for the demonstrator including the installation process.
 
+## Controls
+
+- Use the **mouse** to **drag** around the visualization
+- Pressing the **alt** key while dragging the mouse will select multiple states for an **aggregation**
+- Use the **mouse wheel** to **zoom** in and out
+
+## Data Format
+
+This section describes how the .csv data has to be formatted in order to be readable by this application.
+
+### File type
+
+The file name is irrelevant, however the data needs to be formatted as **csv** file. The seperator used is the normal comma **,**.
+
+### Columns
+
+The minimal columns a file needs are
+
+ - **x**: the x coordinates of the coordinates (floating point format)
+ - **y**: the y coordinates of the coordinates (floating point format)
+ - **line**: the unique identifier for one line (string format)
+ - **algo**: the unique identifier for the algorithm/linegroup (string format)
+
+An example file could looke like this
+
+|x|y|line|algo|
+|--|--|--|--|
+|1|1|L0|A0
+|-1|-1|L0|A0
+|1|-1|L1|A0
+|-1|1|L1|A0
+
+which will be displayed like this
+
+![Sample](https://github.com/JKU-ICG/projection-path-explorer/tree/develop/textures/minimalcsv.png)
+
+Note that **L0** and **L1** are the same identifiers in each row corresponding to a line whereas **A0** is the algorithm identifier and determines the coloring of the lines (in this case, only 1 color is needed).
+
+
+### Additional Columns
+Additional columns might exist in the source file. If this is the case the tool will display meaningful options to change visualization properties in respect to these attributes.
+
+
+
 ## Installation
 
 Use a git tool to clone this repository to your computer.
