@@ -86,7 +86,7 @@ class InferCategory {
             // Check for given header key if its categorical, sequential or diverging
             var distinct = [... new Set(this.vectors.map(vector => vector[key]))]
 
-            if (distinct.length > 8) {
+            if (distinct.length > 8 || key in ranges) {
                 // Check if values are numeric
                 if (!distinct.find(value => isNaN(value))) {
                     // If we have a lot of different values, the values or probably sequential data
@@ -177,6 +177,11 @@ export class DatasetDatabase {
             {
                 display: "Minimal Example",
                 path: "datasets/test/x_y.csv",
+                type: "test"
+            },
+            {
+                display: "Range Header",
+                path: "datasets/test/rangeheader.csv",
                 type: "test"
             },
             {

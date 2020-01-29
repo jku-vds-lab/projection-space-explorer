@@ -40,9 +40,43 @@ which will be displayed like this
 
 Note that **L0** and **L1** are the same identifiers in each row corresponding to a line whereas **A0** is the algorithm identifier and determines the coloring of the lines (in this case, only 1 color is needed).
 
+If the attributes **line** and **algo** are missing they will be added to the dataset on the fly and filled with default values.
+
 
 ### Additional Columns
 Additional columns might exist in the source file. If this is the case the tool will display meaningful options to change visualization properties in respect to these attributes.
+
+Possible visualization properties that can be changed are:
+
+ - **color** (by categorical and sequential/diverging attributes)
+ - **brightness** (by sequential/diverging attributes)
+ - **transparency** (by sequential/diverging attributes)
+ - **size** (by sequential/diverging attributes)
+
+Currently there is a distinction between **categorical**, **sequential** and **diverging** attributes. The information is infered from the csv header and the value range.
+
+An attribute is **categorical** if:
+ - It has at most 8 different distinct values in its value range
+ - It has at least 1 non-floating point number in its value range
+
+An attribute is **sequential** if:
+ - It has only floating point numbers in its value range
+ - It has a **range annotation** in its header (see below)
+
+An attribute is **diverging** if:
+ - It has only floating point numbers in its value range or
+ - It has a **range annotation** in its header (see below)
+
+Range annotations are a way to set the value range of attributes directly in the csv header. For example lets say we have a header that looks like this:
+
+**x,y,line,algo,metadata[0;10]**
+
+Now **metadata** is an additional attribute with a range annotation that sets the value range to 0-10 and makes this attribute sequential. The value range is important for the correct mapping to the color scale (since the minimum and maximum values might not be the true value range).
+
+
+### Test Datasets
+
+There are some test datasets available in this repository under **datasets/test** which are small examples of how the files should look like.
 
 
 
