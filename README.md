@@ -36,7 +36,7 @@ An example file could looke like this
 
 which will be displayed like this
 
-![Sample](https://github.com/JKU-ICG/projection-path-explorer/tree/develop/textures/minimalcsv.png)
+![Sample](https://github.com/JKU-ICG/projection-path-explorer/blob/develop/readme/minimalcsv.PNG)
 
 Note that **L0** and **L1** are the same identifiers in each row corresponding to a line whereas **A0** is the algorithm identifier and determines the coloring of the lines (in this case, only 1 color is needed).
 
