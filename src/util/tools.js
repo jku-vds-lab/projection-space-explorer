@@ -20,7 +20,7 @@ class RectangleSelection {
         this.plane.position.x = 0
         this.plane.position.y = 0
         this.plane.position.z = -0.5
-        
+
         this.plane.scale.x = 0
         this.plane.scale.y = 0
     }
@@ -55,12 +55,12 @@ class RectangleSelection {
         }
     }
 
-    mouseUp() {
+    mouseUp(selector) {
         if (this.create) {
             //this.problem.scene.remove(this.plane)
             var width = Math.abs(this.plane.scale.x)
             var height = Math.abs(this.plane.scale.y)
-            var vectors = this.select({ x: this.plane.position.x - width / 2, y: this.plane.position.y - height / 2, w: width, h: height })
+            var vectors = this.select(selector, { x: this.plane.position.x - width / 2, y: this.plane.position.y - height / 2, w: width, h: height })
 
             this.create = false
 
@@ -79,11 +79,11 @@ class RectangleSelection {
         this.material.dispose()
     }
 
-    select(rect) {
+    select(selector, rect) {
         var set = []
 
         this.vectors.forEach(vector => {
-            if (vector.visible) {
+            if (selector(vector.globalIndex)) {
                 if (vector.x > rect.x && vector.y > rect.y && vector.x < rect.x + rect.w && vector.y < rect.y + rect.h) {
                     set.push(vector)
                 }

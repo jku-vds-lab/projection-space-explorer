@@ -9,7 +9,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-import { ShapeLegend, calculateOptions, Legend, LegendFun } from './view/categorical'
+import { ShapeLegend, calculateOptions, Legend, LegendFun, ShowColorLegend } from './view/categorical'
 import { makeStyles } from '@material-ui/core/styles';
 import { DatasetSelector, DatasetList } from './util/datasetselector'
 import ThreeView from './view/view'
@@ -19,7 +19,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Slider from '@material-ui/core/Slider';
-import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, LinearColorScale, SchemeColor, ContinuosScale, DiscreteScale } from "./util/colors";
+import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, LinearColorScale, SchemeColor, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping } from "./util/colors";
 import { DefaultVectorColorScheme } from "./util/colors";
 import { Input, Divider, Card, CardContent } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
@@ -35,6 +35,9 @@ import { thresholdFreedmanDiaconis } from "d3";
 import { RubikLegend } from "./legends/rubik";
 import { NeuralLegend } from "./legends/neural";
 import { ChessLegend } from "./legends/chess";
+import Popover from '@material-ui/core/Popover';
+import ReactCountryFlag from "react-country-flag"
+import Flag from "react-flags";
 
 
 
@@ -120,7 +123,9 @@ class Application extends React.Component {
       selectedScale: null,
       definedScales: null,
 
-      datasetType: 'none'
+      datasetType: 'none',
+
+      colorsChecked: [true, true, true, true, true, true, true, true, true]
     }
 
     this.threeRef = React.createRef()
@@ -197,10 +202,7 @@ class Application extends React.Component {
 
     this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
 
-    this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
-
-
-    this.threeRef.current.createVisualization(this.dataset, this.lineColorScheme, this.vectorColorScheme)
+    this.threeRef.current.createVisualization(this.dataset, this.lineColorScheme, null)
 
     this.finite()
   }
@@ -227,6 +229,26 @@ class Application extends React.Component {
     this.initializeEncodings()
   }
 
+  mappingFromScale(scale, attribute) {
+    if (scale instanceof DiscreteScale) {
+      return new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[attribute.key]))])
+    }
+    if (scale instanceof ContinuosScale) {
+      var min = null, max = null
+      if (attribute.key in this.dataset.ranges) {
+        min = this.dataset.ranges[attribute.key].min
+        max = this.dataset.ranges[attribute.key].max
+      } else {
+        var filtered = this.vectors.map(vector => vector[attribute.key])
+        max = Math.max(...filtered)
+        min = Math.min(...filtered)
+      }
+
+      return new ContinuousMapping(scale, { min: min, max: max })
+    }
+    return null
+  }
+
   initializeEncodings() {
     var state = {}
 
@@ -238,7 +260,9 @@ class Application extends React.Component {
       state.vectorByColor = defaultColorAttribute
 
 
-      this.threeRef.current.particles.colorCat(defaultColorAttribute, state.definedScales[state.selectedScaleIndex])
+
+      this.threeRef.current.particles.colorCat(defaultColorAttribute, this.mappingFromScale(state.definedScales[state.selectedScaleIndex], defaultColorAttribute))
+      state.showColorMapping = this.threeRef.current.particles.getMapping()
     }
 
     var defaultBrightnessAttribute = this.categoryOptions.getAttribute("transparency", "age", "sequential")
@@ -257,7 +281,8 @@ class Application extends React.Component {
   onColorScaleChanged(scale, index) {
     this.setState({
       selectedScale: scale,
-      selectedScaleIndex: index
+      selectedScaleIndex: index,
+      colorsChecked: [true, true, true, true, true, true, true, true]
     })
 
     this.threeRef.current.particles.setColorScale(scale)
@@ -361,11 +386,11 @@ class Application extends React.Component {
             <ChooseFileDialog ref={this.setSelector} onChange={this.onDataSelected}></ChooseFileDialog>
           </Grid>
 
-          <Divider style={{ padding: '0 4px' }} />
+          <Divider style={{ margin: '8px 0px' }} />
           <div>
             <Typography
-              style={{ margin: '5px 0 0px 16px' }}
-              variant="button"
+              style={{ margin: '0px 0 0px 16px' }}
+              variant="body1"
               display="block"
             >
               Lines
@@ -381,12 +406,12 @@ class Application extends React.Component {
             <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
           </Grid>
 
-          <Divider style={{ padding: '0 4px' }} />
+          <Divider style={{ margin: '8px 0px' }} />
           <div>
             <Typography
               style={{ margin: '0px 0 0px 16px' }}
               color="textPrimary"
-              variant="button"
+              variant="body1"
               display="block"
             >
               Points
@@ -401,7 +426,7 @@ class Application extends React.Component {
                 alignItems="stretch"
                 direction="column"
                 style={{ padding: '0 16px' }}>
-                <FormControl>
+                <FormControl style={{ margin: '4px 0px' }}>
                   <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
                   <Select labelId="vectorByShapeSelectLabel"
                     id="vectorByShapeSelect"
@@ -448,7 +473,7 @@ class Application extends React.Component {
                 alignItems="stretch"
                 direction="column"
                 style={{ padding: '0 16px' }}>
-                <FormControl>
+                <FormControl style={{ margin: '4px 0px' }}>
                   <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
                   <Select labelId="vectorByTransparencySelectLabel"
                     id="vectorByTransparencySelect"
@@ -484,7 +509,7 @@ class Application extends React.Component {
                 alignItems="stretch"
                 direction="column"
                 style={{ padding: '0 16px' }}>
-                <FormControl>
+                <FormControl style={{ margin: '4px 0px' }}>
                   <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
                   <Select labelId="vectorBySizeSelectLabel"
                     id="vectorBySizeSelect"
@@ -523,7 +548,7 @@ class Application extends React.Component {
               >
 
                 <Grid container item alignItems="stretch" direction="column">
-                  <FormControl>
+                  <FormControl style={{ margin: '4px 0px' }}>
                     <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
                     <Select labelId="vectorByColorSelectLabel"
                       id="vectorByColorSelect"
@@ -538,19 +563,36 @@ class Application extends React.Component {
                           selectedVectorByColor: event.target.value,
                           vectorByColor: attribute,
                           definedScales: [],
-                          selectedScaleIndex: 0
+                          selectedScaleIndex: 0,
+                          colorsChecked: [true, true, true, true, true, true, true, true]
                         }
+
+                        var scale = null
 
                         if (attribute != null && attribute.type == 'categorical') {
                           state.selectedScaleIndex = 0
                           state.definedScales = this.defaultScalesForAttribute(attribute)
+
+                          scale = state.definedScales[state.selectedScaleIndex]
+
+                          this.threeRef.current.particles.colorFilter(state.colorsChecked)
                         } else if (attribute != null) {
                           state.selectedScaleIndex = 0
                           state.definedScales = this.defaultScalesForAttribute(attribute)
-                        }
-                        this.setState(state)
-                        this.threeRef.current.particles.colorCat(attribute, attribute == null ? null : state.definedScales[state.selectedScaleIndex])
 
+                          scale = state.definedScales[state.selectedScaleIndex]
+
+                          this.threeRef.current.particles.colorFilter(null)
+                        }
+
+
+                        this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute))
+
+
+                        state.showColorMapping = this.threeRef.current.particles.getMapping()
+                        this.setState(state)
+
+                        this.threeRef.current.particles.update()
                       }}
                     >
                       <MenuItem value="">None</MenuItem>
@@ -569,6 +611,29 @@ class Application extends React.Component {
             {this.state.definedScales != null && this.state.definedScales.length > 0 ?
               <ColorScaleSelect selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></ColorScaleSelect>
               : <div></div>}
+          </Grid>
+
+
+          <Grid item>
+            {
+              this.state.vectorByColor != null && this.state.vectorByColor.type == 'categorical' ?
+                <SimplePopover
+                  showColorMapping={this.state.showColorMapping}
+                  colorsChecked={this.state.colorsChecked}
+                  onChange={(event) => {
+
+                    var state = {}
+                    state.colorsChecked = this.state.colorsChecked
+                    state.colorsChecked[event.target.id] = event.target.checked
+                    this.setState(state)
+
+                    this.threeRef.current.particles.colorFilter(state.colorsChecked)
+                  }}></SimplePopover>
+                :
+                <div></div>
+            }
+
+
           </Grid>
 
 
@@ -591,9 +656,9 @@ class Application extends React.Component {
 
           <Card>
             <CardContent>
-              <Typography gutterBottom variant="h6">Hover State</Typography>
+              <Typography gutterBottom variant="body1">Hover State</Typography>
               <GenericLegend aggregate={false} type={this.state.datasetType} vectors={this.state.selectionState}></GenericLegend>
-              
+
             </CardContent>
           </Card>
 
@@ -601,9 +666,9 @@ class Application extends React.Component {
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
           <Card>
             <CardContent>
-              <Typography gutterBottom variant="h6">Aggregation</Typography>
+              <Typography gutterBottom variant="body1">Aggregation</Typography>
               <GenericLegend aggregate={true} type={this.state.datasetType} vectors={this.state.selectionAggregation}></GenericLegend>
-              
+
             </CardContent>
           </Card>
 
@@ -625,6 +690,52 @@ class Application extends React.Component {
 
     </div >
   }
+}
+
+
+
+var SimplePopover = ({ showColorMapping, colorsChecked, onChange }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+  return <div>
+    <Button style={{ margin: '0px 16px' }} aria-describedby={id} variant="contained" color="primary" onClick={handleClick}>
+      Advanced Coloring
+      </Button>
+    <Popover
+      id={id}
+      open={open}
+      anchorEl={anchorEl}
+      onClose={handleClose}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+    >
+
+
+
+      <ShowColorLegend
+        mapping={showColorMapping}
+        colorsChecked={colorsChecked}
+        onChange={onChange}></ShowColorLegend>
+
+    </Popover>
+  </div>
 }
 
 

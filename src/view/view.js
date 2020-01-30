@@ -34,26 +34,26 @@ const SettingsPopover = ({ onChangeSlider }) => {
 
     const marks = [
         {
-          value: 50,
-          label: '50%',
+            value: 50,
+            label: '50%',
         },
         {
-          value: 75,
-          label: '75%',
+            value: 75,
+            label: '75%',
         },
         {
-          value: 100,
-          label: '100%',
+            value: 100,
+            label: '100%',
         },
         {
-          value: 125,
-          label: '125%',
+            value: 125,
+            label: '125%',
         },
         {
             value: 150,
             label: '150%'
         }
-      ];
+    ];
 
     return (
         <div>
@@ -79,7 +79,7 @@ const SettingsPopover = ({ onChangeSlider }) => {
                     direction="column"
                     justify="center"
                     alignItems="stretch"
-                    
+
                     style={{ width: '16rem', height: '16rem', margin: '2rem' }}>
                     <div>
                         <Typography id="discrete-slider" gutterBottom>
@@ -162,7 +162,7 @@ export default class ThreeView extends React.Component {
             var value = this.vectors[index]
 
             // Skip points matching some criteria
-            if (value.visible == false || this.particles.showSymbols[value.shapeType] == false) {
+            if (!this.particles.isPointVisible(index)) {
                 continue
             }
 
@@ -279,7 +279,7 @@ export default class ThreeView extends React.Component {
 
         if (this.rectangleSelection != null) {
             if (this.rectangleSelection.create) {
-                var result = this.rectangleSelection.mouseUp(test.x, test.y)
+                var result = this.rectangleSelection.mouseUp((index) => this.particles.isPointVisible(index), test.x, test.y)
                 if (result != null && result.length > 0) {
                     // Highlight aggregation
                     var uniqueIndices = new Set(result.map(vector => vector.lineIndex))
@@ -301,9 +301,65 @@ export default class ThreeView extends React.Component {
         this.mouseDown = false;
     }
 
+
+
+
+    normalizeWheel(/*object*/ event) /*object*/ {
+        // Reasonable defaults
+        var PIXEL_STEP = 10;
+        var LINE_HEIGHT = 40;
+        var PAGE_HEIGHT = 800;
+
+        var sX = 0, sY = 0,       // spinX, spinY
+            pX = 0, pY = 0;       // pixelX, pixelY
+
+        // Legacy
+        if ('detail' in event) { sY = event.detail; }
+        if ('wheelDelta' in event) { sY = -event.wheelDelta / 120; }
+        if ('wheelDeltaY' in event) { sY = -event.wheelDeltaY / 120; }
+        if ('wheelDeltaX' in event) { sX = -event.wheelDeltaX / 120; }
+
+        // side scrolling on FF with DOMMouseScroll
+        if ('axis' in event && event.axis === event.HORIZONTAL_AXIS) {
+            sX = sY;
+            sY = 0;
+        }
+
+        pX = sX * PIXEL_STEP;
+        pY = sY * PIXEL_STEP;
+
+        if ('deltaY' in event) { pY = event.deltaY; }
+        if ('deltaX' in event) { pX = event.deltaX; }
+
+        if ((pX || pY) && event.deltaMode) {
+            if (event.deltaMode == 1) {          // delta in LINE units
+                pX *= LINE_HEIGHT;
+                pY *= LINE_HEIGHT;
+            } else {                             // delta in PAGE units
+                pX *= PAGE_HEIGHT;
+                pY *= PAGE_HEIGHT;
+            }
+        }
+
+        // Fall-back if spin cannot be determined
+        if (pX && !sX) { sX = (pX < 1) ? -1 : 1; }
+        if (pY && !sY) { sY = (pY < 1) ? -1 : 1; }
+
+        return {
+            spinX: sX,
+            spinY: sY,
+            pixelX: pX,
+            pixelY: pY
+        };
+    }
+
+
     onWheel(event) {
         event.preventDefault()
-        this.camera.zoom = this.camera.zoom + event.deltaY * 0.02;
+
+        var normalized = this.normalizeWheel(event)
+
+        this.camera.zoom = this.camera.zoom - normalized.pixelY * 0.013;
         if (this.camera.zoom < 1) {
             this.camera.zoom = 1;
         }
@@ -361,7 +417,7 @@ export default class ThreeView extends React.Component {
         this.dataset = dataset
         this.lineColorScheme = lineColorScheme
         this.vectorColorScheme = vectorColorScheme
-        
+
 
         // Update camera zoom to fit the problem
         this.camera.zoom = getDefaultZoom(this.vectors, this.getWidth(), this.getHeight())

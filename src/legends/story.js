@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import { makeStyles } from '@material-ui/core/styles';
+import ReactCountryFlag from "react-country-flag"
 
 
 const HEIGHT = 32
@@ -76,7 +77,7 @@ const marks = [
     },
 ];
 
-export var YearAggComp = ({}) => {
+export var YearAggComp = ({ }) => {
     var lineStart = 60
     var lineEnd = 232 - 60
 
@@ -90,7 +91,7 @@ export var YearAggComp = ({}) => {
 }
 
 export var YearComp = ({ oldYear, newYear }) => {
-    
+
     var lineStart = 60
     var lineEnd = 232 - 60
     var oldX = lineStart + (lineEnd - lineStart) * ((oldYear - 1800) / 215)
@@ -178,17 +179,18 @@ export var StoryLegend = ({ selection }) => {
                                         selection.length > 0 ? selection.filter(value => value[`new_${col}`] == row).length / selection.length : 0
 
 
-
-                                    var A = WIDTH * HEIGHT
-                                    var A2 = (WIDTH * HEIGHT) * percent
+                                    var W = WIDTH - 2
+                                    var H = HEIGHT - 2
+                                    var A = W * H
+                                    var A2 = (W * H) * percent
 
                                     return <TableCell className={classes.nocell} align="right">
                                         <Grid align="center" justify="center" direction="column" container>
                                             <Grid item>
                                                 <div style={{
                                                     background: '#70AD47',
-                                                    width: Math.sqrt(((A / (A / A2)) * WIDTH) / HEIGHT),
-                                                    height: Math.sqrt(((A / (A / A2)) * HEIGHT) / WIDTH)
+                                                    width: Math.sqrt(((A / (A / A2)) * W) / H),
+                                                    height: Math.sqrt(((A / (A / A2)) * H) / W)
                                                 }}></div>
                                             </Grid>
                                         </Grid>

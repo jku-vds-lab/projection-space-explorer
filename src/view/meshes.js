@@ -209,11 +209,14 @@ export class PointVisualization {
     this.vectorColorScheme = vectorColorScheme
     this.dataset = dataset
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
+    this.colorsChecked = [ true, true, true, true, true, true, true, true, true ]
   }
 
   createMesh(data, segments) {
     this.segments = segments
     this.vectors = data
+
+    
 
     var vertices = new THREE.Geometry().vertices;
     var positions = new Float32Array(data.length * 3);
@@ -352,7 +355,8 @@ export class PointVisualization {
       //this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
     } else {
       if (category.type == 'categorical') {
-        this.vectorColorScheme = new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[category.key]))])
+        this.vectorColorScheme = scale
+        //this.vectorColorScheme = new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[category.key]))])
       } else {
         var min = null, max = null
         if (category.key in this.dataset.ranges) {
@@ -363,15 +367,26 @@ export class PointVisualization {
           max = Math.max(...filtered)
           min = Math.min(...filtered)
         }
-  
+
         if (category.type != 'categorical') {
-          console.log([ min, max ])
-          this.vectorColorScheme = new ContinuousMapping(scale, { min: min, max: max })
+          console.log([min, max])
+          this.vectorColorScheme = scale
+          //this.vectorColorScheme = new ContinuousMapping(scale, { min: min, max: max })
         }
       }
     }
 
     this.updateColor()
+  }
+
+  colorFilter(colorsChecked) {
+    this.colorsChecked = colorsChecked
+
+    this.update()
+  }
+
+  getMapping() {
+    return this.vectorColorScheme
   }
 
   setColorScale(colorScale) {
@@ -434,7 +449,7 @@ export class PointVisualization {
             max = Math.max(...filtered)
             min = Math.min(...filtered)
           }
-  
+
           segment.vectors.forEach(vector => {
             vector.baseSize = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
           })
@@ -469,7 +484,9 @@ export class PointVisualization {
       var i = vector.globalIndex
       var rgb = null
       if (this.colorAttribute != null) {
-        rgb = this.vectorColorScheme.map(vector[this.colorAttribute.key]).rgb
+        var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
+        rgb = m.rgb
+        vector.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
       } else {
         var col = this.segments[vector.lineIndex].line.material.color
         rgb = {
@@ -477,8 +494,9 @@ export class PointVisualization {
           g: col.g * 255.0,
           b: col.b * 255.0
         }
+        vector.intrinsicColor = null
       }
-      
+
       
 
       color[i * 4 + 0] = rgb.r / 255.0
@@ -489,14 +507,19 @@ export class PointVisualization {
     this.mesh.geometry.attributes.customColor.needsUpdate = true
   }
 
+  isPointVisible(index) {
+    var vector = this.vectors[index]
+
+    return vector.visible && this.showSymbols[vector.shapeType] && (vector.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.intrinsicColor] : true)
+  }
+
   update() {
     var i = 0
     var show = this.mesh.geometry.attributes.show.array
 
     this.segments.forEach(segment => {
       segment.vectors.forEach(vector => {
-        if (vector.visible
-          && this.showSymbols[vector.shapeType]) {
+        if (this.isPointVisible(vector.globalIndex)) {
           //colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
           show[vector.globalIndex] = 1.0
         } else {
