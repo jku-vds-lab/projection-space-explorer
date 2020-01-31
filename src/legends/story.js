@@ -9,7 +9,8 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import { makeStyles } from '@material-ui/core/styles';
-import ReactCountryFlag from "react-country-flag"
+import Flag from "react-flags";
+import { getCountryCode } from '../util/isocountries';
 
 
 const HEIGHT = 32
@@ -17,9 +18,10 @@ const WIDTH = 44
 
 const useStyles = makeStyles({
     table: {
-        width: WIDTH * 3 * 2 - 26,
-        height: HEIGHT * 5,
-        borderCollapse: 'collapse'
+        width: WIDTH * 6,
+        height: HEIGHT * 6,
+        borderCollapse: 'collapse',
+        tableLayout: 'fixed'
     },
     textcell: {
         height: HEIGHT,
@@ -77,16 +79,48 @@ const marks = [
     },
 ];
 
-export var YearAggComp = ({ }) => {
-    var lineStart = 60
-    var lineEnd = 232 - 60
+export var YearAggComp = ({ selection }) => {
+    var lineStart = 20
+    var lineEnd = 232 - 20
+    if (selection == null || selection == undefined || selection.length == 0) {
 
-    return <svg width="232" height="96" viewBox="0 0 232 96">
 
-        <line x1={lineStart} y1="48" x2={lineEnd} y2="48" stroke="black" />
+        return <svg width="232" height="76" viewBox="0 0 232 76">
 
-        <text x="38" y="52" font-size="14" text-anchor="end">1800</text>
-        <text x="190" y="52" font-size="14">2015</text>
+            <line x1={lineStart} y1="38" x2={lineEnd} y2="38" stroke="black" />
+
+        </svg>
+
+
+    }
+
+
+    var years = [...new Set(selection.map(value => value.new_year))]
+    var count = years.map(year => selection.filter(s => s.new_year == year).length)
+    var max = Math.max(...count)
+    var segmentWidth = 14
+
+    return <svg width="232" height="76" viewBox="0 0 232 76">
+
+        <line x1={lineStart} y1="38" x2={lineEnd} y2="38" stroke="black" />
+
+        {
+
+
+            years.map((year, i) => {
+                var startX = ((lineEnd - lineStart) / 2) - ((segmentWidth * years.length) / 2)
+                var newX = startX + i * segmentWidth
+                return <text font-size="12" transform={`rotate(45, ${newX}, ${48})`} x={newX} y={46}>{year}</text>
+            })
+        }
+        {
+            years.map((year, i) => {
+                var startX = ((lineEnd - lineStart) / 2) - ((segmentWidth * years.length) / 2)
+                var newX = startX + i * segmentWidth
+                var h = ((count[i] / max) * 30) + 2
+                return <rect stroke-width={1} x={newX} y={38 - h} width={10} height={h}></rect>
+            })
+        }
     </svg>
 }
 
@@ -97,7 +131,7 @@ export var YearComp = ({ oldYear, newYear }) => {
     var oldX = lineStart + (lineEnd - lineStart) * ((oldYear - 1800) / 215)
     var newX = lineStart + (lineEnd - lineStart) * ((newYear - 1800) / 215)
 
-    return <svg width="232" height="96" viewBox="0 0 232 96">
+    return <svg width="232" height="76" viewBox="0 0 232 76">
 
         <line x1={lineStart} y1="48" x2={lineEnd} y2="48" stroke="black" />
 
@@ -105,8 +139,8 @@ export var YearComp = ({ oldYear, newYear }) => {
 
         <circle cx={oldX} cy="48" r="10" stroke="black" stroke-width="1" fill="#D9D9D9" />
 
-        <text x={newX} y="20" font-size="14" text-anchor="middle">{newYear}</text>
-        <text x={oldX} y="32" font-size="14" text-anchor="middle">{oldYear}</text>
+        <text x={newX} y="20" font-size="14" text-anchor="middle" fill="#70AD47">{newYear}</text>
+        <text x={oldX} y="32" font-size="14" text-anchor="middle" fill="#D9D9D9">{oldYear}</text>
 
         <text x="38" y="52" font-size="14" text-anchor="end">1800</text>
         <text x="190" y="52" font-size="14">2015</text>
@@ -114,7 +148,18 @@ export var YearComp = ({ oldYear, newYear }) => {
 }
 
 
-export var StoryLegend = ({ selection }) => {
+function parseCountries(countries) {
+    var replaced = countries.replace(/'/g, '"').replace(/;/g, ',')
+    var parsed = JSON.parse(`{ "result": ${replaced} }`)
+    if (parsed == null || parsed.result == undefined) {
+        return []
+    } else {
+        return parsed.result
+    }
+
+}
+
+export var StoryLegend = ({ selection, vectors }) => {
     if (selection == null) {
         return <div>
         </div>
@@ -122,6 +167,8 @@ export var StoryLegend = ({ selection }) => {
 
     var vertical = ["gdp", "child_mortality", "fertility", "life_expect", "population"]
     var horizontal = ["x", "y", "size"]
+
+    var allCountries = [...new Set(selection.flatMap(s => parseCountries(s.new_country)))]
 
     const classes = useStyles();
     return <Grid
@@ -132,7 +179,7 @@ export var StoryLegend = ({ selection }) => {
         <Table className={classes.table}>
             <TableBody>
                 <TableRow>
-                    <TableCell className={classes.textcell}></TableCell>
+                    <TableCell className={classes.textcell} style={{ width: 3 * WIDTH }}></TableCell>
                     <TableCell className={classes.textcell} align="center">
                         <Typography component="div" fontWeight="fontWeightBold">X</Typography>
                     </TableCell>
@@ -208,8 +255,31 @@ export var StoryLegend = ({ selection }) => {
             selection.length == 1 ?
                 <YearComp oldYear={selection[0].old_year} newYear={selection[0].new_year}></YearComp>
                 :
-                <YearAggComp></YearAggComp>
+                <YearAggComp selection={selection}></YearAggComp>
         }
 
+        <Grid item style={{ height: 32 }}>
+            {
+                selection.length == 1 ?
+                    <Countries countries={parseCountries(selection[0].new_country)}></Countries>
+                    : <Countries countries={allCountries}></Countries>
+            }
+        </Grid>
+
     </Grid>
+}
+
+var Countries = ({ countries }) => {
+    if (countries == null || countries == undefined) return <div></div>
+
+    return countries.map(r => {
+        //return <img src={"/img/flags/flags-iso/shiny/32/"+getCountryCode(r)+".png"}></img>
+        return <Flag
+            name={getCountryCode(r)}
+            format="png"
+            pngSize={32}
+            shiny={true}
+            basePath="/img/flags"
+        />
+    })
 }

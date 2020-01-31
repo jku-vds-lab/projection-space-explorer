@@ -152,7 +152,7 @@ export var LegendFun = ({ algorithms, onChange, type }) => {
 export var Checky = ({ checked, onChange, id, name, comp }) => {
   return <FormControlLabel
     style={{ margin: '0px', padding: '0px' }}
-    control={<Checkbox size='small' checked={checked} onChange={onChange} id={id}></Checkbox>}
+    control={<Checkbox style={{ padding: '3px 9px' }} size='small' checked={checked} onChange={onChange} id={id}></Checkbox>}
     label={<Typography style={{ color: `rgb(${comp.r}, ${comp.g}, ${comp.b})` }}>{name}</Typography>}
   ></FormControlLabel>
 }
@@ -234,6 +234,7 @@ export class Legend extends React.Component {
         var comp = line.color.rgb
 
         return <Checky
+
           checked={line.checked} onChange={this.onCheckbox} id={line.color.hex} comp={comp} name={line.name}
         ></Checky>
       })}
@@ -427,8 +428,8 @@ export var ShowColorLegend = ({ mapping, colorsChecked, onChange }) => {
   if (mapping instanceof DiscreteMapping) {
     return <Grid container direction="column">{mapping.values.map((value, index) => {
       var color = mapping.map(value)
-      return <FormControlLabel style={{margin: '0 8px'}}
-        control={<Checkbox size='small' checked={colorsChecked[index]} onChange={onChange} id={index}></Checkbox>}
+      return <FormControlLabel style={{ margin: '0 8px' }}
+        control={<Checkbox style={{ padding: '3px 9px' }} size='small' checked={colorsChecked[index]} onChange={onChange} id={index}></Checkbox>}
         label={<Typography style={{ color: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})` }}>{value}</Typography>}
       ></FormControlLabel>
     })}</Grid>

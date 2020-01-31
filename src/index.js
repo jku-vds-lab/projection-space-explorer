@@ -42,9 +42,9 @@ import Flag from "react-flags";
 
 
 
-var GenericLegend = ({ type, vectors, aggregate }) => {
+var GenericLegend = ({ type, vectors, aggregate, dataset }) => {
   if (type == 'story') {
-    return <StoryLegend selection={vectors}></StoryLegend>
+    return <StoryLegend selection={vectors} vectors={dataset}></StoryLegend>
   } else if (type == 'rubik') {
     return <RubikLegend selection={vectors}></RubikLegend>
   } else if (type == 'neural') {
@@ -290,8 +290,6 @@ class Application extends React.Component {
   }
 
   onDataSelected(dataset, json) {
-    this.setState({ fileDialogOpen: false })
-
     // Dispose old view
     this.threeRef.current.disposeScene()
 
@@ -301,7 +299,7 @@ class Application extends React.Component {
     this.segments = dataset.segments
     this.categories = json
 
-    this.setState({ datasetType: this.dataset.info.type })
+    this.setState({ datasetType: this.dataset.info.type, vectors: this.vectors })
 
     // Load new view
     this.loadData2()
@@ -324,6 +322,49 @@ class Application extends React.Component {
 
     this.props.onLineSelect(col.algo, event.target.checked)
   }
+
+
+  selectColorAttribute() {
+    var attribute = null
+    if (event.target.value != "") {
+      attribute = this.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+    }
+    var state = {
+      selectedVectorByColor: event.target.value,
+      vectorByColor: attribute,
+      definedScales: [],
+      selectedScaleIndex: 0,
+      colorsChecked: [true, true, true, true, true, true, true, true]
+    }
+
+    var scale = null
+
+    if (attribute != null && attribute.type == 'categorical') {
+      state.selectedScaleIndex = 0
+      state.definedScales = this.defaultScalesForAttribute(attribute)
+
+      scale = state.definedScales[state.selectedScaleIndex]
+
+      this.threeRef.current.particles.colorFilter(state.colorsChecked)
+    } else if (attribute != null) {
+      state.selectedScaleIndex = 0
+      state.definedScales = this.defaultScalesForAttribute(attribute)
+
+      scale = state.definedScales[state.selectedScaleIndex]
+
+      this.threeRef.current.particles.colorFilter(null)
+    }
+
+
+    this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute))
+
+
+    state.showColorMapping = this.threeRef.current.particles.getMapping()
+    this.setState(state)
+
+    this.threeRef.current.particles.update()
+  }
+
 
 
   defaultScalesForAttribute(attribute) {
@@ -646,7 +687,7 @@ class Application extends React.Component {
 
 
 
-      <ThreeView ref={this.threeRef} onHover={this.onHover} onAggregate={this.onAggregate} />
+      <ThreeView ref={this.threeRef} onHover={this.onHover} onAggregate={this.onAggregate} test={this.state.selectionState} />
 
 
 
@@ -655,20 +696,20 @@ class Application extends React.Component {
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
 
           <Card>
-            <CardContent>
-              <Typography gutterBottom variant="body1">Hover State</Typography>
-              <GenericLegend aggregate={false} type={this.state.datasetType} vectors={this.state.selectionState}></GenericLegend>
+            <CardContent style={{ padding: '8px' }}>
+              <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
+              <GenericLegend aggregate={false} type={this.state.datasetType} vectors={this.state.selectionState} dataset={this.state.vectors}></GenericLegend>
 
             </CardContent>
           </Card>
 
         </div>
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
-          <Card>
-            <CardContent>
-              <Typography gutterBottom variant="body1">Aggregation</Typography>
-              <GenericLegend aggregate={true} type={this.state.datasetType} vectors={this.state.selectionAggregation}></GenericLegend>
+          <Card >
+            <CardContent style={{ padding: '8px' }}>
+              <Typography align="center" gutterBottom variant="body1">Aggregation</Typography>
 
+              <GenericLegend aggregate={true} type={this.state.datasetType} vectors={this.state.selectionAggregation} dataset={this.state.vectors}></GenericLegend>
             </CardContent>
           </Card>
 

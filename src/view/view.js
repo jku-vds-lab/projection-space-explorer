@@ -515,10 +515,14 @@ export default class ThreeView extends React.Component {
     }
 
 
+    shouldComponentUpdate() {
+        return false
+    }
 
 
-
-
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        
+    }
 
 
 
