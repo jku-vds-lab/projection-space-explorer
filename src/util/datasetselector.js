@@ -36,7 +36,7 @@ class InferCategory {
     }
 
     inferType(header) {
-        if (header.includes('up00') && header.contains('back00')) {
+        if (header.includes('up00') && header.includes('back00')) {
             return "rubik"
         }
         if (header.includes('cf00')) {
@@ -409,7 +409,9 @@ export var DatasetList = ({ onChange }) => {
 
                             var segments = getSegs(vectors)
 
-                            onChange(new Dataset(vectors, segments, ranges, { type: "none" }), new InferCategory(vectors, segments).load(ranges))
+                            var infer = new InferCategory(vectors, segments)
+
+                            onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType(Object.keys(vectors[0])) }), infer.load(ranges))
                         }
                         reader.readAsText(file)
                     }}>
