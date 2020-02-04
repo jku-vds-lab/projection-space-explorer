@@ -544,6 +544,8 @@ export default class ThreeView extends React.Component {
             <div style={{ position: 'absolute', top: '0px', left: '0px' }}>
                 <SettingsPopover onChangeSlider={(ratio) => this.particles.setPointScaling(ratio)}></SettingsPopover>
             </div>
+
+            
         </div>
     }
 }

@@ -9,7 +9,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import DragAndDrop from './draganddrop';
-import { LinearProgress } from '@material-ui/core';
+import { LinearProgress, Typography, Divider } from '@material-ui/core';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -35,6 +35,10 @@ class InferCategory {
         this.segments = segments
     }
 
+    /**
+     * Infers the type of the dataset from the columns
+     * @param {*} header 
+     */
     inferType(header) {
         if (header.includes('up00') && header.includes('back00')) {
             return "rubik"
@@ -50,10 +54,6 @@ class InferCategory {
         }
 
         return 'none'
-    }
-
-    loadLine(ranges) {
-
     }
 
     load(ranges) {
@@ -271,33 +271,15 @@ export class DatasetDatabase {
     }
 }
 
-export function testFromPath(path, callback) {
-    var entry = new DatasetDatabase().getByPath(path)
-
-    d3v5.csv(path).then(vectors => {
-        // Add missing attributes
-        var ranges = preprocess(vectors)
-
-        // Split vectors into segments
-        var segments = getSegs(vectors)
-
-
-        callback(new Dataset(vectors, segments, ranges, entry), new InferCategory(vectors, segments).load(ranges))
-        // Load json file if present
-        d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
-            //callback(new Dataset(vectors, segments, ranges, entry), categories)
-        }).catch(() => {
-            //callback(new Dataset(vectors, segments, ranges, entry), "")
-        })
-    })
-}
-
 export function loadFromPath(path, callback) {
 
     var entry = new DatasetDatabase().getByPath(path)
 
     // Load csv file
     d3v5.csv(path).then(vectors => {
+        // Convert raw dictionaries to classes ...
+        vectors = convertFromCSV(vectors)
+
         // Add missing attributes
         var ranges = preprocess(vectors)
 
@@ -306,12 +288,6 @@ export function loadFromPath(path, callback) {
 
 
         callback(new Dataset(vectors, segments, ranges, entry), new InferCategory(vectors, segments).load(ranges))
-        // Load json file if present
-        d3.json(`datasets/${entry.type}/meta.json`).then(categories => {
-            //callback(new Dataset(vectors, segments, ranges, entry), categories)
-        }).catch(() => {
-            //callback(new Dataset(vectors, segments, ranges, entry), "")
-        })
     })
 }
 
@@ -359,159 +335,83 @@ export var DatasetList = ({ onChange }) => {
     {
 
         return loading ?
-            <Grid container direction="column" justify="center" alignItems="center" style={{ width: 600, height: 400 }}>
+            <Grid container direction="column" justify="center" alignItems="center" style={{ width: 600, height: 500 }}>
                 <LinearProgress style={{ width: 500 }} />
             </Grid>
             :
-            <Grid container direction="row" justify="center" alignItems="center" style={{ width: 600, height: 400 }}>
-                <Grid item style={{ width: '50%', maxHeight: 400, overflow: 'auto' }}>
-                    <List subheader={<li />} style={{ backgroundColor: 'white' }}>
-                        {
-                            types.map(type => (
-                                <li style={{ backgroundColor: 'inherit' }}>
-                                    <ul style={{ backgroundColor: 'inherit', paddingInlineStart: '0px' }}>
-                                        <ListSubheader>{type}</ListSubheader>
-                                        {
-                                            database.data.filter(value => value.type == type).map(entry => {
-                                                return <ListItem key={entry.path} value={entry.path} button onClick={() => {
-                                                    setLoad(true)
-                                                    handleClick(entry.path)
-                                                }
-                                                }>
+            
+            <Grid container direction="row" alignItems="center" justify="center" style={{ width: 600, padding: '32px' }}>
+                <Grid item style={{ width: '50%' }} container direction="column">
+                    <Typography variant={'h6'} align="center" style={{ margin: '12px 0px' }}>Preloaded Datasets</Typography>
 
-                                                    <ListItemText primary={entry.display}></ListItemText>
-                                                </ListItem>
-                                            })
-                                        }
-                                    </ul>
-                                </li>
-                            ))
-                        }
+                    <Grid item style={{ overflow: 'auto', height: 400, border: '1px solid gray' }}>
+                        <List subheader={<li />} style={{ backgroundColor: 'white' }}>
+                            {
+                                types.map(type => (
+                                    <li style={{ backgroundColor: 'inherit' }}>
+                                        <ul style={{ backgroundColor: 'inherit', paddingInlineStart: '0px' }}>
+                                            <ListSubheader>{type}</ListSubheader>
+                                            {
+                                                database.data.filter(value => value.type == type).map(entry => {
+                                                    return <ListItem key={entry.path} value={entry.path} button onClick={() => {
+                                                        setLoad(true)
+                                                        handleClick(entry.path)
+                                                    }
+                                                    }>
 
-                    </List>
+                                                        <ListItemText primary={entry.display}></ListItemText>
+                                                    </ListItem>
+                                                })
+                                            }
+                                        </ul>
+                                    </li>
+                                ))
+                            }
+
+                        </List>
+                    </Grid>
+
                 </Grid>
-                <Grid style={{ width: '50%', padding: '0 30px' }} item container justify="center" alignItems="stretch" direction="column">
-                    <DragAndDrop accept="image/*" handleDrop={(files) => {
-                        if (files == null || files.length <= 0) {
-                            return;
-                        }
 
-                        var file = files[0]
+                <Grid style={{ width: '50%' }} item>
+                    <Typography variant={'h6'} align="center" style={{ margin: '12px 0px' }}>Custom Datasets</Typography>
+                    <Grid container item alignItems="stretch" justify="center" direction="column" style={{ height: 400, padding: '30px' }}>
+                        <DragAndDrop accept="image/*" handleDrop={(files) => {
+                            if (files == null || files.length <= 0) {
+                                return;
+                            }
 
-                        var reader = new FileReader()
-                        reader.onload = (event) => {
-                            var content = event.target.result
+                            var file = files[0]
+
+                            var reader = new FileReader()
+                            reader.onload = (event) => {
+                                var content = event.target.result
 
 
-                            var vectors = d3v5.csvParse(content)
+                                var vectors = d3v5.csvParse(content)
 
-                            var ranges = preprocess(vectors)
+                                // Convert raw dictionaries to classes ...
+                                vectors = convertFromCSV(vectors)
 
-                            var segments = getSegs(vectors)
+                                var ranges = preprocess(vectors)
 
-                            var infer = new InferCategory(vectors, segments)
+                                var segments = getSegs(vectors)
 
-                            onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType(Object.keys(vectors[0])) }), infer.load(ranges))
-                        }
-                        reader.readAsText(file)
-                    }}>
-                        <div style={{ height: 200 }}></div>
-                    </DragAndDrop>
+                                var infer = new InferCategory(vectors, segments)
+
+                                onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType(Object.keys(vectors[0])) }), infer.load(ranges))
+                            }
+                            reader.readAsText(file)
+                        }}>
+                            <div style={{ height: 200 }}></div>
+                        </DragAndDrop>
+                    </Grid>
+
                 </Grid>
             </Grid>
     }
 
 }
-
-export class DatasetSelector extends React.Component {
-    constructor(props) {
-        super(props)
-
-        this.handleChange = this.handleChange.bind(this);
-        this.database = new DatasetDatabase()
-
-        this.state = { value: this.database.data[0].path }
-    }
-
-    handleChange(event) {
-        this.setState({ value: event.target.value })
-
-        loadFromPath(event.target.value, this.props.onChange)
-    }
-
-
-    init(path) {
-        this.setState({ value: path })
-
-        loadFromPath(path, this.props.onChange)
-    }
-
-    loadFileContent(content) {
-
-    }
-
-    render() {
-        return <Grid
-            container
-            item
-            alignItems="stretch"
-            direction="column"
-            style={{ padding: '0 16px' }}>
-
-            <Grid container item alignItems="stretch" direction="column">
-                <FormControl>
-                    <InputLabel id="demo-simple-select-placeholder-label-label">Select Predefined</InputLabel>
-                    <Select labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-
-                        value={this.state.value}
-                        onChange={this.handleChange}>
-
-                        {this.database.data.map(entry => {
-                            return <MenuItem value={entry.path}>{entry.display}</MenuItem>
-                        })}
-                    </Select>
-                </FormControl>
-            </Grid>
-
-            <Grid container item>
-                <input
-                    style={{ width: '100%' }}
-                    accept="image/*"
-                    id="raised-button-file"
-                    multiple
-                    type="file"
-                    onChange={(e) => {
-                        var files = e.target.files
-                        if (files == null || files.length <= 0) {
-                            return;
-                        }
-
-                        var file = files[0]
-
-                        var reader = new FileReader()
-                        reader.onload = (event) => {
-                            var content = event.target.result
-
-
-                            var vectors = d3v5.csvParse(content)
-
-                            var ranges = preprocess(vectors)
-
-                            var segments = getSegs(vectors)
-
-
-                            var infer = new InferCategory(vectors, segments)
-                            this.props.onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType(Object.keys(vectors[0])) }), infer.load(ranges))
-                        }
-                        reader.readAsText(file)
-                    }}
-                />
-            </Grid>
-        </Grid>
-    }
-}
-
 
 
 function getSegs(vectors) {
@@ -611,6 +511,11 @@ function preprocess(vectors) {
 }
 
 
+function convertFromCSV(vectors) {
+    return vectors.map(vector => {
+        return new Vect(vector)
+    })
+}
 
 
 export class Dataset {
@@ -619,5 +524,34 @@ export class Dataset {
         this.ranges = ranges
         this.segments = segments
         this.info = info
+    }
+}
+
+
+/**
+ * Main data point object
+ */
+export class Vect {
+    constructor(dict) {
+        // Copy dictionary values to this object
+        Object.keys(dict).forEach(key => {
+            this[key] = dict[key]
+        })
+
+        this.__meta__ = {}
+    }
+
+    /**
+     * Sets some meta data for a key
+     */
+    setMeta(key, value) {
+        this.__meta__[key] = value
+    }
+
+    /**
+     * Gets some meta data for a key
+     */
+    getMeta(key) {
+        return this.__meta__[key]
     }
 }

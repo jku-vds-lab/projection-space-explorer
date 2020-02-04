@@ -149,6 +149,8 @@ export var YearComp = ({ oldYear, newYear }) => {
 
 
 function parseCountries(countries) {
+    if (countries == null || countries == undefined) return []
+
     var replaced = countries.replace(/'/g, '"').replace(/;/g, ',')
     var parsed = JSON.parse(`{ "result": ${replaced} }`)
     if (parsed == null || parsed.result == undefined) {
@@ -156,10 +158,9 @@ function parseCountries(countries) {
     } else {
         return parsed.result
     }
-
 }
 
-export var StoryLegend = ({ selection, vectors }) => {
+export var StoryLegend = ({ selection }) => {
     if (selection == null) {
         return <div>
         </div>
@@ -272,14 +273,10 @@ export var StoryLegend = ({ selection, vectors }) => {
 var Countries = ({ countries }) => {
     if (countries == null || countries == undefined) return <div></div>
 
-    return countries.map(r => {
-        //return <img src={"/img/flags/flags-iso/shiny/32/"+getCountryCode(r)+".png"}></img>
-        return <Flag
-            name={getCountryCode(r)}
-            format="png"
-            pngSize={32}
-            shiny={true}
-            basePath="/img/flags"
-        />
+    return countries.map(countryName => {
+        return <img
+            title={countryName}
+            src={"/img/flags/flags-iso/shiny/24/" + getCountryCode(countryName) + ".png"}
+        ></img>
     })
 }

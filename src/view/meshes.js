@@ -5,7 +5,8 @@ var convex = require('three/examples/jsm/geometries/ConvexGeometry')
 
 var fragmentShaders = require('./fragmentshaders')
 var vertexShaders = require('./vertexshaders')
-var Meshy = require('three.meshline');
+
+var override = require('../overrides/meshline')
 
 import { SequentialColorScheme, DefaultVectorColorScheme, DivergingColorScheme, NoMapping, DiscreteMapping, ContinuousMapping } from '../util/colors'
 
@@ -142,9 +143,9 @@ export class LineVisualization {
       })
 
 
-      var line = new Meshy.MeshLine();
+      var line = new override.MeshLine();
       line.setGeometry(geometry, function (p) { return 1; });
-      var material = new Meshy.MeshLineMaterial({
+      var material = new override.MeshLineMaterial({
         color: new THREE.Color(this.meshes[index].color),
         resolution: new THREE.Vector2(width, height),
         lineWidth: 0.002 + 0.0001 * this.zoom,
@@ -412,7 +413,6 @@ export class PointVisualization {
           if (category.key in this.dataset.ranges) {
             min = this.dataset.ranges[category.key].min
             max = this.dataset.ranges[category.key].max
-            console.log("took range transparency")
           } else {
             var filtered = segment.vectors.map(vector => vector[category.key])
             max = Math.max(...filtered)
@@ -443,7 +443,6 @@ export class PointVisualization {
           if (category.key in this.dataset.ranges) {
             min = this.dataset.ranges[category.key].min
             max = this.dataset.ranges[category.key].max
-            console.log("took range transparency")
           } else {
             var filtered = segment.vectors.map(vector => vector[category.key])
             max = Math.max(...filtered)

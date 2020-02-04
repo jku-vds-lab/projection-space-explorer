@@ -1,3 +1,7 @@
+
+/**
+ * Dictionary containing all countries
+ */
 var isoCountries = {
     'AF': 'Afghanistan',
     'AX': 'Aland Islands',
@@ -246,6 +250,10 @@ var isoCountries = {
     'ZW': 'Zimbabwe'
 };
 
+/**
+ * Maps a 2 letter ISO code to a country name
+ * @param {*} countryCode the 2 letter ISO code
+ */
 export function getCountryName(countryCode) {
     if (isoCountries.hasOwnProperty(countryCode)) {
         return isoCountries[countryCode];
@@ -253,9 +261,21 @@ export function getCountryName(countryCode) {
         return countryCode;
     }
 }
-
+/**
+ * Maps a country name to the 2 letter ISO code
+ * @param {*} countryName the name of the country
+ */
 export function getCountryCode(countryName) {
+    // Some names often appear, but are not standardized such as Russia, handle them seperately
     if (countryName == 'Russia') return 'RU'
+    if (countryName == 'Micronesia, Fed. Sts.') return 'FM'
+    if (countryName == 'Brunei') return 'BN'
+    if (countryName == 'Trinidad and Tobago') return getCountryCode('Trinidad And Tobago')
+    if (countryName == 'Slovak Republic') return getCountryCode('Slovakia')
+    if (countryName == 'Macedonia, FYR') return getCountryCode('Macedonia')
+    if (countryName == 'Syria') return getCountryCode('Syrian Arab Republic')
+    if (countryName == 'Iran') return getCountryCode('Iran, Islamic Republic of')
+    if (countryName == 'Vietnam') return getCountryCode('Viet Nam')
 
     var f = Object.keys(isoCountries).find(key => isoCountries[key] == countryName)
 

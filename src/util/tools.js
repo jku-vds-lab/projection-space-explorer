@@ -14,7 +14,7 @@ class RectangleSelection {
             color: 0x000000,
             side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.5
+            opacity: 0.2
         });
         this.plane = new THREE.Mesh(this.geometry, this.material);
         this.plane.position.x = 0
@@ -35,8 +35,8 @@ class RectangleSelection {
 
             this.plane.position.x = this.startX
             this.plane.position.y = this.startY
-            this.plane.scale.x = 0
-            this.plane.scale.y = 0
+            this.plane.scale.x = 0.1
+            this.plane.scale.y = 0.1
 
             this.scene.add(this.plane);
 

@@ -10,35 +10,23 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import { ShapeLegend, calculateOptions, Legend, LegendFun, ShowColorLegend } from './view/categorical'
-import { makeStyles } from '@material-ui/core/styles';
-import { DatasetSelector, DatasetList } from './util/datasetselector'
+import { DatasetList } from './util/datasetselector'
 import ThreeView from './view/view'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import Slider from '@material-ui/core/Slider';
-import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, LinearColorScale, SchemeColor, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping } from "./util/colors";
-import { DefaultVectorColorScheme } from "./util/colors";
-import { Input, Divider, Card, CardContent } from "@material-ui/core";
+import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, SchemeColor, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping } from "./util/colors";
+import { Divider, Card, CardContent } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import MaskedInput from "react-text-mask";
 import { StoryLegend } from "./legends/story";
-import DragAndDrop from "./util/draganddrop";
-import { loadFromPath, testFromPath } from './util/datasetselector'
-import { thresholdFreedmanDiaconis } from "d3";
+import { loadFromPath } from './util/datasetselector'
 import { RubikLegend } from "./legends/rubik";
 import { NeuralLegend } from "./legends/neural";
 import { ChessLegend } from "./legends/chess";
 import Popover from '@material-ui/core/Popover';
-import ReactCountryFlag from "react-country-flag"
-import Flag from "react-flags";
-
+import Chip from '@material-ui/core/Chip';
 
 
 
@@ -678,7 +666,6 @@ class Application extends React.Component {
           </Grid>
 
 
-
         </Grid>
 
       </div>
@@ -692,7 +679,7 @@ class Application extends React.Component {
 
 
 
-      <div style={{ width: "18rem", height: '100%', position: 'absolute', left: '18rem', top: '0px', pointerEvents: 'none' }} class="flex-shrink-0">
+      <div style={{ width: "18rem", height: '100%', position: 'absolute', left: '18rem', top: '0px' }} class="flex-shrink-0">
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
 
           <Card>
@@ -707,27 +694,14 @@ class Application extends React.Component {
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
           <Card >
             <CardContent style={{ padding: '8px' }}>
-              <Typography align="center" gutterBottom variant="body1">Aggregation</Typography>
+              <Typography align="center" gutterBottom variant="body1">{`Aggregation (${this.state.selectionAggregation.length})`}</Typography>
 
               <GenericLegend aggregate={true} type={this.state.datasetType} vectors={this.state.selectionAggregation} dataset={this.state.vectors}></GenericLegend>
             </CardContent>
           </Card>
-
-
         </div>
       </div>
 
-      <div id="guide" style={{ position: "absolute", left: "18rem", top: "2rem", display: "none" }}>
-        <div class="card bg-dark text-white" style={{ width: "20rem", height: "20rem", opacity: "90%" }}>
-          <div class="card-body">
-            <h5 class="card-title">Basic Controls</h5>
-
-            <p class="card-text">You can move the camera by pressing the left mouse button and dragging the image.</p>
-            <p class="card-text">Use your mousewheel to zoom in and out of the projection.</p>
-            <p class="card-text">You can select multiple states by dragging a rectangle while pressing the ALT key.</p>
-          </div>
-        </div>
-      </div>
 
     </div >
   }
