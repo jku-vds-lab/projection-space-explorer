@@ -225,50 +225,6 @@ export class ContinuousMapping {
   }
 }
 
-export class SequentialColorScheme {
-  constructor() {
-    this.interpolator = d3v5.interpolateRgb("#ff0000", "blue")
-  }
-
-  createMapping(range) {
-
-    return new SequentialScaleMapping(this, range)
-  }
-
-  map(value) {
-    var d3color = d3v5.color(this.interpolator(value))
-    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
-  }
-}
-
-export class DivergingColorScheme {
-  constructor() {
-  }
-
-  createMapping(range) {
-    return new SequentialScaleMapping(this, range)
-  }
-
-  map(value) {
-    var d3color = d3v5.color(d3v5.interpolatePRGn(value))
-    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
-  }
-}
-
-export class DefaultVectorColorScheme extends ColorScheme {
-  constructor() {
-    super([
-      new SchemeColor("#1b9e77"),
-      new SchemeColor("#d95f02"),
-      new SchemeColor("#7570b3"),
-      new SchemeColor("#e7298a"),
-      new SchemeColor("#66a61e"),
-      new SchemeColor("#e6ab02"),
-      new SchemeColor("#a6761d"),
-      new SchemeColor("#666666")
-    ])
-  }
-}
 
 export class DefaultLineColorScheme extends ColorScheme {
   constructor() {

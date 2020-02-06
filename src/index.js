@@ -212,6 +212,12 @@ class Application extends React.Component {
 
     this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
 
+    console.log(this.lineColorScheme.map('beginner'))
+
+    this.setState({
+      lineColorScheme: this.lineColorScheme
+    })
+
     this.threeRef.current.createVisualization(this.dataset, this.lineColorScheme, null)
 
     this.finite()
@@ -459,7 +465,7 @@ class Application extends React.Component {
               })
 
               this.threeRef.current.setLineFilter(ch)
-            }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos}>
+            }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme}>
 
             </LineSelectionPopover>
           </Grid>
