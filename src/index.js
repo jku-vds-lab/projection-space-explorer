@@ -1,9 +1,6 @@
 import "regenerator-runtime/runtime";
 
 import Button from '@material-ui/core/Button';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import { ShapeLegend, calculateOptions, Legend, LegendFun, ShowColorLegend } from './view/categorical'
 import { DatasetList } from './util/datasetselector'
@@ -13,7 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, SchemeColor, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping } from "./util/colors";
+import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping } from "./util/colors";
 import { Divider, Card, CardContent, Checkbox } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
 import { StoryLegend } from "./legends/story";
@@ -23,6 +20,7 @@ import { NeuralLegend } from "./legends/neural";
 import { ChessLegend } from "./legends/chess";
 import Popover from '@material-ui/core/Popover';
 import { LineSelectionPopover, LineSelectionTree } from './view/lineselectiontree'
+import Box from '@material-ui/core/Box';
 
 
 
@@ -275,7 +273,7 @@ class Application extends React.Component {
 
     var defaultColorAttribute = this.categoryOptions.getAttribute("color", "algo", "categorical")
     if (defaultColorAttribute) {
-      state.definedScales = this.defaultScalesForAttribute(defaultColorAttribute)
+      state.definedScales = defaultScalesForAttribute(defaultColorAttribute)
       state.selectedScaleIndex = 0
       state.selectedVectorByColor = defaultColorAttribute.key
       state.vectorByColor = defaultColorAttribute
@@ -348,14 +346,14 @@ class Application extends React.Component {
 
     if (attribute != null && attribute.type == 'categorical') {
       state.selectedScaleIndex = 0
-      state.definedScales = this.defaultScalesForAttribute(attribute)
+      state.definedScales = defaultScalesForAttribute(attribute)
 
       scale = state.definedScales[state.selectedScaleIndex]
 
       this.threeRef.current.particles.colorFilter(state.colorsChecked)
     } else if (attribute != null) {
       state.selectedScaleIndex = 0
-      state.definedScales = this.defaultScalesForAttribute(attribute)
+      state.definedScales = defaultScalesForAttribute(attribute)
 
       scale = state.definedScales[state.selectedScaleIndex]
 
@@ -374,50 +372,7 @@ class Application extends React.Component {
 
 
 
-  defaultScalesForAttribute(attribute) {
-    if (attribute.type == 'categorical') {
-      return [
-        new DiscreteScale([
-          new SchemeColor("#1b9e77"),
-          new SchemeColor("#d95f02"),
-          new SchemeColor("#7570b3"),
-          new SchemeColor("#e7298a"),
-          new SchemeColor("#66a61e"),
-          new SchemeColor("#e6ab02"),
-          new SchemeColor("#a6761d"),
-          new SchemeColor("#666666")
-        ]),
-        new DiscreteScale([
-          new SchemeColor("#a6cee3"),
-          new SchemeColor("#1f78b4"),
-          new SchemeColor("#b2df8a"),
-          new SchemeColor("#33a02c"),
-          new SchemeColor("#fb9a99"),
-          new SchemeColor("#e31a1c"),
-          new SchemeColor("#fdbf6f"),
-          new SchemeColor("#ff7f00")
-        ])
-      ]
-    } else {
-      return [
-        new ContinuosScale([
-          new SchemeColor('#fdcc8a'),
-          new SchemeColor('#b30000')
-        ]),
-        new ContinuosScale([
-          new SchemeColor('#a6611a'),
-          new SchemeColor('#f5f5f5'),
-          new SchemeColor('#018571')
-        ]),
-        new ContinuosScale([
-          new SchemeColor('#ca0020'),
-          new SchemeColor('#f7f7f7'),
-          new SchemeColor('#0571b0')
-        ])
 
-      ]
-    }
-  }
 
   render() {
     return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
@@ -455,6 +410,7 @@ class Application extends React.Component {
             style={{ padding: '0 16px' }}>
             <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
 
+            <Box p={1}></Box>
 
             <LineSelectionPopover vectors={this.state.vectors}
               onSelectAll={(algo, checked) => {
@@ -522,9 +478,11 @@ class Application extends React.Component {
 
                       this.setState({
                         selectedVectorByShape: event.target.value,
-                        vectorByShape: attribute
+                        vectorByShape: attribute,
+                        checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
                       })
 
+                      this.threeRef.current.filterPoints({ 'star': true, 'cross': true, 'circle': true, 'square': true })
                       this.threeRef.current.particles.shapeCat(attribute)
                     }}
                   >
@@ -655,14 +613,14 @@ class Application extends React.Component {
 
                         if (attribute != null && attribute.type == 'categorical') {
                           state.selectedScaleIndex = 0
-                          state.definedScales = this.defaultScalesForAttribute(attribute)
+                          state.definedScales = defaultScalesForAttribute(attribute)
 
                           scale = state.definedScales[state.selectedScaleIndex]
 
                           this.threeRef.current.particles.colorFilter(state.colorsChecked)
                         } else if (attribute != null) {
                           state.selectedScaleIndex = 0
-                          state.definedScales = this.defaultScalesForAttribute(attribute)
+                          state.definedScales = defaultScalesForAttribute(attribute)
 
                           scale = state.definedScales[state.selectedScaleIndex]
 
@@ -761,6 +719,10 @@ class Application extends React.Component {
     </div >
   }
 }
+
+
+
+
 
 
 

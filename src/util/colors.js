@@ -251,3 +251,57 @@ export function hexToRGB(color) {
     b: (color & 0x0000ff)
   }
 }
+
+
+
+
+
+
+
+
+
+export function defaultScalesForAttribute(attribute) {
+  if (attribute.type == 'categorical') {
+    return [
+      new DiscreteScale([
+        new SchemeColor("#1b9e77"),
+        new SchemeColor("#d95f02"),
+        new SchemeColor("#7570b3"),
+        new SchemeColor("#e7298a"),
+        new SchemeColor("#66a61e"),
+        new SchemeColor("#e6ab02"),
+        new SchemeColor("#a6761d"),
+        new SchemeColor("#666666")
+      ]),
+      new DiscreteScale([
+        new SchemeColor("#a6cee3"),
+        new SchemeColor("#1f78b4"),
+        new SchemeColor("#b2df8a"),
+        new SchemeColor("#33a02c"),
+        new SchemeColor("#fb9a99"),
+        new SchemeColor("#e31a1c"),
+        new SchemeColor("#fdbf6f"),
+        new SchemeColor("#ff7f00")
+      ])
+    ]
+  } else {
+    return [
+      new ContinuosScale([
+        new SchemeColor('#fdcc8a'),
+        new SchemeColor('#b30000')
+      ]),
+      new ContinuosScale([
+        new SchemeColor('#a6611a'),
+        new SchemeColor('#f5f5f5'),
+        new SchemeColor('#018571')
+      ]),
+      new ContinuosScale([
+        new SchemeColor('#ca0020'),
+        new SchemeColor('#f7f7f7'),
+        new SchemeColor('#0571b0')
+      ])
+
+    ]
+  }
+
+}

@@ -5,11 +5,7 @@ var convex = require('three/examples/jsm/geometries/ConvexGeometry')
 
 var fragmentShaders = require('./fragmentshaders')
 var vertexShaders = require('./vertexshaders')
-
 var override = require('../overrides/meshline')
-
-import { SequentialColorScheme, DefaultVectorColorScheme, DivergingColorScheme, NoMapping, DiscreteMapping, ContinuousMapping } from '../util/colors'
-
 
 var Shapes = {
   CIRCLE: "circle",
@@ -170,8 +166,13 @@ export class LineVisualization {
     var opacity = getLineOpacity(this.segments.length)
     var lines = []
 
+    console.log("segments...")
+    console.log(this.segments)
+
+
     this.segments.forEach((segment, index) => {
 
+      console.log(segment.vectors)
       var geometry = new THREE.Geometry();
       var material = new THREE.LineBasicMaterial({
         color: this.lineColorScheme.map(segment.vectors[0].algo).hex,
@@ -224,14 +225,14 @@ export class PointVisualization {
     this.vectorColorScheme = vectorColorScheme
     this.dataset = dataset
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
-    this.colorsChecked = [ true, true, true, true, true, true, true, true, true ]
+    this.colorsChecked = [true, true, true, true, true, true, true, true, true]
   }
 
   createMesh(data, segments) {
     this.segments = segments
     this.vectors = data
 
-    
+
 
     var vertices = new THREE.Geometry().vertices;
     var positions = new Float32Array(data.length * 3);
@@ -510,7 +511,7 @@ export class PointVisualization {
         vector.intrinsicColor = null
       }
 
-      
+
 
       color[i * 4 + 0] = rgb.r / 255.0
       color[i * 4 + 1] = rgb.g / 255.0

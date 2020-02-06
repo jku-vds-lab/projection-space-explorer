@@ -255,8 +255,13 @@ export class DatasetDatabase {
                 type: "neural"
             },
             {
-                display: "Stories: All",
+                display: "Stories: With Indices",
                 path: "datasets/story/all.csv",
+                type: "story"
+            },
+            {
+                display: "Stories: With Names",
+                path: "datasets/story/withnames.csv",
                 type: "story"
             }
         ]
@@ -339,7 +344,7 @@ export var DatasetList = ({ onChange }) => {
                 <LinearProgress style={{ width: 500 }} />
             </Grid>
             :
-            
+
             <Grid container direction="row" alignItems="center" justify="center" style={{ width: 600, padding: '32px' }}>
                 <Grid item style={{ width: '50%' }} container direction="column">
                     <Typography variant={'h6'} align="center" style={{ margin: '12px 0px' }}>Preloaded Datasets</Typography>
