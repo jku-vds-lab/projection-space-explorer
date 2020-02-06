@@ -456,16 +456,33 @@ class Application extends React.Component {
             <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
 
 
-            <LineSelectionPopover vectors={this.state.vectors} onChange={(id, checked) => {
-              var ch = this.state.selectedLines
-              ch[id] = checked
+            <LineSelectionPopover vectors={this.state.vectors}
+              onSelectAll={(algo, checked) => {
+                var ch = this.state.selectedLines
+                Object.keys(ch).forEach(key => {
+                  var e = this.state.selectedLineAlgos.find(e => e.algo == algo)
+                  if (e.lines.find(e => e.line == key)) {
+                    ch[key] = checked
+                  }
 
-              this.setState({
-                selectedLines: ch
-              })
+                })
 
-              this.threeRef.current.setLineFilter(ch)
-            }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme}>
+                this.setState({
+                  selectedLines: ch
+                })
+
+                this.threeRef.current.setLineFilter(ch)
+              }}
+              onChange={(id, checked) => {
+                var ch = this.state.selectedLines
+                ch[id] = checked
+
+                this.setState({
+                  selectedLines: ch
+                })
+
+                this.threeRef.current.setLineFilter(ch)
+              }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme}>
 
             </LineSelectionPopover>
           </Grid>

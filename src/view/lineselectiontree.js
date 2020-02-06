@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
+import { Link, Divider } from '@material-ui/core';
 
 function MinusSquare(props) {
     return (
@@ -125,21 +126,41 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component 
         >
 
 
-            
+
             {
                 this.props.algorithms.map(algo => {
                     return <StyledTreeItem nodeId={algo.algo} label={algo.algo}>
+                        <Grid container direction="row">
+                            <Grid item><Link href="#" onClick={() => {
+                                this.props.onSelectAll(algo.algo, true)
+                            }}>Select all</Link></Grid>
+
+                            <Grid item>
+                                <Divider orientation="vertical" style={{ margin: '0px 8px' }}/>
+                            </Grid>
+                            <Grid item>
+                                <Link href="#" onClick={() => {
+                                    this.props.onSelectAll(algo.algo, false)
+                                }}>Unselect all</Link>
+                            </Grid>
+
+                        </Grid>
+
                         {
-                            
                             algo.lines.map(line => {
-                                return <StyledTreeItem nodeId={line.line} label={<div>
-                                    <Checkbox
-                                        style={{ padding: '3px 9px', color: `${this.props.colorScale != null ? this.props.colorScale.map(algo.algo).hex : ''}` }}
-                                        onClick={(e) => { e.stopPropagation() }}
-                                        onChange={(e, checked) => {
-                                            this.props.onChange(line.line, checked)
-                                        }}
-                                        checked={this.props.checkboxes[line.line]}></Checkbox><div style={{ display: 'inline' }}>{line.line}</div></div>}>
+                                return <StyledTreeItem nodeId={line.line} label={
+                                    <div>
+                                        <Checkbox
+                                            style={{ padding: '3px 9px', color: `${this.props.colorScale != null ? this.props.colorScale.map(algo.algo).hex : ''}` }}
+                                            onClick={(e) => { e.stopPropagation() }}
+                                            onChange={(e, checked) => {
+                                                this.props.onChange(line.line, checked)
+                                            }}
+                                            checked={this.props.checkboxes[line.line]}>
+                                        </Checkbox>
+                                        <div style={{ display: 'inline' }}>{line.line}
+                                        </div>
+                                    </div>}>
 
                                 </StyledTreeItem>
                             })
@@ -158,7 +179,7 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component 
 
 
 
-export var LineSelectionPopover = ({ vectors, onChange, checkboxes, algorithms, colorScale }) => {
+export var LineSelectionPopover = ({ vectors, onChange, checkboxes, algorithms, colorScale, onSelectAll }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = event => {
@@ -192,7 +213,7 @@ export var LineSelectionPopover = ({ vectors, onChange, checkboxes, algorithms, 
             }}
         >
             <Grid style={{ padding: '12px', width: 300, maxHeight: 600 }} alignItems="stretch" direction="column" justify="center">
-                <LineSelectionTree vectors={vectors} onChange={onChange} checkboxes={checkboxes} algorithms={algorithms} colorScale={colorScale}></LineSelectionTree>
+                <LineSelectionTree vectors={vectors} onChange={onChange} checkboxes={checkboxes} algorithms={algorithms} colorScale={colorScale} onSelectAll={onSelectAll}></LineSelectionTree>
             </Grid>
 
         </Popover>
