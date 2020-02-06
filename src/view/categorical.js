@@ -1,7 +1,5 @@
 
-var chess = require('../problems/chess')
-var rubik = require('../problems/rubik')
-var neural = require('../problems/neural')
+
 var util = require('../util/colors')
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
@@ -420,19 +418,21 @@ export class CategorySelection extends React.Component {
 
 
 export var ShowColorLegend = ({ mapping, colorsChecked, onChange }) => {
-  console.log(mapping)
   if (mapping == undefined || mapping == null) {
     return <div></div>
   }
 
   if (mapping instanceof DiscreteMapping) {
-    return <Grid container direction="column">{mapping.values.map((value, index) => {
-      var color = mapping.map(value)
-      return <FormControlLabel style={{ margin: '0 8px' }}
-        control={<Checkbox style={{ padding: '3px 9px' }} size='small' checked={colorsChecked[index]} onChange={onChange} id={index}></Checkbox>}
-        label={<Typography style={{ color: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})` }}>{value}</Typography>}
-      ></FormControlLabel>
-    })}</Grid>
+    return <Grid container direction="column" style={{ padding: '12px 0px' }}>
+
+
+      {mapping.values.map((value, index) => {
+        var color = mapping.map(value)
+        return <FormControlLabel style={{ margin: '0 8px' }}
+          control={<Checkbox style={{ padding: '3px 9px' }} size='small' checked={colorsChecked[index]} onChange={onChange} id={index}></Checkbox>}
+          label={<Typography style={{ color: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})` }}>{value}</Typography>}
+        ></FormControlLabel>
+      })}</Grid>
   }
 
   return <div></div>

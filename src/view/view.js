@@ -8,6 +8,8 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import { getDefaultZoom, arraysEqual } from './utilfunctions';
+
 
 const useStyles = makeStyles(theme => ({
     margin: {
@@ -106,29 +108,7 @@ const SettingsPopover = ({ onChangeSlider }) => {
 
 
 
-/**
- * Calculates the default zoom factor by examining the bounds of the data set
- * and then dividing it by the height of the viewport.
- */
-function getDefaultZoom(vectors, width, height) {
-    var zoom = 10
 
-    // Get rectangle that fits around data set
-    var minX = 1000, maxX = -1000, minY = 1000, maxY = -1000;
-    vectors.forEach(vector => {
-        minX = Math.min(minX, vector.x)
-        maxX = Math.max(maxX, vector.x)
-        minY = Math.min(minY, vector.y)
-        maxY = Math.max(maxY, vector.y)
-    })
-
-    // Get biggest scale
-    var horizontal = Math.max(Math.abs(minX), Math.abs(maxX))
-    var vertical = Math.max(Math.abs(minY), Math.abs(maxY))
-
-    // Divide the height/width through the biggest axis of the data points
-    return Math.min(width, height) / Math.max(horizontal, vertical) / 2
-}
 
 
 
@@ -465,7 +445,7 @@ export default class ThreeView extends React.Component {
     filterLines(algo, show) {
         this.segments.forEach((segment) => {
             if (segment.vectors[0].algo == algo) {
-                segment.line.visible = show
+                segment.setMeta('globalVisible', show)
 
 
                 segment.vectors.forEach((vector) => {
@@ -474,8 +454,22 @@ export default class ThreeView extends React.Component {
             }
         })
 
+        this.lines.update()
         this.particles.update()
     }
+
+
+
+    setLineFilter(checked) {
+        this.segments.forEach((segment) => {
+            segment.setMeta('detailVisible', checked[segment.vectors[0].line])
+        })
+        this.lines.update()
+        this.particles.update()
+    }
+
+
+
 
     filterPoints(checkboxes) {
         this.particles.showSymbols = checkboxes
@@ -515,13 +509,11 @@ export default class ThreeView extends React.Component {
     }
 
 
-    shouldComponentUpdate() {
-        return false
-    }
 
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        
+    componentDidUpdate(prevProps, prevState) {
+        if (!arraysEqual(prevProps.selectionState, this.props.selectionState)) {
+            console.log("props changed")
+        }
     }
 
 

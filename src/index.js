@@ -1,9 +1,5 @@
 import "regenerator-runtime/runtime";
 
-var chess = require('./problems/chess')
-var rubik = require('./problems/rubik')
-var neural = require('./problems/neural')
-
 import Button from '@material-ui/core/Button';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -18,7 +14,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, SchemeColor, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping } from "./util/colors";
-import { Divider, Card, CardContent } from "@material-ui/core";
+import { Divider, Card, CardContent, Checkbox } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
 import { StoryLegend } from "./legends/story";
 import { loadFromPath } from './util/datasetselector'
@@ -26,7 +22,12 @@ import { RubikLegend } from "./legends/rubik";
 import { NeuralLegend } from "./legends/neural";
 import { ChessLegend } from "./legends/chess";
 import Popover from '@material-ui/core/Popover';
-import Chip from '@material-ui/core/Chip';
+import { LineSelectionPopover, LineSelectionTree } from './view/lineselectiontree'
+
+
+
+
+
 
 
 
@@ -51,7 +52,6 @@ window.showGuide = function () {
   } else {
     document.getElementById("guide").style.display = "none"
   }
-
 }
 
 
@@ -113,7 +113,9 @@ class Application extends React.Component {
 
       datasetType: 'none',
 
-      colorsChecked: [true, true, true, true, true, true, true, true, true]
+      colorsChecked: [true, true, true, true, true, true, true, true, true],
+
+      selectedLines: {}
     }
 
     this.threeRef = React.createRef()
@@ -184,6 +186,26 @@ class Application extends React.Component {
   }
 
 
+  onDataSelected(dataset, json) {
+    // Dispose old view
+    this.threeRef.current.disposeScene()
+
+    // Set new dataset as variable
+    this.dataset = dataset
+    this.vectors = dataset.vectors
+    this.segments = dataset.segments
+    this.categories = json
+
+    this.setState({
+      datasetType: this.dataset.info.type,
+      vectors: this.vectors
+    })
+
+    // Load new view
+    this.loadData2()
+  }
+
+
   loadData2() {
     this.setAggregateView(document.getElementById('info'), [], false, this.dataset.info.type)
     this.setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.info.type)
@@ -199,6 +221,9 @@ class Application extends React.Component {
     // Get categorical information about data set
     this.categoryOptions = calculateOptions(this.vectors, this.categories)
 
+    var algos = LineSelectionTree.genAlgos(this.vectors)
+    var selLines = LineSelectionTree.getChecks(algos)
+
     // Update shape legend
     this.setState({
       selectedVectorByShape: "",
@@ -209,7 +234,9 @@ class Application extends React.Component {
       vectorByColor: null,
       selectedVectorByColor: "",
       selectedVectorBySize: "",
-      checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
+      checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true },
+      selectedLines: selLines,
+      selectedLineAlgos: algos
     })
 
     this.legend.current.load(this.dataset.info.type, this.lineColorScheme)
@@ -277,21 +304,7 @@ class Application extends React.Component {
     this.threeRef.current.particles.updateColor()
   }
 
-  onDataSelected(dataset, json) {
-    // Dispose old view
-    this.threeRef.current.disposeScene()
 
-    // Set new dataset as variable
-    this.dataset = dataset
-    this.vectors = dataset.vectors
-    this.segments = dataset.segments
-    this.categories = json
-
-    this.setState({ datasetType: this.dataset.info.type, vectors: this.vectors })
-
-    // Load new view
-    this.loadData2()
-  }
 
   onLineSelect(algo, show) {
     this.threeRef.current.filterLines(algo, show)
@@ -401,15 +414,17 @@ class Application extends React.Component {
   }
 
   render() {
-    //
-    //
     return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
       <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto', 'overflow-x': 'hidden' }}>
+
+
         <Grid
           container
           justify="center"
           alignItems="stretch"
           direction="column">
+
+
 
           <Grid item>
             <ChooseFileDialog ref={this.setSelector} onChange={this.onDataSelected}></ChooseFileDialog>
@@ -433,6 +448,20 @@ class Application extends React.Component {
             direction="column"
             style={{ padding: '0 16px' }}>
             <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
+
+
+            <LineSelectionPopover vectors={this.state.vectors} onChange={(id, checked) => {
+              var ch = this.state.selectedLines
+              ch[id] = checked
+
+              this.setState({
+                selectedLines: ch
+              })
+
+              this.threeRef.current.setLineFilter(ch)
+            }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos}>
+
+            </LineSelectionPopover>
           </Grid>
 
           <Divider style={{ margin: '8px 0px' }} />
@@ -444,8 +473,11 @@ class Application extends React.Component {
               display="block"
             >
               Points
-        </Typography>
+            </Typography>
           </div>
+
+
+
 
           {
             this.categoryOptions != null && this.categoryOptions.hasCategory("shape") ?
@@ -674,15 +706,15 @@ class Application extends React.Component {
 
 
 
-      <ThreeView ref={this.threeRef} onHover={this.onHover} onAggregate={this.onAggregate} test={this.state.selectionState} />
+      <ThreeView ref={this.threeRef} onHover={this.onHover} onAggregate={this.onAggregate} selectionState={this.state.selectionState} />
 
 
 
 
-      <div style={{ width: "18rem", height: '100%', position: 'absolute', left: '18rem', top: '0px' }} class="flex-shrink-0">
+      <div style={{ width: "18rem", height: '100%', position: 'absolute', left: '18rem', top: '0px', pointerEvents: 'none' }} class="flex-shrink-0">
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
 
-          <Card>
+          <Card style={{ pointerEvents: 'auto' }}>
             <CardContent style={{ padding: '8px' }}>
               <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
               <GenericLegend aggregate={false} type={this.state.datasetType} vectors={this.state.selectionState} dataset={this.state.vectors}></GenericLegend>
@@ -692,7 +724,7 @@ class Application extends React.Component {
 
         </div>
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
-          <Card >
+          <Card style={{ pointerEvents: 'auto' }}>
             <CardContent style={{ padding: '8px' }}>
               <Typography align="center" gutterBottom variant="body1">{`Aggregation (${this.state.selectionAggregation.length})`}</Typography>
 

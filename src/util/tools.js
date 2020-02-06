@@ -83,7 +83,7 @@ class RectangleSelection {
         var set = []
 
         this.vectors.forEach(vector => {
-            if (selector(vector.globalIndex)) {
+            if (selector(vector.getMeta('globalIndex'))) {
                 if (vector.x > rect.x && vector.y > rect.y && vector.x < rect.x + rect.w && vector.y < rect.y + rect.h) {
                     set.push(vector)
                 }

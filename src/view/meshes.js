@@ -123,7 +123,8 @@ export class LineVisualization {
     // Undo previous highlight
     if (this.highlightIndices != null) {
       this.highlightIndices.forEach(index => {
-        this.meshes[index].line.visible = true
+        this.segments[index].setMeta('highlight', false)
+        //this.meshes[index].line.visible = true
       })
       this.highlightMeshes.forEach(mesh => {
         mesh.material.dispose()
@@ -135,7 +136,8 @@ export class LineVisualization {
     this.highlightIndices = indices
     this.highlightMeshes = []
     this.highlightIndices.forEach(index => {
-      this.meshes[index].line.visible = false
+      this.segments[index].setMeta('highlight', true)
+      //this.meshes[index].line.visible = false
 
       var geometry = new THREE.Geometry();
       this.meshes[index].line.geometry.vertices.forEach((vertex, i) => {
@@ -159,6 +161,8 @@ export class LineVisualization {
       this.highlightMeshes.push(m);
       scene.add(m);
     })
+
+    this.update()
   }
 
 
@@ -198,6 +202,16 @@ export class LineVisualization {
 
     this.meshes = lines
     return lines
+  }
+
+
+  /**
+   * Updates visibility based on settings in the lines
+   */
+  update() {
+    this.segments.forEach(segment => {
+      segment.line.visible = segment.getMeta('detailVisible') && segment.getMeta('globalVisible') && !segment.getMeta('highlight')
+    })
   }
 }
 
@@ -239,7 +253,7 @@ export class PointVisualization {
         color.setHex('#000000');
 
         // Set the globalIndex which belongs to a specific vertex
-        vector.globalIndex = i
+        vector.setMeta('globalIndex', i)
 
         colors[i * 4] = color.r;
         colors[i * 4 + 1] = color.g;
@@ -331,7 +345,7 @@ export class PointVisualization {
           }
 
           vector.shapeType = Shapes.fromInt(shape)
-          type[vector.globalIndex] = shape
+          type[vector.getMeta('globalIndex')] = shape
         })
       })
     } else {
@@ -403,7 +417,7 @@ export class PointVisualization {
       // default transparency
       this.segments.forEach(segment => {
         segment.vectors.forEach(vector => {
-          color[vector.globalIndex * 4 + 3] = 1.0;
+          color[vector.getMeta('globalIndex') * 4 + 3] = 1.0;
         })
       })
     } else {
@@ -420,7 +434,7 @@ export class PointVisualization {
           }
 
           segment.vectors.forEach(vector => {
-            color[vector.globalIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+            color[vector.getMeta('globalIndex') * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
           })
         })
       }
@@ -470,7 +484,7 @@ export class PointVisualization {
     var size = this.mesh.geometry.attributes.size.array
 
     this.vectors.forEach(vector => {
-      size[vector.globalIndex] = vector.baseSize * (vector.highlighted ? 2.0 : 1.0)
+      size[vector.getMeta('globalIndex')] = vector.baseSize * (vector.highlighted ? 2.0 : 1.0)
     })
 
     this.mesh.geometry.attributes.size.needsUpdate = true
@@ -480,7 +494,7 @@ export class PointVisualization {
     var color = this.mesh.geometry.attributes.customColor.array
 
     this.vectors.forEach(vector => {
-      var i = vector.globalIndex
+      var i = vector.getMeta('globalIndex')
       var rgb = null
       if (this.colorAttribute != null) {
         var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
@@ -509,7 +523,7 @@ export class PointVisualization {
   isPointVisible(index) {
     var vector = this.vectors[index]
 
-    return vector.visible && this.showSymbols[vector.shapeType] && (vector.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.intrinsicColor] : true)
+    return this.segments[vector.lineIndex].getMeta('detailVisible') && this.segments[vector.lineIndex].getMeta('globalVisible') && vector.visible && this.showSymbols[vector.shapeType] && (vector.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.intrinsicColor] : true)
   }
 
   update() {
@@ -518,12 +532,12 @@ export class PointVisualization {
 
     this.segments.forEach(segment => {
       segment.vectors.forEach(vector => {
-        if (this.isPointVisible(vector.globalIndex)) {
+        if (this.isPointVisible(vector.getMeta('globalIndex'))) {
           //colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
-          show[vector.globalIndex] = 1.0
+          show[vector.getMeta('globalIndex')] = 1.0
         } else {
           //colors[i * 4 + 3] = 0.0
-          show[vector.globalIndex] = 0.0
+          show[vector.getMeta('globalIndex')] = 0.0
         }
 
         i++

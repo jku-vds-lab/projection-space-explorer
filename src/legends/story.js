@@ -95,10 +95,14 @@ export var YearAggComp = ({ selection }) => {
     }
 
 
+
     var years = [...new Set(selection.map(value => value.new_year))]
+    years.sort()
     var count = years.map(year => selection.filter(s => s.new_year == year).length)
     var max = Math.max(...count)
     var segmentWidth = 14
+
+
 
     return <svg width="232" height="76" viewBox="0 0 232 76">
 

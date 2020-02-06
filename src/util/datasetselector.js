@@ -419,7 +419,7 @@ function getSegs(vectors) {
     var lineKeys = [... new Set(vectors.map(vector => vector.line))]
 
     var segments = lineKeys.map(lineKey => {
-        return { vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) }
+        return new DataLine({ vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) })
     })
 
     return segments
@@ -518,6 +518,9 @@ function convertFromCSV(vectors) {
 }
 
 
+/**
+ * Dataset class that holds all data, the ranges and additional stuff
+ */
 export class Dataset {
     constructor(vectors, segments, ranges, info) {
         this.vectors = vectors
@@ -529,7 +532,41 @@ export class Dataset {
 
 
 /**
- * Main data point object
+ * Main data class for lines
+ */
+export class DataLine {
+    constructor(dict) {
+        // Copy dictionary values to this object
+        Object.keys(dict).forEach(key => {
+            this[key] = dict[key]
+        })
+
+        this.__meta__ = {}
+
+        this.setMeta('detailVisible', true)
+        this.setMeta('globalVisible', true)
+        this.setMeta('highlight', false)
+    }
+
+    /**
+     * Sets some meta data for a key
+     */
+    setMeta(key, value) {
+        this.__meta__[key] = value
+    }
+
+    /**
+     * Gets some meta data for a key
+     */
+    getMeta(key) {
+        return this.__meta__[key]
+    }
+}
+
+
+
+/**
+ * Main data class for points
  */
 export class Vect {
     constructor(dict) {
