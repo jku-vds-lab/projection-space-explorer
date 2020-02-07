@@ -418,14 +418,11 @@ function getSegs(vectors) {
     // Get a list of lines that are in the set
     var lineKeys = [... new Set(vectors.map(vector => vector.line))]
 
-    console.log("LINE KEYS")
-    console.log(lineKeys)
 
     var segments = lineKeys.map(lineKey => {
         return new DataLine({ vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) })
     })
 
-    console.log(segments)
 
     return segments
 }
@@ -536,6 +533,16 @@ export class Dataset {
 }
 
 
+
+
+export class DataLineView {
+    /**
+     * Determines if this line should be grayed out
+     */
+    grayed = false
+}
+
+
 /**
  * Main data class for lines
  */
@@ -551,6 +558,7 @@ export class DataLine {
         this.setMeta('detailVisible', true)
         this.setMeta('globalVisible', true)
         this.setMeta('highlight', false)
+        this.setMeta('view', new DataLineView())
     }
 
     /**
@@ -565,6 +573,13 @@ export class DataLine {
      */
     getMeta(key) {
         return this.__meta__[key]
+    }
+
+    /**
+     * Getter for view details
+     */
+    get view() {
+        return this.getMeta('view')
     }
 }
 
@@ -581,6 +596,7 @@ export class Vect {
         })
 
         this.__meta__ = {}
+        this.setMeta('view', new VectView())
     }
 
     /**
@@ -595,5 +611,27 @@ export class Vect {
      */
     getMeta(key) {
         return this.__meta__[key]
+    }
+
+    /**
+     * Getter for view details
+     */
+    get view() {
+        return this.getMeta('view')
+    }
+}
+
+export class VectView {
+    /**
+     * Index to the vertice from three
+     */
+    meshIndex = -1
+
+    /**
+     * Set color for this vertice, if null the color of the line is taken
+     */
+    intrinsicColor = null
+
+    constructor() {
     }
 }

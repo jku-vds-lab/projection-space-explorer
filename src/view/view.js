@@ -463,10 +463,6 @@ export default class ThreeView extends React.Component {
     setLineFilter(checked) {
         this.segments.forEach((segment) => {
             var show = checked[segment.vectors[0].line]
-            if (show) {
-                console.log("SHOWING LINE")
-                console.log(segment)
-            }
             segment.setMeta('detailVisible', show)
         })
         this.lines.update()
@@ -517,7 +513,7 @@ export default class ThreeView extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (!arraysEqual(prevProps.selectionState, this.props.selectionState)) {
-            console.log("props changed")
+
         }
     }
 
