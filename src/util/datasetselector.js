@@ -255,11 +255,6 @@ export class DatasetDatabase {
                 type: "neural"
             },
             {
-                display: "Stories: With Indices",
-                path: "datasets/story/all.csv",
-                type: "story"
-            },
-            {
                 display: "Stories: With Names",
                 path: "datasets/story/withnames.csv",
                 type: "story"
@@ -423,9 +418,14 @@ function getSegs(vectors) {
     // Get a list of lines that are in the set
     var lineKeys = [... new Set(vectors.map(vector => vector.line))]
 
+    console.log("LINE KEYS")
+    console.log(lineKeys)
+
     var segments = lineKeys.map(lineKey => {
         return new DataLine({ vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) })
     })
+
+    console.log(segments)
 
     return segments
 }

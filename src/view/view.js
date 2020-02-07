@@ -142,7 +142,7 @@ export default class ThreeView extends React.Component {
             var value = this.vectors[index]
 
             // Skip points matching some criteria
-            if (!this.particles.isPointVisible(index)) {
+            if (!this.particles.isPointVisible(value)) {
                 continue
             }
 
@@ -462,7 +462,12 @@ export default class ThreeView extends React.Component {
 
     setLineFilter(checked) {
         this.segments.forEach((segment) => {
-            segment.setMeta('detailVisible', checked[segment.vectors[0].line])
+            var show = checked[segment.vectors[0].line]
+            if (show) {
+                console.log("SHOWING LINE")
+                console.log(segment)
+            }
+            segment.setMeta('detailVisible', show)
         })
         this.lines.update()
         this.particles.update()

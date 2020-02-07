@@ -166,13 +166,7 @@ export class LineVisualization {
     var opacity = getLineOpacity(this.segments.length)
     var lines = []
 
-    console.log("segments...")
-    console.log(this.segments)
-
-
     this.segments.forEach((segment, index) => {
-
-      console.log(segment.vectors)
       var geometry = new THREE.Geometry();
       var material = new THREE.LineBasicMaterial({
         color: this.lineColorScheme.map(segment.vectors[0].algo).hex,
@@ -184,13 +178,12 @@ export class LineVisualization {
       });
       var da = []
       segment.vectors.forEach(function (vector, vi) {
-        vector.lineIndex = index
         da.push(new THREE.Vector2(vector.x, vector.y))
       })
 
       var curve = new THREE.SplineCurve(da)
 
-      curve.getPoints(1000).forEach(function (p, i) {
+      curve.getPoints(700).forEach(function (p, i) {
         geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
       })
       var line = new THREE.Line(geometry, material);
@@ -199,6 +192,10 @@ export class LineVisualization {
       segment.line = line
 
       lines.push(new LineVis(line))
+
+      segment.vectors.forEach(vector => {
+        vector.lineIndex = index
+      })
     })
 
     this.meshes = lines
@@ -385,7 +382,7 @@ export class PointVisualization {
         }
 
         if (category.type != 'categorical') {
-          console.log([min, max])
+
           this.vectorColorScheme = scale
           //this.vectorColorScheme = new ContinuousMapping(scale, { min: min, max: max })
         }
@@ -521,11 +518,16 @@ export class PointVisualization {
     this.mesh.geometry.attributes.customColor.needsUpdate = true
   }
 
-  isPointVisible(index) {
-    var vector = this.vectors[index]
-
-    return this.segments[vector.lineIndex].getMeta('detailVisible') && this.segments[vector.lineIndex].getMeta('globalVisible') && vector.visible && this.showSymbols[vector.shapeType] && (vector.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.intrinsicColor] : true)
+  isPointVisible(vector) {
+    return this.segments[vector.lineIndex].getMeta('detailVisible')
+      && this.segments[vector.lineIndex].getMeta('globalVisible')
+      && vector.visible
+      && this.showSymbols[vector.shapeType]
+      && (vector.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.intrinsicColor] : true)
   }
+
+
+
 
   update() {
     var i = 0
@@ -533,7 +535,7 @@ export class PointVisualization {
 
     this.segments.forEach(segment => {
       segment.vectors.forEach(vector => {
-        if (this.isPointVisible(vector.getMeta('globalIndex'))) {
+        if (this.isPointVisible(vector)) {
           //colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
           show[vector.getMeta('globalIndex')] = 1.0
         } else {
