@@ -44,15 +44,6 @@ var GenericLegend = ({ type, vectors, aggregate, dataset }) => {
 }
 
 
-window.showGuide = function () {
-  if (document.getElementById("guide").style.display == "none") {
-    document.getElementById("guide").style.display = "block"
-  } else {
-    document.getElementById("guide").style.display = "none"
-  }
-}
-
-
 
 
 
@@ -213,6 +204,8 @@ class Application extends React.Component {
     this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
 
 
+    console.log(this.dataset)
+
     this.setState({
       lineColorScheme: this.lineColorScheme
     })
@@ -292,8 +285,6 @@ class Application extends React.Component {
     }
 
     this.setState(state)
-
-
 
     this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute)
   }

@@ -136,7 +136,7 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component 
                             }}>Select all</Link></Grid>
 
                             <Grid item>
-                                <Divider orientation="vertical" style={{ margin: '0px 8px' }}/>
+                                <Divider orientation="vertical" style={{ margin: '0px 8px' }} />
                             </Grid>
                             <Grid item>
                                 <Link href="#" onClick={() => {
@@ -148,19 +148,32 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component 
 
                         {
                             algo.lines.map(line => {
-                                return <StyledTreeItem nodeId={line.line} label={
-                                    <div>
-                                        <Checkbox
-                                            style={{ padding: '3px 9px', color: `${this.props.colorScale != null ? this.props.colorScale.map(algo.algo).hex : ''}` }}
-                                            onClick={(e) => { e.stopPropagation() }}
-                                            onChange={(e, checked) => {
-                                                this.props.onChange(line.line, checked)
-                                            }}
-                                            checked={this.props.checkboxes[line.line]}>
-                                        </Checkbox>
-                                        <div style={{ display: 'inline' }}>{line.line}
+
+
+                                return <StyledTreeItem nodeId={line.line}
+                                    label=
+                                    {
+
+                                        <div>
+                                            <Checkbox
+                                                disableRipple
+                                                style={{ padding: '3px 9px', color: `${this.props.colorScale != null ? this.props.colorScale.map(algo.algo).hex : ''}` }}
+                                                onClick={(e) => { e.stopPropagation() }}
+                                                onChange={(e, checked) => {
+                                                    this.props.onChange(line.line, checked)
+                                                }}
+                                                checked={this.props.checkboxes[line.line]}>
+                                            </Checkbox>
+                                            <div style={{ display: 'inline', userSelect: 'none' }}>{line.line}
+                                            </div>
                                         </div>
-                                    </div>}>
+                                    }
+
+                                    onClick={(e) => {
+                                        this.props.onChange(line.line, !this.props.checkboxes[line.line])
+                                    }}
+                                >
+
 
                                 </StyledTreeItem>
                             })
