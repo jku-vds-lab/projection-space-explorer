@@ -1,5 +1,4 @@
 var meshes = require('./meshes')
-var tools = require('../util/tools')
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,6 +8,7 @@ import Popover from '@material-ui/core/Popover';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { getDefaultZoom, arraysEqual } from './utilfunctions';
+import { LassoSelection, RectangleSelection } from '../util/tools'
 
 
 const useStyles = makeStyles(theme => ({
@@ -120,6 +120,7 @@ export default class ThreeView extends React.Component {
         super(props)
 
         this.containerRef = React.createRef()
+        this.selectionRef = React.createRef()
         this.mouseDown = false
 
         this.mouse = { x: 0, y: 0 }
@@ -173,6 +174,18 @@ export default class ThreeView extends React.Component {
         }
     }
 
+
+    /**
+     * Converts world coordinates to screen coordinates
+     * @param {*} vec a vector containing x and y
+     */
+    worldToScreen(vec) {
+        return {
+            x: (vec.x - this.camera.position.x) * this.camera.zoom + this.getWidth() / 2,
+            y: (-vec.y + this.camera.position.y) * this.camera.zoom + this.getHeight() / 2
+        }
+    }
+
     componentDidMount() {
         this.setupRenderer()
     }
@@ -199,9 +212,13 @@ export default class ThreeView extends React.Component {
     onMouseDown(event) {
         event.preventDefault();
 
-        if (event.altKey && this.rectangleSelection != null) {
+        if (event.altKey) {
             var test = this.mouseToWorld(event)
-            this.rectangleSelection.mouseDown(test.x, test.y)
+            //this.rectangleSelection.mouseDown(test.x, test.y)
+
+            // Lasso selection mouseDown
+            this.lasso = new LassoSelection()
+            this.lasso.mouseDown(event.altKey, test.x, test.y)
         } else {
             // Dragging data around
             this.mouseDownPosition = this.normaliseMouse(event)
@@ -214,8 +231,12 @@ export default class ThreeView extends React.Component {
 
         var coords = this.mouseToWorld(event)
 
-        if (this.rectangleSelection != null) {
+        /**if (this.rectangleSelection != null) {
             this.rectangleSelection.mouseMove(coords.x, coords.y)
+        }**/
+
+        if (this.lasso != null) {
+            this.lasso.mouseMove(coords.x, coords.y)
         }
 
         if (window.infoTimeout != null) {
@@ -257,7 +278,7 @@ export default class ThreeView extends React.Component {
     onMouseUp(event) {
         var test = this.mouseToWorld(event)
 
-        if (this.rectangleSelection != null) {
+        /**if (this.rectangleSelection != null) {
             if (this.rectangleSelection.create) {
                 var result = this.rectangleSelection.mouseUp((index) => this.particles.isPointVisible(index), test.x, test.y)
                 if (result != null && result.length > 0) {
@@ -275,7 +296,26 @@ export default class ThreeView extends React.Component {
                     this.props.onAggregate([])
                 }
             }
+        }**/
 
+        if (this.lasso != null) {
+            this.lasso.mouseUp(test.x, test.y)
+            var indices = this.lasso.selection(this.vectors, (vector) => this.particles.isPointVisible(vector))
+            if (indices.length > 0) {
+                var selected = indices.map(index => this.vectors[index])
+                var uniqueIndices = new Set(selected.map(vector => vector.lineIndex))
+                this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+
+                this.currentAggregation = selected
+
+                this.props.onAggregate(selected)
+            } else {
+                this.lasso = null
+                this.currentAggregation = null
+                this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+
+                this.props.onAggregate([])
+            }
         }
 
         this.mouseDown = false;
@@ -420,7 +460,7 @@ export default class ThreeView extends React.Component {
         this.pointScene.add(this.particles.mesh)
 
 
-        this.rectangleSelection = new tools.Selection(this.vectors, this.scene)
+        //this.rectangleSelection = new RectangleSelection(this.vectors, this.scene)
 
 
         // Remove old listeners
@@ -440,6 +480,9 @@ export default class ThreeView extends React.Component {
         container.addEventListener('mousedown', this.mouseDownListener, false);
         container.addEventListener('mouseup', this.mouseUpListener, false);
         container.addEventListener('wheel', this.wheelListener, false);
+
+
+
     }
 
     filterLines(algo, show) {
@@ -505,6 +548,8 @@ export default class ThreeView extends React.Component {
             this.renderer.clear()
             this.renderer.render(this.scene, this.camera)
             this.renderer.render(this.pointScene, this.camera)
+
+            this.renderLasso()
         } catch (e) {
         }
     }
@@ -518,7 +563,48 @@ export default class ThreeView extends React.Component {
     }
 
 
+    renderLasso() {
+        var ctx = this.selectionRef.current.getContext('2d')
+        ctx.clearRect(0, 0, this.getWidth(), this.getHeight(), 'white');
 
+
+        if (this.lasso == null) return;
+
+        var points = this.lasso.points
+
+        if (points.length <= 1) {
+            return;
+        }
+        this.selectionRef.current.setAttribute('width', this.getWidth())
+        this.selectionRef.current.setAttribute('height', this.getHeight())
+        
+
+        
+
+        ctx.setLineDash([5, 3]);
+        ctx.strokeStyle = 'black';
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (var index = 0; index < points.length; index++) {
+            var point = points[index];
+            point = this.worldToScreen(point)
+            if (index == 0) {
+                ctx.moveTo(point.x, point.y);
+            } else {
+                ctx.lineTo(point.x, point.y);
+            }
+        }
+
+        if (!this.lasso.drawing) {
+            var conv = this.worldToScreen(points[0])
+            ctx.lineTo(conv.x, conv.y);
+        }
+        
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+    }
 
 
     render() {
@@ -533,12 +619,20 @@ export default class ThreeView extends React.Component {
         return <div class="flex-grow-1 d-flex" style={{ overflow: "hidden", position: "relative" }}>
             <div id="container" style={containerStyle} ref={this.containerRef}>
             </div>
+            <canvas id="selection" style={{
+                position: "absolute",
+                top: "0px",
+                left: "0px",
+                width: "100%",
+                height: "100%",
+                pointerEvents: 'none'
+            }} ref={this.selectionRef}></canvas>
 
             <div style={{ position: 'absolute', top: '0px', left: '0px' }}>
                 <SettingsPopover onChangeSlider={(ratio) => this.particles.setPointScaling(ratio)}></SettingsPopover>
             </div>
 
-            
+
         </div>
     }
 }

@@ -756,7 +756,9 @@ var SimplePopover = ({ showColorMapping, colorsChecked, onChange }) => {
       <ShowColorLegend
         mapping={showColorMapping}
         colorsChecked={colorsChecked}
-        onChange={onChange}></ShowColorLegend>
+        onChange={onChange}>
+
+      </ShowColorLegend>
 
     </Popover>
   </div>

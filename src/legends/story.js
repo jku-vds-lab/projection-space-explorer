@@ -181,6 +181,11 @@ export var StoryLegend = ({ selection }) => {
         style={{ background: 'white' }}
         alignItems="center"
         direction="column">
+
+        <Grid item>
+            
+        </Grid>
+
         <Table className={classes.table}>
             <TableBody>
                 <TableRow>
