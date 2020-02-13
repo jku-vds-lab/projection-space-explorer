@@ -171,8 +171,6 @@ class Application extends React.Component {
   }
 
   onAggregate(selected) {
-    console.log("aggregated")
-    console.log(selected)
     this.setAggregateView(document.getElementById('aggregate'), selected, this.dataset.info.type)
   }
 
@@ -202,9 +200,6 @@ class Application extends React.Component {
     this.setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.info.type)
 
     this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
-
-
-    console.log(this.dataset)
 
     this.setState({
       lineColorScheme: this.lineColorScheme

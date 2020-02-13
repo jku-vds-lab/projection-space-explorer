@@ -529,17 +529,67 @@ export class Dataset {
         this.ranges = ranges
         this.segments = segments
         this.info = info
+
+        this.calculateBounds()
+    }
+
+    /**
+     * Calculates the dataset bounds for this set, eg the minimum and maximum x,y values
+     * which is needed for the zoom to work correctly
+     */
+    calculateBounds() {
+        var xAxis = this.vectors.map(vector => vector.x)
+        var yAxis = this.vectors.map(vector => vector.x)
+
+        var minX = Math.min(...xAxis)
+        var maxX = Math.max(...xAxis)
+        var minY = Math.min(...yAxis)
+        var maxY = Math.max(...yAxis)
+
+        var scaleBase = 100
+        var absoluteMaximum = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY))
+
+        this.bounds = {
+            
+            scaleBase: scaleBase,
+            scaleFactor: absoluteMaximum / scaleBase,
+            x: {
+                min: minX,
+                max: maxX
+            },
+            y: {
+                min: minY,
+                max: maxY
+            }
+        }
     }
 }
 
 
 
-
+/**
+ * View information for segments
+ */
 export class DataLineView {
     /**
      * Determines if this line should be grayed out
      */
     grayed = false
+
+    /**
+     * Is this segment visible through the detailed selection? (line selection treeview)
+     */
+    detailVisible = true
+
+    /**
+     * Is this segment visible through the global switch?
+     */
+    globalVisible = true
+
+    /**
+     * Is this segment currently highlighted?
+     */
+    highlighted = false
 }
 
 
@@ -555,9 +605,6 @@ export class DataLine {
 
         this.__meta__ = {}
 
-        this.setMeta('detailVisible', true)
-        this.setMeta('globalVisible', true)
-        this.setMeta('highlight', false)
         this.setMeta('view', new DataLineView())
     }
 
@@ -621,11 +668,21 @@ export class Vect {
     }
 }
 
+
+/**
+ * View information for a vector, this contains all attributes that are not data related, for
+ * example the color or the index to the mesh vertex
+ */
 export class VectView {
     /**
      * Index to the vertice from three
      */
     meshIndex = -1
+
+    /**
+     * Is this vector selected?
+     */
+    selected = false
 
     /**
      * Set color for this vertice, if null the color of the line is taken

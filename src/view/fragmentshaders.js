@@ -8,6 +8,7 @@ var pointSprite = `
     varying vec4 vColor;
     varying float vType;
     varying float vShow;
+    varying float vSelected;
 
     void main() {
         gl_FragColor = vColor;
@@ -25,6 +26,8 @@ var pointSprite = `
         } else {
             gl_FragColor = gl_FragColor * texture2D(pointTexture[3], gl_PointCoord);
         }
+
+
 
         if ( gl_FragColor.a < ALPHATEST ) discard;
     }

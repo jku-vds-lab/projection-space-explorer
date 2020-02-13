@@ -1,9 +1,5 @@
 var d3 = require('d3')
-var util = require('../util/colors')
-
 var React = require('react')
-var ReactDOM = require('react-dom')
-const e = React.createElement;
 
 
 // Lookup table for chess UNICODE symbols

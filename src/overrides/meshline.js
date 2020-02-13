@@ -1,3 +1,7 @@
+/**
+ * Custom version of a meshline.
+ * This was necessary because the official version used outdated methods which threw warnings all the time.
+ */
 ; (function () {
 
     "use strict";

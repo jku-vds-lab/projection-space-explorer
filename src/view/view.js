@@ -3,9 +3,8 @@ import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
-import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { getDefaultZoom, arraysEqual } from './utilfunctions';
 import { LassoSelection, RectangleSelection } from '../util/tools'
@@ -303,21 +302,35 @@ export default class ThreeView extends React.Component {
             var indices = this.lasso.selection(this.vectors, (vector) => this.particles.isPointVisible(vector))
             if (indices.length > 0) {
                 var selected = indices.map(index => this.vectors[index])
+
+                this.vectors.forEach((vector, index) => {
+                    vector.view.selected = false
+                })
+                selected.forEach(vector => {
+                    vector.view.selected = true
+                })
+
                 var uniqueIndices = new Set(selected.map(vector => vector.lineIndex))
                 this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
 
                 this.currentAggregation = selected
 
                 this.props.onAggregate(selected)
+
             } else {
                 this.lasso = null
                 this.currentAggregation = null
                 this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
 
+                this.vectors.forEach((vector, index) => {
+                    vector.view.selected = false
+                })
+
                 this.props.onAggregate([])
             }
         }
 
+        this.particles.update()
         this.mouseDown = false;
     }
 
@@ -379,10 +392,17 @@ export default class ThreeView extends React.Component {
 
         var normalized = this.normalizeWheel(event)
 
-        this.camera.zoom = this.camera.zoom - normalized.pixelY * 0.013;
-        if (this.camera.zoom < 1) {
-            this.camera.zoom = 1;
+        console.log(this.camera.zoom)
+        
+
+        var newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.dataset.bounds.scaleFactor
+        if (newZoom < 1.0 / this.dataset.bounds.scaleFactor) {
+            this.camera.zoom = 1.0 / this.dataset.bounds.scaleFactor
+        } else {
+            this.camera.zoom = newZoom
         }
+        
+        
 
         this.particles.zoom(this.camera.zoom);
 
@@ -488,7 +508,7 @@ export default class ThreeView extends React.Component {
     filterLines(algo, show) {
         this.segments.forEach((segment) => {
             if (segment.vectors[0].algo == algo) {
-                segment.setMeta('globalVisible', show)
+                segment.view.globalVisible = show
 
 
                 segment.vectors.forEach((vector) => {
@@ -506,7 +526,7 @@ export default class ThreeView extends React.Component {
     setLineFilter(checked) {
         this.segments.forEach((segment) => {
             var show = checked[segment.vectors[0].line]
-            segment.setMeta('detailVisible', show)
+            segment.view.detailVisible = show
         })
         this.lines.update()
         this.particles.update()
@@ -577,13 +597,13 @@ export default class ThreeView extends React.Component {
         }
         this.selectionRef.current.setAttribute('width', this.getWidth())
         this.selectionRef.current.setAttribute('height', this.getHeight())
-        
 
-        
+
+
 
         ctx.setLineDash([5, 3]);
         ctx.strokeStyle = 'black';
-        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.fillStyle = 'rgba(0,0,0,0.05)';
         ctx.lineWidth = 2;
         ctx.beginPath();
         for (var index = 0; index < points.length; index++) {
@@ -600,7 +620,7 @@ export default class ThreeView extends React.Component {
             var conv = this.worldToScreen(points[0])
             ctx.lineTo(conv.x, conv.y);
         }
-        
+
         ctx.fill();
         ctx.stroke();
         ctx.closePath();

@@ -119,7 +119,7 @@ export class LineVisualization {
     // Undo previous highlight
     if (this.highlightIndices != null) {
       this.highlightIndices.forEach(index => {
-        this.segments[index].setMeta('highlight', false)
+        this.segments[index].view.highlighted = false
       })
       this.highlightMeshes.forEach(mesh => {
         mesh.material.dispose()
@@ -131,7 +131,7 @@ export class LineVisualization {
     this.highlightIndices = indices
     this.highlightMeshes = []
     this.highlightIndices.forEach(index => {
-      this.segments[index].setMeta('highlight', true)
+      this.segments[index].view.highlighted = true
 
       var geometry = new THREE.Geometry();
       this.meshes[index].line.geometry.vertices.forEach((vertex, i) => {
@@ -218,7 +218,7 @@ export class LineVisualization {
 
 
     this.segments.forEach(segment => {
-      segment.line.visible = segment.getMeta('detailVisible') && segment.getMeta('globalVisible') && !segment.getMeta('highlight')
+      segment.line.visible = segment.view.detailVisible && segment.view.globalVisible && !segment.view.highlighted
     })
   }
 }
@@ -247,6 +247,7 @@ export class PointVisualization {
     var sizes = new Float32Array(data.length);
     var types = new Float32Array(data.length);
     var show = new Float32Array(data.length)
+    var selected = new Float32Array(data.length);
     var vertex;
     var color = new THREE.Color();
     var i = 0
@@ -263,10 +264,15 @@ export class PointVisualization {
         // Set the globalIndex which belongs to a specific vertex
         vector.view.meshIndex = i
 
+        // Set segment information
+        vector.view.segment = segment
+
         colors[i * 4] = color.r;
         colors[i * 4 + 1] = color.g;
         colors[i * 4 + 2] = color.b;
         colors[i * 4 + 3] = 1.0;
+
+        selected[i] = 0.0;
 
         show[i] = 1.0
 
@@ -298,6 +304,7 @@ export class PointVisualization {
     pointGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
     pointGeometry.setAttribute('type', new THREE.BufferAttribute(types, 1));
     pointGeometry.setAttribute('show', new THREE.BufferAttribute(show, 1))
+    pointGeometry.setAttribute('selected', new THREE.BufferAttribute(selected, 1))
 
     //
     var pointMaterial = new THREE.ShaderMaterial({
@@ -492,7 +499,7 @@ export class PointVisualization {
     var size = this.mesh.geometry.attributes.size.array
 
     this.vectors.forEach(vector => {
-      size[vector.view.meshIndex] = vector.baseSize * (vector.view.highlighted ? 2.0 : 1.0)
+      size[vector.view.meshIndex] = vector.baseSize * (vector.view.highlighted ? 2.0 : 1.0) * (vector.view.selected ? 1.2 : 1.0)
     })
 
     this.mesh.geometry.attributes.size.needsUpdate = true
@@ -529,8 +536,8 @@ export class PointVisualization {
   }
 
   isPointVisible(vector) {
-    return this.segments[vector.lineIndex].getMeta('detailVisible')
-      && this.segments[vector.lineIndex].getMeta('globalVisible')
+    return this.segments[vector.lineIndex].view.detailVisible
+      && this.segments[vector.lineIndex].view.globalVisible
       && vector.visible
       && this.showSymbols[vector.shapeType]
       && (vector.view.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.view.intrinsicColor] : true)
@@ -540,20 +547,17 @@ export class PointVisualization {
 
 
   update() {
-    var i = 0
     var show = this.mesh.geometry.attributes.show.array
+    var selected = this.mesh.geometry.attributes.selected.array
 
     this.segments.forEach(segment => {
       segment.vectors.forEach(vector => {
         if (this.isPointVisible(vector)) {
-          //colors[i * 4 + 3] = 0.3 + (vector.age / segment.vectors.length) * 0.7;
           show[vector.view.meshIndex] = 1.0
         } else {
-          //colors[i * 4 + 3] = 0.0
           show[vector.view.meshIndex] = 0.0
         }
-
-        i++
+        selected[vector.view.meshIndex] = vector.view.selected ? 1.0 : 0.0
       })
     })
 
@@ -561,6 +565,7 @@ export class PointVisualization {
     this.updateSize()
 
     this.mesh.geometry.attributes.show.needsUpdate = true;
+    this.mesh.geometry.attributes.selected.needsUpdate = true
   }
 
   /**
