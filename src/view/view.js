@@ -248,9 +248,9 @@ export default class ThreeView extends React.Component {
                 // Get index of selected node
                 var idx = this.choose(coords)
                 this.particles.highlight(idx)
-                if (idx >= 0 && this.currentAggregation == null) {
+                if (idx >= 0) {
                     this.lines.highlight([this.vectors[idx].lineIndex], this.getWidth(), this.getHeight(), this.scene)
-                } else if (this.currentAggregation == null) {
+                } else {
                     this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
                 }
 
@@ -310,8 +310,10 @@ export default class ThreeView extends React.Component {
                     vector.view.selected = true
                 })
 
-                var uniqueIndices = new Set(selected.map(vector => vector.lineIndex))
-                this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+                var uniqueIndices = [...new Set(selected.map(vector => vector.lineIndex))]
+
+                this.lines.groupHighlight(uniqueIndices)
+                //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
 
                 this.currentAggregation = selected
 
@@ -321,6 +323,8 @@ export default class ThreeView extends React.Component {
                 this.lasso = null
                 this.currentAggregation = null
                 this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+
+                this.lines.groupHighlight([])
 
                 this.vectors.forEach((vector, index) => {
                     vector.view.selected = false

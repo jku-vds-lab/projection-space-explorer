@@ -590,6 +590,11 @@ export class DataLineView {
      * Is this segment currently highlighted?
      */
     highlighted = false
+
+    /**
+     * Color set for this line
+     */
+    intrinsicColor = null
 }
 
 

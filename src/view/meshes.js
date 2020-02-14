@@ -106,6 +106,26 @@ export class LineVisualization {
     }
   }
 
+  groupHighlight(indices) {
+    if (indices != null && indices.length > 0) {
+      this.segments.forEach(segment => {
+        segment.view.grayed = true
+      })
+
+      
+
+      indices.forEach(index => {
+        this.segments[index].view.grayed = false
+      })
+    } else {
+      this.segments.forEach(segment => {
+        segment.view.grayed = false
+      })
+    }
+
+    this.update()
+  }
+
   /**
    * Highlights the given lines that correspond to the indices
    *
@@ -165,15 +185,20 @@ export class LineVisualization {
     var lines = []
 
     this.segments.forEach((segment, index) => {
+      segment.view.intrinsicColor = this.lineColorScheme.map(segment.vectors[0].algo)
+
       var geometry = new THREE.Geometry();
       var material = new THREE.LineBasicMaterial({
-        color: this.lineColorScheme.map(segment.vectors[0].algo).hex,
+        color: segment.view.intrinsicColor.hex,
         transparent: true,
 
         // Calculate opacity
         opacity: opacity
         // 1 - 1     100 - 0.1    200 - 0.05      50 - 0.2     25 - 0.4
       });
+
+      
+
       var da = []
       segment.vectors.forEach(function (vector, vi) {
         da.push(new THREE.Vector2(vector.x, vector.y))
@@ -200,17 +225,6 @@ export class LineVisualization {
     return lines
   }
 
-
-  updateColor() {
-    this.segments.forEach(segment => {
-      // If segment is grayed, set its color to transparent light gray
-      if (segment.view.grayed) {
-        segment.line.material.color = '#D3D3D3'
-      }
-    })
-  }
-
-
   /**
    * Updates visibility based on settings in the lines
    */
@@ -218,6 +232,9 @@ export class LineVisualization {
 
 
     this.segments.forEach(segment => {
+
+      segment.line.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
+
       segment.line.visible = segment.view.detailVisible && segment.view.globalVisible && !segment.view.highlighted
     })
   }
@@ -506,19 +523,30 @@ export class PointVisualization {
     this.vectors.forEach(vector => {
       var i = vector.view.meshIndex
       var rgb = null
-      if (this.colorAttribute != null) {
-        var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
-        rgb = m.rgb
-        vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
-      } else {
-        var col = this.segments[vector.lineIndex].line.material.color
+
+      if (vector.view.segment.view.grayed) {
         rgb = {
-          r: col.r * 255.0,
-          g: col.g * 255.0,
-          b: col.b * 255.0
+          r: 192.0,
+          g: 192.0,
+          b: 192.0
         }
-        vector.view.intrinsicColor = null
+      } else {
+        if (this.colorAttribute != null) {
+          var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
+          rgb = m.rgb
+          vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
+        } else {
+          var col = this.segments[vector.lineIndex].line.material.color
+          rgb = {
+            r: col.r * 255.0,
+            g: col.g * 255.0,
+            b: col.b * 255.0
+          }
+          vector.view.intrinsicColor = null
+        }
       }
+
+
 
 
 

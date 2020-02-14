@@ -11,6 +11,17 @@ import Slider from '@material-ui/core/Slider';
 import { makeStyles } from '@material-ui/core/styles';
 import Flag from "react-flags";
 import { getCountryCode } from '../util/isocountries';
+import { Divider } from '@material-ui/core';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+
+
+const theme = createMuiTheme({
+    typography: {
+        subtitle1: {
+            fontSize: 11,
+        }
+    },
+});
 
 
 const HEIGHT = 32
@@ -20,6 +31,11 @@ const useStyles = makeStyles({
     table: {
         width: WIDTH * 6,
         height: HEIGHT * 6,
+        borderCollapse: 'collapse',
+        tableLayout: 'fixed'
+    },
+    smalltable: {
+        width: WIDTH * 6,
         borderCollapse: 'collapse',
         tableLayout: 'fixed'
     },
@@ -176,28 +192,29 @@ export var StoryLegend = ({ selection }) => {
     var allCountries = [...new Set(selection.flatMap(s => parseCountries(s.new_country)))]
 
     const classes = useStyles();
-    return <Grid
+    return <ThemeProvider theme={theme}><Grid
         container
         style={{ background: 'white' }}
         alignItems="center"
         direction="column">
 
-        <Grid item>
-            
-        </Grid>
+
 
         <Table className={classes.table}>
             <TableBody>
                 <TableRow>
-                    <TableCell className={classes.textcell} style={{ width: 3 * WIDTH }}></TableCell>
+                    <TableCell className={classes.textcell} style={{ width: 2 * WIDTH }}></TableCell>
                     <TableCell className={classes.textcell} align="center">
-                        <Typography component="div" fontWeight="fontWeightBold">X</Typography>
+                        <Typography variant='subtitle2'>X</Typography>
                     </TableCell>
                     <TableCell className={classes.textcell} align="center">
-                        <Typography component="div" fontWeight="fontWeightBold">Y</Typography>
+                        <Typography variant='subtitle2'>Y</Typography>
                     </TableCell>
                     <TableCell className={classes.textcell} align="center">
-                        <Typography component="div" fontWeight="fontWeightBold">Size</Typography>
+                        <Typography variant='subtitle2'>Size</Typography>
+                    </TableCell>
+                    <TableCell className={classes.textcell} align="center">
+                        <Typography variant='subtitle2'>Color</Typography>
                     </TableCell>
                 </TableRow>
 
@@ -206,7 +223,9 @@ export var StoryLegend = ({ selection }) => {
                         vertical.map(row => {
                             var selectionState = selection[0]
                             return <TableRow key={row.name}>
-                                <TableCell className={classes.rowtextcell} align="right">{row}</TableCell>
+                                <TableCell className={classes.rowtextcell} align="right">
+                                    <Typography variant='subtitle1'>{row}</Typography>
+                                </TableCell>
                                 {horizontal.map(col => {
 
                                     var newVal = selectionState[`new_${col}`]
@@ -215,8 +234,7 @@ export var StoryLegend = ({ selection }) => {
                                         return <TableCell className={classes.cell} align="right"></TableCell>
                                     } else if (newVal != oldVal && oldVal == row) {
                                         return <TableCell className={classes.oldcell} align="right"></TableCell>
-                                    }
-                                    else {
+                                    } else {
                                         return <TableCell className={classes.nocell} align="right"></TableCell>
                                     }
                                 })}
@@ -225,7 +243,9 @@ export var StoryLegend = ({ selection }) => {
                         :
                         vertical.map(row => {
                             return <TableRow key={row.name}>
-                                <TableCell className={classes.rowtextcell} align="right">{row}</TableCell>
+                                <TableCell className={classes.rowtextcell} align="right">
+                                    <Typography variant='subtitle1'>{row}</Typography>
+                                </TableCell>
 
                                 {horizontal.map(col => {
 
@@ -261,6 +281,34 @@ export var StoryLegend = ({ selection }) => {
             </TableBody>
         </Table>
 
+        <Divider style={{ margin: '4px 0px', width: WIDTH * 4 }}></Divider>
+
+        <Table className={classes.smalltable}>
+            <TableBody>
+                <TableRow>
+                    <TableCell className={classes.rowtextcell} style={{ width: 2 * WIDTH }} align="right">
+                        <Typography variant='subtitle1'>Continent</Typography>
+                    </TableCell>
+                    <TableCell className={classes.nocell}></TableCell>
+                    <TableCell className={classes.nocell}></TableCell>
+                    <TableCell className={classes.nocell}></TableCell>
+
+                    <SubColor selection={selection} row={'continent'}></SubColor>
+                </TableRow>
+                <TableRow>
+                    <TableCell className={classes.rowtextcell} style={{ width: 2 * WIDTH }} align="right">
+                        <Typography variant='subtitle1'>Religion</Typography>
+                    </TableCell>
+                    <TableCell className={classes.nocell}></TableCell>
+                    <TableCell className={classes.nocell}></TableCell>
+                    <TableCell className={classes.nocell}></TableCell>
+
+                    <SubColor selection={selection} row={'main_religion'}></SubColor>
+                </TableRow>
+            </TableBody>
+        </Table>
+
+
         {
             selection.length == 1 ?
                 <YearComp oldYear={selection[0].old_year} newYear={selection[0].new_year}></YearComp>
@@ -277,7 +325,49 @@ export var StoryLegend = ({ selection }) => {
         </Grid>
 
     </Grid>
+    </ThemeProvider>
 }
+
+
+var SubColor = ({ selection, row }) => {
+    const classes = useStyles();
+
+    if (selection.length == 1) {
+        var selectionState = selection[0]
+        var newVal = selectionState[`new_color`]
+        var oldVal = selectionState[`old_color`]
+        if (newVal == row) {
+            return <TableCell className={classes.cell} align="right"></TableCell>
+        } else if (newVal != oldVal && oldVal == row) {
+            return <TableCell className={classes.oldcell} align="right"></TableCell>
+        } else {
+            return <TableCell className={classes.nocell} align="right"></TableCell>
+        }
+    } else {
+        var percent =
+            selection.length > 0 ? selection.filter(value => value[`new_color`] == row).length / selection.length : 0
+
+
+        var W = WIDTH - 2
+        var H = HEIGHT - 2
+        var A = W * H
+        var A2 = (W * H) * percent
+
+        return <TableCell className={classes.nocell} align="right">
+            <Grid align="center" justify="center" direction="column" container>
+                <Grid item>
+                    <div style={{
+                        background: '#70AD47',
+                        width: Math.sqrt(((A / (A / A2)) * W) / H),
+                        height: Math.sqrt(((A / (A / A2)) * H) / W)
+                    }}></div>
+                </Grid>
+            </Grid>
+        </TableCell>
+    }
+
+}
+
 
 var Countries = ({ countries }) => {
     if (countries == null || countries == undefined) return <div></div>
