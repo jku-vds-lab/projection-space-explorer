@@ -598,7 +598,7 @@ export class PointVisualization {
     this.segments = null
     this.vectors = null
 
-    this.mesh.material.uniforms.pointTexture.value.forEach(tex => tex.dispose())
+    this.mesh.material.uniforms.atlas.value.dispose()
 
     this.mesh.geometry.dispose()
     this.mesh.material.dispose()
