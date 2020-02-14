@@ -144,8 +144,9 @@ export var YearAggComp = ({ selection }) => {
     </svg>
 }
 
-export var YearComp = ({ oldYear, newYear }) => {
 
+
+export var YearComp = ({ oldYear, newYear }) => {
     var lineStart = 60
     var lineEnd = 232 - 60
     var oldX = lineStart + (lineEnd - lineStart) * ((oldYear - 1800) / 215)
@@ -169,14 +170,18 @@ export var YearComp = ({ oldYear, newYear }) => {
 
 
 function parseCountries(countries) {
-    if (countries == null || countries == undefined) return []
+    if (countries == null) return []
 
-    var replaced = countries.replace(/'/g, '"').replace(/;/g, ',')
-    var parsed = JSON.parse(`{ "result": ${replaced} }`)
-    if (parsed == null || parsed.result == undefined) {
-        return []
-    } else {
-        return parsed.result
+    try {
+        var replaced = countries.replace(/'/g, '"').replace(/;/g, ',')
+        var parsed = JSON.parse(`{ "result": ${replaced} }`)
+        if (parsed == null) {
+            return []
+        } else {
+            return parsed.result
+        }
+    } catch(e) {
+        return ['error']
     }
 }
 
