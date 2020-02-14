@@ -6,8 +6,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
-import { getDefaultZoom, arraysEqual } from './utilfunctions';
-import { LassoSelection, RectangleSelection } from '../util/tools'
+import { getDefaultZoom, arraysEqual, normalizeWheel } from './utilfunctions';
+import { LassoSelection } from '../util/tools'
 
 
 const useStyles = makeStyles(theme => ({
@@ -337,63 +337,13 @@ export default class ThreeView extends React.Component {
 
 
 
-    normalizeWheel(/*object*/ event) /*object*/ {
-        // Reasonable defaults
-        var PIXEL_STEP = 10;
-        var LINE_HEIGHT = 40;
-        var PAGE_HEIGHT = 800;
 
-        var sX = 0, sY = 0,       // spinX, spinY
-            pX = 0, pY = 0;       // pixelX, pixelY
-
-        // Legacy
-        if ('detail' in event) { sY = event.detail; }
-        if ('wheelDelta' in event) { sY = -event.wheelDelta / 120; }
-        if ('wheelDeltaY' in event) { sY = -event.wheelDeltaY / 120; }
-        if ('wheelDeltaX' in event) { sX = -event.wheelDeltaX / 120; }
-
-        // side scrolling on FF with DOMMouseScroll
-        if ('axis' in event && event.axis === event.HORIZONTAL_AXIS) {
-            sX = sY;
-            sY = 0;
-        }
-
-        pX = sX * PIXEL_STEP;
-        pY = sY * PIXEL_STEP;
-
-        if ('deltaY' in event) { pY = event.deltaY; }
-        if ('deltaX' in event) { pX = event.deltaX; }
-
-        if ((pX || pY) && event.deltaMode) {
-            if (event.deltaMode == 1) {          // delta in LINE units
-                pX *= LINE_HEIGHT;
-                pY *= LINE_HEIGHT;
-            } else {                             // delta in PAGE units
-                pX *= PAGE_HEIGHT;
-                pY *= PAGE_HEIGHT;
-            }
-        }
-
-        // Fall-back if spin cannot be determined
-        if (pX && !sX) { sX = (pX < 1) ? -1 : 1; }
-        if (pY && !sY) { sY = (pY < 1) ? -1 : 1; }
-
-        return {
-            spinX: sX,
-            spinY: sY,
-            pixelX: pX,
-            pixelY: pY
-        };
-    }
 
 
     onWheel(event) {
         event.preventDefault()
 
-        var normalized = this.normalizeWheel(event)
-
-        console.log(this.camera.zoom)
-        
+        var normalized = normalizeWheel(event)
 
         var newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.dataset.bounds.scaleFactor
         if (newZoom < 1.0 / this.dataset.bounds.scaleFactor) {
@@ -401,8 +351,8 @@ export default class ThreeView extends React.Component {
         } else {
             this.camera.zoom = newZoom
         }
-        
-        
+
+
 
         this.particles.zoom(this.camera.zoom);
 

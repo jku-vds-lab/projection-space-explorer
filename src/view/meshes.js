@@ -312,13 +312,8 @@ export class PointVisualization {
         zoom: { value: 1.0 },
         color: { value: new THREE.Color(0xffffff) },
         scale: { value: 1.0 },
-        pointTexture: {
-          value: [
-            new THREE.TextureLoader().load("textures/sprites/cross_texture.png"),
-            new THREE.TextureLoader().load("textures/sprites/square_texture.png"),
-            new THREE.TextureLoader().load("textures/sprites/circle_texture.png"),
-            new THREE.TextureLoader().load("textures/sprites/star_texture.png")
-          ]
+        atlas: {
+          value: new THREE.TextureLoader().load("textures/sprites/atlas.png")
         }
       },
       transparent: true,
