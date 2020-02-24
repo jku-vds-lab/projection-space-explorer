@@ -148,7 +148,7 @@ export class ColorScheme {
 
     var i = 0
     this.mapping = values.reduce((map, obj) => {
-      map[obj] = this.colors[i]
+      map[obj] = this.colors[i % this.colors.length]
       i++
       return map
     }, {})
@@ -209,7 +209,7 @@ export class DiscreteMapping {
   }
 
   map(value) {
-    return this.scale.map(this.values.indexOf(value) % this.values.length)
+    return this.scale.map(this.values.indexOf(value) % this.scale.stops.length)
   }
 }
 
@@ -256,7 +256,7 @@ export function hexToRGB(color) {
 
 
 
-var NamedScales = {
+export var NamedScales = {
   VIRIDIS: new ContinuosScale([
     new SchemeColor("#440154"),
     new SchemeColor("#482475"),
@@ -285,7 +285,7 @@ var NamedScales = {
   ])
 }
 
-var NamedCategoricalScales = {
+export var NamedCategoricalScales = {
   SET1: new DiscreteScale([
     new SchemeColor("#e41a1c"),
     new SchemeColor("#377eb8"),

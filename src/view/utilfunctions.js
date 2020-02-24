@@ -106,3 +106,13 @@ export function normalizeWheel(/*object*/ event) /*object*/ {
     pixelY: pY
   };
 }
+
+
+
+
+
+
+export function valueInRange(value, range) {
+  if (range == null) return true
+  return value >= range[0] && value <= range[1]
+}

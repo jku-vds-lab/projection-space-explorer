@@ -1,3 +1,5 @@
+import { valueInRange } from './utilfunctions'
+
 /**
  * Generates a line mesh
  */
@@ -184,8 +186,12 @@ export class LineVisualization {
     var opacity = getLineOpacity(this.segments.length)
     var lines = []
 
+
+    console.log(this.lineColorScheme)
     this.segments.forEach((segment, index) => {
+      
       segment.view.intrinsicColor = this.lineColorScheme.map(segment.vectors[0].algo)
+      console.log(segment.view.intrinsicColor)
 
       var geometry = new THREE.Geometry();
       var material = new THREE.LineBasicMaterial({
@@ -235,7 +241,10 @@ export class LineVisualization {
 
       segment.line.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
 
-      segment.line.visible = segment.view.detailVisible && segment.view.globalVisible && !segment.view.highlighted
+      segment.line.visible = segment.view.detailVisible
+      && segment.view.globalVisible
+      && !segment.view.highlighted
+      && valueInRange(segment.vectors.length, segment.view.pathLengthRange)
     })
   }
 }
@@ -564,6 +573,7 @@ export class PointVisualization {
       && vector.visible
       && this.showSymbols[vector.shapeType]
       && (vector.view.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.view.intrinsicColor] : true)
+      && valueInRange(this.segments[vector.lineIndex].vectors.length, this.segments[vector.lineIndex].view.pathLengthRange)
   }
 
 

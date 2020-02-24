@@ -194,7 +194,16 @@ export var StoryLegend = ({ selection }) => {
     var vertical = ["gdp", "child_mortality", "fertility", "life_expect", "population"]
     var horizontal = ["x", "y", "size"]
 
-    var allCountries = [...new Set(selection.flatMap(s => parseCountries(s.new_country)))]
+    var countryArray = selection.flatMap(s => parseCountries(s.new_country))
+    var countryCounts = {}
+    countryArray.forEach(country => {
+        countryCounts[country] = countryCounts[country] ? countryCounts[country] + 1 : 1
+    })
+
+    var allCountries = [...new Set(countryArray)]
+    allCountries.sort((a, b) => {
+        return countryCounts[b] - countryCounts[a]
+    })
 
     const classes = useStyles();
     return <ThemeProvider theme={theme}><Grid
@@ -324,8 +333,8 @@ export var StoryLegend = ({ selection }) => {
         <Grid item style={{ height: 32 }}>
             {
                 selection.length == 1 ?
-                    <Countries countries={parseCountries(selection[0].new_country)}></Countries>
-                    : <Countries countries={allCountries}></Countries>
+                    <Countries countries={parseCountries(selection[0].new_country)} countryCounts={countryCounts}></Countries>
+                    : <Countries countries={allCountries} countryCounts={countryCounts}></Countries>
             }
         </Grid>
 
@@ -374,13 +383,21 @@ var SubColor = ({ selection, row }) => {
 }
 
 
-var Countries = ({ countries }) => {
+var Countries = ({ countries, countryCounts }) => {
     if (countries == null || countries == undefined) return <div></div>
+
+    var countrySum = 0
+    Object.keys(countryCounts).forEach(key => {
+        if (countryCounts[key] > countrySum) {
+            countrySum = countryCounts[key]
+        }
+    })
 
     return countries.map(countryName => {
         return <img
-            title={countryName}
+            title={`${countryName} : ${countryCounts[countryName]}`}
             src={"/img/flags/flags-iso/shiny/24/" + getCountryCode(countryName) + ".png"}
+            style={{ opacity: countryCounts[countryName] / countrySum }}
         ></img>
     })
 }

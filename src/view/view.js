@@ -8,6 +8,7 @@ import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
 import { getDefaultZoom, arraysEqual, normalizeWheel } from './utilfunctions';
 import { LassoSelection } from '../util/tools'
+import { Vector3 } from 'three';
 
 
 const useStyles = makeStyles(theme => ({
@@ -114,6 +115,7 @@ const SettingsPopover = ({ onChangeSlider }) => {
 
 
 
+
 export default class ThreeView extends React.Component {
     constructor(props) {
         super(props)
@@ -124,6 +126,11 @@ export default class ThreeView extends React.Component {
 
         this.mouse = { x: 0, y: 0 }
         this.mouseDownPosition = { x: 0, y: 0 }
+        this.initialMousePosition = null
+
+        this.currentHover = null
+
+        this.currentAggregation = []
     }
 
     dist(x1, y1, x2, y2) {
@@ -156,6 +163,26 @@ export default class ThreeView extends React.Component {
         return res
     }
 
+
+
+    /**
+     * Converts mouse coordinates to world coordinates.
+     * @param {*} event a dom mouse event.
+     */
+    relativeMousePosition(event) {
+        var container = this.containerRef.current;
+        var width = container.offsetWidth;
+        var height = container.offsetHeight;
+
+        const rect = container.getBoundingClientRect();
+
+        return {
+            x: (event.clientX - rect.left),
+            y: (event.clientY - rect.top)
+        }
+    }
+
+
     /**
      * Converts mouse coordinates to world coordinates.
      * @param {*} event a dom mouse event.
@@ -167,11 +194,30 @@ export default class ThreeView extends React.Component {
 
         const rect = container.getBoundingClientRect();
 
+
+
         return {
             x: (event.clientX - rect.left - width / 2) / this.camera.zoom + this.camera.position.x,
             y: -(event.clientY - rect.top - height / 2) / this.camera.zoom + this.camera.position.y
         }
     }
+
+
+    clientCoordinatesToWorld(clientX, clientY) {
+        var container = this.containerRef.current;
+        var width = container.offsetWidth;
+        var height = container.offsetHeight;
+
+        const rect = container.getBoundingClientRect();
+
+
+
+        return {
+            x: (clientX - rect.left - width / 2) / this.camera.zoom + this.camera.position.x,
+            y: -(clientY - rect.top - height / 2) / this.camera.zoom + this.camera.position.y
+        }
+    }
+
 
 
     /**
@@ -211,18 +257,9 @@ export default class ThreeView extends React.Component {
     onMouseDown(event) {
         event.preventDefault();
 
-        if (event.altKey) {
-            var test = this.mouseToWorld(event)
-            //this.rectangleSelection.mouseDown(test.x, test.y)
-
-            // Lasso selection mouseDown
-            this.lasso = new LassoSelection()
-            this.lasso.mouseDown(event.altKey, test.x, test.y)
-        } else {
-            // Dragging data around
-            this.mouseDownPosition = this.normaliseMouse(event)
-            this.mouseDown = true;
-        }
+        this.mouseDown = true
+        this.initialMousePosition = new THREE.Vector2(event.clientX, event.clientY)
+        this.mouseDownPosition = this.normaliseMouse(event)
     }
 
     onMouseMove(event) {
@@ -230,124 +267,144 @@ export default class ThreeView extends React.Component {
 
         var coords = this.mouseToWorld(event)
 
-        /**if (this.rectangleSelection != null) {
-            this.rectangleSelection.mouseMove(coords.x, coords.y)
-        }**/
+        if (this.props.tool == 'default') {
+            var mousePosition = new THREE.Vector2(event.clientX, event.clientY)
 
-        if (this.lasso != null) {
-            this.lasso.mouseMove(coords.x, coords.y)
+            if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 30 && this.lasso == null && this.mouseDown) {
+                var initialWorld = this.clientCoordinatesToWorld(this.initialMousePosition.x, this.initialMousePosition.y)
+
+                this.lasso = new LassoSelection()
+                this.lasso.mouseDown(true, initialWorld.x, initialWorld.y)
+            } else if (this.lasso != null) {
+                this.lasso.mouseMove(coords.x, coords.y)
+            }
+
+
+            if (window.infoTimeout != null) {
+                clearTimeout(window.infoTimeout)
+            }
+            if (!this.mouseDown) {
+                window.infoTimeout = setTimeout(() => {
+                    window.infoTimeout = null
+
+                    // Get index of selected node
+                    var idx = this.choose(coords)
+                    this.particles.highlight(idx)
+                    if (idx >= 0) {
+                        this.lines.highlight([this.vectors[idx].lineIndex], this.getWidth(), this.getHeight(), this.scene)
+                    } else {
+                        this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+                    }
+
+
+                    var list = []
+                    if (idx >= 0) {
+                        this.currentHover = this.vectors[idx]
+                        list.push(this.vectors[idx])
+                    } else {
+                        this.currentHover = null
+                    }
+                    this.props.onHover(list)
+
+                }, 10);
+            }
+        } else if (this.props.tool == 'move') {
+            // Dragging
+            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+
+            if (this.mouseDown) {
+                this.camera.position.x = this.camera.position.x - (this.mouse.x - this.mouseDownPosition.x) * (600 / this.camera.zoom);
+                this.camera.position.y = this.camera.position.y - (this.mouse.y - this.mouseDownPosition.y) * (600 / this.camera.zoom);
+                this.mouseDownPosition = this.normaliseMouse(event)
+                this.camera.updateProjectionMatrix()
+            }
         }
 
-        if (window.infoTimeout != null) {
-            clearTimeout(window.infoTimeout)
-        }
-        if (!this.mouseDown) {
-            window.infoTimeout = setTimeout(() => {
-                window.infoTimeout = null
-
-                // Get index of selected node
-                var idx = this.choose(coords)
-                this.particles.highlight(idx)
-                if (idx >= 0) {
-                    this.lines.highlight([this.vectors[idx].lineIndex], this.getWidth(), this.getHeight(), this.scene)
-                } else {
-                    this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
-                }
-
-
-                var list = []
-                if (idx >= 0) list.push(this.vectors[idx])
-                this.props.onHover(list)
-
-            }, 10);
-        }
-
-        // Dragging
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-        if (this.mouseDown) {
-            this.camera.position.x = this.camera.position.x - (this.mouse.x - this.mouseDownPosition.x) * (600 / this.camera.zoom);
-            this.camera.position.y = this.camera.position.y - (this.mouse.y - this.mouseDownPosition.y) * (600 / this.camera.zoom);
-            this.mouseDownPosition = this.normaliseMouse(event)
-            this.camera.updateProjectionMatrix()
-        }
     }
 
     onMouseUp(event) {
         var test = this.mouseToWorld(event)
 
-        /**if (this.rectangleSelection != null) {
-            if (this.rectangleSelection.create) {
-                var result = this.rectangleSelection.mouseUp((index) => this.particles.isPointVisible(index), test.x, test.y)
-                if (result != null && result.length > 0) {
-                    // Highlight aggregation
-                    var uniqueIndices = new Set(result.map(vector => vector.lineIndex))
-                    this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+        if (this.props.tool == 'default') {
+            if (this.lasso != null) {
+                var wasDrawing = this.lasso.drawing
 
-                    this.currentAggregation = result
+                this.lasso.mouseUp(test.x, test.y)
 
-                    this.props.onAggregate(result)
-                } else {
-                    this.currentAggregation = null
+                var indices = this.lasso.selection(this.vectors, (vector) => this.particles.isPointVisible(vector))
+                if (indices.length > 0 && wasDrawing) {
+                    var selected = indices.map(index => this.vectors[index])
+
+
+
+                    // Toggle selected states
+                    selected.forEach(vector => {
+                        vector.view.selected = !vector.view.selected
+
+                        if (this.currentAggregation.includes(vector) && !vector.view.selected) {
+                            this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
+                        } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
+                            this.currentAggregation.push(vector)
+                        }
+                    })
+
+
+                    var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.lineIndex))]
+
+                    this.lines.groupHighlight(uniqueIndices)
+                    //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+
+                    this.props.onAggregate(this.currentAggregation)
+
+                } else if (wasDrawing) {
+                    this.lasso = null
+                    this.currentAggregation = []
                     this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+
+                    this.lines.groupHighlight([])
+
+                    this.vectors.forEach((vector, index) => {
+                        vector.view.selected = false
+                    })
 
                     this.props.onAggregate([])
                 }
-            }
-        }**/
 
-        if (this.lasso != null) {
-            this.lasso.mouseUp(test.x, test.y)
-            var indices = this.lasso.selection(this.vectors, (vector) => this.particles.isPointVisible(vector))
-            if (indices.length > 0) {
-                var selected = indices.map(index => this.vectors[index])
-
-                this.vectors.forEach((vector, index) => {
-                    vector.view.selected = false
-                })
-                selected.forEach(vector => {
-                    vector.view.selected = true
-                })
-
-                var uniqueIndices = [...new Set(selected.map(vector => vector.lineIndex))]
-
-                this.lines.groupHighlight(uniqueIndices)
-                //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
-
-                this.currentAggregation = selected
-
-                this.props.onAggregate(selected)
-
-            } else {
                 this.lasso = null
-                this.currentAggregation = null
-                this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+            } else {
+                if (this.currentHover != null) {
+                    this.currentHover.view.selected = !this.currentHover.view.selected
 
-                this.lines.groupHighlight([])
+                    if (this.currentAggregation.includes(this.currentHover) && !this.currentHover.view.selected) {
+                        this.currentAggregation.splice(this.currentAggregation.indexOf(this.currentHover), 1)
+                        this.props.onAggregate(this.currentAggregation)
+                    } else if (!this.currentAggregation.includes(this.currentHover) && this.currentHover.view.selected) {
+                        this.currentAggregation.push(this.currentHover)
+                        this.props.onAggregate(this.currentAggregation)
+                    }
 
-                this.vectors.forEach((vector, index) => {
-                    vector.view.selected = false
-                })
+                    var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.lineIndex))]
 
-                this.props.onAggregate([])
+                    this.lines.groupHighlight(uniqueIndices)
+                }
             }
         }
+
 
         this.particles.update()
         this.mouseDown = false;
     }
 
-
-
-
-
-
-
     onWheel(event) {
         event.preventDefault()
 
         var normalized = normalizeWheel(event)
+
+        // Store world position under mouse
+        var worldBefore = this.mouseToWorld(event)
+        var screenBefore = this.relativeMousePosition(event)
 
         var newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.dataset.bounds.scaleFactor
         if (newZoom < 1.0 / this.dataset.bounds.scaleFactor) {
@@ -356,15 +413,20 @@ export default class ThreeView extends React.Component {
             this.camera.zoom = newZoom
         }
 
+        // Restore camera position
+        this.restoreCamera(worldBefore, screenBefore)
 
-
+        // Adjust mesh zoom levels
         this.particles.zoom(this.camera.zoom);
-
-
         this.lines.setZoom(this.camera.zoom)
 
+        // Update projection matrix
         this.camera.updateProjectionMatrix();
+    }
 
+    restoreCamera(world, screen) {
+        this.camera.position.x = world.x - ((screen.x - this.getWidth() / 2) / this.camera.zoom)
+        this.camera.position.y = (world.y + ((screen.y - this.getHeight() / 2) / this.camera.zoom))
     }
 
     getWidth() {
@@ -398,9 +460,6 @@ export default class ThreeView extends React.Component {
 
 
         this.startRendering()
-
-
-
     }
 
     createVisualization(dataset, lineColorScheme, vectorColorScheme) {
@@ -432,9 +491,6 @@ export default class ThreeView extends React.Component {
         this.lines.meshes.forEach(line => this.scene.add(line.line))
         //this.scene.add(this.particles.mesh);
         this.pointScene.add(this.particles.mesh)
-
-
-        //this.rectangleSelection = new RectangleSelection(this.vectors, this.scene)
 
 
         // Remove old listeners
@@ -507,11 +563,6 @@ export default class ThreeView extends React.Component {
         if (this.renderer != null) {
             this.renderer.renderLists.dispose()
         }
-
-        if (this.rectangleSelection != null) {
-            this.rectangleSelection.dispose()
-        }
-
     }
 
 
@@ -531,8 +582,15 @@ export default class ThreeView extends React.Component {
 
 
     componentDidUpdate(prevProps, prevState) {
-        if (!arraysEqual(prevProps.selectionState, this.props.selectionState)) {
+        // Path length range has changed, update view accordingly
+        if (!arraysEqual(prevProps.pathLengthRange, this.props.pathLengthRange)) {
+            // Set path length range on all segment views, and update them
+            this.segments.forEach(segment => {
+                segment.view.pathLengthRange = this.props.pathLengthRange
+            })
 
+            this.lines.update()
+            this.particles.update()
         }
     }
 
@@ -590,7 +648,12 @@ export default class ThreeView extends React.Component {
             height: "100%"
         }
 
-        return <div class="flex-grow-1 d-flex" style={{ overflow: "hidden", position: "relative" }}>
+        return <div class="flex-grow-1 d-flex"
+            style={{
+                overflow: "hidden",
+                position: "relative",
+                cursor: this.props.tool
+            }}>
             <div id="container" style={containerStyle} ref={this.containerRef}>
             </div>
             <canvas id="selection" style={{

@@ -2,7 +2,7 @@ import "regenerator-runtime/runtime";
 
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { ShapeLegend, calculateOptions, Legend, LegendFun, ShowColorLegend } from './view/categorical'
+import { ShapeLegend, calculateOptions, Legend, ShowColorLegend } from './view/categorical'
 import { DatasetList } from './util/datasetselector'
 import ThreeView from './view/view'
 import Select from '@material-ui/core/Select';
@@ -10,8 +10,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import { DefaultLineColorScheme, TableuVectorColorScheme, ColorScaleSelect, defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping } from "./util/colors";
-import { Divider, Card, CardContent, Checkbox } from "@material-ui/core";
+import { ColorScaleSelect, defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
+import { Divider, Card, CardContent } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
 import { StoryLegend } from "./legends/story";
 import { loadFromPath } from './util/datasetselector'
@@ -21,8 +21,11 @@ import { ChessLegend } from "./legends/chess";
 import Popover from '@material-ui/core/Popover';
 import { LineSelectionPopover, LineSelectionTree } from './view/lineselectiontree'
 import Box from '@material-ui/core/Box';
-
-
+import Slider from '@material-ui/core/Slider';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import ControlCameraIcon from '@material-ui/icons/ControlCamera';
+import SelectAllIcon from '@material-ui/icons/SelectAll';
 
 
 
@@ -104,7 +107,11 @@ class Application extends React.Component {
 
       colorsChecked: [true, true, true, true, true, true, true, true, true],
 
-      selectedLines: {}
+      selectedLines: {},
+
+      pathLengthRange: null,
+
+      currentTool: 'default'
     }
 
     this.threeRef = React.createRef()
@@ -199,7 +206,9 @@ class Application extends React.Component {
     this.setAggregateView(document.getElementById('info'), [], false, this.dataset.info.type)
     this.setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.info.type)
 
-    this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
+
+    //this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
+    this.lineColorScheme = this.mappingFromScale(NamedCategoricalScales.DARK2, { key: 'algo' })
 
     this.setState({
       lineColorScheme: this.lineColorScheme
@@ -229,10 +238,13 @@ class Application extends React.Component {
       selectedVectorBySize: "",
       checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true },
       selectedLines: selLines,
-      selectedLineAlgos: algos
+      selectedLineAlgos: algos,
+      pathLengthRange: [0, this.dataset.getMaxPathLength()],
+      maxPathLength: this.dataset.getMaxPathLength()
     })
 
-    this.legend.current.load(this.dataset.info.type, this.lineColorScheme)
+
+    this.legend.current.load(this.dataset.info.type, this.lineColorScheme, this.state.selectedLineAlgos)
 
     this.initializeEncodings()
   }
@@ -386,7 +398,7 @@ class Application extends React.Component {
               display="block"
             >
               Lines
-        </Typography>
+            </Typography>
           </div>
 
           <Grid
@@ -395,7 +407,10 @@ class Application extends React.Component {
             alignItems="stretch"
             direction="column"
             style={{ padding: '0 16px' }}>
-            <Legend ref={this.legend} onLineSelect={this.onLineSelect}></Legend>
+            <Legend
+              ref={this.legend}
+              algorithms={this.state.selectedLineAlgos}
+              onLineSelect={this.onLineSelect}></Legend>
 
             <Box p={1}></Box>
 
@@ -430,6 +445,17 @@ class Application extends React.Component {
             </LineSelectionPopover>
           </Grid>
 
+          <div style={{ margin: '8px 0px' }}></div>
+
+          <PathLengthFilter
+            pathLengthRange={this.state.pathLengthRange}
+            maxPathLength={this.state.maxPathLength}
+            onChange={(event, newValue) => {
+              this.setState({
+                pathLengthRange: newValue
+              })
+            }}></PathLengthFilter>
+
           <Divider style={{ margin: '8px 0px' }} />
           <div>
             <Typography
@@ -441,6 +467,7 @@ class Application extends React.Component {
               Points
             </Typography>
           </div>
+
 
 
 
@@ -674,7 +701,40 @@ class Application extends React.Component {
 
 
 
-      <ThreeView ref={this.threeRef} onHover={this.onHover} onAggregate={this.onAggregate} selectionState={this.state.selectionState} />
+      <ThreeView
+        ref={this.threeRef}
+        onHover={this.onHover}
+        algorithms={this.state.selectedLineAlgos}
+        onAggregate={this.onAggregate}
+        selectionState={this.state.selectionState}
+        pathLengthRange={this.state.pathLengthRange}
+        tool={this.state.currentTool}>
+
+      </ThreeView>
+
+      <div style={{ position: 'absolute', right: '0px', bottom: '0px', pointerEvents: 'none', margin: '16px' }}>
+          <ToggleButtonGroup
+            style={{ pointerEvents: 'auto' }}
+            size='small'
+            value={this.state.currentTool}
+            exclusive
+            onChange={(e, newValue) => {
+              if (newValue != null) {
+                this.setState({
+                  currentTool: newValue
+                })
+              }
+            }}
+            aria-label="text alignment"
+          >
+            <ToggleButton value="default" aria-label="left aligned">
+              <SelectAllIcon />
+            </ToggleButton>
+            <ToggleButton value="move" aria-label="centered">
+              <ControlCameraIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </div>
 
 
 
@@ -710,6 +770,38 @@ class Application extends React.Component {
 
 
 
+var PathLengthFilter = ({ pathLengthRange, onChange, maxPathLength }) => {
+  if (pathLengthRange == null) {
+    return <div></div>
+  }
+
+  const marks = [
+    {
+      value: 0,
+      label: '0',
+    },
+    {
+      value: maxPathLength,
+      label: `${maxPathLength}`,
+    },
+  ];
+
+  return <div style={{ margin: '0 16px' }}>
+    <Typography id="range-slider" gutterBottom>
+      Path Length Filter
+    </Typography>
+    <Slider
+      min={0}
+      max={maxPathLength}
+      value={pathLengthRange}
+      onChange={onChange}
+      marks={marks}
+      valueLabelDisplay="auto"
+    ></Slider>
+  </div>
+}
+
+
 
 
 
@@ -728,7 +820,7 @@ var SimplePopover = ({ showColorMapping, colorsChecked, onChange }) => {
   const id = open ? 'simple-popover' : undefined;
 
   return <div>
-    <Button style={{ margin: '0px 16px' }} aria-describedby={id} variant="contained" color="primary" onClick={handleClick}>
+    <Button style={{ margin: '0px 16px' }} aria-describedby={id} variant="contained" onClick={handleClick}>
       Advanced Coloring
       </Button>
     <Popover

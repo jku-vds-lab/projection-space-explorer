@@ -563,6 +563,13 @@ export class Dataset {
             }
         }
     }
+
+    /**
+     * Calculates the maximum path length for this dataset.
+     */
+    getMaxPathLength() {
+        return Math.max(... this.segments.map(segment => segment.vectors.length))
+    }
 }
 
 
