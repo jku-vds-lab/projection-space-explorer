@@ -126,12 +126,10 @@ var isoCountries = {
     'LB': 'Lebanon',
     'LS': 'Lesotho',
     'LR': 'Liberia',
-    'LY': 'Libyan Arab Jamahiriya',
     'LI': 'Liechtenstein',
     'LT': 'Lithuania',
     'LU': 'Luxembourg',
     'MO': 'Macao',
-    'MK': 'Macedonia',
     'MG': 'Madagascar',
     'MW': 'Malawi',
     'MY': 'Malaysia',
@@ -165,6 +163,7 @@ var isoCountries = {
     'NG': 'Nigeria',
     'NU': 'Niue',
     'NF': 'Norfolk Island',
+    'MK': 'North Macedonia',
     'MP': 'Northern Mariana Islands',
     'NO': 'Norway',
     'OM': 'Oman',
@@ -209,6 +208,7 @@ var isoCountries = {
     'GS': 'South Georgia And Sandwich Isl.',
     'ES': 'Spain',
     'LK': 'Sri Lanka',
+    'LY': 'State of Libya',
     'SD': 'Sudan',
     'SR': 'Suriname',
     'SJ': 'Svalbard And Jan Mayen',
@@ -267,14 +267,23 @@ export function getCountryName(countryCode) {
  */
 export function getCountryCode(countryName) {
     // Some names often appear, but are not standardized such as Russia, handle them seperately
-    if (countryName == 'Russia') return 'RU'
-    if (countryName == 'Micronesia, Fed. Sts.') return 'FM'
-    if (countryName == 'Brunei') return 'BN'
-    if (countryName == 'Trinidad and Tobago') return getCountryCode('Trinidad And Tobago')
+    if (countryName == 'Brunei') return getCountryCode('Brunei Darussalam')
+    if (countryName == 'Congo, Dem. Rep') return getCountryCode('Congo, Democratic Republic')
+    if (countryName == 'Congo, Rep') return getCountryCode('Congo')
+    if (countryName == 'Iran') return getCountryCode('Iran, Islamic Republic Of')
+    if (countryName == 'Islamic Republic of Iran') return getCountryCode('Iran, Islamic Republic Of')
+    if (countryName == 'Laos') return getCountryCode('Lao People\'s Democratic Republic')
+    if (countryName == 'Micronesia, Fed. Sts.') return getCountryCode('Micronesia, Federated States Of')
+    if (countryName == 'Macedonia, FYR') return getCountryCode('North Macedonia')
+    if (countryName == 'Macedonia') return getCountryCode('North Macedonia')
+    if (countryName == 'West Bank and Gaza') return getCountryCode('Palestinian Territory, Occupied')
+    if (countryName == 'Russia') return getCountryCode('Russian Federation')
     if (countryName == 'Slovak Republic') return getCountryCode('Slovakia')
-    if (countryName == 'Macedonia, FYR') return getCountryCode('Macedonia')
+    if (countryName == 'Libya') return getCountryCode('State of Libya')
+    if (countryName == 'Libyan Arab Jamahiriya') return getCountryCode('State of Libya')
+    if (countryName == 'Eswatini') return getCountryCode('Swaziland')
     if (countryName == 'Syria') return getCountryCode('Syrian Arab Republic')
-    if (countryName == 'Iran') return getCountryCode('Iran, Islamic Republic of')
+    if (countryName == 'Trinidad and Tobago') return getCountryCode('Trinidad And Tobago')
     if (countryName == 'Vietnam') return getCountryCode('Viet Nam')
 
     var f = Object.keys(isoCountries).find(key => isoCountries[key] == countryName)
