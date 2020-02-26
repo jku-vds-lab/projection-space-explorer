@@ -1,9 +1,4 @@
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -13,6 +8,7 @@ import { LinearProgress, Typography, Divider } from '@material-ui/core';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+
 var d3v5 = require('d3')
 
 const DEFAULT_LINE = "L"
@@ -20,6 +16,11 @@ const DEFAULT_ALGO = "all"
 
 
 
+/**
+ * Parses a range string and returns an object containing min and max values.
+ * eg "[min;max]""
+ * @param {*} str the range string
+ */
 function parseRange(str) {
     var range = str.match(/-?\d+\.?\d*/g)
     return { min: range[0], max: range[1] }
@@ -28,7 +29,12 @@ function parseRange(str) {
 
 
 
-
+/**
+ * Object responsible for infering things from the data structure of a csv file.
+ * For example this class can infer the
+ * - ranges of columns
+ * - type of data file (rubik, story...)
+ */
 class InferCategory {
     constructor(vectors, segments) {
         this.vectors = vectors
@@ -56,6 +62,12 @@ class InferCategory {
         return 'none'
     }
 
+
+    /**
+     * Infers an array of attributes that can be filtered after, these can be
+     * categorical, sequential or continuous attribues.
+     * @param {*} ranges 
+     */
     load(ranges) {
         if (this.vectors.length <= 0) {
             return []
@@ -171,6 +183,9 @@ class InferCategory {
 
 
 
+/**
+ * Dummy class that holds information about the files that can be preselected.
+ */
 export class DatasetDatabase {
     constructor() {
         this.data = [
@@ -257,6 +272,11 @@ export class DatasetDatabase {
             {
                 display: "Stories: With Names",
                 path: "datasets/story/withnames.csv",
+                type: "story"
+            },
+            {
+                display: "Story: No Duplicates",
+                path: "datasets/story/stories_dup-del_p50_with-names.csv",
                 type: "story"
             }
         ]
@@ -550,7 +570,7 @@ export class Dataset {
         var absoluteMaximum = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY))
 
         this.bounds = {
-            
+
             scaleBase: scaleBase,
             scaleFactor: absoluteMaximum / scaleBase,
             x: {
