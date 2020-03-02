@@ -2,10 +2,13 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-  entry: './src/index.js', // relative path
+  entry: {
+    bundle: './src/index.js',
+    worker: './src/workers/worker_projection.js'
+  },
   output: {
     path: path.join(__dirname, 'dist'), // absolute path
-    filename: 'bundle.js' // file name
+    filename: '[name].js' // file name
   },
   module: {
     rules: [

@@ -543,6 +543,17 @@ export default class ThreeView extends React.Component {
     }
 
 
+    updateXY() {
+        this.particles.updatePosition()
+        this.lines.updatePosition()
+        this.dataset.calculateBounds()
+        this.camera.zoom = getDefaultZoom(this.vectors, this.getWidth(), this.getHeight())
+        this.camera.position.x = 0.0
+        this.camera.position.y = 0.0
+        this.camera.updateProjectionMatrix();
+        
+    }
+
 
 
     filterPoints(checkboxes) {

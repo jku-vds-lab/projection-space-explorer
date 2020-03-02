@@ -10,7 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import { ColorScaleSelect, defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
+import { ColorScaleSelect, defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales, SimplePopover } from "./util/colors";
 import { Divider, Card, CardContent } from "@material-ui/core";
 import Dialog from '@material-ui/core/Dialog';
 import { StoryLegend } from "./legends/story";
@@ -26,6 +26,11 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import ControlCameraIcon from '@material-ui/icons/ControlCamera';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
+import { TensorLoader, MediaControlCard } from "./projection/integration";
+
+
+
+
 
 
 
@@ -62,7 +67,7 @@ var ChooseFileDialog = ({ onChange }) => {
     <Button variant="contained" onClick={(event) => {
       setOpen(true)
     }}>Load Dataset</Button>
-    <Dialog open={open} onClose={() => { setOpen(false) }}>
+    <Dialog maxWidth='md' open={open} onClose={() => { setOpen(false) }}>
       <DatasetList onChange={(dataset, json) => {
         setOpen(false)
         onChange(dataset, json)
@@ -111,7 +116,9 @@ class Application extends React.Component {
 
       pathLengthRange: null,
 
-      currentTool: 'default'
+      currentTool: 'default',
+
+      projectionComputing: false
     }
 
     this.threeRef = React.createRef()
@@ -194,6 +201,7 @@ class Application extends React.Component {
 
     this.setState({
       datasetType: this.dataset.info.type,
+      dataset: dataset,
       vectors: this.vectors
     })
 
@@ -374,7 +382,12 @@ class Application extends React.Component {
 
 
   render() {
-    return <div class="d-flex align-items-stretch" style={{ width: "100vw", height: "100vh" }}>
+    return <div class="d-flex align-items-stretch" style={
+      {
+        width: "100vw",
+        height: "100vh",
+        pointerEvents: this.state.projectionComputing ? 'none' : 'auto'
+      }}>
       <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto', 'overflow-x': 'hidden' }}>
 
 
@@ -673,6 +686,7 @@ class Application extends React.Component {
           <Grid item>
             {
               this.state.vectorByColor != null && this.state.vectorByColor.type == 'categorical' ?
+
                 <SimplePopover
                   showColorMapping={this.state.showColorMapping}
                   colorsChecked={this.state.colorsChecked}
@@ -713,28 +727,77 @@ class Application extends React.Component {
       </ThreeView>
 
       <div style={{ position: 'absolute', right: '0px', bottom: '0px', pointerEvents: 'none', margin: '16px' }}>
-          <ToggleButtonGroup
-            style={{ pointerEvents: 'auto' }}
-            size='small'
-            value={this.state.currentTool}
-            exclusive
-            onChange={(e, newValue) => {
-              if (newValue != null) {
-                this.setState({
-                  currentTool: newValue
-                })
-              }
-            }}
-            aria-label="text alignment"
-          >
-            <ToggleButton value="default" aria-label="left aligned">
-              <SelectAllIcon />
-            </ToggleButton>
-            <ToggleButton value="move" aria-label="centered">
-              <ControlCameraIcon />
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </div>
+        <ToggleButtonGroup
+          style={{ pointerEvents: 'auto' }}
+          size='small'
+          value={this.state.currentTool}
+          exclusive
+          onChange={(e, newValue) => {
+            if (newValue != null) {
+              this.setState({
+                currentTool: newValue
+              })
+            }
+          }}
+          aria-label="text alignment"
+        >
+          <ToggleButton value="default" aria-label="left aligned">
+            <SelectAllIcon />
+          </ToggleButton>
+          <ToggleButton value="move" aria-label="centered">
+            <ControlCameraIcon />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+
+
+      <TensorLoader
+        dataset={this.state.dataset}
+
+        onTensorInitiated={(event, selected, params) => {
+
+          var worker = new Worker('dist/worker.js')
+
+          // Initialise state
+          this.setState({
+            projectionComputing: true,
+            projectionWorker: worker,
+            projectionInput: this.state.dataset.asTensor(selected),
+            projectionParams: params
+          })
+        }}
+      ></TensorLoader>
+
+      <MediaControlCard
+        input={this.state.projectionInput}
+        worker={this.state.projectionWorker}
+        params={this.state.projectionParams}
+        onClose={() => {
+          if (this.state.projectionWorker) {
+            this.state.projectionWorker.terminate()
+          }
+
+          this.setState({
+            projectionComputing: false,
+            projectionInput: null,
+            projectionParams: null,
+            projectionWorker: null
+          })
+        }}
+        onComputingChanged={(e, newVal) => {
+          this.setState({
+            projectionComputing: newVal
+          })
+        }}
+        onStep={(Y) => {
+          this.vectors.forEach((vector, i) => {
+            vector.x = Y[i][0]
+            vector.y = Y[i][1]
+          })
+          this.threeRef.current.updateXY()
+        }}>
+
+      </MediaControlCard>
 
 
 
@@ -805,51 +868,7 @@ var PathLengthFilter = ({ pathLengthRange, onChange, maxPathLength }) => {
 
 
 
-var SimplePopover = ({ showColorMapping, colorsChecked, onChange }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClick = event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
-
-  return <div>
-    <Button style={{ margin: '0px 16px' }} aria-describedby={id} variant="contained" onClick={handleClick}>
-      Advanced Coloring
-      </Button>
-    <Popover
-      id={id}
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handleClose}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-      transformOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-    >
-
-
-
-      <ShowColorLegend
-        mapping={showColorMapping}
-        colorsChecked={colorsChecked}
-        onChange={onChange}>
-
-      </ShowColorLegend>
-
-    </Popover>
-  </div>
-}
 
 
 

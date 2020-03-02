@@ -8,6 +8,9 @@ import { LinearProgress, Typography, Divider } from '@material-ui/core';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import SvgRubikIcon from '../icons/RubikCube'
+import ShareIcon from '@material-ui/icons/Share';
+import WidgetsIcon from '@material-ui/icons/Widgets';
 
 var d3v5 = require('d3')
 
@@ -316,6 +319,9 @@ export function loadFromPath(path, callback) {
 
 var TypeIcon = ({ type }) => {
     switch (type) {
+        case 'neural':
+            return <ListItemIcon><ShareIcon>
+            </ShareIcon></ListItemIcon>
         case 'story':
             return <ListItemIcon><MenuBookIcon>
             </MenuBookIcon></ListItemIcon>
@@ -335,6 +341,10 @@ var TypeIcon = ({ type }) => {
                         style={{ fill: 'none', stroke: '#ffffff', strokeLinejoin: 'miter' }} />
                 </g>
             </SvgIcon></ListItemIcon>
+        case 'rubik':
+            return <ListItemIcon>
+                <WidgetsIcon />
+            </ListItemIcon>
         default:
             return <div></div>
     }
@@ -355,12 +365,12 @@ export var DatasetList = ({ onChange }) => {
     {
 
         return loading ?
-            <Grid container direction="column" justify="center" alignItems="center" style={{ width: 600, height: 500 }}>
+            <Grid container direction="column" justify="center" alignItems="center" style={{ width: 800, height: 500 }}>
                 <LinearProgress style={{ width: 500 }} />
             </Grid>
             :
 
-            <Grid container direction="row" alignItems="center" justify="center" style={{ width: 600, padding: '32px' }}>
+            <Grid container direction="row" alignItems="center" justify="center" style={{ width: 800, padding: '32px' }}>
                 <Grid item style={{ width: '50%' }} container direction="column">
                     <Typography variant={'h6'} align="center" style={{ margin: '12px 0px' }}>Preloaded Datasets</Typography>
 
@@ -378,7 +388,7 @@ export var DatasetList = ({ onChange }) => {
                                                         handleClick(entry.path)
                                                     }
                                                     }>
-
+                                                        <TypeIcon type={entry.type} />
                                                         <ListItemText primary={entry.display}></ListItemText>
                                                     </ListItem>
                                                 })
@@ -472,6 +482,12 @@ function preprocess(vectors) {
             vector.x = +vector.x
             vector.y = +vector.y
         })
+    } else {
+        // In case we are missing x and y columns, we can just generate a uniformly distributed point cloud
+        vectors.forEach(vector => {
+            vector.x = (Math.random() - 0.5) * 100
+            vector.y = (Math.random() - 0.5) * 100
+        })
     }
 
     // If data contains no line attribute, add one
@@ -549,8 +565,69 @@ export class Dataset {
         this.ranges = ranges
         this.segments = segments
         this.info = info
+        this.columns = {}
 
         this.calculateBounds()
+        this.calculateColumnTypes()
+    }
+
+    /**
+     * Creates a map which shows the distinct types and data types of the columns.
+     */
+    calculateColumnTypes() {
+        var columnNames = Object.keys(this.vectors[0])
+        columnNames.forEach(columnName => {
+            this.columns[columnName] = {}
+
+            // Check data type
+            if (this.vectors.find(vector => isNaN(vector[columnName]))) {
+                this.columns[columnName].distinct = Array.from(new Set([... this.vectors.map(vector => vector[columnName])]))
+                this.columns[columnName].isNumeric = false
+            } else {
+                this.columns[columnName].isNumeric = true
+            }
+        })
+    }
+
+
+    /**
+     * Returns an array of columns that are available in the vectors
+     */
+    getColumns() {
+        var vector = this.vectors[0]
+        return Object.keys(vector).filter(e => e != '__meta__')
+    }
+
+
+    /**
+     * Returns the vectors in this dataset as a 2d array, which
+     * can be used as input for tsne for example.
+     */
+    asTensor(columns) {
+        var tensor = []
+
+        function oneHot(n, length) {
+            var arr = new Array(length).fill(0)
+            arr[n] = 1
+            return arr
+        }
+
+        this.vectors.forEach(vector => {
+            var data = []
+            columns.forEach(column => {
+                if (this.columns[column].isNumeric) {
+                    // Numeric data can just be appended to the array
+                    data.push(+vector[column])
+                } else {
+                    // Not numeric data can be converted using one-hot encoding
+                    data = data.concat(oneHot(this.columns[column].distinct.indexOf(vector[column]), this.columns[column].distinct.length))
+
+                }
+            })
+            tensor.push(data)
+        })
+
+        return tensor
     }
 
     /**

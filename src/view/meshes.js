@@ -186,12 +186,9 @@ export class LineVisualization {
     var opacity = getLineOpacity(this.segments.length)
     var lines = []
 
-
-    console.log(this.lineColorScheme)
     this.segments.forEach((segment, index) => {
       
       segment.view.intrinsicColor = this.lineColorScheme.map(segment.vectors[0].algo)
-      console.log(segment.view.intrinsicColor)
 
       var geometry = new THREE.Geometry();
       var material = new THREE.LineBasicMaterial({
@@ -231,6 +228,30 @@ export class LineVisualization {
     return lines
   }
 
+
+  updatePosition() {
+    this.segments.forEach((segment, index) => {
+      var da = []
+
+      segment.vectors.forEach(function (vector, vi) {
+        da.push(new THREE.Vector2(vector.x, vector.y))
+      })
+
+      var geometry = new THREE.Geometry();
+      var curve = new THREE.SplineCurve(da)
+
+      
+      curve.getPoints(700).forEach(function (p, i) {
+        geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
+      })
+
+      segment.line.geometry.dispose()
+      segment.line.geometry = geometry
+      segment.line.geometry.verticesNeedUpdate = true
+    })
+  }
+
+
   /**
    * Updates visibility based on settings in the lines
    */
@@ -267,7 +288,6 @@ export class PointVisualization {
 
 
 
-    var vertices = new THREE.Geometry().vertices;
     var positions = new Float32Array(data.length * 3);
     var colors = new Float32Array(data.length * 4);
     var sizes = new Float32Array(data.length);
@@ -280,10 +300,7 @@ export class PointVisualization {
 
     segments.forEach(segment => {
       segment.vectors.forEach((vector, idx) => {
-        vertices.push(new THREE.Vector3(vector.x, vector.y, 0.0))
-
-        vertex = vertices[i];
-        vertex.toArray(positions, i * 3);
+        new THREE.Vector3(vector.x, vector.y, 0.0).toArray(positions, i * 3);
 
         color.setHex('#000000');
 
@@ -577,6 +594,15 @@ export class PointVisualization {
   }
 
 
+  updatePosition() {
+    var position = this.mesh.geometry.attributes.position.array
+
+    this.vectors.forEach(vector => {
+      new THREE.Vector3(vector.x, vector.y, 0.0).toArray(position, vector.view.meshIndex * 3);
+    })
+
+    this.mesh.geometry.attributes.position.needsUpdate = true
+  }
 
 
   update() {
@@ -624,7 +650,7 @@ export class PointVisualization {
    * Updates the zoom level.
    */
   zoom(zoom) {
-    this.mesh.material.uniforms.zoom.value = zoom
+    this.mesh.material.uniforms.zoom.value = zoom * this.dataset.bounds.scaleFactor
   }
 
 

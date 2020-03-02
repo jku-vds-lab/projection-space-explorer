@@ -1,11 +1,63 @@
 var d3v5 = require('d3')
-import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import { Button, Popover } from '@material-ui/core';
+import { ShowColorLegend } from '../view/categorical';
+
+
+export var SimplePopover = ({ showColorMapping, colorsChecked, onChange }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
+
+  return <div>
+    <Button style={{ margin: '0px 16px' }} aria-describedby={id} variant="contained" onClick={handleClick}>
+      Advanced Coloring
+      </Button>
+    <Popover
+      id={id}
+      open={open}
+      anchorEl={anchorEl}
+      onClose={handleClose}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+    >
+
+
+
+      <ShowColorLegend
+        mapping={showColorMapping}
+        colorsChecked={colorsChecked}
+        onChange={onChange}>
+
+      </ShowColorLegend>
+
+    </Popover>
+  </div>
+}
+
+
+
+
+
+
 
 /**
  * Component that lets user pick from a list of color scales.
