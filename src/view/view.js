@@ -676,11 +676,15 @@ export default class ThreeView extends React.Component {
                 pointerEvents: 'none'
             }} ref={this.selectionRef}></canvas>
 
-            <div style={{ position: 'absolute', top: '0px', left: '0px' }}>
-                <SettingsPopover onChangeSlider={(ratio) => this.particles.setPointScaling(ratio)}></SettingsPopover>
-            </div>
+
 
 
         </div>
     }
 }
+
+/**
+ *             <div style={{ position: 'absolute', top: '0px', left: '0px' }}>
+                <SettingsPopover onChangeSlider={(ratio) => this.particles.setPointScaling(ratio)}></SettingsPopover>
+            </div>
+ */
