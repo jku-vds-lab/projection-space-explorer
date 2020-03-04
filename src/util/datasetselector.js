@@ -213,6 +213,11 @@ export class DatasetDatabase {
                 type: "chess"
             },
             {
+                display: "Chess: AlphaZero vs Stockfish",
+                path: "datasets/chess/alphazero.csv",
+                type: "chess"
+            },
+            {
                 display: "Rubik: 1x2 Different Origins",
                 path: "datasets/rubik/cube1x2_different_origins.csv",
                 type: "rubik"
