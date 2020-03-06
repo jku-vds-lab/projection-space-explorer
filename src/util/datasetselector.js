@@ -61,6 +61,9 @@ class InferCategory {
         if (header.includes('new_y')) {
             return 'story'
         }
+        if (header.includes('aa')) {
+            return 'go'
+        }
 
         return 'none'
     }
@@ -281,6 +284,11 @@ export class DatasetDatabase {
                 display: "Story: No Duplicates",
                 path: "datasets/story/stories_dup-del_p50_with-names.csv",
                 type: "story"
+            },
+            {
+                display: "Go: Combined",
+                path: "datasets/go/combined.csv",
+                type: "go"
             }
         ]
     }

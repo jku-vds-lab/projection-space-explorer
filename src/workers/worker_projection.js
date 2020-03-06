@@ -1,5 +1,7 @@
 import { UMAP } from 'umap-js';
-
+import * as tf from '@tensorflow/tfjs';
+import * as tsne from '@tensorflow/tfjs-tsne';
+import "regenerator-runtime/runtime";
 
 // create main global object
 var tsnejs = tsnejs || { REVISION: 'ALPHA' };
@@ -383,7 +385,16 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
 
 
 
-
+async function knnGraph(input) {
+  // Get a tsne optimizer
+  self.tsne = tsne.tsne(input);
+  const knnIterations = self.tsne.knnIterations();
+  // Do the KNN computation. This needs to complete before we run tsne
+  for (let i = 0; i < knnIterations; ++i) {
+    await self.tsne.iterateKnn();
+    // You can update knn progress in your ui here.
+  }
+}
 
 
 
@@ -394,7 +405,29 @@ self.addEventListener('message', function (e) {
   if (e.data) {
     switch (e.data.params.method) {
       case 0:
-        self.raw = e.data
+
+        tf.setBackend('cpu')
+        // Create some data
+        const data = tf.randomUniform([2000, 10]);
+
+        // Initialize the tsne optimizer
+        const tsneOpt = tsne.tsne(data);
+
+        // Compute a T-SNE embedding, returns a promise.
+        // Runs for 1000 iterations by default.
+        tsneOpt.compute().then(() => {
+          // tsne.coordinate returns a *tensor* with x, y coordinates of
+          // the embedded data.
+          const coordinates = tsneOpt.coordinates();
+          coordinates.print();
+        });
+
+
+
+
+
+
+        /**self.raw = e.data
         self.tsne = new tsnejs.tSNE({
           epsilon: e.data.params.learningRate,
           perplexity: e.data.params.perplexity,
@@ -402,7 +435,7 @@ self.addEventListener('message', function (e) {
         });
         self.tsne.initDataRaw(e.data.input)
         self.tsne.step()
-        self.postMessage(self.tsne.getSolution())
+        self.postMessage(self.tsne.getSolution())**/
         break;
       case 1:
         self.raw = e.data

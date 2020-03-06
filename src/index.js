@@ -27,6 +27,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import ControlCameraIcon from '@material-ui/icons/ControlCamera';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
 import { TensorLoader, MediaControlCard } from "./projection/integration";
+import { GoLegend } from "./legends/go";
 
 
 
@@ -46,6 +47,8 @@ var GenericLegend = ({ type, vectors, aggregate, dataset }) => {
     return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
   } else if (type == 'chess') {
     return <ChessLegend selection={vectors}></ChessLegend>
+  } else if (type == 'go') {
+    return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
   } else {
     return <div></div>
   }
@@ -207,6 +210,8 @@ class Application extends React.Component {
 
     // Load new view
     this.loadData2()
+
+
   }
 
 
