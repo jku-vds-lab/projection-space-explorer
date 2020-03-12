@@ -231,16 +231,6 @@ export class DatasetDatabase {
                 type: "rubik"
             },
             {
-                display: "Rubik: 5x2 Different Origins",
-                path: "datasets/rubik/cube5x2_different_origins.csv",
-                type: "rubik"
-            },
-            {
-                display: "Rubik: 5x2 Same Origins",
-                path: "datasets/rubik/cube5x2.csv",
-                type: "rubik"
-            },
-            {
                 display: "Rubik: 10x2 Different Origins",
                 path: "datasets/rubik/cube10x2_different_origins.csv",
                 type: "rubik"
@@ -291,8 +281,18 @@ export class DatasetDatabase {
                 type: "story"
             },
             {
-                display: "Go: Combined",
+                display: "Go: State features",
                 path: "datasets/go/combined.csv",
+                type: "go"
+            },
+            {
+                display: "Go: Histogram features",
+                path: "datasets/go/histogram.csv",
+                type: "go"
+            },
+            {
+                display: "Go: Move features (wavelet)",
+                path: "datasets/go/move_wavelet.csv",
                 type: "go"
             }
         ]
