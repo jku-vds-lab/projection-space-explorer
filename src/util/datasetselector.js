@@ -33,6 +33,176 @@ function parseRange(str) {
 
 
 /**
+ * Class that preprocesses the data set and checks for validity.
+ * Will halucinate attributes like x, y, line, algo and multiplicity if
+ * they are not present.
+ */
+class Preprocessor {
+    constructor(vectors) {
+        this.vectors = vectors
+    }
+
+    /**
+     * Returns an array of columns that are available in the vectors
+     */
+    getColumns() {
+        var vector = this.vectors[0]
+        return Object.keys(vector).filter(e => e != '__meta__')
+    }
+
+    /**
+     * Returns a unique array of distinct line values.
+     */
+    distinctLines() {
+        return [ ... new Set(this.vectors.map(vector => vector.line)) ]
+    }
+
+    /**
+     * Infers the multiplicity attribute for this dataset.
+     */
+    inferMultiplicity() {
+        if (this.getColumns().includes('multiplicity')) {
+            return;
+        }
+
+        // Build line pools
+        var linePools = {}
+        this.distinctLines().forEach(line => {
+            // Dictionary holding the x/y values of the line
+            linePools[line] = {}
+        })
+
+        // Builds x attributes for linepools
+        this.vectors.forEach(vector => {
+            linePools[vector.line][vector.x] = {}
+        })
+
+        var distinctLines = this.distinctLines()
+        // Count multiplicities
+        this.vectors.forEach(vector => {
+            distinctLines.forEach(line => {
+                if (linePools[line][vector.x] != null) {
+                    if (linePools[line][vector.x][vector.y] == null) {
+                        linePools[line][vector.x][vector.y] = 1
+                    } else {
+                        linePools[line][vector.x][vector.y] = linePools[line][vector.x][vector.y] + 1
+                    }
+                }
+            })
+        })
+
+
+        // Apply multiplicities
+        this.vectors.forEach(vector => {
+            vector.multiplicity = linePools[vector.line][vector.x][vector.y]
+        })
+    }
+
+
+
+    preprocess() {
+
+        
+        this.inferMultiplicity()
+
+        var vectors = this.vectors
+        var header = Object.keys(vectors[0])
+
+        var ranges = header.reduce((map, value) => {
+            var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
+            if (matches != null) {
+                var cutHeader = value.substring(0, value.length - matches[0].length)
+                vectors.forEach(vector => {
+                    vector[cutHeader] = vector[value]
+                    delete vector[value]
+                })
+                header[header.indexOf(value)] = cutHeader
+                map[cutHeader] = parseRange(matches[0])
+            }
+            return map
+        }, {})
+    
+        // If data contains no x and y attributes, its invalid
+        if (header.includes("x") && header.includes("y")) {
+            vectors.forEach(vector => {
+                vector.x = +vector.x
+                vector.y = +vector.y
+            })
+        } else {
+            // In case we are missing x and y columns, we can just generate a uniformly distributed point cloud
+            vectors.forEach(vector => {
+                vector.x = (Math.random() - 0.5) * 100
+                vector.y = (Math.random() - 0.5) * 100
+            })
+        }
+    
+        // If data contains no line attribute, add one
+        if (!header.includes("line")) {
+            // Add age attribute as index and line as DEFAULT_LINE
+            vectors.forEach((vector, index) => {
+                vector.line = DEFAULT_LINE
+                if (!header.includes("age")) {
+                    vector.age = index
+                }
+            })
+        } else if (header.includes("line") && !header.includes("age")) {
+            var segs = {}
+            var distinct = [... new Set(vectors.map(vector => vector.line))]
+            distinct.forEach(a => segs[a] = 0)
+            vectors.forEach(vector => {
+                //vector.age = segs[vector.line]
+                segs[vector.line] = segs[vector.line] + 1
+            })
+            var cur = {}
+            distinct.forEach(a => cur[a] = 0)
+            vectors.forEach(vector => {
+                vector.age = cur[vector.line] / segs[vector.line]
+                cur[vector.line] = cur[vector.line] + 1
+            })
+            ranges["age"] = { min: 0, max: 1 }
+        }
+    
+        // If data has no algo attribute, add DEFAULT_ALGO
+        if (!header.includes("algo")) {
+            vectors.forEach(vector => {
+                vector.algo = DEFAULT_ALGO
+            })
+        }
+    
+    
+        vectors.forEach(function (d) { // convert strings to numbers
+            if ("cubeNum" in d) {
+                d.cubeNum = +d.cubeNum
+            }
+            if ("ep" in d) {
+                d.cubeNum = +d.ep
+            }
+    
+    
+            if ("cp" in d) {
+                d.cp = d.cp
+            }
+    
+            if ("age" in d) {
+                d.age = +d.age
+            }
+    
+            // Attribute that specifies if this vector should be visible or not
+            d.visible = true
+        })
+
+        
+        return ranges
+    }
+}
+
+
+
+
+
+
+
+/**
  * Object responsible for infering things from the data structure of a csv file.
  * For example this class can infer the
  * - ranges of columns
@@ -104,7 +274,7 @@ class InferCategory {
             // Check for given header key if its categorical, sequential or diverging
             var distinct = [... new Set(this.vectors.map(vector => vector[key]))]
 
-            if (distinct.length > 8 || key in ranges) {
+            if (distinct.length > 8 || key in ranges || key == 'multiplicity') {
                 // Check if values are numeric
                 if (!distinct.find(value => isNaN(value))) {
                     // If we have a lot of different values, the values or probably sequential data
@@ -152,7 +322,7 @@ class InferCategory {
                             "max": max
                         },
                         "values": {
-                            range: [0.5, 1.5]
+                            range: [1, 2]
                         }
                     })
                 }
@@ -317,7 +487,7 @@ export function loadFromPath(path, callback) {
         vectors = convertFromCSV(vectors)
 
         // Add missing attributes
-        var ranges = preprocess(vectors)
+        var ranges = new Preprocessor(vectors).preprocess()
 
         // Split vectors into segments
         var segments = getSegs(vectors)
@@ -436,7 +606,7 @@ export var DatasetList = ({ onChange }) => {
                                 // Convert raw dictionaries to classes ...
                                 vectors = convertFromCSV(vectors)
 
-                                var ranges = preprocess(vectors)
+                                var ranges = new Preprocessor(vectors).preprocess()
 
                                 var segments = getSegs(vectors)
 
@@ -468,97 +638,6 @@ function getSegs(vectors) {
 
 
     return segments
-}
-
-
-
-function preprocess(vectors) {
-    var header = Object.keys(vectors[0])
-
-    var ranges = header.reduce((map, value) => {
-        var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
-        if (matches != null) {
-            var cutHeader = value.substring(0, value.length - matches[0].length)
-            vectors.forEach(vector => {
-                vector[cutHeader] = vector[value]
-                delete vector[value]
-            })
-            header[header.indexOf(value)] = cutHeader
-            map[cutHeader] = parseRange(matches[0])
-        }
-        return map
-    }, {})
-
-    // If data contains no x and y attributes, its invalid
-    if (header.includes("x") && header.includes("y")) {
-        vectors.forEach(vector => {
-            vector.x = +vector.x
-            vector.y = +vector.y
-        })
-    } else {
-        // In case we are missing x and y columns, we can just generate a uniformly distributed point cloud
-        vectors.forEach(vector => {
-            vector.x = (Math.random() - 0.5) * 100
-            vector.y = (Math.random() - 0.5) * 100
-        })
-    }
-
-    // If data contains no line attribute, add one
-    if (!header.includes("line")) {
-        // Add age attribute as index and line as DEFAULT_LINE
-        vectors.forEach((vector, index) => {
-            vector.line = DEFAULT_LINE
-            if (!header.includes("age")) {
-                vector.age = index
-            }
-        })
-    } else if (header.includes("line") && !header.includes("age")) {
-        var segs = {}
-        var distinct = [... new Set(vectors.map(vector => vector.line))]
-        distinct.forEach(a => segs[a] = 0)
-        vectors.forEach(vector => {
-            //vector.age = segs[vector.line]
-            segs[vector.line] = segs[vector.line] + 1
-        })
-        var cur = {}
-        distinct.forEach(a => cur[a] = 0)
-        vectors.forEach(vector => {
-            vector.age = cur[vector.line] / segs[vector.line]
-            cur[vector.line] = cur[vector.line] + 1
-        })
-        ranges["age"] = { min: 0, max: 1 }
-    }
-
-    // If data has no algo attribute, add DEFAULT_ALGO
-    if (!header.includes("algo")) {
-        vectors.forEach(vector => {
-            vector.algo = DEFAULT_ALGO
-        })
-    }
-
-
-    vectors.forEach(function (d) { // convert strings to numbers
-        if ("cubeNum" in d) {
-            d.cubeNum = +d.cubeNum
-        }
-        if ("ep" in d) {
-            d.cubeNum = +d.ep
-        }
-
-
-        if ("cp" in d) {
-            d.cp = d.cp
-        }
-
-        if ("age" in d) {
-            d.age = +d.age
-        }
-
-        // Attribute that specifies if this vector should be visible or not
-        d.visible = true
-    })
-
-    return ranges
 }
 
 

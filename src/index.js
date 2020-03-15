@@ -28,6 +28,7 @@ import ControlCameraIcon from '@material-ui/icons/ControlCamera';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
 import { TensorLoader, MediaControlCard } from "./projection/integration";
 import { GoLegend } from "./legends/go";
+import { arraysEqual } from "./view/utilfunctions";
 
 
 
@@ -121,7 +122,9 @@ class Application extends React.Component {
 
       currentTool: 'default',
 
-      projectionComputing: false
+      projectionComputing: false,
+
+      sizeScale: [ 1, 2 ]
     }
 
     this.threeRef = React.createRef()
@@ -284,6 +287,14 @@ class Application extends React.Component {
 
   initializeEncodings() {
     var state = {}
+
+    var defaultSizeAttribute = this.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
+    if (defaultSizeAttribute) {
+      state.selectedVectorBySize = defaultSizeAttribute.key
+      state.vectorBySize = defaultSizeAttribute
+
+      this.threeRef.current.particles.sizeCat(defaultSizeAttribute)
+    }
 
     var defaultColorAttribute = this.categoryOptions.getAttribute("color", "algo", "categorical")
     if (defaultColorAttribute) {
@@ -612,6 +623,29 @@ class Application extends React.Component {
           }
 
           {
+              this.categoryOptions != null && this.categoryOptions.hasCategory("size") && this.state.vectorBySize != null ?
+              <SizeSlider
+                sizeScale={this.state.vectorBySize.values.range}
+                onChange={(e, newVal) => {
+                  if (arraysEqual(newVal, this.state.vectorBySize.values.range)) {
+                    return;
+                  }
+
+                  this.state.vectorBySize.values.range = newVal
+
+                  this.setState({
+                    vectorBySize: this.state.vectorBySize
+                  })
+
+                  if (this.state.vectorBySize != null) {
+                    this.threeRef.current.particles.sizeCat(this.state.vectorBySize)
+                    this.threeRef.current.particles.updateSize()
+                  }
+                }}
+              ></SizeSlider> : <div></div>
+          }
+
+          {
             this.categoryOptions != null && this.categoryOptions.hasCategory("color") ?
               <Grid
                 container
@@ -834,6 +868,57 @@ class Application extends React.Component {
     </div >
   }
 }
+
+
+
+
+
+var SizeSlider = ({ sizeScale, onChange }) => {
+  const marks = [
+    {
+      value: 0,
+      label: '0',
+    },
+    {
+      value: 1,
+      label: `1`,
+    },
+    {
+      value: 2,
+      label: `2`,
+    },
+    {
+      value: 3,
+      label: `3`,
+    },
+    {
+      value: 4,
+      label: `4`,
+    },
+    {
+      value: 5,
+      label: `5`,
+    },
+  ];
+
+  return <div style={{ margin: '0 16px' }}>
+    <Typography id="range-slider" gutterBottom>
+      Size Scale
+    </Typography>
+    <Slider
+      min={0}
+      max={5}
+      value={sizeScale}
+      onChange={onChange}
+      step={0.25}
+      marks={marks}
+      valueLabelDisplay="auto"
+    ></Slider>
+  </div>
+}
+
+
+
 
 
 

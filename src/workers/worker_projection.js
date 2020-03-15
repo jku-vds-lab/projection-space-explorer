@@ -91,7 +91,6 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
   // compute pairwise distance in all vectors in X
   var xtod = function (X) {
     var N = X.length;
-    console.log(`allocating array of ${N * N}`)
     var dist = zeros(N * N); // allocate contiguous array
     for (var i = 0; i < N; i++) {
       for (var j = i + 1; j < N; j++) {
@@ -311,7 +310,6 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
 
           var analytic = grad[i][d];
           var numerical = (cg0.cost - cg1.cost) / (2 * e);
-          console.log(i + ',' + d + ': gradcheck analytic: ' + analytic + ' vs. numerical: ' + numerical);
 
           this.Y[i][d] = yold;
         }

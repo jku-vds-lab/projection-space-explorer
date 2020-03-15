@@ -516,8 +516,14 @@ export class PointVisualization {
             min = Math.min(...filtered)
           }
 
+          
+
           segment.vectors.forEach(vector => {
-            vector.baseSize = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
+            if (min == max) {
+              vector.baseSize = this.particleSize * category.values.range[0]
+            } else {
+              vector.baseSize = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
+            }
           })
         })
       }
