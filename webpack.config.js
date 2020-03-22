@@ -4,7 +4,8 @@ const webpack = require('webpack');
 module.exports = {
   entry: {
     bundle: './src/index.js',
-    worker: './src/workers/worker_projection.js'
+    worker: './src/workers/worker_projection.js',
+    cluster: './src/workers/worker_cluster.js'
   },
   output: {
     path: path.join(__dirname, 'dist'), // absolute path

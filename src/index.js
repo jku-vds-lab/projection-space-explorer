@@ -34,11 +34,6 @@ import { arraysEqual } from "./view/utilfunctions";
 
 
 
-
-
-
-
-
 var GenericLegend = ({ type, vectors, aggregate, dataset }) => {
   if (type == 'story') {
     return <StoryLegend selection={vectors} vectors={dataset}></StoryLegend>
@@ -124,7 +119,7 @@ class Application extends React.Component {
 
       projectionComputing: false,
 
-      sizeScale: [ 1, 2 ]
+      sizeScale: [1, 2]
     }
 
     this.threeRef = React.createRef()
@@ -260,6 +255,8 @@ class Application extends React.Component {
     })
 
 
+
+
     this.legend.current.load(this.dataset.info.type, this.lineColorScheme, this.state.selectedLineAlgos)
 
     this.initializeEncodings()
@@ -332,8 +329,39 @@ class Application extends React.Component {
   }
 
 
+  processClusters(raw) {
+    var clusters = {}
+    raw.forEach((entry, index) => {
+      const [ label, probability ] = entry
+      if (!(label in clusters)) {
+        clusters[label] = []
+      }
+      clusters[label].push({
+        label: label,
+        probability: probability,
+        meshIndex: index
+      })
+    })
+
+    console.log(clusters)
+
+    this.threeRef.current.createClusters(clusters)
+  }
 
   onLineSelect(algo, show) {
+
+    /**var json = this.dataset.vectors.map(vector => [ vector.x, vector.y ])
+    fetch('http://localhost:8090/hdbscan', {
+      method: 'POST',
+      body: JSON.stringify(json)
+    }).then(response => {
+      console.log("bottled")
+      var json = response.json().then(values => {
+        console.log(values.result)
+        this.processClusters(values.result)
+      })
+    })**/
+
     this.threeRef.current.filterLines(algo, show)
   }
 
@@ -623,7 +651,7 @@ class Application extends React.Component {
           }
 
           {
-              this.categoryOptions != null && this.categoryOptions.hasCategory("size") && this.state.vectorBySize != null ?
+            this.categoryOptions != null && this.categoryOptions.hasCategory("size") && this.state.vectorBySize != null ?
               <SizeSlider
                 sizeScale={this.state.vectorBySize.values.range}
                 onChange={(e, newVal) => {

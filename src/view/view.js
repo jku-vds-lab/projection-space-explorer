@@ -9,6 +9,8 @@ import Grid from '@material-ui/core/Grid';
 import { getDefaultZoom, arraysEqual, normalizeWheel } from './utilfunctions';
 import { LassoSelection } from '../util/tools'
 import { Vector3 } from 'three';
+import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
+import concaveman from 'concaveman'
 
 
 const useStyles = makeStyles(theme => ({
@@ -429,6 +431,40 @@ export default class ThreeView extends React.Component {
         this.camera.position.y = (world.y + ((screen.y - this.getHeight() / 2) / this.camera.zoom))
     }
 
+
+
+    createClusters(clusters) {
+
+        Object.keys(clusters).forEach(key => {
+            if (key == -1) return;
+            var cluster = clusters[key]
+
+            var pts = cluster.filter(e => e.probability > 0.7).map(e => {
+                var m = this.vectors[e.meshIndex]
+                return [m.x, m.y]
+            })
+
+            var polygon = concaveman(pts);
+            var points = [];
+            var material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+            polygon.forEach(pt => {
+
+                points.push(new THREE.Vector3(pt[0], pt[1], 0));
+                var geometry = new THREE.BufferGeometry().setFromPoints( points );
+                var line = new THREE.Line( geometry, material );
+
+                this.scene.add(line);
+            })
+
+            //var geometry = new ConvexGeometry(pts);
+            //var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+            //var mesh = new THREE.Mesh(geometry, material);
+            //this.scene.add(mesh);
+        })
+    }
+
+
+
     getWidth() {
         return this.containerRef.current.offsetWidth
     }
@@ -551,7 +587,7 @@ export default class ThreeView extends React.Component {
         this.camera.position.x = 0.0
         this.camera.position.y = 0.0
         this.camera.updateProjectionMatrix();
-        
+
     }
 
 
