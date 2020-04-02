@@ -8,9 +8,10 @@ import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
 import { getDefaultZoom, arraysEqual, normalizeWheel } from './utilfunctions';
 import { LassoSelection } from '../util/tools'
-import { Vector3 } from 'three';
-import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry';
-import concaveman from 'concaveman'
+import libtess from 'libtess'
+import { isPointInConvaveHull } from '../util/geometry'
+import { GenericClusterLegend } from '../legends/generic'
+
 
 
 const useStyles = makeStyles(theme => ({
@@ -133,6 +134,8 @@ export default class ThreeView extends React.Component {
         this.currentHover = null
 
         this.currentAggregation = []
+
+        this.state = {}
     }
 
     dist(x1, y1, x2, y2) {
@@ -264,6 +267,10 @@ export default class ThreeView extends React.Component {
         this.mouseDownPosition = this.normaliseMouse(event)
     }
 
+
+
+
+
     onMouseMove(event) {
         event.preventDefault();
 
@@ -272,7 +279,7 @@ export default class ThreeView extends React.Component {
         if (this.props.tool == 'default') {
             var mousePosition = new THREE.Vector2(event.clientX, event.clientY)
 
-            if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 30 && this.lasso == null && this.mouseDown) {
+            if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 10 && this.lasso == null && this.mouseDown) {
                 var initialWorld = this.clientCoordinatesToWorld(this.initialMousePosition.x, this.initialMousePosition.y)
 
                 this.lasso = new LassoSelection()
@@ -311,7 +318,7 @@ export default class ThreeView extends React.Component {
                 }, 10);
             }
         } else if (this.props.tool == 'move') {
-            // Dragging
+            // If the selected tool is the move tool, process it
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
@@ -322,8 +329,28 @@ export default class ThreeView extends React.Component {
                 this.mouseDownPosition = this.normaliseMouse(event)
                 this.camera.updateProjectionMatrix()
             }
-        }
+        } else if (this.props.tool == 'grab') {
+            var found = false
+            Object.keys(this.props.clusters).forEach(key => {
+                if (key == '-1') return;
 
+                var cl = this.props.clusters[key]
+
+                if (cl.containsPoint(coords)) {
+                    if (isPointInConvaveHull(coords, cl.hull.map(h => ({ x: h[0], y: h[1] })))) {
+                        found = true
+                        this.setState({
+                            hoverCluster: cl
+                        })
+                    }
+                }
+            })
+            if (!found) {
+                this.setState({
+                    hoverCluster: null
+                })
+            }
+        }
     }
 
     onMouseUp(event) {
@@ -331,6 +358,7 @@ export default class ThreeView extends React.Component {
 
         if (this.props.tool == 'default') {
             if (this.lasso != null) {
+                // If there is an active lasso, process it
                 var wasDrawing = this.lasso.drawing
 
                 this.lasso.mouseUp(test.x, test.y)
@@ -361,22 +389,13 @@ export default class ThreeView extends React.Component {
                     this.props.onAggregate(this.currentAggregation)
 
                 } else if (wasDrawing) {
-                    this.lasso = null
-                    this.currentAggregation = []
-                    this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
-
-                    this.lines.groupHighlight([])
-
-                    this.vectors.forEach((vector, index) => {
-                        vector.view.selected = false
-                    })
-
-                    this.props.onAggregate([])
+                    this.clearSelection()
                 }
 
                 this.lasso = null
             } else {
                 if (this.currentHover != null) {
+                    // There is a hover target ... select it
                     this.currentHover.view.selected = !this.currentHover.view.selected
 
                     if (this.currentAggregation.includes(this.currentHover) && !this.currentHover.view.selected) {
@@ -392,12 +411,61 @@ export default class ThreeView extends React.Component {
                     this.lines.groupHighlight(uniqueIndices)
                 }
             }
-        }
+        } else if (this.props.tool == 'grab') {
+            // current hover is null, check if we are inside a cluster
+            var found = false
+            Object.keys(this.props.clusters).forEach(key => {
+                var cluster = this.props.clusters[key]
 
+                if (key != '-1') {
+                    if (isPointInConvaveHull(test, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
+                        found = true
+                        var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
+
+                        selected.forEach(vector => {
+                            vector.view.selected = !vector.view.selected
+
+                            if (this.currentAggregation.includes(vector) && !vector.view.selected) {
+                                this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
+                            } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
+                                this.currentAggregation.push(vector)
+                            }
+                        })
+
+
+                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.lineIndex))]
+
+                        this.lines.groupHighlight(uniqueIndices)
+                        //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+
+                        this.props.onAggregate(this.currentAggregation)
+                    }
+                }
+            })
+            if (!found) {
+                this.clearSelection()
+            }
+        }
 
         this.particles.update()
         this.mouseDown = false;
     }
+
+
+    clearSelection() {
+        this.lasso = null
+        this.currentAggregation = []
+        this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+
+        this.lines.groupHighlight([])
+
+        this.vectors.forEach((vector, index) => {
+            vector.view.selected = false
+        })
+
+        this.props.onAggregate([])
+    }
+
 
     onWheel(event) {
         event.preventDefault()
@@ -431,36 +499,77 @@ export default class ThreeView extends React.Component {
         this.camera.position.y = (world.y + ((screen.y - this.getHeight() / 2) / this.camera.zoom))
     }
 
+    generateNoisyLoop(count, ccw, radius, noiseSize) {
+        var verts = new Array(count * 2);
+        var thetaPer = Math.PI * 2 / count;
+        var backwards = ccw ? -1 : 1;
+        for (var i = 0; i < count; i++) {
+            var theta = thetaPer * i * backwards;
+            var randomRadius = radius * (1 + Math.random() * noiseSize);
+            verts[i * 2] = Math.cos(theta) * randomRadius;
+            verts[i * 2 + 1] = Math.sin(theta) * randomRadius;
+        }
 
+        return verts;
+    }
 
     createClusters(clusters) {
+        if (this.clusterVisualization != null) {
+            this.clusterVisualization.dispose(this.scene)
+            this.clusterVisualization = null
+        }
+
+        var clusterMeshes = []
 
         Object.keys(clusters).forEach(key => {
             if (key == -1) return;
             var cluster = clusters[key]
 
-            var pts = cluster.filter(e => e.probability > 0.7).map(e => {
-                var m = this.vectors[e.meshIndex]
-                return [m.x, m.y]
-            })
+            var test = cluster.triangulation
+            var polygon = cluster.hull
 
-            var polygon = concaveman(pts);
             var points = [];
-            var material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+            var material = new THREE.LineBasicMaterial({ color: 0x0000ff });
             polygon.forEach(pt => {
-
-                points.push(new THREE.Vector3(pt[0], pt[1], 0));
-                var geometry = new THREE.BufferGeometry().setFromPoints( points );
-                var line = new THREE.Line( geometry, material );
-
-                this.scene.add(line);
+                points.push(new THREE.Vector3(pt[0], pt[1], -5));
             })
+            var linege = new THREE.BufferGeometry().setFromPoints(points);
+            var line = new THREE.Line(linege, material);
+            this.scene.add(line);
 
-            //var geometry = new ConvexGeometry(pts);
-            //var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-            //var mesh = new THREE.Mesh(geometry, material);
-            //this.scene.add(mesh);
+            var geometry = new THREE.Geometry();
+
+            var vi = 0
+            for (var i = 0; i < test.length; i += 6) {
+                var faceIn = []
+
+                for (var x = 0; x < 3; x++) {
+
+                    faceIn.push(vi)
+                    var vertex = new THREE.Vector3(test[i + x * 2], test[i + x * 2 + 1])
+                    vi = vi + 1
+                    geometry.vertices.push(vertex)
+                }
+
+                geometry.faces.push(
+                    new THREE.Face3(faceIn[0], faceIn[1], faceIn[2])
+                )
+
+            }
+
+            var material = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.1,
+                // vertexColors: true
+            });
+            var mesh = new THREE.Mesh(geometry, material);
+            clusterMeshes.push(mesh)
+            this.scene.add(mesh);
         })
+
+        this.clusterVisualization = new meshes.ClusterVisualization(clusterMeshes)
     }
 
 
@@ -702,6 +811,25 @@ export default class ThreeView extends React.Component {
                 cursor: this.props.tool
             }}>
             <div id="container" style={containerStyle} ref={this.containerRef}>
+
+                {
+                    this.state.hoverCluster != null && this.props.tool == 'grab' ?
+                        <div
+                            className='speech-bubble-ds'
+                            style={{
+                                position: 'absolute',
+                                right: this.getWidth() - this.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).x,
+                                bottom: this.getHeight() - this.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).y - 10,
+                            }}>
+                            <GenericClusterLegend
+                                cluster={this.state.hoverCluster}></GenericClusterLegend>
+                        </div>
+
+
+                        :
+                        <div></div>
+                }
+
             </div>
             <canvas id="selection" style={{
                 position: "absolute",

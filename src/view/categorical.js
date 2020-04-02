@@ -371,7 +371,7 @@ export var ShowColorLegend = ({ mapping, colorsChecked, onChange }) => {
   }
 
   if (mapping instanceof DiscreteMapping) {
-    return <Grid container direction="column" style={{ padding: '12px 0px' }}>
+    return <Grid container direction="column" style={{ padding: '12px 0px', minWidth: 300 }}>
 
 
       {mapping.values.map((value, index) => {

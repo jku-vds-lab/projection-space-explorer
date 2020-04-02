@@ -111,7 +111,7 @@ class DragAndDrop extends React.Component {
                                 }}
                             />
                             <label htmlFor="contained-button-file">
-                                <Button variant="contained" color="primary" component="span">
+                                <Button variant="outlined" component="span">
                                     Open File
                             </Button>
                             </label>

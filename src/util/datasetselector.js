@@ -1,17 +1,3 @@
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import DragAndDrop from './draganddrop';
-import { LinearProgress, Typography, Divider } from '@material-ui/core';
-import SvgIcon from '@material-ui/core/SvgIcon';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import SvgRubikIcon from '../icons/RubikCube'
-import ShareIcon from '@material-ui/icons/Share';
-import WidgetsIcon from '@material-ui/icons/Widgets';
-
 var d3v5 = require('d3')
 
 const DEFAULT_LINE = "L"
@@ -54,7 +40,7 @@ class Preprocessor {
      * Returns a unique array of distinct line values.
      */
     distinctLines() {
-        return [ ... new Set(this.vectors.map(vector => vector.line)) ]
+        return [... new Set(this.vectors.map(vector => vector.line))]
     }
 
     /**
@@ -102,7 +88,7 @@ class Preprocessor {
 
     preprocess() {
 
-        
+
         this.inferMultiplicity()
 
         var vectors = this.vectors
@@ -121,7 +107,7 @@ class Preprocessor {
             }
             return map
         }, {})
-    
+
         // If data contains no x and y attributes, its invalid
         if (header.includes("x") && header.includes("y")) {
             vectors.forEach(vector => {
@@ -135,7 +121,7 @@ class Preprocessor {
                 vector.y = (Math.random() - 0.5) * 100
             })
         }
-    
+
         // If data contains no line attribute, add one
         if (!header.includes("line")) {
             // Add age attribute as index and line as DEFAULT_LINE
@@ -161,15 +147,15 @@ class Preprocessor {
             })
             ranges["age"] = { min: 0, max: 1 }
         }
-    
+
         // If data has no algo attribute, add DEFAULT_ALGO
         if (!header.includes("algo")) {
             vectors.forEach(vector => {
                 vector.algo = DEFAULT_ALGO
             })
         }
-    
-    
+
+
         vectors.forEach(function (d) { // convert strings to numbers
             if ("cubeNum" in d) {
                 d.cubeNum = +d.cubeNum
@@ -177,21 +163,21 @@ class Preprocessor {
             if ("ep" in d) {
                 d.cubeNum = +d.ep
             }
-    
-    
+
+
             if ("cp" in d) {
                 d.cp = d.cp
             }
-    
+
             if ("age" in d) {
                 d.age = +d.age
             }
-    
+
             // Attribute that specifies if this vector should be visible or not
             d.visible = true
         })
 
-        
+
         return ranges
     }
 }
@@ -199,6 +185,25 @@ class Preprocessor {
 
 
 
+export function loadFromPath(path, callback) {
+
+    var entry = new DatasetDatabase().getByPath(path)
+
+    // Load csv file
+    d3v5.csv(path).then(vectors => {
+        // Convert raw dictionaries to classes ...
+        vectors = convertFromCSV(vectors)
+
+        // Add missing attributes
+        var ranges = new Preprocessor(vectors).preprocess()
+
+        // Split vectors into segments
+        var segments = getSegs(vectors)
+
+
+        callback(new Dataset(vectors, segments, ranges, entry), new InferCategory(vectors, segments).load(ranges))
+    })
+}
 
 
 
@@ -208,7 +213,7 @@ class Preprocessor {
  * - ranges of columns
  * - type of data file (rubik, story...)
  */
-class InferCategory {
+export class InferCategory {
     constructor(vectors, segments) {
         this.vectors = vectors
         this.segments = segments
@@ -237,6 +242,7 @@ class InferCategory {
 
         return 'none'
     }
+
 
 
     /**
@@ -359,6 +365,7 @@ class InferCategory {
 
 
 
+
 /**
  * Dummy class that holds information about the files that can be preselected.
  */
@@ -477,154 +484,11 @@ export class DatasetDatabase {
     }
 }
 
-export function loadFromPath(path, callback) {
-
-    var entry = new DatasetDatabase().getByPath(path)
-
-    // Load csv file
-    d3v5.csv(path).then(vectors => {
-        // Convert raw dictionaries to classes ...
-        vectors = convertFromCSV(vectors)
-
-        // Add missing attributes
-        var ranges = new Preprocessor(vectors).preprocess()
-
-        // Split vectors into segments
-        var segments = getSegs(vectors)
-
-
-        callback(new Dataset(vectors, segments, ranges, entry), new InferCategory(vectors, segments).load(ranges))
-    })
-}
 
 
 
 
-var TypeIcon = ({ type }) => {
-    switch (type) {
-        case 'neural':
-            return <ListItemIcon><ShareIcon>
-            </ShareIcon></ListItemIcon>
-        case 'story':
-            return <ListItemIcon><MenuBookIcon>
-            </MenuBookIcon></ListItemIcon>
-        case 'chess':
-            return <ListItemIcon><SvgIcon viewBox="0 0 45 45">
-                <g style={{ opacity: 1, fill: 'none', fillRule: 'evenodd', fillOpacity: 1, stroke: '#000000', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', strokeMiterlimit: 4, strokeDasharray: 'none', strokeOpacity: 1 }}>
-                    <g style={{ fill: '#000000', stroke: '#000000', strokeLinecap: 'butt' }}>
-                        <path
-                            d="M 9,36 C 12.39,35.03 19.11,36.43 22.5,34 C 25.89,36.43 32.61,35.03 36,36 C 36,36 37.65,36.54 39,38 C 38.32,38.97 37.35,38.99 36,38.5 C 32.61,37.53 25.89,38.96 22.5,37.5 C 19.11,38.96 12.39,37.53 9,38.5 C 7.646,38.99 6.677,38.97 6,38 C 7.354,36.06 9,36 9,36 z" />
-                        <path
-                            d="M 15,32 C 17.5,34.5 27.5,34.5 30,32 C 30.5,30.5 30,30 30,30 C 30,27.5 27.5,26 27.5,26 C 33,24.5 33.5,14.5 22.5,10.5 C 11.5,14.5 12,24.5 17.5,26 C 17.5,26 15,27.5 15,30 C 15,30 14.5,30.5 15,32 z" />
-                        <path
-                            d="M 25 8 A 2.5 2.5 0 1 1  20,8 A 2.5 2.5 0 1 1  25 8 z" />
-                    </g>
-                    <path
-                        d="M 17.5,26 L 27.5,26 M 15,30 L 30,30 M 22.5,15.5 L 22.5,20.5 M 20,18 L 25,18"
-                        style={{ fill: 'none', stroke: '#ffffff', strokeLinejoin: 'miter' }} />
-                </g>
-            </SvgIcon></ListItemIcon>
-        case 'rubik':
-            return <ListItemIcon>
-                <WidgetsIcon />
-            </ListItemIcon>
-        default:
-            return <div></div>
-    }
-}
 
-export var DatasetList = ({ onChange }) => {
-    var database = new DatasetDatabase()
-
-    const [loading, setLoad] = React.useState(false)
-
-    var handleClick = (path) => {
-        loadFromPath(path, onChange)
-    }
-
-    var database = new DatasetDatabase()
-    var types = database.getTypes()
-
-    {
-
-        return loading ?
-            <Grid container direction="column" justify="center" alignItems="center" style={{ width: 800, height: 500 }}>
-                <LinearProgress style={{ width: 500 }} />
-            </Grid>
-            :
-
-            <Grid container direction="row" alignItems="center" justify="center" style={{ width: 800, padding: '32px' }}>
-                <Grid item style={{ width: '50%' }} container direction="column">
-                    <Typography variant={'h6'} align="center" style={{ margin: '12px 0px' }}>Preloaded Datasets</Typography>
-
-                    <Grid item style={{ overflow: 'auto', height: 400, border: '1px solid gray' }}>
-                        <List subheader={<li />} style={{ backgroundColor: 'white' }}>
-                            {
-                                types.map(type => (
-                                    <li style={{ backgroundColor: 'inherit' }}>
-                                        <ul style={{ backgroundColor: 'inherit', paddingInlineStart: '0px' }}>
-                                            <ListSubheader>{type}</ListSubheader>
-                                            {
-                                                database.data.filter(value => value.type == type).map(entry => {
-                                                    return <ListItem key={entry.path} value={entry.path} button onClick={() => {
-                                                        setLoad(true)
-                                                        handleClick(entry.path)
-                                                    }
-                                                    }>
-                                                        <TypeIcon type={entry.type} />
-                                                        <ListItemText primary={entry.display}></ListItemText>
-                                                    </ListItem>
-                                                })
-                                            }
-                                        </ul>
-                                    </li>
-                                ))
-                            }
-
-                        </List>
-                    </Grid>
-
-                </Grid>
-
-                <Grid style={{ width: '50%' }} item>
-                    <Typography variant={'h6'} align="center" style={{ margin: '12px 0px' }}>Custom Datasets</Typography>
-                    <Grid container item alignItems="stretch" justify="center" direction="column" style={{ height: 400, padding: '30px' }}>
-                        <DragAndDrop accept="image/*" handleDrop={(files) => {
-                            if (files == null || files.length <= 0) {
-                                return;
-                            }
-
-                            var file = files[0]
-
-                            var reader = new FileReader()
-                            reader.onload = (event) => {
-                                var content = event.target.result
-
-
-                                var vectors = d3v5.csvParse(content)
-
-                                // Convert raw dictionaries to classes ...
-                                vectors = convertFromCSV(vectors)
-
-                                var ranges = new Preprocessor(vectors).preprocess()
-
-                                var segments = getSegs(vectors)
-
-                                var infer = new InferCategory(vectors, segments)
-
-                                onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType(Object.keys(vectors[0])) }), infer.load(ranges))
-                            }
-                            reader.readAsText(file)
-                        }}>
-                            <div style={{ height: 200 }}></div>
-                        </DragAndDrop>
-                    </Grid>
-
-                </Grid>
-            </Grid>
-    }
-
-}
 
 
 function getSegs(vectors) {

@@ -1,9 +1,7 @@
 import "regenerator-runtime/runtime";
 
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { ShapeLegend, calculateOptions, Legend, ShowColorLegend } from './view/categorical'
-import { DatasetList } from './util/datasetselector'
 import ThreeView from './view/view'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -12,13 +10,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { ColorScaleSelect, defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales, SimplePopover } from "./util/colors";
 import { Divider, Card, CardContent } from "@material-ui/core";
-import Dialog from '@material-ui/core/Dialog';
-import { StoryLegend } from "./legends/story";
 import { loadFromPath } from './util/datasetselector'
-import { RubikLegend } from "./legends/rubik";
-import { NeuralLegend } from "./legends/neural";
-import { ChessLegend } from "./legends/chess";
-import Popover from '@material-ui/core/Popover';
 import { LineSelectionPopover, LineSelectionTree } from './view/lineselectiontree'
 import Box from '@material-ui/core/Box';
 import Slider from '@material-ui/core/Slider';
@@ -26,54 +18,47 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import ControlCameraIcon from '@material-ui/icons/ControlCamera';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
-import { TensorLoader, MediaControlCard } from "./projection/integration";
-import { GoLegend } from "./legends/go";
+import { TensorLoader, MediaControlCard, AdditionalMenu, ClusterWindow } from "./projection/integration";
 import { arraysEqual } from "./view/utilfunctions";
+import BlurOffIcon from '@material-ui/icons/BlurOff';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Button from '@material-ui/core/Button';
+import { GenericLegend } from './legends/generic.js'
+import { ChooseFileDialog } from './util/dataselectui'
+import { FlexParent } from './library/grid'
+import { Cluster } from "./workers/worker_cluster";
 
 
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
 
-
-var GenericLegend = ({ type, vectors, aggregate, dataset }) => {
-  if (type == 'story') {
-    return <StoryLegend selection={vectors} vectors={dataset}></StoryLegend>
-  } else if (type == 'rubik') {
-    return <RubikLegend selection={vectors}></RubikLegend>
-  } else if (type == 'neural') {
-    return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
-  } else if (type == 'chess') {
-    return <ChessLegend selection={vectors}></ChessLegend>
-  } else if (type == 'go') {
-    return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
-  } else {
-    return <div></div>
-  }
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {<Box style={{ overflowY: 'auto', height: '100%' }}>{children}</Box>}
+    </Typography>
+  );
 }
 
 
 
-
-
-var ChooseFileDialog = ({ onChange }) => {
-  const [open, setOpen] = React.useState(false)
-
-  return <Grid
-    container
-    justify="center"
-    alignItems="stretch"
-    direction="column"
-    style={{ padding: '8px 16px' }}>
-    <Button variant="contained" onClick={(event) => {
-      setOpen(true)
-    }}>Load Dataset</Button>
-    <Dialog maxWidth='md' open={open} onClose={() => { setOpen(false) }}>
-      <DatasetList onChange={(dataset, json) => {
-        setOpen(false)
-        onChange(dataset, json)
-      }}></DatasetList>
-    </Dialog>
-  </Grid>
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
 }
+
+
+
 
 
 
@@ -109,7 +94,7 @@ class Application extends React.Component {
 
       datasetType: 'none',
 
-      colorsChecked: [true, true, true, true, true, true, true, true, true],
+      colorsChecked: new Array(100).fill(true),
 
       selectedLines: {},
 
@@ -119,12 +104,13 @@ class Application extends React.Component {
 
       projectionComputing: false,
 
-      sizeScale: [1, 2]
+      sizeScale: [1, 2],
+
+      tabValue: 0
     }
 
     this.threeRef = React.createRef()
     this.legend = React.createRef()
-    this.setSelector = React.createRef()
     this.onHover = this.onHover.bind(this)
     this.onAggregate = this.onAggregate.bind(this)
     this.onLineSelect = this.onLineSelect.bind(this)
@@ -147,10 +133,8 @@ class Application extends React.Component {
       }
 
       loadFromPath(preselect, this.onDataSelected)
-      //this.setSelector.current.init(preselect)
     } else {
       loadFromPath(preselect, (dataset, json) => { this.onDataSelected(dataset, json) })
-      //this.setSelector.current.init(preselect)
     }
 
     window.addEventListener('resize', this.onResize.bind(this))
@@ -231,14 +215,12 @@ class Application extends React.Component {
   }
 
   finite() {
-    // Get categorical information about data set
-    this.categoryOptions = calculateOptions(this.vectors, this.categories)
-
     var algos = LineSelectionTree.genAlgos(this.vectors)
     var selLines = LineSelectionTree.getChecks(algos)
 
     // Update shape legend
     this.setState({
+      categoryOptions: calculateOptions(this.vectors, this.categories),
       selectedVectorByShape: "",
       vectorByShape: null,
       vectorByTransparency: null,
@@ -264,6 +246,7 @@ class Application extends React.Component {
 
   mappingFromScale(scale, attribute) {
     if (scale instanceof DiscreteScale) {
+      // Generate scale
       return new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[attribute.key]))])
     }
     if (scale instanceof ContinuosScale) {
@@ -285,7 +268,7 @@ class Application extends React.Component {
   initializeEncodings() {
     var state = {}
 
-    var defaultSizeAttribute = this.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
+    var defaultSizeAttribute = this.state.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
     if (defaultSizeAttribute) {
       state.selectedVectorBySize = defaultSizeAttribute.key
       state.vectorBySize = defaultSizeAttribute
@@ -293,7 +276,7 @@ class Application extends React.Component {
       this.threeRef.current.particles.sizeCat(defaultSizeAttribute)
     }
 
-    var defaultColorAttribute = this.categoryOptions.getAttribute("color", "algo", "categorical")
+    var defaultColorAttribute = this.state.categoryOptions.getAttribute("color", "algo", "categorical")
     if (defaultColorAttribute) {
       state.definedScales = defaultScalesForAttribute(defaultColorAttribute)
       state.selectedScaleIndex = 0
@@ -306,7 +289,7 @@ class Application extends React.Component {
       state.showColorMapping = this.threeRef.current.particles.getMapping()
     }
 
-    var defaultBrightnessAttribute = this.categoryOptions.getAttribute("transparency", "age", "sequential")
+    var defaultBrightnessAttribute = this.state.categoryOptions.getAttribute("transparency", "age", "sequential")
     if (defaultBrightnessAttribute) {
       state.selectedVectorByTransparency = defaultBrightnessAttribute.key
       state.vectorByTransparency = defaultBrightnessAttribute
@@ -321,47 +304,14 @@ class Application extends React.Component {
     this.setState({
       selectedScale: scale,
       selectedScaleIndex: index,
-      colorsChecked: [true, true, true, true, true, true, true, true]
+      colorsChecked: new Array(100).fill(true)
     })
 
     this.threeRef.current.particles.setColorScale(scale)
     this.threeRef.current.particles.updateColor()
   }
 
-
-  processClusters(raw) {
-    var clusters = {}
-    raw.forEach((entry, index) => {
-      const [ label, probability ] = entry
-      if (!(label in clusters)) {
-        clusters[label] = []
-      }
-      clusters[label].push({
-        label: label,
-        probability: probability,
-        meshIndex: index
-      })
-    })
-
-    console.log(clusters)
-
-    this.threeRef.current.createClusters(clusters)
-  }
-
   onLineSelect(algo, show) {
-
-    /**var json = this.dataset.vectors.map(vector => [ vector.x, vector.y ])
-    fetch('http://localhost:8090/hdbscan', {
-      method: 'POST',
-      body: JSON.stringify(json)
-    }).then(response => {
-      console.log("bottled")
-      var json = response.json().then(values => {
-        console.log(values.result)
-        this.processClusters(values.result)
-      })
-    })**/
-
     this.threeRef.current.filterLines(algo, show)
   }
 
@@ -383,14 +333,14 @@ class Application extends React.Component {
   selectColorAttribute() {
     var attribute = null
     if (event.target.value != "") {
-      attribute = this.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+      attribute = this.state.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
     }
     var state = {
       selectedVectorByColor: event.target.value,
       vectorByColor: attribute,
       definedScales: [],
       selectedScaleIndex: 0,
-      colorsChecked: [true, true, true, true, true, true, true, true]
+      colorsChecked: new Array(100).fill(true)
     }
 
     var scale = null
@@ -432,349 +382,525 @@ class Application extends React.Component {
         height: "100vh",
         pointerEvents: this.state.projectionComputing ? 'none' : 'auto'
       }}>
-      <div class="flex-shrink-0" style={{ width: "18rem", 'overflow-y': 'auto', 'overflow-x': 'hidden' }}>
+
+      <div class="flex-shrink-0" style={{
+        width: "18rem",
+        height: '100vh',
+        'overflow-x': 'hidden',
+        'overflow-y': 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+
+        <div>
+          <ChooseFileDialog onChange={this.onDataSelected}></ChooseFileDialog>
+
+          <Tabs
+            value={this.state.tabValue}
+            indicatorColor="primary"
+            textColor="primary"
+            onChange={(e, newVal) => { this.setState({ tabValue: newVal }) }}
+            aria-label="disabled tabs example"
+          >
+            <Tab label="States" style={{ minWidth: 0, flexGrow: 1 }} />
+            <Tab label="Clusters" style={{ minWidth: 0, flexGrow: 1 }} />
+          </Tabs>
+        </div>
 
 
-        <Grid
-          container
-          justify="center"
-          alignItems="stretch"
-          direction="column">
+        <div style={{
+          flexGrow: 1,
+          overflowY: 'auto'
+        }}>
 
-
-
-          <Grid item>
-            <ChooseFileDialog ref={this.setSelector} onChange={this.onDataSelected}></ChooseFileDialog>
-          </Grid>
-
-          <Divider style={{ margin: '8px 0px' }} />
-          <div>
-            <Typography
-              style={{ margin: '0px 0 0px 16px' }}
-              variant="body1"
-              display="block"
-            >
-              Lines
-            </Typography>
-          </div>
 
           <Grid
             container
             justify="center"
             alignItems="stretch"
-            direction="column"
-            style={{ padding: '0 16px' }}>
-            <Legend
-              ref={this.legend}
-              algorithms={this.state.selectedLineAlgos}
-              onLineSelect={this.onLineSelect}></Legend>
-
-            <Box p={1}></Box>
-
-            <LineSelectionPopover vectors={this.state.vectors}
-              onSelectAll={(algo, checked) => {
-                var ch = this.state.selectedLines
-                Object.keys(ch).forEach(key => {
-                  var e = this.state.selectedLineAlgos.find(e => e.algo == algo)
-                  if (e.lines.find(e => e.line == key)) {
-                    ch[key] = checked
-                  }
-
-                })
-
-                this.setState({
-                  selectedLines: ch
-                })
-
-                this.threeRef.current.setLineFilter(ch)
-              }}
-              onChange={(id, checked) => {
-                var ch = this.state.selectedLines
-                ch[id] = checked
-
-                this.setState({
-                  selectedLines: ch
-                })
-
-                this.threeRef.current.setLineFilter(ch)
-              }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme}>
-
-            </LineSelectionPopover>
-          </Grid>
-
-          <div style={{ margin: '8px 0px' }}></div>
-
-          <PathLengthFilter
-            pathLengthRange={this.state.pathLengthRange}
-            maxPathLength={this.state.maxPathLength}
-            onChange={(event, newValue) => {
-              this.setState({
-                pathLengthRange: newValue
-              })
-            }}></PathLengthFilter>
-
-          <Divider style={{ margin: '8px 0px' }} />
-          <div>
-            <Typography
-              style={{ margin: '0px 0 0px 16px' }}
-              color="textPrimary"
-              variant="body1"
-              display="block"
-            >
-              Points
-            </Typography>
-          </div>
+            direction="column">
 
 
 
+            <Divider style={{ margin: '8px 0px' }} />
 
+            <TabPanel value={this.state.tabValue} index={0}>
+              <div>
+                <Typography
+                  style={{ margin: '0px 0 0px 16px' }}
+                  variant="body1"
+                  display="block"
+                >
+                  Lines
+                </Typography>
+              </div>
 
-          {
-            this.categoryOptions != null && this.categoryOptions.hasCategory("shape") ?
               <Grid
                 container
                 justify="center"
                 alignItems="stretch"
                 direction="column"
                 style={{ padding: '0 16px' }}>
-                <FormControl style={{ margin: '4px 0px' }}>
-                  <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
-                  <Select labelId="vectorByShapeSelectLabel"
-                    id="vectorByShapeSelect"
-                    displayEmpty
+                <Legend
+                  ref={this.legend}
+                  algorithms={this.state.selectedLineAlgos}
+                  onLineSelect={this.onLineSelect}></Legend>
 
-                    value={this.state.selectedVectorByShape}
-                    onChange={(event) => {
-                      var attribute = this.categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
+                <Box p={1}></Box>
 
-                      this.setState({
-                        selectedVectorByShape: event.target.value,
-                        vectorByShape: attribute,
-                        checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
-                      })
+                <LineSelectionPopover vectors={this.state.vectors}
+                  onSelectAll={(algo, checked) => {
+                    var ch = this.state.selectedLines
+                    Object.keys(ch).forEach(key => {
+                      var e = this.state.selectedLineAlgos.find(e => e.algo == algo)
+                      if (e.lines.find(e => e.line == key)) {
+                        ch[key] = checked
+                      }
 
-                      this.threeRef.current.filterPoints({ 'star': true, 'cross': true, 'circle': true, 'square': true })
-                      this.threeRef.current.particles.shapeCat(attribute)
-                    }}
-                  >
-                    <MenuItem value="">None</MenuItem>
-                    {this.categoryOptions.getCategory("shape").attributes.map(attribute => {
-                      return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
-                    })}
-                  </Select>
-                </FormControl>
+                    })
+
+                    this.setState({
+                      selectedLines: ch
+                    })
+
+                    this.threeRef.current.setLineFilter(ch)
+                  }}
+                  onChange={(id, checked) => {
+                    var ch = this.state.selectedLines
+                    ch[id] = checked
+
+                    this.setState({
+                      selectedLines: ch
+                    })
+
+                    this.threeRef.current.setLineFilter(ch)
+                  }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme}>
+
+                </LineSelectionPopover>
               </Grid>
 
-              :
-              <div></div>
-          }
+              <div style={{ margin: '8px 0px' }}></div>
 
-          <Grid item style={{ padding: '0 16px' }}>
-            <ShapeLegend category={this.state.vectorByShape} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
-              var state = this.state
-              state.checkboxes[symbol] = event.target.checked
-              this.setState({ checkboxes: state.checkboxes })
-              this.threeRef.current.filterPoints(state.checkboxes)
-            }}></ShapeLegend>
-          </Grid>
-
-          {
-            this.categoryOptions != null && this.categoryOptions.hasCategory("transparency") ?
-              <Grid
-                container
-                justify="center"
-                alignItems="stretch"
-                direction="column"
-                style={{ padding: '0 16px' }}>
-                <FormControl style={{ margin: '4px 0px' }}>
-                  <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
-                  <Select labelId="vectorByTransparencySelectLabel"
-                    id="vectorByTransparencySelect"
-                    displayEmpty
-                    value={this.state.selectedVectorByTransparency}
-                    onChange={(event) => {
-                      var attribute = this.categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
-
-                      this.setState({
-                        selectedVectorByTransparency: event.target.value,
-                        vectorByTransparency: attribute
-                      })
-
-                      this.threeRef.current.particles.transparencyCat(attribute)
-                    }}
-                  >
-                    <MenuItem value="">None</MenuItem>
-                    {this.categoryOptions.getCategory("transparency").attributes.map(attribute => {
-                      return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
-                    })}
-                  </Select>
-                </FormControl>
-              </Grid>
-              :
-              <div></div>
-          }
-
-          {
-            this.categoryOptions != null && this.categoryOptions.hasCategory("size") ?
-              <Grid
-                container
-                justify="center"
-                alignItems="stretch"
-                direction="column"
-                style={{ padding: '0 16px' }}>
-                <FormControl style={{ margin: '4px 0px' }}>
-                  <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                  <Select labelId="vectorBySizeSelectLabel"
-                    id="vectorBySizeSelect"
-                    displayEmpty
-                    value={this.state.selectedVectorBySize}
-                    onChange={(event) => {
-                      var attribute = this.categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
-
-                      this.setState({
-                        selectedVectorBySize: event.target.value,
-                        vectorBySize: attribute
-                      })
-
-                      this.threeRef.current.particles.sizeCat(attribute)
-                    }}
-                  >
-                    <MenuItem value="">None</MenuItem>
-                    {this.categoryOptions.getCategory("size").attributes.map(attribute => {
-                      return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
-                    })}
-                  </Select>
-                </FormControl>
-              </Grid>
-              :
-              <div></div>
-          }
-
-          {
-            this.categoryOptions != null && this.categoryOptions.hasCategory("size") && this.state.vectorBySize != null ?
-              <SizeSlider
-                sizeScale={this.state.vectorBySize.values.range}
-                onChange={(e, newVal) => {
-                  if (arraysEqual(newVal, this.state.vectorBySize.values.range)) {
-                    return;
-                  }
-
-                  this.state.vectorBySize.values.range = newVal
-
+              <PathLengthFilter
+                pathLengthRange={this.state.pathLengthRange}
+                maxPathLength={this.state.maxPathLength}
+                onChange={(event, newValue) => {
                   this.setState({
-                    vectorBySize: this.state.vectorBySize
+                    pathLengthRange: newValue
                   })
+                }}></PathLengthFilter>
 
-                  if (this.state.vectorBySize != null) {
-                    this.threeRef.current.particles.sizeCat(this.state.vectorBySize)
-                    this.threeRef.current.particles.updateSize()
-                  }
-                }}
-              ></SizeSlider> : <div></div>
-          }
+              <Divider style={{ margin: '8px 0px' }} />
+              <div>
+                <Typography
+                  style={{ margin: '0px 0 0px 16px' }}
+                  color="textPrimary"
+                  variant="body1"
+                  display="block"
+                >
+                  Points
+            </Typography>
+              </div>
 
-          {
-            this.categoryOptions != null && this.categoryOptions.hasCategory("color") ?
-              <Grid
-                container
-                item
-                alignItems="stretch"
-                direction="column"
-                style={{ padding: '0 16px' }}
-              >
 
-                <Grid container item alignItems="stretch" direction="column">
-                  <FormControl style={{ margin: '4px 0px' }}>
-                    <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
-                    <Select labelId="vectorByColorSelectLabel"
-                      id="vectorByColorSelect"
-                      displayEmpty
-                      value={this.state.selectedVectorByColor}
+
+
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("shape") ?
+                  <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                      <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
+                      <Select labelId="vectorByShapeSelectLabel"
+                        id="vectorByShapeSelect"
+                        displayEmpty
+
+                        value={this.state.selectedVectorByShape}
+                        onChange={(event) => {
+                          var attribute = this.state.categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
+
+                          this.setState({
+                            selectedVectorByShape: event.target.value,
+                            vectorByShape: attribute,
+                            checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
+                          })
+
+                          this.threeRef.current.filterPoints({ 'star': true, 'cross': true, 'circle': true, 'square': true })
+                          this.threeRef.current.particles.shapeCat(attribute)
+                        }}
+                      >
+                        <MenuItem value="">None</MenuItem>
+                        {this.state.categoryOptions.getCategory("shape").attributes.map(attribute => {
+                          return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  :
+                  <div></div>
+              }
+
+              <Grid item style={{ padding: '0 16px' }}>
+                <ShapeLegend category={this.state.vectorByShape} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
+                  var state = this.state
+                  state.checkboxes[symbol] = event.target.checked
+                  this.setState({ checkboxes: state.checkboxes })
+                  this.threeRef.current.filterPoints(state.checkboxes)
+                }}></ShapeLegend>
+              </Grid>
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("transparency") ?
+                  <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                      <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
+                      <Select labelId="vectorByTransparencySelectLabel"
+                        id="vectorByTransparencySelect"
+                        displayEmpty
+                        value={this.state.selectedVectorByTransparency}
+                        onChange={(event) => {
+                          var attribute = this.state.categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
+
+                          this.setState({
+                            selectedVectorByTransparency: event.target.value,
+                            vectorByTransparency: attribute
+                          })
+
+                          this.threeRef.current.particles.transparencyCat(attribute)
+                        }}
+                      >
+                        <MenuItem value="">None</MenuItem>
+                        {this.state.categoryOptions.getCategory("transparency").attributes.map(attribute => {
+                          return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  :
+                  <div></div>
+              }
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("size") ?
+                  <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                      <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
+                      <Select labelId="vectorBySizeSelectLabel"
+                        id="vectorBySizeSelect"
+                        displayEmpty
+                        value={this.state.selectedVectorBySize}
+                        onChange={(event) => {
+                          var attribute = this.state.categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+
+                          this.setState({
+                            selectedVectorBySize: event.target.value,
+                            vectorBySize: attribute
+                          })
+
+                          this.threeRef.current.particles.sizeCat(attribute)
+                        }}
+                      >
+                        <MenuItem value="">None</MenuItem>
+                        {this.state.categoryOptions.getCategory("size").attributes.map(attribute => {
+                          return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  :
+                  <div></div>
+              }
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("size") && this.state.vectorBySize != null ?
+                  <SizeSlider
+                    sizeScale={this.state.vectorBySize.values.range}
+                    onChange={(e, newVal) => {
+                      if (arraysEqual(newVal, this.state.vectorBySize.values.range)) {
+                        return;
+                      }
+
+                      this.state.vectorBySize.values.range = newVal
+
+                      this.setState({
+                        vectorBySize: this.state.vectorBySize
+                      })
+
+                      if (this.state.vectorBySize != null) {
+                        this.threeRef.current.particles.sizeCat(this.state.vectorBySize)
+                        this.threeRef.current.particles.updateSize()
+                      }
+                    }}
+                  ></SizeSlider> : <div></div>
+              }
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("color") ?
+                  <Grid
+                    container
+                    item
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}
+                  >
+
+                    <Grid container item alignItems="stretch" direction="column">
+                      <FormControl style={{ margin: '4px 0px' }}>
+                        <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
+                        <Select labelId="vectorByColorSelectLabel"
+                          id="vectorByColorSelect"
+                          displayEmpty
+                          value={this.state.selectedVectorByColor}
+                          onChange={(event) => {
+                            var attribute = null
+                            if (event.target.value != "") {
+                              attribute = this.state.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+                            }
+                            var state = {
+                              selectedVectorByColor: event.target.value,
+                              vectorByColor: attribute,
+                              definedScales: [],
+                              selectedScaleIndex: 0,
+                              colorsChecked: new Array(100).fill(true)
+                            }
+
+                            var scale = null
+
+                            if (attribute != null && attribute.type == 'categorical') {
+                              state.selectedScaleIndex = 0
+                              state.definedScales = defaultScalesForAttribute(attribute)
+
+                              scale = state.definedScales[state.selectedScaleIndex]
+
+                              this.threeRef.current.particles.colorFilter(state.colorsChecked)
+                            } else if (attribute != null) {
+                              state.selectedScaleIndex = 0
+                              state.definedScales = defaultScalesForAttribute(attribute)
+
+                              scale = state.definedScales[state.selectedScaleIndex]
+
+                              this.threeRef.current.particles.colorFilter(null)
+                            }
+
+
+                            this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute))
+
+
+                            state.showColorMapping = this.threeRef.current.particles.getMapping()
+                            this.setState(state)
+
+                            this.threeRef.current.particles.update()
+                          }}
+                        >
+                          <MenuItem value="">None</MenuItem>
+                          {this.state.categoryOptions.getCategory("color").attributes.map(attribute => {
+                            return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                          })}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                  :
+                  <div></div>
+              }
+
+              <Grid item>
+                {this.state.definedScales != null && this.state.definedScales.length > 0 ?
+                  <ColorScaleSelect selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></ColorScaleSelect>
+                  : <div></div>}
+              </Grid>
+
+
+              <Grid item>
+                {
+                  this.state.vectorByColor != null && this.state.vectorByColor.type == 'categorical' ?
+
+                    <SimplePopover
+                      showColorMapping={this.state.showColorMapping}
+                      colorsChecked={this.state.colorsChecked}
                       onChange={(event) => {
-                        var attribute = null
-                        if (event.target.value != "") {
-                          attribute = this.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
-                        }
-                        var state = {
-                          selectedVectorByColor: event.target.value,
-                          vectorByColor: attribute,
-                          definedScales: [],
-                          selectedScaleIndex: 0,
-                          colorsChecked: [true, true, true, true, true, true, true, true]
-                        }
 
-                        var scale = null
-
-                        if (attribute != null && attribute.type == 'categorical') {
-                          state.selectedScaleIndex = 0
-                          state.definedScales = defaultScalesForAttribute(attribute)
-
-                          scale = state.definedScales[state.selectedScaleIndex]
-
-                          this.threeRef.current.particles.colorFilter(state.colorsChecked)
-                        } else if (attribute != null) {
-                          state.selectedScaleIndex = 0
-                          state.definedScales = defaultScalesForAttribute(attribute)
-
-                          scale = state.definedScales[state.selectedScaleIndex]
-
-                          this.threeRef.current.particles.colorFilter(null)
-                        }
-
-
-                        this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute))
-
-
-                        state.showColorMapping = this.threeRef.current.particles.getMapping()
+                        var state = {}
+                        state.colorsChecked = this.state.colorsChecked
+                        state.colorsChecked[event.target.id] = event.target.checked
                         this.setState(state)
 
-                        this.threeRef.current.particles.update()
-                      }}
-                    >
-                      <MenuItem value="">None</MenuItem>
-                      {this.categoryOptions.getCategory("color").attributes.map(attribute => {
-                        return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
-                      })}
-                    </Select>
-                  </FormControl>
-                </Grid>
+                        this.threeRef.current.particles.colorFilter(state.colorsChecked)
+                      }}></SimplePopover>
+                    :
+                    <div></div>
+                }
+
+
               </Grid>
-              :
-              <div></div>
-          }
 
-          <Grid item>
-            {this.state.definedScales != null && this.state.definedScales.length > 0 ?
-              <ColorScaleSelect selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></ColorScaleSelect>
-              : <div></div>}
+            </TabPanel>
+
+            <TabPanel value={this.state.tabValue} index={1}>
+              <FlexParent
+                alignItems='stretch'
+                flexDirection='column'
+                margin='0 16px'
+              >
+                <Button variant="outlined"
+                  style={{
+                    margin: '8px 0'
+                  }}
+                  onClick={() => {
+                    this.setState((state, props) => {
+                      return {
+                        projectionOpen: true
+                      }
+                    })
+                  }}>Start Projection</Button>
+
+                <MediaControlCard
+                  input={this.state.projectionInput}
+                  worker={this.state.projectionWorker}
+                  params={this.state.projectionParams}
+                  onClose={() => {
+                    if (this.state.projectionWorker) {
+                      this.state.projectionWorker.terminate()
+                    }
+
+                    this.setState({
+                      projectionComputing: false,
+                      projectionInput: null,
+                      projectionParams: null,
+                      projectionWorker: null
+                    })
+                  }}
+                  onComputingChanged={(e, newVal) => {
+                    this.setState({
+                      projectionComputing: newVal
+                    })
+                  }}
+                  onStep={(Y) => {
+                    this.vectors.forEach((vector, i) => {
+                      vector.x = Y[i][0]
+                      vector.y = Y[i][1]
+                    })
+                    this.threeRef.current.updateXY()
+                  }}>
+
+                </MediaControlCard>
+
+                <Button
+                  variant="outlined"
+                  style={{
+                    margin: '8px 0'
+                  }}
+                  onClick={() => {
+                    var worker = new Worker('dist/cluster.js')
+                    worker.onmessage = (e) => {
+                      var clusters = {}
+                      Object.keys(e.data).forEach(k => {
+                        var t = e.data[k]
+                        clusters[k] = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
+                      })
+
+                      // Inject cluster attributes
+                      Object.keys(clusters).forEach(key => {
+                        var cluster = clusters[key]
+                        cluster.points.forEach(point => {
+                          var label = point.label
+                          var probability = point.probability
+                          var index = point.meshIndex
+
+                          this.dataset.vectors[index]['clusterLabel'] = label
+
+                          if (isNaN(probability)) {
+                            this.dataset.vectors[index]['clusterProbability'] = 0
+                          } else {
+                            this.dataset.vectors[index]['clusterProbability'] = probability
+                          }
+                        })
+                      })
+
+                      this.setState((state, props) => {
+                        var colorAttribute = state.categoryOptions.json.find(e => e.category == 'color').attributes
+                        if (!colorAttribute.find(e => e.key == 'clusterLabel')) {
+                          colorAttribute.push({
+                            "key": 'clusterLabel',
+                            "name": 'clusterLabel',
+                            "type": "categorical"
+                          })
+                        }
+
+
+
+                        var transparencyAttribute = state.categoryOptions.json.find(e => e.category == 'transparency').attributes
+                        if (!transparencyAttribute.find(e => e.key == 'clusterProbability')) {
+                          transparencyAttribute.push({
+                            "key": 'clusterProbability',
+                            "name": 'clusterProbability',
+                            "type": "sequential",
+                            "values": {
+                              "range": [0.2, 1]
+                            }
+                          })
+                        }
+
+                        this.threeRef.current.createClusters(clusters)
+
+                        return {
+                          categoryOptions: state.categoryOptions,
+                          clusteringOpen: false,
+                          clusteringWorker: null,
+                          clusters: clusters
+                        }
+                      })
+                    }
+                    worker.postMessage(this.vectors.map(vector => [vector.x, vector.y]))
+
+                    this.setState((state, props) => {
+                      return {
+                        clusteringOpen: true,
+                        clusteringWorker: worker
+                      }
+                    })
+                  }}>Start Clustering</Button>
+
+                <ClusterWindow
+                  worker={this.state.clusteringWorker}
+                  onClose={() => {
+                    var worker = this.state.clusteringWorker
+                    if (worker != null) {
+                      worker.terminate()
+                    }
+
+                    this.setState({
+                      clusteringWorker: null,
+                      clusteringOpen: false
+                    })
+                  }}
+                ></ClusterWindow>
+
+              </FlexParent>
+
+
+
+            </TabPanel>
+
           </Grid>
 
-
-          <Grid item>
-            {
-              this.state.vectorByColor != null && this.state.vectorByColor.type == 'categorical' ?
-
-                <SimplePopover
-                  showColorMapping={this.state.showColorMapping}
-                  colorsChecked={this.state.colorsChecked}
-                  onChange={(event) => {
-
-                    var state = {}
-                    state.colorsChecked = this.state.colorsChecked
-                    state.colorsChecked[event.target.id] = event.target.checked
-                    this.setState(state)
-
-                    this.threeRef.current.particles.colorFilter(state.colorsChecked)
-                  }}></SimplePopover>
-                :
-                <div></div>
-            }
-
-
-          </Grid>
-
-
-        </Grid>
+        </div>
 
       </div>
 
@@ -784,6 +910,7 @@ class Application extends React.Component {
 
       <ThreeView
         ref={this.threeRef}
+        clusters={this.state.clusters}
         onHover={this.onHover}
         algorithms={this.state.selectedLineAlgos}
         onAggregate={this.onAggregate}
@@ -800,6 +927,7 @@ class Application extends React.Component {
           value={this.state.currentTool}
           exclusive
           onChange={(e, newValue) => {
+            e.preventDefault()
             if (newValue != null) {
               this.setState({
                 currentTool: newValue
@@ -814,11 +942,21 @@ class Application extends React.Component {
           <ToggleButton value="move" aria-label="centered">
             <ControlCameraIcon />
           </ToggleButton>
+          <ToggleButton value="grab" aria-label="centered">
+            <BlurOffIcon />
+          </ToggleButton>
         </ToggleButtonGroup>
       </div>
 
 
       <TensorLoader
+        open={this.state.projectionOpen}
+        setOpen={(value) => {
+          this.setState({
+            projectionOpen: value
+          })
+        }}
+
         dataset={this.state.dataset}
 
         onTensorInitiated={(event, selected, params) => {
@@ -834,37 +972,6 @@ class Application extends React.Component {
           })
         }}
       ></TensorLoader>
-
-      <MediaControlCard
-        input={this.state.projectionInput}
-        worker={this.state.projectionWorker}
-        params={this.state.projectionParams}
-        onClose={() => {
-          if (this.state.projectionWorker) {
-            this.state.projectionWorker.terminate()
-          }
-
-          this.setState({
-            projectionComputing: false,
-            projectionInput: null,
-            projectionParams: null,
-            projectionWorker: null
-          })
-        }}
-        onComputingChanged={(e, newVal) => {
-          this.setState({
-            projectionComputing: newVal
-          })
-        }}
-        onStep={(Y) => {
-          this.vectors.forEach((vector, i) => {
-            vector.x = Y[i][0]
-            vector.y = Y[i][1]
-          })
-          this.threeRef.current.updateXY()
-        }}>
-
-      </MediaControlCard>
 
 
 
@@ -901,6 +1008,20 @@ class Application extends React.Component {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var SizeSlider = ({ sizeScale, onChange }) => {
   const marks = [
     {
@@ -929,7 +1050,7 @@ var SizeSlider = ({ sizeScale, onChange }) => {
     },
   ];
 
-  return <div style={{ margin: '0 16px' }}>
+  return <div style={{ margin: '0 16px', padding: '0 8px' }}>
     <Typography id="range-slider" gutterBottom>
       Size Scale
     </Typography>
@@ -967,7 +1088,7 @@ var PathLengthFilter = ({ pathLengthRange, onChange, maxPathLength }) => {
     },
   ];
 
-  return <div style={{ margin: '0 16px' }}>
+  return <div style={{ margin: '0 16px', padding: '0 8px' }}>
     <Typography id="range-slider" gutterBottom>
       Path Length Filter
     </Typography>
@@ -981,12 +1102,6 @@ var PathLengthFilter = ({ pathLengthRange, onChange, maxPathLength }) => {
     ></Slider>
   </div>
 }
-
-
-
-
-
-
 
 
 

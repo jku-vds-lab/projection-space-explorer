@@ -11,6 +11,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import Card from '@material-ui/core/Card';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import CardHeader from '@material-ui/core/CardHeader';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -27,6 +29,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import CloseIcon from '@material-ui/icons/Close';
 import Alert from '@material-ui/lab/Alert'
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -196,15 +200,57 @@ const useStylesTensorLoader = makeStyles(theme => ({
 
 
 
+export var AdditionalMenu = ({ onProjectionClick, onClusteringClick, clusteringOpen, projectionOpen }) => {
+    const classes = useStylesTensorLoader()
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = event => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    return <div className={classes.root}>
+        <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+            settings
+        </Button>
+        <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'bottom'
+            }}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+        >
+            <MenuItem
+            disabled={clusteringOpen || projectionOpen}
+            onClick={() => {
+                handleClose()
+                onProjectionClick()
+            }}>Projection</MenuItem>
+            <MenuItem
+            disabled={clusteringOpen || projectionOpen}
+            onClick={() => {
+                handleClose()
+                onClusteringClick()
+            }}>Clustering</MenuItem>
+        </Menu>
+    </div>
+}
 
 
 
-export var TensorLoader = ({ onTensorInitiated, dataset }) => {
+
+
+export var TensorLoader = ({ onTensorInitiated, dataset, open, setOpen }) => {
     if (dataset == null) return <div></div>
 
     const classes = useStylesTensorLoader()
-
-    const [open, setOpen] = React.useState(false);
 
     const [left, setLeft] = React.useState(dataset.getColumns());
     const [right, setRight] = React.useState([]);
@@ -230,11 +276,6 @@ export var TensorLoader = ({ onTensorInitiated, dataset }) => {
 
 
     return <div className={classes.root}>
-        <Button onClick={handleOpen}>
-            Projection
-      </Button>
-
-
         <Modal
             open={open}
             onClose={handleClose}
@@ -332,15 +373,13 @@ export var TensorLoader = ({ onTensorInitiated, dataset }) => {
 const useStylesMedia = makeStyles(theme => ({
     root: {
         display: 'flex',
-        position: 'absolute',
-        right: '300px',
-        bottom: '0px',
-        margin: '16px',
+        margin: '8px 0',
         pointerEvents: 'auto'
     },
     details: {
         display: 'flex',
         flexDirection: 'column',
+        width: '100%'
     },
     content: {
         flex: '1 0 auto',
@@ -351,8 +390,10 @@ const useStylesMedia = makeStyles(theme => ({
     controls: {
         display: 'flex',
         alignItems: 'center',
+        flexDirection: 'column',
         paddingLeft: theme.spacing(1),
         paddingBottom: theme.spacing(1),
+        width: '100%'
     },
     playIcon: {
         height: 38,
@@ -413,9 +454,7 @@ export var MediaControlCard = ({ worker, input, onStep, onComputingChanged, para
                     subheader={`${step}/1000`}
                 />
                 <div className={classes.controls}>
-                    <IconButton aria-label="previous">
-                        <SkipPreviousIcon />
-                    </IconButton>
+
                     <IconButton aria-label="play/pause" onClick={(e) => {
                         var newVal = !computing
                         setComputing(newVal)
@@ -424,14 +463,98 @@ export var MediaControlCard = ({ worker, input, onStep, onComputingChanged, para
                         {computing ? <StopIcon className={classes.playIcon} /> :
                             <PlayArrowIcon className={classes.playIcon}></PlayArrowIcon>}
                     </IconButton>
-                    <IconButton aria-label="next">
-                        <SkipNextIcon />
-                    </IconButton>
+
                 </div>
             </div>
         </Card>
     );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Styles for the projection card that allows to stop/resume projection steps.
+ */
+const useStylesCluster = makeStyles(theme => ({
+    root: {
+        display: 'flex',
+        margin: '8px 0',
+        pointerEvents: 'auto'
+    },
+    details: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%'
+    },
+    content: {
+        flex: '1 0 auto',
+    },
+    cover: {
+        width: 151,
+    },
+    controls: {
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+        paddingLeft: theme.spacing(1),
+        paddingBottom: theme.spacing(1),
+        width: '100%'
+    },
+    playIcon: {
+        height: 38,
+        width: 38,
+    },
+}));
+
+
+
+
+export var ClusterWindow = ({ worker, onClose }) => {
+    if (worker == null) {
+        return <div></div>
+    }
+
+    const classes = useStylesCluster();
+
+    return <Card className={classes.root}>
+        <div className={classes.details}>
+            <CardHeader
+                avatar={<div></div>
+                }
+                action={
+                    <IconButton onClick={(e) => {
+                        onClose()
+                    }}>
+                        <CloseIcon />
+                    </IconButton>
+                }
+                title={'Cluster Progress'}
+                subheader={`hdbscan*`}
+            />
+            <div className={classes.controls}>
+                <CircularProgress />
+            </div>
+        </div>
+    </Card>
+}
+
+
+
+
 
 
 

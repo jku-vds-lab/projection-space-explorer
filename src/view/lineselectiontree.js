@@ -208,7 +208,7 @@ export var LineSelectionPopover = ({ vectors, onChange, checkboxes, algorithms, 
 
 
     return <div>
-        <Button aria-describedby={id} variant="contained" onClick={handleClick}>
+        <Button aria-describedby={id} variant="outlined" onClick={handleClick}>
             Advanced Coloring
         </Button>
         <Popover

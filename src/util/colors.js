@@ -10,6 +10,7 @@ import { ShowColorLegend } from '../view/categorical';
 export var SimplePopover = ({ showColorMapping, colorsChecked, onChange }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
+
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -22,7 +23,7 @@ export var SimplePopover = ({ showColorMapping, colorsChecked, onChange }) => {
   const id = open ? 'simple-popover' : undefined;
 
   return <div>
-    <Button style={{ margin: '0px 16px' }} aria-describedby={id} variant="contained" onClick={handleClick}>
+    <Button style={{ margin: '0px 16px' }} aria-describedby={id} variant="outlined" onClick={handleClick}>
       Advanced Coloring
       </Button>
     <Popover
@@ -258,6 +259,10 @@ export class DiscreteMapping {
   constructor(scale, values) {
     this.scale = scale
     this.values = values
+  }
+
+  index(value) {
+    return this.values.indexOf(value)
   }
 
   map(value) {

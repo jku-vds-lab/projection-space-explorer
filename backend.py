@@ -6,10 +6,11 @@ import csv
 from sklearn.datasets import make_blobs
 import matplotlib.pyplot as plt
 import numpy as np
+from joblib import Memory
 from json import dumps
 
 
-
+# Filter that allows cors request, needed for javascript to work
 class EnableCors(object):
     name = 'enable_cors'
     api = 2
@@ -29,32 +30,31 @@ class EnableCors(object):
 
 app = bottle.app()
 
-print("TESTWISE")
 
+
+# Endpoint that performs the clustering algorithm
 @app.route('/hdbscan', method=['OPTIONS', 'POST'])
 def lvambience():
     print(request.body)
-    features = json.load(request.body)
+    features = np.array(json.load(request.body))
     print(features[0])
     
     bestProbabilities = None
     bestLabels = None
     bestScore = 1000000
     bestI = 0
-    
+    clusterer = hdbscan.HDBSCAN(min_cluster_size=16, min_samples=5, prediction_data=True)
     clusterSize = 13
+    score = 0
     while clusterSize < 20:
         minSamples = 5
         while minSamples < 15:
-            clusterer = hdbscan.HDBSCAN(min_cluster_size=clusterSize, min_samples=minSamples, prediction_data=True)
+            clusterer.set_params(min_cluster_size=clusterSize, min_samples=minSamples)
             cluster_labels = clusterer.fit_predict(features)
             
-            for f in clusterer.outlier_scores_:
-                print(f)
-            
+            # Score function to minimize
             score = len(np.where(clusterer.outlier_scores_ > 0.2)[0])
-            #score = np.sum(clusterer.outlier_scores_)
-            #print(score)
+
             if score < bestScore:
                 bestScore = score
                 bestProbabilities = clusterer.probabilities_
@@ -64,11 +64,6 @@ def lvambience():
             minSamples = minSamples + 1
 
         clusterSize = clusterSize + 2
-    
-    print("best score is...")
-    print(bestScore)
-    print(bestI)
-
     
     return {
         'result': [ [ int(label), float(probability) ] for label, probability in zip(bestLabels, bestProbabilities) ]

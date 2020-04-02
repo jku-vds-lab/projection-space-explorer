@@ -566,7 +566,8 @@ export class PointVisualization {
         if (this.colorAttribute != null) {
           var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
           rgb = m.rgb
-          vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
+          //vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
+          vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
         } else {
           var col = this.segments[vector.lineIndex].line.material.color
           rgb = {
@@ -697,5 +698,39 @@ export class ConvexHull {
     this.mesh = new THREE.Mesh(this.geometry, this.material)
 
     return this.mesh
+  }
+}
+
+
+
+
+
+
+
+
+
+
+/**
+ * Class that stores mesh information about clusters.
+ */
+export class ClusterVisualization {
+  /**
+   * Construct new ClusterVisualization by passing a list of meshes.
+   */
+  constructor(clusterMeshes) {
+    this.clusterMeshes = clusterMeshes
+  }
+
+  /**
+   * Disposes this object, freeing all resources
+   */
+  dispose(scene) {
+    if (this.clusterMeshes != null) {
+      this.clusterMeshes.forEach(mesh => {
+        mesh.geometry.dispose()
+        mesh.material.dispose()
+        scene.remove(mesh)
+      })
+    }
   }
 }
