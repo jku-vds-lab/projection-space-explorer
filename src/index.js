@@ -860,7 +860,8 @@ class Application extends React.Component {
                     this.onClusteringStartClick()
                   }}>Start Clustering</Button>
 
-                <Alert severity="error">No backend detected!</Alert>
+                {this.state.backendRunning ? <div></div> : <Alert severity="error">No backend detected!</Alert>}
+
 
                 <ClusterWindow
                   worker={this.state.clusteringWorker}
