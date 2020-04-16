@@ -24,6 +24,63 @@ export function getDefaultZoom(vectors, width, height) {
 
 
 
+
+
+
+/**
+ * Calculates the default zoom factor by examining the bounds of the data set
+ * and then dividing it by the height of the viewport.
+ */
+export function generateZoomForSet(vectors, width, height) {
+  var zoom = 10
+
+  // Get rectangle that fits around data set
+  var minX = 1000, maxX = -1000, minY = 1000, maxY = -1000;
+  vectors.forEach(vector => {
+    minX = Math.min(minX, vector.x)
+    maxX = Math.max(maxX, vector.x)
+    minY = Math.min(minY, vector.y)
+    maxY = Math.max(maxY, vector.y)
+  })
+
+  // Get biggest scale
+  var horizontal = maxX - minX
+  var vertical = maxY - minY
+
+  // Divide the height/width through the biggest axis of the data points
+  return Math.min(width, height) / Math.max(horizontal, vertical) / 2
+}
+
+
+
+
+
+
+
+
+
+export function interpolateLinear(min, max, k) {
+  return min + (max - min) * k
+}
+
+export function centerOfMass(points) {
+  var x = 0
+  var y = 0
+
+  points.forEach(p => {
+    x = x + p.x
+    y = y + p.y
+  })
+
+  return {
+    x: x / points.length,
+    y: y / points.length
+  }
+}
+
+
+
+
 export function arraysEqual(a, b) {
   if (a === b) return true;
   if (a == null || b == null) return false;

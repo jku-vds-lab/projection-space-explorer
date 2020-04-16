@@ -28,6 +28,7 @@ import { GenericLegend } from './legends/generic.js'
 import { ChooseFileDialog } from './util/dataselectui'
 import { FlexParent } from './library/grid'
 import { Cluster } from "./workers/worker_cluster";
+import { graphLayout } from "./util/graphs";
 
 
 
@@ -404,6 +405,7 @@ class Application extends React.Component {
           >
             <Tab label="States" style={{ minWidth: 0, flexGrow: 1 }} />
             <Tab label="Clusters" style={{ minWidth: 0, flexGrow: 1 }} />
+            <Tab label="Projection" style={{ minWidth: 0, flexGrow: 1 }} />
           </Tabs>
         </div>
 
@@ -758,49 +760,6 @@ class Application extends React.Component {
                 flexDirection='column'
                 margin='0 16px'
               >
-                <Button variant="outlined"
-                  style={{
-                    margin: '8px 0'
-                  }}
-                  onClick={() => {
-                    this.setState((state, props) => {
-                      return {
-                        projectionOpen: true
-                      }
-                    })
-                  }}>Start Projection</Button>
-
-                <MediaControlCard
-                  input={this.state.projectionInput}
-                  worker={this.state.projectionWorker}
-                  params={this.state.projectionParams}
-                  onClose={() => {
-                    if (this.state.projectionWorker) {
-                      this.state.projectionWorker.terminate()
-                    }
-
-                    this.setState({
-                      projectionComputing: false,
-                      projectionInput: null,
-                      projectionParams: null,
-                      projectionWorker: null
-                    })
-                  }}
-                  onComputingChanged={(e, newVal) => {
-                    this.setState({
-                      projectionComputing: newVal
-                    })
-                  }}
-                  onStep={(Y) => {
-                    this.vectors.forEach((vector, i) => {
-                      vector.x = Y[i][0]
-                      vector.y = Y[i][1]
-                    })
-                    this.threeRef.current.updateXY()
-                  }}>
-
-                </MediaControlCard>
-
                 <Button
                   variant="outlined"
                   style={{
@@ -818,10 +777,12 @@ class Application extends React.Component {
                       // Inject cluster attributes
                       Object.keys(clusters).forEach(key => {
                         var cluster = clusters[key]
+                        var vecs = []
                         cluster.points.forEach(point => {
                           var label = point.label
                           var probability = point.probability
                           var index = point.meshIndex
+                          vecs.push(this.dataset.vectors[point.meshIndex])
 
                           this.dataset.vectors[index]['clusterLabel'] = label
 
@@ -831,7 +792,10 @@ class Application extends React.Component {
                             this.dataset.vectors[index]['clusterProbability'] = probability
                           }
                         })
+                        cluster.vectors = vecs
                       })
+
+                      console.log(graphLayout(clusters))
 
                       this.setState((state, props) => {
                         var colorAttribute = state.categoryOptions.json.find(e => e.category == 'color').attributes
@@ -898,6 +862,56 @@ class Application extends React.Component {
 
             </TabPanel>
 
+            <TabPanel value={this.state.tabValue} index={2}>
+              <FlexParent
+                alignItems='stretch'
+                flexDirection='column'
+                margin='0 16px'
+              >
+                <Button variant="outlined"
+                  style={{
+                    margin: '8px 0'
+                  }}
+                  onClick={() => {
+                    this.setState((state, props) => {
+                      return {
+                        projectionOpen: true
+                      }
+                    })
+                  }}>Start Projection</Button>
+
+                <MediaControlCard
+                  input={this.state.projectionInput}
+                  worker={this.state.projectionWorker}
+                  params={this.state.projectionParams}
+                  onClose={() => {
+                    if (this.state.projectionWorker) {
+                      this.state.projectionWorker.terminate()
+                    }
+
+                    this.setState({
+                      projectionComputing: false,
+                      projectionInput: null,
+                      projectionParams: null,
+                      projectionWorker: null
+                    })
+                  }}
+                  onComputingChanged={(e, newVal) => {
+                    this.setState({
+                      projectionComputing: newVal
+                    })
+                  }}
+                  onStep={(Y) => {
+                    this.vectors.forEach((vector, i) => {
+                      vector.x = Y[i][0]
+                      vector.y = Y[i][1]
+                    })
+                    this.threeRef.current.updateXY()
+                  }}>
+
+                </MediaControlCard>
+              </FlexParent>
+            </TabPanel>
           </Grid>
 
         </div>
@@ -991,7 +1005,7 @@ class Application extends React.Component {
         <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
           <Card style={{ pointerEvents: 'auto' }}>
             <CardContent style={{ padding: '8px' }}>
-              <Typography align="center" gutterBottom variant="body1">{`Aggregation (${this.state.selectionAggregation.length})`}</Typography>
+              <Typography align="center" gutterBottom variant="body1">{`Fingerprint (${this.state.selectionAggregation.length})`}</Typography>
 
               <GenericLegend aggregate={true} type={this.state.datasetType} vectors={this.state.selectionAggregation} dataset={this.state.vectors}></GenericLegend>
             </CardContent>

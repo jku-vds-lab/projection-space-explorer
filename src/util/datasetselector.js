@@ -497,8 +497,15 @@ function getSegs(vectors) {
 
 
     var segments = lineKeys.map(lineKey => {
-        return new DataLine({ vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) })
+        var l = new DataLine({ vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) })
+        // Set segment of vectors
+        l.vectors.forEach((v, vi) => {
+            v.view.segment = l
+            v.view.sequenceIndex = vi
+        })
+        return l
     })
+
 
 
     return segments
@@ -748,6 +755,23 @@ export class VectView {
      * Is this vector selected?
      */
     selected = false
+
+    /**
+     * The segment index this vector belongs to.
+     */
+    lineIndex = -1
+
+
+    /**
+     * The segment reference this vector belongs to.
+     */
+    segment = null
+
+    /**
+     * Index of sequence from 0 to n, this is needed because the key for the line might be sortable, but not numeric
+     */
+    sequenceIndex = -1
+
 
     /**
      * Set color for this vertice, if null the color of the line is taken

@@ -13,9 +13,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 
 
-export var GenericLegend = ({ type, vectors, aggregate, dataset }) => {
+export var GenericLegend = ({ type, vectors, aggregate }) => {
     if (type == 'story') {
-        return <StoryLegend selection={vectors} vectors={dataset}></StoryLegend>
+        return <StoryLegend selection={vectors}></StoryLegend>
     } else if (type == 'rubik') {
         return <RubikLegend selection={vectors}></RubikLegend>
     } else if (type == 'neural') {
@@ -46,7 +46,9 @@ export var GenericLegend = ({ type, vectors, aggregate, dataset }) => {
 
 
 
-export function GenericClusterLegend({ cluster }) {
+export function GenericClusterLegend({ cluster, type }) {
+    console.log(cluster)
+    console.log(type)
     return <div>
         <Typography variant='subtitle2'>Cluster Information</Typography>
         <TableContainer>
@@ -60,8 +62,22 @@ export function GenericClusterLegend({ cluster }) {
                         <TableCell>STD</TableCell>
                         <TableCell align="right">{cluster.getSTD().toFixed(2)}</TableCell>
                     </TableRow>
+                    <TableRow>
+                        <TableCell>Score</TableCell>
+                        <TableCell align="right">{cluster.meanScore().toFixed(2)}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>Count</TableCell>
+                        <TableCell align="right">{cluster.vectors.length.toFixed(2)}</TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
+
+            <GenericLegend
+            aggregate={true}
+            vectors={cluster.vectors}
+            type={type}
+            ></GenericLegend>
         </TableContainer>
         <div className="speech-bubble-ds-arrow"></div>
     </div>

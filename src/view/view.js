@@ -6,7 +6,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Grid from '@material-ui/core/Grid';
-import { getDefaultZoom, arraysEqual, normalizeWheel } from './utilfunctions';
+import { getDefaultZoom, arraysEqual, normalizeWheel, centerOfMass, interpolateLinear, generateZoomForSet } from './utilfunctions';
 import { LassoSelection } from '../util/tools'
 import libtess from 'libtess'
 import { isPointInConvaveHull } from '../util/geometry'
@@ -300,7 +300,7 @@ export default class ThreeView extends React.Component {
                     var idx = this.choose(coords)
                     this.particles.highlight(idx)
                     if (idx >= 0) {
-                        this.lines.highlight([this.vectors[idx].lineIndex], this.getWidth(), this.getHeight(), this.scene)
+                        this.lines.highlight([this.vectors[idx].view.lineIndex], this.getWidth(), this.getHeight(), this.scene)
                     } else {
                         this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
                     }
@@ -381,7 +381,7 @@ export default class ThreeView extends React.Component {
                     })
 
 
-                    var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.lineIndex))]
+                    var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
 
                     this.lines.groupHighlight(uniqueIndices)
                     //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
@@ -406,7 +406,7 @@ export default class ThreeView extends React.Component {
                         this.props.onAggregate(this.currentAggregation)
                     }
 
-                    var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.lineIndex))]
+                    var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
 
                     this.lines.groupHighlight(uniqueIndices)
                 }
@@ -420,25 +420,30 @@ export default class ThreeView extends React.Component {
                 if (key != '-1') {
                     if (isPointInConvaveHull(test, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
                         found = true
-                        var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
 
-                        selected.forEach(vector => {
-                            vector.view.selected = !vector.view.selected
+                        if (event.button == 0) {
+                            var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
 
-                            if (this.currentAggregation.includes(vector) && !vector.view.selected) {
-                                this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
-                            } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
-                                this.currentAggregation.push(vector)
-                            }
-                        })
+                            selected.forEach(vector => {
+                                vector.view.selected = !vector.view.selected
+
+                                if (this.currentAggregation.includes(vector) && !vector.view.selected) {
+                                    this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
+                                } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
+                                    this.currentAggregation.push(vector)
+                                }
+                            })
 
 
-                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.lineIndex))]
+                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
 
-                        this.lines.groupHighlight(uniqueIndices)
-                        //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+                            this.lines.groupHighlight(uniqueIndices)
+                            //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
 
-                        this.props.onAggregate(this.currentAggregation)
+                            this.props.onAggregate(this.currentAggregation)
+                        } else if (event.button == 1) {
+                            this.setZoomTarget(cluster.vectors, 1)
+                        }
                     }
                 }
             })
@@ -604,6 +609,7 @@ export default class ThreeView extends React.Component {
         this.scene = new THREE.Scene()
 
 
+        this.prevTime = performance.now()
         this.startRendering()
     }
 
@@ -700,6 +706,27 @@ export default class ThreeView extends React.Component {
     }
 
 
+    /**
+     * This functions sets the zoom target for a given set of points.
+     * This function only needs to be called once to set the target, the view
+     * will then slowly adjust the zoom value and position of the camera depending on
+     * the speed value supplied.
+     */
+    setZoomTarget(vectors, speed) {
+        // Store current camera zoom and position for linear interpolation
+        this.sourcePosition = this.camera.position.clone()
+        this.sourceZoom = this.camera.zoom
+
+        // Set target position to the center of mass of the vectors
+        this.targetPosition = centerOfMass(vectors)
+
+        // Set target zoom the bounds in which all points appear
+        this.targetZoom = generateZoomForSet(vectors, this.getWidth(), this.getHeight())
+
+        // Reset transition time
+        this.transitionTime = 0
+    }
+
 
     filterPoints(checkboxes) {
         this.particles.showSymbols = checkboxes
@@ -722,8 +749,45 @@ export default class ThreeView extends React.Component {
     }
 
 
-    startRendering() {
+    startRendering(lastTime) {
         requestAnimationFrame(() => this.startRendering());
+
+        this.renderFrame()
+    }
+
+
+
+    updateZoom(deltaTime) {
+        if (this.targetPosition != null && this.targetZoom != null) {
+            // Update transition time, maxing at 1
+            this.transitionTime = Math.min(this.transitionTime + deltaTime, 1)
+
+            // Update zoom level and position
+            this.camera.position.x = interpolateLinear(this.sourcePosition.x, this.targetPosition.x, this.transitionTime)
+            this.camera.position.y = interpolateLinear(this.sourcePosition.y, this.targetPosition.y, this.transitionTime)
+            this.camera.zoom = interpolateLinear(this.sourceZoom, this.targetZoom, this.transitionTime)
+            this.camera.updateProjectionMatrix()
+
+            // End transition
+            if (this.transitionTime == 1) {
+                this.sourcePosition = null
+                this.sourceZoom = null
+                this.targetPosition = null
+                this.targetZoom = null
+                this.transitionTime = 0
+            }
+        }
+    }
+
+
+    renderFrame() {
+        // Calculate delta time
+        var nextTime = performance.now()
+        var deltaTime = (nextTime - this.lastTime) / 1000
+        this.lastTime = nextTime
+
+        // Update zoom in case a target has been set
+        this.updateZoom(deltaTime)
 
         try {
             this.renderer.clear()
@@ -822,7 +886,9 @@ export default class ThreeView extends React.Component {
                                 bottom: this.getHeight() - this.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).y - 10,
                             }}>
                             <GenericClusterLegend
-                                cluster={this.state.hoverCluster}></GenericClusterLegend>
+                                cluster={this.state.hoverCluster}
+                                type={this.dataset.info.type}
+                            ></GenericClusterLegend>
                         </div>
 
 

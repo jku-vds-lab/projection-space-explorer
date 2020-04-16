@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from joblib import Memory
 from json import dumps
+from sklearn import metrics
 
 
 # Filter that allows cors request, needed for javascript to work
@@ -35,9 +36,7 @@ app = bottle.app()
 # Endpoint that performs the clustering algorithm
 @app.route('/hdbscan', method=['OPTIONS', 'POST'])
 def lvambience():
-    print(request.body)
     features = np.array(json.load(request.body))
-    print(features[0])
     
     bestProbabilities = None
     bestLabels = None
@@ -54,6 +53,7 @@ def lvambience():
             
             # Score function to minimize
             score = len(np.where(clusterer.outlier_scores_ > 0.2)[0])
+            #score = metrics.davies_bouldin_score(features, cluster_labels)
 
             if score < bestScore:
                 bestScore = score
@@ -65,8 +65,19 @@ def lvambience():
 
         clusterSize = clusterSize + 2
     
+    # metrics2
+    indices = np.where(bestLabels != -1)
+    realLabels = bestLabels[indices]
+    realFeatures = features[indices]
+    clusterScore = metrics.silhouette_samples(realFeatures, realLabels, metric='euclidean')
+    
+    finalScores = np.zeros(len(features))
+    lookup = np.arange(len(realLabels))
+
+    finalScores[indices] = clusterScore[lookup]
+
     return {
-        'result': [ [ int(label), float(probability) ] for label, probability in zip(bestLabels, bestProbabilities) ]
+        'result': [ [ int(label), float(probability), float(score) ] for label, probability, score in zip(bestLabels, bestProbabilities, finalScores) ]
     }
 
 app.install(EnableCors())

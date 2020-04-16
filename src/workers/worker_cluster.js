@@ -104,11 +104,6 @@ export class Cluster {
             x: x / this.points.length,
             y: y / this.points.length
         }
-
-        /**return {
-            x: (this.bounds.minX + this.bounds.maxX) / 2,
-            y: (this.bounds.minY + this.bounds.maxY) / 2
-        }**/
     }
 
     getProbability() {
@@ -120,7 +115,30 @@ export class Cluster {
     }
 
     getSTD() {
-        return 0
+        var center = this.getCenter()
+        var std = 0
+
+        this.points.forEach(p => {
+            std = std + Math.sqrt(((p.x - center.x) * (p.x - center.x)) + ((p.y - center.y) * (p.y - center.y)))
+        })
+
+        return std / this.points.length
+    }
+
+
+    meanScore() {
+        var avg = 0
+        this.points.forEach(p => {
+            avg = avg + p.score
+        })
+        console.log(this.points)
+        return avg / this.points.length
+    }
+
+
+
+    metaGrade() {
+        return this.points.length / 10 + this.getProbability() - this.getSTD()
     }
 }
 
@@ -136,7 +154,7 @@ function processClusters(raw, xy) {
         var x = xy[index][0]
         var y = xy[index][1]
 
-        const [label, probability] = entry
+        const [label, probability, score] = entry
         if (!(label in clusters)) {
             clusters[label] = { points: [] }
         }
@@ -146,7 +164,8 @@ function processClusters(raw, xy) {
             probability: probability,
             meshIndex: index,
             x: x,
-            y: y
+            y: y,
+            score: score
         })
     })
 

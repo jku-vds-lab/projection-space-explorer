@@ -1,15 +1,5 @@
 var d3 = require('d3')
 
-function intToComponents(colorBeginner) {
-    var compBeginner = {
-        r: (colorBeginner & 0xff0000) >> 16,
-        g: (colorBeginner & 0x00ff00) >> 8,
-        b: (colorBeginner & 0x0000ff)
-    };
-
-    return compBeginner
-}
-
 // method to convert cube.csv data to colours
 function cubieToColour(str) {
     switch (str) {
@@ -26,12 +16,10 @@ function cubieToColour(str) {
 /**
  * Aggregates vectors of rubik data and returns a representation of it.
  */
-function aggregateRubik(vectors, width, height) {
+function aggregateRubik(vectors) {
     var ttCubieSize = 1.125;
     var ttCubieMargin = 0.0625;
     var distance = 3 * ttCubieSize + 3 * ttCubieMargin;
-    var svgWidth = 3 * distance;
-    var svgHeight = 4 * distance;
 
     var offsetMap = {
         "upXOffset": distance,
@@ -78,8 +66,8 @@ function aggregateRubik(vectors, width, height) {
     var size = ttCubieSize * 9 + ttCubieMargin * 10;
     var board = container.append("div")
         .style("position", "relative")
-        .style("width", size + "rem")
-        .style("height", (size + ttCubieSize * 3 + ttCubieMargin * 4) + "rem")
+        .style("width", size + "em")
+        .style("height", (size + ttCubieSize * 3 + ttCubieMargin * 4) + "em")
 
     for (var side = 0; side < sides.length; side++) {
         for (var i1 = 0; i1 < 3; i1++) {
@@ -111,8 +99,8 @@ function aggregateRubik(vectors, width, height) {
                 }
 
                 var colorbox = board.append("div")
-                    .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "rem")
-                    .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "rem")
+                    .style("left", offsetMap[sides[side] + "XOffset"] + j * (ttCubieMargin + ttCubieSize) + "em")
+                    .style("top", offsetMap[sides[side] + "YOffset"] + i1 * (ttCubieMargin + ttCubieSize) + "em")
                     .style("background-color", col)
                     //.style("opacity", opacity)
                     .attr("class", "colorbox")
@@ -138,74 +126,6 @@ function aggregateRubik(vectors, width, height) {
 
     return container.html()
 }
-
-
-
-
-
-
-function rubikLegend(colorFridrich, colorBeginner) {
-    var compFridrich = intToComponents(colorFridrich)
-    var compBeginner = intToComponents(colorBeginner)
-
-    var template = `
-    <div>
-      <div class="custom-control custom-checkbox">
-          <input type="checkbox" checked class="custom-control-input" id="showFridrich" onclick="window.toggleData(this, 0)">
-          <label style="color: rgb(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b})" class="custom-control-label" for="showFridrich" >Fridrich method</label>
-      </div>
-
-      <div class="custom-control custom-checkbox">
-          <input type="checkbox" checked class="custom-control-input" id="showBeginner" onclick="window.toggleData(this, 1)">
-          <label style="color: rgb(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b})" class="custom-control-label" for="showBeginner">Beginner's method</label>
-      </div>
-
-      <hr />
-
-      <div>
-        <img src="./textures/sprites/cross.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
-        <span style="vertical-align: middle">Starting point</span><br>
-      </div>
-
-      <div>
-        <img src="./textures/sprites/circle.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
-        <span style="vertical-align: middle">Intermediate </span><a href="#" onclick="window.showIntermediatePoints()">toggle</a><br>
-      </div>
-
-      <div>
-        <img src="./textures/sprites/square.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
-        <span style="vertical-align: middle">Checkpoint</span><br>
-      </div>
-
-      <div>
-        <img src="./textures/sprites/star.png" style="width:1rem;height:1rem; vertical-align: middle"></img>
-        <span style="vertical-align: middle">Solution</span><br>
-      </div>
-
-
-
-      <hr />
-
-      <div style="width: 100%; height: 1rem; background-image: linear-gradient(to right, rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b}, 0.2), rgba(${compBeginner.r}, ${compBeginner.g}, ${compBeginner.b},1))">
-      </div>
-
-      <div style="width: 100%; height: 1rem; background-image: linear-gradient(to right, rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},0.2), rgba(${compFridrich.r}, ${compFridrich.g}, ${compFridrich.b},1))">
-      </div>
-
-      <div class="d-flex justify-content-between">
-            <div>
-               scrambled
-            </div>
-            <div>
-               solved
-            </div>
-       </div>
-
-    </div>`
-
-    return template
-}
-
 
 export var RubikLegend = ({ selection }) => {
     return <div dangerouslySetInnerHTML={{ __html: aggregateRubik(selection) }}></div>

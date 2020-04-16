@@ -220,7 +220,7 @@ export class LineVisualization {
       lines.push(new LineVis(line))
 
       segment.vectors.forEach(vector => {
-        vector.lineIndex = index
+        vector.view.lineIndex = index
       })
     })
 
@@ -569,7 +569,7 @@ export class PointVisualization {
           //vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
           vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
         } else {
-          var col = this.segments[vector.lineIndex].line.material.color
+          var col = this.segments[vector.view.lineIndex].line.material.color
           rgb = {
             r: col.r * 255.0,
             g: col.g * 255.0,
@@ -592,12 +592,12 @@ export class PointVisualization {
   }
 
   isPointVisible(vector) {
-    return this.segments[vector.lineIndex].view.detailVisible
-      && this.segments[vector.lineIndex].view.globalVisible
+    return this.segments[vector.view.lineIndex].view.detailVisible
+      && this.segments[vector.view.lineIndex].view.globalVisible
       && vector.visible
       && this.showSymbols[vector.shapeType]
       && (vector.view.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.view.intrinsicColor] : true)
-      && valueInRange(this.segments[vector.lineIndex].vectors.length, this.segments[vector.lineIndex].view.pathLengthRange)
+      && valueInRange(this.segments[vector.view.lineIndex].vectors.length, this.segments[vector.view.lineIndex].view.pathLengthRange)
   }
 
 
