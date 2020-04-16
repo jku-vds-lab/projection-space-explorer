@@ -70,6 +70,10 @@ export function GenericClusterLegend({ cluster, type }) {
                         <TableCell>Count</TableCell>
                         <TableCell align="right">{cluster.vectors.length.toFixed(2)}</TableCell>
                     </TableRow>
+                    <TableRow>
+                        <TableCell>Unique Lines</TableCell>
+                        <TableCell align="right">{cluster.differentLines().toFixed(2)}</TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
 

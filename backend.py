@@ -33,6 +33,19 @@ app = bottle.app()
 
 
 
+
+
+@app.route('/heart', method=['OPTIONS', 'POST'])
+def heart():
+    return {
+        'result': [ ]
+    }
+
+
+
+
+
+
 # Endpoint that performs the clustering algorithm
 @app.route('/hdbscan', method=['OPTIONS', 'POST'])
 def lvambience():

@@ -135,7 +135,9 @@ export class Cluster {
         return avg / this.points.length
     }
 
-
+    differentLines() {
+        return [...new Set(this.vectors.map(v => v.view.lineIndex))].length
+    }
 
     metaGrade() {
         return this.points.length / 10 + this.getProbability() - this.getSTD()

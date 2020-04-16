@@ -1,5 +1,6 @@
 import "regenerator-runtime/runtime";
 
+import Alert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import { ShapeLegend, calculateOptions, Legend, ShowColorLegend } from './view/categorical'
 import ThreeView from './view/view'
@@ -107,8 +108,23 @@ class Application extends React.Component {
 
       sizeScale: [1, 2],
 
-      tabValue: 0
+      tabValue: 0,
+
+      backendRunning: false
     }
+
+
+
+    var worker = new Worker('dist/healthcheck.js')
+    worker.onmessage = (e) => {
+      this.setState({
+        backendRunning: e.data
+      })
+    }
+
+
+
+
 
     this.threeRef = React.createRef()
     this.legend = React.createRef()
@@ -373,7 +389,81 @@ class Application extends React.Component {
   }
 
 
+  onClusteringStartClick() {
+    var worker = new Worker('dist/cluster.js')
+    worker.onmessage = (e) => {
+      var clusters = {}
+      Object.keys(e.data).forEach(k => {
+        var t = e.data[k]
+        clusters[k] = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
+      })
 
+      // Inject cluster attributes
+      Object.keys(clusters).forEach(key => {
+        var cluster = clusters[key]
+        var vecs = []
+        cluster.points.forEach(point => {
+          var label = point.label
+          var probability = point.probability
+          var index = point.meshIndex
+          vecs.push(this.dataset.vectors[point.meshIndex])
+
+          this.dataset.vectors[index]['clusterLabel'] = label
+
+          if (isNaN(probability)) {
+            this.dataset.vectors[index]['clusterProbability'] = 0
+          } else {
+            this.dataset.vectors[index]['clusterProbability'] = probability
+          }
+        })
+        cluster.vectors = vecs
+      })
+
+      console.log(graphLayout(clusters))
+
+      this.setState((state, props) => {
+        var colorAttribute = state.categoryOptions.json.find(e => e.category == 'color').attributes
+        if (!colorAttribute.find(e => e.key == 'clusterLabel')) {
+          colorAttribute.push({
+            "key": 'clusterLabel',
+            "name": 'clusterLabel',
+            "type": "categorical"
+          })
+        }
+
+
+
+        var transparencyAttribute = state.categoryOptions.json.find(e => e.category == 'transparency').attributes
+        if (!transparencyAttribute.find(e => e.key == 'clusterProbability')) {
+          transparencyAttribute.push({
+            "key": 'clusterProbability',
+            "name": 'clusterProbability',
+            "type": "sequential",
+            "values": {
+              "range": [0.2, 1]
+            }
+          })
+        }
+
+        this.threeRef.current.createClusters(clusters)
+
+        return {
+          categoryOptions: state.categoryOptions,
+          clusteringOpen: false,
+          clusteringWorker: null,
+          clusters: clusters
+        }
+      })
+    }
+    worker.postMessage(this.vectors.map(vector => [vector.x, vector.y]))
+
+    this.setState((state, props) => {
+      return {
+        clusteringOpen: true,
+        clusteringWorker: worker
+      }
+    })
+  }
 
 
   render() {
@@ -762,84 +852,15 @@ class Application extends React.Component {
               >
                 <Button
                   variant="outlined"
+                  disabled={this.state.backendRunning == false}
                   style={{
                     margin: '8px 0'
                   }}
                   onClick={() => {
-                    var worker = new Worker('dist/cluster.js')
-                    worker.onmessage = (e) => {
-                      var clusters = {}
-                      Object.keys(e.data).forEach(k => {
-                        var t = e.data[k]
-                        clusters[k] = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
-                      })
-
-                      // Inject cluster attributes
-                      Object.keys(clusters).forEach(key => {
-                        var cluster = clusters[key]
-                        var vecs = []
-                        cluster.points.forEach(point => {
-                          var label = point.label
-                          var probability = point.probability
-                          var index = point.meshIndex
-                          vecs.push(this.dataset.vectors[point.meshIndex])
-
-                          this.dataset.vectors[index]['clusterLabel'] = label
-
-                          if (isNaN(probability)) {
-                            this.dataset.vectors[index]['clusterProbability'] = 0
-                          } else {
-                            this.dataset.vectors[index]['clusterProbability'] = probability
-                          }
-                        })
-                        cluster.vectors = vecs
-                      })
-
-                      console.log(graphLayout(clusters))
-
-                      this.setState((state, props) => {
-                        var colorAttribute = state.categoryOptions.json.find(e => e.category == 'color').attributes
-                        if (!colorAttribute.find(e => e.key == 'clusterLabel')) {
-                          colorAttribute.push({
-                            "key": 'clusterLabel',
-                            "name": 'clusterLabel',
-                            "type": "categorical"
-                          })
-                        }
-
-
-
-                        var transparencyAttribute = state.categoryOptions.json.find(e => e.category == 'transparency').attributes
-                        if (!transparencyAttribute.find(e => e.key == 'clusterProbability')) {
-                          transparencyAttribute.push({
-                            "key": 'clusterProbability',
-                            "name": 'clusterProbability',
-                            "type": "sequential",
-                            "values": {
-                              "range": [0.2, 1]
-                            }
-                          })
-                        }
-
-                        this.threeRef.current.createClusters(clusters)
-
-                        return {
-                          categoryOptions: state.categoryOptions,
-                          clusteringOpen: false,
-                          clusteringWorker: null,
-                          clusters: clusters
-                        }
-                      })
-                    }
-                    worker.postMessage(this.vectors.map(vector => [vector.x, vector.y]))
-
-                    this.setState((state, props) => {
-                      return {
-                        clusteringOpen: true,
-                        clusteringWorker: worker
-                      }
-                    })
+                    this.onClusteringStartClick()
                   }}>Start Clustering</Button>
+
+                <Alert severity="error">No backend detected!</Alert>
 
                 <ClusterWindow
                   worker={this.state.clusteringWorker}

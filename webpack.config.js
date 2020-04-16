@@ -5,7 +5,8 @@ module.exports = {
   entry: {
     bundle: './src/index.js',
     worker: './src/workers/worker_projection.js',
-    cluster: './src/workers/worker_cluster.js'
+    cluster: './src/workers/worker_cluster.js',
+    healthcheck: './src/workers/worker_healthcheck.js'
   },
   output: {
     path: path.join(__dirname, 'dist'), // absolute path
