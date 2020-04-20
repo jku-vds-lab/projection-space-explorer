@@ -1,73 +1,62 @@
-var clustering = require('density-clustering');
-var THREE = require('three');
+import "regenerator-runtime/runtime";
 
-var meshes = require('./view/meshes')
+import Alert from '@material-ui/lab/Alert';
+import Typography from '@material-ui/core/Typography';
+import { ShapeLegend, calculateOptions, Legend, ShowColorLegend } from './view/categorical'
+import ThreeView from './view/view'
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import { ColorScaleSelect, defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales, SimplePopover } from "./util/colors";
+import { Divider, Card, CardContent } from "@material-ui/core";
+import { loadFromPath } from './util/datasetselector'
+import { LineSelectionPopover, LineSelectionTree } from './view/lineselectiontree'
+import Box from '@material-ui/core/Box';
+import Slider from '@material-ui/core/Slider';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import ControlCameraIcon from '@material-ui/icons/ControlCamera';
+import SelectAllIcon from '@material-ui/icons/SelectAll';
+import { TensorLoader, MediaControlCard, AdditionalMenu, ClusterWindow } from "./projection/integration";
+import { arraysEqual } from "./view/utilfunctions";
+import BlurOffIcon from '@material-ui/icons/BlurOff';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Button from '@material-ui/core/Button';
+import { GenericLegend } from './legends/generic.js'
+import { ChooseFileDialog } from './util/dataselectui'
+import { FlexParent } from './library/grid'
+import { Cluster } from "./workers/worker_cluster";
+import { graphLayout } from "./util/graphs";
 
-var chess = require('./problems/chess')
-var rubik = require('./problems/rubik')
-var neural = require('./problems/neural')
-
-var loader = require('./util/loader')
-var colors = require('./util/colors')
 
 
-class Problem {
-  constructor(type) {
-    this.type = type
-  }
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
 
-  aggregate(vectors) {
-    setAggregateView(document.getElementById('aggregate'), vectors, true)
-  }
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {<Box style={{ overflowY: 'auto', height: '100%' }}>{children}</Box>}
+    </Typography>
+  );
 }
 
 
-const ProblemType = Object.freeze({
- "CHESS" : 1,
- "RUBIK" : 2
-})
 
-
-
-  function setAggregateView(element, list, aggregation) {
-    element.innerHTML = ""
-
-    if (problem.type == ProblemType.CHESS) {
-      element.innerHTML = chess.aggregate(list)
-    }
-    if (problem.type == ProblemType.RUBIK) {
-      element.innerHTML = rubik.aggregate(list)
-    }
-    if (problem.type == ProblemType.NEURAL) {
-      element.innerHTML = neural.aggregate(list, aggregation)
-    }
-  }
-
-
-
-
-/**
- * Calculates the default zoom factor by examining the bounds of the data set
- * and then dividing it by the height of the viewport.
- */
-function getDefaultZoom(vectors, width, height) {
-  var zoom = 10
-
-  // Get rectangle that fits around data set
-  var minX = 1000, maxX = -1000, minY = 1000, maxY = -1000;
-  vectors.forEach (vector => {
-    minX = Math.min(minX, vector.x)
-    maxX = Math.max(maxX, vector.x)
-    minY = Math.min(minY, vector.y)
-    maxY = Math.max(maxY, vector.y)
-  })
-
-  // Get biggest scale
-  var horizontal = Math.max(Math.abs(minX), Math.abs(maxX))
-  var vertical = Math.max(Math.abs(minY), Math.abs(maxY))
-
-  // Divide the height/width through the biggest axis of the data points
-  return Math.min(width, height) / Math.max(horizontal, vertical) / 2
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
 }
 
 
@@ -75,602 +64,1180 @@ function getDefaultZoom(vectors, width, height) {
 
 
 
+class Application extends React.Component {
 
+  constructor(props) {
+    super(props)
 
+    this.state = {
+      selectionState: [],
+      selectionAggregation: [],
 
+      fileDialogOpen: true,
 
+      vectorByShape: null,
+      selectedVectorByShape: "",
 
+      vectorByTransparency: null,
+      selectedVectorByTransparency: "",
 
+      vectorBySize: null,
+      selectedVectorBySize: "",
 
+      vectorByColor: null,
+      selectedVectorByColor: "",
 
+      legendSelected: {},
+      checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true },
 
+      selectedScaleIndex: 0,
+      selectedScale: null,
+      definedScales: null,
 
+      datasetType: 'none',
 
+      colorsChecked: new Array(100).fill(true),
 
+      selectedLines: {},
 
+      pathLengthRange: null,
 
-/**
- * Returns an orthographic camera that is zoomed in at a correct distance for the given
- * data set.
- */
-function getDefaultCamera(width, height, vectors) {
-  var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 1000 );
-  camera.zoom = getDefaultZoom(vectors, width, height);
-  camera.position.z = 1;
-  camera.lookAt(new THREE.Vector3(0,0,0));
-  camera.updateProjectionMatrix();
-  return camera
-}
+      currentTool: 'default',
 
+      projectionComputing: false,
 
+      sizeScale: [1, 2],
 
+      tabValue: 0,
 
-
-
-
-
-
-
-
-
-
-/**
- * Rectangle selection tool.
- */
-class RectangleSelection {
-  constructor(vectors, settings, problem) {
-    this.vectors = vectors
-    this.settings = settings
-    this.problem = problem
-
-    this.create = false
-
-    this.geometry = new THREE.PlaneGeometry(1, 1, 32);
-    this.material = new THREE.MeshBasicMaterial({
-      color: 0x000000,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.5
-    });
-    console.log(this.material)
-    this.plane = new THREE.Mesh(this.geometry, this.material);
-    this.plane.position.x = 0
-    this.plane.position.y = 0
-    this.plane.scale.x = 0
-    this.plane.scale.y = 0
-  }
-
-  mouseDown(x, y) {
-    // dispose old selection
-    this.problem.scene.remove(this.plane)
-
-    if (this.create == false) {
-      this.startX = x
-      this.startY = y
-
-      this.plane.position.x = this.startX
-      this.plane.position.y = this.startY
-      this.plane.scale.x = 0
-      this.plane.scale.y = 0
-
-      this.problem.scene.add(this.plane);
-
-      this.create = true
-    }
-  }
-
-  mouseMove(x, y) {
-    if (this.create) {
-      var w = x - this.startX
-      var h = y - this.startY
-      this.plane.scale.x = w
-      this.plane.scale.y = h
-      this.plane.position.x = x - w / 2
-      this.plane.position.y = y - h / 2
-    }
-  }
-
-  mouseUp() {
-    if (this.create) {
-      //this.problem.scene.remove(this.plane)
-      var width = Math.abs(this.plane.scale.x)
-      var height = Math.abs(this.plane.scale.y)
-      var vectors = this.select({ x: this.plane.position.x - width / 2, y: this.plane.position.y - height / 2, w: width, h: height })
-
-      // Create aggregation
-      this.problem.aggregate(vectors)
-
-      this.create = false
-    }
-  }
-
-  dispose() {
-    if (this.plane != null) {
-      this.problem.scene.remove(this.plane)
+      backendRunning: false
     }
 
-    this.geometry.dispose()
-    this.material.dispose()
+
+
+    var worker = new Worker('dist/healthcheck.js')
+    worker.onmessage = (e) => {
+      this.setState({
+        backendRunning: e.data
+      })
+    }
+
+
+
+
+
+    this.threeRef = React.createRef()
+    this.legend = React.createRef()
+    this.onHover = this.onHover.bind(this)
+    this.onAggregate = this.onAggregate.bind(this)
+    this.onLineSelect = this.onLineSelect.bind(this)
+    this.onDataSelected = this.onDataSelected.bind(this)
+    this.onColorScaleChanged = this.onColorScaleChanged.bind(this)
   }
 
-  select(rect) {
-    var set = []
+  componentDidMount() {
+    var url = new URL(window.location);
+    var set = url.searchParams.get("set");
+    var preselect = "datasets/rubik/cube10x2_different_origins.csv"
+    if (set != null) {
 
-    this.vectors.forEach(vector => {
-      if (vector.visible && (this.settings.showIntPoints || vector.cp == 1)) {
-        if (vector.x > rect.x && vector.y > rect.y && vector.x < rect.x + rect.w && vector.y < rect.y + rect.h) {
-          set.push(vector)
-        }
+      if (set == "neural") {
+        preselect = "datasets/neural/learning_confmat.csv"
+      } else if (set == "rubik") {
+        preselect = "datasets/rubik/cube10x2_different_origins.csv"
+      } else if (set == "chess") {
+        preselect = "datasets/chess/chess16k.csv"
       }
+
+      loadFromPath(preselect, this.onDataSelected)
+    } else {
+      loadFromPath(preselect, (dataset, json) => { this.onDataSelected(dataset, json) })
+    }
+
+    window.addEventListener('resize', this.onResize.bind(this))
+  }
+
+  convertRemToPixels(rem) {
+    return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+  }
+
+  onResize() {
+    this.threeRef.current.resize(window.innerWidth - this.convertRemToPixels(18 * 1), window.innerHeight)
+  }
+
+
+  setAggregateView(element, list, type) {
+    if (list == null || list.length <= 0) {
+      this.setState({ selectionAggregation: [] })
+    } else {
+      this.setState({ selectionAggregation: list })
+    }
+  }
+
+  setSelectionView(element, list, type) {
+    if (list == null || list.length <= 0) {
+      this.setState({ selectionState: [] })
+    } else {
+      this.setState({ selectionState: list })
+    }
+  }
+
+  onHover(selected) {
+    this.setSelectionView(document.getElementById('info'), selected, this.dataset.info.type)
+  }
+
+  onAggregate(selected) {
+    this.setAggregateView(document.getElementById('aggregate'), selected, this.dataset.info.type)
+  }
+
+
+  onDataSelected(dataset, json) {
+    // Dispose old view
+    this.threeRef.current.disposeScene()
+
+    // Set new dataset as variable
+    this.dataset = dataset
+    this.vectors = dataset.vectors
+    this.segments = dataset.segments
+    this.categories = json
+
+    this.setState({
+      datasetType: this.dataset.info.type,
+      dataset: dataset,
+      vectors: this.vectors
     })
 
-    return set
+    // Load new view
+    this.loadData2()
+
+
   }
-}
+
+
+  loadData2() {
+    this.setAggregateView(document.getElementById('info'), [], false, this.dataset.info.type)
+    this.setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.info.type)
+
+
+    //this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
+    this.lineColorScheme = this.mappingFromScale(NamedCategoricalScales.DARK2, { key: 'algo' })
+
+    this.setState({
+      lineColorScheme: this.lineColorScheme
+    })
+
+    this.threeRef.current.createVisualization(this.dataset, this.lineColorScheme, null)
+
+    this.finite()
+  }
+
+  finite() {
+    var algos = LineSelectionTree.genAlgos(this.vectors)
+    var selLines = LineSelectionTree.getChecks(algos)
+
+    // Update shape legend
+    this.setState({
+      categoryOptions: calculateOptions(this.vectors, this.categories),
+      selectedVectorByShape: "",
+      vectorByShape: null,
+      vectorByTransparency: null,
+      selectedVectorByTransparency: "",
+      vectorBySize: null,
+      vectorByColor: null,
+      selectedVectorByColor: "",
+      selectedVectorBySize: "",
+      checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true },
+      selectedLines: selLines,
+      selectedLineAlgos: algos,
+      pathLengthRange: [0, this.dataset.getMaxPathLength()],
+      maxPathLength: this.dataset.getMaxPathLength()
+    })
 
 
 
 
+    this.legend.current.load(this.dataset.info.type, this.lineColorScheme, this.state.selectedLineAlgos)
 
-    window.showGuide = function() {
-      if (document.getElementById("guide").style.display == "none") {
-        document.getElementById("guide").style.display = "block"
+    this.initializeEncodings()
+  }
+
+  mappingFromScale(scale, attribute) {
+    if (scale instanceof DiscreteScale) {
+      // Generate scale
+      return new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[attribute.key]))])
+    }
+    if (scale instanceof ContinuosScale) {
+      var min = null, max = null
+      if (attribute.key in this.dataset.ranges) {
+        min = this.dataset.ranges[attribute.key].min
+        max = this.dataset.ranges[attribute.key].max
       } else {
-        document.getElementById("guide").style.display = "none"
+        var filtered = this.vectors.map(vector => vector[attribute.key])
+        max = Math.max(...filtered)
+        min = Math.min(...filtered)
       }
 
+      return new ContinuousMapping(scale, { min: min, max: max })
+    }
+    return null
+  }
+
+  initializeEncodings() {
+    var state = {}
+
+    var defaultSizeAttribute = this.state.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
+    if (defaultSizeAttribute) {
+      state.selectedVectorBySize = defaultSizeAttribute.key
+      state.vectorBySize = defaultSizeAttribute
+
+      this.threeRef.current.particles.sizeCat(defaultSizeAttribute)
+    }
+
+    var defaultColorAttribute = this.state.categoryOptions.getAttribute("color", "algo", "categorical")
+    if (defaultColorAttribute) {
+      state.definedScales = defaultScalesForAttribute(defaultColorAttribute)
+      state.selectedScaleIndex = 0
+      state.selectedVectorByColor = defaultColorAttribute.key
+      state.vectorByColor = defaultColorAttribute
+
+
+
+      this.threeRef.current.particles.colorCat(defaultColorAttribute, this.mappingFromScale(state.definedScales[state.selectedScaleIndex], defaultColorAttribute))
+      state.showColorMapping = this.threeRef.current.particles.getMapping()
+    }
+
+    var defaultBrightnessAttribute = this.state.categoryOptions.getAttribute("transparency", "age", "sequential")
+    if (defaultBrightnessAttribute) {
+      state.selectedVectorByTransparency = defaultBrightnessAttribute.key
+      state.vectorByTransparency = defaultBrightnessAttribute
+    }
+
+    this.setState(state)
+
+    this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute)
+  }
+
+  onColorScaleChanged(scale, index) {
+    this.setState({
+      selectedScale: scale,
+      selectedScaleIndex: index,
+      colorsChecked: new Array(100).fill(true)
+    })
+
+    this.threeRef.current.particles.setColorScale(scale)
+    this.threeRef.current.particles.updateColor()
+  }
+
+  onLineSelect(algo, show) {
+    this.threeRef.current.filterLines(algo, show)
+  }
+
+  legendOnChange(event) {
+    var select = this.legendSelected
+    select
+    var newState = {
+      legendSelected: {}
+    }
+    var col = newState.colors.filter(c => c.color == event.target.id)[0]
+    col.checked = event.target.checked
+
+    this.setState(newState)
+
+    this.props.onLineSelect(col.algo, event.target.checked)
+  }
+
+
+  selectColorAttribute() {
+    var attribute = null
+    if (event.target.value != "") {
+      attribute = this.state.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+    }
+    var state = {
+      selectedVectorByColor: event.target.value,
+      vectorByColor: attribute,
+      definedScales: [],
+      selectedScaleIndex: 0,
+      colorsChecked: new Array(100).fill(true)
+    }
+
+    var scale = null
+
+    if (attribute != null && attribute.type == 'categorical') {
+      state.selectedScaleIndex = 0
+      state.definedScales = defaultScalesForAttribute(attribute)
+
+      scale = state.definedScales[state.selectedScaleIndex]
+
+      this.threeRef.current.particles.colorFilter(state.colorsChecked)
+    } else if (attribute != null) {
+      state.selectedScaleIndex = 0
+      state.definedScales = defaultScalesForAttribute(attribute)
+
+      scale = state.definedScales[state.selectedScaleIndex]
+
+      this.threeRef.current.particles.colorFilter(null)
     }
 
 
-          var problem = null
+    this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute))
 
 
-          var loaded = null;
-          var segments = null;
-    			var camera;
+    state.showColorMapping = this.threeRef.current.particles.getMapping()
+    this.setState(state)
 
-    			var intersects;
-    			var mouse, INTERSECTED;
+    this.threeRef.current.particles.update()
+  }
 
-          var mouseDownPosition = null;
-          var mouseDown = false;
-          var strokeTexture = null;
 
-          var settings = {
-            showIntPoints: true
+  onClusteringStartClick() {
+    /**var worker = new Worker('dist/cluster.js')
+
+    var load = []
+
+    this.segments.forEach((segment, i) => {
+      segment.vectors.forEach((vec, vi) => {
+        if (vi < segment.vectors.length - 1) {
+          load.push([segment.vectors[vi].x, segment.vectors[vi].y, segment.vectors[vi + 1].x, segment.vectors[vi + 1].y, segment.vectors[vi].view.lineIndex])
+        }
+      })
+    })
+
+    worker.onmessage = (e) => {
+      // Retreived segment clusters
+      var bundles = {}
+      console.log(e.data)
+      e.data.result.forEach((entry, i) => {
+        const [label, probability] = entry
+
+        if (label >= 0) {
+          if (label in bundles) {
+            bundles[label].push(load[i])
+          } else {
+            bundles[label] = [ load[i] ]
           }
-
-          var currentHoverIdx = null;
-
-
-          var chooseColor = colors.generator();
-
-          var algorithms = { };
-
-
-    /**
-     * Checkbox determining if intermediate points should be drawn.
-     */
-    window.showIntermediatePoints = function () {
-      settings.showIntPoints = !settings.showIntPoints
-
-      problem.particles.update()
+        }
+      })
+      
+      // Get center point for bundles
+      console.log(bundles)
+      this.threeRef.current.debugSegs(bundles)
     }
 
+    worker.postMessage({
+      type: 'segment',
+      load: load
+    })
+    return;**/
 
-    window.toggleData = function(element, algo) {
-      segments.forEach((segment) => {
-        if (segment.algo == algo) {
-          segment.line.visible = element.checked
 
 
-          segment.vectors.forEach((vector) => {
-            if (vector.algo == algo) {
-              vector.visible = element.checked
+
+
+
+    var worker = new Worker('dist/cluster.js')
+    worker.onmessage = (e) => {
+      var clusters = []
+      Object.keys(e.data).forEach(k => {
+        var t = e.data[k]
+        clusters[k] = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
+        clusters[k].label = k
+        clusters.push(clusters[k])
+      })
+
+      // Inject cluster attributes
+      clusters.forEach(cluster => {
+        var vecs = []
+        cluster.points.forEach(point => {
+          var label = point.label
+          var probability = point.probability
+          var index = point.meshIndex
+          vecs.push(this.dataset.vectors[point.meshIndex])
+
+          this.dataset.vectors[index]['clusterLabel'] = label
+
+          if (isNaN(probability)) {
+            this.dataset.vectors[index]['clusterProbability'] = 0
+          } else {
+            this.dataset.vectors[index]['clusterProbability'] = probability
+          }
+        })
+        cluster.vectors = vecs
+      })
+
+      console.log(graphLayout(clusters))
+
+      this.setState((state, props) => {
+        var colorAttribute = state.categoryOptions.json.find(e => e.category == 'color').attributes
+        if (!colorAttribute.find(e => e.key == 'clusterLabel')) {
+          colorAttribute.push({
+            "key": 'clusterLabel',
+            "name": 'clusterLabel',
+            "type": "categorical"
+          })
+        }
+
+
+
+        var transparencyAttribute = state.categoryOptions.json.find(e => e.category == 'transparency').attributes
+        if (!transparencyAttribute.find(e => e.key == 'clusterProbability')) {
+          transparencyAttribute.push({
+            "key": 'clusterProbability',
+            "name": 'clusterProbability',
+            "type": "sequential",
+            "values": {
+              "range": [0.2, 1]
             }
           })
         }
+
+        this.threeRef.current.createClusters(clusters)
+
+        return {
+          categoryOptions: state.categoryOptions,
+          clusteringOpen: false,
+          clusteringWorker: null,
+          clusters: clusters
+        }
       })
-
-      problem.particles.update()
     }
+    worker.postMessage({
+      type: 'point',
+      load: this.vectors.map(vector => [vector.x, vector.y])
+    })
 
-    window.selectDataset = function (value) {
-      cleanup()
 
-      if (problem != null) {
-        console.log("cleanup ----")
-        console.log(problem.renderer.info)
-        console.log("-------")
+    this.setState((state, props) => {
+      return {
+        clusteringOpen: true,
+        clusteringWorker: worker
       }
-
-      if (value.startsWith("chess")) {
-        problem = new Problem(ProblemType.CHESS)
-        loadData(problem, "datasets/chess/" + value.substring(6))
-      } else if (value.startsWith("rubik")) {
-        problem = new Problem(ProblemType.RUBIK)
-        loadData(problem, "datasets/rubik/" + value.substring(6));
-      } else if (value.startsWith("neural")) {
-        problem = new Problem(ProblemType.NEURAL)
-        loadData(problem, "datasets/neural/" + value.substring(7))
-      }
-    }
-
-
-
-
-
-      var rectangleSelection = null
-
-
-
-      function cleanup() {
-        if (problem != null) {
-
-          if (problem.lines != null) {
-            console.log("disposing lines")
-            problem.lines.forEach(line => {
-              line.dispose()
-            })
-          }
-
-          if (problem.particles != null) {
-            console.log("get rid of particles")
-            problem.particles.dispose()
-          }
-
-          if (problem.renderer != null) {
-            problem.renderer.renderLists.dispose()
-            console.log("disposed render lists")
-          }
-
-          problem.scene.dispose()
-        }
-      }
-
-
-
-      /**
-       * Loads a specific problem set, creating menus, displaying vectors etc.
-       */
-      function loadData(problem, file) {
-        chooseColor = colors.generator();
-        algorithms = {}
-
-        setAggregateView(document.getElementById('info'), [], false)
-        setAggregateView(document.getElementById('aggregate'), [], true)
-
-
-
-
-        // Load csv file
-        loader.load(file, problem, algorithms, chooseColor, data => {
-          loaded = data;
-
-          segments = getSegments(loaded);
-
-          init(loaded, problem);
-
-          problem.particles.update()
-
-          loadLegend(problem);
-        })
-      }
-
-      function loadLegend(problem) {
-        var chessOpeners = [ "Barnes Hut Opening", "Kings Pawn Opening", "English Opening" ]
-
-        if (problem.type == ProblemType.RUBIK) {
-          document.getElementById('legend').innerHTML = rubik.legend(algorithms[0].color, algorithms[1].color)
-        } else if (problem.type == ProblemType.CHESS) {
-          document.getElementById('legend').innerHTML = chess.legend(Object.keys(algorithms).sort().map(function (key, index) {return { 'color': algorithms[key].color, 'name': chessOpeners[key], 'algo': key } }))
-        } else if (problem.type == ProblemType.NEURAL) {
-          document.getElementById('legend').innerHTML = neural.legend(Object.keys(algorithms).sort().map(function (key, index) { return { 'color': algorithms[key].color, 'learningRate': key } }))
-        }
-      }
-
-
-
-
-
-
-      function getSegments(data) {
-        //creating an array holding arrays of x,y,cubenum,algo,age for each cube
-
-        // Sort data by cubeNum
-        data.sort((a, b) => a.cubeNum - b.cubeNum)
-
-
-        var n = data.length
-        var points = new Array()
-        var currentCube = 0
-        var newArray = { vectors: new Array(), algo: data[0].algo }
-        for (var i = 0; i < n; i++) {
-          if(data[i].cubeNum != currentCube) {
-            points.push(newArray)
-            currentCube = data[i].cubeNum
-
-            newArray = { vectors: new Array(), algo: data[i].algo }
-          }
-
-          newArray.vectors.push(data[i])
-        }
-        points.push(newArray)
-        return points
-    }
-
-
-
-
-
-
-
-    function onDocumentMouseUp(e) {
-
-      var test = mouseToWorld(e)
-
-      if (rectangleSelection != null) {
-        rectangleSelection.mouseUp(test.x, test.y)
-      }
-
-
-      mouseDown = false;
-    }
-
-    function onDocumentMouseDown(e) {
-      e.preventDefault();
-
-      var container = document.getElementById( 'container' );
-      var width = container.offsetWidth;
-      var height = container.offsetHeight;
-
-      if (e.altKey && rectangleSelection != null) {
-        var test = mouseToWorld(event)
-        rectangleSelection.mouseDown(test.x, test.y)
-
-      } else {
-        // Dragging data around
-        mouseDownPosition = normaliseMouse(e)
-        mouseDown = true;
-      }
-    }
-
-    function mouseToWorld(event) {
-      var container = document.getElementById( 'container' );
-      var width = container.offsetWidth;
-      var height = container.offsetHeight;
-
-      const rect = container.getBoundingClientRect();
-
-      var test = {
-        x: (event.clientX - rect.left - width / 2) / camera.zoom + camera.position.x,
-        y: -(event.clientY - rect.top - height / 2) / camera.zoom + camera.position.y
-      }
-
-      return test
-    }
-
-    function onDocumentMouseMove( event ) {
-      event.preventDefault();
-
-      var test = mouseToWorld(event)
-
-      if (rectangleSelection != null) {
-        rectangleSelection.mouseMove(test.x, test.y)
-      }
-
-      if (window.infoTimeout != null) {
-        clearTimeout(window.infoTimeout)
-      }
-      if (!mouseDown) {
-        window.infoTimeout = setTimeout(function() {
-          window.infoTimeout = null
-
-          // Get index of selected node
-          var idx = choose(test)
-          problem.particles.highlight(idx)
-
-          var list = []
-          if (idx >= 0) list.push(loaded[idx])
-          setAggregateView(document.getElementById('info'), list, false)
-        }, 10);
-      }
-
-
-
-      // Dragging
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-      if (mouseDown) {
-        camera.position.x = camera.position.x - (mouse.x - mouseDownPosition.x) * (600 / camera.zoom);
-        camera.position.y = camera.position.y - (mouse.y - mouseDownPosition.y) * (600 / camera.zoom);
-        mouseDownPosition = normaliseMouse(event)
-        camera.updateProjectionMatrix()
-      }
-    }
-
-
-
-			function init(data, problem) {
-				var container = document.getElementById( 'container' );
-
-        problem.scene = new THREE.Scene();
-
-        var width = container.offsetWidth;
-        var height = container.offsetHeight;
-
-        camera = getDefaultCamera(width, height, loaded)
-
-        problem.particles = new meshes.PointVisualization(settings)
-        problem.particles.createMesh(loaded, segments, algorithms)
-        problem.particles.zoom(camera.zoom)
-
-
-
-
-				//
-				var renderer = new THREE.WebGLRenderer({
-          antialias: true
-        });
-        problem.renderer = renderer
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize(width, height);
-        renderer.setClearColor( 0xffffff, 1);
-        renderer.sortObjects = false;
-
-        container.innerHTML = ""
-				container.appendChild( renderer.domElement );
-				//
-				mouse = new THREE.Vector2();
-
-
-
-
-        // First add lines to scene... so they get drawn first
-        problem.lines = meshes.renderLines2(segments, algorithms)
-        problem.lines.forEach(line => problem.scene.add(line.line))
-        //fatLines(segments)
-
-        problem.particles.update()
-        // Then add particles
-        problem.scene.add( problem.particles.mesh );
-
-
-        if (rectangleSelection != null) {
-          rectangleSelection.dispose()
-        }
-        rectangleSelection = new RectangleSelection(loaded, settings, problem)
-
-        console.log(data)
-        // Transform data into [ [], [], ... ] structure
-        //var dataset = []
-        //data.forEach(vector => {
-        //  dataset.push([ vector.x, vector.y ])
-        //})
-        //var dbscan = new clustering.OPTICS();
-        // parameters: 5 - neighborhood radius, 2 - number of points in neighborhood to form a cluster
-        //var clusters = dbscan.run(dataset, 0.5, 20);
-        //console.log(clusters, dbscan.noise);
-
-        //clusters.forEach(cluster => {
-        //  if (cluster.length > 4) {
-        //    var vertices = []
-        //    cluster.forEach(index => {
-        //      vertices.push(new THREE.Vector3(data[index].x, data[index].y, -10))
-        //    })
-
-        //    var m = new meshes.ConvexHull(vertices)
-        //    problem.scene.add(m.createMesh())
-        //  }
-
-        //})
-
-
-
-				container.addEventListener( 'mousemove', onDocumentMouseMove, false );
-        container.addEventListener('mousedown', onDocumentMouseDown, false);
-        container.addEventListener('mouseup', onDocumentMouseUp, false);
-        container.addEventListener( 'wheel', onDocumentMouseWheel, false );
-			}
-
-      function dist(x1, y1, x2, y2) {
-        var a = x1 - x2;
-        var b = y1 - y2;
-
-        var c = Math.sqrt( a*a + b*b );
-        return c
-      }
-
-      function choose(position) {
-        var best = 30 / (camera.zoom * 2.0)
-        var res = -1
-
-        for (var index = 0; index < loaded.length; index++) {
-          var value = loaded[index]
-
-          // Skip points matching some criteria
-          if ((!settings.showIntPoints && value.cp == 0) || value.visible == false) {
-            continue
-          }
-
-          var d = dist(position.x, position.y, value.x, value.y)
-
-          if (d < best) {
-            best = d
-            res = index
-          }
-        }
-        return res
-      }
-
-      function onDocumentMouseWheel(event) {
-        event.preventDefault()
-        camera.zoom = camera.zoom + event.deltaY * 0.02;
-        if (camera.zoom < 1) {
-          camera.zoom = 1;
-        }
-
-        problem.particles.zoom(camera.zoom);
-
-        camera.updateProjectionMatrix();
-      }
-
-      function normaliseMouse(event) {
-        var vec = {}
-        vec.x = (event.clientX / window.innerWidth) * 2 - 1;
-        vec.y = - (event.clientY / window.innerHeight) * 2 + 1;
-        return vec
-      }
-
-
-			function onWindowResize() {
-        var container = document.getElementById( 'container' );
-
-        var width = container.offsetWidth;
-        var height = container.offsetHeight;
-
-				problem.renderer.setSize(width, height);
-
-        camera.left = width / - 2
-        camera.right = width / 2
-        camera.top = height / 2
-        camera.bottom = height / - 2
-
-        camera.updateProjectionMatrix();
-			}
-
-			function animate() {
-
-
-				requestAnimationFrame( animate );
-        render();
-			}
-
-			function render() {
-        if (problem == null) return;
-
-        if (problem != null && "renderer" in problem) {
-          problem.renderer.render(problem.scene, camera);
-        }
-			}
-
-
-
-  var url = new URL(window.location);
-  var set = url.searchParams.get("set");
-
-
-  if (set != null) {
-    if (set == "neural") {
-      document.getElementById("setselect").value = "neural_learning_confmat.csv"
-    } else if (set == "rubik") {
-      document.getElementById("setselect").value = "rubik_cube10x2_different_origins.csv"
-    } else if (set == "chess") {
-      document.getElementById("setselect").value = "chess_chess16k.csv"
-    }
+    })
   }
 
 
-  window.selectDataset(document.getElementById("setselect").value)
-  animate();
+  render() {
+    return <div class="d-flex align-items-stretch" style={
+      {
+        width: "100vw",
+        height: "100vh",
+        pointerEvents: this.state.projectionComputing ? 'none' : 'auto'
+      }}>
+
+      <div class="flex-shrink-0" style={{
+        width: "18rem",
+        height: '100vh',
+        'overflow-x': 'hidden',
+        'overflow-y': 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+
+        <div>
+          <ChooseFileDialog onChange={this.onDataSelected}></ChooseFileDialog>
+
+          <Tabs
+            value={this.state.tabValue}
+            indicatorColor="primary"
+            textColor="primary"
+            onChange={(e, newVal) => { this.setState({ tabValue: newVal }) }}
+            aria-label="disabled tabs example"
+          >
+            <Tab label="States" style={{ minWidth: 0, flexGrow: 1 }} />
+            <Tab label="Clusters" style={{ minWidth: 0, flexGrow: 1 }} />
+            <Tab label="Projection" style={{ minWidth: 0, flexGrow: 1 }} />
+          </Tabs>
+        </div>
+
+
+        <div style={{
+          flexGrow: 1,
+          overflowY: 'auto'
+        }}>
+
+
+          <Grid
+            container
+            justify="center"
+            alignItems="stretch"
+            direction="column">
+
+
+
+            <Divider style={{ margin: '8px 0px' }} />
+
+            <TabPanel value={this.state.tabValue} index={0}>
+              <div>
+                <Typography
+                  style={{ margin: '0px 0 0px 16px' }}
+                  variant="body1"
+                  display="block"
+                >
+                  Lines
+                </Typography>
+              </div>
+
+              <Grid
+                container
+                justify="center"
+                alignItems="stretch"
+                direction="column"
+                style={{ padding: '0 16px' }}>
+                <Legend
+                  ref={this.legend}
+                  algorithms={this.state.selectedLineAlgos}
+                  onLineSelect={this.onLineSelect}></Legend>
+
+                <Box p={1}></Box>
+
+                <LineSelectionPopover vectors={this.state.vectors}
+                  onSelectAll={(algo, checked) => {
+                    var ch = this.state.selectedLines
+                    Object.keys(ch).forEach(key => {
+                      var e = this.state.selectedLineAlgos.find(e => e.algo == algo)
+                      if (e.lines.find(e => e.line == key)) {
+                        ch[key] = checked
+                      }
+
+                    })
+
+                    this.setState({
+                      selectedLines: ch
+                    })
+
+                    this.threeRef.current.setLineFilter(ch)
+                  }}
+                  onChange={(id, checked) => {
+                    var ch = this.state.selectedLines
+                    ch[id] = checked
+
+                    this.setState({
+                      selectedLines: ch
+                    })
+
+                    this.threeRef.current.setLineFilter(ch)
+                  }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme}>
+
+                </LineSelectionPopover>
+              </Grid>
+
+              <div style={{ margin: '8px 0px' }}></div>
+
+              <PathLengthFilter
+                pathLengthRange={this.state.pathLengthRange}
+                maxPathLength={this.state.maxPathLength}
+                onChange={(event, newValue) => {
+                  this.setState({
+                    pathLengthRange: newValue
+                  })
+                }}></PathLengthFilter>
+
+              <Divider style={{ margin: '8px 0px' }} />
+              <div>
+                <Typography
+                  style={{ margin: '0px 0 0px 16px' }}
+                  color="textPrimary"
+                  variant="body1"
+                  display="block"
+                >
+                  Points
+            </Typography>
+              </div>
+
+
+
+
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("shape") ?
+                  <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                      <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
+                      <Select labelId="vectorByShapeSelectLabel"
+                        id="vectorByShapeSelect"
+                        displayEmpty
+
+                        value={this.state.selectedVectorByShape}
+                        onChange={(event) => {
+                          var attribute = this.state.categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
+
+                          this.setState({
+                            selectedVectorByShape: event.target.value,
+                            vectorByShape: attribute,
+                            checkboxes: { 'star': true, 'cross': true, 'circle': true, 'square': true }
+                          })
+
+                          this.threeRef.current.filterPoints({ 'star': true, 'cross': true, 'circle': true, 'square': true })
+                          this.threeRef.current.particles.shapeCat(attribute)
+                        }}
+                      >
+                        <MenuItem value="">None</MenuItem>
+                        {this.state.categoryOptions.getCategory("shape").attributes.map(attribute => {
+                          return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  :
+                  <div></div>
+              }
+
+              <Grid item style={{ padding: '0 16px' }}>
+                <ShapeLegend category={this.state.vectorByShape} checkboxes={this.state.checkboxes} onChange={(event, symbol) => {
+                  var state = this.state
+                  state.checkboxes[symbol] = event.target.checked
+                  this.setState({ checkboxes: state.checkboxes })
+                  this.threeRef.current.filterPoints(state.checkboxes)
+                }}></ShapeLegend>
+              </Grid>
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("transparency") ?
+                  <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                      <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
+                      <Select labelId="vectorByTransparencySelectLabel"
+                        id="vectorByTransparencySelect"
+                        displayEmpty
+                        value={this.state.selectedVectorByTransparency}
+                        onChange={(event) => {
+                          var attribute = this.state.categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
+
+                          this.setState({
+                            selectedVectorByTransparency: event.target.value,
+                            vectorByTransparency: attribute
+                          })
+
+                          this.threeRef.current.particles.transparencyCat(attribute)
+                        }}
+                      >
+                        <MenuItem value="">None</MenuItem>
+                        {this.state.categoryOptions.getCategory("transparency").attributes.map(attribute => {
+                          return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  :
+                  <div></div>
+              }
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("size") ?
+                  <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                      <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
+                      <Select labelId="vectorBySizeSelectLabel"
+                        id="vectorBySizeSelect"
+                        displayEmpty
+                        value={this.state.selectedVectorBySize}
+                        onChange={(event) => {
+                          var attribute = this.state.categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+
+                          this.setState({
+                            selectedVectorBySize: event.target.value,
+                            vectorBySize: attribute
+                          })
+
+                          this.threeRef.current.particles.sizeCat(attribute)
+                        }}
+                      >
+                        <MenuItem value="">None</MenuItem>
+                        {this.state.categoryOptions.getCategory("size").attributes.map(attribute => {
+                          return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  :
+                  <div></div>
+              }
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("size") && this.state.vectorBySize != null ?
+                  <SizeSlider
+                    sizeScale={this.state.vectorBySize.values.range}
+                    onChange={(e, newVal) => {
+                      if (arraysEqual(newVal, this.state.vectorBySize.values.range)) {
+                        return;
+                      }
+
+                      this.state.vectorBySize.values.range = newVal
+
+                      this.setState({
+                        vectorBySize: this.state.vectorBySize
+                      })
+
+                      if (this.state.vectorBySize != null) {
+                        this.threeRef.current.particles.sizeCat(this.state.vectorBySize)
+                        this.threeRef.current.particles.updateSize()
+                      }
+                    }}
+                  ></SizeSlider> : <div></div>
+              }
+
+              {
+                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("color") ?
+                  <Grid
+                    container
+                    item
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}
+                  >
+
+                    <Grid container item alignItems="stretch" direction="column">
+                      <FormControl style={{ margin: '4px 0px' }}>
+                        <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
+                        <Select labelId="vectorByColorSelectLabel"
+                          id="vectorByColorSelect"
+                          displayEmpty
+                          value={this.state.selectedVectorByColor}
+                          onChange={(event) => {
+                            var attribute = null
+                            if (event.target.value != "") {
+                              attribute = this.state.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+                            }
+                            var state = {
+                              selectedVectorByColor: event.target.value,
+                              vectorByColor: attribute,
+                              definedScales: [],
+                              selectedScaleIndex: 0,
+                              colorsChecked: new Array(100).fill(true)
+                            }
+
+                            var scale = null
+
+                            if (attribute != null && attribute.type == 'categorical') {
+                              state.selectedScaleIndex = 0
+                              state.definedScales = defaultScalesForAttribute(attribute)
+
+                              scale = state.definedScales[state.selectedScaleIndex]
+
+                              this.threeRef.current.particles.colorFilter(state.colorsChecked)
+                            } else if (attribute != null) {
+                              state.selectedScaleIndex = 0
+                              state.definedScales = defaultScalesForAttribute(attribute)
+
+                              scale = state.definedScales[state.selectedScaleIndex]
+
+                              this.threeRef.current.particles.colorFilter(null)
+                            }
+
+
+                            this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute))
+
+
+                            state.showColorMapping = this.threeRef.current.particles.getMapping()
+                            this.setState(state)
+
+                            this.threeRef.current.particles.update()
+                          }}
+                        >
+                          <MenuItem value="">None</MenuItem>
+                          {this.state.categoryOptions.getCategory("color").attributes.map(attribute => {
+                            return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
+                          })}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                  :
+                  <div></div>
+              }
+
+              <Grid item>
+                {this.state.definedScales != null && this.state.definedScales.length > 0 ?
+                  <ColorScaleSelect selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></ColorScaleSelect>
+                  : <div></div>}
+              </Grid>
+
+
+              <Grid item>
+                {
+                  this.state.vectorByColor != null && this.state.vectorByColor.type == 'categorical' ?
+
+                    <SimplePopover
+                      showColorMapping={this.state.showColorMapping}
+                      colorsChecked={this.state.colorsChecked}
+                      onChange={(event) => {
+
+                        var state = {}
+                        state.colorsChecked = this.state.colorsChecked
+                        state.colorsChecked[event.target.id] = event.target.checked
+                        this.setState(state)
+
+                        this.threeRef.current.particles.colorFilter(state.colorsChecked)
+                      }}></SimplePopover>
+                    :
+                    <div></div>
+                }
+
+
+              </Grid>
+
+            </TabPanel>
+
+            <TabPanel value={this.state.tabValue} index={1}>
+              <FlexParent
+                alignItems='stretch'
+                flexDirection='column'
+                margin='0 16px'
+              >
+                <Button
+                  variant="outlined"
+                  disabled={this.state.backendRunning == false}
+                  style={{
+                    margin: '8px 0'
+                  }}
+                  onClick={() => {
+                    this.onClusteringStartClick()
+                  }}>Start Clustering</Button>
+
+                {this.state.backendRunning ? <div></div> : <Alert severity="error">No backend detected!</Alert>}
+
+                <Button
+                  variant="outlined"
+                  style={{
+                    margin: '8px 0'
+                  }}
+                  onClick={() => {
+                    function downloadCSV(csv, filename) {
+                      var csvFile;
+                      var downloadLink;
+
+                      // CSV file
+                      csvFile = new Blob([csv], { type: "text/plain" });
+
+                      // Download link
+                      downloadLink = document.createElement("a");
+
+                      // File name
+                      downloadLink.download = filename;
+
+                      // Create a link to the file
+                      downloadLink.href = window.URL.createObjectURL(csvFile);
+
+                      // Hide download link
+                      downloadLink.style.display = "none";
+
+                      // Add the link to DOM
+                      document.body.appendChild(downloadLink);
+
+                      // Click download link
+                      downloadLink.click();
+                    }
+
+                    function vectorAsCsv(vectors, segments) {
+                      var t = ""
+
+                      t = `2\n${segments.length}\n`
+                      segments.forEach((segment, i) => {
+                        t = t + `${i} ${segment.vectors.length}`
+                        segment.vectors.forEach(vec => {
+                          t = t + ` ${vec.x.toFixed(1)} ${vec.y.toFixed(1)}`
+                        })
+                        t = t + "\n"
+                      })
+
+                      return t
+                    }
+
+                    downloadCSV(vectorAsCsv(this.dataset.vectors, this.dataset.segments), "output.tra")
+                  }}>TraClus download</Button>
+
+                <ClusterWindow
+                  worker={this.state.clusteringWorker}
+                  onClose={() => {
+                    var worker = this.state.clusteringWorker
+                    if (worker != null) {
+                      worker.terminate()
+                    }
+
+                    this.setState({
+                      clusteringWorker: null,
+                      clusteringOpen: false
+                    })
+                  }}
+                ></ClusterWindow>
+
+              </FlexParent>
+
+
+
+            </TabPanel>
+
+            <TabPanel value={this.state.tabValue} index={2}>
+              <FlexParent
+                alignItems='stretch'
+                flexDirection='column'
+                margin='0 16px'
+              >
+                <Button variant="outlined"
+                  style={{
+                    margin: '8px 0'
+                  }}
+                  onClick={() => {
+                    this.setState((state, props) => {
+                      return {
+                        projectionOpen: true
+                      }
+                    })
+                  }}>Start Projection</Button>
+
+                <MediaControlCard
+                  input={this.state.projectionInput}
+                  worker={this.state.projectionWorker}
+                  params={this.state.projectionParams}
+                  onClose={() => {
+                    if (this.state.projectionWorker) {
+                      this.state.projectionWorker.terminate()
+                    }
+
+                    this.setState({
+                      projectionComputing: false,
+                      projectionInput: null,
+                      projectionParams: null,
+                      projectionWorker: null
+                    })
+                  }}
+                  onComputingChanged={(e, newVal) => {
+                    this.setState({
+                      projectionComputing: newVal
+                    })
+                  }}
+                  onStep={(Y) => {
+                    this.vectors.forEach((vector, i) => {
+                      vector.x = Y[i][0]
+                      vector.y = Y[i][1]
+                    })
+                    this.threeRef.current.updateXY()
+                  }}>
+
+                </MediaControlCard>
+              </FlexParent>
+            </TabPanel>
+          </Grid>
+
+        </div>
+
+      </div>
+
+
+
+
+
+      <ThreeView
+        ref={this.threeRef}
+        clusters={this.state.clusters}
+        onHover={this.onHover}
+        algorithms={this.state.selectedLineAlgos}
+        onAggregate={this.onAggregate}
+        selectionState={this.state.selectionState}
+        pathLengthRange={this.state.pathLengthRange}
+        tool={this.state.currentTool}>
+
+      </ThreeView>
+
+      <div style={{ position: 'absolute', right: '0px', bottom: '0px', pointerEvents: 'none', margin: '16px' }}>
+        <ToggleButtonGroup
+          style={{ pointerEvents: 'auto' }}
+          size='small'
+          value={this.state.currentTool}
+          exclusive
+          onChange={(e, newValue) => {
+            e.preventDefault()
+            if (newValue != null) {
+              this.setState({
+                currentTool: newValue
+              })
+            }
+          }}
+          aria-label="text alignment"
+        >
+          <ToggleButton value="default" aria-label="left aligned">
+            <SelectAllIcon />
+          </ToggleButton>
+          <ToggleButton value="move" aria-label="centered">
+            <ControlCameraIcon />
+          </ToggleButton>
+          <ToggleButton value="grab" aria-label="centered">
+            <BlurOffIcon />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+
+
+      <TensorLoader
+        open={this.state.projectionOpen}
+        setOpen={(value) => {
+          this.setState({
+            projectionOpen: value
+          })
+        }}
+
+        dataset={this.state.dataset}
+
+        onTensorInitiated={(event, selected, params) => {
+
+          var worker = new Worker('dist/worker.js')
+
+          // Initialise state
+          this.setState({
+            projectionComputing: true,
+            projectionWorker: worker,
+            projectionInput: this.state.dataset.asTensor(selected),
+            projectionParams: params
+          })
+        }}
+      ></TensorLoader>
+
+
+
+
+      <div style={{ width: "18rem", height: '100%', position: 'absolute', left: '18rem', top: '0px', pointerEvents: 'none' }} class="flex-shrink-0">
+        <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
+
+          <Card style={{ pointerEvents: 'auto' }}>
+            <CardContent style={{ padding: '8px' }}>
+              <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
+              <GenericLegend aggregate={false} type={this.state.datasetType} vectors={this.state.selectionState} dataset={this.state.vectors}></GenericLegend>
+
+            </CardContent>
+          </Card>
+
+        </div>
+        <div class="d-flex align-items-center justify-content-center" style={{ height: "50%" }}>
+          <Card style={{ pointerEvents: 'auto' }}>
+            <CardContent style={{ padding: '8px' }}>
+              <Typography align="center" gutterBottom variant="body1">{`Fingerprint (${this.state.selectionAggregation.length})`}</Typography>
+
+              <GenericLegend aggregate={true} type={this.state.datasetType} vectors={this.state.selectionAggregation} dataset={this.state.vectors}></GenericLegend>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+
+    </div >
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var SizeSlider = ({ sizeScale, onChange }) => {
+  const marks = [
+    {
+      value: 0,
+      label: '0',
+    },
+    {
+      value: 1,
+      label: `1`,
+    },
+    {
+      value: 2,
+      label: `2`,
+    },
+    {
+      value: 3,
+      label: `3`,
+    },
+    {
+      value: 4,
+      label: `4`,
+    },
+    {
+      value: 5,
+      label: `5`,
+    },
+  ];
+
+  return <div style={{ margin: '0 16px', padding: '0 8px' }}>
+    <Typography id="range-slider" gutterBottom>
+      Size Scale
+    </Typography>
+    <Slider
+      min={0}
+      max={5}
+      value={sizeScale}
+      onChange={onChange}
+      step={0.25}
+      marks={marks}
+      valueLabelDisplay="auto"
+    ></Slider>
+  </div>
+}
+
+
+
+
+
+
+
+var PathLengthFilter = ({ pathLengthRange, onChange, maxPathLength }) => {
+  if (pathLengthRange == null) {
+    return <div></div>
+  }
+
+  const marks = [
+    {
+      value: 0,
+      label: '0',
+    },
+    {
+      value: maxPathLength,
+      label: `${maxPathLength}`,
+    },
+  ];
+
+  return <div style={{ margin: '0 16px', padding: '0 8px' }}>
+    <Typography id="range-slider" gutterBottom>
+      Path Length Filter
+    </Typography>
+    <Slider
+      min={0}
+      max={maxPathLength}
+      value={pathLengthRange}
+      onChange={onChange}
+      marks={marks}
+      valueLabelDisplay="auto"
+    ></Slider>
+  </div>
+}
+
+
+
+
+ReactDOM.render(<Application />, document.getElementById("test2"))
