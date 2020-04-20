@@ -331,16 +331,14 @@ export default class ThreeView extends React.Component {
             }
         } else if (this.props.tool == 'grab') {
             var found = false
-            Object.keys(this.props.clusters).forEach(key => {
-                if (key == '-1') return;
+            this.props.clusters.forEach(cluster => {
+                if (cluster.label == '-1') return;
 
-                var cl = this.props.clusters[key]
-
-                if (cl.containsPoint(coords)) {
-                    if (isPointInConvaveHull(coords, cl.hull.map(h => ({ x: h[0], y: h[1] })))) {
+                if (cluster.containsPoint(coords)) {
+                    if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
                         found = true
                         this.setState({
-                            hoverCluster: cl
+                            hoverCluster: cluster
                         })
                     }
                 }
@@ -414,10 +412,8 @@ export default class ThreeView extends React.Component {
         } else if (this.props.tool == 'grab') {
             // current hover is null, check if we are inside a cluster
             var found = false
-            Object.keys(this.props.clusters).forEach(key => {
-                var cluster = this.props.clusters[key]
-
-                if (key != '-1') {
+            this.props.clusters.forEach(cluster => {
+                if (cluster.label != '-1') {
                     if (isPointInConvaveHull(test, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
                         found = true
 
@@ -519,6 +515,10 @@ export default class ThreeView extends React.Component {
     }
 
     createClusters(clusters) {
+
+        clusters.sort((a, b) => b.order() - a.order())
+
+
         if (this.clusterVisualization != null) {
             this.clusterVisualization.dispose(this.scene)
             this.clusterVisualization = null
@@ -526,9 +526,8 @@ export default class ThreeView extends React.Component {
 
         var clusterMeshes = []
 
-        Object.keys(clusters).forEach(key => {
-            if (key == -1) return;
-            var cluster = clusters[key]
+        clusters.forEach((cluster, ii) => {
+            if (cluster.label == -1 || ii > 5) return;
 
             var test = cluster.triangulation
             var polygon = cluster.hull
@@ -586,6 +585,47 @@ export default class ThreeView extends React.Component {
     getHeight() {
         return this.containerRef.current.offsetHeight
     }
+
+
+
+    debugSegs(bundles) {
+        var cols = [ '#ff0000',
+        '#ff4000',
+        '#ff8000',
+        '#ffff00',
+        '#bfff00',
+        '#80ff00',
+        '#40ff00',
+        '#00ff00',
+        '#00ff40',
+        '#00ffbf',
+        '#ff0040',
+        '#ff00bf',
+        '#bf00ff',
+        '#4000ff',
+        '#0040ff',
+    ]
+        Object.keys(bundles).forEach((label, i) => {
+            var bundle = bundles[label]
+
+
+            bundle.forEach(part => {
+                var geometry = new THREE.Geometry()
+                var material = new THREE.LineBasicMaterial({
+                  color: cols[i % cols.length]
+                })
+          
+                geometry.vertices.push(new THREE.Vector3(part[0], part[1], -1.0))
+                geometry.vertices.push(new THREE.Vector3(part[2], part[3], -1.0))
+        
+                var line = new THREE.Line(geometry, material);
+                this.scene.add(line)
+            })
+        })
+    }
+
+
+
 
     setupRenderer() {
         this.renderer = new THREE.WebGLRenderer({

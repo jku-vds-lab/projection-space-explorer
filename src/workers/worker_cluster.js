@@ -139,8 +139,8 @@ export class Cluster {
         return [...new Set(this.vectors.map(v => v.view.lineIndex))].length
     }
 
-    metaGrade() {
-        return this.points.length / 10 + this.getProbability() - this.getSTD()
+    order() {
+        return this.points.length / 10 + this.getProbability() - this.getSTD() + this.differentLines()
     }
 }
 
@@ -177,61 +177,83 @@ function processClusters(raw, xy) {
 
 
 
+
+
+
+
+
+
+
+
 /**
  * Clustering endpoint that
  */
 self.addEventListener('message', function (e) {
-    var xy = e.data
 
-    fetch('http://localhost:8090/hdbscan', {
-        method: 'POST',
-        body: JSON.stringify(xy)
-    }).then(response => {
-        response.json().then(values => {
-            // Get clusters
-            var clusters = processClusters(values.result, xy)
+    if (e.data.type == 'point') {
+        var xy = e.data.load
 
-            Object.keys(clusters).forEach(key => {
-                if (key == -1) return;
-                var cluster = clusters[key]
+        fetch('http://localhost:8090/hdbscan', {
+            method: 'POST',
+            body: JSON.stringify(xy)
+        }).then(response => {
+            response.json().then(values => {
+                // Get clusters
+                var clusters = processClusters(values.result, xy)
 
-                var bounds = {
-                    minX: 10000,
-                    maxX: -10000,
-                    minY: 10000,
-                    maxY: -10000
-                }
+                Object.keys(clusters).forEach(key => {
+                    if (key == -1) return;
+                    var cluster = clusters[key]
 
-                cluster.bounds = bounds
+                    var bounds = {
+                        minX: 10000,
+                        maxX: -10000,
+                        minY: 10000,
+                        maxY: -10000
+                    }
 
-                var pts = cluster.points.filter(e => e.probability > 0.7).map(e => {
-                    var x = xy[e.meshIndex][0]
-                    var y = xy[e.meshIndex][1]
+                    cluster.bounds = bounds
 
-                    if (x < bounds.minX) bounds.minX = x
-                    if (x > bounds.maxX) bounds.maxX = x
-                    if (y < bounds.minY) bounds.minY = y
-                    if (y > bounds.maxY) bounds.maxY = y
+                    var pts = cluster.points.filter(e => e.probability > 0.7).map(e => {
+                        var x = xy[e.meshIndex][0]
+                        var y = xy[e.meshIndex][1]
 
-                    return [x, y]
+                        if (x < bounds.minX) bounds.minX = x
+                        if (x > bounds.maxX) bounds.maxX = x
+                        if (y < bounds.minY) bounds.minY = y
+                        if (y > bounds.maxY) bounds.maxY = y
+
+                        return [x, y]
+                    })
+
+
+                    // Get hull of cluster
+                    var polygon = concaveman(pts);
+
+                    // Get triangulated hull for cluster
+                    var triangulated = triangulate([polygon.flat()])
+
+
+
+                    cluster.hull = polygon
+                    cluster.triangulation = triangulated
                 })
 
-
-                // Get hull of cluster
-                var polygon = concaveman(pts);
-
-                // Get triangulated hull for cluster
-                var triangulated = triangulate([polygon.flat()])
-
-
-
-                cluster.hull = polygon
-                cluster.triangulation = triangulated
+                self.postMessage(clusters)
             })
-
-            self.postMessage(clusters)
         })
-    })
+    } else if (e.data.type == 'segment') {
+        var xy = e.data.load
+
+        fetch('http://localhost:8090/segmentation', {
+            method: 'POST',
+            body: JSON.stringify(xy)
+        }).then(response => {
+            response.json().then(values => {
+                self.postMessage(values)
+            })
+        })
+    }
 })
 
 

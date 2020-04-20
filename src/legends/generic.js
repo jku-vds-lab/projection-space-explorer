@@ -74,14 +74,12 @@ export function GenericClusterLegend({ cluster, type }) {
                         <TableCell>Unique Lines</TableCell>
                         <TableCell align="right">{cluster.differentLines().toFixed(2)}</TableCell>
                     </TableRow>
+                    <TableRow>
+                        <TableCell>Ordering</TableCell>
+                        <TableCell align="right">{cluster.order().toFixed(2)}</TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
-
-            <GenericLegend
-            aggregate={true}
-            vectors={cluster.vectors}
-            type={type}
-            ></GenericLegend>
         </TableContainer>
         <div className="speech-bubble-ds-arrow"></div>
     </div>

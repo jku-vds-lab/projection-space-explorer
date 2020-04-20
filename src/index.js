@@ -390,17 +390,62 @@ class Application extends React.Component {
 
 
   onClusteringStartClick() {
+    /**var worker = new Worker('dist/cluster.js')
+
+    var load = []
+
+    this.segments.forEach((segment, i) => {
+      segment.vectors.forEach((vec, vi) => {
+        if (vi < segment.vectors.length - 1) {
+          load.push([segment.vectors[vi].x, segment.vectors[vi].y, segment.vectors[vi + 1].x, segment.vectors[vi + 1].y, segment.vectors[vi].view.lineIndex])
+        }
+      })
+    })
+
+    worker.onmessage = (e) => {
+      // Retreived segment clusters
+      var bundles = {}
+      console.log(e.data)
+      e.data.result.forEach((entry, i) => {
+        const [label, probability] = entry
+
+        if (label >= 0) {
+          if (label in bundles) {
+            bundles[label].push(load[i])
+          } else {
+            bundles[label] = [ load[i] ]
+          }
+        }
+      })
+      
+      // Get center point for bundles
+      console.log(bundles)
+      this.threeRef.current.debugSegs(bundles)
+    }
+
+    worker.postMessage({
+      type: 'segment',
+      load: load
+    })
+    return;**/
+
+
+
+
+
+
     var worker = new Worker('dist/cluster.js')
     worker.onmessage = (e) => {
-      var clusters = {}
+      var clusters = []
       Object.keys(e.data).forEach(k => {
         var t = e.data[k]
         clusters[k] = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
+        clusters[k].label = k
+        clusters.push(clusters[k])
       })
 
       // Inject cluster attributes
-      Object.keys(clusters).forEach(key => {
-        var cluster = clusters[key]
+      clusters.forEach(cluster => {
         var vecs = []
         cluster.points.forEach(point => {
           var label = point.label
@@ -455,7 +500,11 @@ class Application extends React.Component {
         }
       })
     }
-    worker.postMessage(this.vectors.map(vector => [vector.x, vector.y]))
+    worker.postMessage({
+      type: 'point',
+      load: this.vectors.map(vector => [vector.x, vector.y])
+    })
+
 
     this.setState((state, props) => {
       return {
@@ -862,6 +911,55 @@ class Application extends React.Component {
 
                 {this.state.backendRunning ? <div></div> : <Alert severity="error">No backend detected!</Alert>}
 
+                <Button
+                  variant="outlined"
+                  style={{
+                    margin: '8px 0'
+                  }}
+                  onClick={() => {
+                    function downloadCSV(csv, filename) {
+                      var csvFile;
+                      var downloadLink;
+
+                      // CSV file
+                      csvFile = new Blob([csv], { type: "text/plain" });
+
+                      // Download link
+                      downloadLink = document.createElement("a");
+
+                      // File name
+                      downloadLink.download = filename;
+
+                      // Create a link to the file
+                      downloadLink.href = window.URL.createObjectURL(csvFile);
+
+                      // Hide download link
+                      downloadLink.style.display = "none";
+
+                      // Add the link to DOM
+                      document.body.appendChild(downloadLink);
+
+                      // Click download link
+                      downloadLink.click();
+                    }
+
+                    function vectorAsCsv(vectors, segments) {
+                      var t = ""
+
+                      t = `2\n${segments.length}\n`
+                      segments.forEach((segment, i) => {
+                        t = t + `${i} ${segment.vectors.length}`
+                        segment.vectors.forEach(vec => {
+                          t = t + ` ${vec.x.toFixed(1)} ${vec.y.toFixed(1)}`
+                        })
+                        t = t + "\n"
+                      })
+
+                      return t
+                    }
+
+                    downloadCSV(vectorAsCsv(this.dataset.vectors, this.dataset.segments), "output.tra")
+                  }}>TraClus download</Button>
 
                 <ClusterWindow
                   worker={this.state.clusteringWorker}
