@@ -27,7 +27,7 @@ npm install
 To run the application simply navigate to the cloned folder and enter
 
 ```bash
-npm start
+npm run frontend
 ```
 
 This will start a local webserver. You can then enter the URL that is displayed which
