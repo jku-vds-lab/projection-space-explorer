@@ -30,7 +30,6 @@ import { ChooseFileDialog } from './util/dataselectui'
 import { FlexParent } from './library/grid'
 import { Cluster } from "./workers/worker_cluster";
 import { graphLayout } from "./util/graphs";
-import { DataEdge, MultiDictionary } from "./util/datasetselector"
 
 
 
@@ -465,63 +464,7 @@ class Application extends React.Component {
         cluster.vectors = vecs
       })
 
-
-
-
-      // Try to extract puth bundles
-      var load = []
-
-      this.segments.forEach((segment, i) => {
-        segment.vectors.forEach((vec, vi) => {
-          if (vi < segment.vectors.length - 1) {
-            load.push([
-              segment.vectors[vi].x,
-              segment.vectors[vi].y,
-              segment.vectors[vi + 1].x,
-              segment.vectors[vi + 1].y,
-              segment.vectors[vi].view.lineIndex,
-              segment.vectors[vi].clusterLabel,
-              segment.vectors[vi + 1].clusterLabel,
-              segment.vectors[vi].view.meshIndex,
-              segment.vectors[vi + 1].view.meshIndex])
-          }
-        })
-      })
-
-      worker.onmessage = (e) => {
-        // Retreived segment clusters
-        var bundles = {}
-        console.log(e.data)
-        var edgeClusters = new MultiDictionary()
-        e.data.result.forEach((entry, i) => {
-          const [label, probability] = entry
-
-          if (label >= 0) {
-            if (label in bundles) {
-              bundles[label].push(load[i])
-            } else {
-              bundles[label] = [load[i]]
-            }
-            
-            edgeClusters.insert(label, new DataEdge(this.vectors[load[i][7]], this.vectors[load[i][8]]))
-          }
-        })
-
-        // Get center point for bundles
-        console.log(bundles)
-        console.log(edgeClusters)
-        this.threeRef.current.debugSegs(bundles, edgeClusters)
-      }
-
-      /**worker.postMessage({
-        type: 'segment',
-        load: load
-      })**/
-
-
-
-
-
+      console.log(graphLayout(clusters))
 
       this.setState((state, props) => {
         var colorAttribute = state.categoryOptions.json.find(e => e.category == 'color').attributes
