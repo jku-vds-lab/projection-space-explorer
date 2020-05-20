@@ -1,4 +1,5 @@
 import { valueInRange } from './utilfunctions'
+import { ContinuousMapping } from '../util/colors'
 
 /**
  * Generates a line mesh
@@ -114,7 +115,7 @@ export class LineVisualization {
         segment.view.grayed = true
       })
 
-      
+
 
       indices.forEach(index => {
         this.segments[index].view.grayed = false
@@ -187,7 +188,7 @@ export class LineVisualization {
     var lines = []
 
     this.segments.forEach((segment, index) => {
-      
+
       segment.view.intrinsicColor = this.lineColorScheme.map(segment.vectors[0].algo)
 
       var geometry = new THREE.Geometry();
@@ -200,7 +201,7 @@ export class LineVisualization {
         // 1 - 1     100 - 0.1    200 - 0.05      50 - 0.2     25 - 0.4
       });
 
-      
+
 
       var da = []
       segment.vectors.forEach(function (vector, vi) {
@@ -240,7 +241,7 @@ export class LineVisualization {
       var geometry = new THREE.Geometry();
       var curve = new THREE.SplineCurve(da)
 
-      
+
       curve.getPoints(700).forEach(function (p, i) {
         geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
       })
@@ -263,9 +264,9 @@ export class LineVisualization {
       segment.line.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
 
       segment.line.visible = segment.view.detailVisible
-      && segment.view.globalVisible
-      && !segment.view.highlighted
-      && valueInRange(segment.vectors.length, segment.view.pathLengthRange)
+        && segment.view.globalVisible
+        && !segment.view.highlighted
+        && valueInRange(segment.vectors.length, segment.view.pathLengthRange)
     })
   }
 }
@@ -516,7 +517,7 @@ export class PointVisualization {
             min = Math.min(...filtered)
           }
 
-          
+
 
           segment.vectors.forEach(vector => {
             if (min == max) {
@@ -567,7 +568,13 @@ export class PointVisualization {
           var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
           rgb = m.rgb
           //vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
-          vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
+
+          if (this.vectorColorScheme instanceof ContinuousMapping) {
+            vector.view.intrinsicColor = null
+          } else {
+            vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
+          }
+
         } else {
           var col = this.segments[vector.view.lineIndex].line.material.color
           rgb = {

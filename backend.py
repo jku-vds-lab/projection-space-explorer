@@ -12,6 +12,7 @@ from sklearn import metrics
 import math
 from sklearn.cluster import DBSCAN
 from numpy.linalg import norm
+import tkinter
 DECIMAL_MAX_DIFF_FOR_EQUALITY = 0.0000001
 
 
@@ -276,22 +277,36 @@ def angle_of_vectors(a, b):
 
 
 def dist(a, b):
-    s = math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
-    e = math.sqrt((b[2] - a[2]) ** 2 + (b[3] - a[3]) ** 2)
-    return s / 2 + e / 2
+    #s = math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
+    #e = math.sqrt((b[2] - a[2]) ** 2 + (b[3] - a[3]) ** 2)
+    #return s / 3 + e / 3
+    x1 = (b[0] + b[2]) / 2
+    y1 = (b[1] + b[3]) / 2
+    x2 = (b[0] + a[2]) / 2
+    y2 = (b[1] + a[3]) / 2
+    return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
+def interclusterDistance(a, b):
+    asc = a[5]
+    aec = a[6]
+    bsc = b[5]
+    bec = b[6]
+    if asc == bsc and aec == bec:
+        return 0
+    else:
+        return 1
+    
 
 def segmentDistance(a, b):
-
     sega = LineSegment.from_tuples([ a[0], a[1] ], [ a[2], a[3] ])
     segb = LineSegment.from_tuples([ b[0], b[1] ], [ b[2], b[3] ])
 
-    segDist = 0
-    if (a[4] != b[4]):
-        segDist = 3
+    #segDist = 0
+    #if (a[4] != b[4]):
+    #    segDist = 3
     #return #math.hypot(b[2] - a[2], b[3] - a[3]) + math.hypot(b[0] - a[0], b[1] - a[1]) +
     #return dist(a, b) + measurePerpendicularDistance(a, b) + angle_of_vectors(a, b) + segDist
-    return dist(a, b)
+    return angle_of_vectors(a, b) * 2 + perpendicular_distance(sega, segb) + parrallel_distance(sega, segb)
 
 
 
@@ -301,80 +316,24 @@ def segmentDistance(a, b):
 
 @app.route('/segmentation', method=['OPTIONS', 'POST'])
 def segmentation():
-    #
-    X = [
-        [
-            0, 0,     10, 10
-        ],
-        [
-            1, 0,     10, 10
-        ],
-        [
-            1.5, 0,     10, 10
-        ],
-        [
-            0, 1,     10, 10
-        ],
-        [
-            0, 0,     10, 10
-        ],
-        [
-            0, 0.5,     10, 10
-        ],
-        [
-            0.5, 0.5,     10, 10
-        ],
-        [
-            0, 0,     10, 10
-        ],
-        [
-            0, 0,     10, 10
-        ],
-        [
-            0, 0,     10, 10
-        ],
-        [
-            10,10, 20, 20
-        ],
-                [
-            10,10, 20, 20
-        ],
-                [
-            10,10, 20, 20
-        ],
-                [
-            10,10, 20, 20
-        ],
-                [
-            10,10, 20, 20
-        ],
-                [
-            10,10, 20, 20
-        ],
-                [
-            10,10, 20, 20
-        ],
-                [
-            10,10, 20, 20
-        ]
-    ]
     X = np.array(json.load(request.body))
     print(X)
+
     clusterer = hdbscan.HDBSCAN(
         min_cluster_size=10,
-        min_samples=5,
+        min_samples=4,
         prediction_data=True,
         metric=segmentDistance)
     
-    #clusterer=DBSCAN(eps=1,min_samples=4,metric=segmentDistance)
+    #clusterer = DBSCAN(eps=2, min_samples=10, metric=segmentDistance)
 
     clusterer.fit_predict(X)
 
     print(clusterer.labels_)
-    print(clusterer.probabilities_)
+    #clusterer.probabilities_ = np.array(len(X))
 
     return {
-        'result': [ [ int(label), float(probability) ] for label, probability in zip(clusterer.labels_, clusterer.probabilities_) ]
+        'result': [ [ int(label), float(probability) ] for label, probability in zip(clusterer.labels_, clusterer.labels_) ]
     }
 
 
