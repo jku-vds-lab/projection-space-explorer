@@ -503,6 +503,7 @@ class Application extends React.Component {
               bundles[label] = [load[i]]
             }
             
+            
             edgeClusters.insert(label, new DataEdge(this.vectors[load[i][7]], this.vectors[load[i][8]]))
           }
         })
@@ -513,10 +514,10 @@ class Application extends React.Component {
         this.threeRef.current.debugSegs(bundles, edgeClusters)
       }
 
-      /**worker.postMessage({
+      worker.postMessage({
         type: 'segment',
         load: load
-      })**/
+      })
 
 
 

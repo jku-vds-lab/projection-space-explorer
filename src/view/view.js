@@ -275,6 +275,11 @@ export default class ThreeView extends React.Component {
     }
 
 
+    onKeyDown(event) {
+        console.log(event)
+    }
+
+
 
 
 
@@ -600,7 +605,6 @@ export default class ThreeView extends React.Component {
      * @param {*} bundles 
      */
     debugSegs(bundles, edgeClusters) {
-        return;
         this.debugD3(edgeClusters)
 
         var cols = ['#ff0000',
@@ -704,6 +708,7 @@ export default class ThreeView extends React.Component {
         container.removeEventListener('mousemove', this.mouseMoveListener)
         container.removeEventListener('mousedown', this.mouseDownListener)
         container.removeEventListener('mouseup', this.mouseUpListener)
+        container.removeEventListener('keydown', this.keyDownListener)
         container.removeEventListener('wheel', this.wheelListener)
 
         // Store new listeners
@@ -711,61 +716,145 @@ export default class ThreeView extends React.Component {
         this.mouseDownListener = event => this.onMouseDown(event)
         this.mouseMoveListener = event => this.onMouseMove(event)
         this.mouseUpListener = event => this.onMouseUp(event)
+        this.keyDownListener = event => this.onKeyDown(event)
 
         // Add new listeners
         container.addEventListener('mousemove', this.mouseMoveListener, false);
         container.addEventListener('mousedown', this.mouseDownListener, false);
         container.addEventListener('mouseup', this.mouseUpListener, false);
+        container.addEventListener('keydown', this.keyDownListener)
         container.addEventListener('wheel', this.wheelListener, false);
     }
 
+
+
+
+
+    /**
+     * Getting a list of edges this function will return the indices of all subtrees.
+     * eg [[[0,1],[1,2],[1,3]], [...]]
+     * @param {*} edgeClusters 
+     */
+    detectBundles(edgeClusters) {
+        var MIN_CLUSTER_SIZE = 5
+
+        var overlap = []
+        var trees = []
+
+        var uncheckt = edgeClusters.toMatrix().slice(0)
+        uncheckt.forEach((a, ai) => {
+            uncheckt.forEach((b, bi) => {
+                if (a != b) {
+                    if (a.length > MIN_CLUSTER_SIZE && b.length > MIN_CLUSTER_SIZE) {
+                        var targetCluster = a.map(edge => edge.target)
+                        var sourceCluster = b.map(edge => edge.source)
+
+                        // Check for overlap between these clusters
+                        var overlapNodes = targetCluster.filter(value => sourceCluster.includes(value))
+                        var overlapPercentage = Math.max(overlapNodes.length / sourceCluster.length, overlapNodes.length / targetCluster.length)
+
+                        if (overlapPercentage > 0.4) {
+                            // We have enough overlap, construct a tree instance
+                            overlap.push(new EdgeOverlap(ai, bi, overlapPercentage))
+                        }
+                    }
+                }
+
+            })
+        })
+        console.log(overlap)
+
+        var nonStart = []
+
+        // Find any overlap that has no start point
+        for (var i = 0; i < overlap.length; i++) {
+            var a = overlap[i]
+
+            var predecessor = overlap.find(b => a.source == b.target)
+            if (predecessor == undefined) {
+                trees.push([a])
+            } else {
+                nonStart.push(a)
+            }
+        }
+
+        console.log(trees.slice(0))
+        console.log(nonStart.slice(0))
+        
+        while (nonStart.length > 0) {
+            var a = nonStart.splice(0, 1)[0]
+            for (var i = 0; i < trees.length; i++) {
+                var tree = trees[i]
+                var last = tree[tree.length - 1]
+
+                console.log(`compare `)
+                console.log(last)
+                console.log(a)
+
+                if (last.target == a.source) {
+                    tree.push(a)
+                }
+            }
+        }
+
+        console.log("f")
+        
+        return trees
+    }
+
+
+
     debugD3(edgeClusters) {
-        console.log("set state")
+        this.trees = this.detectBundles(edgeClusters)
+        this.edgeClusters = edgeClusters.toMatrix()
 
-
-
+        var self = this
         // Filter out clusters from edgeClusters
-        var displayClusters = edgeClusters.toMatrix().map(edgeCluster => {
+
+        console.log(this.trees)
+        
+        var process = []
+        this.trees.forEach(tree => {
+            tree.forEach((connection, i) => {
+                process.push(this.edgeClusters[connection.source])
+                if (i == tree.length - 1) {
+                    process.push(this.edgeClusters[connection.target])
+                }
+            })
+        })
+
+        var displayClusters = process.map(edgeCluster => {
             var vecs = edgeCluster.map(m => m.target)
             var c = new Cluster(vecs, null, null, null)
+            c.forceLabelPosition = c.getCenter()
+            c.shiftX = 0
+            c.shiftY = 0
             return c
         })
-        console.log(displayClusters)
 
-        //this.setState({
-        //    displayClusters: displayClusters
-        //})
-
-
-
-
-
-
-
+        this.setState({
+            displayClusters: displayClusters
+        })
 
 
         var width = this.getWidth();
         var height = this.getHeight();
         var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-
         var graph = {
             nodes: displayClusters.map(m => {
                 return {
                     id: Math.random(),
-                    center: this.worldToScreen(m.getCenter())
+                    center: m.getCenter()
                 }
             })
         }
-
 
 
         var label = {
             'nodes': [],
             'links': []
         };
-
-
 
         graph.nodes.forEach(function (d, i) {
             label.nodes.push({ node: d });
@@ -777,56 +866,57 @@ export default class ThreeView extends React.Component {
         });
 
         var labelLayout = d3.forceSimulation(label.nodes)
-            .force("charge", d3.forceManyBody().strength(-100))
-            .force("collide", d3.forceCollide().radius(50))
+            .force("charge", d3.forceManyBody().strength(-500))
+            .force("collide", d3.forceCollide().radius(10))
             .force("link", d3.forceLink(label.links).distance(50).strength(0.5));
 
         var graphLayout = d3.forceSimulation(graph.nodes)
             //.force("charge", d3.forceManyBody().strength(-30))
             //.force("center", d3.forceCenter(width / 2, height / 2))
             .force("collide", d3.forceCollide().radius(20))
-            //.force("x", d3.forceX(width / 2).strength(1))
+            //.force("x", d3.forceX(width / 2).strength(0.01))
             //.force("y", d3.forceY(height / 2).strength(1))
             //.force("link", d3.forceLink(graph.links).id(function(d) {return d.id; }).distance(50).strength(1))
             .on("tick", ticked);
 
 
-
-
         var svg = d3.select("#physics").attr("width", width).attr("height", height);
         var container = svg.append("div");
-
-
 
         var node = container.append("div").attr("class", "nodes")
             .selectAll("div")
             .data(graph.nodes)
             .enter()
             .append("div")
-            .style("width", 20)
-            .style("height", 20)
             .style("position", "absolute")
-            .style("background", "red")
-            .attr("fill", function (d) { return color(0); })
-
-
 
         var labelNode = container.append("div").attr("class", "labelNodes")
             .selectAll("div")
             .data(label.nodes)
             .enter()
             .append("div")
-            .text(function (d, i) { return i % 2 == 0 ? "" : d.node.id; })
+            //.text(function (d, i) { return i % 2 == 0 ? "" : d.node.id; })
             .style("position", "absolute")
             .style("fill", "#555")
-            .style("font-family", "Arial")
-            .style("font-size", 12)
+            //.style("font-family", "Arial")
+            //.style("font-size", 12)
             .style("pointer-events", "none"); // to prevent mouseover/drag capture
 
+
+        var link = container.append("g").attr("class", "links")
+            .selectAll("line")
+            .data(label.links)
+            .enter()
+            .append("line")
+            .attr("stroke", "#aaa")
+            .attr("stroke-width", "1px");
+
+        this.link = link
 
         function ticked() {
 
             node.call(updateNode);
+            link.call(updateLink);
 
             labelLayout.alphaTarget(0.3).restart();
             labelNode.each(function (d, i) {
@@ -834,7 +924,7 @@ export default class ThreeView extends React.Component {
                     d.x = d.node.x;
                     d.y = d.node.y;
                 } else {
-                    var b = { width: 100 }
+                    var b = { width: 172, height: 230 }
 
                     var diffX = d.x - d.node.x;
                     var diffY = d.y - d.node.y;
@@ -844,11 +934,43 @@ export default class ThreeView extends React.Component {
                     var shiftX = b.width * (diffX - dist) / (dist * 2);
                     shiftX = Math.max(-b.width, Math.min(0, shiftX));
                     var shiftY = 16;
+                    shiftY = b.height * (diffY - dist) / (dist * 2);
+                    shiftY = Math.max(-b.height, Math.min(0, shiftY))
                     this.setAttribute("transform", "translate(" + shiftX + "," + shiftY + ")");
+
+                    self.state.displayClusters[Math.floor(i / 2)].forceLabelPosition =
+                        { x: d.x, y: d.y }
+                    self.state.displayClusters[Math.floor(i / 2)].shiftX = shiftX
+                    self.state.displayClusters[Math.floor(i / 2)].shiftY = shiftY
+
+                    //self.state.displayClusters[Math.floor(i / 2)].forceLabelPosition = self.state.displayClusters[Math.floor(i / 2)].center
+
                 }
             });
+
+            self.setState({
+                displayClusters: self.state.displayClusters
+            })
+
+            graphLayout.alphaTarget(0.3).restart();
+
+            var k = 0.2 * this.alpha();
+
+            node.each(function (o, i) {
+                var center = self.worldToScreen(o.center)
+                o.x += (center.x - o.x) * k;
+                o.y += (center.y - o.y) * k;
+            });
+
             labelNode.call(updateNode);
 
+        }
+
+        function updateLink(link) {
+            link.attr("x1", function (d) { return fixna(d.source.x); })
+                .attr("y1", function (d) { return fixna(d.source.y); })
+                .attr("x2", function (d) { return fixna(d.target.x); })
+                .attr("y2", function (d) { return fixna(d.target.y); });
         }
 
         function fixna(x) {
@@ -865,8 +987,6 @@ export default class ThreeView extends React.Component {
             node.style("top", function (d) {
                 return fixna(d.y) + "px"
             })
-            node.style("width", "20px")
-            node.style("height", "20px")
         }
     }
 
@@ -969,7 +1089,7 @@ export default class ThreeView extends React.Component {
             // Update zoom level and position
             this.camera.position.x = interpolateLinear(this.sourcePosition.x, this.targetPosition.x, this.transitionTime)
             this.camera.position.y = interpolateLinear(this.sourcePosition.y, this.targetPosition.y, this.transitionTime)
-            this.camera.zoom = interpolateLinear(this.sourceZoom, this.targetZoom, this.transitionTime)
+            //this.camera.zoom = interpolateLinear(this.sourceZoom, this.targetZoom, this.transitionTime)
             this.camera.updateProjectionMatrix()
 
             // End transition
@@ -998,7 +1118,14 @@ export default class ThreeView extends React.Component {
             this.renderer.render(this.scene, this.camera)
             this.renderer.render(this.pointScene, this.camera)
 
-            this.renderLasso()
+            var ctx = this.selectionRef.current.getContext('2d')
+            ctx.clearRect(0, 0, this.getWidth(), this.getHeight(), 'white');
+            this.selectionRef.current.setAttribute('width', this.getWidth())
+            this.selectionRef.current.setAttribute('height', this.getHeight())
+
+            this.renderLasso(ctx)
+            this.renderLinks(ctx)
+            this.renderEdge(ctx)
         } catch (e) {
         }
     }
@@ -1019,11 +1146,7 @@ export default class ThreeView extends React.Component {
     }
 
 
-    renderLasso() {
-        var ctx = this.selectionRef.current.getContext('2d')
-        ctx.clearRect(0, 0, this.getWidth(), this.getHeight(), 'white');
-
-
+    renderLasso(ctx) {
         if (this.lasso == null) return;
 
         var points = this.lasso.points
@@ -1031,8 +1154,6 @@ export default class ThreeView extends React.Component {
         if (points.length <= 1) {
             return;
         }
-        this.selectionRef.current.setAttribute('width', this.getWidth())
-        this.selectionRef.current.setAttribute('height', this.getHeight())
 
         ctx.setLineDash([5, 3]);
         ctx.strokeStyle = 'black';
@@ -1059,6 +1180,67 @@ export default class ThreeView extends React.Component {
         ctx.closePath();
     }
 
+    renderLinks(ctx) {
+        if (this.link) {
+            ctx.setLineDash([]);
+            ctx.strokeStyle = 'rgba(127, 127, 255, 0.7)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
+            ctx.lineWidth = 3;
+
+            this.link.each((d, i) => {
+                ctx.beginPath();
+                ctx.arc(d.source.x, d.source.y, 5, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(d.target.x, d.target.y, 5, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.closePath();
+
+
+                ctx.beginPath();
+                ctx.moveTo(d.source.x, d.source.y)
+                ctx.lineTo(d.target.x, d.target.y)
+                ctx.stroke();
+                ctx.closePath();
+            })
+        }
+    }
+
+
+    renderEdge(ctx) {
+        if (this.trees) {
+
+            ctx.setLineDash([]);
+            ctx.strokeStyle = 'rgba(127, 127, 255, 0.7)';
+            ctx.lineWidth = 10;
+
+            ctx.beginPath()
+
+            this.trees.forEach(tree => {
+                tree.forEach((connection, i) => {
+                    var a = this.edgeClusters[connection.source]
+                    var b = this.edgeClusters[connection.target]
+
+
+                    var p0 = this.worldToScreen(new Cluster(a.map(e => e.source)).getCenter())
+                    var p1 = this.worldToScreen(new Cluster(a.map(e => e.target)).getCenter())
+                    ctx.moveTo(p0.x, p0.y)
+                    ctx.lineTo(p1.x, p1.y)
+
+
+                    p0 = this.worldToScreen(new Cluster(b.map(e => e.source)).getCenter())
+                    p1 = this.worldToScreen(new Cluster(b.map(e => e.target)).getCenter())
+                    ctx.moveTo(p0.x, p0.y)
+                    ctx.lineTo(p1.x, p1.y)
+                })
+            })
+
+            ctx.stroke()
+            ctx.closePath()
+        }
+    }
 
     render() {
         const containerStyle = {
@@ -1066,22 +1248,29 @@ export default class ThreeView extends React.Component {
             top: "0px",
             left: "0px",
             width: "100%",
-            height: "100%"
+            height: "100%",
+            tabIndex: 0
         }
 
         return <div class="flex-grow-1 d-flex"
             style={{
                 overflow: "hidden",
                 position: "relative",
-                cursor: this.props.tool
+                cursor: this.props.tool,
+                tabIndex: 1
             }}>
 
-            <div id="container" style={containerStyle} ref={this.containerRef}>
+            <div id="container" style={containerStyle} ref={this.containerRef} tabIndex={0}>
                 {
                     this.state.displayClusters.map(displayCluster => {
-
-                        var wts = this.worldToScreen(displayCluster.getCenter())
-                        return <div>
+                        return <div
+                            style={{
+                                position: 'absolute',
+                                left: displayCluster.forceLabelPosition.x,
+                                top: displayCluster.forceLabelPosition.y,
+                                transform: `translate(${displayCluster.shiftX.toFixed(1)}px, ${displayCluster.shiftY.toFixed(1)}px)`
+                            }}
+                        >
 
                             <GenericLegend
                                 type={this.dataset.info.type}
@@ -1123,15 +1312,26 @@ export default class ThreeView extends React.Component {
                 pointerEvents: 'none'
             }} ref={this.selectionRef}></canvas>
 
-            <div id="physics" style={containerStyle} ref={this.physicsRef}></div>
+            <div id="physics" style={{
+                position: "absolute",
+                top: "0px",
+                left: "0px",
+                width: "100%",
+                height: "100%",
+                pointerEvents: 'none'
+            }} ref={this.physicsRef}></div>
 
 
         </div>
     }
 }
 
-/**
- *             <div style={{ position: 'absolute', top: '0px', left: '0px' }}>
-                <SettingsPopover onChangeSlider={(ratio) => this.particles.setPointScaling(ratio)}></SettingsPopover>
-            </div>
- */
+
+
+class EdgeOverlap {
+    constructor(source, target, overlap) {
+        this.source = source
+        this.target = target
+        this.overlap = overlap
+    }
+}

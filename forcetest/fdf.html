@@ -14,19 +14,16 @@
     var graph = {
         "nodes": [
             {
-                "id": "Myriel"
+                "id": "Myriel",
+                "center": { x: 200, y: 200 }
             },
             {
-                "id": "Napoleon"
+                "id": "Napoleon",
+                "center": { x: 400, y: 400 }
             },
             {
-                "id": "Mlle.Baptistine"
-            },
-            {
-                "id": "Mme.Magloire"
-            },
-            {
-                "id": "CountessdeLo"
+                "id": "Mlle.Baptistine",
+                "center": { x: 600, y: 700 }
             }
         ]
     }
@@ -45,7 +42,7 @@
     });
 
     var labelLayout = d3.forceSimulation(label.nodes)
-        .force("charge", d3.forceManyBody().strength(-50))
+        .force("charge", d3.forceManyBody().strength(-500))
         .force("collide", d3.forceCollide().radius(10))
         .force("link", d3.forceLink(label.links).distance(50).strength(0.5));
 
@@ -84,6 +81,7 @@
         .data(label.nodes)
         .enter()
         .append("div")
+
         .text(function (d, i) { return i % 2 == 0 ? "" : d.node.id; })
         .style("position", "absolute")
         .style("fill", "#555")
@@ -94,7 +92,7 @@
 
     function ticked(e) {
 
-        
+
         node.call(updateNode);
 
         labelLayout.alphaTarget(0.5).restart();
@@ -104,27 +102,29 @@
                 d.y = d.node.y;
             } else {
                 var b = { width: 100 }
-    
+
                 var diffX = d.x - d.node.x;
                 var diffY = d.y - d.node.y;
-    
+
                 var dist = Math.sqrt(diffX * diffX + diffY * diffY);
-    
+
                 var shiftX = b.width * (diffX - dist) / (dist * 2);
                 shiftX = Math.max(-b.width, Math.min(0, shiftX));
                 var shiftY = 16;
                 this.setAttribute("transform", "translate(" + shiftX + "," + shiftY + ")");
+
+                console.log(d.node.center)
             }
         });
 
         var k = 0.05 * this.alpha();
-        
+
         node.each(function (o, i) {
-            o.y += (200 - o.y) * k;
-            o.x += (200 - o.x) * k;
+            o.y += (o.center.x - o.y) * k;
+            o.x += (o.center.y - o.x) * k;
         });
 
-        labelNode.call(updateNode);
+        labelNode.call(updateLNode);
 
     }
 
@@ -133,6 +133,15 @@
         return 0;
     }
 
+    function updateLNode(node) {
+        node.style("left", function (d) {
+            return fixna(d.x) + "px"
+        })
+        node.style("top", function (d) {
+            return fixna(d.y) + "px"
+        })
+        //node.style("background", "blue")
+    }
 
     function updateNode(node) {
         node.style("left", function (d) {
@@ -141,6 +150,7 @@
         node.style("top", function (d) {
             return fixna(d.y) + "px"
         })
+        //node.style("background", "blue")
     }
 
 
