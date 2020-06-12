@@ -1,1 +1,2359 @@
-!function(t){var n={};function a(r){if(n[r])return n[r].exports;var i=n[r]={i:r,l:!1,exports:{}};return t[r].call(i.exports,i,i.exports,a),i.l=!0,i.exports}a.m=t,a.c=n,a.d=function(t,n,r){a.o(t,n)||Object.defineProperty(t,n,{enumerable:!0,get:r})},a.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},a.t=function(t,n){if(1&n&&(t=a(t)),8&n)return t;if(4&n&&"object"==typeof t&&t&&t.__esModule)return t;var r=Object.create(null);if(a.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:t}),2&n&&"string"!=typeof t)for(var i in t)a.d(r,i,function(n){return t[n]}.bind(null,i));return r},a.n=function(t){var n=t&&t.__esModule?function(){return t.default}:function(){return t};return a.d(n,"a",n),n},a.o=function(t,n){return Object.prototype.hasOwnProperty.call(t,n)},a.p="",a(a.s=37)}({106:function(t,n,a){"use strict";t.exports=i,t.exports.default=i;var r=a(107);function i(t,n){if(!(this instanceof i))return new i(t,n);this._maxEntries=Math.max(4,t||9),this._minEntries=Math.max(2,Math.ceil(.4*this._maxEntries)),n&&this._initFormat(n),this.clear()}function e(t,n,a){if(!a)return n.indexOf(t);for(var r=0;r<n.length;r++)if(a(t,n[r]))return r;return-1}function o(t,n){s(t,0,t.children.length,n,t)}function s(t,n,a,r,i){i||(i=p(null)),i.minX=1/0,i.minY=1/0,i.maxX=-1/0,i.maxY=-1/0;for(var e,o=n;o<a;o++)e=t.children[o],h(i,t.leaf?r(e):e);return i}function h(t,n){return t.minX=Math.min(t.minX,n.minX),t.minY=Math.min(t.minY,n.minY),t.maxX=Math.max(t.maxX,n.maxX),t.maxY=Math.max(t.maxY,n.maxY),t}function u(t,n){return t.minX-n.minX}function c(t,n){return t.minY-n.minY}function f(t){return(t.maxX-t.minX)*(t.maxY-t.minY)}function l(t){return t.maxX-t.minX+(t.maxY-t.minY)}function b(t,n){return t.minX<=n.minX&&t.minY<=n.minY&&n.maxX<=t.maxX&&n.maxY<=t.maxY}function d(t,n){return n.minX<=t.maxX&&n.minY<=t.maxY&&n.maxX>=t.minX&&n.maxY>=t.minY}function p(t){return{children:t,height:1,leaf:!0,minX:1/0,minY:1/0,maxX:-1/0,maxY:-1/0}}function v(t,n,a,i,e){for(var o,s=[n,a];s.length;)(a=s.pop())-(n=s.pop())<=i||(o=n+Math.ceil((a-n)/i/2)*i,r(t,o,n,a,e),s.push(n,o,o,a))}i.prototype={all:function(){return this._all(this.data,[])},search:function(t){var n=this.data,a=[],r=this.toBBox;if(!d(t,n))return a;for(var i,e,o,s,h=[];n;){for(i=0,e=n.children.length;i<e;i++)o=n.children[i],d(t,s=n.leaf?r(o):o)&&(n.leaf?a.push(o):b(t,s)?this._all(o,a):h.push(o));n=h.pop()}return a},collides:function(t){var n=this.data,a=this.toBBox;if(!d(t,n))return!1;for(var r,i,e,o,s=[];n;){for(r=0,i=n.children.length;r<i;r++)if(e=n.children[r],d(t,o=n.leaf?a(e):e)){if(n.leaf||b(t,o))return!0;s.push(e)}n=s.pop()}return!1},load:function(t){if(!t||!t.length)return this;if(t.length<this._minEntries){for(var n=0,a=t.length;n<a;n++)this.insert(t[n]);return this}var r=this._build(t.slice(),0,t.length-1,0);if(this.data.children.length)if(this.data.height===r.height)this._splitRoot(this.data,r);else{if(this.data.height<r.height){var i=this.data;this.data=r,r=i}this._insert(r,this.data.height-r.height-1,!0)}else this.data=r;return this},insert:function(t){return t&&this._insert(t,this.data.height-1),this},clear:function(){return this.data=p([]),this},remove:function(t,n){if(!t)return this;for(var a,r,i,o,s=this.data,h=this.toBBox(t),u=[],c=[];s||u.length;){if(s||(s=u.pop(),r=u[u.length-1],a=c.pop(),o=!0),s.leaf&&-1!==(i=e(t,s.children,n)))return s.children.splice(i,1),u.push(s),this._condense(u),this;o||s.leaf||!b(s,h)?r?(a++,s=r.children[a],o=!1):s=null:(u.push(s),c.push(a),a=0,r=s,s=s.children[0])}return this},toBBox:function(t){return t},compareMinX:u,compareMinY:c,toJSON:function(){return this.data},fromJSON:function(t){return this.data=t,this},_all:function(t,n){for(var a=[];t;)t.leaf?n.push.apply(n,t.children):a.push.apply(a,t.children),t=a.pop();return n},_build:function(t,n,a,r){var i,e=a-n+1,s=this._maxEntries;if(e<=s)return o(i=p(t.slice(n,a+1)),this.toBBox),i;r||(r=Math.ceil(Math.log(e)/Math.log(s)),s=Math.ceil(e/Math.pow(s,r-1))),(i=p([])).leaf=!1,i.height=r;var h,u,c,f,l=Math.ceil(e/s),b=l*Math.ceil(Math.sqrt(s));for(v(t,n,a,b,this.compareMinX),h=n;h<=a;h+=b)for(v(t,h,c=Math.min(h+b-1,a),l,this.compareMinY),u=h;u<=c;u+=l)f=Math.min(u+l-1,c),i.children.push(this._build(t,u,f,r-1));return o(i,this.toBBox),i},_chooseSubtree:function(t,n,a,r){for(var i,e,o,s,h,u,c,l,b,d;r.push(n),!n.leaf&&r.length-1!==a;){for(c=l=1/0,i=0,e=n.children.length;i<e;i++)h=f(o=n.children[i]),b=t,d=o,(u=(Math.max(d.maxX,b.maxX)-Math.min(d.minX,b.minX))*(Math.max(d.maxY,b.maxY)-Math.min(d.minY,b.minY))-h)<l?(l=u,c=h<c?h:c,s=o):u===l&&h<c&&(c=h,s=o);n=s||n.children[0]}return n},_insert:function(t,n,a){var r=this.toBBox,i=a?t:r(t),e=[],o=this._chooseSubtree(i,this.data,n,e);for(o.children.push(t),h(o,i);n>=0&&e[n].children.length>this._maxEntries;)this._split(e,n),n--;this._adjustParentBBoxes(i,e,n)},_split:function(t,n){var a=t[n],r=a.children.length,i=this._minEntries;this._chooseSplitAxis(a,i,r);var e=this._chooseSplitIndex(a,i,r),s=p(a.children.splice(e,a.children.length-e));s.height=a.height,s.leaf=a.leaf,o(a,this.toBBox),o(s,this.toBBox),n?t[n-1].children.push(s):this._splitRoot(a,s)},_splitRoot:function(t,n){this.data=p([t,n]),this.data.height=t.height+1,this.data.leaf=!1,o(this.data,this.toBBox)},_chooseSplitIndex:function(t,n,a){var r,i,e,o,h,u,c,l,b,d,p,v,m,g;for(u=c=1/0,r=n;r<=a-n;r++)i=s(t,0,r,this.toBBox),e=s(t,r,a,this.toBBox),b=i,d=e,p=void 0,v=void 0,m=void 0,g=void 0,p=Math.max(b.minX,d.minX),v=Math.max(b.minY,d.minY),m=Math.min(b.maxX,d.maxX),g=Math.min(b.maxY,d.maxY),o=Math.max(0,m-p)*Math.max(0,g-v),h=f(i)+f(e),o<u?(u=o,l=r,c=h<c?h:c):o===u&&h<c&&(c=h,l=r);return l},_chooseSplitAxis:function(t,n,a){var r=t.leaf?this.compareMinX:u,i=t.leaf?this.compareMinY:c;this._allDistMargin(t,n,a,r)<this._allDistMargin(t,n,a,i)&&t.children.sort(r)},_allDistMargin:function(t,n,a,r){t.children.sort(r);var i,e,o=this.toBBox,u=s(t,0,n,o),c=s(t,a-n,a,o),f=l(u)+l(c);for(i=n;i<a-n;i++)e=t.children[i],h(u,t.leaf?o(e):e),f+=l(u);for(i=a-n-1;i>=n;i--)e=t.children[i],h(c,t.leaf?o(e):e),f+=l(c);return f},_adjustParentBBoxes:function(t,n,a){for(var r=a;r>=0;r--)h(n[r],t)},_condense:function(t){for(var n,a=t.length-1;a>=0;a--)0===t[a].children.length?a>0?(n=t[a-1].children).splice(n.indexOf(t[a]),1):this.clear():o(t[a],this.toBBox)},_initFormat:function(t){var n=["return a"," - b",";"];this.compareMinX=new Function("a","b",n.join(t[0])),this.compareMinY=new Function("a","b",n.join(t[1])),this.toBBox=new Function("a","return {minX: a"+t[0]+", minY: a"+t[1]+", maxX: a"+t[2]+", maxY: a"+t[3]+"};")}}},107:function(t,n,a){t.exports=function(){"use strict";function t(t,n,a){var r=t[n];t[n]=t[a],t[a]=r}function n(t,n){return t<n?-1:t>n?1:0}return function(a,r,i,e,o){!function n(a,r,i,e,o){for(;e>i;){if(e-i>600){var s=e-i+1,h=r-i+1,u=Math.log(s),c=.5*Math.exp(2*u/3),f=.5*Math.sqrt(u*c*(s-c)/s)*(h-s/2<0?-1:1),l=Math.max(i,Math.floor(r-h*c/s+f)),b=Math.min(e,Math.floor(r+(s-h)*c/s+f));n(a,r,l,b,o)}var d=a[r],p=i,v=e;for(t(a,i,r),o(a[e],d)>0&&t(a,i,e);p<v;){for(t(a,p,v),p++,v--;o(a[p],d)<0;)p++;for(;o(a[v],d)>0;)v--}0===o(a[i],d)?t(a,i,v):(v++,t(a,v,e)),v<=r&&(i=v+1),r<=v&&(e=v-1)}}(a,r,i||0,e||a.length-1,o||n)}}()},108:function(t,n,a){"use strict";t.exports=function(t){var n=t.length;if(n<3){for(var a=new Array(n),i=0;i<n;++i)a[i]=i;return 2===n&&t[0][0]===t[1][0]&&t[0][1]===t[1][1]?[0]:a}var e=new Array(n);for(i=0;i<n;++i)e[i]=i;e.sort((function(n,a){var r=t[n][0]-t[a][0];return r||t[n][1]-t[a][1]}));var o=[e[0],e[1]],s=[e[0],e[1]];for(i=2;i<n;++i){for(var h=e[i],u=t[h],c=o.length;c>1&&r(t[o[c-2]],t[o[c-1]],u)<=0;)c-=1,o.pop();for(o.push(h),c=s.length;c>1&&r(t[s[c-2]],t[s[c-1]],u)>=0;)c-=1,s.pop();s.push(h)}a=new Array(s.length+o.length-2);for(var f=0,l=(i=0,o.length);i<l;++i)a[f++]=o[i];for(var b=s.length-2;b>0;--b)a[f++]=s[b];return a};var r=a(69)[3]},109:function(t,n,a){"use strict";t.exports=function(t,n){var a=0|t.length,r=0|n.length;if(1===a&&1===r)return function(t,n){var a=t+n,r=a-t,i=t-(a-r)+(n-r);if(i)return[i,a];return[a]}(t[0],n[0]);var i,e,o=new Array(a+r),s=0,h=0,u=0,c=Math.abs,f=t[h],l=c(f),b=n[u],d=c(b);l<d?(e=f,(h+=1)<a&&(f=t[h],l=c(f))):(e=b,(u+=1)<r&&(b=n[u],d=c(b)));h<a&&l<d||u>=r?(i=f,(h+=1)<a&&(f=t[h],l=c(f))):(i=b,(u+=1)<r&&(b=n[u],d=c(b)));var p,v,m=i+e,g=m-i,x=e-g,_=x,y=m;for(;h<a&&u<r;)l<d?(i=f,(h+=1)<a&&(f=t[h],l=c(f))):(i=b,(u+=1)<r&&(b=n[u],d=c(b))),(x=(e=_)-(g=(m=i+e)-i))&&(o[s++]=x),_=y-((p=y+m)-(v=p-y))+(m-v),y=p;for(;h<a;)(x=(e=_)-(g=(m=(i=f)+e)-i))&&(o[s++]=x),_=y-((p=y+m)-(v=p-y))+(m-v),y=p,(h+=1)<a&&(f=t[h]);for(;u<r;)(x=(e=_)-(g=(m=(i=b)+e)-i))&&(o[s++]=x),_=y-((p=y+m)-(v=p-y))+(m-v),y=p,(u+=1)<r&&(b=n[u]);_&&(o[s++]=_);y&&(o[s++]=y);s||(o[s++]=0);return o.length=s,o}},110:function(t,n,a){"use strict";var r=a(70),i=a(111);t.exports=function(t,n){var a=t.length;if(1===a){var e=r(t[0],n);return e[0]?e:[e[1]]}var o=new Array(2*a),s=[.1,.1],h=[.1,.1],u=0;r(t[0],n,s),s[0]&&(o[u++]=s[0]);for(var c=1;c<a;++c){r(t[c],n,h);var f=s[1];i(f,h[0],s),s[0]&&(o[u++]=s[0]);var l=h[1],b=s[1],d=l+b,p=b-(d-l);s[1]=d,p&&(o[u++]=p)}s[1]&&(o[u++]=s[1]);0===u&&(o[u++]=0);return o.length=u,o}},111:function(t,n,a){"use strict";t.exports=function(t,n,a){var r=t+n,i=r-t,e=n-i,o=t-(r-i);if(a)return a[0]=o+e,a[1]=r,a;return[o+e,r]}},112:function(t,n,a){"use strict";t.exports=function(t,n){var a=0|t.length,r=0|n.length;if(1===a&&1===r)return function(t,n){var a=t+n,r=a-t,i=t-(a-r)+(n-r);if(i)return[i,a];return[a]}(t[0],-n[0]);var i,e,o=new Array(a+r),s=0,h=0,u=0,c=Math.abs,f=t[h],l=c(f),b=-n[u],d=c(b);l<d?(e=f,(h+=1)<a&&(f=t[h],l=c(f))):(e=b,(u+=1)<r&&(b=-n[u],d=c(b)));h<a&&l<d||u>=r?(i=f,(h+=1)<a&&(f=t[h],l=c(f))):(i=b,(u+=1)<r&&(b=-n[u],d=c(b)));var p,v,m=i+e,g=m-i,x=e-g,_=x,y=m;for(;h<a&&u<r;)l<d?(i=f,(h+=1)<a&&(f=t[h],l=c(f))):(i=b,(u+=1)<r&&(b=-n[u],d=c(b))),(x=(e=_)-(g=(m=i+e)-i))&&(o[s++]=x),_=y-((p=y+m)-(v=p-y))+(m-v),y=p;for(;h<a;)(x=(e=_)-(g=(m=(i=f)+e)-i))&&(o[s++]=x),_=y-((p=y+m)-(v=p-y))+(m-v),y=p,(h+=1)<a&&(f=t[h]);for(;u<r;)(x=(e=_)-(g=(m=(i=b)+e)-i))&&(o[s++]=x),_=y-((p=y+m)-(v=p-y))+(m-v),y=p,(u+=1)<r&&(b=-n[u]);_&&(o[s++]=_);y&&(o[s++]=y);s||(o[s++]=0);return o.length=s,o}},113:function(t,n,a){"use strict";function r(t,n){if(!(this instanceof r))return new r(t,n);if(this.data=t||[],this.length=this.data.length,this.compare=n||i,this.length>0)for(var a=(this.length>>1)-1;a>=0;a--)this._down(a)}function i(t,n){return t<n?-1:t>n?1:0}t.exports=r,t.exports.default=r,r.prototype={push:function(t){this.data.push(t),this.length++,this._up(this.length-1)},pop:function(){if(0!==this.length){var t=this.data[0];return this.length--,this.length>0&&(this.data[0]=this.data[this.length],this._down(0)),this.data.pop(),t}},peek:function(){return this.data[0]},_up:function(t){for(var n=this.data,a=this.compare,r=n[t];t>0;){var i=t-1>>1,e=n[i];if(a(r,e)>=0)break;n[t]=e,t=i}n[t]=r},_down:function(t){for(var n=this.data,a=this.compare,r=this.length>>1,i=n[t];t<r;){var e=1+(t<<1),o=e+1,s=n[e];if(o<this.length&&a(n[o],s)<0&&(e=o,s=n[o]),a(s,i)>=0)break;n[t]=s,t=e}n[t]=i}}},114:function(t,n){t.exports=function(t,n){for(var a=t[0],r=t[1],i=!1,e=0,o=n.length-1;e<n.length;o=e++){var s=n[e][0],h=n[e][1],u=n[o][0],c=n[o][1];h>r!=c>r&&a<(u-s)*(r-h)/(c-h)+s&&(i=!i)}return i}},20:function(t,n,a){"use strict";var r;function i(t,n){return t.b===n.b&&t.a===n.a}function e(t,n){return t.b<n.b||t.b===n.b&&t.a<=n.a}function o(t,n,a){var r=n.b-t.b,i=a.b-n.b;return 0<r+i?r<i?n.a-t.a+r/(r+i)*(t.a-a.a):n.a-a.a+i/(r+i)*(a.a-t.a):0}function s(t,n,a){var r=n.b-t.b,i=a.b-n.b;return 0<r+i?(n.a-a.a)*r+(n.a-t.a)*i:0}function h(t,n){return t.a<n.a||t.a===n.a&&t.b<=n.b}function u(t,n,a){var r=n.a-t.a,i=a.a-n.a;return 0<r+i?r<i?n.b-t.b+r/(r+i)*(t.b-a.b):n.b-a.b+i/(r+i)*(a.b-t.b):0}function c(t,n,a){var r=n.a-t.a,i=a.a-n.a;return 0<r+i?(n.b-a.b)*r+(n.b-t.b)*i:0}function f(t){return e(t.b.a,t.a)}function l(t){return e(t.a,t.b.a)}function b(t,n,a,r){return(t=0>t?0:t)<=(a=0>a?0:a)?0===a?(n+r)/2:n+t/(t+a)*(r-n):r+a/(t+a)*(n-r)}function d(t){var n=x(t.b);return y(n,t.c),y(n.b,t.c),S(n,t.a),n}function p(t,n){var a=!1,r=!1;t!==n&&(n.a!==t.a&&(r=!0,M(n.a,t.a)),n.d!==t.d&&(a=!0,T(n.d,t.d)),_(n,t),r||(y(n,t.a),t.a.c=t),a||(S(n,t.d),t.d.a=t))}function v(t){var n=t.b,a=!1;t.d!==t.b.d&&(a=!0,T(t.d,t.b.d)),t.c===t?M(t.a,null):(t.b.d.a=nt(t),t.a.c=t.c,_(t,nt(t)),a||S(t,t.d)),n.c===n?(M(n.a,null),T(n.d,null)):(t.d.a=nt(n),n.a.c=n.c,_(n,nt(n))),E(t)}function m(t){var n=x(t),a=n.b;return _(n,t.e),n.a=t.b.a,y(a,n.a),n.d=a.d=t.d,n=n.b,_(t.b,nt(t.b)),_(t.b,n),t.b.a=n.a,n.b.a.c=n.b,n.b.d=t.b.d,n.f=t.f,n.b.f=t.b.f,n}function g(t,n){var a=!1,r=x(t),i=r.b;return n.d!==t.d&&(a=!0,T(n.d,t.d)),_(r,t.e),_(i,n),r.a=t.b.a,i.a=n.a,r.d=i.d=t.d,t.d.a=i,a||S(r,t.d),r}function x(t){var n=new tt,a=new tt,r=t.b.h;return a.h=r,r.b.h=n,n.h=t,t.b.h=a,n.b=a,n.c=n,n.e=a,a.b=n,a.c=a,a.e=n}function _(t,n){var a=t.c,r=n.c;a.b.e=n,r.b.e=t,t.c=r,n.c=a}function y(t,n){var a=n.f,r=new rt(n,a);a.e=r,n.f=r,a=r.c=t;do{a.a=r,a=a.c}while(a!==t)}function S(t,n){var a=n.d,r=new $(n,a);a.b=r,n.d=r,r.a=t,r.c=n.c,a=t;do{a.d=r,a=a.e}while(a!==t)}function E(t){var n=t.h;t=t.b.h,n.b.h=t,t.b.h=n}function M(t,n){var a=t.c,r=a;do{r.a=n,r=r.c}while(r!==a);a=t.f,(r=t.e).f=a,a.e=r}function T(t,n){var a=t.a,r=a;do{r.d=n,r=r.e}while(r!==a);a=t.d,(r=t.b).d=a,a.b=r}function w(t){var n=0;return Math.abs(t[1])>Math.abs(t[0])&&(n=1),Math.abs(t[2])>Math.abs(t[n])&&(n=2),n}var G=4e150;function Y(t,n){t.f+=n.f,t.b.f+=n.b.f}function X(t,n,a){return t=t.a,n=n.a,a=a.a,n.b.a===t?a.b.a===t?e(n.a,a.a)?0>=s(a.b.a,n.a,a.a):0<=s(n.b.a,a.a,n.a):0>=s(a.b.a,t,a.a):a.b.a===t?0<=s(n.b.a,t,n.a):(n=o(n.b.a,t,n.a))>=(t=o(a.b.a,t,a.a))}function L(t){t.a.i=null;var n=t.e;n.a.c=n.c,n.c.a=n.a,t.e=null}function N(t,n){v(t.a),t.c=!1,t.a=n,n.i=t}function A(t){var n=t.a.a;do{t=pt(t)}while(t.a.a===n);return t.c&&(N(t,n=g(dt(t).a.b,t.a.e)),t=pt(t)),t}function B(t,n,a){var r=new bt;return r.a=a,r.e=J(t.f,n.e,r),a.i=r}function O(t,n){switch(t.s){case 100130:return 0!=(1&n);case 100131:return 0!==n;case 100132:return 0<n;case 100133:return 0>n;case 100134:return 2<=n||-2>=n}return!1}function I(t){var n=t.a,a=n.d;a.c=t.d,a.a=n,L(t)}function k(t,n,a){for(t=n,n=n.a;t!==a;){t.c=!1;var r=dt(t),i=r.a;if(i.a!==n.a){if(!r.c){I(t);break}N(r,i=g(n.c.b,i.b))}n.c!==i&&(p(nt(i),i),p(n,i)),I(t),n=r.a,t=r}return n}function U(t,n,a,r,i,e){var o=!0;do{B(t,n,a.b),a=a.c}while(a!==r);for(null===i&&(i=dt(n).a.b.c);(a=(r=dt(n)).a.b).a===i.a;)a.c!==i&&(p(nt(a),a),p(nt(i),a)),r.f=n.f-a.f,r.d=O(t,r.f),n.b=!0,!o&&C(t,n)&&(Y(a,i),L(n),v(i)),o=!1,n=r,i=a;n.b=!0,e&&F(t,n)}function j(t,n,a,r,i){var e=[n.g[0],n.g[1],n.g[2]];n.d=null,n.d=t.o&&t.o(e,a,r,t.c)||null,null===n.d&&(i?t.n||(Z(t,100156),t.n=!0):n.d=a[0])}function D(t,n,a){var r=[null,null,null,null];r[0]=n.a.d,r[1]=a.a.d,j(t,n.a,r,[.5,.5,0,0],!1),p(n,a)}function R(t,n,a,r,i){var e=Math.abs(n.b-t.b)+Math.abs(n.a-t.a),o=Math.abs(a.b-t.b)+Math.abs(a.a-t.a),s=i+1;r[i]=.5*o/(e+o),r[s]=.5*e/(e+o),t.g[0]+=r[i]*n.g[0]+r[s]*a.g[0],t.g[1]+=r[i]*n.g[1]+r[s]*a.g[1],t.g[2]+=r[i]*n.g[2]+r[s]*a.g[2]}function C(t,n){var a=dt(n),r=n.a,o=a.a;if(e(r.a,o.a)){if(0<s(o.b.a,r.a,o.a))return!1;if(i(r.a,o.a)){if(r.a!==o.a){a=t.e;var h=r.a.h;if(0<=h){var u=(a=a.b).d,c=a.e,f=a.c,l=f[h];u[l]=u[a.a],f[u[l]]=l,l<=--a.a&&(1>=l?ft(a,l):e(c[u[l>>1]],c[u[l]])?ft(a,l):lt(a,l)),c[h]=null,f[h]=a.b,a.b=h}else for(a.c[-(h+1)]=null;0<a.a&&null===a.c[a.d[a.a-1]];)--a.a;D(t,nt(o),r)}}else m(o.b),p(r,nt(o)),n.b=a.b=!0}else{if(0>s(r.b.a,o.a,r.a))return!1;pt(n).b=n.b=!0,m(r.b),p(nt(o),r)}return!0}function P(t,n){var a=dt(n),r=n.a,f=a.a,l=r.a,d=f.a,v=r.b.a,g=f.b.a,x=new rt;if(s(v,t.a,l),s(g,t.a,d),l===d||Math.min(l.a,v.a)>Math.max(d.a,g.a))return!1;if(e(l,d)){if(0<s(g,l,d))return!1}else if(0>s(v,d,l))return!1;var _,y,S=v,E=l,M=g,T=d;if(e(S,E)||(_=S,S=E,E=_),e(M,T)||(_=M,M=T,T=_),e(S,M)||(_=S,S=M,M=_,_=E,E=T,T=_),e(M,E)?e(E,T)?(0>(_=o(S,M,E))+(y=o(M,E,T))&&(_=-_,y=-y),x.b=b(_,M.b,y,E.b)):(0>(_=s(S,M,E))+(y=-s(S,T,E))&&(_=-_,y=-y),x.b=b(_,M.b,y,T.b)):x.b=(M.b+E.b)/2,h(S,E)||(_=S,S=E,E=_),h(M,T)||(_=M,M=T,T=_),h(S,M)||(_=S,S=M,M=_,_=E,E=T,T=_),h(M,E)?h(E,T)?(0>(_=u(S,M,E))+(y=u(M,E,T))&&(_=-_,y=-y),x.a=b(_,M.a,y,E.a)):(0>(_=c(S,M,E))+(y=-c(S,T,E))&&(_=-_,y=-y),x.a=b(_,M.a,y,T.a)):x.a=(M.a+E.a)/2,e(x,t.a)&&(x.b=t.a.b,x.a=t.a.a),S=e(l,d)?l:d,e(S,x)&&(x.b=S.b,x.a=S.a),i(x,l)||i(x,d))return C(t,n),!1;if(!i(v,t.a)&&0<=s(v,t.a,x)||!i(g,t.a)&&0>=s(g,t.a,x)){if(g===t.a)return m(r.b),p(f.b,r),r=dt(n=A(n)).a,k(t,dt(n),a),U(t,n,nt(r),r,r,!0),!0;if(v===t.a){m(f.b),p(r.e,nt(f)),d=(l=a=n).a.b.a;do{l=pt(l)}while(l.a.b.a===d);return l=dt(n=l).a.b.c,a.a=nt(f),U(t,n,(f=k(t,a,null)).c,r.b.c,l,!0),!0}return 0<=s(v,t.a,x)&&(pt(n).b=n.b=!0,m(r.b),r.a.b=t.a.b,r.a.a=t.a.a),0>=s(g,t.a,x)&&(n.b=a.b=!0,m(f.b),f.a.b=t.a.b,f.a.a=t.a.a),!1}return m(r.b),m(f.b),p(nt(f),r),r.a.b=x.b,r.a.a=x.a,r.a.h=et(t.e,r.a),r=r.a,f=[0,0,0,0],x=[l.d,v.d,d.d,g.d],r.g[0]=r.g[1]=r.g[2]=0,R(r,l,v,f,0),R(r,d,g,f,2),j(t,r,x,f,!0),pt(n).b=n.b=a.b=!0,!1}function F(t,n){for(var a=dt(n);;){for(;a.b;)n=a,a=dt(a);if(!n.b&&(a=n,null===(n=pt(n))||!n.b))break;n.b=!1;var r,i=n.a,o=a.a;if(r=i.b.a!==o.b.a)t:{var h=dt(r=n),u=r.a,c=h.a,f=void 0;if(e(u.b.a,c.b.a)){if(0>s(u.b.a,c.b.a,u.a)){r=!1;break t}pt(r).b=r.b=!0,f=m(u),p(c.b,f),f.d.c=r.d}else{if(0<s(c.b.a,u.b.a,c.a)){r=!1;break t}r.b=h.b=!0,f=m(c),p(u.e,c.b),f.b.d.c=r.d}r=!0}if(r&&(a.c?(L(a),v(o),o=(a=dt(n)).a):n.c&&(L(n),v(i),i=(n=pt(a)).a)),i.a!==o.a)if(i.b.a===o.b.a||n.c||a.c||i.b.a!==t.a&&o.b.a!==t.a)C(t,n);else if(P(t,n))break;i.a===o.a&&i.b.a===o.b.a&&(Y(o,i),L(n),v(i),n=pt(a))}}function V(t,n){t.a=n;for(var a=n.c;null===a.i;)if((a=a.c)===n.c){a=t;var r=n;(u=new bt).a=r.c.b;var o=(f=a.f).a;do{o=o.a}while(null!==o.b&&!f.c(f.b,u,o.b));var h=dt(f=o.b),u=f.a;o=h.a;if(0===s(u.b.a,r,u.a))i((u=f.a).a,r)||i(u.b.a,r)||(m(u.b),f.c&&(v(u.c),f.c=!1),p(r.c,u),V(a,r));else{var c=e(o.b.a,u.b.a)?f:h;h=void 0;f.d||c.c?(h=c===f?g(r.c.b,u.e):g(o.b.c.b,r.c).b,c.c?N(c,h):(u=a,(f=B(a,f,h)).f=pt(f).f+f.a.f,f.d=O(u,f.f)),V(a,r)):U(a,f,r.c,r.c,null,!0)}return}if(f=(u=dt(a=A(a.i))).a,(u=k(t,u,null)).c===f){u=(f=u).c,o=dt(a),h=a.a,c=o.a;var f,l=!1;h.b.a!==c.b.a&&P(t,a),i(h.a,t.a)&&(p(nt(u),h),u=dt(a=A(a)).a,k(t,dt(a),o),l=!0),i(c.a,t.a)&&(p(f,nt(c)),f=k(t,o,null),l=!0),l?U(t,a,f.c,u,u,!0):(r=e(c.a,h.a)?nt(c):h,U(t,a,r=g(f.c.b,r),r.c,r.c,!1),r.b.i.c=!0,F(t,a))}else U(t,a,u.c,f,f,!0)}function q(t,n){var a=new bt,r=d(t.b);r.a.b=G,r.a.a=n,r.b.a.b=-G,r.b.a.a=n,t.a=r.b.a,a.a=r,a.f=0,a.d=!1,a.c=!1,a.h=!0,a.b=!1,r=J(r=t.f,r.a,a),a.e=r}function W(t){this.a=new z,this.b=t,this.c=X}function J(t,n,a){do{n=n.c}while(null!==n.b&&!t.c(t.b,n.b,a));return t=new z(a,n.a,n),n.a.c=t,n.a=t}function z(t,n,a){this.b=t||null,this.a=n||this,this.c=a||this}function H(){this.d=K,this.p=this.b=this.q=null,this.j=[0,0,0],this.s=100130,this.n=!1,this.o=this.a=this.e=this.f=null,this.m=!1,this.c=this.r=this.i=this.k=this.l=this.h=null}var K=0;function Q(t,n){if(t.d!==n)for(;t.d!==n;)if(t.d<n)switch(t.d){case K:Z(t,100151),t.u(null);break;case 1:Z(t,100152),t.t()}else switch(t.d){case 2:Z(t,100154),t.v();break;case 1:Z(t,100153),t.w()}}function Z(t,n){t.p&&t.p(n,t.c)}function $(t,n){this.b=t||this,this.d=n||this,this.a=null,this.c=!1}function tt(){this.h=this,this.i=this.d=this.a=this.e=this.c=this.b=null,this.f=0}function nt(t){return t.b.e}function at(){this.c=new rt,this.a=new $,this.b=new tt,this.d=new tt,this.b.b=this.d,this.d.b=this.b}function rt(t,n){this.e=t||this,this.f=n||this,this.d=this.c=null,this.g=[0,0,0],this.h=this.a=this.b=0}function it(){this.c=[],this.d=null,this.a=0,this.e=!1,this.b=new st}function et(t,n){if(t.e){var a,r=t.b,i=++r.a;return 2*i>r.f&&(r.f*=2,r.c=ht(r.c,r.f+1)),0===r.b?a=i:(a=r.b,r.b=r.c[r.b]),r.e[a]=n,r.c[a]=i,r.d[i]=a,r.h&&lt(r,i),a}return r=t.a++,t.c[r]=n,-(r+1)}function ot(t){if(0===t.a)return ct(t.b);var n=t.c[t.d[t.a-1]];if(0!==t.b.a&&e(ut(t.b),n))return ct(t.b);do{--t.a}while(0<t.a&&null===t.c[t.d[t.a-1]]);return n}function st(){this.d=ht([0],33),this.e=[null,null],this.c=[0,0],this.a=0,this.f=32,this.b=0,this.h=!1,this.d[1]=1}function ht(t,n){for(var a=Array(n),r=0;r<t.length;r++)a[r]=t[r];for(;r<n;r++)a[r]=0;return a}function ut(t){return t.e[t.d[1]]}function ct(t){var n=t.d,a=t.e,r=t.c,i=n[1],e=a[i];return 0<t.a&&(n[1]=n[t.a],r[n[1]]=1,a[i]=null,r[i]=t.b,t.b=i,0<--t.a&&ft(t,1)),e}function ft(t,n){for(var a=t.d,r=t.e,i=t.c,o=n,s=a[o];;){var h=o<<1;h<t.a&&e(r[a[h+1]],r[a[h]])&&(h+=1);var u=a[h];if(h>t.a||e(r[s],r[u])){a[o]=s,i[s]=o;break}a[o]=u,i[u]=o,o=h}}function lt(t,n){for(var a=t.d,r=t.e,i=t.c,o=n,s=a[o];;){var h=o>>1,u=a[h];if(0===h||e(r[u],r[s])){a[o]=s,i[s]=o;break}a[o]=u,i[u]=o,o=h}}function bt(){this.e=this.a=null,this.f=0,this.c=this.b=this.h=this.d=!1}function dt(t){return t.e.c.b}function pt(t){return t.e.a.b}(r=H.prototype).x=function(){Q(this,K)},r.B=function(t,n){switch(t){case 100142:return;case 100140:switch(n){case 100130:case 100131:case 100132:case 100133:case 100134:return void(this.s=n)}break;case 100141:return void(this.m=!!n);default:return void Z(this,100900)}Z(this,100901)},r.y=function(t){switch(t){case 100142:return 0;case 100140:return this.s;case 100141:return this.m;default:Z(this,100900)}return!1},r.A=function(t,n,a){this.j[0]=t,this.j[1]=n,this.j[2]=a},r.z=function(t,n){var a=n||null;switch(t){case 100100:case 100106:this.h=a;break;case 100104:case 100110:this.l=a;break;case 100101:case 100107:this.k=a;break;case 100102:case 100108:this.i=a;break;case 100103:case 100109:this.p=a;break;case 100105:case 100111:this.o=a;break;case 100112:this.r=a;break;default:Z(this,100900)}},r.C=function(t,n){var a=!1,r=[0,0,0];Q(this,2);for(var i=0;3>i;++i){var e=t[i];-1e150>e&&(e=-1e150,a=!0),1e150<e&&(e=1e150,a=!0),r[i]=e}a&&Z(this,100155),null===(a=this.q)?p(a=d(this.b),a.b):(m(a),a=a.e),a.a.d=n,a.a.g[0]=r[0],a.a.g[1]=r[1],a.a.g[2]=r[2],a.f=1,a.b.f=-1,this.q=a},r.u=function(t){Q(this,K),this.d=1,this.b=new at,this.c=t},r.t=function(){Q(this,1),this.d=2,this.q=null},r.v=function(){Q(this,2),this.d=1},r.w=function(){Q(this,1),this.d=K;var t=!1,n=[u=this.j[0],a=this.j[1],o=this.j[2]];if(0===u&&0===a&&0===o){for(var a=[-2e150,-2e150,-2e150],r=[2e150,2e150,2e150],o=[],h=[],u=(t=this.b.c).e;u!==t;u=u.e)for(var c=0;3>c;++c){var b=u.g[c];b<r[c]&&(r[c]=b,h[c]=u),b>a[c]&&(a[c]=b,o[c]=u)}if(u=0,a[1]-r[1]>a[0]-r[0]&&(u=1),a[2]-r[2]>a[u]-r[u]&&(u=2),r[u]>=a[u])n[0]=0,n[1]=0,n[2]=1;else{for(a=0,r=h[u],o=o[u],h=[0,0,0],r=[r.g[0]-o.g[0],r.g[1]-o.g[1],r.g[2]-o.g[2]],c=[0,0,0],u=t.e;u!==t;u=u.e)c[0]=u.g[0]-o.g[0],c[1]=u.g[1]-o.g[1],c[2]=u.g[2]-o.g[2],h[0]=r[1]*c[2]-r[2]*c[1],h[1]=r[2]*c[0]-r[0]*c[2],h[2]=r[0]*c[1]-r[1]*c[0],(b=h[0]*h[0]+h[1]*h[1]+h[2]*h[2])>a&&(a=b,n[0]=h[0],n[1]=h[1],n[2]=h[2]);0>=a&&(n[0]=n[1]=n[2]=0,n[w(r)]=1)}t=!0}for(h=w(n),u=this.b.c,a=(h+1)%3,o=(h+2)%3,h=0<n[h]?1:-1,n=u.e;n!==u;n=n.e)n.b=n.g[a],n.a=h*n.g[o];if(t){for(n=0,u=(t=this.b.a).b;u!==t;u=u.b)if(!(0>=(a=u.a).f))do{n+=(a.a.b-a.b.a.b)*(a.a.a+a.b.a.a),a=a.e}while(a!==u.a);if(0>n)for(t=(n=this.b.c).e;t!==n;t=t.e)t.a=-t.a}for(this.n=!1,u=(n=this.b.b).h;u!==n;u=t)t=u.h,a=u.e,i(u.a,u.b.a)&&u.e.e!==u&&(D(this,a,u),v(u),a=(u=a).e),a.e===u&&(a!==u&&(a!==t&&a!==t.b||(t=t.h),v(a)),u!==t&&u!==t.b||(t=t.h),v(u));for(this.e=n=new it,u=(t=this.b.c).e;u!==t;u=u.e)u.h=et(n,u);for(function(t){t.d=[];for(var n=0;n<t.a;n++)t.d[n]=n;t.d.sort(function(t){return function(n,a){return e(t[n],t[a])?1:-1}}(t.c)),t.e=!0,function(t){for(var n=t.a;1<=n;--n)ft(t,n);t.h=!0}(t.b)}(n),this.f=new W(this),q(this,-G),q(this,G);null!==(n=ot(this.e));){for(;;){t:if(u=this.e,0===u.a)t=ut(u.b);else if(t=u.c[u.d[u.a-1]],0!==u.b.a&&(u=ut(u.b),e(u,t))){t=u;break t}if(null===t||!i(t,n))break;t=ot(this.e),D(this,n.c,t.c)}V(this,n)}for(this.a=this.f.a.a.b.a.a,n=0;null!==(t=this.f.a.a.b);)t.h||++n,L(t);for(this.f=null,(n=this.e).b=null,n.d=null,this.e=n.c=null,u=(n=this.b).a.b;u!==n.a;u=t)t=u.b,(u=u.a).e.e===u&&(Y(u.c,u),v(u));if(!this.n){if(n=this.b,this.m)for(u=n.b.h;u!==n.b;u=t)t=u.h,u.b.d.c!==u.d.c?u.f=u.d.c?1:-1:v(u);else for(u=n.a.b;u!==n.a;u=t)if(t=u.b,u.c){for(u=u.a;e(u.b.a,u.a);u=u.c.b);for(;e(u.a,u.b.a);u=u.e);for(a=u.c.b,o=void 0;u.e!==a;)if(e(u.b.a,a.a)){for(;a.e!==u&&(f(a.e)||0>=s(a.a,a.b.a,a.e.b.a));)a=(o=g(a.e,a)).b;a=a.c.b}else{for(;a.e!==u&&(l(u.c.b)||0<=s(u.b.a,u.a,u.c.b.a));)u=(o=g(u,u.c.b)).b;u=u.e}for(;a.e.e!==u;)a=(o=g(a.e,a)).b}if(this.h||this.i||this.k||this.l)if(this.m){for(t=(n=this.b).a.b;t!==n.a;t=t.b)if(t.c){this.h&&this.h(2,this.c),u=t.a;do{this.k&&this.k(u.a.d,this.c),u=u.e}while(u!==t.a);this.i&&this.i(this.c)}}else{for(n=this.b,t=!!this.l,u=!1,a=-1,o=n.a.d;o!==n.a;o=o.d)if(o.c){u||(this.h&&this.h(4,this.c),u=!0),h=o.a;do{t&&(a!==(r=h.b.d.c?0:1)&&(a=r,this.l&&this.l(!!a,this.c))),this.k&&this.k(h.a.d,this.c),h=h.e}while(h!==o.a)}u&&this.i&&this.i(this.c)}if(this.r){for(u=(n=this.b).a.b;u!==n.a;u=t)if(t=u.b,!u.c){o=(a=u.a).e,h=void 0;do{o=(h=o).e,h.d=null,null===h.b.d&&(h.c===h?M(h.a,null):(h.a.c=h.c,_(h,nt(h))),(r=h.b).c===r?M(r.a,null):(r.a.c=r.c,_(r,nt(r))),E(h))}while(h!==a);a=u.d,(u=u.b).d=a,a.b=u}return this.r(this.b),void(this.c=this.b=null)}}this.b=this.c=null},this.libtess={GluTesselator:H,windingRule:{GLU_TESS_WINDING_ODD:100130,GLU_TESS_WINDING_NONZERO:100131,GLU_TESS_WINDING_POSITIVE:100132,GLU_TESS_WINDING_NEGATIVE:100133,GLU_TESS_WINDING_ABS_GEQ_TWO:100134},primitiveType:{GL_LINE_LOOP:2,GL_TRIANGLES:4,GL_TRIANGLE_STRIP:5,GL_TRIANGLE_FAN:6},errorType:{GLU_TESS_MISSING_BEGIN_POLYGON:100151,GLU_TESS_MISSING_END_POLYGON:100153,GLU_TESS_MISSING_BEGIN_CONTOUR:100152,GLU_TESS_MISSING_END_CONTOUR:100154,GLU_TESS_COORD_TOO_LARGE:100155,GLU_TESS_NEED_COMBINE_CALLBACK:100156},gluEnum:{GLU_TESS_MESH:100112,GLU_TESS_TOLERANCE:100142,GLU_TESS_WINDING_RULE:100140,GLU_TESS_BOUNDARY_ONLY:100141,GLU_INVALID_ENUM:100900,GLU_INVALID_VALUE:100901,GLU_TESS_BEGIN:100100,GLU_TESS_VERTEX:100101,GLU_TESS_END:100102,GLU_TESS_ERROR:100103,GLU_TESS_EDGE_FLAG:100104,GLU_TESS_COMBINE:100105,GLU_TESS_BEGIN_DATA:100106,GLU_TESS_VERTEX_DATA:100107,GLU_TESS_END_DATA:100108,GLU_TESS_ERROR_DATA:100109,GLU_TESS_EDGE_FLAG_DATA:100110,GLU_TESS_COMBINE_DATA:100111}},H.prototype.gluDeleteTess=H.prototype.x,H.prototype.gluTessProperty=H.prototype.B,H.prototype.gluGetTessProperty=H.prototype.y,H.prototype.gluTessNormal=H.prototype.A,H.prototype.gluTessCallback=H.prototype.z,H.prototype.gluTessVertex=H.prototype.C,H.prototype.gluTessBeginPolygon=H.prototype.u,H.prototype.gluTessBeginContour=H.prototype.t,H.prototype.gluTessEndContour=H.prototype.v,H.prototype.gluTessEndPolygon=H.prototype.w,t.exports=this.libtess},37:function(t,n,a){"use strict";a.r(n),a.d(n,"Cluster",(function(){return f}));var r=a(73),i=a.n(r),e=a(20),o=a.n(e);a(56);function s(t,n){return function(t){if(Array.isArray(t))return t}(t)||function(t,n){if(!(Symbol.iterator in Object(t)||"[object Arguments]"===Object.prototype.toString.call(t)))return;var a=[],r=!0,i=!1,e=void 0;try{for(var o,s=t[Symbol.iterator]();!(r=(o=s.next()).done)&&(a.push(o.value),!n||a.length!==n);r=!0);}catch(t){i=!0,e=t}finally{try{r||null==s.return||s.return()}finally{if(i)throw e}}return a}(t,n)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance")}()}function h(t){return function(t){if(Array.isArray(t)){for(var n=0,a=new Array(t.length);n<t.length;n++)a[n]=t[n];return a}}(t)||function(t){if(Symbol.iterator in Object(t)||"[object Arguments]"===Object.prototype.toString.call(t))return Array.from(t)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance")}()}function u(t,n){for(var a=0;a<n.length;a++){var r=n[a];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(t,r.key,r)}}var c=function(){var t=new o.a.GluTesselator;return t.gluTessCallback(o.a.gluEnum.GLU_TESS_VERTEX_DATA,(function(t,n){n[n.length]=t[0],n[n.length]=t[1]})),t.gluTessCallback(o.a.gluEnum.GLU_TESS_BEGIN,(function(t){t!==o.a.primitiveType.GL_TRIANGLES&&console.log("expected TRIANGLES but got type: "+t)})),t.gluTessCallback(o.a.gluEnum.GLU_TESS_ERROR,(function(t){console.log("error callback"),console.log("error number: "+t)})),t.gluTessCallback(o.a.gluEnum.GLU_TESS_COMBINE,(function(t,n,a){return[t[0],t[1],t[2]]})),t.gluTessCallback(o.a.gluEnum.GLU_TESS_EDGE_FLAG,(function(t){})),t}();var f=function(){function t(n,a,r,i){!function(t,n){if(!(t instanceof n))throw new TypeError("Cannot call a class as a function")}(this,t),this.points=n,this.bounds=a,this.hull=r,this.triangulation=i}var n,a,r;return n=t,(a=[{key:"containsPoint",value:function(t){var n=t.x,a=t.y;return n>this.bounds.minX&&n<this.bounds.maxX&&a<this.bounds.maxY&&a>this.bounds.minY}},{key:"getCenter",value:function(){var t=0,n=0;return this.points.forEach((function(a){t+=a.x,n+=a.y})),{x:t/this.points.length,y:n/this.points.length}}},{key:"getProbability",value:function(){var t=0;return this.points.forEach((function(n){t+=n.probability})),t/this.points.length}},{key:"getSTD",value:function(){var t=this.getCenter(),n=0;return this.points.forEach((function(a){n+=Math.sqrt((a.x-t.x)*(a.x-t.x)+(a.y-t.y)*(a.y-t.y))})),n/this.points.length}},{key:"meanScore",value:function(){var t=0;return this.points.forEach((function(n){t+=n.score})),console.log(this.points),t/this.points.length}},{key:"differentLines",value:function(){return h(new Set(this.vectors.map((function(t){return t.view.lineIndex})))).length}},{key:"order",value:function(){return this.points.length/10+this.getProbability()-this.getSTD()+this.differentLines()}}])&&u(n.prototype,a),r&&u(n,r),t}();self.addEventListener("message",(function(t){if("point"==t.data.type){var n=t.data.load;fetch("http://localhost:8090/hdbscan",{method:"POST",body:JSON.stringify(n)}).then((function(t){t.json().then((function(t){var a=function(t,n){var a={};return t.forEach((function(t,r){var i=n[r][0],e=n[r][1],o=s(t,3),h=o[0],u=o[1],c=o[2];h in a||(a[h]={points:[]}),a[h].points.push({label:h,probability:u,meshIndex:r,x:i,y:e,score:c})})),a}(t.result,n);Object.keys(a).forEach((function(t){if(-1!=t){var r=a[t],e={minX:1e4,maxX:-1e4,minY:1e4,maxY:-1e4};r.bounds=e;var o=r.points.filter((function(t){return t.probability>.7})).map((function(t){var a=n[t.meshIndex][0],r=n[t.meshIndex][1];return a<e.minX&&(e.minX=a),a>e.maxX&&(e.maxX=a),r<e.minY&&(e.minY=r),r>e.maxY&&(e.maxY=r),[a,r]})),s=i()(o),h=function(t){c.gluTessNormal(0,0,1);var n=[];c.gluTessBeginPolygon(n);for(var a=0;a<t.length;a++){c.gluTessBeginContour();for(var r=t[a],i=0;i<r.length;i+=2){var e=[r[i],r[i+1],0];c.gluTessVertex(e,e)}c.gluTessEndContour()}return(new Date).getTime(),c.gluTessEndPolygon(),(new Date).getTime(),n}([s.flat()]);r.hull=s,r.triangulation=h}})),self.postMessage(a)}))}))}else if("segment"==t.data.type){n=t.data.load;fetch("http://localhost:8090/segmentation",{method:"POST",body:JSON.stringify(n)}).then((function(t){t.json().then((function(t){self.postMessage(t)}))}))}}))},56:function(t,n,a){"use strict";function r(t,n){if(n.length<=1)return!1;for(var a=0,r=1;r<n.length;r++){var i=n[r-1],e=n[r],o={Start:{x:t.x,y:t.y},End:{x:99999,y:0}},s={Start:i,End:e},h={x:o.End.x-o.Start.x,y:o.End.y-o.Start.y},u={x:s.End.x-s.Start.x,y:s.End.y-s.Start.y},c=Math.sqrt(Math.pow(h.x,2)+Math.pow(h.y,2)),f=Math.sqrt(Math.pow(u.x,2)+Math.pow(u.y,2));if(h.X/c!=u.X/f||h.Y/c!=u.Y/f){var l=(h.x*(s.Start.y-o.Start.y)+h.y*(o.Start.x-s.Start.x))/(u.x*h.y-u.y*h.x),b=(s.Start.x+u.x*l-o.Start.x)/h.x;b<0||l<0||l>1||isNaN(b)||a++}}return 0!=a&&!!(1&a)}a.d(n,"a",(function(){return r}))},69:function(t,n,a){"use strict";var r=a(70),i=a(109),e=a(110),o=a(112),s=5;function h(t,n){for(var a=new Array(t.length-1),r=1;r<t.length;++r)for(var i=a[r-1]=new Array(t.length-1),e=0,o=0;e<t.length;++e)e!==n&&(i[o++]=t[r][e]);return a}function u(t){if(1===t.length)return t[0];if(2===t.length)return["sum(",t[0],",",t[1],")"].join("");var n=t.length>>1;return["sum(",u(t.slice(0,n)),",",u(t.slice(n)),")"].join("")}function c(t){if(2===t.length)return[["sum(prod(",t[0][0],",",t[1][1],"),prod(-",t[0][1],",",t[1][0],"))"].join("")];for(var n=[],a=0;a<t.length;++a)n.push(["scale(",u(c(h(t,a))),",",(r=a,1&r?"-":""),t[0][a],")"].join(""));return n;var r}function f(t){for(var n=[],a=[],s=function(t){for(var n=new Array(t),a=0;a<t;++a){n[a]=new Array(t);for(var r=0;r<t;++r)n[a][r]=["m",r,"[",t-a-1,"]"].join("")}return n}(t),f=[],l=0;l<t;++l)0==(1&l)?n.push.apply(n,c(h(s,l))):a.push.apply(a,c(h(s,l))),f.push("m"+l);var b=u(n),d=u(a),p="orientation"+t+"Exact",v=["function ",p,"(",f.join(),"){var p=",b,",n=",d,",d=sub(p,n);return d[d.length-1];};return ",p].join("");return new Function("sum","prod","scale","sub",v)(i,r,e,o)}var l=f(3),b=f(4),d=[function(){return 0},function(){return 0},function(t,n){return n[0]-t[0]},function(t,n,a){var r,i=(t[1]-a[1])*(n[0]-a[0]),e=(t[0]-a[0])*(n[1]-a[1]),o=i-e;if(i>0){if(e<=0)return o;r=i+e}else{if(!(i<0))return o;if(e>=0)return o;r=-(i+e)}var s=33306690738754716e-32*r;return o>=s||o<=-s?o:l(t,n,a)},function(t,n,a,r){var i=t[0]-r[0],e=n[0]-r[0],o=a[0]-r[0],s=t[1]-r[1],h=n[1]-r[1],u=a[1]-r[1],c=t[2]-r[2],f=n[2]-r[2],l=a[2]-r[2],d=e*u,p=o*h,v=o*s,m=i*u,g=i*h,x=e*s,_=c*(d-p)+f*(v-m)+l*(g-x),y=7771561172376103e-31*((Math.abs(d)+Math.abs(p))*Math.abs(c)+(Math.abs(v)+Math.abs(m))*Math.abs(f)+(Math.abs(g)+Math.abs(x))*Math.abs(l));return _>y||-_>y?_:b(t,n,a,r)}];function p(t){var n=d[t.length];return n||(n=d[t.length]=f(t.length)),n.apply(void 0,t)}!function(){for(;d.length<=s;)d.push(f(d.length));for(var n=[],a=["slow"],r=0;r<=s;++r)n.push("a"+r),a.push("o"+r);var i=["function getOrientation(",n.join(),"){switch(arguments.length){case 0:case 1:return 0;"];for(r=2;r<=s;++r)i.push("case ",r,":return o",r,"(",n.slice(0,r).join(),");");i.push("}var s=new Array(arguments.length);for(var i=0;i<arguments.length;++i){s[i]=arguments[i]};return slow(s);}return getOrientation"),a.push(i.join(""));var e=Function.apply(void 0,a);for(t.exports=e.apply(void 0,[p].concat(d)),r=0;r<=s;++r)t.exports[r]=d[r]}()},70:function(t,n,a){"use strict";t.exports=function(t,n,a){var i=t*n,e=r*t,o=e-(e-t),s=t-o,h=r*n,u=h-(h-n),c=n-u,f=s*c-(i-o*u-s*u-o*c);if(a)return a[0]=f,a[1]=i,a;return[f,i]};var r=+(Math.pow(2,27)+1)},73:function(t,n,a){"use strict";var r=a(106),i=a(108),e=a(113),o=a(114),s=a(69)[3];function h(t,n,a){n=Math.max(0,void 0===n?2:n),a=a||0;for(var e,s=function(t){for(var n=t[0],a=t[0],r=t[0],e=t[0],s=0;s<t.length;s++){var h=t[s];h[0]<n[0]&&(n=h),h[0]>r[0]&&(r=h),h[1]<a[1]&&(a=h),h[1]>e[1]&&(e=h)}var u=[n,a,r,e],c=u.slice();for(s=0;s<t.length;s++)o(t[s],u)||c.push(t[s]);var f=i(c),l=[];for(s=0;s<f.length;s++)l.push(c[f[s]]);return l}(t),h=r(16,["[0]","[1]","[0]","[1]"]).load(t),c=[],f=0;f<s.length;f++){var l=s[f];h.remove(l),e=p(l,e),c.push(e)}var b=r(16);for(f=0;f<c.length;f++)b.insert(d(c[f]));for(var m=n*n,g=a*a;c.length;){var x=c.shift(),_=x.p,y=x.next.p,S=v(_,y);if(!(S<g)){var E=S/m;(l=u(h,x.prev.p,_,y,x.next.next.p,E,b))&&Math.min(v(l,_),v(l,y))<=E&&(c.push(x),c.push(p(l,x)),h.remove(l),b.remove(x),b.insert(d(x)),b.insert(d(x.next)))}}x=e;var M=[];do{M.push(x.p),x=x.next}while(x!==e);return M.push(x.p),M}function u(t,n,a,r,i,o,s){for(var h=new e(null,c),u=t.data;u;){for(var l=0;l<u.children.length;l++){var d=u.children[l],p=u.leaf?m(d,a,r):f(a,r,d);p>o||h.push({node:d,dist:p})}for(;h.length&&!h.peek().node.children;){var v=h.pop(),g=v.node,x=m(g,n,a),_=m(g,r,i);if(v.dist<x&&v.dist<_&&b(a,g,s)&&b(r,g,s))return g}(u=h.pop())&&(u=u.node)}return null}function c(t,n){return t.dist-n.dist}function f(t,n,a){if(l(t,a)||l(n,a))return 0;var r=g(t[0],t[1],n[0],n[1],a.minX,a.minY,a.maxX,a.minY);if(0===r)return 0;var i=g(t[0],t[1],n[0],n[1],a.minX,a.minY,a.minX,a.maxY);if(0===i)return 0;var e=g(t[0],t[1],n[0],n[1],a.maxX,a.minY,a.maxX,a.maxY);if(0===e)return 0;var o=g(t[0],t[1],n[0],n[1],a.minX,a.maxY,a.maxX,a.maxY);return 0===o?0:Math.min(r,i,e,o)}function l(t,n){return t[0]>=n.minX&&t[0]<=n.maxX&&t[1]>=n.minY&&t[1]<=n.maxY}function b(t,n,a){for(var r,i,e,o,h=Math.min(t[0],n[0]),u=Math.min(t[1],n[1]),c=Math.max(t[0],n[0]),f=Math.max(t[1],n[1]),l=a.search({minX:h,minY:u,maxX:c,maxY:f}),b=0;b<l.length;b++)if(r=l[b].p,i=l[b].next.p,e=t,r!==(o=n)&&i!==e&&s(r,i,e)>0!=s(r,i,o)>0&&s(e,o,r)>0!=s(e,o,i)>0)return!1;return!0}function d(t){var n=t.p,a=t.next.p;return t.minX=Math.min(n[0],a[0]),t.minY=Math.min(n[1],a[1]),t.maxX=Math.max(n[0],a[0]),t.maxY=Math.max(n[1],a[1]),t}function p(t,n){var a={p:t,prev:null,next:null,minX:0,minY:0,maxX:0,maxY:0};return n?(a.next=n.next,a.prev=n,n.next.prev=a,n.next=a):(a.prev=a,a.next=a),a}function v(t,n){var a=t[0]-n[0],r=t[1]-n[1];return a*a+r*r}function m(t,n,a){var r=n[0],i=n[1],e=a[0]-r,o=a[1]-i;if(0!==e||0!==o){var s=((t[0]-r)*e+(t[1]-i)*o)/(e*e+o*o);s>1?(r=a[0],i=a[1]):s>0&&(r+=e*s,i+=o*s)}return(e=t[0]-r)*e+(o=t[1]-i)*o}function g(t,n,a,r,i,e,o,s){var h,u,c,f,l=a-t,b=r-n,d=o-i,p=s-e,v=t-i,m=n-e,g=l*l+b*b,x=l*d+b*p,_=d*d+p*p,y=l*v+b*m,S=d*v+p*m,E=g*_-x*x,M=E,T=E;0===E?(u=0,M=1,f=S,T=_):(f=g*S-x*y,(u=x*S-_*y)<0?(u=0,f=S,T=_):u>M&&(u=M,f=S+x,T=_)),f<0?(f=0,-y<0?u=0:-y>g?u=M:(u=-y,M=g)):f>T&&(f=T,-y+x<0?u=0:-y+x>g?u=M:(u=-y+x,M=g));var w=(1-(c=0===f?0:f/T))*i+c*o-((1-(h=0===u?0:u/M))*t+h*a),G=(1-c)*e+c*s-((1-h)*n+h*r);return w*w+G*G}t.exports=h,t.exports.default=h}});
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/components/workers/worker_cluster.tsx");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./node_modules/concaveman/index.js":
+/*!******************************************!*\
+  !*** ./node_modules/concaveman/index.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var rbush = __webpack_require__(/*! rbush */ "./node_modules/rbush/index.js");
+var convexHull = __webpack_require__(/*! monotone-convex-hull-2d */ "./node_modules/monotone-convex-hull-2d/index.js");
+var Queue = __webpack_require__(/*! tinyqueue */ "./node_modules/concaveman/node_modules/tinyqueue/index.js");
+var pointInPolygon = __webpack_require__(/*! point-in-polygon */ "./node_modules/point-in-polygon/index.js");
+var orient = __webpack_require__(/*! robust-orientation */ "./node_modules/robust-orientation/orientation.js")[3];
+
+module.exports = concaveman;
+module.exports.default = concaveman;
+
+function concaveman(points, concavity, lengthThreshold) {
+    // a relative measure of concavity; higher value means simpler hull
+    concavity = Math.max(0, concavity === undefined ? 2 : concavity);
+
+    // when a segment goes below this length threshold, it won't be drilled down further
+    lengthThreshold = lengthThreshold || 0;
+
+    // start with a convex hull of the points
+    var hull = fastConvexHull(points);
+
+    // index the points with an R-tree
+    var tree = rbush(16, ['[0]', '[1]', '[0]', '[1]']).load(points);
+
+    // turn the convex hull into a linked list and populate the initial edge queue with the nodes
+    var queue = [];
+    for (var i = 0, last; i < hull.length; i++) {
+        var p = hull[i];
+        tree.remove(p);
+        last = insertNode(p, last);
+        queue.push(last);
+    }
+
+    // index the segments with an R-tree (for intersection checks)
+    var segTree = rbush(16);
+    for (i = 0; i < queue.length; i++) segTree.insert(updateBBox(queue[i]));
+
+    var sqConcavity = concavity * concavity;
+    var sqLenThreshold = lengthThreshold * lengthThreshold;
+
+    // process edges one by one
+    while (queue.length) {
+        var node = queue.shift();
+        var a = node.p;
+        var b = node.next.p;
+
+        // skip the edge if it's already short enough
+        var sqLen = getSqDist(a, b);
+        if (sqLen < sqLenThreshold) continue;
+
+        var maxSqLen = sqLen / sqConcavity;
+
+        // find the best connection point for the current edge to flex inward to
+        p = findCandidate(tree, node.prev.p, a, b, node.next.next.p, maxSqLen, segTree);
+
+        // if we found a connection and it satisfies our concavity measure
+        if (p && Math.min(getSqDist(p, a), getSqDist(p, b)) <= maxSqLen) {
+            // connect the edge endpoints through this point and add 2 new edges to the queue
+            queue.push(node);
+            queue.push(insertNode(p, node));
+
+            // update point and segment indexes
+            tree.remove(p);
+            segTree.remove(node);
+            segTree.insert(updateBBox(node));
+            segTree.insert(updateBBox(node.next));
+        }
+    }
+
+    // convert the resulting hull linked list to an array of points
+    node = last;
+    var concave = [];
+    do {
+        concave.push(node.p);
+        node = node.next;
+    } while (node !== last);
+
+    concave.push(node.p);
+
+    return concave;
+}
+
+function findCandidate(tree, a, b, c, d, maxDist, segTree) {
+    var queue = new Queue(null, compareDist);
+    var node = tree.data;
+
+    // search through the point R-tree with a depth-first search using a priority queue
+    // in the order of distance to the edge (b, c)
+    while (node) {
+        for (var i = 0; i < node.children.length; i++) {
+            var child = node.children[i];
+
+            var dist = node.leaf ? sqSegDist(child, b, c) : sqSegBoxDist(b, c, child);
+            if (dist > maxDist) continue; // skip the node if it's farther than we ever need
+
+            queue.push({
+                node: child,
+                dist: dist
+            });
+        }
+
+        while (queue.length && !queue.peek().node.children) {
+            var item = queue.pop();
+            var p = item.node;
+
+            // skip all points that are as close to adjacent edges (a,b) and (c,d),
+            // and points that would introduce self-intersections when connected
+            var d0 = sqSegDist(p, a, b);
+            var d1 = sqSegDist(p, c, d);
+            if (item.dist < d0 && item.dist < d1 &&
+                noIntersections(b, p, segTree) &&
+                noIntersections(c, p, segTree)) return p;
+        }
+
+        node = queue.pop();
+        if (node) node = node.node;
+    }
+
+    return null;
+}
+
+function compareDist(a, b) {
+    return a.dist - b.dist;
+}
+
+// square distance from a segment bounding box to the given one
+function sqSegBoxDist(a, b, bbox) {
+    if (inside(a, bbox) || inside(b, bbox)) return 0;
+    var d1 = sqSegSegDist(a[0], a[1], b[0], b[1], bbox.minX, bbox.minY, bbox.maxX, bbox.minY);
+    if (d1 === 0) return 0;
+    var d2 = sqSegSegDist(a[0], a[1], b[0], b[1], bbox.minX, bbox.minY, bbox.minX, bbox.maxY);
+    if (d2 === 0) return 0;
+    var d3 = sqSegSegDist(a[0], a[1], b[0], b[1], bbox.maxX, bbox.minY, bbox.maxX, bbox.maxY);
+    if (d3 === 0) return 0;
+    var d4 = sqSegSegDist(a[0], a[1], b[0], b[1], bbox.minX, bbox.maxY, bbox.maxX, bbox.maxY);
+    if (d4 === 0) return 0;
+    return Math.min(d1, d2, d3, d4);
+}
+
+function inside(a, bbox) {
+    return a[0] >= bbox.minX &&
+           a[0] <= bbox.maxX &&
+           a[1] >= bbox.minY &&
+           a[1] <= bbox.maxY;
+}
+
+// check if the edge (a,b) doesn't intersect any other edges
+function noIntersections(a, b, segTree) {
+    var minX = Math.min(a[0], b[0]);
+    var minY = Math.min(a[1], b[1]);
+    var maxX = Math.max(a[0], b[0]);
+    var maxY = Math.max(a[1], b[1]);
+
+    var edges = segTree.search({minX: minX, minY: minY, maxX: maxX, maxY: maxY});
+    for (var i = 0; i < edges.length; i++) {
+        if (intersects(edges[i].p, edges[i].next.p, a, b)) return false;
+    }
+    return true;
+}
+
+// check if the edges (p1,q1) and (p2,q2) intersect
+function intersects(p1, q1, p2, q2) {
+    return p1 !== q2 && q1 !== p2 &&
+        orient(p1, q1, p2) > 0 !== orient(p1, q1, q2) > 0 &&
+        orient(p2, q2, p1) > 0 !== orient(p2, q2, q1) > 0;
+}
+
+// update the bounding box of a node's edge
+function updateBBox(node) {
+    var p1 = node.p;
+    var p2 = node.next.p;
+    node.minX = Math.min(p1[0], p2[0]);
+    node.minY = Math.min(p1[1], p2[1]);
+    node.maxX = Math.max(p1[0], p2[0]);
+    node.maxY = Math.max(p1[1], p2[1]);
+    return node;
+}
+
+// speed up convex hull by filtering out points inside quadrilateral formed by 4 extreme points
+function fastConvexHull(points) {
+    var left = points[0];
+    var top = points[0];
+    var right = points[0];
+    var bottom = points[0];
+
+    // find the leftmost, rightmost, topmost and bottommost points
+    for (var i = 0; i < points.length; i++) {
+        var p = points[i];
+        if (p[0] < left[0]) left = p;
+        if (p[0] > right[0]) right = p;
+        if (p[1] < top[1]) top = p;
+        if (p[1] > bottom[1]) bottom = p;
+    }
+
+    // filter out points that are inside the resulting quadrilateral
+    var cull = [left, top, right, bottom];
+    var filtered = cull.slice();
+    for (i = 0; i < points.length; i++) {
+        if (!pointInPolygon(points[i], cull)) filtered.push(points[i]);
+    }
+
+    // get convex hull around the filtered points
+    var indices = convexHull(filtered);
+
+    // return the hull as array of points (rather than indices)
+    var hull = [];
+    for (i = 0; i < indices.length; i++) hull.push(filtered[indices[i]]);
+    return hull;
+}
+
+// create a new node in a doubly linked list
+function insertNode(p, prev) {
+    var node = {
+        p: p,
+        prev: null,
+        next: null,
+        minX: 0,
+        minY: 0,
+        maxX: 0,
+        maxY: 0
+    };
+
+    if (!prev) {
+        node.prev = node;
+        node.next = node;
+
+    } else {
+        node.next = prev.next;
+        node.prev = prev;
+        prev.next.prev = node;
+        prev.next = node;
+    }
+    return node;
+}
+
+// square distance between 2 points
+function getSqDist(p1, p2) {
+
+    var dx = p1[0] - p2[0],
+        dy = p1[1] - p2[1];
+
+    return dx * dx + dy * dy;
+}
+
+// square distance from a point to a segment
+function sqSegDist(p, p1, p2) {
+
+    var x = p1[0],
+        y = p1[1],
+        dx = p2[0] - x,
+        dy = p2[1] - y;
+
+    if (dx !== 0 || dy !== 0) {
+
+        var t = ((p[0] - x) * dx + (p[1] - y) * dy) / (dx * dx + dy * dy);
+
+        if (t > 1) {
+            x = p2[0];
+            y = p2[1];
+
+        } else if (t > 0) {
+            x += dx * t;
+            y += dy * t;
+        }
+    }
+
+    dx = p[0] - x;
+    dy = p[1] - y;
+
+    return dx * dx + dy * dy;
+}
+
+// segment to segment distance, ported from http://geomalgorithms.com/a07-_distance.html by Dan Sunday
+function sqSegSegDist(x0, y0, x1, y1, x2, y2, x3, y3) {
+    var ux = x1 - x0;
+    var uy = y1 - y0;
+    var vx = x3 - x2;
+    var vy = y3 - y2;
+    var wx = x0 - x2;
+    var wy = y0 - y2;
+    var a = ux * ux + uy * uy;
+    var b = ux * vx + uy * vy;
+    var c = vx * vx + vy * vy;
+    var d = ux * wx + uy * wy;
+    var e = vx * wx + vy * wy;
+    var D = a * c - b * b;
+
+    var sc, sN, tc, tN;
+    var sD = D;
+    var tD = D;
+
+    if (D === 0) {
+        sN = 0;
+        sD = 1;
+        tN = e;
+        tD = c;
+    } else {
+        sN = b * e - c * d;
+        tN = a * e - b * d;
+        if (sN < 0) {
+            sN = 0;
+            tN = e;
+            tD = c;
+        } else if (sN > sD) {
+            sN = sD;
+            tN = e + b;
+            tD = c;
+        }
+    }
+
+    if (tN < 0.0) {
+        tN = 0.0;
+        if (-d < 0.0) sN = 0.0;
+        else if (-d > a) sN = sD;
+        else {
+            sN = -d;
+            sD = a;
+        }
+    } else if (tN > tD) {
+        tN = tD;
+        if ((-d + b) < 0.0) sN = 0;
+        else if (-d + b > a) sN = sD;
+        else {
+            sN = -d + b;
+            sD = a;
+        }
+    }
+
+    sc = sN === 0 ? 0 : sN / sD;
+    tc = tN === 0 ? 0 : tN / tD;
+
+    var cx = (1 - sc) * x0 + sc * x1;
+    var cy = (1 - sc) * y0 + sc * y1;
+    var cx2 = (1 - tc) * x2 + tc * x3;
+    var cy2 = (1 - tc) * y2 + tc * y3;
+    var dx = cx2 - cx;
+    var dy = cy2 - cy;
+
+    return dx * dx + dy * dy;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/concaveman/node_modules/tinyqueue/index.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/concaveman/node_modules/tinyqueue/index.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = TinyQueue;
+module.exports.default = TinyQueue;
+
+function TinyQueue(data, compare) {
+    if (!(this instanceof TinyQueue)) return new TinyQueue(data, compare);
+
+    this.data = data || [];
+    this.length = this.data.length;
+    this.compare = compare || defaultCompare;
+
+    if (this.length > 0) {
+        for (var i = (this.length >> 1) - 1; i >= 0; i--) this._down(i);
+    }
+}
+
+function defaultCompare(a, b) {
+    return a < b ? -1 : a > b ? 1 : 0;
+}
+
+TinyQueue.prototype = {
+
+    push: function (item) {
+        this.data.push(item);
+        this.length++;
+        this._up(this.length - 1);
+    },
+
+    pop: function () {
+        if (this.length === 0) return undefined;
+
+        var top = this.data[0];
+        this.length--;
+
+        if (this.length > 0) {
+            this.data[0] = this.data[this.length];
+            this._down(0);
+        }
+        this.data.pop();
+
+        return top;
+    },
+
+    peek: function () {
+        return this.data[0];
+    },
+
+    _up: function (pos) {
+        var data = this.data;
+        var compare = this.compare;
+        var item = data[pos];
+
+        while (pos > 0) {
+            var parent = (pos - 1) >> 1;
+            var current = data[parent];
+            if (compare(item, current) >= 0) break;
+            data[pos] = current;
+            pos = parent;
+        }
+
+        data[pos] = item;
+    },
+
+    _down: function (pos) {
+        var data = this.data;
+        var compare = this.compare;
+        var halfLength = this.length >> 1;
+        var item = data[pos];
+
+        while (pos < halfLength) {
+            var left = (pos << 1) + 1;
+            var right = left + 1;
+            var best = data[left];
+
+            if (right < this.length && compare(data[right], best) < 0) {
+                left = right;
+                best = data[right];
+            }
+            if (compare(best, item) >= 0) break;
+
+            data[pos] = best;
+            pos = left;
+        }
+
+        data[pos] = item;
+    }
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/libtess/libtess.min.js":
+/*!*********************************************!*\
+  !*** ./node_modules/libtess/libtess.min.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*
+
+ Copyright 2000, Silicon Graphics, Inc. All Rights Reserved.
+ Copyright 2015, Google Inc. All Rights Reserved.
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to
+ deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice including the dates of first publication and
+ either this permission notice or a reference to http://oss.sgi.com/projects/FreeB/
+ shall be included in all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ SILICON GRAPHICS, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ Original Code. The Original Code is: OpenGL Sample Implementation,
+ Version 1.2.1, released January 26, 2000, developed by Silicon Graphics,
+ Inc. The Original Code is Copyright (c) 1991-2000 Silicon Graphics, Inc.
+ Copyright in any portions created by third parties is as indicated
+ elsewhere herein. All Rights Reserved.
+*/
+var n;function t(a,b){return a.b===b.b&&a.a===b.a}function u(a,b){return a.b<b.b||a.b===b.b&&a.a<=b.a}function v(a,b,c){var d=b.b-a.b,e=c.b-b.b;return 0<d+e?d<e?b.a-a.a+d/(d+e)*(a.a-c.a):b.a-c.a+e/(d+e)*(c.a-a.a):0}function x(a,b,c){var d=b.b-a.b,e=c.b-b.b;return 0<d+e?(b.a-c.a)*d+(b.a-a.a)*e:0}function z(a,b){return a.a<b.a||a.a===b.a&&a.b<=b.b}function aa(a,b,c){var d=b.a-a.a,e=c.a-b.a;return 0<d+e?d<e?b.b-a.b+d/(d+e)*(a.b-c.b):b.b-c.b+e/(d+e)*(c.b-a.b):0}
+function ba(a,b,c){var d=b.a-a.a,e=c.a-b.a;return 0<d+e?(b.b-c.b)*d+(b.b-a.b)*e:0}function ca(a){return u(a.b.a,a.a)}function da(a){return u(a.a,a.b.a)}function A(a,b,c,d){a=0>a?0:a;c=0>c?0:c;return a<=c?0===c?(b+d)/2:b+a/(a+c)*(d-b):d+c/(a+c)*(b-d)};function ea(a){var b=B(a.b);C(b,a.c);C(b.b,a.c);D(b,a.a);return b}function E(a,b){var c=!1,d=!1;a!==b&&(b.a!==a.a&&(d=!0,F(b.a,a.a)),b.d!==a.d&&(c=!0,G(b.d,a.d)),H(b,a),d||(C(b,a.a),a.a.c=a),c||(D(b,a.d),a.d.a=a))}function I(a){var b=a.b,c=!1;a.d!==a.b.d&&(c=!0,G(a.d,a.b.d));a.c===a?F(a.a,null):(a.b.d.a=J(a),a.a.c=a.c,H(a,J(a)),c||D(a,a.d));b.c===b?(F(b.a,null),G(b.d,null)):(a.d.a=J(b),b.a.c=b.c,H(b,J(b)));fa(a)}
+function K(a){var b=B(a),c=b.b;H(b,a.e);b.a=a.b.a;C(c,b.a);b.d=c.d=a.d;b=b.b;H(a.b,J(a.b));H(a.b,b);a.b.a=b.a;b.b.a.c=b.b;b.b.d=a.b.d;b.f=a.f;b.b.f=a.b.f;return b}function L(a,b){var c=!1,d=B(a),e=d.b;b.d!==a.d&&(c=!0,G(b.d,a.d));H(d,a.e);H(e,b);d.a=a.b.a;e.a=b.a;d.d=e.d=a.d;a.d.a=e;c||D(d,a.d);return d}function B(a){var b=new M,c=new M,d=a.b.h;c.h=d;d.b.h=b;b.h=a;a.b.h=c;b.b=c;b.c=b;b.e=c;c.b=b;c.c=c;return c.e=b}function H(a,b){var c=a.c,d=b.c;c.b.e=b;d.b.e=a;a.c=d;b.c=c}
+function C(a,b){var c=b.f,d=new N(b,c);c.e=d;b.f=d;c=d.c=a;do c.a=d,c=c.c;while(c!==a)}function D(a,b){var c=b.d,d=new ga(b,c);c.b=d;b.d=d;d.a=a;d.c=b.c;c=a;do c.d=d,c=c.e;while(c!==a)}function fa(a){var b=a.h;a=a.b.h;b.b.h=a;a.b.h=b}function F(a,b){var c=a.c,d=c;do d.a=b,d=d.c;while(d!==c);c=a.f;d=a.e;d.f=c;c.e=d}function G(a,b){var c=a.a,d=c;do d.d=b,d=d.e;while(d!==c);c=a.d;d=a.b;d.d=c;c.b=d};function ha(a){var b=0;Math.abs(a[1])>Math.abs(a[0])&&(b=1);Math.abs(a[2])>Math.abs(a[b])&&(b=2);return b};var O=4*1E150;function P(a,b){a.f+=b.f;a.b.f+=b.b.f}function ia(a,b,c){a=a.a;b=b.a;c=c.a;if(b.b.a===a)return c.b.a===a?u(b.a,c.a)?0>=x(c.b.a,b.a,c.a):0<=x(b.b.a,c.a,b.a):0>=x(c.b.a,a,c.a);if(c.b.a===a)return 0<=x(b.b.a,a,b.a);b=v(b.b.a,a,b.a);a=v(c.b.a,a,c.a);return b>=a}function Q(a){a.a.i=null;var b=a.e;b.a.c=b.c;b.c.a=b.a;a.e=null}function ja(a,b){I(a.a);a.c=!1;a.a=b;b.i=a}function ka(a){var b=a.a.a;do a=R(a);while(a.a.a===b);a.c&&(b=L(S(a).a.b,a.a.e),ja(a,b),a=R(a));return a}
+function la(a,b,c){var d=new ma;d.a=c;d.e=na(a.f,b.e,d);return c.i=d}function oa(a,b){switch(a.s){case 100130:return 0!==(b&1);case 100131:return 0!==b;case 100132:return 0<b;case 100133:return 0>b;case 100134:return 2<=b||-2>=b}return!1}function pa(a){var b=a.a,c=b.d;c.c=a.d;c.a=b;Q(a)}function T(a,b,c){a=b;for(b=b.a;a!==c;){a.c=!1;var d=S(a),e=d.a;if(e.a!==b.a){if(!d.c){pa(a);break}e=L(b.c.b,e.b);ja(d,e)}b.c!==e&&(E(J(e),e),E(b,e));pa(a);b=d.a;a=d}return b}
+function U(a,b,c,d,e,f){var g=!0;do la(a,b,c.b),c=c.c;while(c!==d);for(null===e&&(e=S(b).a.b.c);;){d=S(b);c=d.a.b;if(c.a!==e.a)break;c.c!==e&&(E(J(c),c),E(J(e),c));d.f=b.f-c.f;d.d=oa(a,d.f);b.b=!0;!g&&qa(a,b)&&(P(c,e),Q(b),I(e));g=!1;b=d;e=c}b.b=!0;f&&ra(a,b)}function sa(a,b,c,d,e){var f=[b.g[0],b.g[1],b.g[2]];b.d=null;b.d=a.o?a.o(f,c,d,a.c)||null:null;null===b.d&&(e?a.n||(V(a,100156),a.n=!0):b.d=c[0])}
+function ta(a,b,c){var d=[null,null,null,null];d[0]=b.a.d;d[1]=c.a.d;sa(a,b.a,d,[.5,.5,0,0],!1);E(b,c)}function ua(a,b,c,d,e){var f=Math.abs(b.b-a.b)+Math.abs(b.a-a.a),g=Math.abs(c.b-a.b)+Math.abs(c.a-a.a),h=e+1;d[e]=.5*g/(f+g);d[h]=.5*f/(f+g);a.g[0]+=d[e]*b.g[0]+d[h]*c.g[0];a.g[1]+=d[e]*b.g[1]+d[h]*c.g[1];a.g[2]+=d[e]*b.g[2]+d[h]*c.g[2]}
+function qa(a,b){var c=S(b),d=b.a,e=c.a;if(u(d.a,e.a)){if(0<x(e.b.a,d.a,e.a))return!1;if(!t(d.a,e.a))K(e.b),E(d,J(e)),b.b=c.b=!0;else if(d.a!==e.a){var c=a.e,f=d.a.h;if(0<=f){var c=c.b,g=c.d,h=c.e,k=c.c,l=k[f];g[l]=g[c.a];k[g[l]]=l;l<=--c.a&&(1>=l?W(c,l):u(h[g[l>>1]],h[g[l]])?W(c,l):va(c,l));h[f]=null;k[f]=c.b;c.b=f}else for(c.c[-(f+1)]=null;0<c.a&&null===c.c[c.d[c.a-1]];)--c.a;ta(a,J(e),d)}}else{if(0>x(d.b.a,e.a,d.a))return!1;R(b).b=b.b=!0;K(d.b);E(J(e),d)}return!0}
+function wa(a,b){var c=S(b),d=b.a,e=c.a,f=d.a,g=e.a,h=d.b.a,k=e.b.a,l=new N;x(h,a.a,f);x(k,a.a,g);if(f===g||Math.min(f.a,h.a)>Math.max(g.a,k.a))return!1;if(u(f,g)){if(0<x(k,f,g))return!1}else if(0>x(h,g,f))return!1;var r=h,p=f,q=k,y=g,m,w;u(r,p)||(m=r,r=p,p=m);u(q,y)||(m=q,q=y,y=m);u(r,q)||(m=r,r=q,q=m,m=p,p=y,y=m);u(q,p)?u(p,y)?(m=v(r,q,p),w=v(q,p,y),0>m+w&&(m=-m,w=-w),l.b=A(m,q.b,w,p.b)):(m=x(r,q,p),w=-x(r,y,p),0>m+w&&(m=-m,w=-w),l.b=A(m,q.b,w,y.b)):l.b=(q.b+p.b)/2;z(r,p)||(m=r,r=p,p=m);z(q,y)||
+(m=q,q=y,y=m);z(r,q)||(m=r,r=q,q=m,m=p,p=y,y=m);z(q,p)?z(p,y)?(m=aa(r,q,p),w=aa(q,p,y),0>m+w&&(m=-m,w=-w),l.a=A(m,q.a,w,p.a)):(m=ba(r,q,p),w=-ba(r,y,p),0>m+w&&(m=-m,w=-w),l.a=A(m,q.a,w,y.a)):l.a=(q.a+p.a)/2;u(l,a.a)&&(l.b=a.a.b,l.a=a.a.a);r=u(f,g)?f:g;u(r,l)&&(l.b=r.b,l.a=r.a);if(t(l,f)||t(l,g))return qa(a,b),!1;if(!t(h,a.a)&&0<=x(h,a.a,l)||!t(k,a.a)&&0>=x(k,a.a,l)){if(k===a.a)return K(d.b),E(e.b,d),b=ka(b),d=S(b).a,T(a,S(b),c),U(a,b,J(d),d,d,!0),!0;if(h===a.a){K(e.b);E(d.e,J(e));f=c=b;g=f.a.b.a;
+do f=R(f);while(f.a.b.a===g);b=f;f=S(b).a.b.c;c.a=J(e);e=T(a,c,null);U(a,b,e.c,d.b.c,f,!0);return!0}0<=x(h,a.a,l)&&(R(b).b=b.b=!0,K(d.b),d.a.b=a.a.b,d.a.a=a.a.a);0>=x(k,a.a,l)&&(b.b=c.b=!0,K(e.b),e.a.b=a.a.b,e.a.a=a.a.a);return!1}K(d.b);K(e.b);E(J(e),d);d.a.b=l.b;d.a.a=l.a;d.a.h=xa(a.e,d.a);d=d.a;e=[0,0,0,0];l=[f.d,h.d,g.d,k.d];d.g[0]=d.g[1]=d.g[2]=0;ua(d,f,h,e,0);ua(d,g,k,e,2);sa(a,d,l,e,!0);R(b).b=b.b=c.b=!0;return!1}
+function ra(a,b){for(var c=S(b);;){for(;c.b;)b=c,c=S(c);if(!b.b&&(c=b,b=R(b),null===b||!b.b))break;b.b=!1;var d=b.a,e=c.a,f;if(f=d.b.a!==e.b.a)a:{f=b;var g=S(f),h=f.a,k=g.a,l=void 0;if(u(h.b.a,k.b.a)){if(0>x(h.b.a,k.b.a,h.a)){f=!1;break a}R(f).b=f.b=!0;l=K(h);E(k.b,l);l.d.c=f.d}else{if(0<x(k.b.a,h.b.a,k.a)){f=!1;break a}f.b=g.b=!0;l=K(k);E(h.e,k.b);l.b.d.c=f.d}f=!0}f&&(c.c?(Q(c),I(e),c=S(b),e=c.a):b.c&&(Q(b),I(d),b=R(c),d=b.a));if(d.a!==e.a)if(d.b.a===e.b.a||b.c||c.c||d.b.a!==a.a&&e.b.a!==a.a)qa(a,
+b);else if(wa(a,b))break;d.a===e.a&&d.b.a===e.b.a&&(P(e,d),Q(b),I(d),b=R(c))}}
+function ya(a,b){a.a=b;for(var c=b.c;null===c.i;)if(c=c.c,c===b.c){var c=a,d=b,e=new ma;e.a=d.c.b;var f=c.f,g=f.a;do g=g.a;while(null!==g.b&&!f.c(f.b,e,g.b));var f=g.b,h=S(f),e=f.a,g=h.a;if(0===x(e.b.a,d,e.a))e=f.a,t(e.a,d)||t(e.b.a,d)||(K(e.b),f.c&&(I(e.c),f.c=!1),E(d.c,e),ya(c,d));else{var k=u(g.b.a,e.b.a)?f:h,h=void 0;f.d||k.c?(k===f?h=L(d.c.b,e.e):h=L(g.b.c.b,d.c).b,k.c?ja(k,h):(e=c,f=la(c,f,h),f.f=R(f).f+f.a.f,f.d=oa(e,f.f)),ya(c,d)):U(c,f,d.c,d.c,null,!0)}return}c=ka(c.i);e=S(c);f=e.a;e=T(a,
+e,null);if(e.c===f){var f=e,e=f.c,g=S(c),h=c.a,k=g.a,l=!1;h.b.a!==k.b.a&&wa(a,c);t(h.a,a.a)&&(E(J(e),h),c=ka(c),e=S(c).a,T(a,S(c),g),l=!0);t(k.a,a.a)&&(E(f,J(k)),f=T(a,g,null),l=!0);l?U(a,c,f.c,e,e,!0):(u(k.a,h.a)?d=J(k):d=h,d=L(f.c.b,d),U(a,c,d,d.c,d.c,!1),d.b.i.c=!0,ra(a,c))}else U(a,c,e.c,f,f,!0)}function za(a,b){var c=new ma,d=ea(a.b);d.a.b=O;d.a.a=b;d.b.a.b=-O;d.b.a.a=b;a.a=d.b.a;c.a=d;c.f=0;c.d=!1;c.c=!1;c.h=!0;c.b=!1;d=a.f;d=na(d,d.a,c);c.e=d};function Aa(a){this.a=new Ba;this.b=a;this.c=ia}function na(a,b,c){do b=b.c;while(null!==b.b&&!a.c(a.b,b.b,c));a=new Ba(c,b.a,b);b.a.c=a;return b.a=a};function Ba(a,b,c){this.b=a||null;this.a=b||this;this.c=c||this};function X(){this.d=Y;this.p=this.b=this.q=null;this.j=[0,0,0];this.s=100130;this.n=!1;this.o=this.a=this.e=this.f=null;this.m=!1;this.c=this.r=this.i=this.k=this.l=this.h=null}var Y=0;n=X.prototype;n.x=function(){Z(this,Y)};n.B=function(a,b){switch(a){case 100142:return;case 100140:switch(b){case 100130:case 100131:case 100132:case 100133:case 100134:this.s=b;return}break;case 100141:this.m=!!b;return;default:V(this,100900);return}V(this,100901)};
+n.y=function(a){switch(a){case 100142:return 0;case 100140:return this.s;case 100141:return this.m;default:V(this,100900)}return!1};n.A=function(a,b,c){this.j[0]=a;this.j[1]=b;this.j[2]=c};
+n.z=function(a,b){var c=b?b:null;switch(a){case 100100:case 100106:this.h=c;break;case 100104:case 100110:this.l=c;break;case 100101:case 100107:this.k=c;break;case 100102:case 100108:this.i=c;break;case 100103:case 100109:this.p=c;break;case 100105:case 100111:this.o=c;break;case 100112:this.r=c;break;default:V(this,100900)}};
+n.C=function(a,b){var c=!1,d=[0,0,0];Z(this,2);for(var e=0;3>e;++e){var f=a[e];-1E150>f&&(f=-1E150,c=!0);1E150<f&&(f=1E150,c=!0);d[e]=f}c&&V(this,100155);c=this.q;null===c?(c=ea(this.b),E(c,c.b)):(K(c),c=c.e);c.a.d=b;c.a.g[0]=d[0];c.a.g[1]=d[1];c.a.g[2]=d[2];c.f=1;c.b.f=-1;this.q=c};n.u=function(a){Z(this,Y);this.d=1;this.b=new Ca;this.c=a};n.t=function(){Z(this,1);this.d=2;this.q=null};n.v=function(){Z(this,2);this.d=1};
+n.w=function(){Z(this,1);this.d=Y;var a=this.j[0],b=this.j[1],c=this.j[2],d=!1,e=[a,b,c];if(0===a&&0===b&&0===c){for(var b=[-2*1E150,-2*1E150,-2*1E150],f=[2*1E150,2*1E150,2*1E150],c=[],g=[],d=this.b.c,a=d.e;a!==d;a=a.e)for(var h=0;3>h;++h){var k=a.g[h];k<f[h]&&(f[h]=k,g[h]=a);k>b[h]&&(b[h]=k,c[h]=a)}a=0;b[1]-f[1]>b[0]-f[0]&&(a=1);b[2]-f[2]>b[a]-f[a]&&(a=2);if(f[a]>=b[a])e[0]=0,e[1]=0,e[2]=1;else{b=0;f=g[a];c=c[a];g=[0,0,0];f=[f.g[0]-c.g[0],f.g[1]-c.g[1],f.g[2]-c.g[2]];h=[0,0,0];for(a=d.e;a!==d;a=
+a.e)h[0]=a.g[0]-c.g[0],h[1]=a.g[1]-c.g[1],h[2]=a.g[2]-c.g[2],g[0]=f[1]*h[2]-f[2]*h[1],g[1]=f[2]*h[0]-f[0]*h[2],g[2]=f[0]*h[1]-f[1]*h[0],k=g[0]*g[0]+g[1]*g[1]+g[2]*g[2],k>b&&(b=k,e[0]=g[0],e[1]=g[1],e[2]=g[2]);0>=b&&(e[0]=e[1]=e[2]=0,e[ha(f)]=1)}d=!0}g=ha(e);a=this.b.c;b=(g+1)%3;c=(g+2)%3;g=0<e[g]?1:-1;for(e=a.e;e!==a;e=e.e)e.b=e.g[b],e.a=g*e.g[c];if(d){e=0;d=this.b.a;for(a=d.b;a!==d;a=a.b)if(b=a.a,!(0>=b.f)){do e+=(b.a.b-b.b.a.b)*(b.a.a+b.b.a.a),b=b.e;while(b!==a.a)}if(0>e)for(e=this.b.c,d=e.e;d!==
+e;d=d.e)d.a=-d.a}this.n=!1;e=this.b.b;for(a=e.h;a!==e;a=d)if(d=a.h,b=a.e,t(a.a,a.b.a)&&a.e.e!==a&&(ta(this,b,a),I(a),a=b,b=a.e),b.e===a){if(b!==a){if(b===d||b===d.b)d=d.h;I(b)}if(a===d||a===d.b)d=d.h;I(a)}this.e=e=new Da;d=this.b.c;for(a=d.e;a!==d;a=a.e)a.h=xa(e,a);Ea(e);this.f=new Aa(this);za(this,-O);for(za(this,O);null!==(e=Fa(this.e));){for(;;){a:if(a=this.e,0===a.a)d=Ga(a.b);else if(d=a.c[a.d[a.a-1]],0!==a.b.a&&(a=Ga(a.b),u(a,d))){d=a;break a}if(null===d||!t(d,e))break;d=Fa(this.e);ta(this,e.c,
+d.c)}ya(this,e)}this.a=this.f.a.a.b.a.a;for(e=0;null!==(d=this.f.a.a.b);)d.h||++e,Q(d);this.f=null;e=this.e;e.b=null;e.d=null;this.e=e.c=null;e=this.b;for(a=e.a.b;a!==e.a;a=d)d=a.b,a=a.a,a.e.e===a&&(P(a.c,a),I(a));if(!this.n){e=this.b;if(this.m)for(a=e.b.h;a!==e.b;a=d)d=a.h,a.b.d.c!==a.d.c?a.f=a.d.c?1:-1:I(a);else for(a=e.a.b;a!==e.a;a=d)if(d=a.b,a.c){for(a=a.a;u(a.b.a,a.a);a=a.c.b);for(;u(a.a,a.b.a);a=a.e);b=a.c.b;for(c=void 0;a.e!==b;)if(u(a.b.a,b.a)){for(;b.e!==a&&(ca(b.e)||0>=x(b.a,b.b.a,b.e.b.a));)c=
+L(b.e,b),b=c.b;b=b.c.b}else{for(;b.e!==a&&(da(a.c.b)||0<=x(a.b.a,a.a,a.c.b.a));)c=L(a,a.c.b),a=c.b;a=a.e}for(;b.e.e!==a;)c=L(b.e,b),b=c.b}if(this.h||this.i||this.k||this.l)if(this.m)for(e=this.b,d=e.a.b;d!==e.a;d=d.b){if(d.c){this.h&&this.h(2,this.c);a=d.a;do this.k&&this.k(a.a.d,this.c),a=a.e;while(a!==d.a);this.i&&this.i(this.c)}}else{e=this.b;d=!!this.l;a=!1;b=-1;for(c=e.a.d;c!==e.a;c=c.d)if(c.c){a||(this.h&&this.h(4,this.c),a=!0);g=c.a;do d&&(f=g.b.d.c?0:1,b!==f&&(b=f,this.l&&this.l(!!b,this.c))),
+this.k&&this.k(g.a.d,this.c),g=g.e;while(g!==c.a)}a&&this.i&&this.i(this.c)}if(this.r){e=this.b;for(a=e.a.b;a!==e.a;a=d)if(d=a.b,!a.c){b=a.a;c=b.e;g=void 0;do g=c,c=g.e,g.d=null,null===g.b.d&&(g.c===g?F(g.a,null):(g.a.c=g.c,H(g,J(g))),f=g.b,f.c===f?F(f.a,null):(f.a.c=f.c,H(f,J(f))),fa(g));while(g!==b);b=a.d;a=a.b;a.d=b;b.b=a}this.r(this.b);this.c=this.b=null;return}}this.b=this.c=null};
+function Z(a,b){if(a.d!==b)for(;a.d!==b;)if(a.d<b)switch(a.d){case Y:V(a,100151);a.u(null);break;case 1:V(a,100152),a.t()}else switch(a.d){case 2:V(a,100154);a.v();break;case 1:V(a,100153),a.w()}}function V(a,b){a.p&&a.p(b,a.c)};function ga(a,b){this.b=a||this;this.d=b||this;this.a=null;this.c=!1};function M(){this.h=this;this.i=this.d=this.a=this.e=this.c=this.b=null;this.f=0}function J(a){return a.b.e};function Ca(){this.c=new N;this.a=new ga;this.b=new M;this.d=new M;this.b.b=this.d;this.d.b=this.b};function N(a,b){this.e=a||this;this.f=b||this;this.d=this.c=null;this.g=[0,0,0];this.h=this.a=this.b=0};function Da(){this.c=[];this.d=null;this.a=0;this.e=!1;this.b=new Ha}function Ea(a){a.d=[];for(var b=0;b<a.a;b++)a.d[b]=b;a.d.sort(function(a){return function(b,e){return u(a[b],a[e])?1:-1}}(a.c));a.e=!0;Ia(a.b)}function xa(a,b){if(a.e){var c=a.b,d=++c.a;2*d>c.f&&(c.f*=2,c.c=Ja(c.c,c.f+1));var e;0===c.b?e=d:(e=c.b,c.b=c.c[c.b]);c.e[e]=b;c.c[e]=d;c.d[d]=e;c.h&&va(c,d);return e}c=a.a++;a.c[c]=b;return-(c+1)}
+function Fa(a){if(0===a.a)return Ka(a.b);var b=a.c[a.d[a.a-1]];if(0!==a.b.a&&u(Ga(a.b),b))return Ka(a.b);do--a.a;while(0<a.a&&null===a.c[a.d[a.a-1]]);return b};function Ha(){this.d=Ja([0],33);this.e=[null,null];this.c=[0,0];this.a=0;this.f=32;this.b=0;this.h=!1;this.d[1]=1}function Ja(a,b){for(var c=Array(b),d=0;d<a.length;d++)c[d]=a[d];for(;d<b;d++)c[d]=0;return c}function Ia(a){for(var b=a.a;1<=b;--b)W(a,b);a.h=!0}function Ga(a){return a.e[a.d[1]]}function Ka(a){var b=a.d,c=a.e,d=a.c,e=b[1],f=c[e];0<a.a&&(b[1]=b[a.a],d[b[1]]=1,c[e]=null,d[e]=a.b,a.b=e,0<--a.a&&W(a,1));return f}
+function W(a,b){for(var c=a.d,d=a.e,e=a.c,f=b,g=c[f];;){var h=f<<1;h<a.a&&u(d[c[h+1]],d[c[h]])&&(h+=1);var k=c[h];if(h>a.a||u(d[g],d[k])){c[f]=g;e[g]=f;break}c[f]=k;e[k]=f;f=h}}function va(a,b){for(var c=a.d,d=a.e,e=a.c,f=b,g=c[f];;){var h=f>>1,k=c[h];if(0===h||u(d[k],d[g])){c[f]=g;e[g]=f;break}c[f]=k;e[k]=f;f=h}};function ma(){this.e=this.a=null;this.f=0;this.c=this.b=this.h=this.d=!1}function S(a){return a.e.c.b}function R(a){return a.e.a.b};this.libtess={GluTesselator:X,windingRule:{GLU_TESS_WINDING_ODD:100130,GLU_TESS_WINDING_NONZERO:100131,GLU_TESS_WINDING_POSITIVE:100132,GLU_TESS_WINDING_NEGATIVE:100133,GLU_TESS_WINDING_ABS_GEQ_TWO:100134},primitiveType:{GL_LINE_LOOP:2,GL_TRIANGLES:4,GL_TRIANGLE_STRIP:5,GL_TRIANGLE_FAN:6},errorType:{GLU_TESS_MISSING_BEGIN_POLYGON:100151,GLU_TESS_MISSING_END_POLYGON:100153,GLU_TESS_MISSING_BEGIN_CONTOUR:100152,GLU_TESS_MISSING_END_CONTOUR:100154,GLU_TESS_COORD_TOO_LARGE:100155,GLU_TESS_NEED_COMBINE_CALLBACK:100156},
+gluEnum:{GLU_TESS_MESH:100112,GLU_TESS_TOLERANCE:100142,GLU_TESS_WINDING_RULE:100140,GLU_TESS_BOUNDARY_ONLY:100141,GLU_INVALID_ENUM:100900,GLU_INVALID_VALUE:100901,GLU_TESS_BEGIN:100100,GLU_TESS_VERTEX:100101,GLU_TESS_END:100102,GLU_TESS_ERROR:100103,GLU_TESS_EDGE_FLAG:100104,GLU_TESS_COMBINE:100105,GLU_TESS_BEGIN_DATA:100106,GLU_TESS_VERTEX_DATA:100107,GLU_TESS_END_DATA:100108,GLU_TESS_ERROR_DATA:100109,GLU_TESS_EDGE_FLAG_DATA:100110,GLU_TESS_COMBINE_DATA:100111}};X.prototype.gluDeleteTess=X.prototype.x;
+X.prototype.gluTessProperty=X.prototype.B;X.prototype.gluGetTessProperty=X.prototype.y;X.prototype.gluTessNormal=X.prototype.A;X.prototype.gluTessCallback=X.prototype.z;X.prototype.gluTessVertex=X.prototype.C;X.prototype.gluTessBeginPolygon=X.prototype.u;X.prototype.gluTessBeginContour=X.prototype.t;X.prototype.gluTessEndContour=X.prototype.v;X.prototype.gluTessEndPolygon=X.prototype.w; if (true) { module.exports = this.libtess; }
+
+
+/***/ }),
+
+/***/ "./node_modules/monotone-convex-hull-2d/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/monotone-convex-hull-2d/index.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = monotoneConvexHull2D
+
+var orient = __webpack_require__(/*! robust-orientation */ "./node_modules/robust-orientation/orientation.js")[3]
+
+function monotoneConvexHull2D(points) {
+  var n = points.length
+
+  if(n < 3) {
+    var result = new Array(n)
+    for(var i=0; i<n; ++i) {
+      result[i] = i
+    }
+
+    if(n === 2 &&
+       points[0][0] === points[1][0] &&
+       points[0][1] === points[1][1]) {
+      return [0]
+    }
+
+    return result
+  }
+
+  //Sort point indices along x-axis
+  var sorted = new Array(n)
+  for(var i=0; i<n; ++i) {
+    sorted[i] = i
+  }
+  sorted.sort(function(a,b) {
+    var d = points[a][0]-points[b][0]
+    if(d) {
+      return d
+    }
+    return points[a][1] - points[b][1]
+  })
+
+  //Construct upper and lower hulls
+  var lower = [sorted[0], sorted[1]]
+  var upper = [sorted[0], sorted[1]]
+
+  for(var i=2; i<n; ++i) {
+    var idx = sorted[i]
+    var p   = points[idx]
+
+    //Insert into lower list
+    var m = lower.length
+    while(m > 1 && orient(
+        points[lower[m-2]], 
+        points[lower[m-1]], 
+        p) <= 0) {
+      m -= 1
+      lower.pop()
+    }
+    lower.push(idx)
+
+    //Insert into upper list
+    m = upper.length
+    while(m > 1 && orient(
+        points[upper[m-2]], 
+        points[upper[m-1]], 
+        p) >= 0) {
+      m -= 1
+      upper.pop()
+    }
+    upper.push(idx)
+  }
+
+  //Merge lists together
+  var result = new Array(upper.length + lower.length - 2)
+  var ptr    = 0
+  for(var i=0, nl=lower.length; i<nl; ++i) {
+    result[ptr++] = lower[i]
+  }
+  for(var j=upper.length-2; j>0; --j) {
+    result[ptr++] = upper[j]
+  }
+
+  //Return result
+  return result
+}
+
+/***/ }),
+
+/***/ "./node_modules/point-in-polygon/index.js":
+/*!************************************************!*\
+  !*** ./node_modules/point-in-polygon/index.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function (point, vs) {
+    // ray-casting algorithm based on
+    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+    
+    var x = point[0], y = point[1];
+    
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+        
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    
+    return inside;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/quickselect/quickselect.js":
+/*!*************************************************!*\
+  !*** ./node_modules/quickselect/quickselect.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+(function (global, factory) {
+	 true ? module.exports = factory() :
+	undefined;
+}(this, (function () { 'use strict';
+
+function quickselect(arr, k, left, right, compare) {
+    quickselectStep(arr, k, left || 0, right || (arr.length - 1), compare || defaultCompare);
+}
+
+function quickselectStep(arr, k, left, right, compare) {
+
+    while (right > left) {
+        if (right - left > 600) {
+            var n = right - left + 1;
+            var m = k - left + 1;
+            var z = Math.log(n);
+            var s = 0.5 * Math.exp(2 * z / 3);
+            var sd = 0.5 * Math.sqrt(z * s * (n - s) / n) * (m - n / 2 < 0 ? -1 : 1);
+            var newLeft = Math.max(left, Math.floor(k - m * s / n + sd));
+            var newRight = Math.min(right, Math.floor(k + (n - m) * s / n + sd));
+            quickselectStep(arr, k, newLeft, newRight, compare);
+        }
+
+        var t = arr[k];
+        var i = left;
+        var j = right;
+
+        swap(arr, left, k);
+        if (compare(arr[right], t) > 0) swap(arr, left, right);
+
+        while (i < j) {
+            swap(arr, i, j);
+            i++;
+            j--;
+            while (compare(arr[i], t) < 0) i++;
+            while (compare(arr[j], t) > 0) j--;
+        }
+
+        if (compare(arr[left], t) === 0) swap(arr, left, j);
+        else {
+            j++;
+            swap(arr, j, right);
+        }
+
+        if (j <= k) left = j + 1;
+        if (k <= j) right = j - 1;
+    }
+}
+
+function swap(arr, i, j) {
+    var tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+}
+
+function defaultCompare(a, b) {
+    return a < b ? -1 : a > b ? 1 : 0;
+}
+
+return quickselect;
+
+})));
+
+
+/***/ }),
+
+/***/ "./node_modules/rbush/index.js":
+/*!*************************************!*\
+  !*** ./node_modules/rbush/index.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = rbush;
+module.exports.default = rbush;
+
+var quickselect = __webpack_require__(/*! quickselect */ "./node_modules/quickselect/quickselect.js");
+
+function rbush(maxEntries, format) {
+    if (!(this instanceof rbush)) return new rbush(maxEntries, format);
+
+    // max entries in a node is 9 by default; min node fill is 40% for best performance
+    this._maxEntries = Math.max(4, maxEntries || 9);
+    this._minEntries = Math.max(2, Math.ceil(this._maxEntries * 0.4));
+
+    if (format) {
+        this._initFormat(format);
+    }
+
+    this.clear();
+}
+
+rbush.prototype = {
+
+    all: function () {
+        return this._all(this.data, []);
+    },
+
+    search: function (bbox) {
+
+        var node = this.data,
+            result = [],
+            toBBox = this.toBBox;
+
+        if (!intersects(bbox, node)) return result;
+
+        var nodesToSearch = [],
+            i, len, child, childBBox;
+
+        while (node) {
+            for (i = 0, len = node.children.length; i < len; i++) {
+
+                child = node.children[i];
+                childBBox = node.leaf ? toBBox(child) : child;
+
+                if (intersects(bbox, childBBox)) {
+                    if (node.leaf) result.push(child);
+                    else if (contains(bbox, childBBox)) this._all(child, result);
+                    else nodesToSearch.push(child);
+                }
+            }
+            node = nodesToSearch.pop();
+        }
+
+        return result;
+    },
+
+    collides: function (bbox) {
+
+        var node = this.data,
+            toBBox = this.toBBox;
+
+        if (!intersects(bbox, node)) return false;
+
+        var nodesToSearch = [],
+            i, len, child, childBBox;
+
+        while (node) {
+            for (i = 0, len = node.children.length; i < len; i++) {
+
+                child = node.children[i];
+                childBBox = node.leaf ? toBBox(child) : child;
+
+                if (intersects(bbox, childBBox)) {
+                    if (node.leaf || contains(bbox, childBBox)) return true;
+                    nodesToSearch.push(child);
+                }
+            }
+            node = nodesToSearch.pop();
+        }
+
+        return false;
+    },
+
+    load: function (data) {
+        if (!(data && data.length)) return this;
+
+        if (data.length < this._minEntries) {
+            for (var i = 0, len = data.length; i < len; i++) {
+                this.insert(data[i]);
+            }
+            return this;
+        }
+
+        // recursively build the tree with the given data from scratch using OMT algorithm
+        var node = this._build(data.slice(), 0, data.length - 1, 0);
+
+        if (!this.data.children.length) {
+            // save as is if tree is empty
+            this.data = node;
+
+        } else if (this.data.height === node.height) {
+            // split root if trees have the same height
+            this._splitRoot(this.data, node);
+
+        } else {
+            if (this.data.height < node.height) {
+                // swap trees if inserted one is bigger
+                var tmpNode = this.data;
+                this.data = node;
+                node = tmpNode;
+            }
+
+            // insert the small tree into the large tree at appropriate level
+            this._insert(node, this.data.height - node.height - 1, true);
+        }
+
+        return this;
+    },
+
+    insert: function (item) {
+        if (item) this._insert(item, this.data.height - 1);
+        return this;
+    },
+
+    clear: function () {
+        this.data = createNode([]);
+        return this;
+    },
+
+    remove: function (item, equalsFn) {
+        if (!item) return this;
+
+        var node = this.data,
+            bbox = this.toBBox(item),
+            path = [],
+            indexes = [],
+            i, parent, index, goingUp;
+
+        // depth-first iterative tree traversal
+        while (node || path.length) {
+
+            if (!node) { // go up
+                node = path.pop();
+                parent = path[path.length - 1];
+                i = indexes.pop();
+                goingUp = true;
+            }
+
+            if (node.leaf) { // check current node
+                index = findItem(item, node.children, equalsFn);
+
+                if (index !== -1) {
+                    // item found, remove the item and condense tree upwards
+                    node.children.splice(index, 1);
+                    path.push(node);
+                    this._condense(path);
+                    return this;
+                }
+            }
+
+            if (!goingUp && !node.leaf && contains(node, bbox)) { // go down
+                path.push(node);
+                indexes.push(i);
+                i = 0;
+                parent = node;
+                node = node.children[0];
+
+            } else if (parent) { // go right
+                i++;
+                node = parent.children[i];
+                goingUp = false;
+
+            } else node = null; // nothing found
+        }
+
+        return this;
+    },
+
+    toBBox: function (item) { return item; },
+
+    compareMinX: compareNodeMinX,
+    compareMinY: compareNodeMinY,
+
+    toJSON: function () { return this.data; },
+
+    fromJSON: function (data) {
+        this.data = data;
+        return this;
+    },
+
+    _all: function (node, result) {
+        var nodesToSearch = [];
+        while (node) {
+            if (node.leaf) result.push.apply(result, node.children);
+            else nodesToSearch.push.apply(nodesToSearch, node.children);
+
+            node = nodesToSearch.pop();
+        }
+        return result;
+    },
+
+    _build: function (items, left, right, height) {
+
+        var N = right - left + 1,
+            M = this._maxEntries,
+            node;
+
+        if (N <= M) {
+            // reached leaf level; return leaf
+            node = createNode(items.slice(left, right + 1));
+            calcBBox(node, this.toBBox);
+            return node;
+        }
+
+        if (!height) {
+            // target height of the bulk-loaded tree
+            height = Math.ceil(Math.log(N) / Math.log(M));
+
+            // target number of root entries to maximize storage utilization
+            M = Math.ceil(N / Math.pow(M, height - 1));
+        }
+
+        node = createNode([]);
+        node.leaf = false;
+        node.height = height;
+
+        // split the items into M mostly square tiles
+
+        var N2 = Math.ceil(N / M),
+            N1 = N2 * Math.ceil(Math.sqrt(M)),
+            i, j, right2, right3;
+
+        multiSelect(items, left, right, N1, this.compareMinX);
+
+        for (i = left; i <= right; i += N1) {
+
+            right2 = Math.min(i + N1 - 1, right);
+
+            multiSelect(items, i, right2, N2, this.compareMinY);
+
+            for (j = i; j <= right2; j += N2) {
+
+                right3 = Math.min(j + N2 - 1, right2);
+
+                // pack each entry recursively
+                node.children.push(this._build(items, j, right3, height - 1));
+            }
+        }
+
+        calcBBox(node, this.toBBox);
+
+        return node;
+    },
+
+    _chooseSubtree: function (bbox, node, level, path) {
+
+        var i, len, child, targetNode, area, enlargement, minArea, minEnlargement;
+
+        while (true) {
+            path.push(node);
+
+            if (node.leaf || path.length - 1 === level) break;
+
+            minArea = minEnlargement = Infinity;
+
+            for (i = 0, len = node.children.length; i < len; i++) {
+                child = node.children[i];
+                area = bboxArea(child);
+                enlargement = enlargedArea(bbox, child) - area;
+
+                // choose entry with the least area enlargement
+                if (enlargement < minEnlargement) {
+                    minEnlargement = enlargement;
+                    minArea = area < minArea ? area : minArea;
+                    targetNode = child;
+
+                } else if (enlargement === minEnlargement) {
+                    // otherwise choose one with the smallest area
+                    if (area < minArea) {
+                        minArea = area;
+                        targetNode = child;
+                    }
+                }
+            }
+
+            node = targetNode || node.children[0];
+        }
+
+        return node;
+    },
+
+    _insert: function (item, level, isNode) {
+
+        var toBBox = this.toBBox,
+            bbox = isNode ? item : toBBox(item),
+            insertPath = [];
+
+        // find the best node for accommodating the item, saving all nodes along the path too
+        var node = this._chooseSubtree(bbox, this.data, level, insertPath);
+
+        // put the item into the node
+        node.children.push(item);
+        extend(node, bbox);
+
+        // split on node overflow; propagate upwards if necessary
+        while (level >= 0) {
+            if (insertPath[level].children.length > this._maxEntries) {
+                this._split(insertPath, level);
+                level--;
+            } else break;
+        }
+
+        // adjust bboxes along the insertion path
+        this._adjustParentBBoxes(bbox, insertPath, level);
+    },
+
+    // split overflowed node into two
+    _split: function (insertPath, level) {
+
+        var node = insertPath[level],
+            M = node.children.length,
+            m = this._minEntries;
+
+        this._chooseSplitAxis(node, m, M);
+
+        var splitIndex = this._chooseSplitIndex(node, m, M);
+
+        var newNode = createNode(node.children.splice(splitIndex, node.children.length - splitIndex));
+        newNode.height = node.height;
+        newNode.leaf = node.leaf;
+
+        calcBBox(node, this.toBBox);
+        calcBBox(newNode, this.toBBox);
+
+        if (level) insertPath[level - 1].children.push(newNode);
+        else this._splitRoot(node, newNode);
+    },
+
+    _splitRoot: function (node, newNode) {
+        // split root node
+        this.data = createNode([node, newNode]);
+        this.data.height = node.height + 1;
+        this.data.leaf = false;
+        calcBBox(this.data, this.toBBox);
+    },
+
+    _chooseSplitIndex: function (node, m, M) {
+
+        var i, bbox1, bbox2, overlap, area, minOverlap, minArea, index;
+
+        minOverlap = minArea = Infinity;
+
+        for (i = m; i <= M - m; i++) {
+            bbox1 = distBBox(node, 0, i, this.toBBox);
+            bbox2 = distBBox(node, i, M, this.toBBox);
+
+            overlap = intersectionArea(bbox1, bbox2);
+            area = bboxArea(bbox1) + bboxArea(bbox2);
+
+            // choose distribution with minimum overlap
+            if (overlap < minOverlap) {
+                minOverlap = overlap;
+                index = i;
+
+                minArea = area < minArea ? area : minArea;
+
+            } else if (overlap === minOverlap) {
+                // otherwise choose distribution with minimum area
+                if (area < minArea) {
+                    minArea = area;
+                    index = i;
+                }
+            }
+        }
+
+        return index;
+    },
+
+    // sorts node children by the best axis for split
+    _chooseSplitAxis: function (node, m, M) {
+
+        var compareMinX = node.leaf ? this.compareMinX : compareNodeMinX,
+            compareMinY = node.leaf ? this.compareMinY : compareNodeMinY,
+            xMargin = this._allDistMargin(node, m, M, compareMinX),
+            yMargin = this._allDistMargin(node, m, M, compareMinY);
+
+        // if total distributions margin value is minimal for x, sort by minX,
+        // otherwise it's already sorted by minY
+        if (xMargin < yMargin) node.children.sort(compareMinX);
+    },
+
+    // total margin of all possible split distributions where each node is at least m full
+    _allDistMargin: function (node, m, M, compare) {
+
+        node.children.sort(compare);
+
+        var toBBox = this.toBBox,
+            leftBBox = distBBox(node, 0, m, toBBox),
+            rightBBox = distBBox(node, M - m, M, toBBox),
+            margin = bboxMargin(leftBBox) + bboxMargin(rightBBox),
+            i, child;
+
+        for (i = m; i < M - m; i++) {
+            child = node.children[i];
+            extend(leftBBox, node.leaf ? toBBox(child) : child);
+            margin += bboxMargin(leftBBox);
+        }
+
+        for (i = M - m - 1; i >= m; i--) {
+            child = node.children[i];
+            extend(rightBBox, node.leaf ? toBBox(child) : child);
+            margin += bboxMargin(rightBBox);
+        }
+
+        return margin;
+    },
+
+    _adjustParentBBoxes: function (bbox, path, level) {
+        // adjust bboxes along the given tree path
+        for (var i = level; i >= 0; i--) {
+            extend(path[i], bbox);
+        }
+    },
+
+    _condense: function (path) {
+        // go through the path, removing empty nodes and updating bboxes
+        for (var i = path.length - 1, siblings; i >= 0; i--) {
+            if (path[i].children.length === 0) {
+                if (i > 0) {
+                    siblings = path[i - 1].children;
+                    siblings.splice(siblings.indexOf(path[i]), 1);
+
+                } else this.clear();
+
+            } else calcBBox(path[i], this.toBBox);
+        }
+    },
+
+    _initFormat: function (format) {
+        // data format (minX, minY, maxX, maxY accessors)
+
+        // uses eval-type function compilation instead of just accepting a toBBox function
+        // because the algorithms are very sensitive to sorting functions performance,
+        // so they should be dead simple and without inner calls
+
+        var compareArr = ['return a', ' - b', ';'];
+
+        this.compareMinX = new Function('a', 'b', compareArr.join(format[0]));
+        this.compareMinY = new Function('a', 'b', compareArr.join(format[1]));
+
+        this.toBBox = new Function('a',
+            'return {minX: a' + format[0] +
+            ', minY: a' + format[1] +
+            ', maxX: a' + format[2] +
+            ', maxY: a' + format[3] + '};');
+    }
+};
+
+function findItem(item, items, equalsFn) {
+    if (!equalsFn) return items.indexOf(item);
+
+    for (var i = 0; i < items.length; i++) {
+        if (equalsFn(item, items[i])) return i;
+    }
+    return -1;
+}
+
+// calculate node's bbox from bboxes of its children
+function calcBBox(node, toBBox) {
+    distBBox(node, 0, node.children.length, toBBox, node);
+}
+
+// min bounding rectangle of node children from k to p-1
+function distBBox(node, k, p, toBBox, destNode) {
+    if (!destNode) destNode = createNode(null);
+    destNode.minX = Infinity;
+    destNode.minY = Infinity;
+    destNode.maxX = -Infinity;
+    destNode.maxY = -Infinity;
+
+    for (var i = k, child; i < p; i++) {
+        child = node.children[i];
+        extend(destNode, node.leaf ? toBBox(child) : child);
+    }
+
+    return destNode;
+}
+
+function extend(a, b) {
+    a.minX = Math.min(a.minX, b.minX);
+    a.minY = Math.min(a.minY, b.minY);
+    a.maxX = Math.max(a.maxX, b.maxX);
+    a.maxY = Math.max(a.maxY, b.maxY);
+    return a;
+}
+
+function compareNodeMinX(a, b) { return a.minX - b.minX; }
+function compareNodeMinY(a, b) { return a.minY - b.minY; }
+
+function bboxArea(a)   { return (a.maxX - a.minX) * (a.maxY - a.minY); }
+function bboxMargin(a) { return (a.maxX - a.minX) + (a.maxY - a.minY); }
+
+function enlargedArea(a, b) {
+    return (Math.max(b.maxX, a.maxX) - Math.min(b.minX, a.minX)) *
+           (Math.max(b.maxY, a.maxY) - Math.min(b.minY, a.minY));
+}
+
+function intersectionArea(a, b) {
+    var minX = Math.max(a.minX, b.minX),
+        minY = Math.max(a.minY, b.minY),
+        maxX = Math.min(a.maxX, b.maxX),
+        maxY = Math.min(a.maxY, b.maxY);
+
+    return Math.max(0, maxX - minX) *
+           Math.max(0, maxY - minY);
+}
+
+function contains(a, b) {
+    return a.minX <= b.minX &&
+           a.minY <= b.minY &&
+           b.maxX <= a.maxX &&
+           b.maxY <= a.maxY;
+}
+
+function intersects(a, b) {
+    return b.minX <= a.maxX &&
+           b.minY <= a.maxY &&
+           b.maxX >= a.minX &&
+           b.maxY >= a.minY;
+}
+
+function createNode(children) {
+    return {
+        children: children,
+        height: 1,
+        leaf: true,
+        minX: Infinity,
+        minY: Infinity,
+        maxX: -Infinity,
+        maxY: -Infinity
+    };
+}
+
+// sort an array so that items come in groups of n unsorted items, with groups sorted between each other;
+// combines selection algorithm with binary divide & conquer approach
+
+function multiSelect(arr, left, right, n, compare) {
+    var stack = [left, right],
+        mid;
+
+    while (stack.length) {
+        right = stack.pop();
+        left = stack.pop();
+
+        if (right - left <= n) continue;
+
+        mid = left + Math.ceil((right - left) / n / 2) * n;
+        quickselect(arr, mid, left, right, compare);
+
+        stack.push(left, mid, mid, right);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/robust-orientation/orientation.js":
+/*!********************************************************!*\
+  !*** ./node_modules/robust-orientation/orientation.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(/*! two-product */ "./node_modules/two-product/two-product.js")
+var robustSum = __webpack_require__(/*! robust-sum */ "./node_modules/robust-sum/robust-sum.js")
+var robustScale = __webpack_require__(/*! robust-scale */ "./node_modules/robust-scale/robust-scale.js")
+var robustSubtract = __webpack_require__(/*! robust-subtract */ "./node_modules/robust-subtract/robust-diff.js")
+
+var NUM_EXPAND = 5
+
+var EPSILON     = 1.1102230246251565e-16
+var ERRBOUND3   = (3.0 + 16.0 * EPSILON) * EPSILON
+var ERRBOUND4   = (7.0 + 56.0 * EPSILON) * EPSILON
+
+function cofactor(m, c) {
+  var result = new Array(m.length-1)
+  for(var i=1; i<m.length; ++i) {
+    var r = result[i-1] = new Array(m.length-1)
+    for(var j=0,k=0; j<m.length; ++j) {
+      if(j === c) {
+        continue
+      }
+      r[k++] = m[i][j]
+    }
+  }
+  return result
+}
+
+function matrix(n) {
+  var result = new Array(n)
+  for(var i=0; i<n; ++i) {
+    result[i] = new Array(n)
+    for(var j=0; j<n; ++j) {
+      result[i][j] = ["m", j, "[", (n-i-1), "]"].join("")
+    }
+  }
+  return result
+}
+
+function sign(n) {
+  if(n & 1) {
+    return "-"
+  }
+  return ""
+}
+
+function generateSum(expr) {
+  if(expr.length === 1) {
+    return expr[0]
+  } else if(expr.length === 2) {
+    return ["sum(", expr[0], ",", expr[1], ")"].join("")
+  } else {
+    var m = expr.length>>1
+    return ["sum(", generateSum(expr.slice(0, m)), ",", generateSum(expr.slice(m)), ")"].join("")
+  }
+}
+
+function determinant(m) {
+  if(m.length === 2) {
+    return [["sum(prod(", m[0][0], ",", m[1][1], "),prod(-", m[0][1], ",", m[1][0], "))"].join("")]
+  } else {
+    var expr = []
+    for(var i=0; i<m.length; ++i) {
+      expr.push(["scale(", generateSum(determinant(cofactor(m, i))), ",", sign(i), m[0][i], ")"].join(""))
+    }
+    return expr
+  }
+}
+
+function orientation(n) {
+  var pos = []
+  var neg = []
+  var m = matrix(n)
+  var args = []
+  for(var i=0; i<n; ++i) {
+    if((i&1)===0) {
+      pos.push.apply(pos, determinant(cofactor(m, i)))
+    } else {
+      neg.push.apply(neg, determinant(cofactor(m, i)))
+    }
+    args.push("m" + i)
+  }
+  var posExpr = generateSum(pos)
+  var negExpr = generateSum(neg)
+  var funcName = "orientation" + n + "Exact"
+  var code = ["function ", funcName, "(", args.join(), "){var p=", posExpr, ",n=", negExpr, ",d=sub(p,n);\
+return d[d.length-1];};return ", funcName].join("")
+  var proc = new Function("sum", "prod", "scale", "sub", code)
+  return proc(robustSum, twoProduct, robustScale, robustSubtract)
+}
+
+var orientation3Exact = orientation(3)
+var orientation4Exact = orientation(4)
+
+var CACHED = [
+  function orientation0() { return 0 },
+  function orientation1() { return 0 },
+  function orientation2(a, b) { 
+    return b[0] - a[0]
+  },
+  function orientation3(a, b, c) {
+    var l = (a[1] - c[1]) * (b[0] - c[0])
+    var r = (a[0] - c[0]) * (b[1] - c[1])
+    var det = l - r
+    var s
+    if(l > 0) {
+      if(r <= 0) {
+        return det
+      } else {
+        s = l + r
+      }
+    } else if(l < 0) {
+      if(r >= 0) {
+        return det
+      } else {
+        s = -(l + r)
+      }
+    } else {
+      return det
+    }
+    var tol = ERRBOUND3 * s
+    if(det >= tol || det <= -tol) {
+      return det
+    }
+    return orientation3Exact(a, b, c)
+  },
+  function orientation4(a,b,c,d) {
+    var adx = a[0] - d[0]
+    var bdx = b[0] - d[0]
+    var cdx = c[0] - d[0]
+    var ady = a[1] - d[1]
+    var bdy = b[1] - d[1]
+    var cdy = c[1] - d[1]
+    var adz = a[2] - d[2]
+    var bdz = b[2] - d[2]
+    var cdz = c[2] - d[2]
+    var bdxcdy = bdx * cdy
+    var cdxbdy = cdx * bdy
+    var cdxady = cdx * ady
+    var adxcdy = adx * cdy
+    var adxbdy = adx * bdy
+    var bdxady = bdx * ady
+    var det = adz * (bdxcdy - cdxbdy) 
+            + bdz * (cdxady - adxcdy)
+            + cdz * (adxbdy - bdxady)
+    var permanent = (Math.abs(bdxcdy) + Math.abs(cdxbdy)) * Math.abs(adz)
+                  + (Math.abs(cdxady) + Math.abs(adxcdy)) * Math.abs(bdz)
+                  + (Math.abs(adxbdy) + Math.abs(bdxady)) * Math.abs(cdz)
+    var tol = ERRBOUND4 * permanent
+    if ((det > tol) || (-det > tol)) {
+      return det
+    }
+    return orientation4Exact(a,b,c,d)
+  }
+]
+
+function slowOrient(args) {
+  var proc = CACHED[args.length]
+  if(!proc) {
+    proc = CACHED[args.length] = orientation(args.length)
+  }
+  return proc.apply(undefined, args)
+}
+
+function generateOrientationProc() {
+  while(CACHED.length <= NUM_EXPAND) {
+    CACHED.push(orientation(CACHED.length))
+  }
+  var args = []
+  var procArgs = ["slow"]
+  for(var i=0; i<=NUM_EXPAND; ++i) {
+    args.push("a" + i)
+    procArgs.push("o" + i)
+  }
+  var code = [
+    "function getOrientation(", args.join(), "){switch(arguments.length){case 0:case 1:return 0;"
+  ]
+  for(var i=2; i<=NUM_EXPAND; ++i) {
+    code.push("case ", i, ":return o", i, "(", args.slice(0, i).join(), ");")
+  }
+  code.push("}var s=new Array(arguments.length);for(var i=0;i<arguments.length;++i){s[i]=arguments[i]};return slow(s);}return getOrientation")
+  procArgs.push(code.join(""))
+
+  var proc = Function.apply(undefined, procArgs)
+  module.exports = proc.apply(undefined, [slowOrient].concat(CACHED))
+  for(var i=0; i<=NUM_EXPAND; ++i) {
+    module.exports[i] = CACHED[i]
+  }
+}
+
+generateOrientationProc()
+
+/***/ }),
+
+/***/ "./node_modules/robust-scale/robust-scale.js":
+/*!***************************************************!*\
+  !*** ./node_modules/robust-scale/robust-scale.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var twoProduct = __webpack_require__(/*! two-product */ "./node_modules/two-product/two-product.js")
+var twoSum = __webpack_require__(/*! two-sum */ "./node_modules/two-sum/two-sum.js")
+
+module.exports = scaleLinearExpansion
+
+function scaleLinearExpansion(e, scale) {
+  var n = e.length
+  if(n === 1) {
+    var ts = twoProduct(e[0], scale)
+    if(ts[0]) {
+      return ts
+    }
+    return [ ts[1] ]
+  }
+  var g = new Array(2 * n)
+  var q = [0.1, 0.1]
+  var t = [0.1, 0.1]
+  var count = 0
+  twoProduct(e[0], scale, q)
+  if(q[0]) {
+    g[count++] = q[0]
+  }
+  for(var i=1; i<n; ++i) {
+    twoProduct(e[i], scale, t)
+    var pq = q[1]
+    twoSum(pq, t[0], q)
+    if(q[0]) {
+      g[count++] = q[0]
+    }
+    var a = t[1]
+    var b = q[1]
+    var x = a + b
+    var bv = x - a
+    var y = b - bv
+    q[1] = x
+    if(y) {
+      g[count++] = y
+    }
+  }
+  if(q[1]) {
+    g[count++] = q[1]
+  }
+  if(count === 0) {
+    g[count++] = 0.0
+  }
+  g.length = count
+  return g
+}
+
+/***/ }),
+
+/***/ "./node_modules/robust-subtract/robust-diff.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/robust-subtract/robust-diff.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = robustSubtract
+
+//Easy case: Add two scalars
+function scalarScalar(a, b) {
+  var x = a + b
+  var bv = x - a
+  var av = x - bv
+  var br = b - bv
+  var ar = a - av
+  var y = ar + br
+  if(y) {
+    return [y, x]
+  }
+  return [x]
+}
+
+function robustSubtract(e, f) {
+  var ne = e.length|0
+  var nf = f.length|0
+  if(ne === 1 && nf === 1) {
+    return scalarScalar(e[0], -f[0])
+  }
+  var n = ne + nf
+  var g = new Array(n)
+  var count = 0
+  var eptr = 0
+  var fptr = 0
+  var abs = Math.abs
+  var ei = e[eptr]
+  var ea = abs(ei)
+  var fi = -f[fptr]
+  var fa = abs(fi)
+  var a, b
+  if(ea < fa) {
+    b = ei
+    eptr += 1
+    if(eptr < ne) {
+      ei = e[eptr]
+      ea = abs(ei)
+    }
+  } else {
+    b = fi
+    fptr += 1
+    if(fptr < nf) {
+      fi = -f[fptr]
+      fa = abs(fi)
+    }
+  }
+  if((eptr < ne && ea < fa) || (fptr >= nf)) {
+    a = ei
+    eptr += 1
+    if(eptr < ne) {
+      ei = e[eptr]
+      ea = abs(ei)
+    }
+  } else {
+    a = fi
+    fptr += 1
+    if(fptr < nf) {
+      fi = -f[fptr]
+      fa = abs(fi)
+    }
+  }
+  var x = a + b
+  var bv = x - a
+  var y = b - bv
+  var q0 = y
+  var q1 = x
+  var _x, _bv, _av, _br, _ar
+  while(eptr < ne && fptr < nf) {
+    if(ea < fa) {
+      a = ei
+      eptr += 1
+      if(eptr < ne) {
+        ei = e[eptr]
+        ea = abs(ei)
+      }
+    } else {
+      a = fi
+      fptr += 1
+      if(fptr < nf) {
+        fi = -f[fptr]
+        fa = abs(fi)
+      }
+    }
+    b = q0
+    x = a + b
+    bv = x - a
+    y = b - bv
+    if(y) {
+      g[count++] = y
+    }
+    _x = q1 + x
+    _bv = _x - q1
+    _av = _x - _bv
+    _br = x - _bv
+    _ar = q1 - _av
+    q0 = _ar + _br
+    q1 = _x
+  }
+  while(eptr < ne) {
+    a = ei
+    b = q0
+    x = a + b
+    bv = x - a
+    y = b - bv
+    if(y) {
+      g[count++] = y
+    }
+    _x = q1 + x
+    _bv = _x - q1
+    _av = _x - _bv
+    _br = x - _bv
+    _ar = q1 - _av
+    q0 = _ar + _br
+    q1 = _x
+    eptr += 1
+    if(eptr < ne) {
+      ei = e[eptr]
+    }
+  }
+  while(fptr < nf) {
+    a = fi
+    b = q0
+    x = a + b
+    bv = x - a
+    y = b - bv
+    if(y) {
+      g[count++] = y
+    } 
+    _x = q1 + x
+    _bv = _x - q1
+    _av = _x - _bv
+    _br = x - _bv
+    _ar = q1 - _av
+    q0 = _ar + _br
+    q1 = _x
+    fptr += 1
+    if(fptr < nf) {
+      fi = -f[fptr]
+    }
+  }
+  if(q0) {
+    g[count++] = q0
+  }
+  if(q1) {
+    g[count++] = q1
+  }
+  if(!count) {
+    g[count++] = 0.0  
+  }
+  g.length = count
+  return g
+}
+
+/***/ }),
+
+/***/ "./node_modules/robust-sum/robust-sum.js":
+/*!***********************************************!*\
+  !*** ./node_modules/robust-sum/robust-sum.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = linearExpansionSum
+
+//Easy case: Add two scalars
+function scalarScalar(a, b) {
+  var x = a + b
+  var bv = x - a
+  var av = x - bv
+  var br = b - bv
+  var ar = a - av
+  var y = ar + br
+  if(y) {
+    return [y, x]
+  }
+  return [x]
+}
+
+function linearExpansionSum(e, f) {
+  var ne = e.length|0
+  var nf = f.length|0
+  if(ne === 1 && nf === 1) {
+    return scalarScalar(e[0], f[0])
+  }
+  var n = ne + nf
+  var g = new Array(n)
+  var count = 0
+  var eptr = 0
+  var fptr = 0
+  var abs = Math.abs
+  var ei = e[eptr]
+  var ea = abs(ei)
+  var fi = f[fptr]
+  var fa = abs(fi)
+  var a, b
+  if(ea < fa) {
+    b = ei
+    eptr += 1
+    if(eptr < ne) {
+      ei = e[eptr]
+      ea = abs(ei)
+    }
+  } else {
+    b = fi
+    fptr += 1
+    if(fptr < nf) {
+      fi = f[fptr]
+      fa = abs(fi)
+    }
+  }
+  if((eptr < ne && ea < fa) || (fptr >= nf)) {
+    a = ei
+    eptr += 1
+    if(eptr < ne) {
+      ei = e[eptr]
+      ea = abs(ei)
+    }
+  } else {
+    a = fi
+    fptr += 1
+    if(fptr < nf) {
+      fi = f[fptr]
+      fa = abs(fi)
+    }
+  }
+  var x = a + b
+  var bv = x - a
+  var y = b - bv
+  var q0 = y
+  var q1 = x
+  var _x, _bv, _av, _br, _ar
+  while(eptr < ne && fptr < nf) {
+    if(ea < fa) {
+      a = ei
+      eptr += 1
+      if(eptr < ne) {
+        ei = e[eptr]
+        ea = abs(ei)
+      }
+    } else {
+      a = fi
+      fptr += 1
+      if(fptr < nf) {
+        fi = f[fptr]
+        fa = abs(fi)
+      }
+    }
+    b = q0
+    x = a + b
+    bv = x - a
+    y = b - bv
+    if(y) {
+      g[count++] = y
+    }
+    _x = q1 + x
+    _bv = _x - q1
+    _av = _x - _bv
+    _br = x - _bv
+    _ar = q1 - _av
+    q0 = _ar + _br
+    q1 = _x
+  }
+  while(eptr < ne) {
+    a = ei
+    b = q0
+    x = a + b
+    bv = x - a
+    y = b - bv
+    if(y) {
+      g[count++] = y
+    }
+    _x = q1 + x
+    _bv = _x - q1
+    _av = _x - _bv
+    _br = x - _bv
+    _ar = q1 - _av
+    q0 = _ar + _br
+    q1 = _x
+    eptr += 1
+    if(eptr < ne) {
+      ei = e[eptr]
+    }
+  }
+  while(fptr < nf) {
+    a = fi
+    b = q0
+    x = a + b
+    bv = x - a
+    y = b - bv
+    if(y) {
+      g[count++] = y
+    } 
+    _x = q1 + x
+    _bv = _x - q1
+    _av = _x - _bv
+    _br = x - _bv
+    _ar = q1 - _av
+    q0 = _ar + _br
+    q1 = _x
+    fptr += 1
+    if(fptr < nf) {
+      fi = f[fptr]
+    }
+  }
+  if(q0) {
+    g[count++] = q0
+  }
+  if(q1) {
+    g[count++] = q1
+  }
+  if(!count) {
+    g[count++] = 0.0  
+  }
+  g.length = count
+  return g
+}
+
+/***/ }),
+
+/***/ "./node_modules/two-product/two-product.js":
+/*!*************************************************!*\
+  !*** ./node_modules/two-product/two-product.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = twoProduct
+
+var SPLITTER = +(Math.pow(2, 27) + 1.0)
+
+function twoProduct(a, b, result) {
+  var x = a * b
+
+  var c = SPLITTER * a
+  var abig = c - a
+  var ahi = c - abig
+  var alo = a - ahi
+
+  var d = SPLITTER * b
+  var bbig = d - b
+  var bhi = d - bbig
+  var blo = b - bhi
+
+  var err1 = x - (ahi * bhi)
+  var err2 = err1 - (alo * bhi)
+  var err3 = err2 - (ahi * blo)
+
+  var y = alo * blo - err3
+
+  if(result) {
+    result[0] = y
+    result[1] = x
+    return result
+  }
+
+  return [ y, x ]
+}
+
+/***/ }),
+
+/***/ "./node_modules/two-sum/two-sum.js":
+/*!*****************************************!*\
+  !*** ./node_modules/two-sum/two-sum.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = fastTwoSum
+
+function fastTwoSum(a, b, result) {
+	var x = a + b
+	var bv = x - a
+	var av = x - bv
+	var br = b - bv
+	var ar = a - av
+	if(result) {
+		result[0] = ar + br
+		result[1] = x
+		return result
+	}
+	return [ar+br, x]
+}
+
+/***/ }),
+
+/***/ "./src/components/workers/worker_cluster.tsx":
+/*!***************************************************!*\
+  !*** ./src/components/workers/worker_cluster.tsx ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var concaveman = __webpack_require__(/*! concaveman */ "./node_modules/concaveman/index.js");
+
+var libtess = __webpack_require__(/*! libtess */ "./node_modules/libtess/libtess.min.js");
+
+function isPointInConvaveHull(seat, points) {
+  if (points.length <= 1) {
+    return false;
+  }
+
+  var selected = false;
+  var intercessionCount = 0;
+
+  for (var index = 1; index < points.length; index++) {
+    var start = points[index - 1];
+    var end = points[index]; //Testes
+    //*************************************************
+    //* Adicionar teste bounding box intersection aqui *
+    //*************************************************
+
+    var ray = {
+      Start: {
+        x: seat.x,
+        y: seat.y
+      },
+      End: {
+        x: 99999,
+        y: 0
+      }
+    };
+    var segment = {
+      Start: start,
+      End: end
+    };
+    var rayDistance = {
+      x: ray.End.x - ray.Start.x,
+      y: ray.End.y - ray.Start.y
+    };
+    var segDistance = {
+      x: segment.End.x - segment.Start.x,
+      y: segment.End.y - segment.Start.y
+    };
+    var rayLength = Math.sqrt(Math.pow(rayDistance.x, 2) + Math.pow(rayDistance.y, 2));
+    var segLength = Math.sqrt(Math.pow(segDistance.x, 2) + Math.pow(segDistance.y, 2));
+
+    if (rayDistance.X / rayLength == segDistance.X / segLength && rayDistance.Y / rayLength == segDistance.Y / segLength) {
+      continue;
+    }
+
+    var T2 = (rayDistance.x * (segment.Start.y - ray.Start.y) + rayDistance.y * (ray.Start.x - segment.Start.x)) / (segDistance.x * rayDistance.y - segDistance.y * rayDistance.x);
+    var T1 = (segment.Start.x + segDistance.x * T2 - ray.Start.x) / rayDistance.x; //Parametric check.
+
+    if (T1 < 0) {
+      continue;
+    }
+
+    if (T2 < 0 || T2 > 1) {
+      continue;
+    }
+
+    ;
+
+    if (isNaN(T1)) {
+      continue;
+    }
+
+    ; //rayDistance.X = 0
+
+    intercessionCount++;
+  }
+
+  if (intercessionCount == 0) {
+    selected = false;
+    return selected;
+  }
+
+  if (intercessionCount & 1) {
+    selected = true;
+  } else {
+    selected = false;
+  }
+
+  return selected;
+}
+/*global libtess */
+
+/* exported triangulate */
+
+
+var tessy = function initTesselator() {
+  // function called for each vertex of tesselator output
+  function vertexCallback(data, polyVertArray) {
+    // console.log(data[0], data[1]);
+    polyVertArray[polyVertArray.length] = data[0];
+    polyVertArray[polyVertArray.length] = data[1];
+  }
+
+  function begincallback(type) {
+    if (type !== libtess.primitiveType.GL_TRIANGLES) {
+      console.log('expected TRIANGLES but got type: ' + type);
+    }
+  }
+
+  function errorcallback(errno) {
+    console.log('error callback');
+    console.log('error number: ' + errno);
+  } // callback for when segments intersect and must be split
+
+
+  function combinecallback(coords, data, weight) {
+    // console.log('combine callback');
+    return [coords[0], coords[1], coords[2]];
+  }
+
+  function edgeCallback(flag) {// don't really care about the flag, but need no-strip/no-fan behavior
+    // console.log('edge flag: ' + flag);
+  }
+
+  var tessy = new libtess.GluTesselator(); // tessy.gluTessProperty(libtess.gluEnum.GLU_TESS_WINDING_RULE, libtess.windingRule.GLU_TESS_WINDING_POSITIVE);
+
+  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_VERTEX_DATA, vertexCallback);
+  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_BEGIN, begincallback);
+  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_ERROR, errorcallback);
+  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_COMBINE, combinecallback);
+  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_EDGE_FLAG, edgeCallback);
+  return tessy;
+}();
+
+function triangulate(contours) {
+  // libtess will take 3d verts and flatten to a plane for tesselation
+  // since only doing 2d tesselation here, provide z=1 normal to skip
+  // iterating over verts only to get the same answer.
+  // comment out to test normal-generation code
+  tessy.gluTessNormal(0, 0, 1);
+  var triangleVerts = [];
+  tessy.gluTessBeginPolygon(triangleVerts);
+
+  for (var i = 0; i < contours.length; i++) {
+    tessy.gluTessBeginContour();
+    var contour = contours[i];
+
+    for (var j = 0; j < contour.length; j += 2) {
+      var coords = [contour[j], contour[j + 1], 0];
+      tessy.gluTessVertex(coords, coords);
+    }
+
+    tessy.gluTessEndContour();
+  } // finish polygon (and time triangulation process)
+
+
+  var startTime = new Date().getTime();
+  tessy.gluTessEndPolygon();
+  var endTime = new Date().getTime();
+  return triangleVerts;
+}
+/**
+ * Create cluster structures from raw data.
+ */
+
+
+function processClusters(raw, xy) {
+  var clusters = {};
+  raw.forEach(function (entry, index) {
+    var x = xy[index][0];
+    var y = xy[index][1];
+
+    var _entry = _slicedToArray(entry, 3),
+        label = _entry[0],
+        probability = _entry[1],
+        score = _entry[2];
+
+    if (!(label in clusters)) {
+      clusters[label] = {
+        points: []
+      };
+    }
+
+    clusters[label].points.push({
+      label: label,
+      probability: probability,
+      meshIndex: index,
+      x: x,
+      y: y,
+      score: score
+    });
+  });
+  return clusters;
+}
+/**
+ * Clustering endpoint that
+ */
+
+
+self.addEventListener('message', function (e) {
+  if (e.data.type == 'point') {
+    var xy = e.data.load;
+    fetch('http://localhost:8090/hdbscan', {
+      method: 'POST',
+      body: JSON.stringify(xy)
+    }).then(function (response) {
+      response.json().then(function (values) {
+        // Get clusters
+        var clusters = processClusters(values.result, xy);
+        Object.keys(clusters).forEach(function (key) {
+          if (key == -1) return;
+          var cluster = clusters[key];
+          var bounds = {
+            minX: 10000,
+            maxX: -10000,
+            minY: 10000,
+            maxY: -10000
+          };
+          cluster.bounds = bounds;
+          var pts = cluster.points.filter(function (e) {
+            return e.probability > 0.7;
+          }).map(function (e) {
+            var x = xy[e.meshIndex][0];
+            var y = xy[e.meshIndex][1];
+            if (x < bounds.minX) bounds.minX = x;
+            if (x > bounds.maxX) bounds.maxX = x;
+            if (y < bounds.minY) bounds.minY = y;
+            if (y > bounds.maxY) bounds.maxY = y;
+            return [x, y];
+          }); // Get hull of cluster
+
+          var polygon = concaveman(pts); // Get triangulated hull for cluster
+
+          var triangulated = triangulate([polygon.flat()]);
+          cluster.hull = polygon;
+          cluster.triangulation = triangulated;
+        });
+        self.postMessage(clusters);
+      });
+    });
+  } else if (e.data.type == 'segment') {
+    var xy = e.data.load;
+    fetch('http://localhost:8090/segmentation', {
+      method: 'POST',
+      body: JSON.stringify(xy)
+    }).then(function (response) {
+      response.json().then(function (values) {
+        self.postMessage(values);
+      });
+    });
+  }
+}); // OLD code that uses C++ and WebAssembly, only here for completeness
+
+/**self.importScripts('test.js')
+
+
+self.addEventListener('message', function (e) {
+
+    var sab = e.data
+    const vectorArray = new Float32Array(sab)
+
+    var nVec = vectorArray.length / 2
+
+
+    // Allocate some space in the heap for the data (making sure to use the appropriate memory size of the elements)
+    var buffer = Module._malloc(vectorArray.length * vectorArray.BYTES_PER_ELEMENT)
+
+    // Output buffer for labels
+    var outLabel = Module._malloc(nVec * 4)
+
+    // Output buffer for probabilities
+    var outProbs = Module._malloc(nVec * 4)
+
+    // Assign the data to the heap - Keep in mind bytes per element
+    Module.HEAPF32.set(vectorArray, buffer >> 2)
+
+    // Finally, call the function with "number" parameter type for the array (the pointer), and an extra length parameter
+    var js_wrapped_fib = Module.cwrap("cluster", "number", ["number", "number", "number", "number", "number", "number"]);
+    console.log("STARTING")
+    js_wrapped_fib(buffer, vectorArray.length, outLabel, nVec, outProbs, nVec)
+
+    var labels = Module.HEAP32.subarray(outLabel / 4, outLabel / 4 + nVec)
+    var probabilities = Module.HEAPF32.subarray(outProbs / 4, outProbs / 4 + nVec)
+
+    self.postMessage({
+        labels: labels,
+        probabilities: probabilities
+    })
+})**/
+
+/***/ })
+
+/******/ });
+//# sourceMappingURL=cluster.js.map

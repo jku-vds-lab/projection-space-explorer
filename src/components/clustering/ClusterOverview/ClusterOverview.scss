@@ -1,0 +1,23 @@
+.ClusterOverviewItems {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    height: 640px;
+    width: 100%;
+}
+
+
+.ClusterOverviewParent {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    position: absolute;
+    right: 0px;
+    top: 64px;
+    width: 150px;
+}
+
+.ClusterItem {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
