@@ -2313,6 +2313,8 @@ self.addEventListener('message', function (e) {
         self.postMessage(values);
       });
     });
+  } else if (e.data.type == 'triangulate') {
+    console.log("triangulate");
   }
 }); // OLD code that uses C++ and WebAssembly, only here for completeness
 

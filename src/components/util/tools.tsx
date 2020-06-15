@@ -1,3 +1,5 @@
+import { Vect } from "./datasetselector"
+
 export class LassoSelection {
     constructor() {
         this.drawing = false
@@ -255,4 +257,15 @@ export function getDefaultCamera(width, height, vectors) {
     camera.lookAt(new THREE.Vector3(0, 0, 0));
     camera.updateProjectionMatrix();
     return camera
+}
+
+
+
+
+
+export function annotateVectors(vectors: Vect[], clusterId) {
+    vectors?.forEach(vector => {
+        vector.clusterLabel = clusterId
+        vector.clusterProbability = 1.0
+    })
 }

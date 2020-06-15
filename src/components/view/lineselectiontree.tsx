@@ -226,7 +226,7 @@ export var LineSelectionPopover = ({ vectors, onChange, checkboxes, algorithms, 
                 horizontal: 'center',
             }}
         >
-            <Grid style={{ padding: '12px', width: 300, maxHeight: 600 }} container alignItems="stretch" direction="column" justify="center">
+            <Grid style={{ padding: '12px', width: 300, maxHeight: 600 }} container alignItems="stretch" direction="column">
                 <LineSelectionTree vectors={vectors} onChange={onChange} checkboxes={checkboxes} algorithms={algorithms} colorScale={colorScale} onSelectAll={onSelectAll}></LineSelectionTree>
             </Grid>
 

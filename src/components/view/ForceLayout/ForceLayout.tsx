@@ -2,7 +2,7 @@ import * as d3 from 'd3'
 import * as React from 'react'
 import './ForceLayout.scss'
 import Cluster, { Story } from '../../library/Cluster'
-import { GenericLegend } from '../../legends/Generic'
+import { GenericLegend, GenericFingerprint } from '../../legends/Generic'
 import { FingerprintPreview } from '../../clustering/FingerprintPreview/FingerprintPreview'
 import { RubikFingerprint } from '../../legends/RubikFingerprint/RubikFingerprint'
 import { Container } from '@material-ui/core'
@@ -11,6 +11,7 @@ type ForceLayoutProps = {
     activeStory: Story
     width: number
     height: number
+    type: String
 }
 
 type ForceLayoutState = {
@@ -317,10 +318,7 @@ export class ForceLayout extends React.Component<ForceLayoutProps, ForceLayoutSt
                             transform: `translate(${displayCluster.shiftX.toFixed(1)}px, ${displayCluster.shiftY.toFixed(1)}px)`
                         }}
                     >
-
-                        <RubikFingerprint width={90} height={120} vectors={displayCluster.vectors}></RubikFingerprint>
-
-
+                        <GenericFingerprint scale={1.5} vectors={displayCluster.vectors} type={this.props.dataset.info.type}></GenericFingerprint>
                     </div>
                 })
             }

@@ -11,9 +11,10 @@ type StoryPreviewProps = {
     stories: Story[]
     onChange: any
     activeStory: number
+    type: String
 }
 
-export const StoryPreview: FunctionComponent<StoryPreviewProps> = ({ stories, onChange, activeStory }) => {
+export const StoryPreview: FunctionComponent<StoryPreviewProps> = ({ stories, onChange, activeStory, type }) => {
     return <Fade in={stories != null && stories.length > 0}><div>
         <h6>Stories</h6>
         <hr></hr>
@@ -28,7 +29,7 @@ export const StoryPreview: FunctionComponent<StoryPreviewProps> = ({ stories, on
             {
                 stories?.map((story, index) => {
                     return <ToggleButton key={index} value={story} style={{ flexGrow: 1 }}>
-                        <FingerprintPreview type='rubik' pointClusters={story.clusters}></FingerprintPreview>
+                        <FingerprintPreview type={type} pointClusters={story.clusters}></FingerprintPreview>
                     </ToggleButton>
                 })
             }

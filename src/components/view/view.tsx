@@ -16,6 +16,7 @@ import { LassoLayer } from './LassoLayer/LassoLayer';
 import { ForceLayout } from './ForceLayout/ForceLayout';
 import Cluster from '../library/Cluster';
 var d3 = require('d3')
+import { connect } from 'react-redux'
 
 
 const useStyles = makeStyles(theme => ({
@@ -120,10 +121,21 @@ const SettingsPopover = ({ onChangeSlider }) => {
 
 
 
+const mapStateToProps = state => ({
+    currentTool: state.currentTool,
+    currentAggregation: state.currentAggregation
+})
 
 
+const mapDispatchToProps = dispatch => ({
+    setCurrentAggregation: id => dispatch({
+        type: 'SET_AGGREGATION',
+        aggregation: id
+    })
+})
 
-export default class ThreeView extends React.Component {
+
+export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component {
     lasso: any
     particles: any
     containerRef: any
@@ -437,6 +449,7 @@ export default class ThreeView extends React.Component {
                     //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
 
                     this.props.onAggregate(this.currentAggregation)
+                    this.props.setCurrentAggregation(this.currentAggregation)
 
                 } else if (wasDrawing) {
                     this.clearSelection()
@@ -451,9 +464,11 @@ export default class ThreeView extends React.Component {
                     if (this.currentAggregation.includes(this.currentHover) && !this.currentHover.view.selected) {
                         this.currentAggregation.splice(this.currentAggregation.indexOf(this.currentHover), 1)
                         this.props.onAggregate(this.currentAggregation)
+                        this.props.setCurrentAggregation(this.currentAggregation)
                     } else if (!this.currentAggregation.includes(this.currentHover) && this.currentHover.view.selected) {
                         this.currentAggregation.push(this.currentHover)
                         this.props.onAggregate(this.currentAggregation)
+                        this.props.setCurrentAggregation(this.currentAggregation)
                     }
 
                     var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
@@ -489,6 +504,7 @@ export default class ThreeView extends React.Component {
                             //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
 
                             this.props.onAggregate(this.currentAggregation)
+                            this.props.setCurrentAggregation(this.currentAggregation)
                         } else if (event.button == 1) {
                             this.setZoomTarget(cluster.vectors, 1)
                         }
@@ -854,7 +870,7 @@ export default class ThreeView extends React.Component {
         var cc = process.map(edgeCluster => {
             var vecs = edgeCluster.map(m => m.target)
             var c = new Cluster(vecs, null, null, null)
-            
+
             c.vectors = c.points
             return c
         })
@@ -871,7 +887,7 @@ export default class ThreeView extends React.Component {
 
 
                 segment.vectors.forEach((vector) => {
-                    vector.visible = show
+                    vector.view.visible = show
                 })
             }
         })
@@ -1104,7 +1120,7 @@ export default class ThreeView extends React.Component {
                 flexGrow: 1,
                 overflow: "hidden",
                 position: "relative",
-                cursor: this.props.tool
+                cursor: this.props.currentTool
             }}>
 
             <div id="container" style={{
@@ -1117,7 +1133,7 @@ export default class ThreeView extends React.Component {
 
 
                 {
-                    this.state.hoverCluster != null && this.props.tool == 'grab' ?
+                    this.state.hoverCluster != null && this.props.currentTool == 'grab' ?
                         <div
                             className='speech-bubble-ds'
                             style={{
@@ -1145,7 +1161,7 @@ export default class ThreeView extends React.Component {
 
         </div>
     }
-}
+})
 
 
 

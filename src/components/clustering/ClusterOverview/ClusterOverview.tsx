@@ -51,7 +51,7 @@ export var ClusterOverview = function ({ type, story, itemClicked }: ClusterOver
                         }}><GenericFingerprint
                             type={type}
                             vectors={cluster.vectors}
-                            aggregate={true}
+                            scale={1}
                         ></GenericFingerprint>
                         </ToggleButton>
                     })

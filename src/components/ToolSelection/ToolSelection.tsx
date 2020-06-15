@@ -5,8 +5,20 @@ import ControlCameraIcon from '@material-ui/icons/ControlCamera';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
 import BlurOffIcon from '@material-ui/icons/BlurOff';
 import './ToolSelection.scss'
+import { connect } from 'react-redux'
 
-export var ToolSelection = function ({ currentTool, onChange }) {
+const mapStateToProps = state => ({
+    currentTool: state.currentTool
+})
+
+const mapDispatchToProps = dispatch => ({
+    setCurrentTool: id => dispatch({
+        type: 'SET_TOOL',
+        tool: id
+    })
+})
+
+export var ToolSelection = connect(mapStateToProps, mapDispatchToProps)(function ({ currentTool, setCurrentTool }) {
     return <div className="ToolSelectionParent">
         <ToggleButtonGroup
             style={{ pointerEvents: 'auto' }}
@@ -14,8 +26,7 @@ export var ToolSelection = function ({ currentTool, onChange }) {
             value={currentTool}
             exclusive
             onChange={(e, newValue) => {
-                e.preventDefault()
-                onChange(newValue)
+                setCurrentTool(newValue)
             }}
             aria-label="text alignment"
         >
@@ -30,4 +41,4 @@ export var ToolSelection = function ({ currentTool, onChange }) {
             </ToggleButton>
         </ToggleButtonGroup>
     </div>
-}
+})

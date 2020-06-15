@@ -4,7 +4,7 @@ import Alert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import { calculateOptions } from './view/categorical'
 import { ShapeLegend } from './ShapeLegend/ShapeLegend'
-import ThreeView from './view/view'
+import { ThreeView } from './view/view'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
@@ -38,7 +38,13 @@ import { StoryPreview } from "./clustering/StoryPreview/StoryPreview";
 import { Legend } from "./Legend/Legend";
 import concaveman = require("concaveman");
 import * as libtess from 'libtess'
-
+import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
+import { annotateVectors } from "./util/tools";
+import { createStore, combineReducers } from 'redux'
+import { Provider } from 'react-redux'
+import { connect } from 'react-redux'
+import currentTool from "./Reducers/CurrentToolReducer";
+import currentAggregation from "./Reducers/CurrentAggregationReducer";
 
 
 /*global libtess */
@@ -143,10 +149,12 @@ function a11yProps(index) {
 
 
 
+const mapStateToProps = state => ({
+  currentTool: state.currentTool
+})
 
 
-
-class Application extends React.Component {
+var Application = connect(mapStateToProps)(class extends React.Component {
   threeRef: React.RefObject<any>;
   legend: React.RefObject<unknown>;
   dataset: any;
@@ -187,8 +195,6 @@ class Application extends React.Component {
       selectedLines: {},
 
       pathLengthRange: null,
-
-      currentTool: 'default',
 
       projectionComputing: false,
 
@@ -627,50 +633,6 @@ class Application extends React.Component {
 
 
   onClusteringStartClick() {
-    /**var worker = new Worker('dist/cluster.js')
- 
-    var load = []
- 
-    this.segments.forEach((segment, i) => {
-      segment.vectors.forEach((vec, vi) => {
-        if (vi < segment.vectors.length - 1) {
-          load.push([segment.vectors[vi].x, segment.vectors[vi].y, segment.vectors[vi + 1].x, segment.vectors[vi + 1].y, segment.vectors[vi].view.lineIndex])
-        }
-      })
-    })
- 
-    worker.onmessage = (e) => {
-      // Retreived segment clusters
-      var bundles = {}
-      console.log(e.data)
-      e.data.result.forEach((entry, i) => {
-        const [label, probability] = entry
- 
-        if (label >= 0) {
-          if (label in bundles) {
-            bundles[label].push(load[i])
-          } else {
-            bundles[label] = [ load[i] ]
-          }
-        }
-      })
-      
-      // Get center point for bundles
-      console.log(bundles)
-      this.threeRef.current.debugSegs(bundles)
-    }
- 
-    worker.postMessage({
-      type: 'segment',
-      load: load
-    })
-    return;**/
-
-
-
-
-
-
     var worker = new Worker('dist/cluster.js')
     worker.onmessage = (e) => {
       // Point clusteruing
@@ -759,6 +721,7 @@ class Application extends React.Component {
 
 
   render() {
+    console.log("application render")
     return <div style={
       {
         display: 'flex',
@@ -1139,120 +1102,18 @@ class Application extends React.Component {
             </TabPanel>
 
             <TabPanel value={this.state.tabValue} index={1}>
-              <FlexParent
-                alignItems='stretch'
-                flexDirection='column'
-                margin='0 16px'
-              >
-                <Button
-                  variant="outlined"
-                  disabled={this.state.backendRunning == false}
-                  style={{
-                    margin: '8px 0'
-                  }}
-                  onClick={() => {
-                    this.onClusteringStartClick()
-                  }}>Start Clustering</Button>
-
-                <Button
-                  variant="outlined"
-                  disabled={this.state.backendRunning == false}
-                  style={{
-                    margin: '8px 0'
-                  }}
-                  onClick={() => {
-                    this.onSegmentClustering()
-                  }}>Segment Clustering</Button>
-
-                {this.state.backendRunning ? <div></div> : <Alert severity="error">No backend detected!</Alert>}
-
-                <Button
-                  variant="outlined"
-                  style={{
-                    margin: '8px 0'
-                  }}
-                  onClick={() => {
-                    function downloadCSV(csv, filename) {
-                      var csvFile;
-                      var downloadLink;
-
-                      // CSV file
-                      csvFile = new Blob([csv], { type: "text/plain" });
-
-                      // Download link
-                      downloadLink = document.createElement("a");
-
-                      // File name
-                      downloadLink.download = filename;
-
-                      // Create a link to the file
-                      downloadLink.href = window.URL.createObjectURL(csvFile);
-
-                      // Hide download link
-                      downloadLink.style.display = "none";
-
-                      // Add the link to DOM
-                      document.body.appendChild(downloadLink);
-
-                      // Click download link
-                      downloadLink.click();
-                    }
-
-                    function vectorAsXml(vectors, segments) {
-
-                      var nodes = vectors.map((vector, i) => {
-                        return `
-                        <node id="${i}">
-                          <data key="x">${vector.x}</data>
-                          <data key="tooltip">LIT(lngx=-92.224444,laty=34.729444)</data>
-                          <data key="y">${vector.y}</data>
-                        </node>`
-                      })
-
-                      var edges = ""
-
-                      var j = 0
-                      segments.forEach((segment, si) => {
-                        for (var i = 0; i < segment.vectors.length - 1; i++) {
-                          var p0 = segment.vectors[i]
-                          var p1 = segment.vectors[i + 1]
-
-
-                          edges = edges + `<edge id="${j}" source="${p0.view.meshIndex}" target="${p1.view.meshIndex}">
-                                            </edge>`
-                          j = j + 1
-                        }
-                      })
-
-                      return nodes + edges
-                    }
-
-                    downloadCSV(vectorAsXml(this.dataset.vectors, this.dataset.segments), "output.tra")
-                  }}>TraClus download</Button>
-
-                <ClusterWindow
-                  worker={this.state.clusteringWorker}
-                  onClose={() => {
-                    var worker = this.state.clusteringWorker
-                    if (worker != null) {
-                      worker.terminate()
-                    }
-
-                    this.setState({
-                      clusteringWorker: null,
-                      clusteringOpen: false
-                    })
-                  }}
-                ></ClusterWindow>
-
-
-
-
-
-                <StoryPreview stories={this.state.stories} activeStory={this.state.activeStory} onChange={((e, newStory) => this.setState({ activeStory: newStory }))}></StoryPreview>
-              </FlexParent>
-
-
+              {this.state.dataset != null ?
+                <ClusteringTabPanel
+                  open={this.state.tabValue == 1}
+                  backendRunning={this.state.backendRunning}
+                  clusteringWorker={this.state.clusteringWorker}
+                  dataset={this.state.dataset}
+                  activeStory={this.state.activeStory}
+                  setActiveStory={(event, activeStory) => this.setState({ activeStory: activeStory })}
+                  stories={this.state.stories}
+                  onClusteringStart={() => this.onClusteringStartClick()}
+                ></ClusteringTabPanel> : <div></div>
+              }
 
             </TabPanel>
 
@@ -1322,9 +1183,9 @@ class Application extends React.Component {
         onAggregate={this.onAggregate}
         selectionState={this.state.selectionState}
         pathLengthRange={this.state.pathLengthRange}
-        tool={this.state.currentTool}
-        activeStory={this.state.activeStory}>
-
+        tool={this.props.currentTool}
+        activeStory={this.state.activeStory}
+        type={this.state.datasetType}>
       </ThreeView>
 
 
@@ -1333,7 +1194,7 @@ class Application extends React.Component {
       }}></ClusterOverview>
 
       <ToolSelection
-        currentTool={this.state.currentTool}
+        currentTool={this.props.currentTool}
         onChange={(newValue) => this.setState({ currentTool: newValue })} />
 
 
@@ -1372,7 +1233,15 @@ class Application extends React.Component {
 
     </div >
   }
-}
+})
 
 
-ReactDOM.render(<Application />, document.getElementById("test2"))
+const rootReducer = combineReducers({
+  currentTool: currentTool,
+  currentAggregation: currentAggregation
+})
+
+
+const store = createStore(rootReducer)
+
+ReactDOM.render(<Provider store={store}><Application /></Provider>, document.getElementById("test2"))

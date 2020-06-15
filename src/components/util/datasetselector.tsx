@@ -85,7 +85,6 @@ export class Preprocessor {
     }
 
 
-
     preprocess() {
 
 
@@ -172,10 +171,15 @@ export class Preprocessor {
             if ("age" in d) {
                 d.age = +d.age
             }
-
-            // Attribute that specifies if this vector should be visible or not
-            d.visible = true
         })
+
+        // If data has no cluster labels, add default ones
+        if (!header.includes('clusterLabel')) {
+            vectors.forEach(vector => {
+                vector.clusterLabel = -1
+                vector.clusterProbability = 0.0
+            })
+        }
 
 
         return ranges
@@ -736,8 +740,19 @@ export class Vect {
      * Getter for view details
      */
     get view() {
-        return this.getMeta('view')
+        return this.getMeta('view') as VectView
     }
+
+
+    pureValues() {
+        var keys = this.pureHeader()
+        return keys.map(key => this[key])
+    }
+
+    pureHeader() {
+        return Object.keys(this).filter(value => value != '__meta__')
+    }
+        
 }
 
 
@@ -777,6 +792,11 @@ export class VectView {
      * Set color for this vertice, if null the color of the line is taken
      */
     intrinsicColor = null
+
+    /**
+     * Is this vector visible?
+     */
+    visible = true
 
     constructor() {
     }
