@@ -2,6 +2,8 @@
  * Directed graph library for javascript.
  */
 
+import Cluster from "../library/Cluster"
+
 
 /**
  * Graph class which holds the nodes and edges of the graph.
@@ -26,10 +28,14 @@ export class Node {
  * Edge class that is a connection between 2 nodes.
  */
 export class Edge {
-    constructor(source, destination, intersection) {
+    source: Cluster
+    destination: Cluster
+    bundle: number[]
+
+    constructor(source, destination, bundle) {
         this.source = source
         this.destination = destination
-        this.intersection = intersection
+        this.bundle = bundle
     }
 }
 
@@ -41,13 +47,7 @@ export class Edge {
  * @param {*} vectors 
  */
 export function graphLayout(clusters) {
-    var edges = []
-    var nodes = []
-
-    Object.keys(clusters).forEach(key => {
-        var cluster = clusters[key]
-        cluster.node = new Node(cluster.vectors)
-    })
+    var edges: Edge[] = []
 
     // For each cluster,
     Object.keys(clusters).forEach(srcKey => {
@@ -59,19 +59,19 @@ export function graphLayout(clusters) {
 
                 // For each vector in source cluster, check if the direct ancestor is in the destination cluster
                 srcCluster.vectors.forEach(srcVec => {
-                    if (dstCluster.vectors.find(dstVec => srcVec.lineIndex == dstVec.lineIndex && srcVec.view.sequenceIndex == dstVec.view.sequenceIndex + 1)) {
+                    if (dstCluster.vectors.find(dstVec => srcVec.view.lineIndex == dstVec.view.lineIndex && srcVec.view.sequenceIndex + 1 == dstVec.view.sequenceIndex)) {
                         bundle.push(srcVec.view.lineIndex)
                     }
                 })
 
-                if (bundle.length > 20) {
-                    var edge = new Edge(srcCluster.node, dstCluster.node, [...new Set(bundle)])
+                if (bundle.length > 10) {
+                    var edge = new Edge(srcCluster, dstCluster, [...new Set(bundle)])
                     edges.push(edge)
                 }
             }
         })
 
     })
-
-    return [nodes, edges]
+    console.log(edges)
+    return [edges]
 }

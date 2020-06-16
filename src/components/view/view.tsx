@@ -17,6 +17,7 @@ import { ForceLayout } from './ForceLayout/ForceLayout';
 import Cluster from '../library/Cluster';
 var d3 = require('d3')
 import { connect } from 'react-redux'
+import { graphLayout } from '../util/graphs';
 
 
 const useStyles = makeStyles(theme => ({
@@ -123,7 +124,9 @@ const SettingsPopover = ({ onChangeSlider }) => {
 
 const mapStateToProps = state => ({
     currentTool: state.currentTool,
-    currentAggregation: state.currentAggregation
+    currentAggregation: state.currentAggregation,
+    clusters: state.currentClusters,
+    openTab: state.openTab
 })
 
 
@@ -131,6 +134,10 @@ const mapDispatchToProps = dispatch => ({
     setCurrentAggregation: id => dispatch({
         type: 'SET_AGGREGATION',
         aggregation: id
+    }),
+    setClusterEdges: clusterEdges => dispatch({
+        type: 'SET_CLUSTER_EDGES',
+        clusterEdges: clusterEdges
     })
 })
 
@@ -582,6 +589,12 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         return verts;
     }
 
+
+
+    /**
+     * Creates the triangulated mesh that visualizes the clustering.
+     * @param clusters an array of clusters
+     */
     createClusters(clusters) {
 
         clusters.sort((a, b) => b.order() - a.order())
@@ -593,6 +606,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         }
 
         var clusterMeshes = []
+        var lineMeshes = []
 
         clusters.forEach((cluster, ii) => {
             if (cluster.label == -1 || ii > 15) return;
@@ -601,6 +615,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             var polygon = cluster.hull
 
             var points = [];
+            
             var material = new THREE.LineBasicMaterial({ color: 0x0000ff });
             polygon.forEach(pt => {
                 points.push(new THREE.Vector3(pt[0], pt[1], -5));
@@ -638,12 +653,22 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             });
             var mesh = new THREE.Mesh(geometry, material);
             clusterMeshes.push(mesh)
+            lineMeshes.push(line)
             this.scene.add(mesh);
         })
 
-        this.clusterVisualization = new meshes.ClusterVisualization(clusterMeshes)
+        this.clusterVisualization = new meshes.ClusterVisualization(clusterMeshes, lineMeshes)
+
+        //this.createTrajectories(clusters)
     }
 
+
+
+    createTrajectories(clusters) {
+        const [edges] = graphLayout(clusters)
+
+        this.props.setClusterEdges(edges)
+    }
 
 
     getWidth() {
@@ -875,8 +900,6 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             return c
         })
 
-        console.log(cc)
-
         return [this.trees, cc]
     }
 
@@ -1022,6 +1045,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
             this.renderLasso(ctx)
             this.state.forceLayoutRef.current.renderLinks(ctx)
+            this.state.forceLayoutRef.current.renderClusterEdges(ctx)
             this.renderEdge(ctx)
         } catch (e) {
         }
@@ -1030,6 +1054,28 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
     componentDidUpdate(prevProps, prevState) {
+        if (prevProps.openTab != this.props.openTab) {
+            // openTab changed, check if we left clustering tab
+            if (this.props.openTab != 1) {
+                // Remove clustering view
+                this.clusterVisualization?.dispose(this.scene)
+                this.clusterVisualization = null
+            }
+            // If we changed to clustering tab... and we have clusters... create visualization
+            if (this.props.openTab == 1) {
+                if (this.clusterVisualization == null) {
+                    this.createClusters(this.props.clusters)
+                }
+            }
+        }
+        // If we have clusters now... and are on clusters tab... create cluster visualization
+        if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters != null) {
+            if (this.props.openTab == 1) {
+                this.clusterVisualization?.dispose(this.scene)
+                this.createClusters(this.props.clusters)
+            }
+        }
+
         // Path length range has changed, update view accordingly
         if (!arraysEqual(prevProps.pathLengthRange, this.props.pathLengthRange)) {
             // Set path length range on all segment views, and update them
@@ -1156,7 +1202,12 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
             <LassoLayer selectionRef={this.selectionRef}></LassoLayer>
 
-            <ForceLayout ref={this.state.forceLayoutRef} dataset={this.dataset} camera={this.state.camera} width={this.getWidth()} height={this.getHeight()} activeStory={this.props.activeStory}></ForceLayout>>
+            <ForceLayout
+                ref={this.state.forceLayoutRef}
+                dataset={this.dataset}
+                camera={this.state.camera}
+                width={this.getWidth()}
+                height={this.getHeight()}></ForceLayout>>
 
 
         </div>

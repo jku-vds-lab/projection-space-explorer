@@ -1,6 +1,7 @@
 import * as concaveman from 'concaveman'
 import * as libtess from 'libtess'
 import Cluster from '../library/Cluster'
+import { MultiDictionary } from '../util/datasetselector';
 
 
 function isPointInConvaveHull(seat, points) {
@@ -105,7 +106,7 @@ var tessy = (function initTesselator() {
         // console.log('edge flag: ' + flag);
     }
 
-    
+
     var tessy = new libtess.GluTesselator();
     // tessy.gluTessProperty(libtess.gluEnum.GLU_TESS_WINDING_RULE, libtess.windingRule.GLU_TESS_WINDING_POSITIVE);
     tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_VERTEX_DATA, vertexCallback);
@@ -255,9 +256,67 @@ self.addEventListener('message', function (e) {
                 self.postMessage(values)
             })
         })
-    } else if (e.data.type == 'triangulate') {
+    } else if (e.data.type == 'extract') {
         console.log("triangulate")
-        
+        // From input data [ [label], [label]... ] generate the clusters with triangulation
+        var clusters = {}
+
+        e.data.message.forEach((vector, index) => {
+            const [x, y, label] = vector
+
+            if (label != undefined && label >= 0) {
+                // Ignore invalid labels
+                if (!(label in clusters)) {
+                    clusters[label] = { points: [] }
+                }
+
+                clusters[label].points.push({
+                    label: label,
+                    probability: 1.0,
+                    meshIndex: index,
+                    x: x,
+                    y: y
+                })
+            }
+        })
+
+        Object.keys(clusters).forEach(key => {
+            if (key == -1) return;
+            var cluster = clusters[key]
+
+            var bounds = {
+                minX: 10000,
+                maxX: -10000,
+                minY: 10000,
+                maxY: -10000
+            }
+
+            cluster.bounds = bounds
+
+            var pts = cluster.points.map(point => {
+                var x = point.x
+                var y = point.y
+
+                if (x < bounds.minX) bounds.minX = x
+                if (x > bounds.maxX) bounds.maxX = x
+                if (y < bounds.minY) bounds.minY = y
+                if (y > bounds.maxY) bounds.maxY = y
+
+                return [x, y]
+            })
+
+            // Get hull of cluster
+            var polygon = concaveman(pts);
+
+            // Get triangulated hull for cluster
+            var triangulated = triangulate([polygon.flat()])
+
+
+            cluster.hull = polygon
+            cluster.triangulation = triangulated
+        })
+
+        self.postMessage(clusters)
     }
 })
 

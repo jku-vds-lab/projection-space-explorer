@@ -2313,8 +2313,60 @@ self.addEventListener('message', function (e) {
         self.postMessage(values);
       });
     });
-  } else if (e.data.type == 'triangulate') {
-    console.log("triangulate");
+  } else if (e.data.type == 'extract') {
+    console.log("triangulate"); // From input data [ [label], [label]... ] generate the clusters with triangulation
+
+    var clusters = {};
+    e.data.message.forEach(function (vector, index) {
+      var _vector = _slicedToArray(vector, 3),
+          x = _vector[0],
+          y = _vector[1],
+          label = _vector[2];
+
+      if (label != undefined && label >= 0) {
+        // Ignore invalid labels
+        if (!(label in clusters)) {
+          clusters[label] = {
+            points: []
+          };
+        }
+
+        clusters[label].points.push({
+          label: label,
+          probability: 1.0,
+          meshIndex: index,
+          x: x,
+          y: y
+        });
+      }
+    });
+    Object.keys(clusters).forEach(function (key) {
+      if (key == -1) return;
+      var cluster = clusters[key];
+      var bounds = {
+        minX: 10000,
+        maxX: -10000,
+        minY: 10000,
+        maxY: -10000
+      };
+      cluster.bounds = bounds;
+      var pts = cluster.points.map(function (point) {
+        var x = point.x;
+        var y = point.y;
+        if (x < bounds.minX) bounds.minX = x;
+        if (x > bounds.maxX) bounds.maxX = x;
+        if (y < bounds.minY) bounds.minY = y;
+        if (y > bounds.maxY) bounds.maxY = y;
+        return [x, y];
+      }); // Get hull of cluster
+
+      var polygon = concaveman(pts); // Get triangulated hull for cluster
+
+      var triangulated = triangulate([polygon.flat()]);
+      cluster.hull = polygon;
+      cluster.triangulation = triangulated;
+    });
+    self.postMessage(clusters);
   }
 }); // OLD code that uses C++ and WebAssembly, only here for completeness
 

@@ -5,7 +5,7 @@ import { GenericFingerprint } from "../../legends/Generic";
 import { Card, Slide, Grow, Link } from "@material-ui/core";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
-
+import { connect } from 'react-redux'
 
 
 type ClusterOverviewProps = {
@@ -14,13 +14,16 @@ type ClusterOverviewProps = {
     itemClicked: any
 }
 
-export var ClusterOverview = function ({ type, story, itemClicked }: ClusterOverviewProps) {
+const mapStateToProps = state => ({
+    story: state.activeStory
+})
+
+export var ClusterOverview = connect(mapStateToProps)(function ({ type, story, itemClicked }: ClusterOverviewProps) {
     if (story == null) {
         return <div></div>
     }
 
     const [active, setActive] = React.useState(0)
-
 
     return <Grow in={story != null}>
         <Card className="ClusterOverviewParent">
@@ -59,4 +62,4 @@ export var ClusterOverview = function ({ type, story, itemClicked }: ClusterOver
             </ToggleButtonGroup>
         </Card>
     </Grow>
-}
+})

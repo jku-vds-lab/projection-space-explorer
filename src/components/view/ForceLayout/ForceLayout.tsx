@@ -6,12 +6,15 @@ import { GenericLegend, GenericFingerprint } from '../../legends/Generic'
 import { FingerprintPreview } from '../../clustering/FingerprintPreview/FingerprintPreview'
 import { RubikFingerprint } from '../../legends/RubikFingerprint/RubikFingerprint'
 import { Container } from '@material-ui/core'
+import { connect } from 'react-redux'
+import { Edge } from '../../util/graphs'
 
 type ForceLayoutProps = {
     activeStory: Story
     width: number
     height: number
     type: String
+    clusterEdges: Edge[]
 }
 
 type ForceLayoutState = {
@@ -23,9 +26,13 @@ type ForceLayoutState = {
 
 
 
+const mapStateToProps = state => ({
+    activeStory: state.activeStory,
+    clusterEdges: state.clusterEdges
+})
 
 
-export class ForceLayout extends React.Component<ForceLayoutProps, ForceLayoutState> {
+export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true })(class extends React.Component<ForceLayoutProps, ForceLayoutState> {
     constructor(props) {
         super(props)
 
@@ -39,6 +46,13 @@ export class ForceLayout extends React.Component<ForceLayoutProps, ForceLayoutSt
         return {
             x: (vec.x) * this.props.camera.zoom + this.props.width / 2,
             y: (-vec.y) * this.props.camera.zoom + this.props.height / 2
+        }
+    }
+
+    worldToScreenWithOffset(vec) {
+        return {
+            x: (vec.x - this.props.camera.position.x) * this.props.camera.zoom + this.props.width / 2,
+            y: (-vec.y + this.props.camera.position.y) * this.props.camera.zoom + this.props.height / 2
         }
     }
 
@@ -266,6 +280,7 @@ export class ForceLayout extends React.Component<ForceLayoutProps, ForceLayoutSt
     }
 
 
+
     /**
      * Renders the links between the cluster centers and the
      * force-directed fingerprints.
@@ -300,9 +315,37 @@ export class ForceLayout extends React.Component<ForceLayoutProps, ForceLayoutSt
                 ctx.closePath();
             })
         }
+    }
 
-        // Clear global composition
-        ctx.globalCompositeOperation = 'source-over'
+
+    renderClusterEdges(ctx: CanvasRenderingContext2D) {
+
+        function canvas_arrow(context, fromx, fromy, tox, toy) {
+            var headlen = 50; // length of head in pixels
+            var dx = tox - fromx;
+            var dy = toy - fromy;
+            var angle = Math.atan2(dy, dx);
+            context.moveTo(fromx, fromy);
+            context.lineTo(tox, toy);
+            context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+            context.moveTo(tox, toy);
+            context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+        }
+
+        if (this.props.clusterEdges) {
+
+            this.props.clusterEdges.forEach(edge => {
+                const { x: x0, y: y0 } = this.worldToScreenWithOffset(edge.source.getCenter())
+                const { x: x1, y: y1 } = this.worldToScreenWithOffset(edge.destination.getCenter())
+
+                ctx.strokeStyle = 'rgba(70, 130, 180, 0.5)'
+                ctx.lineWidth = 5 * window.devicePixelRatio
+                ctx.beginPath();
+                canvas_arrow(ctx, x0 * window.devicePixelRatio, y0 * window.devicePixelRatio, x1 * window.devicePixelRatio, y1 * window.devicePixelRatio)
+                ctx.stroke();
+                ctx.closePath();
+            })
+        }
     }
 
 
@@ -324,4 +367,4 @@ export class ForceLayout extends React.Component<ForceLayoutProps, ForceLayoutSt
             }
         </div>
     }
-}
+})

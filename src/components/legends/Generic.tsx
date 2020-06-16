@@ -49,7 +49,7 @@ type GenericFingerprintProps = {
 export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({ type, vectors, scale }: GenericFingerprintProps) => {
     switch (type) {
         case 'rubik':
-            return <RubikFingerprint width={90 * scale} height={120 * scale} vectors={vectors}></RubikFingerprint>
+            return <RubikFingerprint width={81 * scale} height={108 * scale} vectors={vectors}></RubikFingerprint>
         case 'chess':
             return <ChessFingerprint width={80 * scale} height={80 * scale} vectors={vectors}></ChessFingerprint>
         default:

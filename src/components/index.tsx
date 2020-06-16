@@ -24,7 +24,6 @@ import Button from '@material-ui/core/Button';
 import { GenericLegend } from './legends/Generic'
 import { ChooseFileDialog } from './util/dataselectui'
 import { FlexParent } from './library/grid'
-import { graphLayout } from "./util/graphs";
 import { DataEdge, MultiDictionary } from "./util/datasetselector"
 import * as React from "react";
 import { SelectionClusters } from "./clustering/SelectionClusters/SelectionClusters";
@@ -37,84 +36,22 @@ import { FingerprintPreview } from "./clustering/FingerprintPreview/FingerprintP
 import { StoryPreview } from "./clustering/StoryPreview/StoryPreview";
 import { Legend } from "./Legend/Legend";
 import concaveman = require("concaveman");
-import * as libtess from 'libtess'
+
 import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
-import { annotateVectors } from "./util/tools";
+import { annotateVectors, triangulate } from "./util/tools";
 import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { connect } from 'react-redux'
 import currentTool from "./Reducers/CurrentToolReducer";
 import currentAggregation from "./Reducers/CurrentAggregationReducer";
+import activeStory from "./Reducers/ActiveStoryReducer";
+import stories from "./Reducers/StoriesReducer";
+import currentClusters from "./Reducers/CurrentCLustersReducer";
+import openTab from "./Reducers/OpenTabReducer";
+import clusterEdges from "./Reducers/ClusterEdgesReducer";
 
 
-/*global libtess */
-/* exported triangulate */
 
-var tessy = (function initTesselator() {
-  // function called for each vertex of tesselator output
-  function vertexCallback(data, polyVertArray) {
-    // console.log(data[0], data[1]);
-    polyVertArray[polyVertArray.length] = data[0];
-    polyVertArray[polyVertArray.length] = data[1];
-  }
-  function begincallback(type) {
-    if (type !== libtess.primitiveType.GL_TRIANGLES) {
-      console.log('expected TRIANGLES but got type: ' + type);
-    }
-  }
-  function errorcallback(errno) {
-    console.log('error callback');
-    console.log('error number: ' + errno);
-  }
-  // callback for when segments intersect and must be split
-  function combinecallback(coords, data, weight) {
-    // console.log('combine callback');
-    return [coords[0], coords[1], coords[2]];
-  }
-  function edgeCallback(flag) {
-    // don't really care about the flag, but need no-strip/no-fan behavior
-    // console.log('edge flag: ' + flag);
-  }
-
-
-  var tessy = new libtess.GluTesselator();
-  // tessy.gluTessProperty(libtess.gluEnum.GLU_TESS_WINDING_RULE, libtess.windingRule.GLU_TESS_WINDING_POSITIVE);
-  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_VERTEX_DATA, vertexCallback);
-  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_BEGIN, begincallback);
-  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_ERROR, errorcallback);
-  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_COMBINE, combinecallback);
-  tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_EDGE_FLAG, edgeCallback);
-
-  return tessy;
-})();
-
-function triangulate(contours) {
-  // libtess will take 3d verts and flatten to a plane for tesselation
-  // since only doing 2d tesselation here, provide z=1 normal to skip
-  // iterating over verts only to get the same answer.
-  // comment out to test normal-generation code
-  tessy.gluTessNormal(0, 0, 1);
-
-  var triangleVerts = [];
-  tessy.gluTessBeginPolygon(triangleVerts);
-
-  for (var i = 0; i < contours.length; i++) {
-    tessy.gluTessBeginContour();
-    var contour = contours[i];
-    for (var j = 0; j < contour.length; j += 2) {
-      var coords = [contour[j], contour[j + 1], 0];
-      tessy.gluTessVertex(coords, coords);
-    }
-    tessy.gluTessEndContour();
-  }
-
-  // finish polygon (and time triangulation process)
-  var startTime = new Date().getTime();
-  tessy.gluTessEndPolygon();
-  var endTime = new Date().getTime();
-
-  return triangleVerts;
-}
 
 
 
@@ -150,11 +87,20 @@ function a11yProps(index) {
 
 
 const mapStateToProps = state => ({
-  currentTool: state.currentTool
+  currentTool: state.currentTool,
+  openTab: state.openTab
 })
 
 
-var Application = connect(mapStateToProps)(class extends React.Component {
+const mapDispatchToProps = dispatch => ({
+  setOpenTab: openTab => dispatch({
+    type: 'SET_OPEN_TAB',
+    openTab: openTab
+  })
+})
+
+
+var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component {
   threeRef: React.RefObject<any>;
   legend: React.RefObject<unknown>;
   dataset: any;
@@ -199,8 +145,6 @@ var Application = connect(mapStateToProps)(class extends React.Component {
       projectionComputing: false,
 
       sizeScale: [1, 2],
-
-      tabValue: 0,
 
       backendRunning: false,
 
@@ -396,8 +340,6 @@ var Application = connect(mapStateToProps)(class extends React.Component {
       state.selectedVectorByColor = defaultColorAttribute.key
       state.vectorByColor = defaultColorAttribute
 
-
-
       this.threeRef.current.particles.colorCat(defaultColorAttribute, this.mappingFromScale(state.definedScales[state.selectedScaleIndex], defaultColorAttribute))
       state.showColorMapping = this.threeRef.current.particles.getMapping()
     }
@@ -485,60 +427,6 @@ var Application = connect(mapStateToProps)(class extends React.Component {
   }
 
 
-
-
-  onPointClusteringStartClick() {
-    var worker = new Worker('dist/cluster.js')
-    worker.onmessage = (e) => {
-      var clusters = []
-      Object.keys(e.data).forEach(k => {
-        var t = e.data[k]
-        clusters[k] = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
-        clusters[k].label = k
-        clusters.push(clusters[k])
-      })
-
-      // Inject cluster attributes
-      clusters.forEach(cluster => {
-        var vecs = []
-        cluster.points.forEach(point => {
-          var label = point.label
-          var probability = point.probability
-          var index = point.meshIndex
-          vecs.push(this.dataset.vectors[point.meshIndex])
-
-          this.dataset.vectors[index]['clusterLabel'] = label
-
-          if (isNaN(probability)) {
-            this.dataset.vectors[index]['clusterProbability'] = 0
-          } else {
-            this.dataset.vectors[index]['clusterProbability'] = probability
-          }
-        })
-        cluster.vectors = vecs
-      })
-    }
-
-
-    worker.postMessage({
-      type: 'point',
-      load: this.vectors.map(vector => [vector.x, vector.y])
-    })
-
-
-    this.setState((state, props) => {
-      return {
-        clusteringOpen: true,
-        clusteringWorker: worker
-      }
-    })
-  }
-
-
-
-
-
-
   onSegmentClustering() {
     var worker = new Worker('dist/cluster.js')
 
@@ -610,7 +498,7 @@ var Application = connect(mapStateToProps)(class extends React.Component {
         return {
           clusteringOpen: false,
           clusteringWorker: null,
-          clusters: clusters,
+          //clusters: clusters,
           stories: [story],
           activeStory: story
         }
@@ -627,95 +515,6 @@ var Application = connect(mapStateToProps)(class extends React.Component {
     worker.postMessage({
       type: 'segment',
       load: load
-    })
-  }
-
-
-
-  onClusteringStartClick() {
-    var worker = new Worker('dist/cluster.js')
-    worker.onmessage = (e) => {
-      // Point clusteruing
-      var clusters = []
-      Object.keys(e.data).forEach(k => {
-        var t = e.data[k]
-        var f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
-        f.label = k
-        clusters.push(f)
-      })
-
-
-      // Inject cluster attributes
-      clusters.forEach(cluster => {
-        var vecs = []
-        cluster.points.forEach(point => {
-          var label = point.label
-          var probability = point.probability
-          var index = point.meshIndex
-          vecs.push(this.dataset.vectors[point.meshIndex])
-
-          this.dataset.vectors[index]['clusterLabel'] = label
-
-          if (isNaN(probability)) {
-            this.dataset.vectors[index]['clusterProbability'] = 0
-          } else {
-            this.dataset.vectors[index]['clusterProbability'] = probability
-          }
-        })
-        cluster.vectors = vecs
-      })
-
-      this.setState((state, props) => {
-        var colorAttribute = state.categoryOptions.json.find(e => e.category == 'color').attributes
-        if (!colorAttribute.find(e => e.key == 'clusterLabel')) {
-          colorAttribute.push({
-            "key": 'clusterLabel',
-            "name": 'clusterLabel',
-            "type": "categorical"
-          })
-        }
-
-
-
-        var transparencyAttribute = state.categoryOptions.json.find(e => e.category == 'transparency').attributes
-        if (!transparencyAttribute.find(e => e.key == 'clusterProbability')) {
-          transparencyAttribute.push({
-            "key": 'clusterProbability',
-            "name": 'clusterProbability',
-            "type": "sequential",
-            "values": {
-              "range": [0.2, 1]
-            }
-          })
-        }
-
-
-
-        this.threeRef.current.createClusters(clusters)
-
-        var story = new Story(clusters.slice(0, 9))
-
-        return {
-          categoryOptions: state.categoryOptions,
-          clusteringOpen: false,
-          clusteringWorker: null,
-          clusters: clusters,
-          stories: [story],
-          activeStory: story
-        }
-      })
-    }
-    worker.postMessage({
-      type: 'point',
-      load: this.vectors.map(vector => [vector.x, vector.y])
-    })
-
-
-    this.setState((state, props) => {
-      return {
-        clusteringOpen: true,
-        clusteringWorker: worker
-      }
     })
   }
 
@@ -745,10 +544,10 @@ var Application = connect(mapStateToProps)(class extends React.Component {
           <ChooseFileDialog onChange={this.onDataSelected}></ChooseFileDialog>
 
           <Tabs
-            value={this.state.tabValue}
+            value={this.props.openTab}
             indicatorColor="primary"
             textColor="primary"
-            onChange={(e, newVal) => { this.setState({ tabValue: newVal }) }}
+            onChange={(e, newVal) => { this.props.setOpenTab(newVal) }}
             aria-label="disabled tabs example"
           >
             <Tab label="States" style={{ minWidth: 0, flexGrow: 1 }} />
@@ -774,7 +573,7 @@ var Application = connect(mapStateToProps)(class extends React.Component {
 
             <Divider style={{ margin: '8px 0px' }} />
 
-            <TabPanel value={this.state.tabValue} index={0}>
+            <TabPanel value={this.props.openTab} index={0}>
               <div>
                 <Typography
                   style={{ margin: '0px 0 0px 16px' }}
@@ -1101,23 +900,19 @@ var Application = connect(mapStateToProps)(class extends React.Component {
 
             </TabPanel>
 
-            <TabPanel value={this.state.tabValue} index={1}>
+            <TabPanel value={this.props.openTab} index={1}>
               {this.state.dataset != null ?
                 <ClusteringTabPanel
-                  open={this.state.tabValue == 1}
+                  open={this.props.openTab == 1}
                   backendRunning={this.state.backendRunning}
                   clusteringWorker={this.state.clusteringWorker}
                   dataset={this.state.dataset}
-                  activeStory={this.state.activeStory}
-                  setActiveStory={(event, activeStory) => this.setState({ activeStory: activeStory })}
-                  stories={this.state.stories}
-                  onClusteringStart={() => this.onClusteringStartClick()}
                 ></ClusteringTabPanel> : <div></div>
               }
 
             </TabPanel>
 
-            <TabPanel value={this.state.tabValue} index={2}>
+            <TabPanel value={this.props.openTab} index={2}>
               <FlexParent
                 alignItems='stretch'
                 flexDirection='column'
@@ -1177,21 +972,23 @@ var Application = connect(mapStateToProps)(class extends React.Component {
 
       <ThreeView
         ref={this.threeRef}
-        clusters={this.state.clusters}
+        //clusters={this.state.clusters}
         onHover={this.onHover}
         algorithms={this.state.selectedLineAlgos}
         onAggregate={this.onAggregate}
         selectionState={this.state.selectionState}
         pathLengthRange={this.state.pathLengthRange}
         tool={this.props.currentTool}
-        activeStory={this.state.activeStory}
         type={this.state.datasetType}>
       </ThreeView>
 
 
-      <ClusterOverview type={this.state.datasetType} story={this.state.activeStory} itemClicked={(cluster) => {
-        this.threeRef.current.setZoomTarget(cluster.vectors, 1)
-      }}></ClusterOverview>
+      <ClusterOverview
+        type={this.state.datasetType}
+        //story={this.state.activeStory}
+        itemClicked={(cluster) => {
+          this.threeRef.current.setZoomTarget(cluster.vectors, 1)
+        }}></ClusterOverview>
 
       <ToolSelection
         currentTool={this.props.currentTool}
@@ -1236,9 +1033,18 @@ var Application = connect(mapStateToProps)(class extends React.Component {
 })
 
 
+
+/**
+ * Combine reducers and create a store for the main application.
+ */
 const rootReducer = combineReducers({
   currentTool: currentTool,
-  currentAggregation: currentAggregation
+  currentAggregation: currentAggregation,
+  activeStory: activeStory,
+  stories: stories,
+  currentClusters: currentClusters,
+  openTab: openTab,
+  clusterEdges: clusterEdges
 })
 
 

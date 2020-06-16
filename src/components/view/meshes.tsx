@@ -727,8 +727,9 @@ export class ClusterVisualization {
   /**
    * Construct new ClusterVisualization by passing a list of meshes.
    */
-  constructor(clusterMeshes) {
+  constructor(clusterMeshes, lineMeshes) {
     this.clusterMeshes = clusterMeshes
+    this.lineMeshes = lineMeshes
   }
 
   /**
@@ -737,6 +738,13 @@ export class ClusterVisualization {
   dispose(scene) {
     if (this.clusterMeshes != null) {
       this.clusterMeshes.forEach(mesh => {
+        mesh.geometry.dispose()
+        mesh.material.dispose()
+        scene.remove(mesh)
+      })
+    }
+    if (this.lineMeshes != null) {
+      this.lineMeshes.forEach(mesh => {
         mesh.geometry.dispose()
         mesh.material.dispose()
         scene.remove(mesh)
