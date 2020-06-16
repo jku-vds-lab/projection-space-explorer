@@ -105,7 +105,12 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
 
 
     function storyLayout(edges) {
+        // hh
+        while (edges.length > 0) {
+            var edge = edges.splice(0, 1)[0]
 
+            
+        }
     }
 
     function toggleClusters() {
