@@ -37,6 +37,7 @@ export var StoryPreview = connect(mapStateToProps, mapDispatchToProps)(({ storie
             style={{
                 alignItems: "stretch"
             }}
+            orientation='vertical'
         >
             {
                 stories?.map((story, index) => {

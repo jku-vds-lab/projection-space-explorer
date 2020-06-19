@@ -49,6 +49,8 @@ import stories from "./Reducers/StoriesReducer";
 import currentClusters from "./Reducers/CurrentCLustersReducer";
 import openTab from "./Reducers/OpenTabReducer";
 import clusterEdges from "./Reducers/ClusterEdgesReducer";
+import { selectedVectorByShape, vectorByShape, checkedShapes } from "./Reducers/VectorByReducers";
+import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 
 
 
@@ -87,7 +89,6 @@ function a11yProps(index) {
 
 
 const mapStateToProps = state => ({
-  currentTool: state.currentTool,
   openTab: state.openTab
 })
 
@@ -115,9 +116,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       selectionAggregation: [],
 
       fileDialogOpen: true,
-
-      vectorByShape: null,
-      selectedVectorByShape: "",
 
       vectorByTransparency: null,
       selectedVectorByTransparency: "",
@@ -220,11 +218,26 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   }
 
   onHover(selected) {
-    this.setSelectionView(document.getElementById('info'), selected, this.dataset.info.type)
+    if ((selected == null || selected.length <= 0)) {
+      if (this.state.selectionState.length != 0) {
+        this.setState({ selectionState: [] })
+      }
+      
+      
+    } else {
+      this.setState({ selectionState: selected })
+    }
   }
 
   onAggregate(selected) {
-    this.setAggregateView(document.getElementById('aggregate'), selected, this.dataset.info.type)
+    if (selected == null || selected.length <= 0) {
+      if (this.state.selectionAggregation != null) {
+        this.setState({ selectionAggregation: [] })
+      }
+      
+    } else {
+      this.setState({ selectionAggregation: list })
+    }
   }
 
 
@@ -279,8 +292,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     // Update shape legend
     this.setState({
       categoryOptions: calculateOptions(this.vectors, this.categories),
-      selectedVectorByShape: "",
-      vectorByShape: null,
       vectorByTransparency: null,
       selectedVectorByTransparency: "",
       vectorBySize: null,
@@ -653,55 +664,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
 
+              <StatesTabPanel
+              categoryOptions={this.state.categoryOptions}
+              dataset={this.state.dataset}></StatesTabPanel>
 
 
-              {
-                this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("shape") ?
-                  <Grid
-                    container
-                    justify="center"
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}>
-                    <FormControl style={{ margin: '4px 0px' }}>
-                      <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
-                      <Select labelId="vectorByShapeSelectLabel"
-                        id="vectorByShapeSelect"
-                        displayEmpty
-
-                        value={this.state.selectedVectorByShape}
-                        onChange={(event) => {
-                          var attribute = this.state.categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
-
-                          this.setState({
-                            selectedVectorByShape: event.target.value,
-                            vectorByShape: attribute
-                          })
-
-                          this.threeRef.current.filterPoints({ 'star': true, 'cross': true, 'circle': true, 'square': true })
-                          this.threeRef.current.particles.shapeCat(attribute)
-                        }}
-                      >
-                        <MenuItem value="">None</MenuItem>
-                        {this.state.categoryOptions.getCategory("shape").attributes.map(attribute => {
-                          return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                        })}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-
-                  :
-                  <div></div>
-              }
-
-              <Grid item style={{ padding: '0 16px' }}>
-                <ShapeLegend
-                  dataset={this.state.dataset}
-                  category={this.state.vectorByShape}
-                  onChange={(checkboxes) => {
-                    this.threeRef.current.filterPoints(checkboxes)
-                  }}></ShapeLegend>
-              </Grid>
 
               {
                 this.state.categoryOptions != null && this.state.categoryOptions.hasCategory("transparency") ?
@@ -978,7 +945,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         onAggregate={this.onAggregate}
         selectionState={this.state.selectionState}
         pathLengthRange={this.state.pathLengthRange}
-        tool={this.props.currentTool}
         type={this.state.datasetType}>
       </ThreeView>
 
@@ -990,9 +956,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           this.threeRef.current.setZoomTarget(cluster.vectors, 1)
         }}></ClusterOverview>
 
-      <ToolSelection
-        currentTool={this.props.currentTool}
-        onChange={(newValue) => this.setState({ currentTool: newValue })} />
+      <ToolSelection />
 
 
       <TensorLoader
@@ -1044,7 +1008,10 @@ const rootReducer = combineReducers({
   stories: stories,
   currentClusters: currentClusters,
   openTab: openTab,
-  clusterEdges: clusterEdges
+  clusterEdges: clusterEdges,
+  selectedVectorByShape: selectedVectorByShape,
+  vectorByShape: vectorByShape,
+  checkedShapes: checkedShapes
 })
 
 

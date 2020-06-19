@@ -126,7 +126,9 @@ const mapStateToProps = state => ({
     currentTool: state.currentTool,
     currentAggregation: state.currentAggregation,
     clusters: state.currentClusters,
-    openTab: state.openTab
+    openTab: state.openTab,
+    vectorByShape: state.vectorByShape,
+    checkedShapes: state.checkedShapes
 })
 
 
@@ -346,7 +348,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
         var coords = this.mouseToWorld(event)
 
-        if (this.props.tool == 'default') {
+        if (this.props.currentTool == 'default') {
             var mousePosition = new THREE.Vector2(event.clientX, event.clientY)
 
             if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 10 && this.lasso == null && this.mouseDown) {
@@ -387,7 +389,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
                 }, 10);
             }
-        } else if (this.props.tool == 'move') {
+        } else if (this.props.currentTool == 'move') {
             // If the selected tool is the move tool, process it
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
@@ -399,7 +401,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 this.mouseDownPosition = this.normaliseMouse(event)
                 this.camera.updateProjectionMatrix()
             }
-        } else if (this.props.tool == 'grab') {
+        } else if (this.props.currentTool == 'grab') {
             var found = false
             this.props.clusters.forEach(cluster => {
                 if (cluster.label == '-1') return;
@@ -424,7 +426,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
     onMouseUp(event) {
         var test = this.mouseToWorld(event)
 
-        if (this.props.tool == 'default') {
+        if (this.props.currentTool == 'default') {
             if (this.lasso != null) {
                 // If there is an active lasso, process it
                 var wasDrawing = this.lasso.drawing
@@ -483,7 +485,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                     this.lines.groupHighlight(uniqueIndices)
                 }
             }
-        } else if (this.props.tool == 'grab') {
+        } else if (this.props.currentTool == 'grab') {
             // current hover is null, check if we are inside a cluster
             var found = false
             this.props.clusters.forEach(cluster => {
@@ -615,7 +617,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             var polygon = cluster.hull
 
             var points = [];
-            
+
             var material = new THREE.LineBasicMaterial({ color: 0x0000ff });
             polygon.forEach(pt => {
                 points.push(new THREE.Vector3(pt[0], pt[1], -5));
@@ -1085,6 +1087,15 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
             this.lines.update()
             this.particles.update()
+        }
+
+        if (prevProps.vectorByShape != this.props.vectorByShape) {
+            this.filterPoints({ 'star': true, 'cross': true, 'circle': true, 'square': true })
+            this.particles.shapeCat(this.props.vectorByShape)
+        }
+
+        if (prevProps.checkedShapes != this.props.checkedShapes) {
+            this.filterPoints(this.props.checkedShapes)
         }
     }
 

@@ -8,7 +8,7 @@ import { StoryPreview } from "../../clustering/StoryPreview/StoryPreview"
 import { connect } from 'react-redux'
 import { annotateVectors } from "../../util/tools"
 import Cluster, { Story } from "../../library/Cluster"
-import { graphLayout } from "../../util/graphs"
+import { graphLayout, Edge } from "../../util/graphs"
 
 var worker = new Worker('dist/cluster.js')
 
@@ -104,13 +104,36 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
     const [clusterId, setClusterId] = React.useState(0)
 
 
-    function storyLayout(edges) {
+    function storyLayout(edges: Edge[]) {
+        var stories: Story[] = []
+        var copy = edges.slice(0)
         // hh
-        while (edges.length > 0) {
-            var edge = edges.splice(0, 1)[0]
+        while (copy.length > 0) {
+            var toProcess = [ copy.splice(0, 1)[0] ]
 
-            
+            var clusters = new Set()
+
+
+            while (toProcess.length > 0) {
+                var edge = toProcess.splice(0, 1)[0]
+                do {
+                    clusters.add(edge.source)
+                    clusters.add(edge.destination)
+    
+                    var idx = copy.findIndex(value => value.destination == edge.source || value.source == edge.destination)
+                    if (idx >= 0) {
+                        var removed = copy.splice(idx, 1)[0]
+                        clusters.add(removed.source)
+                        clusters.add(removed.destination)
+                        toProcess.push(removed)
+                    }
+                } while (idx >= 0)
+            }
+
+
+            stories.push(new Story([... clusters]))
         }
+        return stories
     }
 
     function toggleClusters() {
@@ -139,12 +162,12 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
             const [edges] = graphLayout(clusters)
 
             setClusterEdges(edges)
-            storyLayout(edges)
 
-            var story = new Story(clusters)
+            var stories = storyLayout(edges)
+
             setCurrentClusters(clusters)
-            setStories([story])
-            setActiveStory(story)
+            setStories(stories)
+            setActiveStory(stories[0])
         }
 
         worker.postMessage({
