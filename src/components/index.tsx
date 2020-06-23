@@ -51,6 +51,9 @@ import openTab from "./Reducers/OpenTabReducer";
 import clusterEdges from "./Reducers/ClusterEdgesReducer";
 import { selectedVectorByShape, vectorByShape, checkedShapes } from "./Reducers/VectorByReducers";
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
+import { StateSequenceDrawer } from "./StateSequenceDrawer/StateSequenceDrawer";
+import activeLine from "./Reducers/ActiveLineReducer";
+import dataset from "./Reducers/DatasetReducer";
 
 
 
@@ -97,6 +100,10 @@ const mapDispatchToProps = dispatch => ({
   setOpenTab: openTab => dispatch({
     type: 'SET_OPEN_TAB',
     openTab: openTab
+  }),
+  setDataset: dataset => dispatch({
+    type: 'SET_DATASET',
+    dataset: dataset
   })
 })
 
@@ -236,7 +243,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       }
       
     } else {
-      this.setState({ selectionAggregation: list })
+      this.setState({ selectionAggregation: selected })
     }
   }
 
@@ -252,6 +259,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.threeRef.current.disposeScene()
 
     // Set new dataset as variable
+    this.props.setDataset(dataset)
     this.dataset = dataset
     this.vectors = dataset.vectors
     this.segments = dataset.segments
@@ -934,7 +942,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       </div>
 
 
-
+      
 
 
       <ThreeView
@@ -948,6 +956,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         type={this.state.datasetType}>
       </ThreeView>
 
+      <StateSequenceDrawer></StateSequenceDrawer>
 
       <ClusterOverview
         type={this.state.datasetType}
@@ -1011,7 +1020,9 @@ const rootReducer = combineReducers({
   clusterEdges: clusterEdges,
   selectedVectorByShape: selectedVectorByShape,
   vectorByShape: vectorByShape,
-  checkedShapes: checkedShapes
+  checkedShapes: checkedShapes,
+  activeLine: activeLine,
+  dataset: dataset
 })
 
 

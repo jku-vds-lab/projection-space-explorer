@@ -13,36 +13,65 @@ var vertexShader = require('../../shaders/vertex.glsl')
 
 var override = require('./meshline')
 
-var Shapes = {
-  CIRCLE: "circle",
-  STAR: "star",
-  SQUARE: "square",
-  CROSS: "cross",
+export enum Shapes {
+  Circle= 'circle',
+  Star='star',
+  Square='square',
+  Cross='cross'
+}
 
-  fromInt: function (value) {
-    if (value == 0) {
-      return Shapes.CROSS
-    }
-    if (value == 1) {
-      return Shapes.SQUARE
-    }
-    if (value == 2) {
-      return Shapes.CIRCLE
-    }
-    if (value == 3) {
-      return Shapes.STAR
-    }
-  },
 
-  toInt: function (value) {
-    const mapping = {
-      "cross": 0,
-      "square": 1,
-      "circle": 2,
-      "star": 3
-    }
+export function imageFromShape(value) {
+  switch (value) {
+    case Shapes.Cross:
+      return "./textures/sprites/cross.png"
+    case Shapes.Square:
+      return "./textures/sprites/square.png"
+    case Shapes.Circle:
+      return "./textures/sprites/circle.png"
+    case Shapes.Star:
+      return "./textures/sprites/star.png"
+  }
+}
 
-    return mapping[value]
+function shapeFromInt(value) {
+  if (value == 0) {
+    return Shapes.Cross
+  }
+  if (value == 1) {
+    return Shapes.Square
+  }
+  if (value == 2) {
+    return Shapes.Circle
+  }
+  if (value == 3) {
+    return Shapes.Star
+  }
+}
+
+function shapeToInt(value) {
+  switch (value) {
+    case Shapes.Cross:
+      return 0
+    case Shapes.Square:
+      return 1
+    case Shapes.Circle:
+      return 2
+    case Shapes.Star:
+      return 3
+  }
+}
+
+function shapeToString(value) {
+  switch (value) {
+    case Shapes.Cross:
+      return 'cross'
+    case Shapes.Square:
+      return 'square'
+    case Shapes.Circle:
+      return 'circle'
+    case Shapes.Star:
+      return 'star'
   }
 }
 
@@ -282,6 +311,7 @@ export class PointVisualization {
     this.particleSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
     this.vectorColorScheme = vectorColorScheme
     this.dataset = dataset
+    
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
     this.colorsChecked = [true, true, true, true, true, true, true, true, true]
   }
@@ -336,7 +366,7 @@ export class PointVisualization {
           // Intermediate
           types[i] = 2
         }
-        vector.view.shapeType = Shapes.fromInt(types[i])
+        vector.view.shapeType = shapeFromInt(types[i])
         vector.view.highlighted = false
 
         i++
@@ -401,7 +431,7 @@ export class PointVisualization {
             shape = 2
           }
 
-          vector.view.shapeType = Shapes.fromInt(shape)
+          vector.view.shapeType = shapeFromInt(shape)
           type[vector.view.meshIndex] = shape
         })
       })
@@ -409,7 +439,7 @@ export class PointVisualization {
       if (category.type == 'categorical') {
         this.vectors.forEach((vector, index) => {
           var select = category.values.filter(value => value.from == vector[category.key])[0]
-          type[index] = Shapes.toInt(select.to)
+          type[index] = shapeToInt(select.to)
           vector.view.shapeType = select.to
         })
       }

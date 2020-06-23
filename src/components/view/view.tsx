@@ -18,6 +18,8 @@ import Cluster from '../library/Cluster';
 var d3 = require('d3')
 import { connect } from 'react-redux'
 import { graphLayout } from '../util/graphs';
+import { Tool, getToolCursor } from '../ToolSelection/ToolSelection';
+import { Dataset } from '../util/datasetselector';
 
 
 const useStyles = makeStyles(theme => ({
@@ -120,7 +122,13 @@ const SettingsPopover = ({ onChangeSlider }) => {
 
 
 
-
+type ViewProps = {
+    dataset: Dataset,
+    currentTool: Tool,
+    openTab: number,
+    clusters: Cluster[],
+    setActiveLine: any
+}
 
 const mapStateToProps = state => ({
     currentTool: state.currentTool,
@@ -128,7 +136,8 @@ const mapStateToProps = state => ({
     clusters: state.currentClusters,
     openTab: state.openTab,
     vectorByShape: state.vectorByShape,
-    checkedShapes: state.checkedShapes
+    checkedShapes: state.checkedShapes,
+    dataset: state.dataset
 })
 
 
@@ -140,11 +149,15 @@ const mapDispatchToProps = dispatch => ({
     setClusterEdges: clusterEdges => dispatch({
         type: 'SET_CLUSTER_EDGES',
         clusterEdges: clusterEdges
+    }),
+    setActiveLine: activeLine => dispatch({
+        type: 'SET_ACTIVE_LINE',
+        activeLine: activeLine
     })
 })
 
 
-export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component {
+export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<ViewProps> {
     lasso: any
     particles: any
     containerRef: any
@@ -348,181 +361,197 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
         var coords = this.mouseToWorld(event)
 
-        if (this.props.currentTool == 'default') {
-            var mousePosition = new THREE.Vector2(event.clientX, event.clientY)
+        switch (this.props.currentTool) {
+            case Tool.Default:
+                var mousePosition = new THREE.Vector2(event.clientX, event.clientY)
 
-            if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 10 && this.lasso == null && this.mouseDown) {
-                var initialWorld = this.clientCoordinatesToWorld(this.initialMousePosition.x, this.initialMousePosition.y)
+                if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 10 && this.lasso == null && this.mouseDown) {
+                    var initialWorld = this.clientCoordinatesToWorld(this.initialMousePosition.x, this.initialMousePosition.y)
 
-                this.lasso = new LassoSelection()
-                this.lasso.mouseDown(true, initialWorld.x, initialWorld.y)
-            } else if (this.lasso != null) {
-                this.lasso.mouseMove(coords.x, coords.y)
-            }
-
-
-            if (window.infoTimeout != null) {
-                clearTimeout(window.infoTimeout)
-            }
-            if (!this.mouseDown) {
-                window.infoTimeout = setTimeout(() => {
-                    window.infoTimeout = null
-
-                    // Get index of selected node
-                    var idx = this.choose(coords)
-                    this.particles.highlight(idx)
-                    if (idx >= 0) {
-                        this.lines.highlight([this.vectors[idx].view.lineIndex], this.getWidth(), this.getHeight(), this.scene)
-                    } else {
-                        this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
-                    }
-
-
-                    var list = []
-                    if (idx >= 0) {
-                        this.currentHover = this.vectors[idx]
-                        list.push(this.vectors[idx])
-                    } else {
-                        this.currentHover = null
-                    }
-                    this.props.onHover(list)
-
-                }, 10);
-            }
-        } else if (this.props.currentTool == 'move') {
-            // If the selected tool is the move tool, process it
-            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-
-            if (this.mouseDown) {
-                this.camera.position.x = this.camera.position.x - (this.mouse.x - this.mouseDownPosition.x) * (600 / this.camera.zoom);
-                this.camera.position.y = this.camera.position.y - (this.mouse.y - this.mouseDownPosition.y) * (600 / this.camera.zoom);
-                this.mouseDownPosition = this.normaliseMouse(event)
-                this.camera.updateProjectionMatrix()
-            }
-        } else if (this.props.currentTool == 'grab') {
-            var found = false
-            this.props.clusters.forEach(cluster => {
-                if (cluster.label == '-1') return;
-
-                if (cluster.containsPoint(coords)) {
-                    if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
-                        found = true
-                        this.setState({
-                            hoverCluster: cluster
-                        })
-                    }
+                    this.lasso = new LassoSelection()
+                    this.lasso.mouseDown(true, initialWorld.x, initialWorld.y)
+                } else if (this.lasso != null) {
+                    this.lasso.mouseMove(coords.x, coords.y)
                 }
-            })
-            if (!found) {
-                this.setState({
-                    hoverCluster: null
+
+
+                if (window.infoTimeout != null) {
+                    clearTimeout(window.infoTimeout)
+                }
+                if (!this.mouseDown) {
+                    window.infoTimeout = setTimeout(() => {
+                        window.infoTimeout = null
+
+                        // Get index of selected node
+                        var idx = this.choose(coords)
+                        this.particles.highlight(idx)
+                        if (idx >= 0) {
+                            this.lines.highlight([this.vectors[idx].view.lineIndex], this.getWidth(), this.getHeight(), this.scene)
+                        } else {
+                            this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+                        }
+
+
+                        var list = []
+                        if (idx >= 0) {
+                            this.currentHover = this.vectors[idx]
+                            list.push(this.vectors[idx])
+                        } else {
+                            this.currentHover = null
+                        }
+                        this.props.onHover(list)
+
+                    }, 10);
+                }
+                break;
+            case Tool.Move:
+                // If the selected tool is the move tool, process it
+                this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+
+                if (this.mouseDown) {
+                    this.camera.position.x = this.camera.position.x - (this.mouse.x - this.mouseDownPosition.x) * (600 / this.camera.zoom);
+                    this.camera.position.y = this.camera.position.y - (this.mouse.y - this.mouseDownPosition.y) * (600 / this.camera.zoom);
+                    this.mouseDownPosition = this.normaliseMouse(event)
+                    this.camera.updateProjectionMatrix()
+                }
+                break;
+            case Tool.Grab:
+                var found = false
+                this.props.clusters.forEach(cluster => {
+                    if (cluster.label == '-1') return;
+
+                    if (cluster.containsPoint(coords)) {
+                        if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
+                            found = true
+                            this.setState({
+                                hoverCluster: cluster
+                            })
+                        }
+                    }
                 })
-            }
+                if (!found) {
+                    this.setState({
+                        hoverCluster: null
+                    })
+                }
+                break;
+
         }
     }
 
     onMouseUp(event) {
         var test = this.mouseToWorld(event)
 
-        if (this.props.currentTool == 'default') {
-            if (this.lasso != null) {
-                // If there is an active lasso, process it
-                var wasDrawing = this.lasso.drawing
+        switch (this.props.currentTool) {
+            case Tool.Default:
+                if (this.lasso != null) {
+                    // If there is an active lasso, process it
+                    var wasDrawing = this.lasso.drawing
 
-                this.lasso.mouseUp(test.x, test.y)
+                    this.lasso.mouseUp(test.x, test.y)
 
-                var indices = this.lasso.selection(this.vectors, (vector) => this.particles.isPointVisible(vector))
-                if (indices.length > 0 && wasDrawing) {
-                    var selected = indices.map(index => this.vectors[index])
-
-
-
-                    // Toggle selected states
-                    selected.forEach(vector => {
-                        vector.view.selected = !vector.view.selected
-
-                        if (this.currentAggregation.includes(vector) && !vector.view.selected) {
-                            this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
-                        } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
-                            this.currentAggregation.push(vector)
-                        }
-                    })
+                    var indices = this.lasso.selection(this.vectors, (vector) => this.particles.isPointVisible(vector))
+                    if (indices.length > 0 && wasDrawing) {
+                        var selected = indices.map(index => this.vectors[index])
 
 
-                    var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
+
+                        // Toggle selected states
+                        selected.forEach(vector => {
+                            vector.view.selected = !vector.view.selected
+
+                            if (this.currentAggregation.includes(vector) && !vector.view.selected) {
+                                this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
+                            } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
+                                this.currentAggregation.push(vector)
+                            }
+                        })
 
 
-                    this.lines.groupHighlight(uniqueIndices)
-                    //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
 
-                    this.props.onAggregate(this.currentAggregation)
-                    this.props.setCurrentAggregation(this.currentAggregation)
 
-                } else if (wasDrawing) {
-                    this.clearSelection()
-                }
+                        this.lines.groupHighlight(uniqueIndices)
+                        //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
 
-                this.lasso = null
-            } else {
-                if (this.currentHover != null) {
-                    // There is a hover target ... select it
-                    this.currentHover.view.selected = !this.currentHover.view.selected
-
-                    if (this.currentAggregation.includes(this.currentHover) && !this.currentHover.view.selected) {
-                        this.currentAggregation.splice(this.currentAggregation.indexOf(this.currentHover), 1)
                         this.props.onAggregate(this.currentAggregation)
                         this.props.setCurrentAggregation(this.currentAggregation)
-                    } else if (!this.currentAggregation.includes(this.currentHover) && this.currentHover.view.selected) {
-                        this.currentAggregation.push(this.currentHover)
-                        this.props.onAggregate(this.currentAggregation)
-                        this.props.setCurrentAggregation(this.currentAggregation)
+
+                    } else if (wasDrawing) {
+                        this.clearSelection()
                     }
 
-                    var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
+                    this.lasso = null
+                } else {
+                    if (this.currentHover != null) {
+                        // There is a hover target ... select it
+                        this.currentHover.view.selected = !this.currentHover.view.selected
 
-                    this.lines.groupHighlight(uniqueIndices)
-                }
-            }
-        } else if (this.props.currentTool == 'grab') {
-            // current hover is null, check if we are inside a cluster
-            var found = false
-            this.props.clusters.forEach(cluster => {
-                if (cluster.label != '-1') {
-                    if (isPointInConvaveHull(test, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
-                        found = true
-
-                        if (event.button == 0) {
-                            var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
-
-                            selected.forEach(vector => {
-                                vector.view.selected = !vector.view.selected
-
-                                if (this.currentAggregation.includes(vector) && !vector.view.selected) {
-                                    this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
-                                } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
-                                    this.currentAggregation.push(vector)
-                                }
-                            })
-
-
-                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
-
-                            this.lines.groupHighlight(uniqueIndices)
-                            //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
-
+                        if (this.currentAggregation.includes(this.currentHover) && !this.currentHover.view.selected) {
+                            this.currentAggregation.splice(this.currentAggregation.indexOf(this.currentHover), 1)
                             this.props.onAggregate(this.currentAggregation)
                             this.props.setCurrentAggregation(this.currentAggregation)
-                        } else if (event.button == 1) {
-                            this.setZoomTarget(cluster.vectors, 1)
+                        } else if (!this.currentAggregation.includes(this.currentHover) && this.currentHover.view.selected) {
+                            this.currentAggregation.push(this.currentHover)
+                            this.props.onAggregate(this.currentAggregation)
+                            this.props.setCurrentAggregation(this.currentAggregation)
                         }
+
+                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
+
+                        this.lines.groupHighlight(uniqueIndices)
                     }
                 }
-            })
-            if (!found) {
-                this.clearSelection()
-            }
+                break;
+            case Tool.Grab:
+                // current hover is null, check if we are inside a cluster
+                var found = false
+                this.props.clusters.forEach(cluster => {
+                    if (cluster.label != '-1') {
+                        if (isPointInConvaveHull(test, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
+                            found = true
+
+                            if (event.button == 0) {
+                                var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
+
+                                selected.forEach(vector => {
+                                    vector.view.selected = !vector.view.selected
+
+                                    if (this.currentAggregation.includes(vector) && !vector.view.selected) {
+                                        this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
+                                    } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
+                                        this.currentAggregation.push(vector)
+                                    }
+                                })
+
+
+                                var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
+
+                                this.lines.groupHighlight(uniqueIndices)
+                                //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+
+                                this.props.onAggregate(this.currentAggregation)
+                                this.props.setCurrentAggregation(this.currentAggregation)
+                            } else if (event.button == 1) {
+                                this.setZoomTarget(cluster.vectors, 1)
+                            }
+                        }
+                    }
+                })
+                if (!found) {
+                    this.clearSelection()
+                }
+                break;
+            case Tool.Crosshair:
+                var idx = this.choose(test)
+                if (idx >= 0) {
+                    var vector = this.props.dataset.vectors[idx]
+                    this.props.setActiveLine(this.props.dataset.segments[vector.view.lineIndex])
+                }
+
+                break;
         }
 
         this.particles.update()
@@ -1177,7 +1206,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 flexGrow: 1,
                 overflow: "hidden",
                 position: "relative",
-                cursor: this.props.currentTool
+                cursor: getToolCursor(this.props.currentTool)
             }}>
 
             <div id="container" style={{

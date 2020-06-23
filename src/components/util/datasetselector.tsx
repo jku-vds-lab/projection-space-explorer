@@ -284,6 +284,7 @@ export class InferCategory {
             // Check for given header key if its categorical, sequential or diverging
             var distinct = [... new Set(this.vectors.map(vector => vector[key]))]
 
+            console.log(distinct)
             if (distinct.length > 8 || key in ranges || key == 'multiplicity') {
                 // Check if values are numeric
                 if (!distinct.find(value => isNaN(value))) {
@@ -338,6 +339,7 @@ export class InferCategory {
                 }
             } else {
                 if (distinct.find(value => isNaN(value)) || key == 'algo') {
+
                     options.find(e => e.category == 'color').attributes.push({
                         "key": key,
                         "name": key,
@@ -501,7 +503,7 @@ export function getSegs(vectors) {
 
 
     var segments = lineKeys.map(lineKey => {
-        var l = new DataLine({ vectors: vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age) })
+        var l = new DataLine(vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age))
         // Set segment of vectors
         l.vectors.forEach((v, vi) => {
             v.view.segment = l
@@ -527,6 +529,9 @@ function convertFromCSV(vectors) {
  * Dataset class that holds all data, the ranges and additional stuff
  */
 export class Dataset {
+    vectors: Vect[]
+    segments: DataLine[]
+
     constructor(vectors, segments, ranges, info) {
         this.vectors = vectors
         this.ranges = ranges
@@ -673,11 +678,10 @@ export class DataLineView {
  * Main data class for lines
  */
 export class DataLine {
-    constructor(dict) {
-        // Copy dictionary values to this object
-        Object.keys(dict).forEach(key => {
-            this[key] = dict[key]
-        })
+    vectors: Vect[]
+
+    constructor(vectors) {
+        this.vectors = vectors
 
         this.__meta__ = {}
 
@@ -797,6 +801,8 @@ export class VectView {
      * Is this vector visible?
      */
     visible = true
+
+    
 
     constructor() {
     }

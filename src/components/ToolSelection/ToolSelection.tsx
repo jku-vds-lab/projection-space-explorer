@@ -18,6 +18,26 @@ const mapDispatchToProps = dispatch => ({
     })
 })
 
+export enum Tool {
+    Default,
+    Move,
+    Grab,
+    Crosshair
+}
+
+export function getToolCursor(tool: Tool) {
+    switch (tool) {
+        case Tool.Default:
+            return 'default'
+        case Tool.Move:
+            return 'move'
+        case Tool.Grab:
+            return 'grab'
+        case Tool.Crosshair:
+            return 'crosshair'
+    }
+}
+
 export var ToolSelection = connect(mapStateToProps, mapDispatchToProps)(function ({ currentTool, setCurrentTool }) {
     return <div className="ToolSelectionParent">
         <ToggleButtonGroup
@@ -30,13 +50,16 @@ export var ToolSelection = connect(mapStateToProps, mapDispatchToProps)(function
             }}
             aria-label="text alignment"
         >
-            <ToggleButton value="default" aria-label="left aligned">
+            <ToggleButton value={Tool.Default}>
                 <SelectAllIcon />
             </ToggleButton>
-            <ToggleButton value="move" aria-label="centered">
+            <ToggleButton value={Tool.Move}>
                 <ControlCameraIcon />
             </ToggleButton>
-            <ToggleButton value="grab" aria-label="centered">
+            <ToggleButton value={Tool.Grab}>
+                <BlurOffIcon />
+            </ToggleButton>
+            <ToggleButton value={Tool.Crosshair}>
                 <BlurOffIcon />
             </ToggleButton>
         </ToggleButtonGroup>
