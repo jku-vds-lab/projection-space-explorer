@@ -20,6 +20,7 @@ import { connect } from 'react-redux'
 import { graphLayout } from '../util/graphs';
 import { Tool, getToolCursor } from '../ToolSelection/ToolSelection';
 import { Dataset } from '../util/datasetselector';
+import { setAggregationAction, setActiveLineAction, setClusterEdgesAction } from '../Actions/Actions';
 
 
 const useStyles = makeStyles(theme => ({
@@ -127,7 +128,9 @@ type ViewProps = {
     currentTool: Tool,
     openTab: number,
     clusters: Cluster[],
-    setActiveLine: any
+    setActiveLine: any,
+    activeLine: any,
+    highlightedSequence: any
 }
 
 const mapStateToProps = state => ({
@@ -137,23 +140,16 @@ const mapStateToProps = state => ({
     openTab: state.openTab,
     vectorByShape: state.vectorByShape,
     checkedShapes: state.checkedShapes,
-    dataset: state.dataset
+    dataset: state.dataset,
+    highlightedSequence: state.highlightedSequence,
+    activeLine: state.activeLine
 })
 
 
 const mapDispatchToProps = dispatch => ({
-    setCurrentAggregation: id => dispatch({
-        type: 'SET_AGGREGATION',
-        aggregation: id
-    }),
-    setClusterEdges: clusterEdges => dispatch({
-        type: 'SET_CLUSTER_EDGES',
-        clusterEdges: clusterEdges
-    }),
-    setActiveLine: activeLine => dispatch({
-        type: 'SET_ACTIVE_LINE',
-        activeLine: activeLine
-    })
+    setCurrentAggregation: id => dispatch(setAggregationAction(id)),
+    setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
+    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine))
 })
 
 
@@ -1125,6 +1121,13 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
         if (prevProps.checkedShapes != this.props.checkedShapes) {
             this.filterPoints(this.props.checkedShapes)
+        }
+
+        if (prevProps.activeLine != this.props.activeLine) {
+
+        }
+        if (prevProps.highlightedSequence != this.props.highlightedSequence) {
+            // Highlighted sequence changed... display it
         }
     }
 

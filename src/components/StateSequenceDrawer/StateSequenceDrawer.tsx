@@ -15,50 +15,65 @@ import BlurOffIcon from '@material-ui/icons/BlurOff';
 import { Tool } from "../ToolSelection/ToolSelection";
 import { DataLine } from "../util/datasetselector";
 import { imageFromShape } from "../view/meshes";
+import highlightedSequence from "../Reducers/HighlightedSequenceReducer";
+import { setHighlightedSequenceAction } from "../Actions/Actions";
 
 type StateSequenceDrawerProps = {
     activeLine: DataLine,
-    currentTool: Tool
+    currentTool: Tool,
+    setHighlightedSequence: any,
+    highlightedSequence: any
 }
 
 const mapStateToProps = state => ({
     activeLine: state.activeLine,
-    currentTool: state.currentTool
+    currentTool: state.currentTool,
+    highlightedSequence: state.highlightedSequence
 })
 
+const mapDispatchToProps = dispatch => ({
+    setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence))
+})
 
-
-export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = connect(mapStateToProps, null)(({
+export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = connect(mapStateToProps, mapDispatchToProps)(({
     activeLine,
-    currentTool
+    currentTool,
+    setHighlightedSequence,
+    highlightedSequence
 }: StateSequenceDrawerProps) => {
     if (currentTool != Tool.Crosshair || activeLine == null) {
         return <div></div>
     }
 
-    
 
-    return <Timeline className="StateSequenceDrawerParent" align="alternate">
-        {
-            activeLine.vectors.map((vector, index) => {
-                return <TimelineItem style={{ minHeight: 30 }} onClick={() => {
-                    console.log("hi")
-                }}>
-                    <TimelineSeparator>
-                        <TimelineDot variant='outlined' color="secondary" >
-                            
-                            <img src={imageFromShape(vector.view.shapeType)} style={{
-                                width: "1rem",
-                                height: "1rem",
-                                verticalAlign: "middle"
-                            }} />
-                        </TimelineDot>
-                    </TimelineSeparator>
-                    <TimelineContent>
-                        <Typography>{index}</Typography>
-                    </TimelineContent>
-                </TimelineItem>
-            })
-        }
-    </Timeline>
+
+    return <Paper className="StateSequenceDrawerParent">
+        <Timeline>
+            {
+                activeLine.vectors.map((vector, index) => {
+                    return <TimelineItem style={{ minHeight: 30 }} onClick={() => {
+                        setHighlightedSequence({
+                            previous: activeLine.vectors[index - 1],
+                            current: vector,
+                            next: activeLine.vectors[index + 1]
+                        })
+                    }}>
+                        <TimelineSeparator>
+                            <TimelineDot variant={highlightedSequence != null && highlightedSequence.current == vector ? 'default' : 'outlined'} color="secondary" >
+
+                                <img src={imageFromShape(vector.view.shapeType)} style={{
+                                    width: "1rem",
+                                    height: "1rem",
+                                    verticalAlign: "middle"
+                                }} />
+                            </TimelineDot>
+                            <TimelineConnector />
+                        </TimelineSeparator>
+                        <TimelineContent>
+                            {index}
+                        </TimelineContent>
+                    </TimelineItem>
+                })
+            }
+        </Timeline></Paper>
 })

@@ -54,6 +54,7 @@ import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel"
 import { StateSequenceDrawer } from "./StateSequenceDrawer/StateSequenceDrawer";
 import activeLine from "./Reducers/ActiveLineReducer";
 import dataset from "./Reducers/DatasetReducer";
+import highlightedSequence from "./Reducers/HighlightedSequenceReducer";
 
 
 
@@ -1022,7 +1023,8 @@ const rootReducer = combineReducers({
   vectorByShape: vectorByShape,
   checkedShapes: checkedShapes,
   activeLine: activeLine,
-  dataset: dataset
+  dataset: dataset,
+  highlightedSequence: highlightedSequence
 })
 
 

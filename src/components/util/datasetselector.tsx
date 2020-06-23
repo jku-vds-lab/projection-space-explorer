@@ -1,3 +1,5 @@
+import { Shapes } from "../view/meshes"
+
 var d3v5 = require('d3')
 
 const DEFAULT_LINE = "L"
@@ -284,7 +286,6 @@ export class InferCategory {
             // Check for given header key if its categorical, sequential or diverging
             var distinct = [... new Set(this.vectors.map(vector => vector[key]))]
 
-            console.log(distinct)
             if (distinct.length > 8 || key in ranges || key == 'multiplicity') {
                 // Check if values are numeric
                 if (!distinct.find(value => isNaN(value))) {
@@ -801,6 +802,11 @@ export class VectView {
      * Is this vector visible?
      */
     visible = true
+
+    /**
+     * Currently displayed shape of the vector.
+     */
+    shapeType = Shapes.Circle
 
     
 

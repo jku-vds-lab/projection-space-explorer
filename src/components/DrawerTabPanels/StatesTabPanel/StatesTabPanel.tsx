@@ -3,6 +3,7 @@ import { FunctionComponent } from 'react'
 import * as React from 'react'
 import { Grid, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core'
 import { ShapeLegend } from '../../ShapeLegend/ShapeLegend'
+import { setVectorByShapeAction, setCheckedShapesAction, setSelectedVectorByShapeAction } from '../../Actions/Actions'
 
 type StatesTabPanelProps = {
 
@@ -14,18 +15,9 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    setSelectedVectorByShape: selectedVectorByShape => dispatch({
-        type: 'SET_SELECTED_VECTOR_BY_SHAPE',
-        selectedVectorByShape: selectedVectorByShape
-    }),
-    setVectorByShape: vectorByShape => dispatch({
-        type: 'SET_VECTOR_BY_SHAPE',
-        vectorByShape: vectorByShape
-    }),
-    setCheckedShapes: checkedShapes => dispatch({
-        type: 'SET_CHECKED_SHAPES',
-        checkedShapes: checkedShapes
-    })
+    setSelectedVectorByShape: selectedVectorByShape => dispatch(setSelectedVectorByShapeAction(selectedVectorByShape)),
+    setVectorByShape: vectorByShape => dispatch(setVectorByShapeAction(vectorByShape)),
+    setCheckedShapes: checkedShapes => dispatch(setCheckedShapesAction(checkedShapes))
 })
 
 export const StatesTabPanel: FunctionComponent<StatesTabPanelProps> = connect(mapStateToProps, mapDispatchToProps)(({
