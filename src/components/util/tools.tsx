@@ -1,7 +1,13 @@
 import { Vect } from "./datasetselector"
 import * as libtess from 'libtess'
+import * as React from 'react'
+import * as THREE from 'three'
 
 export class LassoSelection {
+    drawing: boolean
+    start: { x, y }
+    points: { x, y }[]
+
     constructor() {
         this.drawing = false
         this.start = { x: 0, y: 0 }
@@ -81,8 +87,8 @@ export class LassoSelection {
             var rayLength = Math.sqrt(Math.pow(rayDistance.x, 2) + Math.pow(rayDistance.y, 2));
             var segLength = Math.sqrt(Math.pow(segDistance.x, 2) + Math.pow(segDistance.y, 2));
 
-            if ((rayDistance.X / rayLength == segDistance.X / segLength) &&
-                (rayDistance.Y / rayLength == segDistance.Y / segLength)) {
+            if ((rayDistance.x / rayLength == segDistance.x / segLength) &&
+                (rayDistance.y / rayLength == segDistance.y / segLength)) {
                 continue;
             }
 
@@ -126,10 +132,20 @@ export class LassoSelection {
  * Rectangle selection tool.
  */
 export class RectangleSelection {
+    vectors: Vect[]
+    scene: any
+    create: boolean
+    geometry: any
+    material: any
+    plane: any
+    startX: any
+    startY: any
+
     constructor(vectors, scene) {
         this.vectors = vectors
         this.scene = scene
 
+    
         this.create = false
 
         this.geometry = new THREE.PlaneGeometry(1, 1, 32);

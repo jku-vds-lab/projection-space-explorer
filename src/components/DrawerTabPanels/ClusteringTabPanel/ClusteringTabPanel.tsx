@@ -59,11 +59,11 @@ type ClusteringTabPanelProps = {
     backendRunning: boolean
     clusteringWorker: any
     dataset: any
-    activeStory: any
-    setActiveStory: any
-    stories: any
-    onClusteringStart: any
-    annotate: any
+    activeStory?: any
+    setActiveStory?: any
+    stories?: any
+    onClusteringStart?: any
+    annotate?: any
     open: boolean
 }
 
@@ -295,6 +295,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
         alignItems='stretch'
         flexDirection='column'
         margin='0 16px'
+        justifyContent=''
     >
 
         <Button

@@ -2,7 +2,6 @@ import { FunctionComponent } from "react";
 import { connect } from 'react-redux'
 import * as React from 'react'
 import { List, Typography, Paper } from "@material-ui/core";
-import { active } from "d3";
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
 import './StateSequenceDrawer.scss'
@@ -17,12 +16,13 @@ import { DataLine } from "../util/datasetselector";
 import { imageFromShape } from "../view/meshes";
 import highlightedSequence from "../Reducers/HighlightedSequenceReducer";
 import { setHighlightedSequenceAction } from "../Actions/Actions";
+import { FlexParent } from "../library/grid";
 
 type StateSequenceDrawerProps = {
-    activeLine: DataLine,
-    currentTool: Tool,
-    setHighlightedSequence: any,
-    highlightedSequence: any
+    activeLine?: DataLine,
+    currentTool?: Tool,
+    setHighlightedSequence?: any,
+    highlightedSequence?: any
 }
 
 const mapStateToProps = state => ({
@@ -35,6 +35,33 @@ const mapDispatchToProps = dispatch => ({
     setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence))
 })
 
+
+
+
+
+
+
+
+
+
+function SequenceLineItem({ content, onClick, image }) {
+    return <FlexParent
+        flexDirection='row'
+        alignItems='center'>
+        <img src={image} style={{
+            width: "1rem",
+            height: "1rem"
+        }} />
+        <span>{content}</span>
+    </FlexParent>
+}
+
+
+
+/**
+ * The StateSequenceDrawer is the UI element that is shown when one line is selected by the line selection tool. In this case
+ * the user wants to navigate the sequence of one line only.
+ */
 export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = connect(mapStateToProps, mapDispatchToProps)(({
     activeLine,
     currentTool,
@@ -48,32 +75,23 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
 
 
     return <Paper className="StateSequenceDrawerParent">
-        <Timeline>
+        <div>
             {
                 activeLine.vectors.map((vector, index) => {
-                    return <TimelineItem style={{ minHeight: 30 }} onClick={() => {
-                        setHighlightedSequence({
-                            previous: activeLine.vectors[index - 1],
-                            current: vector,
-                            next: activeLine.vectors[index + 1]
-                        })
-                    }}>
-                        <TimelineSeparator>
-                            <TimelineDot variant={highlightedSequence != null && highlightedSequence.current == vector ? 'default' : 'outlined'} color="secondary" >
-
-                                <img src={imageFromShape(vector.view.shapeType)} style={{
-                                    width: "1rem",
-                                    height: "1rem",
-                                    verticalAlign: "middle"
-                                }} />
-                            </TimelineDot>
-                            <TimelineConnector />
-                        </TimelineSeparator>
-                        <TimelineContent>
-                            {index}
-                        </TimelineContent>
-                    </TimelineItem>
+                    return <SequenceLineItem
+                        key={index}
+                        onClick={() => {
+                            setHighlightedSequence({
+                                previous: activeLine.vectors[index - 1],
+                                current: vector,
+                                next: activeLine.vectors[index + 1]
+                            })
+                        }}
+                        image={imageFromShape(vector.view.shapeType)}
+                        content={index}
+                    />
                 })
             }
-        </Timeline></Paper>
+        </div>
+    </Paper >
 })

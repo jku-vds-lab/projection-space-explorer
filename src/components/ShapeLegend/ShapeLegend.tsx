@@ -73,7 +73,7 @@ export var ShapeLegend = ({ dataset, category, onChange }) => {
     return <div>
         {
             category.values.map(v => {
-                return <ShapeSymbol symbol={v.to} text={"display" in v ? v.display : v.from} checked={state[v.to]} onCheck={(event) => {
+                return <ShapeSymbol key={v.from} symbol={v.to} text={"display" in v ? v.display : v.from} checked={state[v.to]} onCheck={(event) => {
                     var newState = clone(state)
                     newState[v.to] = event.target.checked
                     setState(newState)

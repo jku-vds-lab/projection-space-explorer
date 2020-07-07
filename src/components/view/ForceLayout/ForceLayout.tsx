@@ -8,6 +8,7 @@ import { RubikFingerprint } from '../../legends/RubikFingerprint/RubikFingerprin
 import { Container } from '@material-ui/core'
 import { connect } from 'react-redux'
 import { Edge } from '../../util/graphs'
+import THREE = require('three')
 
 type ForceLayoutProps = {
     activeStory: Story
@@ -15,12 +16,17 @@ type ForceLayoutProps = {
     height: number
     type: String
     clusterEdges: Edge[]
+    camera: THREE.Camera
+    dataset: any
 }
 
 type ForceLayoutState = {
     physicsRef: React.Ref<HTMLDivElement>
     link: any
-    displayClusters: Cluster[]
+    displayClusters: { cluster: Cluster, forceLabelPosition, shiftX, shiftY }[],
+    graphLayout: any,
+    labelLayout: any,
+    container: any
 }
 
 
@@ -33,39 +39,49 @@ const mapStateToProps = state => ({
 
 
 export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true })(class extends React.Component<ForceLayoutProps, ForceLayoutState> {
+    
+    
     constructor(props) {
         super(props)
 
         this.state = {
-            physicsRef: React.createRef()
+            physicsRef: React.createRef(),
+            link: null,
+            displayClusters: null,
+            graphLayout: null,
+            labelLayout: null,
+            container: null
         }
     }
 
 
     worldToScreen(vec) {
+        let camera = this.props.camera as any
         return {
-            x: (vec.x) * this.props.camera.zoom + this.props.width / 2,
-            y: (-vec.y) * this.props.camera.zoom + this.props.height / 2
+            x: (vec.x) * camera.zoom + this.props.width / 2,
+            y: (-vec.y) * camera.zoom + this.props.height / 2
         }
     }
 
     worldToScreenWithOffset(vec) {
+        let camera = this.props.camera as any
         return {
-            x: (vec.x - this.props.camera.position.x) * this.props.camera.zoom + this.props.width / 2,
-            y: (-vec.y + this.props.camera.position.y) * this.props.camera.zoom + this.props.height / 2
+            x: (vec.x - this.props.camera.position.x) * camera.zoom + this.props.width / 2,
+            y: (-vec.y + this.props.camera.position.y) * camera.zoom + this.props.height / 2
         }
     }
 
     offsetToScreen() {
+        let camera = this.props.camera as any
         return {
-            x: (-this.props.camera.position.x) * this.props.camera.zoom,
-            y: (this.props.camera.position.y) * this.props.camera.zoom
+            x: (-this.props.camera.position.x) * camera.zoom,
+            y: (this.props.camera.position.y) * camera.zoom
         }
     }
 
     deleteForceLayout() {
         this.state.graphLayout?.stop()
-        this.state.laybelLayout?.stop()
+        this.state.labelLayout?.stop()
         this.state.container.select('#force').remove()
 
         this.setState({
@@ -78,10 +94,12 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
         var self = this
 
         var displayClusters = this.props.activeStory.clusters.map(cluster => {
-            cluster.forceLabelPosition = cluster.getCenter()
-            cluster.shiftX = 0
-            cluster.shiftY = 0
-            return cluster
+            return {
+                cluster: cluster,
+                forceLabelPosition: cluster.getCenter(),
+                shiftX: 0,
+                shiftY: 0
+            }
         })
 
         this.setState({
@@ -95,7 +113,7 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
         var graph = {
             nodes: displayClusters.map(m => {
                 // Preinitialize x/y
-                var center = m.getCenter()
+                var center = m.cluster.getCenter()
                 var screen = this.worldToScreen(center)
                 return {
                     id: Math.random(),
@@ -352,8 +370,9 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
     render() {
         return <div id="physics" className="ForceLayoutParent" ref={this.state.physicsRef}>
             {
-                this.state.displayClusters?.map(displayCluster => {
+                this.state.displayClusters?.map((displayCluster, index) => {
                     return <div
+                        key={index}
                         style={{
                             position: 'absolute',
                             left: displayCluster.forceLabelPosition.x + this.offsetToScreen().x,
@@ -361,7 +380,7 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
                             transform: `translate(${displayCluster.shiftX.toFixed(1)}px, ${displayCluster.shiftY.toFixed(1)}px)`
                         }}
                     >
-                        <GenericFingerprint scale={1.5} vectors={displayCluster.vectors} type={this.props.dataset.info.type}></GenericFingerprint>
+                        <GenericFingerprint scale={1.5} vectors={displayCluster.cluster.vectors} type={this.props.dataset.info.type}></GenericFingerprint>
                     </div>
                 })
             }

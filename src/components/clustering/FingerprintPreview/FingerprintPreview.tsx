@@ -12,8 +12,9 @@ type ClusterOverviewProps = {
 export var FingerprintPreview = function ({ pointClusters, type }: ClusterOverviewProps) {
     return <div className="FingerprintPreviewTriplet">
         {
-            pointClusters?.slice(0, 3).map(cluster => {
-                return <div><GenericFingerprint
+            pointClusters?.slice(0, 3).map((cluster, index) => {
+                return <div key={index}><GenericFingerprint
+
                     type={type}
                     vectors={cluster.vectors}
                     scale={1}

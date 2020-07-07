@@ -100,14 +100,18 @@ function check() {
     method: 'POST',
     body: JSON.stringify("")
   }).then(function () {
+    var context = self;
+
     if (backendRunning == false) {
-      self.postMessage(true);
+      context.postMessage(true);
     }
 
     backendRunning = true;
   }).catch(function () {
+    var context = self;
+
     if (backendRunning == true) {
-      self.postMessage(false);
+      context.postMessage(false);
     }
 
     backendRunning = false;

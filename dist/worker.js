@@ -8498,7 +8498,7 @@ var tsnejs = tsnejs || {
     // (re)initializes the solution to random
     initSolution: function initSolution() {
       // generate random solution to t-SNE
-      this.Y = randn2d(this.N, this.dim); // the solution
+      this.Y = randn2d(this.N, this.dim, undefined); // the solution
 
       this.gains = randn2d(this.N, this.dim, 1.0); // step gains to accelerate progress in unchanging directions
 
@@ -8649,37 +8649,39 @@ var tsnejs = tsnejs || {
 
 
 self.addEventListener('message', function (e) {
+  var context = self;
+
   if (e.data) {
     switch (e.data.params.method) {
       case 0:
-        self.raw = e.data;
-        self.tsne = new tsnejs.tSNE({
+        context.raw = e.data;
+        context.tsne = new tsnejs.tSNE({
           epsilon: e.data.params.learningRate,
           perplexity: e.data.params.perplexity,
           dim: 2
         });
-        self.tsne.initDataRaw(e.data.input);
-        self.tsne.step();
-        self.postMessage(self.tsne.getSolution());
+        context.tsne.initDataRaw(e.data.input);
+        context.tsne.step();
+        context.postMessage(context.tsne.getSolution());
         break;
 
       case 1:
-        self.raw = e.data;
-        self.umap = new umap_js_1.UMAP({
+        context.raw = e.data;
+        context.umap = new umap_js_1.UMAP({
           nNeighbors: e.data.params.nNeighbors
         });
-        self.umap.initializeFit(e.data.input);
-        self.umap.step();
-        self.postMessage(self.umap.getEmbedding());
+        context.umap.initializeFit(e.data.input);
+        context.umap.step();
+        context.postMessage(context.umap.getEmbedding());
         break;
     }
-  } else if (self.tsne != null || self.umap != null) {
-    if (self.tsne) {
-      self.tsne.step();
-      self.postMessage(self.tsne.getSolution());
-    } else if (self.umap) {
-      self.umap.step();
-      self.postMessage(self.umap.getEmbedding());
+  } else if (context.tsne != null || context.umap != null) {
+    if (context.tsne) {
+      context.tsne.step();
+      context.postMessage(context.tsne.getSolution());
+    } else if (context.umap) {
+      context.umap.step();
+      context.postMessage(context.umap.getEmbedding());
     }
   }
 }, false);

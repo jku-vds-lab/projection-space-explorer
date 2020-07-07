@@ -7,6 +7,151 @@ const DEFAULT_ALGO = "all"
 
 
 
+
+
+
+
+
+
+
+
+
+/**
+ * Dummy class that holds information about the files that can be preselected.
+ */
+export class DatasetDatabase {
+    data: { display: string, path: string, type: string }[]
+
+    constructor() {
+        this.data = [
+            {
+                display: "Minimal Example",
+                path: "datasets/test/x_y.csv",
+                type: "test"
+            },
+            {
+                display: "Range Header",
+                path: "datasets/test/rangeheader.csv",
+                type: "test"
+            },
+            {
+                display: "Chess: 190 Games",
+                path: "datasets/chess/chess16k.csv",
+                type: "chess"
+            },
+            {
+                display: "Chess: 450 Games",
+                path: "datasets/chess/chess40k.csv",
+                type: "chess"
+            },
+            {
+                display: "Chess: AlphaZero vs Stockfish",
+                path: "datasets/chess/alphazero.csv",
+                type: "chess"
+            },
+            {
+                display: "Rubik: 1x2 Different Origins",
+                path: "datasets/rubik/cube1x2_different_origins.csv",
+                type: "rubik"
+            },
+            {
+                display: "Rubik: 1x2 Same Origins",
+                path: "datasets/rubik/cube1x2.csv",
+                type: "rubik"
+            },
+            {
+                display: "Rubik: 10x2 Different Origins",
+                path: "datasets/rubik/cube10x2_different_origins.csv",
+                type: "rubik"
+            },
+            {
+                display: "Rubik: 10x2 Same Origins",
+                path: "datasets/rubik/cube10x2.csv",
+                type: "rubik"
+            },
+            {
+                display: "Rubik: 100x2 Different Origins",
+                path: "datasets/rubik/cube100x2_different_origins.csv",
+                type: "rubik"
+            },
+            {
+                display: "Rubik: 100x2 Same Origins",
+                path: "datasets/rubik/cube100x2.csv",
+                type: "rubik"
+            },
+            {
+                display: "NN: Rnd Weights",
+                path: "datasets/neural/random_weights.csv",
+                type: "neural"
+            },
+            {
+                display: "NN: Rnd Confusion Matrix",
+                path: "datasets/neural/random_confmat.csv",
+                type: "neural"
+            },
+            {
+                display: "NN: Weights",
+                path: "datasets/neural/learning_weights.csv",
+                type: "neural"
+            },
+            {
+                display: "NN: Confusion Matrix",
+                path: "datasets/neural/learning_confmat.csv",
+                type: "neural"
+            },
+            {
+                display: "Stories: With Names",
+                path: "datasets/story/withnames.csv",
+                type: "story"
+            },
+            {
+                display: "Story: No Duplicates",
+                path: "datasets/story/stories_dup-del_p50_with-names.csv",
+                type: "story"
+            },
+            {
+                display: "Go: State features",
+                path: "datasets/go/combined.csv",
+                type: "go"
+            },
+            {
+                display: "Go: Histogram features",
+                path: "datasets/go/histogram.csv",
+                type: "go"
+            },
+            {
+                display: "Go: Move features (wavelet)",
+                path: "datasets/go/move_wavelet.csv",
+                type: "go"
+            }
+        ]
+    }
+
+    getTypes() {
+        return [... new Set(this.data.map(value => value.type))]
+    }
+
+    getByPath(path) {
+        return this.data.filter(e => e.path == path)[0]
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Parses a range string and returns an object containing min and max values.
  * eg "[min;max]""
@@ -26,6 +171,8 @@ function parseRange(str) {
  * they are not present.
  */
 export class Preprocessor {
+    vectors: Vect[]
+
     constructor(vectors) {
         this.vectors = vectors
     }
@@ -158,18 +305,6 @@ export class Preprocessor {
 
 
         vectors.forEach(function (d) { // convert strings to numbers
-            if ("cubeNum" in d) {
-                d.cubeNum = +d.cubeNum
-            }
-            if ("ep" in d) {
-                d.cubeNum = +d.ep
-            }
-
-
-            if ("cp" in d) {
-                d.cp = d.cp
-            }
-
             if ("age" in d) {
                 d.age = +d.age
             }
@@ -220,6 +355,9 @@ export function loadFromPath(path, callback) {
  * - type of data file (rubik, story...)
  */
 export class InferCategory {
+    vectors: Vect[]
+    segments: DataLine[]
+
     constructor(vectors, segments) {
         this.vectors = vectors
         this.segments = segments
@@ -373,123 +511,7 @@ export class InferCategory {
 
 
 
-/**
- * Dummy class that holds information about the files that can be preselected.
- */
-export class DatasetDatabase {
-    constructor() {
-        this.data = [
-            {
-                display: "Minimal Example",
-                path: "datasets/test/x_y.csv",
-                type: "test"
-            },
-            {
-                display: "Range Header",
-                path: "datasets/test/rangeheader.csv",
-                type: "test"
-            },
-            {
-                display: "Chess: 190 Games",
-                path: "datasets/chess/chess16k.csv",
-                type: "chess"
-            },
-            {
-                display: "Chess: 450 Games",
-                path: "datasets/chess/chess40k.csv",
-                type: "chess"
-            },
-            {
-                display: "Chess: AlphaZero vs Stockfish",
-                path: "datasets/chess/alphazero.csv",
-                type: "chess"
-            },
-            {
-                display: "Rubik: 1x2 Different Origins",
-                path: "datasets/rubik/cube1x2_different_origins.csv",
-                type: "rubik"
-            },
-            {
-                display: "Rubik: 1x2 Same Origins",
-                path: "datasets/rubik/cube1x2.csv",
-                type: "rubik"
-            },
-            {
-                display: "Rubik: 10x2 Different Origins",
-                path: "datasets/rubik/cube10x2_different_origins.csv",
-                type: "rubik"
-            },
-            {
-                display: "Rubik: 10x2 Same Origins",
-                path: "datasets/rubik/cube10x2.csv",
-                type: "rubik"
-            },
-            {
-                display: "Rubik: 100x2 Different Origins",
-                path: "datasets/rubik/cube100x2_different_origins.csv",
-                type: "rubik"
-            },
-            {
-                display: "Rubik: 100x2 Same Origins",
-                path: "datasets/rubik/cube100x2.csv",
-                type: "rubik"
-            },
-            {
-                display: "NN: Rnd Weights",
-                path: "datasets/neural/random_weights.csv",
-                type: "neural"
-            },
-            {
-                display: "NN: Rnd Confusion Matrix",
-                path: "datasets/neural/random_confmat.csv",
-                type: "neural"
-            },
-            {
-                display: "NN: Weights",
-                path: "datasets/neural/learning_weights.csv",
-                type: "neural"
-            },
-            {
-                display: "NN: Confusion Matrix",
-                path: "datasets/neural/learning_confmat.csv",
-                type: "neural"
-            },
-            {
-                display: "Stories: With Names",
-                path: "datasets/story/withnames.csv",
-                type: "story"
-            },
-            {
-                display: "Story: No Duplicates",
-                path: "datasets/story/stories_dup-del_p50_with-names.csv",
-                type: "story"
-            },
-            {
-                display: "Go: State features",
-                path: "datasets/go/combined.csv",
-                type: "go"
-            },
-            {
-                display: "Go: Histogram features",
-                path: "datasets/go/histogram.csv",
-                type: "go"
-            },
-            {
-                display: "Go: Move features (wavelet)",
-                path: "datasets/go/move_wavelet.csv",
-                type: "go"
-            }
-        ]
-    }
 
-    getTypes() {
-        return [... new Set(this.data.map(value => value.type))]
-    }
-
-    getByPath(path) {
-        return this.data.filter(e => e.path == path)[0]
-    }
-}
 
 
 
@@ -504,7 +526,7 @@ export function getSegs(vectors) {
 
 
     var segments = lineKeys.map(lineKey => {
-        var l = new DataLine(vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age))
+        var l = new DataLine(lineKey, vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age))
         // Set segment of vectors
         l.vectors.forEach((v, vi) => {
             v.view.segment = l
@@ -532,6 +554,10 @@ function convertFromCSV(vectors) {
 export class Dataset {
     vectors: Vect[]
     segments: DataLine[]
+    bounds: { x, y, scaleBase, scaleFactor }
+    ranges: any
+    info: any
+    columns: any
 
     constructor(vectors, segments, ranges, info) {
         this.vectors = vectors
@@ -672,6 +698,14 @@ export class DataLineView {
      * Color set for this line
      */
     intrinsicColor = null
+
+    /**
+     * Line mesh
+     */
+    lineMesh = null
+
+    pathLengthRange: any
+
 }
 
 
@@ -679,9 +713,12 @@ export class DataLineView {
  * Main data class for lines
  */
 export class DataLine {
+    lineKey: any
     vectors: Vect[]
+    __meta__: any
 
-    constructor(vectors) {
+    constructor(lineKey, vectors) {
+        this.lineKey = lineKey
         this.vectors = vectors
 
         this.__meta__ = {}
@@ -707,16 +744,36 @@ export class DataLine {
      * Getter for view details
      */
     get view() {
-        return this.getMeta('view')
+        return this.getMeta('view') as DataLineView
     }
 }
-
-
 
 /**
  * Main data class for points
  */
 export class Vect {
+    // x, y coordinates
+    x: number
+    y: number
+
+    // cluster label and probability
+    clusterLabel: any
+    clusterProbability: number
+
+    // assigned line
+    line: any
+
+    // number of occurences of this vector
+    multiplicity: number
+
+    // algorithm (category)
+    algo: any
+
+    // age (generated)
+    age: number
+
+    __meta__: any
+
     constructor(dict) {
         // Copy dictionary values to this object
         Object.keys(dict).forEach(key => {
@@ -779,13 +836,13 @@ export class VectView {
     /**
      * The segment index this vector belongs to.
      */
-    lineIndex = -1
+    lineIndex: any
 
 
     /**
      * The segment reference this vector belongs to.
      */
-    segment = null
+    segment: DataLine = null
 
     /**
      * Index of sequence from 0 to n, this is needed because the key for the line might be sortable, but not numeric
@@ -808,6 +865,13 @@ export class VectView {
      */
     shapeType = Shapes.Circle
 
+    /**
+     * Base size scaling for this point
+     */
+    baseSize: number = 16
+
+    highlighted = false
+
     
 
     constructor() {
@@ -823,14 +887,17 @@ export class VectView {
  * and specifies the direction of this line part.
  */
 export class DataEdge {
+    source: any
+    target: any
+    view: any
+
+
     constructor(source, target) {
         this.source = source
         this.target = target
 
         this.view = {}
     }
-
-
 }
 
 
@@ -841,6 +908,9 @@ export class DataEdge {
  * { key1: [], key2: [] ... }
  */
 export class MultiDictionary {
+    data: any[]
+    lookup: any
+
     constructor() {
         this.data = []
         this.lookup = {}

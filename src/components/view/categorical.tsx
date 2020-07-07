@@ -1,22 +1,23 @@
 
 
 import * as React from 'react'
-import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
-import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import { DiscreteMapping } from '../util/colors';
-
+import { connect } from 'react-redux'
+import { setAdvancedColoringSelectionAction } from '../Actions/Actions';
+import advancedColoringSelection from '../Reducers/AdvancedColoringSelection';
 
 
 
 
 
 class CategoryOptions {
+  vectors: any
+  json: any
+
   constructor(vectors, json) {
     this.vectors = vectors
     this.json = json
@@ -89,86 +90,22 @@ export function calculateOptions(vectors, categories) {
   return new CategoryOptions(vectors, categories)
 }
 
+const mapStateToProps = state => ({
+  advancedColoringSelection: state.advancedColoringSelection
+})
 
 
+const mapDispatchToProps = dispatch => ({
+  setAdvancedColoringSelection: advancedColoringSelection => dispatch(setAdvancedColoringSelectionAction(advancedColoringSelection))
+})
 
-
-
-
-
-
-
-export class CategorySelection extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      options: null,
-      selection: {
-        "color": "",
-        "transparency": "",
-        "shape": "",
-        "size": ""
-      }
-    }
-  }
-
-  setData(vectors, options, selection) {
-    this.vectors = vectors
-    this.setState({
-      options: options,
-      selection: selection
-    })
-  }
-
-  render() {
-    if (this.state.options == null) return <div></div>
-
-    return <Grid
-      container
-      justify="center"
-      alignItems="stretch"
-      direction="column">
-
-
-
-      {this.state.options.asArray().map(option => {
-        const handler = event => {
-          var state = this.state
-          state.selection[option.category] = event.target.value
-          this.setState(state)
-          if (event.target.value != "") {
-            this.props.onChange(option.category, option.attributes.filter(attribute => attribute.key == event.target.value)[0])
-          } else {
-            this.props.onChange(option.category, null)
-          }
-        }
-
-        return <FormControl>
-          <InputLabel id={'labeli' + option.category}>{'by ' + option.category}</InputLabel>
-          <Select labelId={'labeli' + option.category}
-            id={option.category}
-            value={this.state.selection[option.category]}
-            onChange={handler}
-          >
-            <MenuItem value="">None</MenuItem>
-            {option.attributes.map(attribute => {
-              return <MenuItem value={attribute.key}>{attribute.name}</MenuItem>
-            })}
-          </Select>
-        </FormControl>
-      })}
-    </Grid>
-  }
+type ShowColorLegendProps = {
+  mapping: any
+  advancedColoringSelection: boolean[]
+  setAdvancedColoringSelection: Function
 }
 
-
-
-
-
-
-
-export var ShowColorLegend = ({ mapping, colorsChecked, onChange }) => {
+export var ShowColorLegend = connect(mapStateToProps, mapDispatchToProps)(({ mapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps) => {
   if (mapping == undefined || mapping == null) {
     return <div></div>
   }
@@ -179,13 +116,17 @@ export var ShowColorLegend = ({ mapping, colorsChecked, onChange }) => {
 
       {mapping.values.map((value, index) => {
         var color = mapping.map(value)
-        return <FormControlLabel style={{ margin: '0 8px' }}
+        return <FormControlLabel key={index} style={{ margin: '0 8px' }}
           control={<Checkbox style={{ padding: '3px 9px' }} disableRipple
-            color="primary" size='small' checked={colorsChecked[index]} onChange={onChange} id={index}></Checkbox>}
+            color="primary" size='small' checked={advancedColoringSelection[index]} onChange={(event) => {
+              var values = advancedColoringSelection.splice(0)
+              values[event.target.value] = event.target.checked
+              setAdvancedColoringSelection(values)
+            }} value={index}></Checkbox>}
           label={<Typography style={{ color: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})` }}>{value}</Typography>}
         ></FormControlLabel>
       })}</Grid>
   }
 
   return <div></div>
-}
+})

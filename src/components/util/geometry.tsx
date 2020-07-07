@@ -30,8 +30,8 @@ export function isPointInConvaveHull(seat, points) {
         var rayLength = Math.sqrt(Math.pow(rayDistance.x, 2) + Math.pow(rayDistance.y, 2));
         var segLength = Math.sqrt(Math.pow(segDistance.x, 2) + Math.pow(segDistance.y, 2));
 
-        if ((rayDistance.X / rayLength == segDistance.X / segLength) &&
-            (rayDistance.Y / rayLength == segDistance.Y / segLength)) {
+        if ((rayDistance.x / rayLength == segDistance.x / segLength) &&
+            (rayDistance.y / rayLength == segDistance.y / segLength)) {
             continue;
         }
 

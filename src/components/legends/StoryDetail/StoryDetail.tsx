@@ -9,6 +9,7 @@ import { getCountryCode } from '../../util/isocountries';
 import { Divider } from '@material-ui/core';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import * as React from 'react'
+import { Vect } from '../../util/datasetselector';
 
 
 const theme = createMuiTheme({
@@ -170,7 +171,11 @@ function parseCountries(countries) {
     }
 }
 
-export var StoryLegend = ({ selection }) => {
+type StoryLegendProps = {
+    selection: any[]
+}
+
+export var StoryLegend = ({ selection }: StoryLegendProps) => {
     if (selection == null) {
         return <div>
         </div>
@@ -221,7 +226,7 @@ export var StoryLegend = ({ selection }) => {
                     selection.length == 1 ?
                         vertical.map(row => {
                             var selectionState = selection[0]
-                            return <TableRow key={row.name}>
+                            return <TableRow key={row}>
                                 <TableCell key={`text${row}`} className={classes.rowtextcell} align="right">
                                     <Typography variant='subtitle1'>{row}</Typography>
                                 </TableCell>
@@ -241,7 +246,7 @@ export var StoryLegend = ({ selection }) => {
                         })
                         :
                         vertical.map(row => {
-                            return <TableRow key={row.name}>
+                            return <TableRow key={row}>
                                 <TableCell className={classes.rowtextcell} align="right">
                                     <Typography variant='subtitle1'>{row}</Typography>
                                 </TableCell>

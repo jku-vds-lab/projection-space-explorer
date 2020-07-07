@@ -1,9 +1,7 @@
 import "regenerator-runtime/runtime";
 
-import Alert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import { calculateOptions } from './view/categorical'
-import { ShapeLegend } from './ShapeLegend/ShapeLegend'
 import { ThreeView } from './view/view'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -11,17 +9,15 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { ColorScaleSelect, defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales, SimplePopover } from "./util/colors";
-import { Divider, Card, CardContent } from "@material-ui/core";
+import { Divider } from "@material-ui/core";
 import { loadFromPath } from './util/datasetselector'
-import { LineSelectionPopover, LineSelectionTree } from './view/lineselectiontree'
+import { LineSelectionPopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './view/lineselectiontree'
 import Box from '@material-ui/core/Box';
-import { TensorLoader, MediaControlCard, AdditionalMenu, ClusterWindow } from "./projection/integration";
+import { TensorLoader, MediaControlCard } from "./projection/integration";
 import { arraysEqual } from "./view/utilfunctions";
-import BlurOffIcon from '@material-ui/icons/BlurOff';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
-import { GenericLegend } from './legends/Generic'
 import { ChooseFileDialog } from './util/dataselectui'
 import { FlexParent } from './library/grid'
 import { DataEdge, MultiDictionary } from "./util/datasetselector"
@@ -31,14 +27,12 @@ import { ToolSelection } from "./ToolSelection/ToolSelection";
 import { PathLengthFilter } from "./PathLengthFilter/PathLengthFilter";
 import { SizeSlider } from "./SizeSlider/SizeSlider";
 import { ClusterOverview } from "./clustering/ClusterOverview/ClusterOverview";
-import Cluster, { Story } from "./library/Cluster";
-import { FingerprintPreview } from "./clustering/FingerprintPreview/FingerprintPreview";
-import { StoryPreview } from "./clustering/StoryPreview/StoryPreview";
+import { Story } from "./library/Cluster";
 import { Legend } from "./Legend/Legend";
 import concaveman = require("concaveman");
-
+import * as ReactDOM from 'react-dom';
 import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
-import { annotateVectors, triangulate } from "./util/tools";
+import { triangulate } from "./util/tools";
 import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { connect } from 'react-redux'
@@ -55,6 +49,9 @@ import { StateSequenceDrawer } from "./StateSequenceDrawer/StateSequenceDrawer";
 import activeLine from "./Reducers/ActiveLineReducer";
 import dataset from "./Reducers/DatasetReducer";
 import highlightedSequence from "./Reducers/HighlightedSequenceReducer";
+import { viewTransform } from "./Reducers/ViewTransformReducer";
+import advancedColoringSelection from "./Reducers/AdvancedColoringSelection";
+import { setAdvancedColoringSelectionAction } from "./Actions/Actions";
 
 
 
@@ -105,13 +102,14 @@ const mapDispatchToProps = dispatch => ({
   setDataset: dataset => dispatch({
     type: 'SET_DATASET',
     dataset: dataset
-  })
+  }),
+  setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value))
 })
 
 
-var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component {
+var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component<any, any> {
   threeRef: React.RefObject<any>;
-  legend: React.RefObject<unknown>;
+  legend: React.RefObject<Legend>;
   dataset: any;
   vectors: any;
   segments: any;
@@ -134,15 +132,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       vectorByColor: null,
       selectedVectorByColor: "",
 
-      legendSelected: {},
-
       selectedScaleIndex: 0,
       selectedScale: null,
       definedScales: null,
 
       datasetType: 'none',
-
-      colorsChecked: new Array(100).fill(true),
 
       selectedLines: {},
 
@@ -208,30 +202,13 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.threeRef.current.resize(window.innerWidth - this.convertRemToPixels(18 * 1), window.innerHeight)
   }
 
-
-  setAggregateView(element, list, type) {
-    if (list == null || list.length <= 0) {
-      this.setState({ selectionAggregation: [] })
-    } else {
-      this.setState({ selectionAggregation: list })
-    }
-  }
-
-  setSelectionView(element, list, type) {
-    if (list == null || list.length <= 0) {
-      this.setState({ selectionState: [] })
-    } else {
-      this.setState({ selectionState: list })
-    }
-  }
-
   onHover(selected) {
     if ((selected == null || selected.length <= 0)) {
       if (this.state.selectionState.length != 0) {
         this.setState({ selectionState: [] })
       }
-      
-      
+
+
     } else {
       this.setState({ selectionState: selected })
     }
@@ -242,7 +219,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       if (this.state.selectionAggregation != null) {
         this.setState({ selectionAggregation: [] })
       }
-      
+
     } else {
       this.setState({ selectionAggregation: selected })
     }
@@ -264,7 +241,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.dataset = dataset
     this.vectors = dataset.vectors
     this.segments = dataset.segments
-    this.categories = json
 
     this.setState({
       datasetType: this.dataset.info.type,
@@ -273,34 +249,24 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     })
 
     // Load new view
-    this.loadData2()
-  }
-
-
-  loadData2() {
-    this.setAggregateView(document.getElementById('info'), [], false, this.dataset.info.type)
-    this.setAggregateView(document.getElementById('aggregate'), [], true, this.dataset.info.type)
-
-
-    //this.lineColorScheme = new DefaultLineColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
-    this.lineColorScheme = this.mappingFromScale(NamedCategoricalScales.DARK2, { key: 'algo' })
+    let lineScheme = this.mappingFromScale(NamedCategoricalScales.DARK2, { key: 'algo' })
 
     this.setState({
-      lineColorScheme: this.lineColorScheme
+      lineColorScheme: lineScheme
     })
 
-    this.threeRef.current.createVisualization(this.dataset, this.lineColorScheme, null)
+    this.threeRef.current.createVisualization(this.dataset, lineScheme, null)
 
-    this.finite()
+    this.finite(lineScheme, json)
   }
 
-  finite() {
-    var algos = LineSelectionTree.genAlgos(this.vectors)
-    var selLines = LineSelectionTree.getChecks(algos)
+  finite(lineColorScheme, categories) {
+    var algos = LineSelectionTree_GenAlgos(this.vectors)
+    var selLines = LineSelectionTree_GetChecks(algos)
 
     // Update shape legend
     this.setState({
-      categoryOptions: calculateOptions(this.vectors, this.categories),
+      categoryOptions: calculateOptions(this.vectors, categories),
       vectorByTransparency: null,
       selectedVectorByTransparency: "",
       vectorBySize: null,
@@ -310,13 +276,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       selectedLines: selLines,
       selectedLineAlgos: algos,
       pathLengthRange: [0, this.dataset.getMaxPathLength()],
-      maxPathLength: this.dataset.getMaxPathLength()
+      maxPathLength: this.dataset.getMaxPathLength(),
+      selectionAggregation: []
     })
 
-
-
-
-    this.legend.current.load(this.dataset.info.type, this.lineColorScheme, this.state.selectedLineAlgos)
+    this.legend.current.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
     this.initializeEncodings()
   }
@@ -343,7 +307,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   }
 
   initializeEncodings() {
-    var state = {}
+    var state = {} as any
 
     var defaultSizeAttribute = this.state.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
     if (defaultSizeAttribute) {
@@ -378,8 +342,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   onColorScaleChanged(scale, index) {
     this.setState({
       selectedScale: scale,
-      selectedScaleIndex: index,
-      colorsChecked: new Array(100).fill(true)
+      selectedScaleIndex: index
     })
 
     this.threeRef.current.particles.setColorScale(scale)
@@ -388,62 +351,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
   onLineSelect(algo, show) {
     this.threeRef.current.filterLines(algo, show)
-  }
-
-  legendOnChange(event) {
-    var select = this.legendSelected
-    select
-    var newState = {
-      legendSelected: {}
-    }
-    var col = newState.colors.filter(c => c.color == event.target.id)[0]
-    col.checked = event.target.checked
-
-    this.setState(newState)
-
-    this.props.onLineSelect(col.algo, event.target.checked)
-  }
-
-
-  selectColorAttribute() {
-    var attribute = null
-    if (event.target.value != "") {
-      attribute = this.state.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
-    }
-    var state = {
-      selectedVectorByColor: event.target.value,
-      vectorByColor: attribute,
-      definedScales: [],
-      selectedScaleIndex: 0,
-      colorsChecked: new Array(100).fill(true)
-    }
-
-    var scale = null
-
-    if (attribute != null && attribute.type == 'categorical') {
-      state.selectedScaleIndex = 0
-      state.definedScales = defaultScalesForAttribute(attribute)
-
-      scale = state.definedScales[state.selectedScaleIndex]
-
-      this.threeRef.current.particles.colorFilter(state.colorsChecked)
-    } else if (attribute != null) {
-      state.selectedScaleIndex = 0
-      state.definedScales = defaultScalesForAttribute(attribute)
-
-      scale = state.definedScales[state.selectedScaleIndex]
-
-      this.threeRef.current.particles.colorFilter(null)
-    }
-
-
-    this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute))
-
-
-    state.showColorMapping = this.threeRef.current.particles.getMapping()
-    this.setState(state)
-
-    this.threeRef.current.particles.update()
   }
 
 
@@ -461,7 +368,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             segment.vectors[vi].y,
             segment.vectors[vi + 1].x,
             segment.vectors[vi + 1].y,
-            segment.vectors[vi].view.lineIndex,
+            segment.lineKey,
             segment.vectors[vi].clusterLabel == undefined ? 0 : segment.vectors[vi].clusterLabel,
             segment.vectors[vi + 1].clusterLabel == undefined ? 0 : segment.vectors[vi + 1].clusterLabel,
             segment.vectors[vi].view.meshIndex,
@@ -612,12 +519,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                 style={{ padding: '0 16px' }}>
                 <Legend
                   ref={this.legend}
-                  algorithms={this.state.selectedLineAlgos}
                   onLineSelect={this.onLineSelect}></Legend>
 
                 <Box p={1}></Box>
 
-                <LineSelectionPopover vectors={this.state.vectors}
+                <LineSelectionPopover
                   onSelectAll={(algo, checked) => {
                     var ch = this.state.selectedLines
                     Object.keys(ch).forEach(key => {
@@ -643,9 +549,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                     })
 
                     this.threeRef.current.setLineFilter(ch)
-                  }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme}>
-
-                </LineSelectionPopover>
+                  }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme} />
               </Grid>
 
               <div style={{ margin: '8px 0px' }}></div>
@@ -674,8 +578,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
               <StatesTabPanel
-              categoryOptions={this.state.categoryOptions}
-              dataset={this.state.dataset}></StatesTabPanel>
+                categoryOptions={this.state.categoryOptions}
+                dataset={this.state.dataset}></StatesTabPanel>
 
 
 
@@ -801,8 +705,10 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                               vectorByColor: attribute,
                               definedScales: [],
                               selectedScaleIndex: 0,
-                              colorsChecked: new Array(100).fill(true)
+                              showColorMapping: undefined
                             }
+
+                            this.props.setAdvancedColoringSelection(new Array(100).fill(true))
 
                             var scale = null
 
@@ -811,15 +717,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                               state.definedScales = defaultScalesForAttribute(attribute)
 
                               scale = state.definedScales[state.selectedScaleIndex]
-
-                              this.threeRef.current.particles.colorFilter(state.colorsChecked)
                             } else if (attribute != null) {
                               state.selectedScaleIndex = 0
                               state.definedScales = defaultScalesForAttribute(attribute)
 
                               scale = state.definedScales[state.selectedScaleIndex]
-
-                              this.threeRef.current.particles.colorFilter(null)
                             }
 
 
@@ -856,17 +758,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                   this.state.vectorByColor != null && this.state.vectorByColor.type == 'categorical' ?
 
                     <SimplePopover
-                      showColorMapping={this.state.showColorMapping}
-                      colorsChecked={this.state.colorsChecked}
-                      onChange={(event) => {
-
-                        var state = {}
-                        state.colorsChecked = this.state.colorsChecked
-                        state.colorsChecked[event.target.id] = event.target.checked
-                        this.setState(state)
-
-                        this.threeRef.current.particles.colorFilter(state.colorsChecked)
-                      }}></SimplePopover>
+                      showColorMapping={this.state.showColorMapping}></SimplePopover>
                     :
                     <div></div>
                 }
@@ -893,6 +785,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                 alignItems='stretch'
                 flexDirection='column'
                 margin='0 16px'
+                justifyContent=''
               >
                 <Button variant="outlined"
                   style={{
@@ -943,7 +836,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       </div>
 
 
-      
+
 
 
       <ThreeView
@@ -965,6 +858,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         itemClicked={(cluster) => {
           this.threeRef.current.setZoomTarget(cluster.vectors, 1)
         }}></ClusterOverview>
+
+
 
       <ToolSelection />
 
@@ -1024,7 +919,9 @@ const rootReducer = combineReducers({
   checkedShapes: checkedShapes,
   activeLine: activeLine,
   dataset: dataset,
-  highlightedSequence: highlightedSequence
+  highlightedSequence: highlightedSequence,
+  viewTransform: viewTransform,
+  advancedColoringSelection: advancedColoringSelection
 })
 
 

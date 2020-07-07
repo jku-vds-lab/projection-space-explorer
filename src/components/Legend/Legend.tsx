@@ -66,30 +66,41 @@ export var Checky = ({ checked, onChange, id, name, comp }) => {
     ></FormControlLabel>
 }
 
-export class Legend extends React.Component {
+type LegendState = {
+    lineChecks: any
+    type: string
+}
+
+type LegendProps = {
+    onLineSelect: any
+}
+
+export class Legend extends React.Component<LegendProps, LegendState> {
     constructor(props) {
         super(props)
 
-        this.state = {}
+        this.state = {
+            lineChecks: null,
+            type: null
+        }
+
         this.onCheckbox = this.onCheckbox.bind(this)
     }
 
     load(type, lineColorScheme, algorithms) {
-
-        this.lineColorScheme = lineColorScheme
-        this.type = type
-
-
         var lineChecks = algorithms.map(entry => {
             return {
-                color: this.lineColorScheme.map(entry.algo),
+                color: lineColorScheme.map(entry.algo),
                 name: entry.algo,
                 checked: true,
                 algo: entry.algo
             }
         })
 
-        this.setState({ lineChecks: lineChecks })
+        this.setState({
+            lineChecks: lineChecks,
+            type: type
+        })
     }
 
     onCheckbox(event) {
@@ -108,18 +119,20 @@ export class Legend extends React.Component {
         if (this.state.lineChecks == undefined) return <div id="legend"></div>
 
         var colorLegend = null
-        if (this.type == 'neural') {
+        if (this.state.type == 'neural') {
             colorLegend = this.state.lineChecks.map(line => {
                 var comp = line.color.rgb
-                return <div key={line.algo} class="d-flex" style={{ width: "100%", height: "1rem" }}>
-                    <small class="small flex-shrink-0" style={{ width: '2.5rem' }}>{line.name == "undefined" ? '-' : line.name}</small>
-                    <div class="flex-grow-1" style={{ "background-image": `linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))` }}></div>
+                return <div key={line.algo} className="d-flex" style={{ width: "100%", height: "1rem" }}>
+                    <small className="small flex-shrink-0" style={{ width: '2.5rem' }}>{line.name == "undefined" ? '-' : line.name}</small>
+                    <div className="flex-grow-1" style={{
+                        backgroundImage: `linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))`
+                    }}></div>
                 </div>
             })
         } else {
             colorLegend = this.state.lineChecks.map(line => {
                 var comp = line.color.rgb
-                return <div key={line.algo} style={{ width: "100%", height: "1rem", "background-image": `linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))` }}>
+                return <div key={line.algo} style={{ width: "100%", height: "1rem", backgroundImage: `linear-gradient(to right, rgba(${comp.r}, ${comp.g}, ${comp.b}, 0.2), rgba(${comp.r}, ${comp.g}, ${comp.b},1))` }}>
                 </div>
             })
         }

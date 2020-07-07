@@ -1,4 +1,4 @@
-var meshes = require('./meshes')
+
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,8 +19,12 @@ var d3 = require('d3')
 import { connect } from 'react-redux'
 import { graphLayout } from '../util/graphs';
 import { Tool, getToolCursor } from '../ToolSelection/ToolSelection';
-import { Dataset } from '../util/datasetselector';
-import { setAggregationAction, setActiveLineAction, setClusterEdgesAction } from '../Actions/Actions';
+import { Dataset, DataLine, Vect } from '../util/datasetselector';
+import { setAggregationAction, setActiveLineAction, setClusterEdgesAction, setViewTransformAction } from '../Actions/Actions';
+import { ViewTransform } from './ViewTransform'
+import { viewTransform } from '../Reducers/ViewTransformReducer';
+import { Camera } from 'three';
+import { LineVisualization, PointVisualization, ClusterVisualization } from './meshes';
 
 
 const useStyles = makeStyles(theme => ({
@@ -100,7 +104,7 @@ const SettingsPopover = ({ onChangeSlider }) => {
                             Point Scale
                         </Typography>
                         <Slider
-                            onChange={(event, val) => { setValue(val); onChangeSlider(val / 100.0) }}
+                            onChange={(event, val: number) => { setValue(val); onChangeSlider(val / 100.0) }}
                             value={value}
                             aria-labelledby="discrete-slider"
                             valueLabelDisplay="auto"
@@ -124,13 +128,30 @@ const SettingsPopover = ({ onChangeSlider }) => {
 
 
 type ViewProps = {
-    dataset: Dataset,
-    currentTool: Tool,
-    openTab: number,
-    clusters: Cluster[],
-    setActiveLine: any,
-    activeLine: any,
+    dataset: Dataset
+    currentTool: Tool
+    openTab: number
+    clusters: Cluster[]
+    setActiveLine: any
+    activeLine: DataLine
     highlightedSequence: any
+    onAggregate: any
+    setCurrentAggregation: any
+    viewTransform: ViewTransform
+    onHover: any
+    setClusterEdges: any
+    setViewTransform: any
+    checkedShapes: any
+    vectorByShape: any
+    pathLengthRange: any
+    advancedColoringSelection: boolean[]
+}
+
+type ViewState = {
+    hoverCluster: any
+    displayClusters: any
+    camera: Camera
+    forceLayoutRef: any
 }
 
 const mapStateToProps = state => ({
@@ -142,18 +163,21 @@ const mapStateToProps = state => ({
     checkedShapes: state.checkedShapes,
     dataset: state.dataset,
     highlightedSequence: state.highlightedSequence,
-    activeLine: state.activeLine
+    activeLine: state.activeLine,
+    viewTransform: state.viewTransform,
+    advancedColoringSelection: state.advancedColoringSelection
 })
 
 
 const mapDispatchToProps = dispatch => ({
     setCurrentAggregation: id => dispatch(setAggregationAction(id)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
-    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine))
+    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine)),
+    setViewTransform: viewTransform => dispatch(setViewTransformAction(viewTransform))
 })
 
 
-export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<ViewProps> {
+export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<ViewProps, ViewState> {
     lasso: any
     particles: any
     containerRef: any
@@ -164,11 +188,11 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
     mouseDownPosition: any
     initialMousePosition: any;
     currentHover: any;
-    currentAggregation: any[];
+    currentAggregation: Vect[];
     camera: any;
-    vectors: any;
+    vectors: Vect[];
     renderer: any;
-    lines: any;
+    lines: LineVisualization;
     scene: THREE.Scene;
     dataset: any;
     lineColorScheme: any;
@@ -185,6 +209,12 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
     edgeClusters: any;
     lastTime: number;
     clusterVisualization: any;
+    mouseMoveListener: any;
+    mouseDownListener: any;
+    keyDownListener: any;
+    wheelListener: any;
+    mouseUpListener: any;
+    infoTimeout: any
 
 
     constructor(props) {
@@ -207,7 +237,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             // clusters to display using force-directed layout
             displayClusters: [],
             camera: null,
-            forceLayoutRef: React.createRef()
+            forceLayoutRef: React.createRef(),
+            hoverCluster: undefined
         }
     }
 
@@ -248,35 +279,11 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
      * @param {*} event a dom mouse event.
      */
     relativeMousePosition(event) {
-        var container = this.containerRef.current;
-        var width = container.offsetWidth;
-        var height = container.offsetHeight;
-
-        const rect = container.getBoundingClientRect();
+        const rect = this.containerRef.current.getBoundingClientRect();
 
         return {
             x: (event.clientX - rect.left),
             y: (event.clientY - rect.top)
-        }
-    }
-
-
-    /**
-     * Converts mouse coordinates to world coordinates.
-     * @param {*} event a dom mouse event.
-     */
-    mouseToWorld(event) {
-        var container = this.containerRef.current;
-        var width = container.offsetWidth;
-        var height = container.offsetHeight;
-
-        const rect = container.getBoundingClientRect();
-
-
-
-        return {
-            x: (event.clientX - rect.left - width / 2) / this.camera.zoom + this.camera.position.x,
-            y: -(event.clientY - rect.top - height / 2) / this.camera.zoom + this.camera.position.y
         }
     }
 
@@ -296,24 +303,9 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         }
     }
 
-
-
-    /**
-     * Converts world coordinates to screen coordinates
-     * @param {*} vec a vector containing x and y
-     */
-    worldToScreen(vec) {
-        return {
-            x: (vec.x - this.camera.position.x) * this.camera.zoom + this.getWidth() / 2,
-            y: (-vec.y + this.camera.position.y) * this.camera.zoom + this.getHeight() / 2
-        }
-    }
-
     componentDidMount() {
         this.setupRenderer()
     }
-
-
 
     normaliseMouse(event) {
         var vec = {
@@ -333,6 +325,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
         this.camera.updateProjectionMatrix()
         this.renderer.setSize(width, height)
+        this.props.viewTransform.width = width
+        this.props.viewTransform.height = height
     }
 
     onMouseDown(event) {
@@ -355,7 +349,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
     onMouseMove(event) {
         event.preventDefault();
 
-        var coords = this.mouseToWorld(event)
+        var bounds = this.containerRef.current.getBoundingClientRect()
+        var coords = this.props.viewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top })
 
         switch (this.props.currentTool) {
             case Tool.Default:
@@ -371,18 +366,18 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 }
 
 
-                if (window.infoTimeout != null) {
-                    clearTimeout(window.infoTimeout)
+                if (this.infoTimeout != null) {
+                    clearTimeout(this.infoTimeout)
                 }
                 if (!this.mouseDown) {
-                    window.infoTimeout = setTimeout(() => {
-                        window.infoTimeout = null
+                    this.infoTimeout = setTimeout(() => {
+                        this.infoTimeout = null
 
                         // Get index of selected node
                         var idx = this.choose(coords)
                         this.particles.highlight(idx)
                         if (idx >= 0) {
-                            this.lines.highlight([this.vectors[idx].view.lineIndex], this.getWidth(), this.getHeight(), this.scene)
+                            this.lines.highlight([this.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
                         } else {
                             this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
                         }
@@ -438,7 +433,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
     }
 
     onMouseUp(event) {
-        var test = this.mouseToWorld(event)
+        var bounds = this.containerRef.current.getBoundingClientRect()
+        var coords = this.props.viewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top })
 
         switch (this.props.currentTool) {
             case Tool.Default:
@@ -446,7 +442,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                     // If there is an active lasso, process it
                     var wasDrawing = this.lasso.drawing
 
-                    this.lasso.mouseUp(test.x, test.y)
+                    this.lasso.mouseUp(coords.x, coords.y)
 
                     var indices = this.lasso.selection(this.vectors, (vector) => this.particles.isPointVisible(vector))
                     if (indices.length > 0 && wasDrawing) {
@@ -466,7 +462,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                         })
 
 
-                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
+                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
 
                         this.lines.groupHighlight(uniqueIndices)
@@ -495,7 +491,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                             this.props.setCurrentAggregation(this.currentAggregation)
                         }
 
-                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
+                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
                         this.lines.groupHighlight(uniqueIndices)
                     }
@@ -506,7 +502,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 var found = false
                 this.props.clusters.forEach(cluster => {
                     if (cluster.label != '-1') {
-                        if (isPointInConvaveHull(test, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
+                        if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
                             found = true
 
                             if (event.button == 0) {
@@ -523,7 +519,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                                 })
 
 
-                                var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.lineIndex))]
+                                var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
                                 this.lines.groupHighlight(uniqueIndices)
                                 //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
@@ -541,10 +537,10 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 }
                 break;
             case Tool.Crosshair:
-                var idx = this.choose(test)
+                var idx = this.choose(coords)
                 if (idx >= 0) {
                     var vector = this.props.dataset.vectors[idx]
-                    this.props.setActiveLine(this.props.dataset.segments[vector.view.lineIndex])
+                    this.props.setActiveLine(vector.view.segment)
                 }
 
                 break;
@@ -576,7 +572,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         var normalized = normalizeWheel(event)
 
         // Store world position under mouse
-        var worldBefore = this.mouseToWorld(event)
+        var bounds = this.containerRef.current.getBoundingClientRect()
+        var worldBefore = this.props.viewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top })
         var screenBefore = this.relativeMousePosition(event)
 
         var newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.dataset.bounds.scaleFactor
@@ -643,7 +640,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
             var points = [];
 
-            var material = new THREE.LineBasicMaterial({ color: 0x0000ff });
+            let material = new THREE.LineBasicMaterial({ color: 0x0000ff });
             polygon.forEach(pt => {
                 points.push(new THREE.Vector3(pt[0], pt[1], -5));
             })
@@ -671,20 +668,20 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
             }
 
-            var material = new THREE.MeshBasicMaterial({
+            let meshMat = new THREE.MeshBasicMaterial({
                 color: 0x000000,
                 side: THREE.DoubleSide,
                 transparent: true,
                 opacity: 0.1,
                 // vertexColors: true
             });
-            var mesh = new THREE.Mesh(geometry, material);
+            var mesh = new THREE.Mesh(geometry, meshMat);
             clusterMeshes.push(mesh)
             lineMeshes.push(line)
             this.scene.add(mesh);
         })
 
-        this.clusterVisualization = new meshes.ClusterVisualization(clusterMeshes, lineMeshes)
+        this.clusterVisualization = new ClusterVisualization(clusterMeshes, lineMeshes)
 
         //this.createTrajectories(clusters)
     }
@@ -769,11 +766,13 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         this.camera.updateProjectionMatrix();
 
+
         this.containerRef.current.appendChild(this.renderer.domElement);
 
 
         this.scene = new THREE.Scene()
 
+        this.props.setViewTransform(new ViewTransform(this.camera, this.getWidth(), this.getHeight()))
 
         this.prevTime = performance.now()
         this.startRendering()
@@ -799,11 +798,11 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             camera: this.camera
         })
 
-        this.lines = new meshes.LineVisualization(this.segments, this.lineColorScheme)
+        this.lines = new LineVisualization(this.segments, this.lineColorScheme)
         this.lines.createMesh()
         this.lines.setZoom(this.camera.zoom)
 
-        this.particles = new meshes.PointVisualization(this.vectorColorScheme, this.dataset)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.dataset)
         this.particles.createMesh(this.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
@@ -814,6 +813,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         this.pointScene.add(this.particles.mesh)
 
 
+        var container = this.containerRef.current
         // Remove old listeners
         container.removeEventListener('mousemove', this.mouseMoveListener)
         container.removeEventListener('mousedown', this.mouseDownListener)
@@ -1065,15 +1065,21 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             this.renderer.render(this.scene, this.camera)
             this.renderer.render(this.pointScene, this.camera)
 
-            var ctx = this.selectionRef.current.getContext('2d')
+            var ctx = this.selectionRef.current.getContext()
             ctx.clearRect(0, 0, this.getWidth(), this.getHeight(), 'white');
-            this.selectionRef.current.setAttribute('width', this.getWidth() * window.devicePixelRatio)
-            this.selectionRef.current.setAttribute('height', this.getHeight() * window.devicePixelRatio)
+
+            this.selectionRef.current.setDimensions(this.getWidth() * window.devicePixelRatio,
+                this.getHeight() * window.devicePixelRatio)
 
             this.renderLasso(ctx)
             this.state.forceLayoutRef.current.renderLinks(ctx)
             this.state.forceLayoutRef.current.renderClusterEdges(ctx)
             this.renderEdge(ctx)
+
+            if (this.props.highlightedSequence != null) {
+                this.selectionRef.current.renderHighlightedSequence(ctx, this.props.highlightedSequence)
+            }
+
         } catch (e) {
         }
     }
@@ -1124,10 +1130,17 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         }
 
         if (prevProps.activeLine != this.props.activeLine) {
+            if (this.props.activeLine != null) {
+                // Highlight correct line
 
+                this.lines.groupHighlight([this.props.activeLine.lineKey])
+            }
         }
         if (prevProps.highlightedSequence != this.props.highlightedSequence) {
-            // Highlighted sequence changed... display it
+        }
+
+        if (prevProps.advancedColoringSelection != this.props.advancedColoringSelection) {
+            this.particles.colorFilter(this.props.advancedColoringSelection)
         }
     }
 
@@ -1148,7 +1161,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         ctx.beginPath();
         for (var index = 0; index < points.length; index++) {
             var point = points[index];
-            point = this.worldToScreen(point)
+            point = this.props.viewTransform.worldToScreen(point)
+
             if (index == 0) {
                 ctx.moveTo(point.x * window.devicePixelRatio, point.y * window.devicePixelRatio);
             } else {
@@ -1157,7 +1171,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         }
 
         if (!this.lasso.drawing) {
-            var conv = this.worldToScreen(points[0])
+            var conv = this.props.viewTransform.worldToScreen(points[0])
             ctx.lineTo(conv.x * window.devicePixelRatio, conv.y * window.devicePixelRatio);
         }
 
@@ -1183,15 +1197,14 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                     var a = this.edgeClusters[connection.source]
                     var b = this.edgeClusters[connection.target]
 
+                    var p0 = this.props.viewTransform.worldToScreen(new Cluster(a.map(e => e.source)).getCenter())
+                    var p1 = this.props.viewTransform.worldToScreen(new Cluster(a.map(e => e.target)).getCenter())
 
-                    var p0 = this.worldToScreen(new Cluster(a.map(e => e.source)).getCenter())
-                    var p1 = this.worldToScreen(new Cluster(a.map(e => e.target)).getCenter())
                     ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
                     ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
 
-
-                    p0 = this.worldToScreen(new Cluster(b.map(e => e.source)).getCenter())
-                    p1 = this.worldToScreen(new Cluster(b.map(e => e.target)).getCenter())
+                    p0 = this.props.viewTransform.worldToScreen(new Cluster(b.map(e => e.source)).getCenter())
+                    p1 = this.props.viewTransform.worldToScreen(new Cluster(b.map(e => e.target)).getCenter())
                     ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
                     ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
                 })
@@ -1222,13 +1235,13 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
                 {
-                    this.state.hoverCluster != null && this.props.currentTool == 'grab' ?
+                    this.state.hoverCluster != null && this.props.currentTool == Tool.Grab ?
                         <div
                             className='speech-bubble-ds'
                             style={{
                                 position: 'absolute',
-                                right: this.getWidth() - this.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).x,
-                                bottom: this.getHeight() - this.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).y - 10,
+                                right: this.getWidth() - this.props.viewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).x,
+                                bottom: this.getHeight() - this.props.viewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).y - 10,
                             }}>
                             <GenericClusterLegend
                                 cluster={this.state.hoverCluster}
@@ -1243,14 +1256,14 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
             </div>
 
-            <LassoLayer selectionRef={this.selectionRef}></LassoLayer>
+            <LassoLayer ref={this.selectionRef}></LassoLayer>
 
             <ForceLayout
                 ref={this.state.forceLayoutRef}
                 dataset={this.dataset}
                 camera={this.state.camera}
                 width={this.getWidth()}
-                height={this.getHeight()}></ForceLayout>>
+                height={this.getHeight()}></ForceLayout>
 
 
         </div>

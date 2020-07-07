@@ -6,15 +6,19 @@ function check() {
         method: 'POST',
         body: JSON.stringify("")
     }).then(() => {
+        let context = self as any
+
         if (backendRunning == false) {
-            self.postMessage(true)
+            context.postMessage(true)
         }
 
         backendRunning = true
 
     }).catch(() => {
+        let context = self as any
+
         if (backendRunning == true) {
-            self.postMessage(false)
+            context.postMessage(false)
         }
 
         backendRunning = false

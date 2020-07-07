@@ -21,9 +21,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { Modal, Container, Paper, CardContent, Typography, IconButton, Box, TextField, Avatar } from '@material-ui/core';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
 import StopIcon from '@material-ui/icons/Stop';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -199,54 +197,6 @@ const useStylesTensorLoader = makeStyles(theme => ({
 }));
 
 
-
-export var AdditionalMenu = ({ onProjectionClick, onClusteringClick, clusteringOpen, projectionOpen }) => {
-    const classes = useStylesTensorLoader()
-
-    const [anchorEl, setAnchorEl] = React.useState(null);
-
-    const handleClick = event => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    return <div className={classes.root}>
-        <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-            settings
-        </Button>
-        <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: 'bottom'
-            }}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-        >
-            <MenuItem
-            disabled={clusteringOpen || projectionOpen}
-            onClick={() => {
-                handleClose()
-                onProjectionClick()
-            }}>Projection</MenuItem>
-            <MenuItem
-            disabled={clusteringOpen || projectionOpen}
-            onClick={() => {
-                handleClose()
-                onClusteringClick()
-            }}>Clustering</MenuItem>
-        </Menu>
-    </div>
-}
-
-
-
-
-
 export var TensorLoader = ({ onTensorInitiated, dataset, open, setOpen }) => {
     if (dataset == null) return <div></div>
 
@@ -299,8 +249,7 @@ export var TensorLoader = ({ onTensorInitiated, dataset, open, setOpen }) => {
                                             right={right}
                                             left={left}
                                             setLeft={setLeft}
-                                            setRight={setRight}>
-                                        </TransferList>
+                                            setRight={setRight} />
                                     </Grid>
                                     <Grid item>
                                         <ProjectionSettings

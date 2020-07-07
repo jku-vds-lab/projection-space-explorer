@@ -41,62 +41,59 @@ const styles = {
     },
 };
 
+type LineSelectionTreeProps = {
+    algorithms: any
+    onSelectAll: any
+    onChange: any
+    checkboxes: any
+    colorScale: any
+}
 
-const StyledTreeItem = withStyles(theme => ({
-    iconContainer: {
-        '& .close': {
-            opacity: 0.3,
-        },
-    },
-    group: {
-        marginLeft: 12,
-        paddingLeft: 12,
-        borderLeft: `1px dashed`,
-    },
-}))(props => <TreeItem {...props} />);
+type LineSelectionTreeState = {
+    expanded: any
+}
 
 
+export function LineSelectionTree_GetChecks(algorithms) {
+    var ch = {}
+    algorithms.forEach(algo => {
+        algo.lines.forEach(line => {
+            ch[line.line] = true
+        })
+    })
+    return ch
+}
 
-export var LineSelectionTree = withStyles(styles)(class extends React.Component {
+export function LineSelectionTree_GenAlgos(vectors) {
+    if (vectors == null) return {}
+    var algorithms = []
+    var t = [...new Set(vectors.map(vector => vector.algo))]
+    t.forEach(algo => {
+        var algoVectors = vectors.filter(vector => vector.algo == algo)
+        var distinctLines = [...new Set(algoVectors.map(v => v.line))]
+        algorithms.push({
+            algo: algo,
+            lines: distinctLines.map(line => {
+                return {
+                    line: line,
+                    vectors: vectors.filter(v => v.line == line && v.algo == algo)
+                }
+            })
+        })
+    })
+    return algorithms
+}
+
+
+export var LineSelectionTree = withStyles(styles)(class extends React.Component<LineSelectionTreeProps, LineSelectionTreeState> {
     constructor(props) {
         super(props)
 
         var state = {
-            vectors: props.vectors,
             expanded: []
         }
 
         this.state = state
-    }
-
-    static getChecks(algorithms) {
-        var ch = {}
-        algorithms.forEach(algo => {
-            algo.lines.forEach(line => {
-                ch[line.line] = true
-            })
-        })
-        return ch
-    }
-
-    static genAlgos(vectors) {
-        if (vectors == null) return {}
-        var algorithms = []
-        var t = [...new Set(vectors.map(vector => vector.algo))]
-        t.forEach(algo => {
-            var algoVectors = vectors.filter(vector => vector.algo == algo)
-            var distinctLines = [...new Set(algoVectors.map(v => v.line))]
-            algorithms.push({
-                algo: algo,
-                lines: distinctLines.map(line => {
-                    return {
-                        line: line,
-                        vectors: vectors.filter(v => v.line == line && v.algo == algo)
-                    }
-                })
-            })
-        })
-        return algorithms
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -130,7 +127,10 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component 
 
             {
                 this.props.algorithms.map(algo => {
-                    return <StyledTreeItem nodeId={algo.algo} label={algo.algo}>
+                    return <TreeItem
+                        key={algo.algo}
+                        nodeId={algo.algo}
+                        label={algo.algo}>
                         <Grid container direction="row">
                             <Grid item><Link href="#" onClick={() => {
                                 this.props.onSelectAll(algo.algo, true)
@@ -151,7 +151,9 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component 
                             algo.lines.map(line => {
 
 
-                                return <StyledTreeItem nodeId={line.line}
+                                return <TreeItem
+                                    key={line.line}
+                                    nodeId={line.line}
                                     label=
                                     {
 
@@ -163,8 +165,7 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component 
                                                 onChange={(e, checked) => {
                                                     this.props.onChange(line.line, checked)
                                                 }}
-                                                checked={this.props.checkboxes[line.line]}>
-                                            </Checkbox>
+                                                checked={this.props.checkboxes[line.line]} />
                                             <div style={{ display: 'inline', userSelect: 'none' }}>{line.line}
                                             </div>
                                         </div>
@@ -176,10 +177,10 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component 
                                 >
 
 
-                                </StyledTreeItem>
+                                </TreeItem>
                             })
                         }
-                    </StyledTreeItem>
+                    </TreeItem>
                 })
             }
 
@@ -193,7 +194,7 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component 
 
 
 
-export var LineSelectionPopover = ({ vectors, onChange, checkboxes, algorithms, colorScale, onSelectAll }) => {
+export var LineSelectionPopover = ({ onChange, checkboxes, algorithms, colorScale, onSelectAll }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = event => {
@@ -227,7 +228,7 @@ export var LineSelectionPopover = ({ vectors, onChange, checkboxes, algorithms, 
             }}
         >
             <Grid style={{ padding: '12px', width: 300, maxHeight: 600 }} container alignItems="stretch" direction="column">
-                <LineSelectionTree vectors={vectors} onChange={onChange} checkboxes={checkboxes} algorithms={algorithms} colorScale={colorScale} onSelectAll={onSelectAll}></LineSelectionTree>
+                <LineSelectionTree onChange={onChange} checkboxes={checkboxes} algorithms={algorithms} colorScale={colorScale} onSelectAll={onSelectAll}></LineSelectionTree>
             </Grid>
 
         </Popover>

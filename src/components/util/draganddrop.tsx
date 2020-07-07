@@ -2,7 +2,19 @@ import Button from '@material-ui/core/Button';
 import { Grid } from '@material-ui/core';
 import * as React from 'react'
 
-class DragAndDrop extends React.Component {
+type DragAndDropProps = {
+    handleDrop: Function
+    accept: string
+}
+
+type DragAndDropState = {
+    drag: boolean
+}
+
+class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
+    dragCounter: number
+    dropRef: any
+
     constructor(props) {
         super(props)
 

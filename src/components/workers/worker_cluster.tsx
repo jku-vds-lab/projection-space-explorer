@@ -2,80 +2,7 @@ import * as concaveman from 'concaveman'
 import * as libtess from 'libtess'
 import Cluster from '../library/Cluster'
 import { MultiDictionary } from '../util/datasetselector';
-
-
-function isPointInConvaveHull(seat, points) {
-    if (points.length <= 1) {
-        return false;
-    }
-
-    var selected = false
-
-    var intercessionCount = 0;
-    for (var index = 1; index < points.length; index++) {
-        var start = points[index - 1];
-        var end = points[index];
-
-        //Testes
-
-        //*************************************************
-        //* Adicionar teste bounding box intersection aqui *
-        //*************************************************
-
-        var ray = { Start: { x: seat.x, y: seat.y }, End: { x: 99999, y: 0 } };
-        var segment = { Start: start, End: end };
-        var rayDistance = {
-            x: ray.End.x - ray.Start.x,
-            y: ray.End.y - ray.Start.y
-        };
-        var segDistance = {
-            x: segment.End.x - segment.Start.x,
-            y: segment.End.y - segment.Start.y
-        };
-
-        var rayLength = Math.sqrt(Math.pow(rayDistance.x, 2) + Math.pow(rayDistance.y, 2));
-        var segLength = Math.sqrt(Math.pow(segDistance.x, 2) + Math.pow(segDistance.y, 2));
-
-        if ((rayDistance.X / rayLength == segDistance.X / segLength) &&
-            (rayDistance.Y / rayLength == segDistance.Y / segLength)) {
-            continue;
-        }
-
-        var T2 = (rayDistance.x * (segment.Start.y - ray.Start.y) + rayDistance.y * (ray.Start.x - segment.Start.x)) / (segDistance.x * rayDistance.y - segDistance.y * rayDistance.x);
-        var T1 = (segment.Start.x + segDistance.x * T2 - ray.Start.x) / rayDistance.x;
-
-        //Parametric check.
-        if (T1 < 0) {
-            continue;
-        }
-        if (T2 < 0 || T2 > 1) {
-            continue
-        };
-        if (isNaN(T1)) {
-            continue
-        }; //rayDistance.X = 0
-
-        intercessionCount++;
-    }
-
-    if (intercessionCount == 0) {
-        selected = false;
-        return selected;
-    }
-    if (intercessionCount & 1) {
-        selected = true;
-    } else {
-        selected = false;
-    }
-
-
-    return selected
-}
-
-
-
-
-
+import { isNumber } from 'util';
 
 /*global libtess */
 /* exported triangulate */
@@ -188,7 +115,13 @@ function processClusters(raw, xy) {
 
 
 
+function validKey(key: string) {
+    if (isNumber(key) && key < 0) {
+        return false
+    }
 
+    return true
+}
 
 /**
  * Clustering endpoint that
@@ -207,7 +140,7 @@ self.addEventListener('message', function (e) {
                 var clusters = processClusters(values.result, xy)
 
                 Object.keys(clusters).forEach(key => {
-                    if (key == -1) return;
+                    if (!validKey(key)) return;
                     var cluster = clusters[key]
 
                     var bounds = {
@@ -242,7 +175,8 @@ self.addEventListener('message', function (e) {
                     cluster.triangulation = triangulated
                 })
 
-                self.postMessage(clusters)
+                let context = self as any
+                context.postMessage(clusters)
             })
         })
     } else if (e.data.type == 'segment') {
@@ -252,8 +186,9 @@ self.addEventListener('message', function (e) {
             method: 'POST',
             body: JSON.stringify(xy)
         }).then(response => {
+            let context = self as any
             response.json().then(values => {
-                self.postMessage(values)
+                context.postMessage(values)
             })
         })
     } else if (e.data.type == 'extract') {
@@ -281,7 +216,7 @@ self.addEventListener('message', function (e) {
         })
 
         Object.keys(clusters).forEach(key => {
-            if (key == -1) return;
+            if (!validKey(key)) return;
             var cluster = clusters[key]
 
             var bounds = {
@@ -316,7 +251,8 @@ self.addEventListener('message', function (e) {
             cluster.triangulation = triangulated
         })
 
-        self.postMessage(clusters)
+        let context = self as any
+        context.postMessage(clusters)
     }
 })
 

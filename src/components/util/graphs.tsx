@@ -3,12 +3,16 @@
  */
 
 import Cluster from "../library/Cluster"
+import { Vect } from "./datasetselector"
 
 
 /**
  * Graph class which holds the nodes and edges of the graph.
  */
 export class Graph {
+    nodes: any
+    edges: any
+
     constructor(nodes, edges) {
         this.nodes = nodes
         this.edges = edges
@@ -19,6 +23,8 @@ export class Graph {
  * Node class holding the vectors that are in this node.
  */
 export class Node {
+    vectors: Vect[]
+
     constructor(vectors) {
         this.vectors = vectors
     }
@@ -59,8 +65,8 @@ export function graphLayout(clusters) {
 
                 // For each vector in source cluster, check if the direct ancestor is in the destination cluster
                 srcCluster.vectors.forEach(srcVec => {
-                    if (dstCluster.vectors.find(dstVec => srcVec.view.lineIndex == dstVec.view.lineIndex && srcVec.view.sequenceIndex + 1 == dstVec.view.sequenceIndex)) {
-                        bundle.push(srcVec.view.lineIndex)
+                    if (dstCluster.vectors.find(dstVec => srcVec.view.segment.lineKey == dstVec.view.segment.lineKey && srcVec.view.sequenceIndex + 1 == dstVec.view.sequenceIndex)) {
+                        bundle.push(srcVec.view.segment.lineKey)
                     }
                 })
 

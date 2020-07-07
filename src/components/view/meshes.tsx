@@ -1,6 +1,7 @@
 import { valueInRange } from './utilfunctions'
 import { ContinuousMapping } from '../util/colors'
 import * as THREE from 'three'
+import { Vect, DataLine } from '../util/datasetselector'
 
 /**
  * Generates a line mesh
@@ -100,6 +101,9 @@ function getLineOpacity(count) {
 
 
 class LineVis {
+  line: any
+  color: any
+
   constructor(line) {
     this.line = line
     this.color = this.line.material.color
@@ -118,6 +122,13 @@ class LineVis {
 
 
 export class LineVisualization {
+  segments: DataLine[]
+  highlightIndices: any
+  lineColorScheme: any
+  meshes: any
+  zoom: any
+  highlightMeshes
+
   constructor(segments, lineColorScheme) {
     this.segments = segments
     this.highlightIndices = null
@@ -147,10 +158,8 @@ export class LineVisualization {
         segment.view.grayed = true
       })
 
-
-
       indices.forEach(index => {
-        this.segments[index].view.grayed = false
+        this.segments.find(e => e.lineKey == index).view.grayed = false
       })
     } else {
       this.segments.forEach(segment => {
@@ -174,7 +183,7 @@ export class LineVisualization {
     // Undo previous highlight
     if (this.highlightIndices != null) {
       this.highlightIndices.forEach(index => {
-        this.segments[index].view.highlighted = false
+        this.segments.find(e => e.lineKey == index).view.highlighted = false
       })
       this.highlightMeshes.forEach(mesh => {
         mesh.material.dispose()
@@ -186,10 +195,11 @@ export class LineVisualization {
     this.highlightIndices = indices
     this.highlightMeshes = []
     this.highlightIndices.forEach(index => {
-      this.segments[index].view.highlighted = true
+      var findSeg = this.segments.find(e => e.lineKey == index)
+      findSeg.view.highlighted = true
 
       var geometry = new THREE.Geometry();
-      this.meshes[index].line.geometry.vertices.forEach((vertex, i) => {
+      findSeg.view.lineMesh.geometry.vertices.forEach((vertex, i) => {
         geometry.vertices.push(vertex)
       })
 
@@ -197,7 +207,7 @@ export class LineVisualization {
       var line = new override.MeshLine();
       line.setGeometry(geometry, function (p) { return 1; });
       var material = new override.MeshLineMaterial({
-        color: new THREE.Color(this.meshes[index].color),
+        color: new THREE.Color(findSeg.view.lineMesh.material.color),
         resolution: new THREE.Vector2(width, height),
         lineWidth: 0.002 + 0.0001 * this.zoom,
         sizeAttenuation: true,
@@ -248,13 +258,9 @@ export class LineVisualization {
       var line = new THREE.Line(geometry, material);
 
       // Store line data in segment...
-      segment.line = line
+      segment.view.lineMesh = line
 
       lines.push(new LineVis(line))
-
-      segment.vectors.forEach(vector => {
-        vector.view.lineIndex = index
-      })
     })
 
     this.meshes = lines
@@ -278,9 +284,9 @@ export class LineVisualization {
         geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
       })
 
-      segment.line.geometry.dispose()
-      segment.line.geometry = geometry
-      segment.line.geometry.verticesNeedUpdate = true
+      segment.view.lineMesh.geometry.dispose()
+      segment.view.lineMesh.geometry = geometry
+      segment.view.lineMesh.geometry.verticesNeedUpdate = true
     })
   }
 
@@ -293,9 +299,9 @@ export class LineVisualization {
 
     this.segments.forEach(segment => {
 
-      segment.line.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
+      segment.view.lineMesh.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
 
-      segment.line.visible = segment.view.detailVisible
+      segment.view.lineMesh.visible = segment.view.detailVisible
         && segment.view.globalVisible
         && !segment.view.highlighted
         && valueInRange(segment.vectors.length, segment.view.pathLengthRange)
@@ -306,6 +312,18 @@ export class LineVisualization {
 
 
 export class PointVisualization {
+  highlightIndex: any
+  particleSize: any
+  vectorColorScheme: any
+  dataset: any
+  showSymbols: any
+  colorsChecked: any
+  segments: any
+  vectors: Vect[]
+  mesh: any
+  sizeAttribute: any
+  colorAttribute
+
   constructor(vectorColorScheme, dataset) {
     this.highlightIndex = null
     this.particleSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
@@ -336,17 +354,15 @@ export class PointVisualization {
       segment.vectors.forEach((vector, idx) => {
         new THREE.Vector3(vector.x, vector.y, 0.0).toArray(positions, i * 3);
 
-        color.setHex('#000000');
-
         // Set the globalIndex which belongs to a specific vertex
         vector.view.meshIndex = i
 
         // Set segment information
         vector.view.segment = segment
 
-        colors[i * 4] = color.r;
-        colors[i * 4 + 1] = color.g;
-        colors[i * 4 + 2] = color.b;
+        colors[i * 4] = 0;
+        colors[i * 4 + 1] = 0;
+        colors[i * 4 + 2] = 0;
         colors[i * 4 + 3] = 1.0;
 
         selected[i] = 0.0;
@@ -609,7 +625,7 @@ export class PointVisualization {
           }
 
         } else {
-          var col = this.segments[vector.view.lineIndex].line.material.color
+          var col = vector.view.segment.view.lineMesh.material.color
           rgb = {
             r: col.r * 255.0,
             g: col.g * 255.0,
@@ -632,12 +648,12 @@ export class PointVisualization {
   }
 
   isPointVisible(vector) {
-    return this.segments[vector.view.lineIndex].view.detailVisible
-      && this.segments[vector.view.lineIndex].view.globalVisible
+    return vector.view.segment.view.detailVisible
+      && vector.view.segment.view.globalVisible
       && vector.view.visible
       && this.showSymbols[vector.view.shapeType]
       && (vector.view.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.view.intrinsicColor] : true)
-      && valueInRange(this.segments[vector.view.lineIndex].vectors.length, this.segments[vector.view.lineIndex].view.pathLengthRange)
+      && valueInRange(vector.view.segment.vectors.length, vector.view.segment.view.pathLengthRange)
   }
 
 
@@ -728,6 +744,11 @@ export class PointVisualization {
 
 
 export class ConvexHull {
+  vectors: any
+  geometry: any
+  material: any
+  mesh: any
+
   constructor(vectors) {
     this.vectors = vectors
   }
@@ -754,6 +775,9 @@ export class ConvexHull {
  * Class that stores mesh information about clusters.
  */
 export class ClusterVisualization {
+  clusterMeshes: any
+  lineMeshes: any
+
   /**
    * Construct new ClusterVisualization by passing a list of meshes.
    */

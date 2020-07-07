@@ -6,7 +6,8 @@ import { ShapeLegend } from '../../ShapeLegend/ShapeLegend'
 import { setVectorByShapeAction, setCheckedShapesAction, setSelectedVectorByShapeAction } from '../../Actions/Actions'
 
 type StatesTabPanelProps = {
-
+    categoryOptions: any
+    dataset: any
 }
 
 const mapStateToProps = state => ({

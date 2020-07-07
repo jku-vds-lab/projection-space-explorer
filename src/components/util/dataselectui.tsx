@@ -101,7 +101,7 @@ export var DatasetList = ({ onChange }) => {
                                             <ListSubheader>{type}</ListSubheader>
                                             {
                                                 database.data.filter(value => value.type == type).map(entry => {
-                                                    return <ListItem key={entry.path} value={entry.path} button onClick={() => {
+                                                    return <ListItem key={entry.path} button onClick={() => {
                                                         setLoad(true)
                                                         handleClick(entry.path)
                                                     }
@@ -133,7 +133,7 @@ export var DatasetList = ({ onChange }) => {
 
                             var reader = new FileReader()
                             reader.onload = (event) => {
-                                var content = event.target.result
+                                var content = event.target.result as string
 
 
                                 var vectors = d3v5.csvParse(content)

@@ -231,7 +231,7 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
     // (re)initializes the solution to random
     initSolution: function () {
       // generate random solution to t-SNE
-      this.Y = randn2d(this.N, this.dim); // the solution
+      this.Y = randn2d(this.N, this.dim, undefined); // the solution
       this.gains = randn2d(this.N, this.dim, 1.0); // step gains to accelerate progress in unchanging directions
       this.ystep = randn2d(this.N, this.dim, 0.0); // momentum accumulator
       this.iter = 0;
@@ -371,37 +371,38 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
  * Worker thread that computes a stepwise projection
  */
 self.addEventListener('message', function (e) {
+  let context = self as any
   if (e.data) {
     switch (e.data.params.method) {
       case 0:
-        self.raw = e.data
-        self.tsne = new tsnejs.tSNE({
+        context.raw = e.data
+        context.tsne = new tsnejs.tSNE({
           epsilon: e.data.params.learningRate,
           perplexity: e.data.params.perplexity,
           dim: 2
         });
-        self.tsne.initDataRaw(e.data.input)
-        self.tsne.step()
-        self.postMessage(self.tsne.getSolution())
+        context.tsne.initDataRaw(e.data.input)
+        context.tsne.step()
+        context.postMessage(context.tsne.getSolution())
         break;
       case 1:
-        self.raw = e.data
-        self.umap = new UMAP({
+        context.raw = e.data
+        context.umap = new UMAP({
           nNeighbors: e.data.params.nNeighbors
         })
-        self.umap.initializeFit(e.data.input)
-        self.umap.step()
-        self.postMessage(self.umap.getEmbedding())
+        context.umap.initializeFit(e.data.input)
+        context.umap.step()
+        context.postMessage(context.umap.getEmbedding())
         break;
     }
 
-  } else if (self.tsne != null || self.umap != null) {
-    if (self.tsne) {
-      self.tsne.step()
-      self.postMessage(self.tsne.getSolution())
-    } else if (self.umap) {
-      self.umap.step()
-      self.postMessage(self.umap.getEmbedding())
+  } else if (context.tsne != null || context.umap != null) {
+    if (context.tsne) {
+      context.tsne.step()
+      context.postMessage(context.tsne.getSolution())
+    } else if (context.umap) {
+      context.umap.step()
+      context.postMessage(context.umap.getEmbedding())
     }
 
   }

@@ -1,3 +1,5 @@
+import * as React from 'react'
+
 /**
  * Go Legend, implemented using a canvas element and React effect hooks
  */

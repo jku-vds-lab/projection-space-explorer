@@ -16,7 +16,7 @@ export var SelectionClusters = function ({
             <Card style={{ pointerEvents: 'auto' }}>
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
-                    <GenericLegend aggregate={false} type={datasetType} vectors={selectionState} dataset={vectors}></GenericLegend>
+                    <GenericLegend aggregate={false} type={datasetType} vectors={selectionState}></GenericLegend>
 
                 </CardContent>
             </Card>
@@ -27,7 +27,7 @@ export var SelectionClusters = function ({
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">{`Fingerprint (${selectionAggregation.length})`}</Typography>
 
-                    <GenericLegend aggregate={true} type={datasetType} vectors={selectionAggregation} dataset={vectors}></GenericLegend>
+                    <GenericLegend aggregate={true} type={datasetType} vectors={selectionAggregation}></GenericLegend>
                 </CardContent>
             </Card>
         </div>

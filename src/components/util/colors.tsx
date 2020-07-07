@@ -5,9 +5,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import { Button, Popover } from '@material-ui/core';
 import { ShowColorLegend } from '../view/categorical';
+import * as React from "react";
+import { AnySrvRecord } from 'dns';
 
-
-export var SimplePopover = ({ showColorMapping, colorsChecked, onChange }) => {
+export var SimplePopover = ({ showColorMapping }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
 
@@ -44,11 +45,7 @@ export var SimplePopover = ({ showColorMapping, colorsChecked, onChange }) => {
 
 
       <ShowColorLegend
-        mapping={showColorMapping}
-        colorsChecked={colorsChecked}
-        onChange={onChange}>
-
-      </ShowColorLegend>
+        mapping={showColorMapping} />
 
     </Popover>
   </div>
@@ -128,6 +125,9 @@ export var ColorScaleMenuItem = ({ scale }) => {
 
 
 export class QualitativeScaleMapping {
+  scale: any
+  values: any
+
   constructor(scale, values) {
     this.scale = scale
     this.values = values
@@ -146,6 +146,9 @@ export class QualitativeScaleMapping {
 }
 
 export class SequentialScaleMapping {
+  scale: any
+  range: any
+
   constructor(scale, range) {
     this.scale = scale
     this.range = range
@@ -162,6 +165,9 @@ export class SequentialScaleMapping {
 
 
 export class SchemeColor {
+  hex: string
+  rgb: { r, g, b }
+
   constructor(hex) {
     this.hex = hex
     this.rgb = this.hexToRgb(this.hex)
@@ -189,6 +195,9 @@ export class SchemeColor {
 }
 
 export class ColorScheme {
+  colors: any
+  mapping: any
+
   constructor(colors) {
     this.colors = colors
   }
@@ -217,6 +226,10 @@ export class ColorScheme {
 
 
 export class LinearColorScale {
+  stops: any
+  type: any
+  interpolator: any
+
   constructor(stops, type) {
     this.stops = stops
     this.type = type
@@ -255,9 +268,21 @@ export class DiscreteScale extends LinearColorScale {
   }
 }
 
-export class DiscreteMapping {
-  constructor(scale, values) {
+class Mapping {
+  scale: any
+
+  constructor(scale) {
     this.scale = scale
+  }
+}
+
+export class DiscreteMapping extends Mapping {
+  scale: any
+  values: any
+
+  constructor(scale, values) {
+    super(scale)
+
     this.values = values
   }
 
@@ -271,6 +296,9 @@ export class DiscreteMapping {
 }
 
 export class ContinuousMapping {
+  scale: any
+  range: any
+
   constructor(scale, range) {
     this.scale = scale
     this.range = range

@@ -49,13 +49,17 @@ export var ClusterOverview = connect(mapStateToProps)(function ({ type, story, i
             >
                 {
                     story?.clusters.map((cluster, index) => {
-                        return <ToggleButton key={index} className="ClusterItem" value={index} onClick={() => {
-                            itemClicked(cluster)
-                        }}><GenericFingerprint
-                            type={type}
-                            vectors={cluster.vectors}
-                            scale={1}
-                        ></GenericFingerprint>
+                        return <ToggleButton
+                            key={index}
+                            className="ClusterItem"
+                            value={index}
+                            onClick={() => {
+                                itemClicked(cluster)
+                            }}><GenericFingerprint
+                                type={type}
+                                vectors={cluster.vectors}
+                                scale={1}
+                            ></GenericFingerprint>
                         </ToggleButton>
                     })
                 }

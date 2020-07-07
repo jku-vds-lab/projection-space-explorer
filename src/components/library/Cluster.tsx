@@ -1,7 +1,12 @@
 export default class Cluster {
     points: Array<any>
+    label: any
+    bounds: any
+    hull: any
+    triangulation: any
+    vectors: any
 
-    constructor(points, bounds, hull, triangulation) {
+    constructor(points, bounds?, hull?, triangulation?) {
         this.points = points
         this.bounds = bounds
         this.hull = hull
@@ -63,7 +68,7 @@ export default class Cluster {
     }
 
     differentLines() {
-        return [...new Set(this.vectors.map(v => v.view.lineIndex))].length
+        return [...new Set(this.vectors.map(v => v.view.segment.lineKey))].length
     }
 
     order() {

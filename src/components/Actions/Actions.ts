@@ -1,3 +1,5 @@
+import advancedColoringSelection from "../Reducers/AdvancedColoringSelection"
+
 export const setVectorByShapeAction = vectorByShape => ({
     type: 'SET_VECTOR_BY_SHAPE',
     vectorByShape: vectorByShape
@@ -32,4 +34,14 @@ export const setActiveLineAction = activeLine => ({
 export const setHighlightedSequenceAction = highlightedSequence => ({
     type: 'SET_HIGHLIGHTED_SEQUENCE',
     highlightedSequence: highlightedSequence
+})
+
+export const setViewTransformAction = viewTransform => ({
+    type: 'SET_VIEW_TRANSFORM',
+    viewTransform: viewTransform
+})
+
+export const setAdvancedColoringSelectionAction = advancedColoringSelection => ({
+    type: 'SET_ADVANCED_COLORING_SELECTION',
+    advancedColoringSelection: advancedColoringSelection
 })
