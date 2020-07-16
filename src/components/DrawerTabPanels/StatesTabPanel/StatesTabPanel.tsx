@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { FunctionComponent } from 'react'
 import * as React from 'react'
 import { Grid, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core'
-import { ShapeLegend } from '../../ShapeLegend/ShapeLegend'
+import { ShapeLegend } from './ShapeLegend/ShapeLegend'
 import { setVectorByShapeAction, setCheckedShapesAction, setSelectedVectorByShapeAction } from '../../Actions/Actions'
 
 type StatesTabPanelProps = {

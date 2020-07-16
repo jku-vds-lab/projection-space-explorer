@@ -1,126 +1,8 @@
 var d3v5 = require('d3')
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import { Button, Popover } from '@material-ui/core';
-import { ShowColorLegend } from '../view/categorical';
-import * as React from "react";
-import { AnySrvRecord } from 'dns';
-
-export var SimplePopover = ({ showColorMapping }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-
-  const handleClick = event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
-
-  return <div>
-    <Button style={{ margin: '0px 16px' }} aria-describedby={id} variant="outlined" onClick={handleClick}>
-      Advanced Coloring
-      </Button>
-    <Popover
-      id={id}
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handleClose}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-      transformOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-    >
-
-
-
-      <ShowColorLegend
-        mapping={showColorMapping} />
-
-    </Popover>
-  </div>
-}
 
 
 
 
-
-
-
-/**
- * Component that lets user pick from a list of color scales.
- */
-export var ColorScaleSelect = ({ selectedScaleIndex, onChange, definedScales }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleClickListItem = event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuItemClick = (event, index) => {
-    setAnchorEl(null);
-
-    onChange(definedScales[index], index)
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  return (
-    <div>
-      <List component="nav" aria-label="Device settings">
-        <ListItem
-          button
-          aria-haspopup="true"
-          aria-controls="lock-menu"
-          aria-label="when device is locked"
-          onClick={handleClickListItem}
-        >
-          <ColorScaleMenuItem scale={definedScales[selectedScaleIndex]}></ColorScaleMenuItem>
-
-        </ListItem>
-      </List>
-      <Menu
-        id="lock-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        {definedScales.map((scale, index) => (
-          <MenuItem
-            key={index}
-            selected={index === selectedScaleIndex}
-            onClick={event => handleMenuItemClick(event, index)}
-          >
-            <ColorScaleMenuItem scale={scale}></ColorScaleMenuItem>
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>
-  )
-}
-
-export var ColorScaleMenuItem = ({ scale }) => {
-  if (scale.type == "continuous") {
-    return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map(stop => stop.hex).join(',')})` }}>
-    </div>
-  } else {
-    return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map((stop, index) => `${stop.hex} ${(index / scale.stops.length) * 100.0}%, ${stop.hex} ${((index + 1) / scale.stops.length) * 100.0}%`).join(',')})` }}>
-    </div>
-  }
-}
 
 
 
@@ -225,6 +107,16 @@ export class ColorScheme {
 
 
 
+
+
+
+
+
+
+
+
+
+
 export class LinearColorScale {
   stops: any
   type: any
@@ -268,6 +160,19 @@ export class DiscreteScale extends LinearColorScale {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Mapping {
   scale: any
 
@@ -277,7 +182,6 @@ class Mapping {
 }
 
 export class DiscreteMapping extends Mapping {
-  scale: any
   values: any
 
   constructor(scale, values) {
@@ -295,12 +199,12 @@ export class DiscreteMapping extends Mapping {
   }
 }
 
-export class ContinuousMapping {
-  scale: any
+export class ContinuousMapping extends Mapping {
   range: any
 
   constructor(scale, range) {
-    this.scale = scale
+    super(scale)
+
     this.range = range
   }
 
@@ -309,6 +213,20 @@ export class ContinuousMapping {
     return this.scale.map(normalized)
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 export class DefaultLineColorScheme extends ColorScheme {

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { arraysEqual } from '../../view/utilfunctions'
+import { arraysEqual } from '../../WebGLView/UtilityFunctions'
 
 
 // Lookup table for chess UNICODE symbols

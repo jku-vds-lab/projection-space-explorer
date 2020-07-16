@@ -2,7 +2,7 @@
  * Directed graph library for javascript.
  */
 
-import Cluster from "../library/Cluster"
+import Cluster from "./Cluster"
 import { Vect } from "./datasetselector"
 
 

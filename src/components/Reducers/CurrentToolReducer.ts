@@ -1,4 +1,4 @@
-import { Tool } from "../ToolSelection/ToolSelection"
+import { Tool } from "../Overlays/ToolSelection/ToolSelection"
 
 
 const currentTool = (state = Tool.Default, action) => {

@@ -1,7 +1,5 @@
 import * as concaveman from 'concaveman'
 import * as libtess from 'libtess'
-import Cluster from '../library/Cluster'
-import { MultiDictionary } from '../util/datasetselector';
 import { isNumber } from 'util';
 
 /*global libtess */

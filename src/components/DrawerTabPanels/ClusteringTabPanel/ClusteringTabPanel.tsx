@@ -1,13 +1,13 @@
 import { FunctionComponent } from "react"
-import { FlexParent } from "../../library/grid"
+import { FlexParent } from "../../util/FlexParent"
 import React = require("react")
 import { Button } from "@material-ui/core"
 import Alert from "@material-ui/lab/Alert"
 import { ClusterWindow } from "../../projection/integration"
-import { StoryPreview } from "../../clustering/StoryPreview/StoryPreview"
+import { StoryPreview } from "./StoryPreview/StoryPreview"
 import { connect } from 'react-redux'
-import { annotateVectors } from "../../util/tools"
-import Cluster, { Story } from "../../library/Cluster"
+import { annotateVectors } from "../../WebGLView/tools"
+import Cluster, { Story } from "../../util/Cluster"
 import { graphLayout, Edge } from "../../util/graphs"
 
 var worker = new Worker('dist/cluster.js')

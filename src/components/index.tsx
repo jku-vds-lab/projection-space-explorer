@@ -1,38 +1,37 @@
 import "regenerator-runtime/runtime";
 
 import Typography from '@material-ui/core/Typography';
-import { calculateOptions } from './view/categorical'
-import { ThreeView } from './view/view'
+import { ThreeView } from './WebGLView/WebGLView'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import { ColorScaleSelect, defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales, SimplePopover } from "./util/colors";
+import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
 import { Divider } from "@material-ui/core";
 import { loadFromPath } from './util/datasetselector'
-import { LineSelectionPopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './view/lineselectiontree'
+import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import { TensorLoader, MediaControlCard } from "./projection/integration";
-import { arraysEqual } from "./view/utilfunctions";
+import { arraysEqual } from "./WebGLView/UtilityFunctions";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
 import { ChooseFileDialog } from './util/dataselectui'
-import { FlexParent } from './library/grid'
+import { FlexParent } from './util/FlexParent'
 import { DataEdge, MultiDictionary } from "./util/datasetselector"
 import * as React from "react";
-import { SelectionClusters } from "./clustering/SelectionClusters/SelectionClusters";
-import { ToolSelection } from "./ToolSelection/ToolSelection";
-import { PathLengthFilter } from "./PathLengthFilter/PathLengthFilter";
-import { SizeSlider } from "./SizeSlider/SizeSlider";
-import { ClusterOverview } from "./clustering/ClusterOverview/ClusterOverview";
-import { Story } from "./library/Cluster";
-import { Legend } from "./Legend/Legend";
+import { SelectionClusters } from "./Overlays/SelectionClusters/SelectionClusters";
+import { ToolSelection, Tool } from "./Overlays/ToolSelection/ToolSelection";
+import { PathLengthFilter } from "./DrawerTabPanels/StatesTabPanel/PathLengthFilter/PathLengthFilter";
+import { SizeSlider } from "./DrawerTabPanels/StatesTabPanel/SizeSlider/SizeSlider";
+import { ClusterOverview } from "./Overlays/ClusterOverview/ClusterOverview";
+import { Story } from "./util/Cluster";
+import { Legend } from "./DrawerTabPanels/StatesTabPanel/LineSelection/LineSelection";
 import concaveman = require("concaveman");
 import * as ReactDOM from 'react-dom';
 import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
-import { triangulate } from "./util/tools";
+import { triangulate } from "./WebGLView/tools";
 import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { connect } from 'react-redux'
@@ -45,13 +44,16 @@ import openTab from "./Reducers/OpenTabReducer";
 import clusterEdges from "./Reducers/ClusterEdgesReducer";
 import { selectedVectorByShape, vectorByShape, checkedShapes } from "./Reducers/VectorByReducers";
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
-import { StateSequenceDrawer } from "./StateSequenceDrawer/StateSequenceDrawer";
+import { StateSequenceDrawer } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
 import activeLine from "./Reducers/ActiveLineReducer";
 import dataset from "./Reducers/DatasetReducer";
 import highlightedSequence from "./Reducers/HighlightedSequenceReducer";
 import { viewTransform } from "./Reducers/ViewTransformReducer";
 import advancedColoringSelection from "./Reducers/AdvancedColoringSelection";
-import { setAdvancedColoringSelectionAction } from "./Actions/Actions";
+import { setAdvancedColoringSelectionAction, setHighlightedSequenceAction, setActiveLineAction } from "./Actions/Actions";
+import { CategoryOptions } from "./WebGLView/CategoryOptions";
+import { AdvancedColoringPopover } from "./DrawerTabPanels/StatesTabPanel/AdvancedColoring/AdvancedColoringPopover/AdvancedColoringPopover";
+import { ColorScaleSelect } from "./DrawerTabPanels/StatesTabPanel/ColorScaleSelect/ColorScaleSelect";
 
 
 
@@ -103,7 +105,9 @@ const mapDispatchToProps = dispatch => ({
     type: 'SET_DATASET',
     dataset: dataset
   }),
-  setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value))
+  setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
+  setHighlightedSequence: value => dispatch(setHighlightedSequenceAction(value)),
+  setActiveLine: value => dispatch(setActiveLineAction(value))
 })
 
 
@@ -266,7 +270,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     // Update shape legend
     this.setState({
-      categoryOptions: calculateOptions(this.vectors, categories),
+      categoryOptions: new CategoryOptions(this.vectors, categories),
       vectorByTransparency: null,
       selectedVectorByTransparency: "",
       vectorBySize: null,
@@ -279,6 +283,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       maxPathLength: this.dataset.getMaxPathLength(),
       selectionAggregation: []
     })
+
+    this.props.setHighlightedSequence(null)
+    this.props.setActiveLine(null)
 
     this.legend.current.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
@@ -523,7 +530,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
                 <Box p={1}></Box>
 
-                <LineSelectionPopover
+                <LineTreePopover
                   onSelectAll={(algo, checked) => {
                     var ch = this.state.selectedLines
                     Object.keys(ch).forEach(key => {
@@ -757,8 +764,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                 {
                   this.state.vectorByColor != null && this.state.vectorByColor.type == 'categorical' ?
 
-                    <SimplePopover
-                      showColorMapping={this.state.showColorMapping}></SimplePopover>
+                    <AdvancedColoringPopover
+                      showColorMapping={this.state.showColorMapping}></AdvancedColoringPopover>
                     :
                     <div></div>
                 }
@@ -861,7 +868,12 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
 
-      <ToolSelection />
+      <ToolSelection onChangeTool={(value) => {
+        if (value != Tool.Crosshair) {
+          this.props.setActiveLine(null)
+          this.props.setHighlightedSequence(null)
+        }
+      }} />
 
 
       <TensorLoader

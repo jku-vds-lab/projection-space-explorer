@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './RubikFingerprint.scss'
-import { arraysEqual } from '../../view/utilfunctions';
+import { arraysEqual } from '../../WebGLView/UtilityFunctions';
 
 
 type RubikFingerprintProps = {

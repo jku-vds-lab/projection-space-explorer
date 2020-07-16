@@ -1,4 +1,4 @@
-import { Shapes } from "../view/meshes"
+import { Shapes } from "../WebGLView/meshes"
 
 var d3v5 = require('d3')
 
@@ -100,13 +100,18 @@ export class DatasetDatabase {
                 type: "neural"
             },
             {
-                display: "Stories: With Names",
+                display: "Story: With Names",
                 path: "datasets/story/withnames.csv",
                 type: "story"
             },
             {
                 display: "Story: No Duplicates",
                 path: "datasets/story/stories_dup-del_p50_with-names.csv",
+                type: "story"
+            },
+            {
+                display: "Story: Test",
+                path: "datasets/story/teststories.csv",
                 type: "story"
             },
             {
@@ -595,6 +600,13 @@ export class Dataset {
     getColumns() {
         var vector = this.vectors[0]
         return Object.keys(vector).filter(e => e != '__meta__')
+    }
+
+    /**
+     * Returns true if the dataset contains the column.
+     */
+    hasColumn(column) {
+        return this.getColumns().find(e => e == column) != undefined
     }
 
 
