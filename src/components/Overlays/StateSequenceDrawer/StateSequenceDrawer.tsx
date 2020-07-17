@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { connect } from 'react-redux'
 import * as React from 'react'
-import { Paper, Typography, Divider, Link } from "@material-ui/core";
+import { Paper, Typography, Divider, Link, IconButton } from "@material-ui/core";
 import './StateSequenceDrawer.scss'
 import { Tool } from "../ToolSelection/ToolSelection";
 import { DataLine, Dataset } from "../../util/datasetselector";
@@ -16,6 +16,7 @@ import TimelineContent from '@material-ui/lab/TimelineContent';
 import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
 import TimelineDot from '@material-ui/lab/TimelineDot';
 import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
 
 type StateSequenceDrawerProps = {
     activeLine?: DataLine,
@@ -74,7 +75,9 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
 
     return <div className="StateSequenceDrawerParent">
         <Paper className="StateSequenceDrawerPaper">
-
+            <IconButton aria-label="close">
+                <CloseIcon />
+            </IconButton>
             <div
                 style={{
                     display: 'flex',
@@ -122,7 +125,7 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                                     </TimelineOppositeContent>
                                     <TimelineSeparator>
                                         <TimelineDot variant={selected == index ? 'default' : 'outlined'} color={selected == index ? 'primary' : 'grey'}>
-    
+
                                         </TimelineDot>
                                         <TimelineConnector className={selected == index ? classes.primaryTail : ''} />
                                     </TimelineSeparator>
