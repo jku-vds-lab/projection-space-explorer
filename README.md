@@ -74,6 +74,17 @@ Range annotations are a way to set the value range of attributes directly in the
 Now **metadata** is an additional attribute with a range annotation that sets the value range to 0-10 and makes this attribute sequential. The value range is important for the correct mapping to the color scale (since the minimum and maximum values might not be the true value range).
 
 
+## Meta Columns
+Some columns can be set to provide additional metadata that can be displayed in the explorer.
+
+### Changes Column
+
+The column 'changes' can be supplied with text values that will be displayed with the line selection tool. It should annotate the change from the last state. For example a good value for 'changes' for the Rubik data would be the move that lead to this state (R, U...).
+
+### Multiplicity Column
+
+The column 'multiplicity' can be supplied to denote how often this state occurs in the dataset (with the exact same position). This is sometimes necessary if you want to project the data without any duplicates, but need it in the explorer to display the lines correctly (since only single edges are allowed). For example if the same state occurs in 3 lines, it would have a multiplicity of 3 in each row.
+
 ### Test Datasets
 
 There are some test datasets available in this repository under **datasets/test** which are small examples of how the files should look like.
@@ -100,16 +111,19 @@ and run the command to install the required packages
 npm install
 ```
 
-## Starting the application
+## Building the application
 
-To run the application simply navigate to the cloned folder and enter
+There is always a valid build in the repository, but in case you want to make changes, you can use the local build server. Start it with the command
 
-```bash
-npm start
+```
+npm run webpack:dev
 ```
 
-This will start a local webserver. You can then enter the URL that is displayed which
-is most likely 'localhost:8080'
+Whenever a file is changed while this server is running, it will automatically build a new version and deploy it in the /dist folder.
+
+## Starting the application
+
+To start the application you just need to start the index.html locally. The easiest way to this is by using the live server provided by either Atom or Visual Studio Code.
 
 ## Preselect a set using a link
 

@@ -2,10 +2,10 @@
     position: absolute;
     right: 0px;
     top: 100px;
-    display: flex;
-    justify-content: center;
+
 }
 
 .StateSequenceDrawerPaper {
-    width: 300px;
+    min-width: 200px;
+    max-width: 300px;
 }

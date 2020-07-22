@@ -3,9 +3,10 @@ import Cluster from "../../../util/Cluster";
 import { RubikFingerprint } from '../../../legends/RubikFingerprint/RubikFingerprint';
 import './FingerprintPreview.scss'
 import { GenericFingerprint } from '../../../legends/Generic';
+import { DatasetType } from '../../../util/datasetselector';
 
 type ClusterOverviewProps = {
-    type: String
+    type: DatasetType
     pointClusters?: Array<Cluster>
 }
 
@@ -14,10 +15,9 @@ export var FingerprintPreview = function ({ pointClusters, type }: ClusterOvervi
         {
             pointClusters?.slice(0, 3).map((cluster, index) => {
                 return <div key={index}><GenericFingerprint
-
                     type={type}
                     vectors={cluster.vectors}
-                    scale={1}
+                    scale={0.75}
                 ></GenericFingerprint></div>
             })
         }

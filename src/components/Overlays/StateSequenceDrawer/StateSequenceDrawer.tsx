@@ -1,13 +1,12 @@
 import { FunctionComponent } from "react";
 import { connect } from 'react-redux'
 import * as React from 'react'
-import { Paper, Typography, Divider, Link, IconButton } from "@material-ui/core";
+import { Paper, Typography, Divider, Link, IconButton, Card, CardHeader, CardContent } from "@material-ui/core";
 import './StateSequenceDrawer.scss'
 import { Tool } from "../ToolSelection/ToolSelection";
 import { DataLine, Dataset } from "../../util/datasetselector";
 import { imageFromShape } from "../../WebGLView/meshes";
-import { setHighlightedSequenceAction } from "../../Actions/Actions";
-import { SequenceLineItem } from "./SequenceLineItem/SequenceLineItem";
+import { setHighlightedSequenceAction, setActiveLineAction } from "../../Actions/Actions";
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
 import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
@@ -23,7 +22,8 @@ type StateSequenceDrawerProps = {
     currentTool?: Tool,
     setHighlightedSequence?: any,
     highlightedSequence?: any,
-    dataset: Dataset
+    dataset?: Dataset,
+    setActiveLine?: any
 }
 
 const mapStateToProps = state => ({
@@ -34,7 +34,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence))
+    setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence)),
+    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine))
 })
 
 const useStyles = makeStyles((theme) => ({
@@ -55,9 +56,10 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
     currentTool,
     setHighlightedSequence,
     highlightedSequence,
-    dataset
+    dataset,
+    setActiveLine
 }: StateSequenceDrawerProps) => {
-    if (currentTool != Tool.Crosshair || activeLine == null) {
+    if (activeLine == null) {
         return <div></div>
     }
 
@@ -73,21 +75,25 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
     }, [activeLine])
 
 
-    return <div className="StateSequenceDrawerParent">
-        <Paper className="StateSequenceDrawerPaper">
-            <IconButton aria-label="close">
-                <CloseIcon />
-            </IconButton>
+    return <Card className="StateSequenceDrawerParent">
+        <CardHeader
+            action={
+                <IconButton aria-label="close" onClick={() => {
+                    setHighlightedSequence(null)
+                    setActiveLine(null)
+                }}>
+                    <CloseIcon />
+                </IconButton>
+            }
+            title="Line Sequence"
+        />
+        <CardContent className="StateSequenceDrawerPaper">
             <div
                 style={{
                     display: 'flex',
-                    flexDirection: 'column',
-                    padding: 8
+                    flexDirection: 'column'
                 }}
             >
-
-                <Typography>Line Sequence</Typography>
-
                 <Link href="#" onClick={() => {
                     setSelected(selected + 1)
                     setHighlightedSequence({
@@ -103,7 +109,7 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                     overflowY: 'auto',
                     height: '50vh'
                 }}>
-                    <Timeline >
+                    <Timeline style={{ padding: 0 }}>
                         {
                             activeLine.vectors.map((vector, index) => {
                                 return <TimelineItem
@@ -135,63 +141,12 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                                         </Paper>
                                     </TimelineContent>
                                 </TimelineItem>
-
-
                             })
                         }
-
                     </Timeline>
-
                 </div>
             </div>
-        </Paper>
-    </div>
+        </CardContent>
+    </Card>
+
 })
-
-/**
- *             <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: 16
-                }}
-            >
-
-                <Typography>Line Sequence</Typography>
-
-                <Link href="#" onClick={() => {
-                    setSelected(selected + 1)
-                    setHighlightedSequence({
-                        previous: activeLine.vectors[selected - 1],
-                        current: activeLine.vectors[selected],
-                        next: activeLine.vectors[selected + 1]
-                    })
-                }}>Next</Link>
-
-                <Divider style={{ margin: '8px 0 0 0' }} />
-
-                <div style={{
-                    overflowY: 'auto',
-                    height: '50vh'
-                }}>
-                    {
-                        activeLine.vectors.map((vector, index) => {
-                            return <SequenceLineItem
-                                key={index}
-                                onClick={() => {
-                                    setHighlightedSequence({
-                                        previous: activeLine.vectors[index - 1],
-                                        current: vector,
-                                        next: activeLine.vectors[index + 1]
-                                    })
-                                    setSelected(index)
-                                }}
-                                image={imageFromShape(vector.view.shapeType)}
-                                content={dataset.hasColumn('changes') ? vector['changes'] : index}
-                                selected={selected == index}
-                            />
-                        })
-                    }
-                </div>
-            </div>
- */

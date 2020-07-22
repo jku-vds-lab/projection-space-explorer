@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react"
 import { FlexParent } from "../../util/FlexParent"
 import React = require("react")
-import { Button } from "@material-ui/core"
+import { Button, FormControlLabel, Switch } from "@material-ui/core"
 import Alert from "@material-ui/lab/Alert"
 import { ClusterWindow } from "../../projection/integration"
 import { StoryPreview } from "./StoryPreview/StoryPreview"
@@ -9,6 +9,8 @@ import { connect } from 'react-redux'
 import { annotateVectors } from "../../WebGLView/tools"
 import Cluster, { Story } from "../../util/Cluster"
 import { graphLayout, Edge } from "../../util/graphs"
+import { setActiveStoryAction, setStoriesAction, setClusterEdgesAction, setStoryModeAction } from "../../Actions/Actions"
+import { StoryMode } from "../../Reducers/StoryModeReducer"
 
 var worker = new Worker('dist/cluster.js')
 
@@ -64,14 +66,16 @@ type ClusteringTabPanelProps = {
     stories?: any
     onClusteringStart?: any
     annotate?: any
-    open: boolean
+    open: boolean,
+    storyMode: StoryMode
 }
 
 
 const mapStateToProps = state => ({
     currentAggregation: state.currentAggregation,
     stories: state.stories,
-    activeStory: state.activeStory
+    activeStory: state.activeStory,
+    storyMode: state.storyMode
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -79,18 +83,10 @@ const mapDispatchToProps = dispatch => ({
         type: 'SET_CURRENT_CLUSTERS',
         currentClusters: clusters
     }),
-    setStories: stories => dispatch({
-        type: 'SET_STORIES',
-        stories: stories
-    }),
-    setActiveStory: activeStory => dispatch({
-        type: 'SET_ACTIVE_STORY',
-        activeStory: activeStory
-    }),
-    setClusterEdges: clusterEdges => dispatch({
-        type: 'SET_CLUSTER_EDGES',
-        clusterEdges: clusterEdges
-    })
+    setStories: stories => dispatch(setStoriesAction(stories)),
+    setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
+    setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
+    setStoryMode: storyMode => dispatch(setStoryModeAction(storyMode))
 })
 
 
@@ -99,7 +95,7 @@ const mapDispatchToProps = dispatch => ({
 export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = connect(mapStateToProps, mapDispatchToProps)(({ setCurrentClusters,
     setStories, setActiveStory,
     currentAggregation, open, backendRunning, clusteringWorker,
-    dataset, stories, setClusterEdges }) => {
+    dataset, stories, setClusterEdges, storyMode, setStoryMode }) => {
 
     const [clusterId, setClusterId] = React.useState(0)
 
@@ -109,9 +105,10 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
         var copy = edges.slice(0)
         // hh
         while (copy.length > 0) {
-            var toProcess = [ copy.splice(0, 1)[0] ]
+            var toProcess = [copy.splice(0, 1)[0]]
 
             var clusters = new Set()
+            var storyEdges = new Set()
 
 
             while (toProcess.length > 0) {
@@ -119,62 +116,69 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
                 do {
                     clusters.add(edge.source)
                     clusters.add(edge.destination)
-    
+                    storyEdges.add(edge)
+
                     var idx = copy.findIndex(value => value.destination == edge.source || value.source == edge.destination)
                     if (idx >= 0) {
                         var removed = copy.splice(idx, 1)[0]
                         clusters.add(removed.source)
                         clusters.add(removed.destination)
+                        storyEdges.add(removed)
                         toProcess.push(removed)
                     }
                 } while (idx >= 0)
             }
 
 
-            stories.push(new Story([... clusters]))
+            stories.push(new Story([...clusters], [...storyEdges]))
         }
         return stories
     }
 
     function toggleClusters() {
-        var worker = new Worker('dist/cluster.js')
+        if (stories == null) {
+            var worker = new Worker('dist/cluster.js')
 
-        worker.onmessage = (e) => {
-            // Point clusteruing
-            var clusters = []
-            Object.keys(e.data).forEach(k => {
-                var t = e.data[k]
-                var f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
-                f.label = k
-                clusters.push(f)
-            })
-
-
-            // Inject cluster attributes
-            clusters.forEach(cluster => {
-                var vecs = []
-                cluster.points.forEach(point => {
-                    vecs.push(dataset.vectors[point.meshIndex])
+            worker.onmessage = (e) => {
+                // Point clusteruing
+                var clusters = []
+                Object.keys(e.data).forEach(k => {
+                    var t = e.data[k]
+                    var f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
+                    f.label = k
+                    clusters.push(f)
                 })
-                cluster.vectors = vecs
+
+
+                // Inject cluster attributes
+                clusters.forEach(cluster => {
+                    var vecs = []
+                    cluster.points.forEach(point => {
+                        vecs.push(dataset.vectors[point.meshIndex])
+                    })
+                    cluster.vectors = vecs
+                })
+
+                const [edges] = graphLayout(clusters)
+
+                setClusterEdges(edges)
+
+                var stories = storyLayout(edges)
+
+                setCurrentClusters(clusters)
+                setStories(stories)
+                setActiveStory(stories[0])
+            }
+
+            worker.postMessage({
+                type: 'extract',
+                message: dataset.vectors.map(vector => [vector.x, vector.y, vector.clusterLabel])
             })
-
-            const [edges] = graphLayout(clusters)
-
-            setClusterEdges(edges)
-
-            var stories = storyLayout(edges)
-
-            setCurrentClusters(clusters)
-            setStories(stories)
-            setActiveStory(stories[0])
+        } else {
+            setStories(null)
+            setActiveStory(null)
+            setCurrentClusters(null)
         }
-
-        worker.postMessage({
-            type: 'extract',
-            message: dataset.vectors.map(vector => [vector.x, vector.y, vector.clusterLabel])
-        })
-
     }
 
 
@@ -330,16 +334,6 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
                 onClusteringStartClick()
             }}>Start Clustering</Button>
 
-        <Button
-            variant="outlined"
-            disabled={backendRunning == false}
-            style={{
-                margin: '8px 0'
-            }}
-            onClick={() => {
-                this.onSegmentClustering()
-            }}>Segment Clustering</Button>
-
         {backendRunning ? <div></div> : <Alert severity="error">No backend detected!</Alert>}
 
         <Button
@@ -359,6 +353,13 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
             onClick={() => {
                 toggleClusters()
             }}>Toggle Clusters</Button>
+
+        <FormControlLabel
+            control={<Switch checked={storyMode == StoryMode.Difference} onChange={(event) => {
+                setStoryMode(event.target.checked ? StoryMode.Difference : StoryMode.Cluster)
+            }} name="test" />}
+            label="Show Differences"
+        />
 
 
         <ClusterWindow

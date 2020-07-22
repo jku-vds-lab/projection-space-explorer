@@ -20,114 +20,114 @@ const DEFAULT_ALGO = "all"
  * Dummy class that holds information about the files that can be preselected.
  */
 export class DatasetDatabase {
-    data: { display: string, path: string, type: string }[]
+    data: { display: string, path: string, type: DatasetType }[]
 
     constructor() {
         this.data = [
             {
                 display: "Minimal Example",
                 path: "datasets/test/x_y.csv",
-                type: "test"
+                type: DatasetType.Test
             },
             {
                 display: "Range Header",
                 path: "datasets/test/rangeheader.csv",
-                type: "test"
+                type: DatasetType.Test
             },
             {
                 display: "Chess: 190 Games",
                 path: "datasets/chess/chess16k.csv",
-                type: "chess"
+                type: DatasetType.Chess
             },
             {
                 display: "Chess: 450 Games",
                 path: "datasets/chess/chess40k.csv",
-                type: "chess"
+                type: DatasetType.Chess
             },
             {
                 display: "Chess: AlphaZero vs Stockfish",
                 path: "datasets/chess/alphazero.csv",
-                type: "chess"
+                type: DatasetType.Chess
             },
             {
                 display: "Rubik: 1x2 Different Origins",
                 path: "datasets/rubik/cube1x2_different_origins.csv",
-                type: "rubik"
+                type: DatasetType.Rubik
             },
             {
                 display: "Rubik: 1x2 Same Origins",
                 path: "datasets/rubik/cube1x2.csv",
-                type: "rubik"
+                type: DatasetType.Rubik
             },
             {
                 display: "Rubik: 10x2 Different Origins",
                 path: "datasets/rubik/cube10x2_different_origins.csv",
-                type: "rubik"
+                type: DatasetType.Rubik
             },
             {
                 display: "Rubik: 10x2 Same Origins",
                 path: "datasets/rubik/cube10x2.csv",
-                type: "rubik"
+                type: DatasetType.Rubik
             },
             {
                 display: "Rubik: 100x2 Different Origins",
                 path: "datasets/rubik/cube100x2_different_origins.csv",
-                type: "rubik"
+                type: DatasetType.Rubik
             },
             {
                 display: "Rubik: 100x2 Same Origins",
                 path: "datasets/rubik/cube100x2.csv",
-                type: "rubik"
+                type: DatasetType.Rubik
             },
             {
                 display: "NN: Rnd Weights",
                 path: "datasets/neural/random_weights.csv",
-                type: "neural"
+                type: DatasetType.Neural
             },
             {
                 display: "NN: Rnd Confusion Matrix",
                 path: "datasets/neural/random_confmat.csv",
-                type: "neural"
+                type: DatasetType.Neural
             },
             {
                 display: "NN: Weights",
                 path: "datasets/neural/learning_weights.csv",
-                type: "neural"
+                type: DatasetType.Neural
             },
             {
                 display: "NN: Confusion Matrix",
                 path: "datasets/neural/learning_confmat.csv",
-                type: "neural"
+                type: DatasetType.Neural
             },
             {
                 display: "Story: With Names",
                 path: "datasets/story/withnames.csv",
-                type: "story"
+                type: DatasetType.Story
             },
             {
                 display: "Story: No Duplicates",
                 path: "datasets/story/stories_dup-del_p50_with-names.csv",
-                type: "story"
+                type: DatasetType.Story
             },
             {
                 display: "Story: Test",
                 path: "datasets/story/teststories.csv",
-                type: "story"
+                type: DatasetType.Story
             },
             {
                 display: "Go: State features",
                 path: "datasets/go/combined.csv",
-                type: "go"
+                type: DatasetType.Go
             },
             {
                 display: "Go: Histogram features",
                 path: "datasets/go/histogram.csv",
-                type: "go"
+                type: DatasetType.Go
             },
             {
                 display: "Go: Move features (wavelet)",
                 path: "datasets/go/move_wavelet.csv",
-                type: "go"
+                type: DatasetType.Go
             }
         ]
     }
@@ -374,22 +374,22 @@ export class InferCategory {
      */
     inferType(header) {
         if (header.includes('up00') && header.includes('back00')) {
-            return "rubik"
+            return DatasetType.Rubik
         }
         if (header.includes('cf00')) {
-            return 'neural'
+            return DatasetType.Neural
         }
         if (header.includes('a8')) {
-            return 'chess'
+            return DatasetType.Chess
         }
         if (header.includes('new_y')) {
-            return 'story'
+            return DatasetType.Story
         }
         if (header.includes('aa')) {
-            return 'go'
+            return DatasetType.Go
         }
 
-        return 'none'
+        return DatasetType.None
     }
 
 
@@ -552,6 +552,15 @@ function convertFromCSV(vectors) {
     })
 }
 
+export enum DatasetType {
+    Rubik,
+    Chess,
+    Neural,
+    Go,
+    Test,
+    Story,
+    None
+}
 
 /**
  * Dataset class that holds all data, the ranges and additional stuff
@@ -563,6 +572,7 @@ export class Dataset {
     ranges: any
     info: any
     columns: any
+    type: DatasetType
 
     constructor(vectors, segments, ranges, info) {
         this.vectors = vectors
@@ -570,6 +580,7 @@ export class Dataset {
         this.segments = segments
         this.info = info
         this.columns = {}
+        this.type = this.info.type
 
         this.calculateBounds()
         this.calculateColumnTypes()

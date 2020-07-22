@@ -10,7 +10,7 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ShareIcon from '@material-ui/icons/Share';
-import { DatasetDatabase, Dataset, InferCategory, loadFromPath, Vect, Preprocessor, getSegs } from './datasetselector'
+import { DatasetDatabase, Dataset, InferCategory, loadFromPath, Vect, Preprocessor, getSegs, DatasetType } from './datasetselector'
 import Button from '@material-ui/core/Button';
 import WidgetsIcon from '@material-ui/icons/Widgets';
 import * as React from 'react'
@@ -98,7 +98,7 @@ export var DatasetList = ({ onChange }) => {
                                 types.map(type => (
                                     <li key={type} style={{ backgroundColor: 'inherit' }}>
                                         <ul style={{ backgroundColor: 'inherit', paddingInlineStart: '0px' }}>
-                                            <ListSubheader>{type}</ListSubheader>
+                                            <ListSubheader>{Object.keys(DatasetType)[Object.values(DatasetType).indexOf(type)]}</ListSubheader>
                                             {
                                                 database.data.filter(value => value.type == type).map(entry => {
                                                     return <ListItem key={entry.path} button onClick={() => {

@@ -3,8 +3,10 @@ import { Story } from '../../../util/Cluster'
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { FingerprintPreview } from '../FingerprintPreview/FingerprintPreview';
-import { Fade } from '@material-ui/core';
+import { Fade, Typography } from '@material-ui/core';
 import { connect } from 'react-redux'
+import './StoryPreview.scss'
+import { GenericFingerprint } from '../../../legends/Generic';
 
 type StoryPreviewProps = {
     stories: Story[]
@@ -26,25 +28,34 @@ const mapDispatchToProps = dispatch => ({
 })
 
 export var StoryPreview = connect(mapStateToProps, mapDispatchToProps)(({ stories, setActiveStory, activeStory, type }) => {
-    return <Fade in={stories != null && stories.length > 0}><div>
-        <h6>Stories</h6>
-        <hr></hr>
-        <ToggleButtonGroup
-            value={activeStory}
-            exclusive
-            onChange={(e, newValue) => setActiveStory(newValue)}
-            style={{
-                alignItems: "stretch"
-            }}
-            orientation='vertical'
-        >
-            {
-                stories?.map((story, index) => {
-                    return <ToggleButton key={index} value={story} style={{ flexGrow: 1 }}>
-                        <FingerprintPreview type={type} pointClusters={story.clusters}></FingerprintPreview>
-                    </ToggleButton>
-                })
-            }
-        </ToggleButtonGroup>
-    </div></Fade>
+    return <Fade in={stories != null && stories.length > 0}>
+        <div className="StoryPreviewContent">
+            <ToggleButtonGroup
+                value={activeStory}
+                exclusive
+                onChange={(e, newValue) => setActiveStory(newValue)}
+                style={{
+                    alignItems: "stretch"
+                }}
+                orientation='vertical'
+            >
+                {
+                    stories?.map((story, index) => {
+                        return <ToggleButton key={index} value={story}
+                            style={{
+                                flexGrow: 1,
+                                display: 'flex',
+                                justifyContent: 'end'
+                            }}>
+                             
+                            <Typography>Story {index}</Typography>
+                        </ToggleButton>
+                    })
+                }
+            </ToggleButtonGroup>
+        </div>
+    </Fade>
 })
+
+//<FingerprintPreview type={type} pointClusters={story.clusters}></FingerprintPreview>
+//<GenericFingerprint type={type} vectors={story.clusters[0].vectors} scale={0.5}></GenericFingerprint>

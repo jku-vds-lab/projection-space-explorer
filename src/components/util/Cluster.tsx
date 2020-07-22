@@ -1,3 +1,5 @@
+import { Edge } from "./graphs"
+
 export default class Cluster {
     points: Array<any>
     label: any
@@ -90,8 +92,10 @@ export default class Cluster {
  */
 export class Story {
     clusters: Cluster[]
+    edges: Edge[]
 
-    constructor(clusters) {
+    constructor(clusters, edges) {
         this.clusters = clusters
+        this.edges = edges
     }
 }

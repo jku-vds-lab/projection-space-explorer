@@ -613,6 +613,12 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
 
+    deleteClusters() {
+        this.clusterVisualization?.dispose(this.scene)
+        this.clusterVisualization = null
+    }
+
+
     /**
      * Creates the triangulated mesh that visualizes the clustering.
      * @param clusters an array of clusters
@@ -1085,7 +1091,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.openTab != this.props.openTab) {
+        /**if (prevProps.openTab != this.props.openTab) {
             // openTab changed, check if we left clustering tab
             if (this.props.openTab != 1) {
                 // Remove clustering view
@@ -1098,13 +1104,15 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                     this.createClusters(this.props.clusters)
                 }
             }
-        }
+        }**/
         // If we have clusters now... and are on clusters tab... create cluster visualization
         if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters != null) {
             if (this.props.openTab == 1) {
                 this.clusterVisualization?.dispose(this.scene)
                 this.createClusters(this.props.clusters)
             }
+        } else if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters == null) {
+            this.deleteClusters()
         }
 
         // Path length range has changed, update view accordingly

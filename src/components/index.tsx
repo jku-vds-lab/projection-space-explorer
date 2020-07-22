@@ -50,10 +50,11 @@ import dataset from "./Reducers/DatasetReducer";
 import highlightedSequence from "./Reducers/HighlightedSequenceReducer";
 import { viewTransform } from "./Reducers/ViewTransformReducer";
 import advancedColoringSelection from "./Reducers/AdvancedColoringSelection";
-import { setAdvancedColoringSelectionAction, setHighlightedSequenceAction, setActiveLineAction } from "./Actions/Actions";
+import { setAdvancedColoringSelectionAction, setHighlightedSequenceAction, setActiveLineAction, setActiveStoryAction, setStoriesAction, setDatasetAction, setOpenTabAction } from "./Actions/Actions";
 import { CategoryOptions } from "./WebGLView/CategoryOptions";
 import { AdvancedColoringPopover } from "./DrawerTabPanels/StatesTabPanel/AdvancedColoring/AdvancedColoringPopover/AdvancedColoringPopover";
 import { ColorScaleSelect } from "./DrawerTabPanels/StatesTabPanel/ColorScaleSelect/ColorScaleSelect";
+import storyMode from "./Reducers/StoryModeReducer";
 
 
 
@@ -97,17 +98,13 @@ const mapStateToProps = state => ({
 
 
 const mapDispatchToProps = dispatch => ({
-  setOpenTab: openTab => dispatch({
-    type: 'SET_OPEN_TAB',
-    openTab: openTab
-  }),
-  setDataset: dataset => dispatch({
-    type: 'SET_DATASET',
-    dataset: dataset
-  }),
+  setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
+  setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
   setHighlightedSequence: value => dispatch(setHighlightedSequenceAction(value)),
-  setActiveLine: value => dispatch(setActiveLineAction(value))
+  setActiveLine: value => dispatch(setActiveLineAction(value)),
+  setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
+  setStories: stories => dispatch(setStoriesAction(stories))
 })
 
 
@@ -286,6 +283,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setHighlightedSequence(null)
     this.props.setActiveLine(null)
+    this.props.setActiveStory(null)
+    this.props.setStories(null)
 
     this.legend.current.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
@@ -870,8 +869,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
       <ToolSelection onChangeTool={(value) => {
         if (value != Tool.Crosshair) {
-          this.props.setActiveLine(null)
-          this.props.setHighlightedSequence(null)
+          //this.props.setActiveLine(null)
+          //this.props.setHighlightedSequence(null)
         }
       }} />
 
@@ -933,7 +932,8 @@ const rootReducer = combineReducers({
   dataset: dataset,
   highlightedSequence: highlightedSequence,
   viewTransform: viewTransform,
-  advancedColoringSelection: advancedColoringSelection
+  advancedColoringSelection: advancedColoringSelection,
+  storyMode: storyMode
 })
 
 

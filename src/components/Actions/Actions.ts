@@ -45,3 +45,28 @@ export const setAdvancedColoringSelectionAction = advancedColoringSelection => (
     type: 'SET_ADVANCED_COLORING_SELECTION',
     advancedColoringSelection: advancedColoringSelection
 })
+
+export const setActiveStoryAction = activeStory => ({
+    type: 'SET_ACTIVE_STORY',
+    activeStory: activeStory
+})
+
+export const setStoriesAction = stories => ({
+    type: 'SET_STORIES',
+    stories: stories
+})
+
+export const setDatasetAction = dataset => ({
+    type: 'SET_DATASET',
+    dataset: dataset
+})
+
+export const setOpenTabAction = openTab => ({
+    type: 'SET_OPEN_TAB',
+    openTab: openTab
+})
+
+export const setStoryModeAction = storyMode => ({
+    type: 'SET_STORY_MODE',
+    storyMode: storyMode
+})

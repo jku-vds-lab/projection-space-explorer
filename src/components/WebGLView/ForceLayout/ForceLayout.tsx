@@ -6,6 +6,9 @@ import { GenericFingerprint } from '../../legends/Generic'
 import { connect } from 'react-redux'
 import { Edge } from '../../util/graphs'
 import THREE = require('three')
+import { ViewTransform } from '../ViewTransform'
+import { GenericChanges } from '../../legends/GenericChanges/GenericChanges'
+import { StoryMode } from '../../Reducers/StoryModeReducer'
 
 type ForceLayoutProps = {
     activeStory: Story
@@ -14,7 +17,9 @@ type ForceLayoutProps = {
     type: String
     clusterEdges: Edge[]
     camera: THREE.Camera
-    dataset: any
+    dataset: any,
+    viewTransform: ViewTransform,
+    storyMode: StoryMode
 }
 
 type ForceLayoutState = {
@@ -31,13 +36,15 @@ type ForceLayoutState = {
 
 const mapStateToProps = state => ({
     activeStory: state.activeStory,
-    clusterEdges: state.clusterEdges
+    clusterEdges: state.clusterEdges,
+    viewTransform: state.viewTransform,
+    storyMode: state.storyMode
 })
 
 
 export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true })(class extends React.Component<ForceLayoutProps, ForceLayoutState> {
-    
-    
+
+
     constructor(props) {
         super(props)
 
@@ -79,7 +86,7 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
     deleteForceLayout() {
         this.state.graphLayout?.stop()
         this.state.labelLayout?.stop()
-        this.state.container.select('#force').remove()
+        d3.select("#physics").select('#phys').remove()
 
         this.setState({
             link: null,
@@ -159,7 +166,8 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
 
 
         var svg = d3.select("#physics").attr("width", width).attr("height", height);
-        var container = svg.append("div").attr('id', 'phys');
+        var container = svg.append("div")
+            .attr('id', 'phys');
 
 
         var node = container.append("div").attr("class", "nodes")
@@ -305,7 +313,7 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
     renderLinks(ctx: CanvasRenderingContext2D) {
         var offset = this.offsetToScreen()
 
-        if (this.state.link) {
+        if (this.props.storyMode == StoryMode.Cluster && this.state.link) {
             ctx.setLineDash([]);
             ctx.strokeStyle = 'rgba(70, 130, 180, 1)'
             ctx.fillStyle = 'rgba(70, 130, 180, 1)'
@@ -347,9 +355,9 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
             context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
         }
 
-        if (this.props.clusterEdges) {
+        if (this.props.activeStory && this.props.activeStory.edges) {
 
-            this.props.clusterEdges.forEach(edge => {
+            this.props.activeStory.edges.forEach(edge => {
                 const { x: x0, y: y0 } = this.worldToScreenWithOffset(edge.source.getCenter())
                 const { x: x1, y: y1 } = this.worldToScreenWithOffset(edge.destination.getCenter())
 
@@ -363,11 +371,17 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
         }
     }
 
+    middle(vecA, vecB) {
+        return {
+            x: vecA.x + (vecB.x - vecA.x) / 2,
+            y: vecA.y + (vecB.y - vecA.y) / 2
+        }
+    }
 
     render() {
         return <div id="physics" className="ForceLayoutParent" ref={this.state.physicsRef}>
             {
-                this.state.displayClusters?.map((displayCluster, index) => {
+                this.props.storyMode == StoryMode.Cluster && this.state.displayClusters?.map((displayCluster, index) => {
                     return <div
                         key={index}
                         style={{
@@ -378,6 +392,22 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
                         }}
                     >
                         <GenericFingerprint scale={1.5} vectors={displayCluster.cluster.vectors} type={this.props.dataset.info.type}></GenericFingerprint>
+                    </div>
+                })
+            }
+            {
+                this.props.storyMode == StoryMode.Difference && this.props.activeStory?.edges?.map((clusterEdge, index) => {
+                    var screen = this.props.viewTransform.worldToScreen(this.middle(clusterEdge.source.getCenter(), clusterEdge.destination.getCenter()))
+
+                    return <div
+                        key={index}
+                        style={{
+                            position: 'absolute',
+                            left: screen.x,
+                            top: screen.y,
+                            transform: `translate(${-50}px, ${-60}px)`
+                        }}>
+                        <GenericChanges vectorsA={clusterEdge.source.vectors} vectorsB={clusterEdge.destination.vectors}></GenericChanges>
                     </div>
                 })
             }

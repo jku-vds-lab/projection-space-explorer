@@ -15,42 +15,44 @@ import * as React from 'react'
 import { FunctionComponent } from "react";
 import { RubikFingerprint } from "./RubikFingerprint/RubikFingerprint";
 import { ChessFingerprint } from "./ChessFingerprint/ChessFingerprint";
+import { DatasetType, Dataset } from "../util/datasetselector";
 
 type GenericLegendProps = {
-    type: String
+    type: DatasetType
     vectors: Array<any>
     aggregate: Boolean
 }
 
 export var GenericLegend = ({ type, vectors, aggregate }: GenericLegendProps) => {
-    if (type == 'story') {
-        return <StoryLegend selection={vectors}></StoryLegend>
-    } else if (type == 'rubik') {
-        return <RubikLegend selection={vectors}></RubikLegend>
-    } else if (type == 'neural') {
-        return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
-    } else if (type == 'chess') {
-        return <ChessLegend selection={vectors}></ChessLegend>
-    } else if (type == 'go') {
-        return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
-    } else {
-        return <div></div>
+    switch (type) {
+        case DatasetType.Story:
+            return <StoryLegend selection={vectors}></StoryLegend>
+        case DatasetType.Rubik:
+            return <RubikLegend selection={vectors}></RubikLegend>
+        case DatasetType.Neural:
+            return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
+        case DatasetType.Chess:
+            return <ChessLegend selection={vectors}></ChessLegend>
+        case DatasetType.Go:
+            return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
+        default:
+            return <div></div>
     }
 }
 
 
 
 type GenericFingerprintProps = {
-    type: String
+    type: DatasetType
     vectors: Array<any>
     scale: number
 }
 
 export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({ type, vectors, scale }: GenericFingerprintProps) => {
     switch (type) {
-        case 'rubik':
+        case DatasetType.Rubik:
             return <RubikFingerprint width={81 * scale} height={108 * scale} vectors={vectors}></RubikFingerprint>
-        case 'chess':
+        case DatasetType.Chess:
             return <ChessFingerprint width={80 * scale} height={80 * scale} vectors={vectors}></ChessFingerprint>
         default:
             return <div></div>

@@ -6,6 +6,7 @@ import SelectAllIcon from '@material-ui/icons/SelectAll';
 import BlurOffIcon from '@material-ui/icons/BlurOff';
 import './ToolSelection.scss'
 import { connect } from 'react-redux'
+import LinearScaleIcon from '@material-ui/icons/LinearScale';
 
 const mapStateToProps = state => ({
     currentTool: state.currentTool
@@ -61,7 +62,7 @@ export var ToolSelection = connect(mapStateToProps, mapDispatchToProps)(function
                 <BlurOffIcon />
             </ToggleButton>
             <ToggleButton value={Tool.Crosshair}>
-                <BlurOffIcon />
+                <LinearScaleIcon />
             </ToggleButton>
         </ToggleButtonGroup>
     </div>
