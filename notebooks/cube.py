@@ -1546,7 +1546,7 @@ def solve_simple(create_cube_data = None):
 
     differences = get_difference_score(ret_data)
 
-    return ret_data, ret_cp, differences
+    return ret_data, ret_cp, differences, solution
 
 
 def solve(create_cube_data = None):
@@ -1604,7 +1604,7 @@ def solve(create_cube_data = None):
 
     differences = get_difference_score(ret_data)
 
-    return ret_data, ret_cp, differences
+    return ret_data, ret_cp, differences, solution
 
 #Performs solve simulations, will return a list with the number of moves, which one was the best
 # and the scramble used to get the best. The worst, which one was the worst, and the scramble

@@ -9,6 +9,8 @@ import THREE = require('three')
 import { ViewTransform } from '../ViewTransform'
 import { GenericChanges } from '../../legends/GenericChanges/GenericChanges'
 import { StoryMode } from '../../Reducers/StoryModeReducer'
+import { ThrustLayout } from '../../util/ThrustLayout'
+import { cpuUsage } from 'process'
 
 type ForceLayoutProps = {
     activeStory: Story
@@ -26,9 +28,13 @@ type ForceLayoutState = {
     physicsRef: React.Ref<HTMLDivElement>
     link: any
     displayClusters: { cluster: Cluster, forceLabelPosition, shiftX, shiftY }[],
+    differenceClusters: any,
     graphLayout: any,
     labelLayout: any,
-    container: any
+    container: any,
+
+    thrustLayout: ThrustLayout,
+    differenceLayout: ThrustLayout
 }
 
 
@@ -52,9 +58,12 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
             physicsRef: React.createRef(),
             link: null,
             displayClusters: null,
+            differenceClusters: null,
             graphLayout: null,
             labelLayout: null,
-            container: null
+            container: null,
+            thrustLayout: null,
+            differenceLayout: null
         }
     }
 
@@ -75,22 +84,16 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
         }
     }
 
-    offsetToScreen() {
-        let camera = this.props.camera as any
-        return {
-            x: (-this.props.camera.position.x) * camera.zoom,
-            y: (this.props.camera.position.y) * camera.zoom
-        }
-    }
 
     deleteForceLayout() {
-        this.state.graphLayout?.stop()
-        this.state.labelLayout?.stop()
-        d3.select("#physics").select('#phys').remove()
-
+        this.state.thrustLayout?.dispose()
+        this.state.differenceLayout?.dispose()
         this.setState({
             link: null,
-            displayClusters: null
+            displayClusters: null,
+            differenceClusters: null,
+            thrustLayout: null,
+            differenceLayout: null
         })
     }
 
@@ -98,23 +101,25 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
         var self = this
 
         var displayClusters = this.props.activeStory.clusters.map(cluster => {
+            var center = cluster.getCenter()
+            var screen = this.worldToScreen(center)
             return {
                 cluster: cluster,
-                forceLabelPosition: cluster.getCenter(),
+
+                forceLabelPosition: center,
                 shiftX: 0,
-                shiftY: 0
+                shiftY: 0,
+                x: screen.x,
+                y: screen.y,
+                center: center,
+                id: Math.random()
             }
         })
-
-        this.setState({
-            displayClusters: displayClusters
-        })
-
 
         var width = this.props.width;
         var height = this.props.height;
 
-        var graph = {
+        /**var graph = {
             nodes: displayClusters.map(m => {
                 // Preinitialize x/y
                 var center = m.cluster.getCenter()
@@ -126,159 +131,63 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
                     y: screen.y
                 }
             })
+        }**/
+
+
+        var layout = new ThrustLayout(this.props.viewTransform, 50)
+        layout.onTick = (output, links) => {
+            output.forEach((node, i) => {
+                self.state.displayClusters[i].forceLabelPosition = { x: node.forceLabelPosition.x, y: node.forceLabelPosition.y }
+                self.state.displayClusters[i].shiftX = node.shiftX
+                self.state.displayClusters[i].shiftY = node.shiftY
+                self.state.displayClusters[i].link = node.link
+                self.setState({
+                    displayClusters: displayClusters
+                })
+            })
         }
-
-
-        var label = {
-            'nodes': [],
-            'links': []
-        };
-
-        graph.nodes.forEach(function (d, i) {
-            label.nodes.push({
-                node: d
-            });
-            label.nodes.push({
-                node: d,
-                x: d.x,
-                y: d.y
-            });
-            label.links.push({
-                source: i * 2,
-                target: i * 2 + 1
-            });
-        });
-
-        var labelLayout = d3.forceSimulation(label.nodes)
-            .force("charge", d3.forceManyBody().strength(-500))
-            .force("collide", d3.forceCollide().radius(10))
-            .force("link", d3.forceLink(label.links).distance(50).strength(0.5));
-
-        var graphLayout = d3.forceSimulation(graph.nodes)
-            //.force("charge", d3.forceManyBody().strength(-30))
-            //.force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collide", d3.forceCollide().radius(20))
-            //.force("x", d3.forceX(width / 2).strength(0.01))
-            //.force("y", d3.forceY(height / 2).strength(1))
-            //.force("link", d3.forceLink(graph.links).id(function(d) {return d.id; }).distance(50).strength(1))
-            .on("tick", ticked);
+        layout.init({ nodes: displayClusters }, width, height)
 
 
 
-        var svg = d3.select("#physics").attr("width", width).attr("height", height);
-        var container = svg.append("div")
-            .attr('id', 'phys');
 
 
-        var node = container.append("div").attr("class", "nodes")
-            .selectAll("div")
-            .data(graph.nodes)
-            .enter()
-            .append("div")
-            .style("position", "absolute")
-
-        var labelNode = container.append("div").attr("class", "labelNodes")
-            .selectAll("div")
-            .data(label.nodes)
-            .enter()
-            .append("div")
-            //.text(function (d, i) { return i % 2 == 0 ? "" : d.node.id; })
-            .style("position", "absolute")
-            .style("fill", "#555")
-            //.style("font-family", "Arial")
-            //.style("font-size", 12)
-            .style("pointer-events", "none"); // to prevent mouseover/drag capture
-
-
-        var link = container.append("g").attr("class", "links")
-            .selectAll("line")
-            .data(label.links)
-            .enter()
-            .append("line")
-            .attr("stroke", "#aaa")
-            .attr("stroke-width", "1px");
-
-        this.setState({
-            link: link,
-            graphLayout: graphLayout,
-            labelLayout: labelLayout,
-            container: container
+        var differenceClusters = this.props.activeStory.edges?.map(clusterEdge => {
+            var center = this.middle(clusterEdge.source.getCenter(), clusterEdge.destination.getCenter())
+            var screen = this.worldToScreen(center)
+            return {
+                clusterEdge: clusterEdge,
+                forceLabelPosition: center,
+                shiftX: 0,
+                shiftY: 0,
+                x: screen.x,
+                y: screen.y,
+                center: center,
+                id: Math.random()
+            }
         })
 
-        function ticked() {
-            node.call(updateNode);
-            link.call(updateLink);
 
-            labelLayout.alphaTarget(0.3).restart();
-            labelNode.each(function (d, i) {
-                if (i % 2 == 0) {
-                    d.x = d.node.x;
-                    d.y = d.node.y;
-                } else {
-                    var b = { width: 90, height: 120 }
-
-                    var diffX = d.x - d.node.x;
-                    var diffY = d.y - d.node.y;
-
-                    var dist = Math.sqrt(diffX * diffX + diffY * diffY);
-
-                    var shiftX = b.width * (diffX - dist) / (dist * 2);
-                    shiftX = Math.max(-b.width, Math.min(0, shiftX));
-                    var shiftY = 16;
-                    shiftY = b.height * (diffY - dist) / (dist * 2);
-                    shiftY = Math.max(-b.height, Math.min(0, shiftY))
-                    this.setAttribute("transform", "translate(" + shiftX + "," + shiftY + ")");
-
-                    self.state.displayClusters[Math.floor(i / 2)].forceLabelPosition =
-                        { x: d.x, y: d.y }
-                    self.state.displayClusters[Math.floor(i / 2)].shiftX = shiftX
-                    self.state.displayClusters[Math.floor(i / 2)].shiftY = shiftY
-
-                    //self.state.displayClusters[Math.floor(i / 2)].forceLabelPosition = self.state.displayClusters[Math.floor(i / 2)].center
-
-                }
-            });
-
-            self.setState({
-                displayClusters: self.state.displayClusters
-            })
-
-            graphLayout.alphaTarget(0.3).restart();
-
-            var k = 0.2 * this.alpha();
-
-            node.each(function (o, i) {
-                var center = self.worldToScreen(o.center)
-                o.x += (center.x - o.x) * k;
-                o.y += (center.y - o.y) * k;
-            });
-
-            labelNode.call(updateNode);
-
-        }
-
-        function updateLink(link) {
-            link.attr("x1", function (d) { return fixna(d.source.x); })
-                .attr("y1", function (d) { return fixna(d.source.y); })
-                .attr("x2", function (d) { return fixna(d.target.x); })
-                .attr("y2", function (d) { return fixna(d.target.y); });
-        }
-
-        function fixna(x) {
-            if (isFinite(x)) return x;
-            return 0;
-        }
-
-
-        function updateNode(node) {
-
-            node.style("left", function (d) {
-                return fixna(d.x) + "px"
-            })
-            node.style("top", function (d) {
-                return fixna(d.y) + "px"
+        var differenceLayout = new ThrustLayout(this.props.viewTransform, 30)
+        differenceLayout.onTick = (output, links) => {
+            output.forEach((node, i) => {
+                self.state.differenceClusters[i].forceLabelPosition = { x: node.forceLabelPosition.x, y: node.forceLabelPosition.y }
+                self.state.differenceClusters[i].shiftX = node.shiftX
+                self.state.differenceClusters[i].shiftY = node.shiftY
+                self.state.differenceClusters[i].link = node.link
+                self.setState({
+                    differenceClusters: differenceClusters
+                })
             })
         }
+        differenceLayout.init({ nodes: differenceClusters }, width, height)
+
+        this.setState({
+            displayClusters: displayClusters,
+            thrustLayout: layout,
+            differenceLayout: differenceLayout,
+            differenceClusters: differenceClusters
+        })
     }
 
 
@@ -311,15 +220,24 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
      * @param ctx the rendering context of the canvas
      */
     renderLinks(ctx: CanvasRenderingContext2D) {
-        var offset = this.offsetToScreen()
+        var offset = this.props.viewTransform.cameraOffsetToScreen()
 
-        if (this.props.storyMode == StoryMode.Cluster && this.state.link) {
+        if (this.state.displayClusters || this.state.differenceClusters) {
+            let link = null
+            if (this.state.displayClusters && this.props.storyMode == StoryMode.Cluster) {
+                link = this.state.displayClusters.map(e => e.link)
+            }
+            if (this.state.differenceClusters && this.props.storyMode == StoryMode.Difference) {
+                link = this.state.differenceClusters.map(e => e.link)
+            }
+
+
             ctx.setLineDash([]);
             ctx.strokeStyle = 'rgba(70, 130, 180, 1)'
             ctx.fillStyle = 'rgba(70, 130, 180, 1)'
             ctx.lineWidth = 3 * window.devicePixelRatio;
 
-            this.state.link.each((d, i) => {
+            link.forEach((d, i) => {
                 ctx.beginPath();
                 ctx.arc((d.source.x + offset.x) * window.devicePixelRatio, (d.source.y + offset.y) * window.devicePixelRatio, 5 * window.devicePixelRatio, 0, 2 * Math.PI, false);
                 ctx.fill();
@@ -386,8 +304,8 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
                         key={index}
                         style={{
                             position: 'absolute',
-                            left: displayCluster.forceLabelPosition.x + this.offsetToScreen().x,
-                            top: displayCluster.forceLabelPosition.y + this.offsetToScreen().y,
+                            left: displayCluster.forceLabelPosition.x + this.props.viewTransform.cameraOffsetToScreen().x,
+                            top: displayCluster.forceLabelPosition.y + this.props.viewTransform.cameraOffsetToScreen().y,
                             transform: `translate(${displayCluster.shiftX.toFixed(1)}px, ${displayCluster.shiftY.toFixed(1)}px)`
                         }}
                     >
@@ -396,18 +314,16 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
                 })
             }
             {
-                this.props.storyMode == StoryMode.Difference && this.props.activeStory?.edges?.map((clusterEdge, index) => {
-                    var screen = this.props.viewTransform.worldToScreen(this.middle(clusterEdge.source.getCenter(), clusterEdge.destination.getCenter()))
-
+                this.props.storyMode == StoryMode.Difference && this.state.differenceClusters?.map((differenceCluster, index) => {
                     return <div
                         key={index}
                         style={{
                             position: 'absolute',
-                            left: screen.x,
-                            top: screen.y,
-                            transform: `translate(${-50}px, ${-60}px)`
+                            left: differenceCluster.forceLabelPosition.x + this.props.viewTransform.cameraOffsetToScreen().x,
+                            top: differenceCluster.forceLabelPosition.y + this.props.viewTransform.cameraOffsetToScreen().y,
+                            transform: `translate(${differenceCluster.shiftX.toFixed(1)}px, ${differenceCluster.shiftY.toFixed(1)}px)`
                         }}>
-                        <GenericChanges vectorsA={clusterEdge.source.vectors} vectorsB={clusterEdge.destination.vectors}></GenericChanges>
+                        <GenericChanges vectorsA={differenceCluster.clusterEdge.source.vectors} vectorsB={differenceCluster.clusterEdge.destination.vectors}></GenericChanges>
                     </div>
                 })
             }

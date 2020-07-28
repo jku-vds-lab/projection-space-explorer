@@ -26,6 +26,30 @@ export class ViewTransform {
     }
 
     /**
+     * Converts world coordinates to screen coordinates ignoring the camera position
+     * @param screen 
+     */
+    worldToScreenWithoutOffset(vec) {
+        let camera = this.camera as any
+        return {
+            x: (vec.x) * camera.zoom + this.width / 2,
+            y: (-vec.y) * camera.zoom + this.height / 2
+        }
+    }
+
+    /**
+     * Converts world coordinates to screen coordinates, but only the camera position
+     * @param screen 
+     */
+    cameraOffsetToScreen() {
+        let camera = this.camera as any
+        return {
+            x: (-camera.position.x) * camera.zoom,
+            y: (camera.position.y) * camera.zoom
+        }
+    }
+
+    /**
      * Converts screen coordinates in the range 0 - width, 0 - height to world coordinates taking into account
      * the position of the camera.
      */
