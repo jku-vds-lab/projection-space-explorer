@@ -1,19 +1,6 @@
 import { ViewTransform } from "../WebGLView/ViewTransform";
 import d3 = require("d3");
 
-
-class ThrustNode {
-    constructor() {
-
-    }
-}
-
-class ThrustEdge {
-    constructor() {
-
-    }
-}
-
 export class ThrustLayout {
     viewTransform: ViewTransform
     output = []
