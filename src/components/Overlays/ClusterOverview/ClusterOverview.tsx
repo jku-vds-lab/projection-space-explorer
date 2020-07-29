@@ -7,19 +7,23 @@ import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect } from 'react-redux'
 import { DatasetType } from "../../util/datasetselector";
+import { StoryMode } from "../../Reducers/StoryModeReducer";
+import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
 
 
 type ClusterOverviewProps = {
     type: DatasetType
     story?: Story
     itemClicked: any
+    storyMode?: StoryMode
 }
 
 const mapStateToProps = state => ({
-    story: state.activeStory
+    story: state.activeStory,
+    storyMode: state.storyMode
 })
 
-export var ClusterOverview = connect(mapStateToProps)(function ({ type, story, itemClicked }: ClusterOverviewProps) {
+export var ClusterOverview = connect(mapStateToProps)(function ({ type, story, itemClicked, storyMode }: ClusterOverviewProps) {
     if (story == null) {
         return <div></div>
     }
@@ -52,7 +56,7 @@ export var ClusterOverview = connect(mapStateToProps)(function ({ type, story, i
 
                 >
                     {
-                        story?.clusters.map((cluster, index) => {
+                        storyMode == StoryMode.Cluster && story?.clusters.map((cluster, index) => {
                             return <ToggleButton
                                 key={index}
                                 className="ClusterItem"
@@ -64,6 +68,22 @@ export var ClusterOverview = connect(mapStateToProps)(function ({ type, story, i
                                     vectors={cluster.vectors}
                                     scale={1}
                                 ></GenericFingerprint>
+                            </ToggleButton>
+                        })
+                    }
+                    {
+                        storyMode == StoryMode.Difference && story?.edges.map((edge, index) => {
+                            return <ToggleButton
+                                key={index}
+                                className="ClusterItem"
+                                value={index}
+                                onClick={() => {
+                                    itemClicked(edge.destination)
+                                }}>
+                                    <GenericChanges
+                                        vectorsA={edge.source.vectors}
+                                        vectorsB={edge.destination.vectors}
+                                    />
                             </ToggleButton>
                         })
                     }

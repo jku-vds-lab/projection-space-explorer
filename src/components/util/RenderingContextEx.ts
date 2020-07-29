@@ -18,6 +18,14 @@ export class RenderingContextEx {
         this.context.lineDashOffset = value
     }
 
+    set strokeStyle(value) {
+        this.context.strokeStyle = value
+    }
+
+    set lineCap(value) {
+        this.context.lineCap = value
+    }
+
     setLineDash(value) {
         this.context.setLineDash(value)
     }
@@ -38,8 +46,19 @@ export class RenderingContextEx {
         this.context.lineTo(x * this.pixelRatio, y * this.pixelRatio)
     }
 
-    arrowTo(x, y) {
-        this.lineTo(x, y)
+    arrowTo(fromX, fromY, toX, toY, headlen = 50) {
+        var lineCap = this.context.lineCap
+        this.lineCap = 'round'
+        var dx = toX - fromX;
+        var dy = toY - fromY;
+        var angle = Math.atan2(dy, dx);
+        this.lineTo(toX, toY);
+        this.moveTo(toX, toY)
+        this.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+        this.moveTo(toX, toY);
+        this.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+        this.moveTo(toX, toY)
+        this.lineCap = lineCap
     }
 
     stroke() {

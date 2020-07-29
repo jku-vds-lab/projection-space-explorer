@@ -176,7 +176,7 @@ const mapDispatchToProps = dispatch => ({
 
 
 export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<ViewProps, ViewState> {
-    lasso: any
+    lasso: LassoSelection
     particles: any
     containerRef: any
     selectionRef: any
@@ -352,6 +352,10 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
         switch (this.props.currentTool) {
             case Tool.Default:
+                // In case we have a line in the sequence UI
+                if (this.props.activeLine) {
+                    break;
+                }
                 var mousePosition = new THREE.Vector2(event.clientX, event.clientY)
 
                 if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 10 && this.lasso == null && this.mouseDown) {
@@ -407,6 +411,11 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 }
                 break;
             case Tool.Grab:
+                // In case we have a line in the sequence UI
+                if (this.props.activeLine) {
+                    break;
+                }
+
                 var found = false
                 this.props.clusters.forEach(cluster => {
                     if (cluster.label == '-1') return;
@@ -436,6 +445,10 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
         switch (this.props.currentTool) {
             case Tool.Default:
+                // In case we have a line in the sequence UI
+                if (this.props.activeLine) {
+                    break;
+                }
                 if (this.lasso != null) {
                     // If there is an active lasso, process it
                     var wasDrawing = this.lasso.drawing
@@ -496,6 +509,11 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 }
                 break;
             case Tool.Grab:
+                // In case we have a line in the sequence UI
+                if (this.props.activeLine) {
+                    break;
+                }
+
                 // current hover is null, check if we are inside a cluster
                 var found = false
                 this.props.clusters.forEach(cluster => {
@@ -1139,7 +1157,11 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             if (this.props.activeLine != null) {
                 // Highlight correct line
 
-                this.lines.groupHighlight([this.props.activeLine.lineKey])
+                //this.lines.groupHighlight([this.props.activeLine.lineKey])
+                this.lines.highlight([this.props.activeLine.lineKey], this.getWidth(), this.getHeight(), this.scene, true)
+            } else {
+                this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene, true)
+                this.particles.update()
             }
         }
 

@@ -95,8 +95,6 @@ export class RubikChanges extends React.Component<RubikChangesProps> {
                     let [opacityB, colB] = getProminent(countB, key) as [number, string]
 
 
-                    console.log(opacityA, colA)
-
                     if (colA != colB) {
                         col = colB
                         opacity = opacityB

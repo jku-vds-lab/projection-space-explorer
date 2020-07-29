@@ -15,10 +15,10 @@ var vertexShader = require('../../shaders/vertex.glsl')
 var override = require('./meshline')
 
 export enum Shapes {
-  Circle= 'circle',
-  Star='star',
-  Square='square',
-  Cross='cross'
+  Circle = 'circle',
+  Star = 'star',
+  Square = 'square',
+  Cross = 'cross'
 }
 
 
@@ -178,7 +178,14 @@ export class LineVisualization {
    * @param {*} height
    * @param {*} scene
    */
-  highlight(indices, width, height, scene) {
+  highlight(indices, width, height, scene, grayout = false) {
+
+    // Gray other lines if needed
+    if (grayout) {
+      this.groupHighlight(indices)
+    }
+
+
 
     // Undo previous highlight
     if (this.highlightIndices != null) {
@@ -329,7 +336,7 @@ export class PointVisualization {
     this.particleSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
     this.vectorColorScheme = vectorColorScheme
     this.dataset = dataset
-    
+
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
     this.colorsChecked = [true, true, true, true, true, true, true, true, true]
   }

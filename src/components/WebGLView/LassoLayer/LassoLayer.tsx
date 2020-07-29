@@ -32,25 +32,31 @@ export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true 
 
 
 
-        ctx.beginPath()
+        
         ctx.lineWidth = 6
-        ctx.setLineDash([8, 8])
-        ctx.lineDashOffset = ((performance.now() / 30) % 16) * -1
+        
+        //ctx.setLineDash([8, 8])
+        //ctx.lineDashOffset = ((performance.now() / 30) % 16) * -1
 
         if (highlightedSequence.previous) {
+            ctx.beginPath()
             let previous = this.props.viewTransform.worldToScreen({ x: highlightedSequence.previous.x, y: highlightedSequence.previous.y })
             ctx.moveTo(previous.x, previous.y)
-            ctx.arrowTo(current.x, current.y)
+
+            ctx.strokeStyle = "rgba(0.5, 0.5, 0.5, 0.4)"
+            ctx.arrowTo(previous.x, previous.y, current.x, current.y, 30)
+            ctx.stroke()
+            ctx.closePath()
         }
         if (highlightedSequence.next) {
             let next = this.props.viewTransform.worldToScreen({ x: highlightedSequence.next.x, y: highlightedSequence.next.y })
-            if (!highlightedSequence.previous) {
-                ctx.moveTo(current.x, current.y)
-            }
-            ctx.arrowTo(next.x, next.y)
+            ctx.beginPath()
+            ctx.moveTo(current.x, current.y)
+            
+            ctx.strokeStyle = "rgba(0.5, 0.5, 0.5, 0.6)"
+            ctx.arrowTo(current.x, current.y, next.x, next.y, 30)
+            ctx.stroke()
         }
-
-        ctx.stroke()
     }
 
     getContext() {
