@@ -70,3 +70,20 @@ export const setStoryModeAction = storyMode => ({
     type: 'SET_STORY_MODE',
     storyMode: storyMode
 })
+
+export const setProjectionColumns = projectionColumns => ({
+    type: 'SET_PROJECTION_COLUMNS',
+    projectionColumns: projectionColumns
+})
+
+export const setProjectionColumnsEntry = (index, value) => ({
+    type: 'SET_PROJECTION_COLUMNS_ENTRY',
+    index: index,
+    value: value
+})
+
+export const setProjectionColumnsShift = (last, index) => ({
+    type: 'SET_PROJECTION_COLUMNS_SHIFT',
+    last: last,
+    index: index
+})

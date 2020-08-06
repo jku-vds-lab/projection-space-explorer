@@ -9,7 +9,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
 import { Divider } from "@material-ui/core";
-import { loadFromPath } from './util/datasetselector'
+import { loadFromPath, Dataset } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import { TensorLoader, MediaControlCard } from "./projection/integration";
@@ -50,11 +50,12 @@ import dataset from "./Reducers/DatasetReducer";
 import highlightedSequence from "./Reducers/HighlightedSequenceReducer";
 import { viewTransform } from "./Reducers/ViewTransformReducer";
 import advancedColoringSelection from "./Reducers/AdvancedColoringSelection";
-import { setAdvancedColoringSelectionAction, setHighlightedSequenceAction, setActiveLineAction, setActiveStoryAction, setStoriesAction, setDatasetAction, setOpenTabAction } from "./Actions/Actions";
+import { setAdvancedColoringSelectionAction, setHighlightedSequenceAction, setActiveLineAction, setActiveStoryAction, setStoriesAction, setDatasetAction, setOpenTabAction, setProjectionColumns } from "./Actions/Actions";
 import { CategoryOptions } from "./WebGLView/CategoryOptions";
 import { AdvancedColoringPopover } from "./DrawerTabPanels/StatesTabPanel/AdvancedColoring/AdvancedColoringPopover/AdvancedColoringPopover";
 import { ColorScaleSelect } from "./DrawerTabPanels/StatesTabPanel/ColorScaleSelect/ColorScaleSelect";
 import storyMode from "./Reducers/StoryModeReducer";
+import projectionColumns from "./Reducers/ProjectionColumnsReducer";
 
 
 
@@ -104,14 +105,15 @@ const mapDispatchToProps = dispatch => ({
   setHighlightedSequence: value => dispatch(setHighlightedSequenceAction(value)),
   setActiveLine: value => dispatch(setActiveLineAction(value)),
   setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
-  setStories: stories => dispatch(setStoriesAction(stories))
+  setStories: stories => dispatch(setStoriesAction(stories)),
+  setProjectionColumns: projectionColumns => dispatch(setProjectionColumns(projectionColumns))
 })
 
 
 var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component<any, any> {
   threeRef: React.RefObject<any>;
   legend: React.RefObject<Legend>;
-  dataset: any;
+  dataset: Dataset;
   vectors: any;
   segments: any;
 
@@ -285,6 +287,12 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setActiveLine(null)
     this.props.setActiveStory(null)
     this.props.setStories(null)
+    this.props.setProjectionColumns(this.dataset.getColumns().map(entry => {
+      return {
+        name: entry,
+        checked: false
+      }
+    }))
 
     this.legend.current.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
@@ -933,7 +941,8 @@ const rootReducer = combineReducers({
   highlightedSequence: highlightedSequence,
   viewTransform: viewTransform,
   advancedColoringSelection: advancedColoringSelection,
-  storyMode: storyMode
+  storyMode: storyMode,
+  projectionColumns: projectionColumns
 })
 
 

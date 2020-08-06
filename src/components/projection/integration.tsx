@@ -9,7 +9,6 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import ListItem from '@material-ui/core/ListItem';
@@ -27,6 +26,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import Alert from '@material-ui/lab/Alert'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import * as React from 'react'
+import { List } from 'react-virtualized';
+import { connect } from 'react-redux'
+import { Dataset } from '../util/datasetselector';
+import { setProjectionColumnsEntry, setProjectionColumnsShift } from '../Actions/Actions';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -60,7 +63,7 @@ function union(a, b) {
     return [...a, ...not(b, a)];
 }
 
-export var TransferList = ({ left, right, setLeft, setRight }) => {
+/**export var TransferList = ({ left, right, setLeft, setRight }) => {
     if (right == null) return <div></div>
     const classes = useStyles();
     const [checked, setChecked] = React.useState([]);
@@ -177,7 +180,7 @@ export var TransferList = ({ left, right, setLeft, setRight }) => {
             <Grid item>{customList('Selected Columns', right)}</Grid>
         </Grid>
     );
-}
+}**/
 
 
 
@@ -195,32 +198,76 @@ const useStylesTensorLoader = makeStyles(theme => ({
 }));
 
 
-export var TensorLoader = ({ onTensorInitiated, dataset, open, setOpen }) => {
+
+
+
+
+function TransferList({ projectionColumns, handleToggle }) {
+    const rowRenderer = function ({
+        key, // Unique key within array of rows
+        index, // Index of row within collection
+        isScrolling, // The List is currently being scrolled
+        isVisible, // This row is visible within the List (eg it is not an overscanned row)
+        style, // Style object to be applied to row (to position it)
+    }) {
+        return <ListItem key={key} style={style} role="listitem" button onClick={(event) => {
+            handleToggle(index, !projectionColumns[index].checked, event.shiftKey)
+        }}>
+            <ListItemIcon>
+                <Checkbox
+                    checked={projectionColumns[index].checked}
+                    tabIndex={-1}
+                    disableRipple
+                />
+            </ListItemIcon>
+            <ListItemText id={index} style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} primary={`${projectionColumns[index].name}`} />
+        </ListItem>
+    }
+
+
+    return <List
+        width={500}
+        height={500}
+        rowCount={projectionColumns.length}
+        rowHeight={25}
+        rowRenderer={rowRenderer}
+    />
+}
+
+type TensorLoaderProps = {
+    onTensorInitiated: any
+    dataset: Dataset
+    open: boolean
+    setOpen: any
+    projectionColumns: any
+    setProjectionColumnsEntry: any
+}
+
+const mapStateToProps = state => ({
+    projectionColumns: state.projectionColumns
+})
+
+const mapDispatchToProps = dispatch => ({
+    setProjectionColumnsEntry: (index, value) => dispatch(setProjectionColumnsEntry(index, value)),
+    setProjectionColumnsShift: (last, index) => dispatch(setProjectionColumnsShift(last, index))
+})
+
+
+export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({ onTensorInitiated, dataset, open, setOpen, setProjectionColumnsEntry, projectionColumns, setProjectionColumnsShift }: TensorLoaderProps) => {
     if (dataset == null) return <div></div>
 
     const classes = useStylesTensorLoader()
-
-    const [left, setLeft] = React.useState(dataset.getColumns());
-    const [right, setRight] = React.useState([]);
 
     const [perplexity, setPerplexity] = React.useState(30)
     const [learningRate, setLearningRate] = React.useState(50)
     const [method, setMethod] = React.useState(0)
     const [nNeighbors, setNNeighbors] = React.useState(15)
+    const [last, setLast] = React.useState(0)
 
-    const handleOpen = () => {
-        setOpen(true);
-    };
 
     const handleClose = () => {
         setOpen(false);
     };
-
-
-    React.useEffect(() => {
-        setLeft(dataset.getColumns())
-        setRight([])
-    }, [dataset])
 
 
     return <div className={classes.root}>
@@ -240,14 +287,18 @@ export var TensorLoader = ({ onTensorInitiated, dataset, open, setOpen }) => {
                             <div>
                                 <Grid spacing={2} container direction="column" alignItems='stretch' justify='center'>
                                     <Grid item>
-                                        <Alert style={{ width: '100%' }} variant="filled" severity={right.length > 0 ? 'success' : 'error'}>{right.length > 0 ? `${right.length} columns selected` : 'Select at least 1 column'}</Alert>
-                                    </Grid>
-                                    <Grid item>
                                         <TransferList
-                                            right={right}
-                                            left={left}
-                                            setLeft={setLeft}
-                                            setRight={setRight} />
+                                            projectionColumns={projectionColumns}
+                                            handleToggle={(index, value, shiftKey) => {
+                                                if (shiftKey) {
+                                                    setProjectionColumnsShift(last, index)
+                                                } else {
+                                                    setProjectionColumnsEntry(index, value)
+                                                    setLast(index)
+                                                }
+                                            }}
+                                            
+                                        />
                                     </Grid>
                                     <Grid item>
                                         <ProjectionSettings
@@ -274,19 +325,16 @@ export var TensorLoader = ({ onTensorInitiated, dataset, open, setOpen }) => {
                         <Grid item>
                             <Button
                                 color='primary'
-                                disabled={right.length == 0}
                                 onClick={(e) => {
-                                    if (right.length <= 0) {
 
-                                    } else {
-                                        setOpen(false)
-                                        onTensorInitiated(e, right, {
-                                            method: method,
-                                            perplexity: perplexity,
-                                            learningRate: learningRate,
-                                            nNeighbors: nNeighbors
-                                        })
-                                    }
+                                    setOpen(false)
+                                    onTensorInitiated(e, projectionColumns.filter(e => e.checked).map(e => e.name), {
+                                        method: method,
+                                        perplexity: perplexity,
+                                        learningRate: learningRate,
+                                        nNeighbors: nNeighbors
+                                    })
+
                                 }}>Start Projection</Button>
                         </Grid>
 
@@ -295,7 +343,7 @@ export var TensorLoader = ({ onTensorInitiated, dataset, open, setOpen }) => {
             </Card>
         </Modal>
     </div>
-}
+})
 
 
 
