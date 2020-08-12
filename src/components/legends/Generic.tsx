@@ -35,7 +35,7 @@ export var GenericLegend = ({ type, vectors, aggregate }: GenericLegendProps) =>
         case DatasetType.Chess:
             return <ChessLegend selection={vectors}></ChessLegend>
         case DatasetType.Coral:
-            return <CoralLegend selection={vectors}></CoralLegend>
+            return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
         default:
