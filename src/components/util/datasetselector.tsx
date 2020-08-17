@@ -31,7 +31,7 @@ export class DatasetDatabase {
             },
             {
                 display: "Coral 500 sub-sampled post Line Creation normalized",
-                path: "datasets/coral/500_post_subsampled_individual_normalized_lines_path_explorer",
+                path: "datasets/coral/500_post_subsampled_individual_normalized_lines_path_explorer.csv",
                 type: DatasetType.Coral
             },
             {
