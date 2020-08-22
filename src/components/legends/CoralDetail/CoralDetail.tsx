@@ -70,12 +70,12 @@ function aggregateCoral(vectors, aggregation, setProjectionColumns, projectionCo
   // .text('Tumor Type Skin: '+parseFloat(vector['Tumor Type_skin']).toFixed(3))
   // var content = container.html()
 
-  var svg = `<svg width="260" height="240" viewBox="0 0 260 240">
+  var svg = `<svg width="260" height="440" viewBox="0 0 260 440">
   <g font-size="16" style="text-anchor: left">
-    <text x="10" y="10">Cohort Aggregate Data</text>
+    <text x="10" y="10">Cohort Sample Data</text>
   </g>
 
-  <foreignObject x="21" y="21" width="180" height="180" style="overflow: scroll">
+  <foreignObject x="21" y="21" width="180" height="400" style="overflow: scroll">
 
   ${content}
 

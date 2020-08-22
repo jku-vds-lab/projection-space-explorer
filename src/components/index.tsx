@@ -9,7 +9,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
 import { Divider } from "@material-ui/core";
-import { loadFromPath, Dataset } from './util/datasetselector'
+import { loadFromPath, Dataset, DatasetType } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import { TensorLoader, MediaControlCard } from "./projection/integration";
@@ -287,12 +287,37 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setActiveLine(null)
     this.props.setActiveStory(null)
     this.props.setStories(null)
-    this.props.setProjectionColumns(this.dataset.getColumns().map(entry => {
-      return {
-        name: entry,
-        checked: false
-      }
-    }))
+
+    // TODO create more general implementation for using defaults with all datatypes and potentially outsource
+    const defaultCoralFeatures = [
+      "KRAS: AA Mutated_Mutated",
+      "KRAS: AA Mutated_Non Mutated",
+      "KRAS: AA Mutation_p.Gly12Ala",
+      "KRAS: AA Mutation_p.Gly12Cys",
+      "KRAS: AA Mutation_p.Gly12Val",
+      "Tumor Type_colon adenocarcinoma",
+      "Tumor Type_lung adenocarcinoma",
+      "Tumor Type_pancreatic adenocarcinoma",
+      "Tumor Type_breast invasive carcinoma",
+      "MDM2: Copy Number Class_Amplification",
+      "TP53: AA Mutation_wt"
+    ]
+
+    if (this.dataset.info.type === DatasetType.Coral) {
+      this.props.setProjectionColumns(this.dataset.getColumns().map(entry => {
+        return {
+          name: entry,
+          checked: (defaultCoralFeatures.indexOf(entry) > -1)
+        }
+      }))
+    } else {
+      this.props.setProjectionColumns(this.dataset.getColumns().map(entry => {
+        return {
+          name: entry,
+          checked: entry == 'Age'
+        }
+      }))
+    }
 
     this.legend.current.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
