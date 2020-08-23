@@ -8,7 +8,85 @@ const oneHotToCategorical = state => {
 
 function aggregateCoral(vectors, aggregation, setProjectionColumns, projectionColumns) {
   var vector = null
-  if (vectors.length != 1 && aggregation) {
+  var container = d3.create('div')
+  if (vectors.length > 1 && aggregation) {
+    // vectors is an array where each element is 
+    // a dict of key:value for 'line', 'cp', ...
+    // i need the variance of each feature
+    // somehow iterate over list of dictionaries and reduce all with same name
+    // then sort this list of variances
+    // then create the html table in that order
+
+    // create list of only the features that were checked for projection
+    const checkedFeatures = []
+    for (const entry of projectionColumns.entries()) {
+      // entry[0] .. idx, entry[1] ... {name: , checked}
+      if (entry[1]['checked']) {
+        checkedFeatures.push(entry[1]['name'])
+      }  
+    }
+    
+    // turn this array of maps for each sample into map of arrays
+    // i.e. mapOfArrays['brain cancer'] = [0, 1, 1, 1, 0, 0]
+    const mapOfArrays = {}
+    for (var i = 0; i < checkedFeatures.length; i++) {
+      mapOfArrays[checkedFeatures[i]] = vectors.map(sample => +sample[checkedFeatures[i]])
+    }
+    
+    // function for calculating variance relative to mean
+    const calculateVariancePercentage = (data) => {
+      const meanValue = data.reduce((sum, element) => sum + element, 0) / data.length;
+      const sumOfDeviations = data.reduce((sod, element) => Math.pow(element - meanValue, 2), 0);
+      const variance = sumOfDeviations / (data.length - 1);
+      return variance / (meanValue + 1e-5);
+    }
+
+    const calculateMean = (data) => {
+      const meanValue = data.reduce((sum, element) => sum + element, 0) / data.length;
+      return meanValue;
+    }
+
+    const meanDict = {}
+    for (var i = 0; i < checkedFeatures.length; i++) {
+      meanDict[checkedFeatures[i]] = calculateMean(mapOfArrays[checkedFeatures[i]])
+    }
+
+    // create dictionary for featureName: variance
+    const varDict = {}
+    for (var i = 0; i < checkedFeatures.length; i++) {
+      varDict[checkedFeatures[i]] = calculateVariancePercentage(mapOfArrays[checkedFeatures[i]])
+    }
+
+    // sorting this dictionary by variance
+
+    // Create items array
+    var items = Object.keys(varDict).map(function(key) {
+      return [key, meanDict[key], varDict[key]];
+    });
+
+    // Sort the array based on the third element, i.e., variance
+    items.sort(function(first, second) {
+      return first[2] - second[2]
+    });
+
+    var table = container.append('table')
+  
+    // create html table for variance sorted features aggregates
+    for (var key in items) {
+      table.append('tr')
+        .append('td')
+        .attr('class', 'coralCohort')
+        .text(items[key][0])
+
+      table.append('tr')
+      .append('td')
+      .attr('class', 'coralCohort')
+      .text('mean:' + parseFloat(items[key][1]).toFixed(3) + ', var:' + parseFloat(items[key][2]).toFixed(3))
+    
+    }
+
+  }
+  else if (vectors.length != 1 && aggregation) {
     return "<h5>Not applicable</h5>"
   } else if (vectors.length != 1 && !aggregation) {
     vector = { }
@@ -19,63 +97,26 @@ function aggregateCoral(vectors, aggregation, setProjectionColumns, projectionCo
     }
   } else {
     vector = vectors[0]
-  }
-
-  var container = d3.create('div')
-
-  var table = container.append('table')
-
-  for (var i=0; i < projectionColumns.length; i++) {
-    var name = projectionColumns[i]['name']
-    var checked = projectionColumns[i]['checked']
-    if (checked) {
-      table.append('tr')
-        .append('td')
-        .attr('class', 'coralCohort')
-        .text(name+': '+parseFloat(vector[name]).toFixed(3))
+    
+    var table = container.append('table')
+  
+    for (var i=0; i < projectionColumns.length; i++) {
+      var name = projectionColumns[i]['name']
+      var checked = projectionColumns[i]['checked']
+      if (checked) {
+        table.append('tr')
+          .append('td')
+          .attr('class', 'coralCohort')
+          .text(name+': '+parseFloat(vector[name]).toFixed(3))
+      }
     }
   }
 
-  
-  // var row = table.append('tr')
-  // row.append('td')
-  // .attr('class', 'coralCohort')
-  // .text('Age: '+parseFloat(vector['Age']).toFixed(3))
-
-  // var row = table.append('tr')
-  // row.append('td')
-  // .attr('class', 'coralCohort')
-  // .text('BMI: '+parseFloat(vector['Body Mass Index (BMI)']).toFixed(3))
-
-  // var row = table.append('tr')
-  // row.append('td')
-  // .attr('class', 'coralCohort')
-  // .text('Dtd: '+parseFloat(vector['Days to death']).toFixed(3))
-
-  // var row = table.append('tr')
-  // row.append('td')
-  // .attr('class', 'coralCohort')
-  // .text('f: '+parseFloat(vector['Gender_female']).toFixed(3))
-
-  // var row = table.append('tr')
-  // row.append('td')
-  // .attr('class', 'coralCohort')
-  // .text('m: '+parseFloat(vector['Gender_male']).toFixed(3))
-
   var content = container.html()
 
-  // var row = table.append('tr')
-  // row.append('td')
-  // .attr('class', 'coralCohort')
-  // .text('Tumor Type Skin: '+parseFloat(vector['Tumor Type_skin']).toFixed(3))
-  // var content = container.html()
+  var svg = `<svg width="300" height="440" viewBox="0 0 300 440">
 
-  var svg = `<svg width="260" height="440" viewBox="0 0 260 440">
-  <g font-size="16" style="text-anchor: left">
-    <text x="10" y="10">Cohort Sample Data</text>
-  </g>
-
-  <foreignObject x="21" y="21" width="180" height="400" style="overflow: scroll">
+  <foreignObject x="21" y="21" width="300" height="400" style="overflow: scroll">
 
   ${content}
 
