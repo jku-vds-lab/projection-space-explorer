@@ -630,6 +630,12 @@ export class Dataset {
         })
     }
 
+    mapProjectionInitialization = entry => {
+        return {
+          name: entry,
+          checked: entry[0] === '*'
+        }
+      }
 
     /**
      * Returns an array of columns that are available in the vectors

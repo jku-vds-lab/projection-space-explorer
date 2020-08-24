@@ -288,36 +288,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setActiveStory(null)
     this.props.setStories(null)
 
-    // TODO create more general implementation for using defaults with all datatypes and potentially outsource
-    const defaultCoralFeatures = [
-      "KRAS: AA Mutated_Mutated",
-      "KRAS: AA Mutated_Non Mutated",
-      "KRAS: AA Mutation_p.Gly12Ala",
-      "KRAS: AA Mutation_p.Gly12Cys",
-      "KRAS: AA Mutation_p.Gly12Val",
-      "Tumor Type_colon adenocarcinoma",
-      "Tumor Type_lung adenocarcinoma",
-      "Tumor Type_pancreatic adenocarcinoma",
-      "Tumor Type_breast invasive carcinoma",
-      "MDM2: Copy Number Class_Amplification",
-      "TP53: AA Mutation_wt"
-    ]
-
-    if (this.dataset.info.type === DatasetType.Coral) {
-      this.props.setProjectionColumns(this.dataset.getColumns().map(entry => {
-        return {
-          name: entry,
-          checked: (defaultCoralFeatures.indexOf(entry) > -1)
-        }
-      }))
-    } else {
-      this.props.setProjectionColumns(this.dataset.getColumns().map(entry => {
-        return {
-          name: entry,
-          checked: entry == 'Age'
-        }
-      }))
-    }
+    this.props.setProjectionColumns(this.dataset.getColumns().map(this.dataset.mapProjectionInitialization))
 
     this.legend.current.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
