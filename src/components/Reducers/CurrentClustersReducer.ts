@@ -1,6 +1,8 @@
+import { ActionTypeLiteral } from "../Actions/Actions"
+
 const currentClusters = (state = [], action) => {
     switch (action.type) {
-        case 'SET_CURRENT_CLUSTERS':
+        case ActionTypeLiteral.SetCurrentClusters:
             return action.currentClusters
         default:
             return state

@@ -19,10 +19,12 @@ import { connect } from 'react-redux'
 import { graphLayout } from '../util/graphs';
 import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
 import { Dataset, DataLine, Vect } from '../util/datasetselector';
-import { setAggregationAction, setActiveLineAction, setClusterEdgesAction, setViewTransformAction } from '../Actions/Actions';
+import { setAggregationAction, setActiveLineAction, setClusterEdgesAction, setViewTransformAction, toggleSelectedClusterAction } from '../Actions/Actions';
 import { ViewTransform } from './ViewTransform'
 import { Camera } from 'three';
 import { LineVisualization, PointVisualization, ClusterVisualization } from './meshes';
+import { MultivariateClustering } from './Visualizations/MultivariateClustering';
+import { ClusterMode } from '../Reducers/ClusterModeReducer';
 
 
 const useStyles = makeStyles(theme => ({
@@ -143,6 +145,10 @@ type ViewProps = {
     vectorByShape: any
     pathLengthRange: any
     advancedColoringSelection: boolean[]
+    clusterMode: ClusterMode
+    toggleSelectedCluster: any
+
+    selectedClusters: Cluster[]
 }
 
 type ViewState = {
@@ -163,7 +169,9 @@ const mapStateToProps = state => ({
     highlightedSequence: state.highlightedSequence,
     activeLine: state.activeLine,
     viewTransform: state.viewTransform,
-    advancedColoringSelection: state.advancedColoringSelection
+    advancedColoringSelection: state.advancedColoringSelection,
+    clusterMode: state.clusterMode,
+    selectedClusters: state.selectedClusters
 })
 
 
@@ -171,7 +179,8 @@ const mapDispatchToProps = dispatch => ({
     setCurrentAggregation: id => dispatch(setAggregationAction(id)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine)),
-    setViewTransform: viewTransform => dispatch(setViewTransformAction(viewTransform))
+    setViewTransform: viewTransform => dispatch(setViewTransformAction(viewTransform)),
+    toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedClusterAction(selectedCluster))
 })
 
 
@@ -213,6 +222,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
     wheelListener: any;
     mouseUpListener: any;
     infoTimeout: any
+    multivariateClusterView: MultivariateClustering
 
 
     constructor(props) {
@@ -415,19 +425,31 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 if (this.props.activeLine) {
                     break;
                 }
-
                 var found = false
                 this.props.clusters.forEach(cluster => {
-                    if (cluster.label == '-1') return;
 
-                    if (cluster.containsPoint(coords)) {
-                        if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
-                            found = true
-                            this.setState({
-                                hoverCluster: cluster
-                            })
+                    switch (this.props.clusterMode) {
+                        case ClusterMode.Univariate: {
+                            if (cluster.containsPoint(coords)) {
+                                if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
+                                    found = true
+                                    this.setState({
+                                        hoverCluster: cluster
+                                    })
+                                }
+                            }
                         }
+                        case ClusterMode.Multivariate: {
+                            if (new THREE.Vector2(coords.x, coords.y).distanceTo(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y)) < 1) {
+                                found = true
+                                this.setState({
+                                    hoverCluster: cluster
+                                })
+                            }
+                        }
+
                     }
+
                 })
                 if (!found) {
                     this.setState({
@@ -514,43 +536,63 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                     break;
                 }
 
-                // current hover is null, check if we are inside a cluster
-                var found = false
-                this.props.clusters.forEach(cluster => {
-                    if (cluster.label != '-1') {
-                        if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
-                            found = true
+                switch (this.props.clusterMode) {
+                    case ClusterMode.Univariate: {
+                        // current hover is null, check if we are inside a cluster
+                        var found = false
+                        this.props.clusters.forEach(cluster => {
+                            if (cluster.label != '-1') {
+                                if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
+                                    found = true
 
-                            if (event.button == 0) {
-                                var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
+                                    if (event.button == 0) {
+                                        var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
 
-                                selected.forEach(vector => {
-                                    vector.view.selected = !vector.view.selected
+                                        selected.forEach(vector => {
+                                            vector.view.selected = !vector.view.selected
 
-                                    if (this.currentAggregation.includes(vector) && !vector.view.selected) {
-                                        this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
-                                    } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
-                                        this.currentAggregation.push(vector)
+                                            if (this.currentAggregation.includes(vector) && !vector.view.selected) {
+                                                this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
+                                            } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
+                                                this.currentAggregation.push(vector)
+                                            }
+                                        })
+
+
+                                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
+
+                                        this.lines.groupHighlight(uniqueIndices)
+                                        //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+
+                                        this.props.onAggregate(this.currentAggregation)
+                                        this.props.setCurrentAggregation(this.currentAggregation)
+                                    } else if (event.button == 1) {
+                                        this.setZoomTarget(cluster.vectors, 1)
                                     }
-                                })
-
-
-                                var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
-
-                                this.lines.groupHighlight(uniqueIndices)
-                                //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
-
-                                this.props.onAggregate(this.currentAggregation)
-                                this.props.setCurrentAggregation(this.currentAggregation)
-                            } else if (event.button == 1) {
-                                this.setZoomTarget(cluster.vectors, 1)
+                                }
                             }
+                        })
+                        if (!found) {
+                            this.clearSelection()
                         }
                     }
-                })
-                if (!found) {
-                    this.clearSelection()
+                    case ClusterMode.Multivariate: {
+                        let selected: Cluster = null
+                        let minDist = Number.MAX_VALUE
+                        this.props.clusters.forEach(cluster => {
+                            let dist = new THREE.Vector2(coords.x, coords.y).distanceTo(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y))
+                            if (dist < 1 && dist < minDist) {
+                                selected = cluster
+                                minDist = dist
+                            }
+                        })
+                        this.props.toggleSelectedCluster(selected)
+
+                    }
+
                 }
+
+
                 break;
             case Tool.Crosshair:
                 var idx = this.choose(coords)
@@ -634,6 +676,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
     deleteClusters() {
         this.clusterVisualization?.dispose(this.scene)
         this.clusterVisualization = null
+        this.multivariateClusterView?.destroy()
+        this.multivariateClusterView = null
     }
 
 
@@ -970,6 +1014,10 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
 
+    /**
+     * 
+     * @param checked 
+     */
     setLineFilter(checked) {
         this.segments.forEach((segment) => {
             var show = checked[segment.vectors[0].line]
@@ -980,6 +1028,10 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
     }
 
 
+    /**
+     * Updates the x,y coordinates of the visualization only. This will also
+     * recalculate the optimal camera zoom level.
+     */
     updateXY() {
         this.particles.updatePosition()
         this.lines.updatePosition()
@@ -1126,11 +1178,22 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         // If we have clusters now... and are on clusters tab... create cluster visualization
         if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters != null) {
             if (this.props.openTab == 1) {
-                this.clusterVisualization?.dispose(this.scene)
-                this.createClusters(this.props.clusters)
+                if (this.props.dataset.multivariateLabels) {
+                    this.multivariateClusterView?.destroy()
+                    this.multivariateClusterView = new MultivariateClustering(this.props.dataset, this.scene, this.props.clusters)
+                    this.multivariateClusterView?.create()
+                } else {
+                    this.clusterVisualization?.dispose(this.scene)
+                    this.createClusters(this.props.clusters)
+                }
             }
         } else if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters == null) {
             this.deleteClusters()
+        }
+
+        // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
+        if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)) {
+            this.multivariateClusterView.highlightCluster(this.props.selectedClusters)
         }
 
         // Path length range has changed, update view accordingly
@@ -1261,7 +1324,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
                 {
-                    this.state.hoverCluster != null && this.props.currentTool == Tool.Grab ?
+                    this.props.clusterMode == ClusterMode.Univariate && this.state.hoverCluster != null && this.props.currentTool == Tool.Grab ?
                         <div
                             className='speech-bubble-ds'
                             style={{

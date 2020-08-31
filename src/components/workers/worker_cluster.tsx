@@ -190,15 +190,14 @@ self.addEventListener('message', function (e) {
             })
         })
     } else if (e.data.type == 'extract') {
-        console.log("triangulate")
         // From input data [ [label], [label]... ] generate the clusters with triangulation
         var clusters = {}
 
         e.data.message.forEach((vector, index) => {
-            const [x, y, label] = vector
+            const [x, y, labels] = vector
 
-            if (label != undefined && label >= 0) {
-                // Ignore invalid labels
+            labels.forEach(label => {
+                // If we have a new
                 if (!(label in clusters)) {
                     clusters[label] = { points: [] }
                 }
@@ -210,7 +209,7 @@ self.addEventListener('message', function (e) {
                     x: x,
                     y: y
                 })
-            }
+            })
         })
 
         Object.keys(clusters).forEach(key => {
@@ -249,6 +248,7 @@ self.addEventListener('message', function (e) {
             cluster.triangulation = triangulated
         })
 
+        console.log(clusters)
         let context = self as any
         context.postMessage(clusters)
     }

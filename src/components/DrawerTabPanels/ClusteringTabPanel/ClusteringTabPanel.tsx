@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import { annotateVectors } from "../../WebGLView/tools"
 import Cluster, { Story } from "../../util/Cluster"
 import { graphLayout, Edge } from "../../util/graphs"
-import { setActiveStoryAction, setStoriesAction, setClusterEdgesAction, setStoryModeAction } from "../../Actions/Actions"
+import { setActiveStoryAction, setStoriesAction, setClusterEdgesAction, setStoryModeAction, setCurrentClustersAction } from "../../Actions/Actions"
 import { StoryMode } from "../../Reducers/StoryModeReducer"
 
 var worker = new Worker('dist/cluster.js')
@@ -58,16 +58,16 @@ function vectorAsXml(vectors, segments) {
 
 
 type ClusteringTabPanelProps = {
-    backendRunning: boolean
-    clusteringWorker: any
-    dataset: any
+    backendRunning?: boolean
+    clusteringWorker?: any
+    dataset?: any
     activeStory?: any
     setActiveStory?: any
     stories?: any
     onClusteringStart?: any
     annotate?: any
-    open: boolean,
-    storyMode: StoryMode
+    open?: boolean,
+    storyMode?: StoryMode
 }
 
 
@@ -75,14 +75,11 @@ const mapStateToProps = state => ({
     currentAggregation: state.currentAggregation,
     stories: state.stories,
     activeStory: state.activeStory,
-    storyMode: state.storyMode
+    storyMode?: state.storyMode
 })
 
 const mapDispatchToProps = dispatch => ({
-    setCurrentClusters: clusters => dispatch({
-        type: 'SET_CURRENT_CLUSTERS',
-        currentClusters: clusters
-    }),
+    setCurrentClusters: clusters => dispatch(setCurrentClustersAction(clusters)),
     setStories: stories => dispatch(setStoriesAction(stories)),
     setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
@@ -162,18 +159,20 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
                 const [edges] = graphLayout(clusters)
 
                 setClusterEdges(edges)
-
-                var stories = storyLayout(edges)
-
                 setCurrentClusters(clusters)
-                setStories(stories)
-                setActiveStory(stories[0])
+                if (edges.length > 0) {
+                    var stories = storyLayout(edges)
+
+                    setStories(stories)
+                    setActiveStory(stories[0])
+                }
             }
 
             worker.postMessage({
                 type: 'extract',
                 message: dataset.vectors.map(vector => [vector.x, vector.y, vector.clusterLabel])
             })
+
         } else {
             setStories(null)
             setActiveStory(null)

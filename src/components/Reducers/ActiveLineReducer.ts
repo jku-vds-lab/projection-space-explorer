@@ -1,6 +1,8 @@
+import { ActionTypeLiteral } from "../Actions/Actions"
+
 const activeLine = (state = null, action) => {
     switch (action.type) {
-        case 'SET_ACTIVE_LINE':
+        case ActionTypeLiteral.SetActiveLine:
             return action.activeLine
         default:
             return state

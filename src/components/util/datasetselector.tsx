@@ -35,6 +35,11 @@ export class DatasetDatabase {
                 type: DatasetType.Test
             },
             {
+                display: "Multivariate Test",
+                path: "datasets/test/multivariate.csv",
+                type: DatasetType.Test
+            },
+            {
                 display: "Chess: 190 Games",
                 path: "datasets/chess/chess16k.csv",
                 type: DatasetType.Chess
@@ -318,10 +323,33 @@ export class Preprocessor {
         // If data has no cluster labels, add default ones
         if (!header.includes('clusterLabel')) {
             vectors.forEach(vector => {
-                vector.clusterLabel = -1
+                vector.clusterLabel = []
                 vector.clusterProbability = 0.0
             })
+        } else {
+            // Support multivariate points ... eg each clusterLabel is actually an array
+            vectors.forEach(vector => {
+                try {
+                    if (isNaN(vector.clusterLabel)) {
+                        // convert string to array
+                        vector.clusterLabel = JSON.parse(vector.clusterLabel)
+                    } else {
+                        if (vector.clusterLabel < 0) {
+                            vector.clusterLabel = []
+                        } else {
+                            // convert number to array
+                            vector.clusterLabel = [vector.clusterLabel]
+                        }
+                    }
+                } catch {
+                    // default is empty array
+                    vector.clusterLabel = []
+                }
+
+
+            })
         }
+
 
 
         return ranges
@@ -573,6 +601,7 @@ export class Dataset {
     info: any
     columns: any
     type: DatasetType
+    multivariateLabels: boolean
 
     constructor(vectors, segments, ranges, info) {
         this.vectors = vectors
@@ -584,6 +613,17 @@ export class Dataset {
 
         this.calculateBounds()
         this.calculateColumnTypes()
+        this.checkLabels()
+    }
+
+    checkLabels() {
+        this.multivariateLabels = false
+        this.vectors.forEach(vector => {
+            if (vector.clusterLabel.length > 1) {
+                this.multivariateLabels = true
+                return;
+            }
+        })
     }
 
     /**
@@ -771,13 +811,41 @@ export class DataLine {
     }
 }
 
+export type VectorType = {
+    x: number
+    y: number
+}
+
+/**
+ * Math class for vector calculations.
+ */
+export class VectBase implements VectorType {
+    x: number
+    y: number
+
+    constructor(x: number, y: number) {
+        this.x = x
+        this.y = y
+    }
+
+    lerp(v: VectorType, alpha: number) {
+        this.x += (v.x - this.x) * alpha
+        this.y += (v.y - this.y) * alpha
+
+        return this
+    }
+
+    angle() {
+        return Math.atan2(- this.y, - this.x) + Math.PI;
+    }
+}
+
+
+
 /**
  * Main data class for points
  */
-export class Vect {
-    // x, y coordinates
-    x: number
-    y: number
+export class Vect extends VectBase {
 
     // cluster label and probability
     clusterLabel: any
@@ -798,6 +866,8 @@ export class Vect {
     __meta__: any
 
     constructor(dict) {
+        super(0, 0)
+
         // Copy dictionary values to this object
         Object.keys(dict).forEach(key => {
             this[key] = dict[key]
@@ -837,7 +907,7 @@ export class Vect {
     pureHeader() {
         return Object.keys(this).filter(value => value != '__meta__')
     }
-        
+
 }
 
 
@@ -895,7 +965,7 @@ export class VectView {
 
     highlighted = false
 
-    
+
 
     constructor() {
     }
@@ -946,7 +1016,7 @@ export class MultiDictionary {
         } else {
             // If key is not in lookup, store lookup index and add array
             this.lookup[key] = this.data.length
-            this.data.push([ value ])
+            this.data.push([value])
         }
     }
 

@@ -12,7 +12,6 @@ import { Divider } from "@material-ui/core";
 import { loadFromPath, Dataset } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
-import { TensorLoader, MediaControlCard } from "./projection/integration";
 import { arraysEqual } from "./WebGLView/UtilityFunctions";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -50,12 +49,20 @@ import dataset from "./Reducers/DatasetReducer";
 import highlightedSequence from "./Reducers/HighlightedSequenceReducer";
 import { viewTransform } from "./Reducers/ViewTransformReducer";
 import advancedColoringSelection from "./Reducers/AdvancedColoringSelection";
-import { setAdvancedColoringSelectionAction, setHighlightedSequenceAction, setActiveLineAction, setActiveStoryAction, setStoriesAction, setDatasetAction, setOpenTabAction, setProjectionColumns } from "./Actions/Actions";
+import { setAdvancedColoringSelectionAction, setHighlightedSequenceAction, setActiveLineAction, setActiveStoryAction, setStoriesAction, setDatasetAction, setOpenTabAction, setProjectionColumns, setProjectionOpenAction, setWebGLViewAction, setClusterModeAction } from "./Actions/Actions";
 import { CategoryOptions } from "./WebGLView/CategoryOptions";
 import { AdvancedColoringPopover } from "./DrawerTabPanels/StatesTabPanel/AdvancedColoring/AdvancedColoringPopover/AdvancedColoringPopover";
 import { ColorScaleSelect } from "./DrawerTabPanels/StatesTabPanel/ColorScaleSelect/ColorScaleSelect";
 import storyMode from "./Reducers/StoryModeReducer";
 import projectionColumns from "./Reducers/ProjectionColumnsReducer";
+import projectionOpen from "./Reducers/ProjectionOpenReducer";
+import projectionParams from "./Reducers/ProjectionParamsReducer";
+import { ProjectionControlCard } from "./DrawerTabPanels/EmbeddingTabPanel/ProjectionControlCard/ProjectionControlCard";
+import projectionWorker from "./Reducers/ProjectionWorkerReducer";
+import { EmbeddingTabPanel } from "./DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel";
+import webGLView from "./Reducers/WebGLViewReducer";
+import clusterMode, { ClusterMode } from "./Reducers/ClusterModeReducer";
+import selectedClusters from "./Reducers/SelectedClustersReducer";
 
 
 
@@ -106,16 +113,19 @@ const mapDispatchToProps = dispatch => ({
   setActiveLine: value => dispatch(setActiveLineAction(value)),
   setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
   setStories: stories => dispatch(setStoriesAction(stories)),
-  setProjectionColumns: projectionColumns => dispatch(setProjectionColumns(projectionColumns))
+  setProjectionColumns: projectionColumns => dispatch(setProjectionColumns(projectionColumns)),
+  setProjectionOpen: projectionOpen => dispatch(setProjectionOpenAction(projectionOpen)),
+  setWebGLView: webGLView => dispatch(setWebGLViewAction(webGLView)),
+  setClusterMode: clusterMode => dispatch(setClusterModeAction(clusterMode))
 })
 
 
 var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component<any, any> {
-  threeRef: React.RefObject<any>;
   legend: React.RefObject<Legend>;
   dataset: Dataset;
   vectors: any;
   segments: any;
+  threeRef: any;
 
   constructor(props) {
     super(props)
@@ -149,9 +159,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
       sizeScale: [1, 2],
 
-      backendRunning: false,
-
-      projectionOpen: false
+      backendRunning: false
     }
 
     var worker = new Worker('dist/healthcheck.js')
@@ -166,6 +174,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
     this.threeRef = React.createRef()
+    this.props.setWebGLView(this.threeRef)
     this.legend = React.createRef()
     this.onHover = this.onHover.bind(this)
     this.onAggregate = this.onAggregate.bind(this)
@@ -287,6 +296,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setActiveLine(null)
     this.props.setActiveStory(null)
     this.props.setStories(null)
+    this.props.setClusterMode(this.dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
     this.props.setProjectionColumns(this.dataset.getColumns().map(entry => {
       return {
         name: entry,
@@ -434,7 +444,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       this.setState((state, props) => {
         this.threeRef.current.createClusters(clusters)
 
-        var story = new Story(clusters.slice(0, 9))
+        var story = new Story(clusters.slice(0, 9), null)
 
         return {
           clusteringOpen: false,
@@ -461,7 +471,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
   render() {
-    console.log("application render")
     return <div style={
       {
         display: 'flex',
@@ -493,7 +502,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           >
             <Tab label="States" style={{ minWidth: 0, flexGrow: 1 }} />
             <Tab label="Clusters" style={{ minWidth: 0, flexGrow: 1 }} />
-            <Tab label="Projection" style={{ minWidth: 0, flexGrow: 1 }} />
+            <Tab label="Embedding" style={{ minWidth: 0, flexGrow: 1 }} />
           </Tabs>
         </div>
 
@@ -795,53 +804,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             </TabPanel>
 
             <TabPanel value={this.props.openTab} index={2}>
-              <FlexParent
-                alignItems='stretch'
-                flexDirection='column'
-                margin='0 16px'
-                justifyContent=''
-              >
-                <Button variant="outlined"
-                  style={{
-                    margin: '8px 0'
-                  }}
-                  onClick={() => {
-                    this.setState((state, props) => {
-                      return {
-                        projectionOpen: true
-                      }
-                    })
-                  }}>Start Projection</Button>
-
-                <MediaControlCard
-                  input={this.state.projectionInput}
-                  worker={this.state.projectionWorker}
-                  params={this.state.projectionParams}
-                  onClose={() => {
-                    if (this.state.projectionWorker) {
-                      this.state.projectionWorker.terminate()
-                    }
-
-                    this.setState({
-                      projectionComputing: false,
-                      projectionInput: null,
-                      projectionParams: null,
-                      projectionWorker: null
-                    })
-                  }}
-                  onComputingChanged={(e, newVal) => {
-                    this.setState({
-                      projectionComputing: newVal
-                    })
-                  }}
-                  onStep={(Y) => {
-                    this.vectors.forEach((vector, i) => {
-                      vector.x = Y[i][0]
-                      vector.y = Y[i][1]
-                    })
-                    this.threeRef.current.updateXY()
-                  }} />
-              </FlexParent>
+              <EmbeddingTabPanel></EmbeddingTabPanel>
             </TabPanel>
           </Grid>
 
@@ -883,29 +846,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       }} />
 
 
-      <TensorLoader
-        open={this.state.projectionOpen}
-        setOpen={(value) => {
-          this.setState({
-            projectionOpen: value
-          })
-        }}
 
-        dataset={this.state.dataset}
-
-        onTensorInitiated={(event, selected, params) => {
-
-          var worker = new Worker('dist/worker.js')
-
-          // Initialise state
-          this.setState({
-            projectionComputing: true,
-            projectionWorker: worker,
-            projectionInput: this.state.dataset.asTensor(selected),
-            projectionParams: params
-          })
-        }}
-      ></TensorLoader>
 
 
       <SelectionClusters
@@ -942,7 +883,13 @@ const rootReducer = combineReducers({
   viewTransform: viewTransform,
   advancedColoringSelection: advancedColoringSelection,
   storyMode: storyMode,
-  projectionColumns: projectionColumns
+  projectionColumns: projectionColumns,
+  projectionOpen: projectionOpen,
+  projectionParams: projectionParams,
+  projectionWorker: projectionWorker,
+  webGLView: webGLView,
+  clusterMode: clusterMode,
+  selectedClusters: selectedClusters
 })
 
 

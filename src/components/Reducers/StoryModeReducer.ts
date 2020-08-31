@@ -1,3 +1,5 @@
+import { ActionTypeLiteral } from "../Actions/Actions"
+
 export enum StoryMode {
     Cluster,
     Difference
@@ -5,7 +7,7 @@ export enum StoryMode {
 
 const storyMode = (state = StoryMode.Cluster, action) => {
     switch (action.type) {
-        case 'SET_STORY_MODE':
+        case ActionTypeLiteral.SetStoryMode:
             return action.storyMode
         default:
             return state

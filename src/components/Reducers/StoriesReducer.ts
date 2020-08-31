@@ -1,6 +1,8 @@
+import { ActionTypeLiteral } from "../Actions/Actions"
+
 const stories = (state = [], action) => {
     switch (action.type) {
-        case 'SET_STORIES':
+        case ActionTypeLiteral.SetStories:
             return action.stories
         default:
             return state

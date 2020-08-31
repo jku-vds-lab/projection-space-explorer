@@ -1,6 +1,8 @@
+import { ActionTypeLiteral } from "../Actions/Actions"
+
 const advancedColoringSelection = (state = new Array(100).fill(true), action) => {
     switch (action.type) {
-        case 'SET_ADVANCED_COLORING_SELECTION':
+        case ActionTypeLiteral.SetAdvancedColoringSelection:
             return action.advancedColoringSelection
         default:
             return state

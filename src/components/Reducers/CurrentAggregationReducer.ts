@@ -1,6 +1,8 @@
+import { ActionTypeLiteral } from "../Actions/Actions"
+
 const currentAggregation = (state = [], action) => {
     switch (action.type) {
-        case 'SET_AGGREGATION':
+        case ActionTypeLiteral.SetAggregation:
             return action.aggregation
         default:
             return state
