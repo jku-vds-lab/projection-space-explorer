@@ -3206,16 +3206,17 @@ self.addEventListener('message', function (e) {
       });
     });
   } else if (e.data.type == 'extract') {
-    // From input data [ [label], [label]... ] generate the clusters with triangulation
+    console.log("triangulate"); // From input data [ [label], [label]... ] generate the clusters with triangulation
+
     var clusters = {};
     e.data.message.forEach(function (vector, index) {
       var _vector = _slicedToArray(vector, 3),
           x = _vector[0],
           y = _vector[1],
-          labels = _vector[2];
+          label = _vector[2];
 
-      labels.forEach(function (label) {
-        // If we have a new
+      if (label != undefined && label >= 0) {
+        // Ignore invalid labels
         if (!(label in clusters)) {
           clusters[label] = {
             points: []
@@ -3229,7 +3230,7 @@ self.addEventListener('message', function (e) {
           x: x,
           y: y
         });
-      });
+      }
     });
     Object.keys(clusters).forEach(function (key) {
       if (!validKey(key)) return;
@@ -3257,7 +3258,6 @@ self.addEventListener('message', function (e) {
       cluster.hull = polygon;
       cluster.triangulation = triangulated;
     });
-    console.log(clusters);
     var context = self;
     context.postMessage(clusters);
   }

@@ -9,7 +9,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
 import { Divider } from "@material-ui/core";
-import { loadFromPath, Dataset } from './util/datasetselector'
+import { loadFromPath, Dataset, DatasetType } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import { arraysEqual } from "./WebGLView/UtilityFunctions";
@@ -297,12 +297,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setActiveStory(null)
     this.props.setStories(null)
     this.props.setClusterMode(this.dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
-    this.props.setProjectionColumns(this.dataset.getColumns().map(entry => {
-      return {
-        name: entry,
-        checked: false
-      }
-    }))
+    this.props.setProjectionColumns(this.dataset.getColumns().map(this.dataset.mapProjectionInitialization))
 
     this.legend.current.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
