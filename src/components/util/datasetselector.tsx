@@ -25,6 +25,31 @@ export class DatasetDatabase {
     constructor() {
         this.data = [
             {
+                display: "Coral sub-sampled",
+                path: "datasets/coral/non-mutated_subsampled_individual_path_explorer.csv",
+                type: DatasetType.Coral
+            },
+            {
+                display: "Coral sub-sampled normalized",
+                path: "datasets/coral/non-mutated_subsampled_individual_normalized_path_explorer.csv",
+                type: DatasetType.Coral
+            },
+            {
+                display: "Coral Individual Samples",
+                path: "datasets/coral/coral_individual_data.csv",
+                type: DatasetType.Coral
+            },
+            {
+                display: "Coral Aggregate Cohorts",
+                path: "datasets/coral/coral_aggregate_data.csv",
+                type: DatasetType.Coral
+            },
+            {
+                display: "Coral Aggregate Cohorts Normalized",
+                path: "datasets/coral/coral_aggregate_data_normalized.csv",
+                type: DatasetType.Coral
+            },
+            {
                 display: "Minimal Example",
                 path: "datasets/test/x_y.csv",
                 type: DatasetType.Test
@@ -559,6 +584,7 @@ export enum DatasetType {
     Go,
     Test,
     Story,
+    Coral,
     None
 }
 
@@ -604,6 +630,12 @@ export class Dataset {
         })
     }
 
+    mapProjectionInitialization = entry => {
+        return {
+          name: entry,
+          checked: entry[0] === '*'
+        }
+      }
 
     /**
      * Returns an array of columns that are available in the vectors
