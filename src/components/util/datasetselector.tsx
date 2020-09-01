@@ -291,6 +291,7 @@ export class Preprocessor {
             return map
         }, {})
 
+        
         // If data contains no x and y attributes, its invalid
         if (header.includes("x") && header.includes("y")) {
             vectors.forEach(vector => {
@@ -304,6 +305,7 @@ export class Preprocessor {
                 vector.y = (Math.random() - 0.5) * 100
             })
         }
+        
 
         // If data contains no line attribute, add one
         if (!header.includes("line")) {
@@ -730,7 +732,7 @@ export class Dataset {
      */
     calculateBounds() {
         var xAxis = this.vectors.map(vector => vector.x)
-        var yAxis = this.vectors.map(vector => vector.x)
+        var yAxis = this.vectors.map(vector => vector.y)
 
         var minX = Math.min(...xAxis)
         var maxX = Math.max(...xAxis)
@@ -877,7 +879,9 @@ export class VectBase implements VectorType {
 /**
  * Main data class for points
  */
-export class Vect extends VectBase {
+export class Vect {
+    x: number
+    y: number
 
     // cluster label and probability
     clusterLabel: any
@@ -898,8 +902,6 @@ export class Vect extends VectBase {
     __meta__: any
 
     constructor(dict) {
-        super(0, 0)
-
         // Copy dictionary values to this object
         Object.keys(dict).forEach(key => {
             this[key] = dict[key]

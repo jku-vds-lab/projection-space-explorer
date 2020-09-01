@@ -4,8 +4,8 @@ import Cluster from "../../util/Cluster";
 import THREE = require("three");
 import { Dataset } from "../../util/datasetselector";
 
-const SELECTED_COLOR = 0xFF0000
-const DEFAULT_COLOR = 0xA48F8B
+const SELECTED_COLOR = 0x4d94ff
+const DEFAULT_COLOR = 0xa3a3c2
 const LINE_COLOR = 0xFF5733
 
 /**
@@ -29,8 +29,6 @@ export class MultivariateClustering {
      * Creates the visualization.
      */
     create() {
-        console.log("createing...")
-        console.log(this.clusters)
         this.clusters.forEach(cluster => {
             // Add circle to scene
             var geometry = new THREE.CircleGeometry(3 * this.dataset.bounds.scaleFactor, 32);

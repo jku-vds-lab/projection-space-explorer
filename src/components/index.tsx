@@ -297,11 +297,15 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setActiveStory(null)
     this.props.setStories(null)
     this.props.setClusterMode(this.dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
+
     this.props.setProjectionColumns(this.dataset.getColumns().map(this.dataset.mapProjectionInitialization))
 
     this.legend.current.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
     this.initializeEncodings()
+
+    console.log(this.dataset.getColumns().map(this.dataset.mapProjectionInitialization))
+    console.log(this.vectors)
   }
 
   mappingFromScale(scale, attribute) {

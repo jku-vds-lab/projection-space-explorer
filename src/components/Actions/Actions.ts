@@ -7,6 +7,7 @@ export enum ActionTypeLiteral {
     SetCheckedShapes = 'SET_CHECKED_SHAPES',
     SetSelectedVectorByShape = 'SET_SELECTED_VECTOR_BY_SHAPE',
     SetAggregation = 'SET_AGGREGATION',
+    ToggleAggregation = 'TOGGLE_AGGREGATION',
     SetClusterEdges = 'SET_CLUSTER_EDGES',
     SetActiveLine = 'SET_ACTIVE_LINE',
     SetHighlightedSequence = 'SET_HIGHLIGHTED_SEQUENCE',

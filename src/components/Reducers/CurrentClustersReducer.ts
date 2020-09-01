@@ -1,6 +1,6 @@
 import { ActionTypeLiteral } from "../Actions/Actions"
 
-const currentClusters = (state = [], action) => {
+const currentClusters = (state = null, action) => {
     switch (action.type) {
         case ActionTypeLiteral.SetCurrentClusters:
             return action.currentClusters

@@ -75,7 +75,8 @@ const mapStateToProps = state => ({
     currentAggregation: state.currentAggregation,
     stories: state.stories,
     activeStory: state.activeStory,
-    storyMode?: state.storyMode
+    storyMode?: state.storyMode,
+    currentClusters: state.currentClusters
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -92,7 +93,8 @@ const mapDispatchToProps = dispatch => ({
 export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = connect(mapStateToProps, mapDispatchToProps)(({ setCurrentClusters,
     setStories, setActiveStory,
     currentAggregation, open, backendRunning, clusteringWorker,
-    dataset, stories, setClusterEdges, storyMode, setStoryMode }) => {
+    dataset, stories, setClusterEdges, storyMode, setStoryMode,
+    currentClusters }) => {
 
     const [clusterId, setClusterId] = React.useState(0)
 
@@ -133,7 +135,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
     }
 
     function toggleClusters() {
-        if (stories == null) {
+        if (currentClusters == null) {
             var worker = new Worker('dist/cluster.js')
 
             worker.onmessage = (e) => {
