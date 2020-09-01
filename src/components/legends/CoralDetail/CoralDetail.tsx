@@ -2,20 +2,32 @@ var d3 = require('d3')
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-const oneHotToCategorical = state => {
+const calculateVariancePercentage = (data) => {
+  const total= data.reduce(function(a,b){
+    return a+b
+  });
+  const mean=total/data.length
+  function var_numerator(value){
+    return ((value-mean)*(value-mean));
+  }
+  var variance=data.map(var_numerator);
+  variance=variance.reduce(function(a,b){
+    return (a+b);
+  });
+  variance = variance/data.length;
+  // variance relative to mean
+  return variance / (mean + 1e-9)
+}
 
+const calculateMean = (data) => {
+  const meanValue = data.reduce((sum, element) => sum + element, 0) / data.length;
+  return meanValue;
 }
 
 function aggregateCoral(vectors, aggregation, setProjectionColumns, projectionColumns) {
   var vector = null
   var container = d3.create('div')
   if (vectors.length > 1 && aggregation) {
-    // vectors is an array where each element is 
-    // a dict of key:value for 'line', 'cp', ...
-    // i need the variance of each feature
-    // somehow iterate over list of dictionaries and reduce all with same name
-    // then sort this list of variances
-    // then create the html table in that order
 
     // create list of only the features that were checked for projection
     const checkedFeatures = []
@@ -31,19 +43,6 @@ function aggregateCoral(vectors, aggregation, setProjectionColumns, projectionCo
     const mapOfArrays = {}
     for (var i = 0; i < checkedFeatures.length; i++) {
       mapOfArrays[checkedFeatures[i]] = vectors.map(sample => +sample[checkedFeatures[i]])
-    }
-    
-    // function for calculating variance relative to mean
-    const calculateVariancePercentage = (data) => {
-      const meanValue = data.reduce((sum, element) => sum + element, 0) / data.length;
-      const sumOfDeviations = data.reduce((sod, element) => Math.pow(element - meanValue, 2), 0);
-      const variance = sumOfDeviations / (data.length - 1);
-      return variance / (meanValue + 1e-5);
-    }
-
-    const calculateMean = (data) => {
-      const meanValue = data.reduce((sum, element) => sum + element, 0) / data.length;
-      return meanValue;
     }
 
     const meanDict = {}
