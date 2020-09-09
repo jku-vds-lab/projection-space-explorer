@@ -32,6 +32,11 @@ export enum ActionTypeLiteral {
 
 }
 
+export const toggleAggregationAction = aggregation => ({
+    type: ActionTypeLiteral.ToggleAggregation,
+    aggregation: aggregation
+})
+
 export const toggleSelectedClusterAction = selectedCluster => ({
     type: ActionTypeLiteral.ToggleSelectedCluster,
     selectedCluster: selectedCluster
@@ -73,7 +78,7 @@ export const setCurrentClustersAction = currentClusters => ({
 })
 
 export const setVectorByShapeAction = vectorByShape => ({
-    type: ActionTypeLiteral.SetSelectedVectorByShape,
+    type: ActionTypeLiteral.SetVectorByShape,
     vectorByShape: vectorByShape
 })
 

@@ -2,7 +2,7 @@
 import { Scene } from "three";
 import Cluster from "../../util/Cluster";
 import THREE = require("three");
-import { Dataset } from "../../util/datasetselector";
+import { Dataset, Vect } from "../../util/datasetselector";
 
 const SELECTED_COLOR = 0x4d94ff
 const DEFAULT_COLOR = 0xa3a3c2
@@ -50,7 +50,7 @@ export class MultivariateClustering {
             // Create line geometry
             cluster.vectors.forEach(vector => {
                 var temp = new THREE.Vector2(vector.x - center.x, vector.y - center.y)
-                var geometry = new THREE.PlaneGeometry(0.5 * this.dataset.bounds.scaleFactor, temp.length(), 32);
+                var geometry = new THREE.PlaneGeometry(0.3 * this.dataset.bounds.scaleFactor, temp.length(), 32);
                 var material = new THREE.MeshBasicMaterial({ color: LINE_COLOR, side: THREE.DoubleSide });
                 var plane = new THREE.Mesh(geometry, material);
                 plane.visible = false
@@ -63,6 +63,7 @@ export class MultivariateClustering {
                 
 
                 clusterObject.children.push({
+                    sample: vector,
                     geometry: geometry,
                     material: material,
                     mesh: plane
@@ -71,7 +72,38 @@ export class MultivariateClustering {
         })
     }
 
+    // Activates the lines from given samples to their corresponding clusters
+    highlightSamples(samples: Vect[]) {
+        // Deactivate all lines
+        this.deactivateAll()
+
+        samples.forEach(sample => {
+            sample.clusterLabel.forEach(label => {
+                let clusterObject = this.clusterObjects.find(e => e.cluster.label == label)
+                if (clusterObject) {
+                    clusterObject.children.forEach(child => {
+                        if (child.sample == sample) {
+                            child.mesh.visible = true
+                        }
+                    })
+                }
+            })
+        })
+    }
+
+    deactivateAll() {
+        this.clusterObjects.forEach(clusterObject => {
+            clusterObject.material.color = new THREE.Color(DEFAULT_COLOR)
+
+            clusterObject.children.forEach(child => {
+                child.mesh.visible = false
+            })
+        })
+    }
+
     highlightCluster(clusters?: Cluster[]) {
+        this.deactivateAll()
+
         this.clusterObjects.forEach(clusterObject => {
             var visible = clusters?.includes(clusterObject.cluster)
 

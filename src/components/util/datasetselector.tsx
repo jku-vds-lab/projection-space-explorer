@@ -1,4 +1,6 @@
 import { Shapes } from "../WebGLView/meshes"
+import { Edge } from "./graphs"
+import Cluster from "./Cluster"
 
 var d3v5 = require('d3')
 
@@ -10,7 +12,9 @@ const DEFAULT_ALGO = "all"
 
 
 
-
+enum PrebuiltFeatures {
+    Line = 'line'
+}
 
 
 
@@ -24,6 +28,11 @@ export class DatasetDatabase {
 
     constructor() {
         this.data = [
+            {
+                display: "Coral sub-sampled (json)",
+                path: "datasets/coral/coral_subsampled_normalized.json",
+                type: DatasetType.Coral
+            },
             {
                 display: "Coral sub-sampled",
                 path: "datasets/coral/non-mutated_subsampled_individual_path_explorer.csv",
@@ -62,6 +71,11 @@ export class DatasetDatabase {
             {
                 display: "Multivariate Test",
                 path: "datasets/test/multivariate.csv",
+                type: DatasetType.Test
+            },
+            {
+                display: "Test H5",
+                path: "datasets/test/coral_subsampled_normalized.h5",
                 type: DatasetType.Test
             },
             {
@@ -174,32 +188,6 @@ export class DatasetDatabase {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * Parses a range string and returns an object containing min and max values.
- * eg "[min;max]""
- * @param {*} str the range string
- */
-function parseRange(str) {
-    var range = str.match(/-?\d+\.?\d*/g)
-    return { min: range[0], max: range[1] }
-}
-
-
-
-
 /**
  * Class that preprocesses the data set and checks for validity.
  * Will halucinate attributes like x, y, line, algo and multiplicity if
@@ -269,29 +257,13 @@ export class Preprocessor {
     }
 
 
-    preprocess() {
-
-
+    preprocess(ranges) {
         this.inferMultiplicity()
 
         var vectors = this.vectors
         var header = Object.keys(vectors[0])
 
-        var ranges = header.reduce((map, value) => {
-            var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
-            if (matches != null) {
-                var cutHeader = value.substring(0, value.length - matches[0].length)
-                vectors.forEach(vector => {
-                    vector[cutHeader] = vector[value]
-                    delete vector[value]
-                })
-                header[header.indexOf(value)] = cutHeader
-                map[cutHeader] = parseRange(matches[0])
-            }
-            return map
-        }, {})
 
-        
         // If data contains no x and y attributes, its invalid
         if (header.includes("x") && header.includes("y")) {
             vectors.forEach(vector => {
@@ -305,18 +277,10 @@ export class Preprocessor {
                 vector.y = (Math.random() - 0.5) * 100
             })
         }
-        
+
 
         // If data contains no line attribute, add one
-        if (!header.includes("line")) {
-            // Add age attribute as index and line as DEFAULT_LINE
-            vectors.forEach((vector, index) => {
-                vector.line = DEFAULT_LINE
-                if (!header.includes("age")) {
-                    vector.age = index
-                }
-            })
-        } else if (header.includes("line") && !header.includes("age")) {
+        if (header.includes("line") && !header.includes("age")) {
             var segs = {}
             var distinct = [... new Set(vectors.map(vector => vector.line))]
             distinct.forEach(a => segs[a] = 0)
@@ -372,38 +336,11 @@ export class Preprocessor {
                     // default is empty array
                     vector.clusterLabel = []
                 }
-
-
             })
         }
 
-
-
         return ranges
     }
-}
-
-
-
-
-export function loadFromPath(path, callback) {
-
-    var entry = new DatasetDatabase().getByPath(path)
-
-    // Load csv file
-    d3v5.csv(path).then(vectors => {
-        // Convert raw dictionaries to classes ...
-        vectors = convertFromCSV(vectors)
-
-        // Add missing attributes
-        var ranges = new Preprocessor(vectors).preprocess()
-
-        // Split vectors into segments
-        var segments = getSegs(vectors)
-
-
-        callback(new Dataset(vectors, segments, ranges, entry), new InferCategory(vectors, segments).load(ranges))
-    })
 }
 
 
@@ -416,18 +353,18 @@ export function loadFromPath(path, callback) {
  */
 export class InferCategory {
     vectors: Vect[]
-    segments: DataLine[]
 
-    constructor(vectors, segments) {
+    constructor(vectors) {
         this.vectors = vectors
-        this.segments = segments
     }
 
     /**
      * Infers the type of the dataset from the columns
      * @param {*} header 
      */
-    inferType(header) {
+    inferType() {
+        var header = Object.keys(this.vectors[0])
+
         if (header.includes('up00') && header.includes('back00')) {
             return DatasetType.Rubik
         }
@@ -569,17 +506,6 @@ export class InferCategory {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 export function getSegs(vectors) {
     // Get a list of lines that are in the set
     var lineKeys = [... new Set(vectors.map(vector => vector.line))]
@@ -598,13 +524,6 @@ export function getSegs(vectors) {
 
 
     return segments
-}
-
-
-function convertFromCSV(vectors) {
-    return vectors.map(vector => {
-        return new Vect(vector)
-    })
 }
 
 export enum DatasetType {
@@ -628,13 +547,27 @@ export class Dataset {
     ranges: any
     info: any
     columns: any
+
+    // The type of the dataset (or unknown if not possible to derive)
     type: DatasetType
+
+    // True if the dataset has multiple labels per sample
     multivariateLabels: boolean
 
-    constructor(vectors, segments, ranges, info) {
+    // True if the dataset has sequential information (line attribute)
+    isSequential: boolean
+
+    // Preselected projection columns.
+    preselectedProjectionColumns: string[]
+
+    clusters: Cluster[]
+
+    // The edges between clusters.
+    clusterEdges: Edge[]
+
+    constructor(vectors, ranges, preselection, info) {
         this.vectors = vectors
         this.ranges = ranges
-        this.segments = segments
         this.info = info
         this.columns = {}
         this.type = this.info.type
@@ -642,6 +575,29 @@ export class Dataset {
         this.calculateBounds()
         this.calculateColumnTypes()
         this.checkLabels()
+
+        // If the dataset is sequential, calculate the segments
+        this.isSequential = this.checkSequential()
+        if (this.isSequential) {
+            this.segments = getSegs(this.vectors)
+        }
+
+        this.preselectedProjectionColumns = preselection
+    }
+
+    // Checks if the dataset contains sequential data
+    checkSequential() {
+        var header = this.getColumns()
+
+        // If we have no line attribute, its not sequential
+        if (!header.includes(PrebuiltFeatures.Line)) {
+            return false
+        }
+
+        // If each sample is a different line, its not sequential either
+        var set = new Set(this.vectors.map(vector => vector.line))
+
+        return set.size != this.vectors.length
     }
 
     checkLabels() {
@@ -674,10 +630,10 @@ export class Dataset {
 
     mapProjectionInitialization = entry => {
         return {
-          name: entry,
-          checked: entry[0] === '*'
+            name: entry,
+            checked: entry[0] === '*'
         }
-      }
+    }
 
     /**
      * Returns an array of columns that are available in the vectors
@@ -761,7 +717,11 @@ export class Dataset {
      * Calculates the maximum path length for this dataset.
      */
     getMaxPathLength() {
-        return Math.max(... this.segments.map(segment => segment.vectors.length))
+        if (this.isSequential) {
+            return Math.max(... this.segments.map(segment => segment.vectors.length))
+        } else {
+            return 1
+        }
     }
 }
 
@@ -1000,6 +960,7 @@ export class VectView {
     highlighted = false
 
 
+    duplicateOf = null
 
     constructor() {
     }

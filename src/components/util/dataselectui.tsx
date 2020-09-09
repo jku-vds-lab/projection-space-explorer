@@ -10,11 +10,12 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ShareIcon from '@material-ui/icons/Share';
-import { DatasetDatabase, Dataset, InferCategory, loadFromPath, Vect, Preprocessor, getSegs, DatasetType } from './datasetselector'
+import { DatasetDatabase, Vect, DatasetType } from './datasetselector'
 import Button from '@material-ui/core/Button';
 import WidgetsIcon from '@material-ui/icons/Widgets';
 import * as React from 'react'
-import * as d3v5 from 'd3'
+import { CSVLoader } from '../../model/Loaders/CSVLoader';
+import { HDF5Loader } from '../../model/Loaders/HDF5Loader';
 
 
 
@@ -73,8 +74,12 @@ export var DatasetList = ({ onChange }) => {
 
     const [loading, setLoad] = React.useState(false)
 
-    var handleClick = (path) => {
-        loadFromPath(path, onChange)
+    var handleClick = (entry) => {
+        if (entry.path.endsWith('json')) {
+            new HDF5Loader().resolvePath(entry, onChange)
+        } else {
+            new CSVLoader().resolvePath(entry, onChange)
+        }
     }
 
     var database = new DatasetDatabase()
@@ -103,7 +108,7 @@ export var DatasetList = ({ onChange }) => {
                                                 database.data.filter(value => value.type == type).map(entry => {
                                                     return <ListItem key={entry.path} button onClick={() => {
                                                         setLoad(true)
-                                                        handleClick(entry.path)
+                                                        handleClick(entry)
                                                     }
                                                     }>
                                                         <TypeIcon type={entry.type} />
@@ -130,13 +135,19 @@ export var DatasetList = ({ onChange }) => {
                             }
 
                             var file = files[0]
+                            var fileName = file.name as string
 
                             var reader = new FileReader()
                             reader.onload = (event) => {
-                                var content = event.target.result as string
+                                var content = event.target.result
 
-
-                                var vectors = d3v5.csvParse(content)
+                                if (fileName.endsWith('json')) {
+                                    new HDF5Loader().resolveContent(content, onChange)
+                                } else {
+                                    new CSVLoader().resolveContent(content, onChange)
+                                }
+                                
+                                /**var vectors = d3v5.csvParse(content)
 
                                 // Convert raw dictionaries to classes ...
                                 vectors = convertFromCSV(vectors)
@@ -145,11 +156,14 @@ export var DatasetList = ({ onChange }) => {
 
                                 var segments = getSegs(vectors)
 
-                                var infer = new InferCategory(vectors, segments)
+                                var infer = new InferCategory(vectors)
 
-                                onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType(Object.keys(vectors[0])) }), infer.load(ranges))
+                                onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType() }), infer.load(ranges))**/
                             }
+
                             reader.readAsText(file)
+                            
+                            
                         }}>
                             <div style={{ height: 200 }}></div>
                         </DragAndDrop>

@@ -6,7 +6,7 @@ import './StateSequenceDrawer.scss'
 import { Tool } from "../ToolSelection/ToolSelection";
 import { DataLine, Dataset } from "../../util/datasetselector";
 import { imageFromShape } from "../../WebGLView/meshes";
-import { setHighlightedSequenceAction, setActiveLineAction } from "../../Actions/Actions";
+import { setHighlightedSequenceAction, setActiveLineAction, setAggregationAction } from "../../Actions/Actions";
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
 import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
@@ -28,6 +28,7 @@ type StateSequenceDrawerProps = {
     highlightedSequence?: any,
     dataset?: Dataset,
     setActiveLine?: any
+    setCurrentAggregation?: any
 }
 
 const mapStateToProps = state => ({
@@ -39,7 +40,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence)),
-    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine))
+    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine)),
+    setCurrentAggregation: currentAggregation => dispatch(setAggregationAction(currentAggregation))
 })
 
 const useStyles = makeStyles((theme) => ({
@@ -57,11 +59,10 @@ const useStyles = makeStyles((theme) => ({
  */
 export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = connect(mapStateToProps, mapDispatchToProps)(({
     activeLine,
-    currentTool,
     setHighlightedSequence,
-    highlightedSequence,
     dataset,
-    setActiveLine
+    setActiveLine,
+    setCurrentAggregation
 }: StateSequenceDrawerProps) => {
     if (activeLine == null) {
         return <div></div>
@@ -72,14 +73,15 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
     const [playing, setPlaying] = React.useState(null)
     React.useEffect(() => {
         setSelected(0)
+        
         setHighlightedSequence({
             previous: null,
             current: activeLine.vectors[0],
             next: activeLine.vectors[1]
         })
+        setCurrentAggregation([activeLine.vectors[0]])
         setPlaying(null)
     }, [activeLine])
-
 
     return <Card className="StateSequenceDrawerParent">
         <CardHeader
@@ -91,7 +93,7 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                     <CloseIcon />
                 </IconButton>
             }
-            title="Line Sequence"
+            title={`Line ${activeLine.lineKey}`}
         />
         <CardContent className="StateSequenceDrawerPaper">
             <div
@@ -112,9 +114,16 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                                 next: activeLine.vectors[selected]
                             })
 
-                            let myElement = document.getElementById(`ssdChild${selected}`)
-                            let topPos = myElement.offsetTop
-                            document.getElementById('ssdParent').scrollTop = topPos
+                            setCurrentAggregation([activeLine.vectors[selected - 1]])
+                            let myElement = document.getElementById(`ssdChild${selected - 2}`)
+                            if (myElement) {
+                                let topPos = myElement.offsetTop
+                                document.getElementById('ssdParent').scrollTop = topPos
+                            } else {
+                                myElement = document.getElementById(`ssdChild${selected - 1}`)
+                                let topPos = myElement.offsetTop
+                                document.getElementById('ssdParent').scrollTop = topPos
+                            }
 
                             setSelected(selected - 1)
                         } else {
@@ -123,8 +132,8 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                                 current: activeLine.vectors[activeLine.vectors.length - 2],
                                 next: activeLine.vectors[activeLine.vectors.length - 1]
                             })
-
-                            let myElement = document.getElementById(`ssdChild${activeLine.vectors.length - 1}`)
+                            setCurrentAggregation([activeLine.vectors[activeLine.vectors.length - 2]])
+                            let myElement = document.getElementById(`ssdChild${activeLine.vectors.length - 3}`)
                             let topPos = myElement.offsetTop
                             document.getElementById('ssdParent').scrollTop = topPos
 
@@ -153,7 +162,7 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                                 current: activeLine.vectors[selected + 1],
                                 next: activeLine.vectors[selected + 2]
                             })
-
+                            setCurrentAggregation([activeLine.vectors[selected + 1]])
                             let myElement = document.getElementById(`ssdChild${selected}`)
                             let topPos = myElement.offsetTop
                             document.getElementById('ssdParent').scrollTop = topPos
@@ -165,7 +174,7 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                                 current: activeLine.vectors[0],
                                 next: activeLine.vectors[0 + 1]
                             })
-
+                            setCurrentAggregation([activeLine.vectors[0]])
                             let myElement = document.getElementById(`ssdChild${0}`)
                             let topPos = myElement.offsetTop
                             document.getElementById('ssdParent').scrollTop = topPos
@@ -196,6 +205,7 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                                             current: vector,
                                             next: activeLine.vectors[index + 1]
                                         })
+                                        setCurrentAggregation([vector])
                                         setSelected(index)
                                     }}
                                 >
@@ -209,7 +219,7 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                                         <TimelineDot variant={selected == index ? 'default' : 'outlined'} color={selected == index ? 'primary' : 'grey'}>
 
                                         </TimelineDot>
-                                        <TimelineConnector className={selected == index ? classes.primaryTail : ''} />
+                                        <TimelineConnector className={selected == index || selected == index + 1 ? classes.primaryTail : ''} />
                                     </TimelineSeparator>
                                     <TimelineContent>
                                         <Paper elevation={3} className={classes.paper}>

@@ -2,12 +2,18 @@ import * as React from 'react'
 import { Card, CardContent, Typography } from '@material-ui/core'
 import { GenericLegend } from '../../legends/Generic'
 import './SelectionClusters.scss'
+import { connect } from 'react-redux'
 
-export var SelectionClusters = function ({
+const mapStateToProps = state => ({
+    currentAggregation: state.currentAggregation
+})
+
+export var SelectionClusters = connect(mapStateToProps)(function ({
     selectionState,
     selectionAggregation,
     vectors,
-    datasetType
+    datasetType,
+    currentAggregation
 }) {
 
     return <div className="Parent">
@@ -25,11 +31,11 @@ export var SelectionClusters = function ({
         <div className="Cluster">
             <Card style={{ pointerEvents: 'auto' }}>
                 <CardContent style={{ padding: '8px' }}>
-                    <Typography align="center" gutterBottom variant="body1">{`Fingerprint (${selectionAggregation.length})`}</Typography>
+                    <Typography align="center" gutterBottom variant="body1">{`Fingerprint (${currentAggregation.length})`}</Typography>
 
-                    <GenericLegend aggregate={true} type={datasetType} vectors={selectionAggregation}></GenericLegend>
+                    <GenericLegend aggregate={true} type={datasetType} vectors={currentAggregation}></GenericLegend>
                 </CardContent>
             </Card>
         </div>
     </div>
-}
+})
