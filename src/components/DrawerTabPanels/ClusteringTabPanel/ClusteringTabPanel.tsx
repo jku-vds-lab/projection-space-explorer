@@ -136,14 +136,14 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
 
     function toggleClusters() {
         if (currentClusters == null) {
-            var worker = new Worker('dist/cluster.js')
+            let worker = new Worker('dist/cluster.js')
 
             worker.onmessage = (e) => {
                 // Point clusteruing
-                var clusters = []
+                let clusters = []
                 Object.keys(e.data).forEach(k => {
-                    var t = e.data[k]
-                    var f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
+                    let t = e.data[k]
+                    let f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
                     f.label = k
                     clusters.push(f)
                 })
@@ -151,22 +151,36 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
 
                 // Inject cluster attributes
                 clusters.forEach(cluster => {
-                    var vecs = []
+                    let vecs = []
                     cluster.points.forEach(point => {
                         vecs.push(dataset.vectors[point.meshIndex])
                     })
                     cluster.vectors = vecs
                 })
 
-                const [edges] = graphLayout(clusters)
-
-                setClusterEdges(edges)
                 setCurrentClusters(clusters)
-                if (edges.length > 0) {
-                    var stories = storyLayout(edges)
+
+                console.log(dataset)
+                if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
+                    setClusterEdges(dataset.clusterEdges)
+
+                    let stories = storyLayout(dataset.clusterEdges)
 
                     setStories(stories)
                     setActiveStory(stories[0])
+                } else {
+                    if (dataset.isSequential) {
+                        const [edges] = graphLayout(clusters)
+
+                        setClusterEdges(edges)
+
+                        if (edges.length > 0) {
+                            let stories = storyLayout(edges)
+
+                            setStories(stories)
+                            setActiveStory(stories[0])
+                        }
+                    }
                 }
             }
 

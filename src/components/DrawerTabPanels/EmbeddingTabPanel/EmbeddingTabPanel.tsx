@@ -7,6 +7,7 @@ import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControl
 import { setProjectionOpenAction, setProjectionWorkerAction } from '../../Actions/Actions'
 import { Dataset } from '../../util/datasetselector'
 import { TensorLoader } from './TensorLoader/TensorLoader'
+import { ForceEmbedding } from './ForceEmbedding/ForceEmbedding'
 
 type EmbeddingTabPanelProps = {
     projectionWorker?: Worker
@@ -79,5 +80,7 @@ export const EmbeddingTabPanel: FunctionComponent<EmbeddingTabPanelProps> = conn
                 })
                 props.webGLView.current.updateXY()
             }} />
+
+        <ForceEmbedding></ForceEmbedding>
     </FlexParent>
 })

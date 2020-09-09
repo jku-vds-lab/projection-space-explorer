@@ -9,7 +9,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
 import { Divider } from "@material-ui/core";
-import { loadFromPath, Dataset, DatasetType } from './util/datasetselector'
+import { Dataset, DatasetType, DatasetDatabase } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import { arraysEqual } from "./WebGLView/UtilityFunctions";
@@ -63,6 +63,8 @@ import { EmbeddingTabPanel } from "./DrawerTabPanels/EmbeddingTabPanel/Embedding
 import webGLView from "./Reducers/WebGLViewReducer";
 import clusterMode, { ClusterMode } from "./Reducers/ClusterModeReducer";
 import selectedClusters from "./Reducers/SelectedClustersReducer";
+import { CSVLoader } from "../model/Loaders/CSVLoader";
+import { GithubLink } from "./Overlays/GithubLink/GithubLink";
 
 
 
@@ -126,6 +128,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   vectors: any;
   segments: any;
   threeRef: any;
+  
 
   constructor(props) {
     super(props)
@@ -183,6 +186,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.onColorScaleChanged = this.onColorScaleChanged.bind(this)
   }
 
+
+
   componentDidMount() {
 
     var url = new URL(window.location.toString());
@@ -198,9 +203,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         preselect = "datasets/chess/chess16k.csv"
       }
 
-      loadFromPath(preselect, this.onDataSelected)
+      new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     } else {
-      loadFromPath(preselect, (dataset, json) => { this.onDataSelected(dataset, json) })
+      new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     }
 
     window.addEventListener('resize', this.onResize.bind(this))
@@ -298,14 +303,14 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setStories(null)
     this.props.setClusterMode(this.dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
 
-    this.props.setProjectionColumns(this.dataset.getColumns().map(this.dataset.mapProjectionInitialization))
+    this.props.setProjectionColumns(this.dataset.getColumns().map(column => ({
+      name: column,
+      checked: this.dataset.preselectedProjectionColumns.includes(column)
+    })))
 
-    this.legend.current.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
+    this.legend.current?.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
     this.initializeEncodings()
-
-    console.log(this.dataset.getColumns().map(this.dataset.mapProjectionInitialization))
-    console.log(this.vectors)
   }
 
   mappingFromScale(scale, attribute) {
@@ -331,6 +336,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
   initializeEncodings() {
     var state = {} as any
+    
+    this.threeRef.current.particles.shapeCat(null)
 
     var defaultSizeAttribute = this.state.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
     if (defaultSizeAttribute) {
@@ -523,67 +530,71 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             <Divider style={{ margin: '8px 0px' }} />
 
             <TabPanel value={this.props.openTab} index={0}>
-              <div>
-                <Typography
-                  style={{ margin: '0px 0 0px 16px' }}
-                  variant="body1"
-                  display="block"
-                >
-                  Lines
+              {this.dataset && this.dataset.isSequential && <div>
+                <div>
+                  <Typography
+                    style={{ margin: '0px 0 0px 16px' }}
+                    variant="body1"
+                    display="block"
+                  >
+                    Lines
                 </Typography>
+                </div>
+
+                <Grid
+                  container
+                  justify="center"
+                  alignItems="stretch"
+                  direction="column"
+                  style={{ padding: '0 16px' }}>
+                  <Legend
+                    ref={this.legend}
+                    onLineSelect={this.onLineSelect}></Legend>
+
+                  <Box p={1}></Box>
+
+                  <LineTreePopover
+                    onSelectAll={(algo, checked) => {
+                      var ch = this.state.selectedLines
+                      Object.keys(ch).forEach(key => {
+                        var e = this.state.selectedLineAlgos.find(e => e.algo == algo)
+                        if (e.lines.find(e => e.line == key)) {
+                          ch[key] = checked
+                        }
+
+                      })
+
+                      this.setState({
+                        selectedLines: ch
+                      })
+
+                      this.threeRef.current.setLineFilter(ch)
+                    }}
+                    onChange={(id, checked) => {
+                      var ch = this.state.selectedLines
+                      ch[id] = checked
+
+                      this.setState({
+                        selectedLines: ch
+                      })
+
+                      this.threeRef.current.setLineFilter(ch)
+                    }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme} />
+                </Grid>
+
+
+                <div style={{ margin: '8px 0px' }}></div>
+
+                <PathLengthFilter
+                  pathLengthRange={this.state.pathLengthRange}
+                  maxPathLength={this.state.maxPathLength}
+                  onChange={(event, newValue) => {
+                    this.setState({
+                      pathLengthRange: newValue
+                    })
+                  }}></PathLengthFilter>
               </div>
-
-              <Grid
-                container
-                justify="center"
-                alignItems="stretch"
-                direction="column"
-                style={{ padding: '0 16px' }}>
-                <Legend
-                  ref={this.legend}
-                  onLineSelect={this.onLineSelect}></Legend>
-
-                <Box p={1}></Box>
-
-                <LineTreePopover
-                  onSelectAll={(algo, checked) => {
-                    var ch = this.state.selectedLines
-                    Object.keys(ch).forEach(key => {
-                      var e = this.state.selectedLineAlgos.find(e => e.algo == algo)
-                      if (e.lines.find(e => e.line == key)) {
-                        ch[key] = checked
-                      }
-
-                    })
-
-                    this.setState({
-                      selectedLines: ch
-                    })
-
-                    this.threeRef.current.setLineFilter(ch)
-                  }}
-                  onChange={(id, checked) => {
-                    var ch = this.state.selectedLines
-                    ch[id] = checked
-
-                    this.setState({
-                      selectedLines: ch
-                    })
-
-                    this.threeRef.current.setLineFilter(ch)
-                  }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme} />
-              </Grid>
-
-              <div style={{ margin: '8px 0px' }}></div>
-
-              <PathLengthFilter
-                pathLengthRange={this.state.pathLengthRange}
-                maxPathLength={this.state.maxPathLength}
-                onChange={(event, newValue) => {
-                  this.setState({
-                    pathLengthRange: newValue
-                  })
-                }}></PathLengthFilter>
+              }
 
               <Divider style={{ margin: '8px 0px' }} />
               <div>
@@ -843,6 +854,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           //this.props.setHighlightedSequence(null)
         }
       }} />
+
+      <GithubLink></GithubLink>
 
 
 

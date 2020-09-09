@@ -47,6 +47,7 @@ export const StatesTabPanel: FunctionComponent<StatesTabPanelProps> = connect(ma
                             value={selectedVectorByShape}
                             onChange={(event) => {
 
+                                console.log(event.target.value)
                                 setSelectedVectorByShape(event.target.value)
 
                                 if (event.target.value != null && event.target.value != "") {

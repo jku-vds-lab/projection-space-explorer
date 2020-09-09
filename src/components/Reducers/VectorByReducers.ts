@@ -1,3 +1,5 @@
+import { ActionTypeLiteral } from "../Actions/Actions"
+
 export const vectorByColor = (state = null, action) => {
     switch (action.type) {
         case 'SET_VECTOR_BY_COLOR':
@@ -29,7 +31,7 @@ export const checkedShapes = (state = { 'star': true, 'cross': true, 'circle': t
 
 export const vectorByShape = (state = null, action) => {
     switch (action.type) {
-        case 'SET_VECTOR_BY_SHAPE':
+        case ActionTypeLiteral.SetVectorByShape:
             return action.vectorByShape
         default:
             return state
@@ -38,7 +40,7 @@ export const vectorByShape = (state = null, action) => {
 
 export const selectedVectorByShape = (state = "", action) => {
     switch (action.type) {
-        case 'SET_SELECTED_VECTOR_BY_SHAPE':
+        case ActionTypeLiteral.SetSelectedVectorByShape:
             return action.selectedVectorByShape
         default:
             return state

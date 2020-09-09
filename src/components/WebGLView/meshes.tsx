@@ -1,7 +1,7 @@
 import { valueInRange } from './UtilityFunctions'
 import { ContinuousMapping } from '../util/colors'
 import * as THREE from 'three'
-import { Vect, DataLine } from '../util/datasetselector'
+import { Vect, DataLine, Dataset } from '../util/datasetselector'
 
 /**
  * Generates a line mesh
@@ -322,7 +322,7 @@ export class PointVisualization {
   highlightIndex: any
   particleSize: any
   vectorColorScheme: any
-  dataset: any
+  dataset: Dataset
   showSymbols: any
   colorsChecked: any
   segments: any
@@ -353,20 +353,52 @@ export class PointVisualization {
     var types = new Float32Array(data.length);
     var show = new Float32Array(data.length)
     var selected = new Float32Array(data.length);
-    var vertex;
-    var color = new THREE.Color();
     var i = 0
 
-    segments.forEach(segment => {
-      segment.vectors.forEach((vector, idx) => {
-        new THREE.Vector3(vector.x, vector.y, 0.0).toArray(positions, i * 3);
+    if (this.dataset.isSequential) {
+      segments.forEach(segment => {
+        segment.vectors.forEach((vector, idx) => {
+          new THREE.Vector3(vector.x, vector.y, 0.0).toArray(positions, i * 3);
 
-        // Set the globalIndex which belongs to a specific vertex
+          // Set the globalIndex which belongs to a specific vertex
+          vector.view.meshIndex = i
+
+          // Set segment information
+          vector.view.segment = segment
+
+          colors[i * 4] = 0;
+          colors[i * 4 + 1] = 0;
+          colors[i * 4 + 2] = 0;
+          colors[i * 4 + 3] = 1.0;
+
+          selected[i] = 0.0;
+
+          show[i] = 1.0
+
+          //color.toArray( colors, i * 4 );
+          vector.view.baseSize = this.particleSize
+
+          if (vector.age == 0) {
+            // Starting point
+            types[i] = 0
+          } else if (idx == segment.vectors.length - 1) {
+            // Ending point
+            types[i] = 3
+          } else {
+            // Intermediate
+            types[i] = 2
+          }
+          vector.view.shapeType = shapeFromInt(types[i])
+          vector.view.highlighted = false
+
+          i++
+        })
+      })
+    } else {
+      this.vectors.forEach((vector, i) => {
+        new THREE.Vector3(vector.x, vector.y, 0.0).toArray(positions, i * 3)
+
         vector.view.meshIndex = i
-
-        // Set segment information
-        vector.view.segment = segment
-
         colors[i * 4] = 0;
         colors[i * 4 + 1] = 0;
         colors[i * 4 + 2] = 0;
@@ -375,26 +407,13 @@ export class PointVisualization {
         selected[i] = 0.0;
 
         show[i] = 1.0
-
-        //color.toArray( colors, i * 4 );
         vector.view.baseSize = this.particleSize
-
-        if (vector.age == 0) {
-          // Starting point
-          types[i] = 0
-        } else if (idx == segment.vectors.length - 1) {
-          // Ending point
-          types[i] = 3
-        } else {
-          // Intermediate
-          types[i] = 2
-        }
+        types[i] = 2
         vector.view.shapeType = shapeFromInt(types[i])
         vector.view.highlighted = false
-
-        i++
       })
-    })
+    }
+
 
 
 
@@ -436,28 +455,39 @@ export class PointVisualization {
    * @param {*} category a feature to select the shape for
    */
   shapeCat(category) {
+    console.log("hello")
     var type = this.mesh.geometry.attributes.type.array
 
     // default shapes used
     if (category == null) {
-      this.segments.forEach(segment => {
-        segment.vectors.forEach((vector, index) => {
-          var shape = 2
-          if (vector.age == 0) {
-            // Starting point
-            shape = 0
-          } else if (index == segment.vectors.length - 1) {
-            // Ending point
-            shape = 3
-          } else {
-            // Intermediate
-            shape = 2
-          }
+      if (this.dataset.isSequential) {
+        console.log("non seq")
+        this.segments.forEach(segment => {
+          segment.vectors.forEach((vector, index) => {
+            var shape = 2
+            if (vector.age == 0) {
+              // Starting point
+              shape = 0
+            } else if (index == segment.vectors.length - 1) {
+              // Ending point
+              shape = 3
+            } else {
+              // Intermediate
+              shape = 2
+            }
 
-          vector.view.shapeType = shapeFromInt(shape)
-          type[vector.view.meshIndex] = shape
+            vector.view.shapeType = shapeFromInt(shape)
+            type[vector.view.meshIndex] = shape
+          })
         })
-      })
+      } else {
+        console.log("non seq")
+        this.vectors.forEach(vector => {
+          vector.view.shapeType = Shapes.Circle
+          type[vector.view.meshIndex] = shapeToInt(vector.view.shapeType)
+        })
+      }
+
     } else {
       if (category.type == 'categorical') {
         this.vectors.forEach((vector, index) => {
@@ -525,28 +555,41 @@ export class PointVisualization {
 
     if (category == null) {
       // default transparency
-      this.segments.forEach(segment => {
-        segment.vectors.forEach(vector => {
-          color[vector.view.meshIndex * 4 + 3] = 1.0;
-        })
-      })
+      this.vectors.forEach(vector => color[vector.view.meshIndex * 4 + 3] = 1.0)
     } else {
       if (category.type == 'sequential') {
-        this.segments.forEach(segment => {
+
+        if (this.dataset.isSequential) {
+          this.segments.forEach(segment => {
+            var min = null, max = null
+            if (category.key in this.dataset.ranges) {
+              min = this.dataset.ranges[category.key].min
+              max = this.dataset.ranges[category.key].max
+            } else {
+              var filtered = segment.vectors.map(vector => vector[category.key])
+              max = Math.max(...filtered)
+              min = Math.min(...filtered)
+            }
+
+            segment.vectors.forEach(vector => {
+              color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+            })
+          })
+        } else {
           var min = null, max = null
           if (category.key in this.dataset.ranges) {
             min = this.dataset.ranges[category.key].min
             max = this.dataset.ranges[category.key].max
           } else {
-            var filtered = segment.vectors.map(vector => vector[category.key])
+            var filtered = this.vectors.map(vector => vector[category.key])
             max = Math.max(...filtered)
             min = Math.min(...filtered)
           }
 
-          segment.vectors.forEach(vector => {
+          this.vectors.forEach(vector => {
             color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
           })
-        })
+        }
       }
     }
 
@@ -554,35 +597,53 @@ export class PointVisualization {
   }
 
   sizeCat(category) {
-    var size = this.mesh.geometry.attributes.size.array
-
     if (category == null) {
       this.vectors.forEach(vector => {
         vector.view.baseSize = this.particleSize
       })
     } else {
       if (category.type == 'sequential') {
-        this.segments.forEach(segment => {
+        if (this.dataset.isSequential) {
+          // dataset with lines, we have segments
+          this.segments.forEach(segment => {
+            var min = null, max = null
+            if (category.key in this.dataset.ranges) {
+              min = this.dataset.ranges[category.key].min
+              max = this.dataset.ranges[category.key].max
+            } else {
+              var filtered = segment.vectors.map(vector => vector[category.key])
+              max = Math.max(...filtered)
+              min = Math.min(...filtered)
+            }
+
+            segment.vectors.forEach(vector => {
+              if (min == max) {
+                vector.view.baseSize = this.particleSize * category.values.range[0]
+              } else {
+                vector.view.baseSize = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
+              }
+            })
+          })
+        } else {
+          // for state based data, min and max is based on whole dataset
           var min = null, max = null
           if (category.key in this.dataset.ranges) {
             min = this.dataset.ranges[category.key].min
             max = this.dataset.ranges[category.key].max
           } else {
-            var filtered = segment.vectors.map(vector => vector[category.key])
+            var filtered = this.vectors.map(vector => vector[category.key])
             max = Math.max(...filtered)
             min = Math.min(...filtered)
           }
 
-
-
-          segment.vectors.forEach(vector => {
+          this.vectors.forEach(vector => {
             if (min == max) {
               vector.view.baseSize = this.particleSize * category.values.range[0]
             } else {
               vector.view.baseSize = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
             }
           })
-        })
+        }
       }
       if (category.type == 'categorical') {
         this.vectors.forEach(vector => {
@@ -613,38 +674,49 @@ export class PointVisualization {
       var i = vector.view.meshIndex
       var rgb = null
 
-      if (vector.view.segment.view.grayed) {
-        rgb = {
-          r: 192.0,
-          g: 192.0,
-          b: 192.0
+      if (this.dataset.isSequential) {
+        if (vector.view.segment.view.grayed) {
+          rgb = {
+            r: 192.0,
+            g: 192.0,
+            b: 192.0
+          }
+        } else {
+          if (this.colorAttribute != null) {
+            var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
+            rgb = m.rgb
+            //vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
+
+            if (this.vectorColorScheme instanceof ContinuousMapping) {
+              vector.view.intrinsicColor = null
+            } else {
+              vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
+            }
+
+          } else {
+            var col = vector.view.segment.view.lineMesh.material.color
+            rgb = {
+              r: col.r * 255.0,
+              g: col.g * 255.0,
+              b: col.b * 255.0
+            }
+            vector.view.intrinsicColor = null
+          }
         }
       } else {
         if (this.colorAttribute != null) {
           var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
           rgb = m.rgb
-          //vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
 
           if (this.vectorColorScheme instanceof ContinuousMapping) {
             vector.view.intrinsicColor = null
           } else {
             vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
           }
-
         } else {
-          var col = vector.view.segment.view.lineMesh.material.color
-          rgb = {
-            r: col.r * 255.0,
-            g: col.g * 255.0,
-            b: col.b * 255.0
-          }
-          vector.view.intrinsicColor = null
+          rgb = { r: 0, g: 0, b: 0 }
         }
       }
-
-
-
-
 
       color[i * 4 + 0] = rgb.r / 255.0
       color[i * 4 + 1] = rgb.g / 255.0
@@ -655,12 +727,12 @@ export class PointVisualization {
   }
 
   isPointVisible(vector) {
-    return vector.view.segment.view.detailVisible
-      && vector.view.segment.view.globalVisible
+    return (vector.view.segment == null || vector.view.segment.view.detailVisible)
+      && (vector.view.segment == null || vector.view.segment.view.globalVisible)
       && vector.view.visible
       && this.showSymbols[vector.view.shapeType]
       && (vector.view.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.view.intrinsicColor] : true)
-      && valueInRange(vector.view.segment.vectors.length, vector.view.segment.view.pathLengthRange)
+      && (vector.view.segment == null || valueInRange(vector.view.segment.vectors.length, vector.view.segment.view.pathLengthRange))
   }
 
 
@@ -679,15 +751,13 @@ export class PointVisualization {
     var show = this.mesh.geometry.attributes.show.array
     var selected = this.mesh.geometry.attributes.selected.array
 
-    this.segments.forEach(segment => {
-      segment.vectors.forEach(vector => {
-        if (this.isPointVisible(vector)) {
-          show[vector.view.meshIndex] = 1.0
-        } else {
-          show[vector.view.meshIndex] = 0.0
-        }
-        selected[vector.view.meshIndex] = vector.view.selected ? 1.0 : 0.0
-      })
+    this.vectors.forEach(vector => {
+      if (this.isPointVisible(vector)) {
+        show[vector.view.meshIndex] = 1.0
+      } else {
+        show[vector.view.meshIndex] = 0.0
+      }
+      selected[vector.view.meshIndex] = vector.view.selected ? 1.0 : 0.0
     })
 
     this.updateColor()

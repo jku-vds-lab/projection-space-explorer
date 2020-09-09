@@ -19,7 +19,7 @@ import { connect } from 'react-redux'
 import { graphLayout } from '../util/graphs';
 import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
 import { Dataset, DataLine, Vect } from '../util/datasetselector';
-import { setAggregationAction, setActiveLineAction, setClusterEdgesAction, setViewTransformAction, toggleSelectedClusterAction } from '../Actions/Actions';
+import { setAggregationAction, setActiveLineAction, setClusterEdgesAction, setViewTransformAction, toggleSelectedClusterAction, toggleAggregationAction } from '../Actions/Actions';
 import { ViewTransform } from './ViewTransform'
 import { Camera } from 'three';
 import { LineVisualization, PointVisualization, ClusterVisualization } from './meshes';
@@ -131,6 +131,7 @@ type ViewProps = {
     dataset: Dataset
     currentTool: Tool
     openTab: number
+    currentAggregation: any
     clusters: Cluster[]
     setActiveLine: any
     activeLine: DataLine
@@ -147,7 +148,7 @@ type ViewProps = {
     advancedColoringSelection: boolean[]
     clusterMode: ClusterMode
     toggleSelectedCluster: any
-
+    toggleAggregation: any
     selectedClusters: Cluster[]
 }
 
@@ -180,7 +181,8 @@ const mapDispatchToProps = dispatch => ({
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine)),
     setViewTransform: viewTransform => dispatch(setViewTransformAction(viewTransform)),
-    toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedClusterAction(selectedCluster))
+    toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedClusterAction(selectedCluster)),
+    toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation))
 })
 
 
@@ -388,12 +390,14 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                         // Get index of selected node
                         var idx = this.choose(coords)
                         this.particles.highlight(idx)
-                        if (idx >= 0) {
-                            this.lines.highlight([this.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
-                        } else {
-                            this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
-                        }
 
+                        if (this.props.dataset.isSequential) {
+                            if (idx >= 0) {
+                                this.lines.highlight([this.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
+                            } else {
+                                this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+                            }
+                        }
 
                         var list = []
                         if (idx >= 0) {
@@ -495,11 +499,12 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                         })
 
 
-                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
+                        if (this.props.dataset.isSequential) {
+                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
-
-                        this.lines.groupHighlight(uniqueIndices)
-                        //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+                            this.lines.groupHighlight(uniqueIndices)
+                            //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+                        }
 
                         this.props.onAggregate(this.currentAggregation)
                         this.props.setCurrentAggregation(this.currentAggregation)
@@ -524,11 +529,15 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                             this.props.setCurrentAggregation(this.currentAggregation)
                         }
 
-                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
+                        if (this.props.dataset.isSequential) {
+                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
-                        this.lines.groupHighlight(uniqueIndices)
+                            this.lines.groupHighlight(uniqueIndices)
+                        }
                     }
                 }
+
+                
                 break;
             case Tool.Grab:
                 // In case we have a line in the sequence UI
@@ -547,7 +556,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
                                     if (event.button == 0) {
                                         var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
-
+                                        
                                         selected.forEach(vector => {
                                             vector.view.selected = !vector.view.selected
 
@@ -559,10 +568,13 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                                         })
 
 
-                                        var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
+                                        if (this.props.dataset.isSequential) {
+                                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
-                                        this.lines.groupHighlight(uniqueIndices)
-                                        //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+                                            this.lines.groupHighlight(uniqueIndices)
+                                            //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+                                        }
+
 
                                         this.props.onAggregate(this.currentAggregation)
                                         this.props.setCurrentAggregation(this.currentAggregation)
@@ -586,10 +598,30 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                                 minDist = dist
                             }
                         })
-                        this.props.toggleSelectedCluster(selected)
+                        
+                        // Toggle
+                        if (selected) {
+                            selected.vectors.forEach(vector => {
+                                vector.view.selected = !vector.view.selected
+    
+                                if (this.currentAggregation.includes(vector) && !vector.view.selected) {
+                                    this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
+                                } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
+                                    this.currentAggregation.push(vector)
+                                }
+                            })
 
+                            this.props.toggleSelectedCluster(selected)
+                            this.props.toggleAggregation(selected.vectors)
+                        }
+                        
+                        if (this.props.dataset.isSequential) {
+                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
+
+                            this.lines.groupHighlight(uniqueIndices)
+    
+                        }
                     }
-
                 }
 
 
@@ -612,15 +644,19 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
     clearSelection() {
         this.lasso = null
         this.currentAggregation = []
-        this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
 
-        this.lines.groupHighlight([])
+        if (this.props.dataset.isSequential) {
+            this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+
+            this.lines.groupHighlight([])
+        }
 
         this.vectors.forEach((vector, index) => {
             vector.view.selected = false
         })
 
         this.props.onAggregate([])
+        this.props.setCurrentAggregation([])
     }
 
 
@@ -646,7 +682,10 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
         // Adjust mesh zoom levels
         this.particles.zoom(this.camera.zoom);
-        this.lines.setZoom(this.camera.zoom)
+
+        if (this.props.dataset.isSequential) {
+            this.lines.setZoom(this.camera.zoom)
+        }
 
         // Update projection matrix
         this.camera.updateProjectionMatrix();
@@ -864,17 +903,23 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             camera: this.camera
         })
 
-        this.lines = new LineVisualization(this.segments, this.lineColorScheme)
-        this.lines.createMesh()
-        this.lines.setZoom(this.camera.zoom)
+
+        if (this.props.dataset.isSequential) {
+            this.lines = new LineVisualization(this.segments, this.lineColorScheme)
+            this.lines.createMesh()
+            this.lines.setZoom(this.camera.zoom)
+
+            // First add lines, then particles
+            this.lines.meshes.forEach(line => this.scene.add(line.line))
+        }
+
 
         this.particles = new PointVisualization(this.vectorColorScheme, this.dataset)
         this.particles.createMesh(this.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
 
-        // First add lines, then particles
-        this.lines.meshes.forEach(line => this.scene.add(line.line))
+
         //this.scene.add(this.particles.mesh);
         this.pointScene.add(this.particles.mesh)
 
@@ -971,7 +1016,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
 
-    debugD3(edgeClusters) {
+/**     debugD3(edgeClusters) {
         this.trees = this.detectBundles(edgeClusters)
         this.edgeClusters = edgeClusters.toMatrix()
 
@@ -994,9 +1039,10 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         })
 
         return [this.trees, cc]
-    }
+    }*/
 
     filterLines(algo, show) {
+
         this.segments.forEach((segment) => {
             if (segment.vectors[0].algo == algo) {
                 segment.view.globalVisible = show
@@ -1034,7 +1080,9 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
      */
     updateXY() {
         this.particles.updatePosition()
-        this.lines.updatePosition()
+        if (this.props.dataset.isSequential) {
+            this.lines.updatePosition()
+        }
         this.dataset.calculateBounds()
         this.camera.zoom = getDefaultZoom(this.vectors, this.getWidth(), this.getHeight())
         this.camera.position.x = 0.0
@@ -1081,6 +1129,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
         if (this.lines != null) {
             this.lines.dispose(this.scene)
+            this.lines = null
         }
 
         if (this.particles != null) {
@@ -1148,7 +1197,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             this.renderLasso(ctx)
             this.state.forceLayoutRef.current.renderLinks(ctx)
             this.state.forceLayoutRef.current.renderClusterEdges(ctx)
-            this.renderEdge(ctx)
+            //this.renderEdge(ctx)
 
             if (this.props.highlightedSequence != null) {
                 this.selectionRef.current.renderHighlightedSequence(ctx, this.props.highlightedSequence)
@@ -1191,13 +1240,20 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             this.deleteClusters()
         }
 
+
+        if ((this.props.currentTool == Tool.Default && !arraysEqual(prevProps.currentAggregation, this.props.currentAggregation))
+        || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Default)) {
+            this.multivariateClusterView?.highlightSamples(this.props.currentAggregation)
+        }
+
         // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
-        if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)) {
+        if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)
+        || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Grab)) {
             this.multivariateClusterView.highlightCluster(this.props.selectedClusters)
         }
 
         // Path length range has changed, update view accordingly
-        if (!arraysEqual(prevProps.pathLengthRange, this.props.pathLengthRange)) {
+        if (this.props.dataset && this.props.dataset.isSequential && !arraysEqual(prevProps.pathLengthRange, this.props.pathLengthRange)) {
             // Set path length range on all segment views, and update them
             this.segments.forEach(segment => {
                 segment.view.pathLengthRange = this.props.pathLengthRange

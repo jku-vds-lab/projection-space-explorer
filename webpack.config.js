@@ -7,6 +7,7 @@ module.exports = {
     bundle: "./src/components/index.tsx",
     worker: './src/components/workers/worker_projection.tsx',
     cluster: './src/components/workers/worker_cluster.tsx',
+    force: './src/components/workers/worker_force.ts',
     healthcheck: './src/components/workers/worker_healthcheck.tsx'
   },
   output: {

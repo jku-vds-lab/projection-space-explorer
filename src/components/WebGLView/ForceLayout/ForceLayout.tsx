@@ -11,6 +11,7 @@ import { GenericChanges } from '../../legends/GenericChanges/GenericChanges'
 import { StoryMode } from '../../Reducers/StoryModeReducer'
 import { ThrustLayout } from '../../util/ThrustLayout'
 import { cpuUsage } from 'process'
+import { ClusterMode } from '../../Reducers/ClusterModeReducer'
 
 type ForceLayoutProps = {
     activeStory: Story
@@ -22,6 +23,7 @@ type ForceLayoutProps = {
     dataset: any,
     viewTransform: ViewTransform,
     storyMode: StoryMode
+    clusterMode: ClusterMode
 }
 
 type ForceLayoutState = {
@@ -44,7 +46,8 @@ const mapStateToProps = state => ({
     activeStory: state.activeStory,
     clusterEdges: state.clusterEdges,
     viewTransform: state.viewTransform,
-    storyMode: state.storyMode
+    storyMode: state.storyMode,
+    clusterMode: state.clusterMode
 })
 
 
@@ -194,19 +197,19 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
     componentDidUpdate(prevProps) {
 
         // Create new force layout
-        if (prevProps.activeStory == null && prevProps.activeStory != this.props.activeStory && this.props.activeStory != null) {
+        if (this.props.clusterMode == ClusterMode.Univariate && prevProps.activeStory == null && prevProps.activeStory != this.props.activeStory && this.props.activeStory != null) {
             this.createForceLayout()
         }
 
         // Delete old create new
-        if (prevProps.activeStory != null && prevProps.activeStory != this.props.activeStory && this.props.activeStory != null) {
+        if (this.props.clusterMode == ClusterMode.Univariate && prevProps.activeStory != null && prevProps.activeStory != this.props.activeStory && this.props.activeStory != null) {
             this.deleteForceLayout()
 
             this.createForceLayout()
         }
 
         // Delete only
-        if (prevProps.activeStory != null && this.props.activeStory == null) {
+        if (this.props.clusterMode == ClusterMode.Univariate && prevProps.activeStory != null && this.props.activeStory == null) {
             this.deleteForceLayout()
         }
     }

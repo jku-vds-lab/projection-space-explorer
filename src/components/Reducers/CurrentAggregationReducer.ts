@@ -7,7 +7,13 @@ const currentAggregation = (state = [], action) => {
             return action.aggregation
         case ActionTypeLiteral.ToggleAggregation:
             var newState = state.slice(0)
-            return action.aggregation
+            action.aggregation.forEach(vector => {
+                if (newState.includes(vector)) {
+                    newState.splice(newState.indexOf(vector), 1)
+                } else {
+                    newState.push(vector)
+                }
+            })
             return newState
         default:
             return state
