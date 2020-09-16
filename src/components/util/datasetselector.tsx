@@ -29,33 +29,13 @@ export class DatasetDatabase {
     constructor() {
         this.data = [
             {
-                display: "Coral sub-sampled (json)",
-                path: "datasets/coral/coral_subsampled_normalized.json",
-                type: DatasetType.Coral
-            },
-            {
                 display: "Coral sub-sampled",
-                path: "datasets/coral/non-mutated_subsampled_individual_path_explorer.csv",
+                path: "datasets/coral/coral_subsampled.json",
                 type: DatasetType.Coral
             },
             {
                 display: "Coral sub-sampled normalized",
-                path: "datasets/coral/non-mutated_subsampled_individual_normalized_path_explorer.csv",
-                type: DatasetType.Coral
-            },
-            {
-                display: "Coral Individual Samples",
-                path: "datasets/coral/coral_individual_data.csv",
-                type: DatasetType.Coral
-            },
-            {
-                display: "Coral Aggregate Cohorts",
-                path: "datasets/coral/coral_aggregate_data.csv",
-                type: DatasetType.Coral
-            },
-            {
-                display: "Coral Aggregate Cohorts Normalized",
-                path: "datasets/coral/coral_aggregate_data_normalized.csv",
+                path: "datasets/coral/coral_subsampled_normalized.csv",
                 type: DatasetType.Coral
             },
             {
@@ -961,6 +941,13 @@ export class VectView {
 
 
     duplicateOf = null
+
+    // Brightness value of this sample.
+    brightness = 1.0
+
+    // Is this point grayed out
+    // If this value is null the grayed value will be taken from the segment
+    grayed = null
 
     constructor() {
     }

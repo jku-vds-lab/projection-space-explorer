@@ -54,6 +54,8 @@ export class MultivariateClustering {
                 var material = new THREE.MeshBasicMaterial({ color: LINE_COLOR, side: THREE.DoubleSide });
                 var plane = new THREE.Mesh(geometry, material);
                 plane.visible = false
+                material.opacity = 0.5
+                material.transparent = true
                 
                 plane.position.set((center.x + vector.x) / 2, (center.y + vector.y) / 2, -1)
                 var temp = new THREE.Vector2(vector.x - center.x, vector.y - center.y)
