@@ -1,14 +1,12 @@
-import * as sigma from 'graphology-layout-forceatlas2'
 import React = require('react');
-import { Button, Box, LinearProgress, Typography } from '@material-ui/core';
-import { Dataset, DataLine, Vect } from '../../../util/datasetselector';
+import { Button, Box, LinearProgress, Typography, Checkbox, FormControlLabel, TextField, Paper, Tooltip } from '@material-ui/core';
+import { Dataset, DataLine } from '../../../util/datasetselector';
 import { connect } from 'react-redux'
 const Graph = require('graphology');
-import * as FA2Layout from 'graphology-layout-forceatlas2/worker';
+import Modal from '@material-ui/core/Modal';
+import './ForceEmbedding.scss'
+import Alert from '@material-ui/lab/Alert';
 
-console.log(FA2Layout)
-
-console.log(sigma)
 type ForceEmbeddingProps = {
     webGLView: any
     dataset: Dataset
@@ -19,7 +17,7 @@ const mapStateToProps = state => ({
     dataset: state.dataset
 })
 
-function buildGraph(segments: DataLine[]) {
+function buildGraph(segments: DataLine[], reuse) {
     let nodes = []
     let edges = []
 
@@ -51,7 +49,6 @@ function buildGraph(segments: DataLine[]) {
             prev = isDuplicate ? nodes[fIdx] : sample
         })
     })
-    console.log(dups)
     return [nodes, edges]
 }
 
@@ -70,24 +67,32 @@ function LinearProgressWithLabel(props) {
     );
 }
 
-export var ForceEmbedding = connect(mapStateToProps)(class extends React.Component<ForceEmbeddingProps> {
+export var ForceEmbedding = connect(mapStateToProps)(class extends React.Component<ForceEmbeddingProps, any> {
     constructor(props) {
         super(props)
 
         this.state = {
-            progress: 0
+            progress: 0,
+            reusePositions: true,
+            openModal: false,
+            iterations: 1000,
+            worker: null
         }
     }
 
     force() {
         let graph = new Graph()
 
-        const [nodes, edges] = buildGraph(this.props.dataset.segments)
+        const [nodes, edges] = buildGraph(this.props.dataset.segments, this.state.reusePositions)
 
         nodes.forEach(node => {
+            if (!this.state.reusePositions) {
+                node.x = Math.random()
+                node.y = Math.random()
+            }
             graph.addNode(node.view.meshIndex, {
-                x: node.x,
-                y: node.y
+                x: this.state.reusePositions ? node.x : Math.random(),
+                y: this.state.reusePositions ? node.y : Math.random()
             })
         })
         edges.forEach(edge => {
@@ -96,18 +101,26 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
 
 
         let worker = new Worker("dist/force.js")
+        this.setState({
+            worker: worker
+        })
+
         let self = this
         worker.onmessage = function (e) {
             switch (e.data.type) {
                 case 'progress':
-                    self.setState({
-                        progress: e.data.progress
-                    })
-                    break
                 case 'finish':
-                    self.setState({
-                        progress: 100
-                    })
+                    if (e.data.type == 'finish') {
+                        self.setState({
+                            progress: e.data.progress,
+                            worker: null
+                        })
+                    } else {
+                        self.setState({
+                            progress: e.data.progress
+                        })
+                    }
+
                     let positions = e.data.positions
 
                     self.props.dataset.vectors.forEach((sample, i) => {
@@ -123,15 +136,96 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
         worker.postMessage({
             nodes: nodes.map(e => ({ x: e.x, y: e.y, meshIndex: e.view.meshIndex })),
             edges: edges,
-            params: { iterations: 300 }
+            params: { iterations: self.state.iterations }
         })
     }
 
-    render() {
-        return <div><Button onClick={() => {
-            this.force()
-        }}>Force</Button>
+    handleClose() {
+        this.setState({
+            openModal: false
+        })
+    }
 
-            <LinearProgressWithLabel value={this.state.progress} /></div>
+    isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    render() {
+        return <div>
+            {
+                this.props.dataset && !this.props.dataset.isSequential && <Alert severity="info">Force Embedding is only available with a valid line attribute!</Alert>
+            }
+            <Button disabled={!this.props.dataset?.isSequential} onClick={() => {
+                //this.force()
+                this.setState({
+                    openModal: true
+                })
+            }}>Force Embedding</Button>
+
+
+            <Modal
+                open={this.state.openModal}
+                onClose={() => this.handleClose()}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description"
+            >
+                <Paper className="ForceEmbeddingModal">
+                    <h2 id="simple-modal-title">Force Embedding</h2>
+                    <div>
+                        <TextField
+                            id="standard-number"
+                            label="Iterations"
+                            type="number"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            value={this.state.iterations}
+                            onChange={(event) => {
+                                if (this.isNumeric(event.target.value) && parseFloat(event.target.value) > 0) {
+                                    this.setState({
+                                        iterations: parseFloat(event.target.value)
+                                    })
+                                }
+                            }}
+                        />
+                    </div>
+
+                    <div>
+                        <Tooltip title="If this is checked, the embedding will be initialized with the current positions. Otherwise it will be initialized with random positions." aria-label="add">
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={this.state.reusePositions}
+                                        onChange={(e, newVal) => {
+                                            this.setState({
+                                                reusePositions: newVal
+                                            })
+                                        }}
+                                        name="checkedB"
+                                        color="primary"
+                                    />
+                                }
+                                label="Initialize with sample positions"
+                            />
+                        </Tooltip>
+
+                    </div>
+
+                    <div>
+                        <Button onClick={() => {
+                            this.setState({
+                                openModal: false
+                            })
+                            this.force()
+                        }}>Start</Button>
+                    </div>
+                </Paper>
+            </Modal>
+
+
+            <br></br>
+
+            {this.state.worker && <LinearProgressWithLabel value={this.state.progress} />}
+        </div>
     }
 })

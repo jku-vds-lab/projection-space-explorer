@@ -1143,10 +1143,13 @@ self.addEventListener('message', function (e) {
 
     // Iterating
     for (i = 0; i < iterations; i++) {
-        if (i % (iterations / 10) == 0) {
+        if (i % Math.floor(iterations / 100) == 0) {
+            let res = collectLayoutChanges(graph, matrices.nodes)
+
             self.postMessage({
                 type: 'progress',
-                progress: (i / iterations) * 100
+                progress: (i / iterations) * 100,
+                positions: res
             })
         }
         iterate(settings, matrices.nodes, matrices.edges);
@@ -1157,6 +1160,7 @@ self.addEventListener('message', function (e) {
 
     self.postMessage({
         type: 'finish',
-        positions: res
+        positions: res,
+        progress: 0
     })
 })

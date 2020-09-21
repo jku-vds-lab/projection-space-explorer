@@ -185,8 +185,6 @@ export class LineVisualization {
       this.groupHighlight(indices)
     }
 
-
-
     // Undo previous highlight
     if (this.highlightIndices != null) {
       this.highlightIndices.forEach(index => {
@@ -446,6 +444,23 @@ export class PointVisualization {
     this.sizeAttribute = this.mesh.geometry.attributes.size
   }
 
+
+  groupHighlight(samples: Vect[]) {
+    if (samples && samples.length > 0) {
+      this.vectors.forEach(sample => {
+        sample.view.grayed = true
+      })
+      samples?.forEach(sample => {
+        sample.view.grayed = null
+      })
+    } else {
+      this.vectors.forEach(sample => {
+        sample.view.grayed = null
+      })
+    }
+  }
+
+
   setPointScaling(pointScaling) {
     this.mesh.material.uniforms.scale.value = pointScaling
   }
@@ -455,13 +470,11 @@ export class PointVisualization {
    * @param {*} category a feature to select the shape for
    */
   shapeCat(category) {
-    console.log("hello")
     var type = this.mesh.geometry.attributes.type.array
 
     // default shapes used
     if (category == null) {
       if (this.dataset.isSequential) {
-        console.log("non seq")
         this.segments.forEach(segment => {
           segment.vectors.forEach((vector, index) => {
             var shape = 2
@@ -481,7 +494,6 @@ export class PointVisualization {
           })
         })
       } else {
-        console.log("non seq")
         this.vectors.forEach(vector => {
           vector.view.shapeType = Shapes.Circle
           type[vector.view.meshIndex] = shapeToInt(vector.view.shapeType)
@@ -551,11 +563,12 @@ export class PointVisualization {
   }
 
   transparencyCat(category) {
-    var color = this.mesh.geometry.attributes.customColor.array
+    //var color = this.mesh.geometry.attributes.customColor.array
 
     if (category == null) {
       // default transparency
-      this.vectors.forEach(vector => color[vector.view.meshIndex * 4 + 3] = 1.0)
+      //this.vectors.forEach(vector => color[vector.view.meshIndex * 4 + 3] = 1.0)
+      this.vectors.forEach(sample => sample.view.brightness = 1.0)
     } else {
       if (category.type == 'sequential') {
 
@@ -572,7 +585,8 @@ export class PointVisualization {
             }
 
             segment.vectors.forEach(vector => {
-              color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+              vector.view.brightness = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+              //color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
             })
           })
         } else {
@@ -587,13 +601,14 @@ export class PointVisualization {
           }
 
           this.vectors.forEach(vector => {
-            color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+            //color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+            vector.view.brightness = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
           })
         }
       }
     }
 
-    this.mesh.geometry.attributes.customColor.needsUpdate = true
+    this.updateColor()
   }
 
   sizeCat(category) {
@@ -704,29 +719,51 @@ export class PointVisualization {
           }
         }
       } else {
-        if (this.colorAttribute != null) {
-          var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
-          rgb = m.rgb
-
-          if (this.vectorColorScheme instanceof ContinuousMapping) {
-            vector.view.intrinsicColor = null
-          } else {
-            vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
+        if (vector.view.grayed == true) {
+          rgb = {
+            r: 192.0,
+            g: 192.0,
+            b: 192.0
           }
         } else {
-          rgb = { r: 0, g: 0, b: 0 }
+          if (this.colorAttribute != null) {
+            var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
+            rgb = m.rgb
+  
+            if (this.vectorColorScheme instanceof ContinuousMapping) {
+              vector.view.intrinsicColor = null
+            } else {
+              vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
+            }
+          } else {
+            rgb = { r: 0, g: 0, b: 0 }
+          }
         }
       }
 
       color[i * 4 + 0] = rgb.r / 255.0
       color[i * 4 + 1] = rgb.g / 255.0
       color[i * 4 + 2] = rgb.b / 255.0
+
+      if (this.dataset.isSequential) {
+        if (vector.view.segment.view.grayed) {
+          color[i * 4 + 3] = vector.view.brightness * 0.4
+        } else {
+          color[i * 4 + 3] = vector.view.brightness
+        }
+      } else {
+        if (vector.view.grayed) {
+          color[i * 4 + 3] = vector.view.brightness * 0.4
+        } else {
+          color[i * 4 + 3] = vector.view.brightness
+        }
+      }
     })
 
     this.mesh.geometry.attributes.customColor.needsUpdate = true
   }
 
-  isPointVisible(vector) {
+  isPointVisible(vector: Vect) {
     return (vector.view.segment == null || vector.view.segment.view.detailVisible)
       && (vector.view.segment == null || vector.view.segment.view.globalVisible)
       && vector.view.visible
@@ -740,7 +777,11 @@ export class PointVisualization {
     var position = this.mesh.geometry.attributes.position.array
 
     this.vectors.forEach(vector => {
-      new THREE.Vector3(vector.x, vector.y, 0.0).toArray(position, vector.view.meshIndex * 3);
+      let z = 0.0
+      if ((!this.dataset.isSequential && vector.view.grayed) || (this.dataset.isSequential && vector.view.segment.view.grayed)) {
+        z = -0.1
+      }
+      new THREE.Vector3(vector.x, vector.y, z).toArray(position, vector.view.meshIndex * 3);
     })
 
     this.mesh.geometry.attributes.position.needsUpdate = true
@@ -762,6 +803,7 @@ export class PointVisualization {
 
     this.updateColor()
     this.updateSize()
+    this.updatePosition()
 
     this.mesh.geometry.attributes.show.needsUpdate = true;
     this.mesh.geometry.attributes.selected.needsUpdate = true

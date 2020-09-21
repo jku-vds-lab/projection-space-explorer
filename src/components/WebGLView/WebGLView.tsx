@@ -188,7 +188,7 @@ const mapDispatchToProps = dispatch => ({
 
 export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<ViewProps, ViewState> {
     lasso: LassoSelection
-    particles: any
+    particles: PointVisualization
     containerRef: any
     selectionRef: any
     mouseDown: any
@@ -349,7 +349,6 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
     onKeyDown(event) {
-        console.log(event)
     }
 
 
@@ -430,7 +429,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                     break;
                 }
                 var found = false
-                this.props.clusters.forEach(cluster => {
+                this.props.clusters?.forEach(cluster => {
 
                     switch (this.props.clusterMode) {
                         case ClusterMode.Univariate: {
@@ -503,11 +502,12 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                             var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
                             this.lines.groupHighlight(uniqueIndices)
-                            //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+                        } else {
+                            this.particles.groupHighlight(this.currentAggregation)
                         }
 
                         this.props.onAggregate(this.currentAggregation)
-                        this.props.setCurrentAggregation(this.currentAggregation)
+                        this.props.setCurrentAggregation(this.currentAggregation.slice(0))
 
                     } else if (wasDrawing) {
                         this.clearSelection()
@@ -522,22 +522,23 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                         if (this.currentAggregation.includes(this.currentHover) && !this.currentHover.view.selected) {
                             this.currentAggregation.splice(this.currentAggregation.indexOf(this.currentHover), 1)
                             this.props.onAggregate(this.currentAggregation)
-                            this.props.setCurrentAggregation(this.currentAggregation)
+                            this.props.setCurrentAggregation(this.currentAggregation.slice(0))
                         } else if (!this.currentAggregation.includes(this.currentHover) && this.currentHover.view.selected) {
                             this.currentAggregation.push(this.currentHover)
                             this.props.onAggregate(this.currentAggregation)
-                            this.props.setCurrentAggregation(this.currentAggregation)
+                            this.props.setCurrentAggregation(this.currentAggregation.slice(0))
                         }
 
                         if (this.props.dataset.isSequential) {
-                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
+                            let uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
                             this.lines.groupHighlight(uniqueIndices)
+                        } else {
+                            this.particles.groupHighlight(this.currentAggregation)
                         }
                     }
                 }
 
-                
                 break;
             case Tool.Grab:
                 // In case we have a line in the sequence UI
@@ -549,7 +550,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                     case ClusterMode.Univariate: {
                         // current hover is null, check if we are inside a cluster
                         var found = false
-                        this.props.clusters.forEach(cluster => {
+                        this.props.clusters?.forEach(cluster => {
                             if (cluster.label != '-1') {
                                 if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
                                     found = true
@@ -572,7 +573,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                                             var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
                                             this.lines.groupHighlight(uniqueIndices)
-                                            //this.lines.highlight(uniqueIndices, this.getWidth(), this.getHeight(), this.scene)
+                                        } else {
+                                            this.particles.groupHighlight(this.currentAggregation)
                                         }
 
 
@@ -591,7 +593,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                     case ClusterMode.Multivariate: {
                         let selected: Cluster = null
                         let minDist = Number.MAX_VALUE
-                        this.props.clusters.forEach(cluster => {
+                        this.props.clusters?.forEach(cluster => {
                             let dist = new THREE.Vector2(coords.x, coords.y).distanceTo(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y))
                             if (dist < 1 && dist < minDist) {
                                 selected = cluster
@@ -619,7 +621,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                             var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
 
                             this.lines.groupHighlight(uniqueIndices)
-    
+                        } else {
+                            this.particles.groupHighlight(this.currentAggregation)
                         }
                     }
                 }
@@ -649,6 +652,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
 
             this.lines.groupHighlight([])
+        } else {
+            this.particles.groupHighlight([])
         }
 
         this.vectors.forEach((vector, index) => {
@@ -1249,7 +1254,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
         if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)
         || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Grab)) {
-            this.multivariateClusterView.highlightCluster(this.props.selectedClusters)
+            this.multivariateClusterView?.highlightCluster(this.props.selectedClusters)
         }
 
         // Path length range has changed, update view accordingly

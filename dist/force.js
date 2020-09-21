@@ -931,10 +931,13 @@ self.addEventListener('message', function (e) {
       i; // Iterating
 
   for (i = 0; i < iterations; i++) {
-    if (i % (iterations / 10) == 0) {
+    if (i % Math.floor(iterations / 100) == 0) {
+      var _res = collectLayoutChanges(graph, matrices.nodes);
+
       self.postMessage({
         type: 'progress',
-        progress: i / iterations * 100
+        progress: i / iterations * 100,
+        positions: _res
       });
     }
 
@@ -944,7 +947,8 @@ self.addEventListener('message', function (e) {
   var res = collectLayoutChanges(graph, matrices.nodes);
   self.postMessage({
     type: 'finish',
-    positions: res
+    positions: res,
+    progress: 0
   });
 });
 
