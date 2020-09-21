@@ -35,7 +35,12 @@ export class DatasetDatabase {
             },
             {
                 display: "Coral sub-sampled normalized",
-                path: "datasets/coral/coral_subsampled_normalized.csv",
+                path: "datasets/coral/coral_subsampled_normalized.json",
+                type: DatasetType.Coral
+            },
+            {
+                display: "Coral no one-hot encoding",
+                path: "datasets/coral/coral_subsampled_no_one_hot.json",
                 type: DatasetType.Coral
             },
             {

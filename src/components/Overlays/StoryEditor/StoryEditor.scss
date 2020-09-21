@@ -1,0 +1,24 @@
+.StoryEditorParent {
+    width: 400px;
+    height: 400px;
+    position: absolute;
+    left: 200px;
+    top: 200px;
+}
+
+.StoryEditorDraggable {
+    cursor: move;
+}
+
+.StoryEditorTools {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+
+.StoryEditorSVG {
+    position: absolute;
+    background-color: lightyellow;
+    width: 400px;
+    height: 400px;
+}

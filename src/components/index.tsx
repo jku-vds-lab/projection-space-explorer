@@ -65,6 +65,7 @@ import clusterMode, { ClusterMode } from "./Reducers/ClusterModeReducer";
 import selectedClusters from "./Reducers/SelectedClustersReducer";
 import { CSVLoader } from "../model/Loaders/CSVLoader";
 import { GithubLink } from "./Overlays/GithubLink/GithubLink";
+import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
 
 
 
@@ -496,8 +497,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         flexDirection: 'column'
       }}>
 
+        
+
         <div>
           <ChooseFileDialog onChange={this.onDataSelected}></ChooseFileDialog>
+
 
           <Tabs
             value={this.props.openTab}
@@ -867,7 +871,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         selectionState={this.state.selectionState}
         selectionAggregation={this.state.selectionAggregation}
       ></SelectionClusters>
-
+      
 
     </div >
   }

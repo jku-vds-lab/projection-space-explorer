@@ -31,7 +31,8 @@ export class RubikFingerprint extends React.Component<RubikFingerprintProps> {
 
     renderToContext() {
         var vectors = this.props.vectors
-        
+
+        console.log(vectors)
         // Get layout size, on retina display, canvas width is actually larger
         var cssWidth = this.props.width ? this.props.width : this.canvasRef.current.getBoundingClientRect().width
         var cssHeight = this.props.height ? this.props.height : this.canvasRef.current.getBoundingClientRect().height
@@ -112,7 +113,7 @@ export class RubikFingerprint extends React.Component<RubikFingerprintProps> {
 
                             if (v.count > max) {
                                 max = v.count
-                                
+
                                 curKey = aggregation[key][k].key
 
                             }
@@ -123,8 +124,8 @@ export class RubikFingerprint extends React.Component<RubikFingerprintProps> {
                     }
 
 
-                    
-                    
+
+
                     this.canvasContext.fillStyle = '#F0F0F0'
                     this.canvasContext.fillRect(
                         (offsetMap[sides[side] + "XOffset"] * 3 + j) * size,
@@ -151,11 +152,13 @@ export class RubikFingerprint extends React.Component<RubikFingerprintProps> {
     componentDidMount() {
         this.canvasContext = this.canvasRef.current.getContext('2d')
 
-        this.renderToContext()
+        if (this.props.vectors) {
+            this.renderToContext()
+        }
     }
 
     componentDidUpdate(prevProps) {
-        if (!arraysEqual(prevProps.vectors, this.props.vectors)) {
+        if (!arraysEqual(prevProps.vectors, this.props.vectors) && this.props.vectors) {
             this.renderToContext()
         }
     }
