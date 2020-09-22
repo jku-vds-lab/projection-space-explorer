@@ -44,6 +44,11 @@ export class DatasetDatabase {
                 type: DatasetType.Coral
             },
             {
+                display: "Coral no one-hot encoding normalized",
+                path: "datasets/coral/coral_subsampled_normalized_no_one_hot.json",
+                type: DatasetType.Coral
+            },
+            {
                 display: "Minimal Example",
                 path: "datasets/test/x_y.csv",
                 type: DatasetType.Test

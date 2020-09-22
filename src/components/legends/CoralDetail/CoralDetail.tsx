@@ -1,20 +1,70 @@
 var d3 = require('d3')
 import * as React from 'react'
 import { connect } from 'react-redux'
+import BarChart from './BarChart.js';
+import VegaHist from './VegaHist.js';
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
+const useStyles = makeStyles({
+  table: {
+    maxWidth: 288,
+  },
+});
+
+function createData(name, calories, fat, carbs, protein) {
+  return { name, calories, fat, carbs, protein };
+}
+
+const barData = {
+  "values": [
+    { "a": "A", "b": 20 }, { "a": "B", "b": 34 }, { "a": "C", "b": 55 },
+    { "a": "D", "b": 19 }, { "a": "E", "b": 40 }, { "a": "F", "b": 34 },
+    { "a": "G", "b": 91 }, { "a": "H", "b": 78 }, { "a": "I", "b": 25 }
+  ]
+};
+
+function mapHistData(data, feature) {
+  const mapped = data.map((d) => {
+    return {
+      feature: d[feature]
+    }
+  })
+  return {"values": mapped}
+}
+
+function genRows(vectors) {
+  const chartAge = <VegaHist data={mapHistData(vectors, 'Age')} actions={false} />
+  const chartBMI = <VegaHist data={mapHistData(vectors, 'Body Mass Index (BMI)')} actions={false} />
+  const chartDTD = <VegaHist data={mapHistData(vectors, 'Days to death')} actions={false} />
+  return [
+    createData('Age', 159, chartAge, 24, 4.0),
+    createData('BMI', 237, chartBMI, 37, 4.3),
+    createData('Days to death', 262, chartDTD, 24, 6.0)//,//,
+    // createData('Cupcake', 305, 3.7, 67, 4.3),
+    // createData('Gingerbread', 356, 16.0, 49, 3.9),
+  ];
+}
 
 const calculateVariancePercentage = (data) => {
-  const total= data.reduce(function(a,b){
-    return a+b
+  const total = data.reduce(function (a, b) {
+    return a + b
   });
-  const mean=total/data.length
-  function var_numerator(value){
-    return ((value-mean)*(value-mean));
+  const mean = total / data.length
+  function var_numerator(value) {
+    return ((value - mean) * (value - mean));
   }
-  var variance=data.map(var_numerator);
-  variance=variance.reduce(function(a,b){
-    return (a+b);
+  var variance = data.map(var_numerator);
+  variance = variance.reduce(function (a, b) {
+    return (a + b);
   });
-  variance = variance/data.length;
+  variance = variance / data.length;
   // variance relative to mean
   return variance / (mean + 1e-9)
 }
@@ -24,138 +74,52 @@ const calculateMean = (data) => {
   return meanValue;
 }
 
-function aggregateCoral(vectors, aggregation, setProjectionColumns, projectionColumns) {
-  var vector = null
-  var container = d3.create('div')
-  if (vectors.length > 1 && aggregation) {
+function getTable(vectors, aggregation, setProjectionColumns, projectionColumns) {
 
-    // create list of only the features that were checked for projection
-    const checkedFeatures = []
-    for (const entry of projectionColumns.entries()) {
-      // entry[0] .. idx, entry[1] ... {name: , checked}
-      if (entry[1]['checked']) {
-        checkedFeatures.push(entry[1]['name'])
-      }  
-    }
-    
-    // turn this array of maps for each sample into map of arrays
-    // i.e. mapOfArrays['brain cancer'] = [0, 1, 1, 1, 0, 0]
-    const mapOfArrays = {}
-    for (var i = 0; i < checkedFeatures.length; i++) {
-      mapOfArrays[checkedFeatures[i]] = vectors.map(sample => +sample[checkedFeatures[i]])
-    }
+  const classes = useStyles();
+  const rows = genRows(vectors)
 
-    const meanDict = {}
-    for (var i = 0; i < checkedFeatures.length; i++) {
-      meanDict[checkedFeatures[i]] = calculateMean(mapOfArrays[checkedFeatures[i]])
-    }
-
-    // create dictionary for featureName: variance
-    const varDict = {}
-    for (var i = 0; i < checkedFeatures.length; i++) {
-      varDict[checkedFeatures[i]] = calculateVariancePercentage(mapOfArrays[checkedFeatures[i]])
-    }
-
-    // sorting this dictionary by variance
-
-    // Create items array
-    var items = Object.keys(varDict).map(function(key) {
-      return [key, meanDict[key], varDict[key]];
-    });
-
-    // Sort the array based on the third element, i.e., variance
-    items.sort(function(first, second) {
-      return first[2] - second[2]
-    });
-
-    var table = container.append('table')
-  
-    // create html table for variance sorted features aggregates
-    for (var key in items) {
-      table.append('tr')
-        .append('td')
-        .attr('class', 'coralCohort')
-        .text(items[key][0])
-
-      table.append('tr')
-      .append('td')
-      .attr('class', 'coralCohort')
-      .text('mean:' + parseFloat(items[key][1]).toFixed(3) + ', var:' + parseFloat(items[key][2]).toFixed(3))
-    
-    }
-
-  }
-  else if (vectors.length != 1 && aggregation) {
-    return "<h5>Not applicable</h5>"
-  } else if (vectors.length != 1 && !aggregation) {
-    vector = { }
-    for (var y = 0; y < 9; y++) {
-      for (var x = 0; x < 9; x++) {
-        vector[`cf${y}${x}`] = ""
-      }
-    }
-  } else {
-    vector = vectors[0]
-    
-    var table = container.append('table')
-  
-    for (var i=0; i < projectionColumns.length; i++) {
-      var name = projectionColumns[i]['name']
-      var checked = projectionColumns[i]['checked']
-      if (checked) {
-        table.append('tr')
-          .append('td')
-          .attr('class', 'coralCohort')
-          .text(name+': '+parseFloat(vector[name]).toFixed(3))
-      }
-    }
-  }
-
-  var content = container.html()
-
-  var svg = `<svg width="300" height="440" viewBox="0 0 300 440">
-
-  <foreignObject x="21" y="21" width="300" height="400" style="overflow: scroll">
-
-  ${content}
-
-  </foreignObject>
-
-</svg>`
-
-
-
-
-  return svg
+  return (
+    <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="simple table" size={'small'}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Feature</TableCell>
+            <TableCell>Dissimilarity</TableCell>
+            <TableCell>Characteristic</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow key={row.name}>
+              <TableCell component="th" scope="row">
+                {row.name}
+              </TableCell>
+              <TableCell>{row.calories}</TableCell>
+              <TableCell>{row.fat}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 }
 
-
-
-
-
-
-
-// function coralLegend(color) {
-// }
-
 const mapStateToProps = state => {
-  console.log('mapStateToProps called')
   return ({
-  projectionColumns: state.projectionColumns
-})}
+    projectionColumns: state.projectionColumns
+  })
+}
 
 const mapDispatchToProps = dispatch => ({
-    setProjectionColumns: projectionColumns => {dispatch({
+  setProjectionColumns: projectionColumns => {
+    dispatch({
       type: 'SET_PROJECTION_COLUMNS',
       projectionColumns: projectionColumns
-  })
-  console.log('doing osmetihng in setProjectionColumns')
-}})
-
-export var CoralLegend = connect(mapStateToProps, mapDispatchToProps)(({ selection, aggregate, setProjectionColumns, projectionColumns }) => {
-  return <div dangerouslySetInnerHTML={{ __html: aggregateCoral(selection, aggregate, setProjectionColumns, projectionColumns) }}></div>
+    })
+  }
 })
 
-// export var CoralLegend = ({ selection, aggregate }) => {
-//     return <div dangerouslySetInnerHTML={{ __html: aggregateCoral(selection, aggregate) }}></div>
-// }
+export var CoralLegend = connect(mapStateToProps, mapDispatchToProps)(({ selection, aggregate, setProjectionColumns, projectionColumns }) => {
+  return getTable(selection, aggregate, setProjectionColumns, projectionColumns)
+})
