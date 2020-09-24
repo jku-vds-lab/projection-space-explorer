@@ -128,3 +128,4 @@ To start the application you just need to start the index.html locally. The easi
 ## Preselect a set using a link
 
 You can share a link that automatically preselects a set when opened. For this the 'set' parameter can be one (1) neural (2) chess (3) rubik. So for instance the URL localhost:8080?set=neural will automatically open the application with the neural network data set.
+
