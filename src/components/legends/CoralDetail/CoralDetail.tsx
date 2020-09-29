@@ -123,7 +123,7 @@ const getCV = (data) => {
   });
   variance = variance / data.length;
   const std = Math.sqrt(variance)
-  return std / (mean + 1e-9)
+  return std / (Math.abs(mean) + 1e-9)
 }
 
 const getMean = (data) => {
@@ -188,12 +188,14 @@ function genRows(vectors) {
     "KRAS: AA Mutation",
     "Tumor Type",
     "MDM2: Copy Number Class",
-    "TP53: AA Mutation"
+    "TP53: AA Mutation",
+    "Age"
   ]
 
   // loop through dict
   for (var key in dictOfArrays) {
     console.log(key)
+    // TODO comment out for all features
     if (preselect.indexOf(key) > -1) {
       // feature cat?
       if (isCategoricalFeature(dictOfArrays[key])) {
@@ -204,6 +206,7 @@ function genRows(vectors) {
         var histData = mapHistData(vectors, key)
       rows.push([key, getCV(dictOfArrays[key]), <VegaHist data={histData} actions={false} />])
       }
+      // TODO comment out for all features
     }
   }
 
@@ -211,8 +214,11 @@ function genRows(vectors) {
   rows.sort(sortByScore)
 
   // turn into array of dicts
+  // TODO set appropriate limit of features to show
   const ret = []
-  for (var i = 0; i < Math.min(rows.length, 5); i++) {
+  // for (var i = 0; i < rows.length; i++) {
+    // TODO comment out for all features
+  for (var i = 0; i < Math.min(rows.length, 6); i++) {
     ret.push(createData(rows[i][0], rows[i][1], rows[i][2]))
   }
 
@@ -226,13 +232,12 @@ function getTable(vectors, aggregation, setProjectionColumns, projectionColumns)
   const rows = genRows(vectors)
 
   return (
-    <div
-    style={{
+    <div>
+    <TableContainer component={Paper} style={{
       height: "400px",
       width: "100%",
       overflow: "auto"
     }}>
-    <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table" size={'small'}>
         <TableHead>
           <TableRow>
@@ -247,7 +252,7 @@ function getTable(vectors, aggregation, setProjectionColumns, projectionColumns)
               <TableCell component="th" scope="row">
                 {row.feature}
               </TableCell>
-              <TableCell>{row.score}</TableCell>
+              <TableCell>{(Math.round(row.score * 1000) / 1000).toFixed(3)}</TableCell>
               <TableCell>{row.char}</TableCell>
             </TableRow>
           ))}
