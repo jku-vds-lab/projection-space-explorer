@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { FunctionComponent } from 'react'
 import React = require('react')
 import { FlexParent } from '../../util/FlexParent'
-import { Button } from '@material-ui/core'
+import { Button, Divider, Grid } from '@material-ui/core'
 import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
 import { setProjectionOpenAction, setProjectionWorkerAction } from '../../Actions/Actions'
 import { Dataset } from '../../util/datasetselector'
@@ -35,8 +35,6 @@ const mapDispatchToProps = dispatch => ({
 })
 
 
-
-
 export const EmbeddingTabPanel: FunctionComponent<EmbeddingTabPanelProps> = connect(mapStateToProps, mapDispatchToProps)((props: EmbeddingTabPanelProps) => {
     const [input, setInput] = React.useState(null)
 
@@ -46,7 +44,7 @@ export const EmbeddingTabPanel: FunctionComponent<EmbeddingTabPanelProps> = conn
         margin='0 16px'
         justifyContent=''
     >
-        <Button variant="outlined"
+        <Button
             style={{
                 margin: '8px 0'
             }}
@@ -80,6 +78,11 @@ export const EmbeddingTabPanel: FunctionComponent<EmbeddingTabPanelProps> = conn
                 })
                 props.webGLView.current.updateXY()
             }} />
+
+
+
+
+        <Divider></Divider>
 
         <ForceEmbedding></ForceEmbedding>
     </FlexParent>

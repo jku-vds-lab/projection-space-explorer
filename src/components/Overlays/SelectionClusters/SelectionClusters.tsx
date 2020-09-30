@@ -3,6 +3,8 @@ import { Card, CardContent, Typography } from '@material-ui/core'
 import { GenericLegend } from '../../legends/Generic'
 import './SelectionClusters.scss'
 import { connect } from 'react-redux'
+import AdjustIcon from '@material-ui/icons/Adjust';
+
 
 const mapStateToProps = state => ({
     currentAggregation: state.currentAggregation
@@ -10,8 +12,6 @@ const mapStateToProps = state => ({
 
 export var SelectionClusters = connect(mapStateToProps)(function ({
     selectionState,
-    selectionAggregation,
-    vectors,
     datasetType,
     currentAggregation
 }) {
@@ -29,7 +29,11 @@ export var SelectionClusters = connect(mapStateToProps)(function ({
 
         </div>
         <div className="Cluster">
-            <Card style={{ pointerEvents: 'auto' }}>
+            <Card style={{ position: 'relative', pointerEvents: 'auto' }}>
+                { currentAggregation.length > 0 && <div style={{ position: 'absolute', right: '0px', top: '0px' }} draggable onDragStart={(event) => {
+                    event.persist()
+                }}><AdjustIcon></AdjustIcon></div> }
+                
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">{`Fingerprint (${currentAggregation.length})`}</Typography>
 

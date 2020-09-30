@@ -444,6 +444,9 @@ export class PointVisualization {
     this.sizeAttribute = this.mesh.geometry.attributes.size
   }
 
+  hide() {
+    
+  }
 
   groupHighlight(samples: Vect[]) {
     if (samples && samples.length > 0) {

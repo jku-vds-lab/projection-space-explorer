@@ -558,7 +558,7 @@ export class Dataset {
         this.type = this.info.type
 
         this.calculateBounds()
-        this.calculateColumnTypes()
+        this.calculateColumnTypes(ranges)
         this.checkLabels()
 
         // If the dataset is sequential, calculate the segments
@@ -568,6 +568,31 @@ export class Dataset {
         }
 
         this.preselectedProjectionColumns = preselection
+    }
+
+    inferRangeForAttribute(key: string) {
+        let values = this.vectors.map(sample => sample[key])
+        let numeric = true
+        let min = Number.MAX_SAFE_INTEGER
+        let max = Number.MIN_SAFE_INTEGER
+
+        values.forEach(value => {
+            if (isNaN(value)) {
+                numeric = false
+            } else if (numeric) {
+                if (value < min) {
+                    min = value
+                } else if (value > max) {
+                    max = value
+                }
+            }
+        })
+
+        return numeric ? { min: min, max: max } : null
+    }
+
+    reloadRanges() {
+
     }
 
     // Checks if the dataset contains sequential data
@@ -598,7 +623,7 @@ export class Dataset {
     /**
      * Creates a map which shows the distinct types and data types of the columns.
      */
-    calculateColumnTypes() {
+    calculateColumnTypes(ranges) {
         var columnNames = Object.keys(this.vectors[0])
         columnNames.forEach(columnName => {
             this.columns[columnName] = {}
@@ -609,6 +634,12 @@ export class Dataset {
                 this.columns[columnName].isNumeric = false
             } else {
                 this.columns[columnName].isNumeric = true
+                if (columnName in ranges) {
+                    this.columns[columnName].range = ranges[columnName]
+                } else {
+                    this.columns[columnName].range = this.inferRangeForAttribute(columnName)
+                }
+                
             }
         })
     }
@@ -651,14 +682,20 @@ export class Dataset {
 
         this.vectors.forEach(vector => {
             var data = []
-            columns.forEach(column => {
+            columns.forEach(entry => {
+                let column = entry.name
                 if (this.columns[column].isNumeric) {
                     // Numeric data can just be appended to the array
-                    data.push(+vector[column])
+                    if (column in this.ranges) {
+                        let abs = Math.max(Math.abs(this.ranges[column].min), Math.abs(this.ranges[column].max))
+                        data.push(+vector[column] / abs)
+                    } else{
+                        data.push(+vector[column])
+                    }
+                    
                 } else {
                     // Not numeric data can be converted using one-hot encoding
                     data = data.concat(oneHot(this.columns[column].distinct.indexOf(vector[column]), this.columns[column].distinct.length))
-
                 }
             })
             tensor.push(data)
@@ -816,6 +853,33 @@ export class VectBase implements VectorType {
 
     angle() {
         return Math.atan2(- this.y, - this.x) + Math.PI;
+    }
+
+    multiplyScalar(scalar) {
+        this.x *= scalar;
+        this.y *= scalar;
+
+        return this;
+    }
+
+    length() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+
+    divideScalar(scalar) {
+        return this.multiplyScalar(1 / scalar);
+    }
+
+    normalize() {
+        return this.divideScalar(this.length() || 1);
+    }
+
+    static subtract(a, b) {
+        return new VectBase(a.x - b.x, a.y - b.y)
+    }
+
+    static add(a, b) {
+        return new VectBase(a.x + b.x, a.y + b.y)
     }
 }
 

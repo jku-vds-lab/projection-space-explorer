@@ -12,6 +12,7 @@ import { StoryMode } from '../../Reducers/StoryModeReducer'
 import { ThrustLayout } from '../../util/ThrustLayout'
 import { cpuUsage } from 'process'
 import { ClusterMode } from '../../Reducers/ClusterModeReducer'
+import { RenderingContextEx } from '../../util/RenderingContextEx'
 
 type ForceLayoutProps = {
     activeStory: Story
@@ -263,6 +264,8 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
 
 
     renderClusterEdges(ctx: CanvasRenderingContext2D) {
+        let context = new RenderingContextEx(ctx, window.devicePixelRatio)
+        
 
         function canvas_arrow(context, fromx, fromy, tox, toy) {
             var headlen = 50; // length of head in pixels
@@ -279,8 +282,8 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
         if (this.props.activeStory && this.props.activeStory.edges) {
 
             this.props.activeStory.edges.forEach(edge => {
-                const { x: x0, y: y0 } = this.worldToScreenWithOffset(edge.source.getCenter())
-                const { x: x1, y: y1 } = this.worldToScreenWithOffset(edge.destination.getCenter())
+                const { x: x0, y: y0 } = this.props.viewTransform.worldToScreen(edge.source.getCenter())
+                const { x: x1, y: y1 } = this.props.viewTransform.worldToScreen(edge.destination.getCenter())
 
                 ctx.strokeStyle = 'rgba(70, 130, 180, 0.5)'
                 ctx.lineWidth = 5 * window.devicePixelRatio

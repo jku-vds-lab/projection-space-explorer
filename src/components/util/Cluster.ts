@@ -16,6 +16,18 @@ export default class Cluster {
         this.triangulation = triangulation
     }
 
+    static fromSamples(samples: Vect[]) {
+        let cluster = new Cluster(samples.map(sample => ({
+            x: sample.x,
+            y: sample.y,
+            meshIndex: sample.view.meshIndex
+        })))
+
+        cluster.vectors = samples
+
+        return cluster
+    }
+
     containsPoint(coords) {
         var x = coords.x
         var y = coords.y

@@ -1,16 +1,19 @@
 import './StoryEditor.scss'
 import React = require('react')
-import { requirePropFactory, Tooltip, Typography } from '@material-ui/core'
+import { Button, Paper, requirePropFactory, Tooltip, Typography } from '@material-ui/core'
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
-import ViewListIcon from '@material-ui/icons/ViewList';
-import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import ViewQuiltIcon from '@material-ui/icons/ViewQuilt';
-import { Story } from '../../util/Cluster';
+import Cluster, { Story } from '../../util/Cluster';
 const Graph = require('graphology');
 import { connect } from 'react-redux'
 import { centerOfMass } from '../../WebGLView/UtilityFunctions';
 import { GenericFingerprint } from '../../legends/Generic';
-import { DatasetType } from '../../util/datasetselector';
+import { DatasetType, Vect, VectBase } from '../../util/datasetselector';
+import GestureIcon from '@material-ui/icons/Gesture';
+import DeleteIcon from '@material-ui/icons/Delete';
+import SelectAllIcon from '@material-ui/icons/SelectAll';
+import { setAggregationAction } from '../../Actions/Actions';
+import Draggable from 'react-draggable';
+import { Rnd } from 'react-rnd'
 
 export function rescalePoints(
     points: { x: number, y: number }[],
@@ -46,17 +49,12 @@ export function rescalePoints(
     })
 }
 
-type StoryEditorState = {
-    nodes: any[]
-    edges: any[]
-    tool: SETool
-    dragLine: any
-}
+
 
 enum SETool {
     Draw,
     Delete,
-    Edit
+    Select
 }
 
 enum SEAction {
@@ -66,15 +64,32 @@ enum SEAction {
     PreparingMove
 }
 
+type StoryEditorState = {
+    nodes: any[]
+    edges: any[]
+    tool: SETool
+    dragLine: any
+}
+
+type StoryEditorProps = {
+    setCurrentAggregation: any
+    activeStory: Story
+    currentAggregation: Vect[]
+    webGLView: any
+}
+
 const mapStateToProps = state => ({
-    activeStory: state.activeStory
+    activeStory: state.activeStory,
+    currentAggregation: state.currentAggregation,
+    webGLView: state.webGLView
 })
 
 
 const mapDispatchToProps = dispatch => ({
+    setCurrentAggregation: id => dispatch(setAggregationAction(id))
 })
 
-export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<any, StoryEditorState> {
+export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<StoryEditorProps, StoryEditorState> {
     svgRef: any = React.createRef()
     pressedElement: any = null
     lastPosition: any
@@ -91,17 +106,32 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
         }
     }
 
+    clear() {
+        this.pressedElement = null
+        this.lastPosition = null
+        this.action = SEAction.None
+
+        this.setState({
+            nodes: [],
+            edges: [],
+            tool: SETool.Draw,
+            dragLine: null
+        })
+    }
+
     addNode(x, y, id) {
-        this.state.nodes.push({
+        let node = {
             id: id,
             x: x,
             y: y,
-            radius: 30,
+            radius: 20,
             cluster: null
-        })
+        }
+        this.state.nodes.push(node)
         this.setState({
             nodes: this.state.nodes.slice(0)
         })
+        return node
     }
 
     onMouseDown(event) {
@@ -151,9 +181,11 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
 
         let node = this.state.nodes.find(node => node.id == event.target.parentNode.id)
 
+
+
         if (node) {
             //this.onNodeClick(event, node)
-        } else {
+        } else if (this.state.tool == SETool.Draw) {
             switch (this.action) {
                 case SEAction.None:
                     let x = event.offsetX, y = event.offsetY
@@ -174,8 +206,18 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
     }
 
     onNodeClick(event, node) {
-        console.log("click")
         switch (this.state.tool) {
+            case SETool.Delete:
+                const nodes = this.state.nodes.slice(0)
+                nodes.splice(nodes.findIndex(node), 1)
+                this.setState({
+                    nodes: nodes
+                })
+                break;
+            case SETool.Select:
+                this.props.setCurrentAggregation(node.cluster.vectors)
+                this.props.webGLView.current.setZoomTarget(node.cluster.vectors, 1)
+                break;
             case SETool.Draw:
                 switch (this.action) {
                     case SEAction.None:
@@ -188,7 +230,6 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
                     case SEAction.MakeEdge:
                         // Creating edge and other node is different
                         if (node != this.pressedElement) {
-                            console.log("creating edge")
                             let edges = this.state.edges.slice(0)
                             edges.push({
                                 source: this.state.dragLine.node,
@@ -267,7 +308,7 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
             meshIndex: cluster.label,
             x: Math.random(),
             y: Math.random(),
-            radius: 30,
+            radius: 20,
             id: cluster.label,
             cluster: cluster
         }))
@@ -279,9 +320,6 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
 
         let worker = new Worker("dist/force.js")
 
-        console.log(nodes)
-        console.log(edges)
-
         let self = this
         worker.onmessage = function (e) {
             switch (e.data.type) {
@@ -289,10 +327,10 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
                 case 'finish':
                     if (e.data.type == 'finish') {
                         // finish
-                        let positions = e.data.positions
-                        console.log(positions)
+                        const positions = e.data.positions
 
-                        rescalePoints(positions, 400, 400)
+                        const rect = self.svgRef.current.getBoundingClientRect()
+                        rescalePoints(positions, rect.width, rect.height)
 
                         nodes.forEach(node => {
                             node.x = positions[node.meshIndex].x
@@ -315,61 +353,145 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
         })
     }
 
+    onDrop(event) {
+        let rect = this.svgRef.current.getBoundingClientRect()
+
+        let node = this.addNode(
+            event.clientX - rect.x,
+            event.clientY - rect.y,
+            Math.floor(Math.random() * 100)
+        )
+
+        node.cluster = Cluster.fromSamples(this.props.currentAggregation)
+    }
+
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.activeStory != this.props.activeStory && this.props.activeStory) {
-            this.initWithStory(this.props.activeStory)
+        if (prevProps.activeStory != this.props.activeStory) {
+            if (this.props.activeStory) {
+                this.initWithStory(this.props.activeStory)
+            } else {
+                this.clear()
+            }
         }
     }
 
     render() {
-        return <div className="StoryEditorParent">
-            <svg className="StoryEditorSVG" ref={this.svgRef}>
-                {
-                    this.state.edges.map(edge => {
-                        let source = edge.source
-                        let destination = edge.destination
-                        return <line strokeWidth="3" x1={source.x} y1={source.y} x2={destination.x} y2={destination.y} stroke="black" />
-                    })
-                }
+        return <Rnd
+            minWidth={250}
+            minHeight={200}
+            maxWidth={500}
+            default={{
+                width: 300,
+                height: 200,
+                x: 500,
+                y: 500
+            }}
+            dragHandleClassName="StoryEditorStrong">
+            <Paper
+                elevation={3}
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100%',
+                    height: '100%',
+                    padding: '8px',
+                    boxSizing: 'border-box'
+                }}>
+                <strong className="StoryEditorStrong">Story Editor</strong>
+                <div
+                    style={{ width: '100%', flexGrow: 1, position: 'relative' }}
+                    onDragOver={(event) => {
+                        event.persist()
+                        event.preventDefault()
+                    }}
+                    onDrop={(event) => {
+                        event.persist()
 
-                {this.state.dragLine &&
-                    <line strokeWidth="2" x1={this.state.dragLine.node.x} y1={this.state.dragLine.node.y}
-                        x2={this.state.dragLine.x2} y2={this.state.dragLine.y2} stroke="black" />}
+                        this.onDrop(event)
+                    }}
+                >
 
-                {
-                    this.state.nodes.map(node => {
-                        return <NodeContainer node={node} onNodeChange={(text) => {
-                            node.id = text
-                            this.setState({
-                                nodes: this.state.nodes.slice(0)
+
+                    <svg className="StoryEditorSVG" ref={this.svgRef}>
+                        <defs>
+                            <marker id="arrowhead" markerWidth="5" markerHeight="4"
+                                refX="0" refY="2" orient="auto">
+                                <polygon points="0 0, 5 2, 0 4" />
+                            </marker>
+                        </defs>
+
+                        {
+                            this.state.edges.map(edge => {
+                                const source = edge.source
+                                const destination = edge.destination
+
+                                const vecA = new VectBase(source.x, source.y)
+                                const vecB = new VectBase(destination.x, destination.y)
+                        
+                                const dir = VectBase.subtract(vecB, vecA).normalize()
+                                dir.multiplyScalar(35)
+                                
+                                let p2 = VectBase.subtract(vecB, dir)
+
+                                return <line strokeWidth="3" x1={source.x} y1={source.y}
+                                    x2={p2.x} y2={p2.y} stroke="black"
+                                    marker-end="url(#arrowhead)" />
                             })
-                        }}
-                            onMouseDown={() => { this.onNodeMouseDown(node) }}
-                            onClick={(event) => { this.onNodeClick(event, node) }}
-                            onMouseUp={() => { this.onNodeMouseUp(node) }}
-                        />
-                    })
-                }
-            </svg>
+                        }
 
-            <ToggleButtonGroup className="StoryEditorTools" orientation="vertical" value={this.state.tool} exclusive onChange={(event, newVal) => { this.setState({ tool: newVal }) }}>
-                <ToggleButton value={SETool.Draw} aria-label="list">
-                    <ViewListIcon />
-                </ToggleButton>
-                <ToggleButton value={SETool.Delete} aria-label="module">
-                    <ViewModuleIcon />
-                </ToggleButton>
-                <ToggleButton value={SETool.Edit} aria-label="quilt">
-                    <ViewQuiltIcon />
-                </ToggleButton>
-            </ToggleButtonGroup>
+                        {
+                            this.state.dragLine &&
+                            <line strokeWidth="2" x1={this.state.dragLine.node.x} y1={this.state.dragLine.node.y}
+                                x2={this.state.dragLine.x2} y2={this.state.dragLine.y2} stroke="black"
+                                marker-end="url(#arrowhead)" />
+                        }
 
-        </div>
+                        {
+                            this.state.nodes.map(node => {
+                                return <NodeContainer node={node} onNodeChange={(text) => {
+                                    node.id = text
+                                    this.setState({
+                                        nodes: this.state.nodes.slice(0)
+                                    })
+                                }}
+                                    onMouseDown={() => { this.onNodeMouseDown(node) }}
+                                    onClick={(event) => { this.onNodeClick(event, node) }}
+                                    onMouseUp={() => { this.onNodeMouseUp(node) }}
+                                />
+                            })
+                        }
+                    </svg>
 
+
+                    <div className="StoryEditorTools">
+                        <ToggleButtonGroup size="small" orientation="vertical" value={this.state.tool} exclusive onChange={(event, newVal) => { this.setState({ tool: newVal }) }}>
+                            <ToggleButton value={SETool.Draw} aria-label="list">
+                                <GestureIcon />
+                            </ToggleButton>
+                            <ToggleButton value={SETool.Delete} aria-label="module">
+                                <DeleteIcon />
+                            </ToggleButton>
+                            <ToggleButton value={SETool.Select} aria-label="quilt">
+                                <SelectAllIcon />
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </div>
+                </div>
+
+            </Paper>
+        </Rnd>
     }
 })
 
+class VectorMath {
+    static test (a, b) {
+        const vecA = new VectBase(a.x, a.y)
+        const vecB = new VectBase(b.x, b.y)
 
+        const dir = VectBase.subtract(vecB, vecA).normalize()
+
+    }
+}
 
 function NodeContainer({ node, onNodeChange, onMouseDown, onClick, onMouseUp }) {
     const [edit, setEdit] = React.useState(false)
@@ -393,7 +515,7 @@ function NodeContainer({ node, onNodeChange, onMouseDown, onClick, onMouseUp }) 
                 {
                     node.cluster && <GenericFingerprint type={DatasetType.Rubik} scale={1} vectors={node.cluster.vectors}></GenericFingerprint>
                 }
-                
+
             </React.Fragment>
         }>
             <circle cx={0} cy={0} r={node.radius} stroke="black" strokeWidth="3" fill="white" />
@@ -418,4 +540,8 @@ function NodeContainer({ node, onNodeChange, onMouseDown, onClick, onMouseUp }) 
             }
         </foreignObject>
     </g>
+}
+
+function arcedLine() {
+    return <path d="M 10 80 Q 95 10 180 80" stroke="black" fill="transparent" />
 }

@@ -3,6 +3,8 @@ import advancedColoringSelection from "../Reducers/AdvancedColoringSelection"
 
 
 export enum ActionTypeLiteral {
+    AddStory= 'ADD_STORY',
+    DeleteStory = 'DELETE_STORY',
     SetVectorByShape = 'SET_VECTOR_BY_SHAPE',
     SetCheckedShapes = 'SET_CHECKED_SHAPES',
     SetSelectedVectorByShape = 'SET_SELECTED_VECTOR_BY_SHAPE',
@@ -31,6 +33,16 @@ export enum ActionTypeLiteral {
     ToggleSelectedCluster = 'TOGGLE_SELECTED_CLUSTER'
 
 }
+
+export const addStoryAction = story => ({
+    type: ActionTypeLiteral.AddStory,
+    story: story
+})
+
+export const deleteStoryAction = story => ({
+    type: ActionTypeLiteral.DeleteStory,
+    story: story
+})
 
 export const toggleAggregationAction = aggregation => ({
     type: ActionTypeLiteral.ToggleAggregation,

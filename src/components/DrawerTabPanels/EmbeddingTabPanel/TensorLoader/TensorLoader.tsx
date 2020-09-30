@@ -38,7 +38,7 @@ const useStylesTensorLoader = makeStyles(theme => ({
     }
 }));
 
-function TransferList({ projectionColumns, handleToggle }) {
+function TransferList({ projectionColumns, handleToggle, normalizeClick }) {
     const rowRenderer = function ({
         key, // Unique key within array of rows
         index, // Index of row within collection
@@ -46,17 +46,24 @@ function TransferList({ projectionColumns, handleToggle }) {
         isVisible, // This row is visible within the List (eg it is not an overscanned row)
         style, // Style object to be applied to row (to position it)
     }) {
-        return <ListItem key={key} style={style} role="listitem" button onClick={(event) => {
-            handleToggle(index, !projectionColumns[index].checked, event.shiftKey)
-        }}>
+        return <ListItem key={key} style={style} role="listitem">
             <ListItemIcon>
                 <Checkbox
                     checked={projectionColumns[index].checked}
-                    tabIndex={-1}
-                    disableRipple
+                    onClick={(event) => {
+                        handleToggle(index, !projectionColumns[index].checked, event.shiftKey)
+                    }}
                 />
             </ListItemIcon>
             <ListItemText id={index} style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} primary={`${projectionColumns[index].name}`} />
+            <ListItemIcon>
+                <Checkbox
+                    checked={projectionColumns[index].normalized}
+                    onChange={(event) => {
+                        normalizeClick(index, event.target.checked)
+                    }}
+                />
+            </ListItemIcon>
         </ListItem>
     }
 
@@ -65,8 +72,10 @@ function TransferList({ projectionColumns, handleToggle }) {
         width={500}
         height={500}
         rowCount={projectionColumns.length}
-        rowHeight={25}
+        rowHeight={42}
         rowRenderer={rowRenderer}
+        
+        
     />
 }
 
@@ -118,11 +127,13 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
                                                 if (shiftKey) {
                                                     setProjectionColumnsShift(last, index)
                                                 } else {
-                                                    setProjectionColumnsEntry(index, value)
+                                                    setProjectionColumnsEntry(index, { checked: value })
                                                     setLast(index)
                                                 }
                                             }}
-
+                                            normalizeClick={(index, value) => {
+                                                setProjectionColumnsEntry(index, { normalized: value })
+                                            }}
                                         />
                                     </Grid>
                                     <Grid item>
@@ -138,11 +149,6 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
                                         ></ProjectionSettings>
                                     </Grid>
                                 </Grid>
-
-
-
-
-
                             </div>
 
                         </Grid>
@@ -151,7 +157,6 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
                             <Button
                                 color='primary'
                                 onClick={(e) => {
-
                                     setProjectionOpen(false)
                                     setProjectionParams({
                                         method: method,
@@ -159,7 +164,7 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
                                         learningRate: learningRate,
                                         nNeighbors: nNeighbors
                                     })
-                                    onTensorInitiated(e, projectionColumns.filter(e => e.checked).map(e => e.name))
+                                    onTensorInitiated(e, projectionColumns.filter(e => e.checked))
 
                                 }}>Start Projection</Button>
                         </Grid>

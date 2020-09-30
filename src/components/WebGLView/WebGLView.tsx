@@ -25,6 +25,7 @@ import { Camera } from 'three';
 import { LineVisualization, PointVisualization, ClusterVisualization } from './meshes';
 import { MultivariateClustering } from './Visualizations/MultivariateClustering';
 import { ClusterMode } from '../Reducers/ClusterModeReducer';
+import { DisplayMode } from '../Reducers/DisplayModeReducer';
 
 
 const useStyles = makeStyles(theme => ({
@@ -136,7 +137,6 @@ type ViewProps = {
     setActiveLine: any
     activeLine: DataLine
     highlightedSequence: any
-    onAggregate: any
     setCurrentAggregation: any
     viewTransform: ViewTransform
     onHover: any
@@ -150,6 +150,7 @@ type ViewProps = {
     toggleSelectedCluster: any
     toggleAggregation: any
     selectedClusters: Cluster[]
+    displayMode: DisplayMode
 }
 
 type ViewState = {
@@ -172,7 +173,8 @@ const mapStateToProps = state => ({
     viewTransform: state.viewTransform,
     advancedColoringSelection: state.advancedColoringSelection,
     clusterMode: state.clusterMode,
-    selectedClusters: state.selectedClusters
+    selectedClusters: state.selectedClusters,
+    displayMode: state.displayMode
 })
 
 
@@ -186,7 +188,7 @@ const mapDispatchToProps = dispatch => ({
 })
 
 
-export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<ViewProps, ViewState> {
+export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<ViewProps, ViewState> {
     lasso: LassoSelection
     particles: PointVisualization
     containerRef: any
@@ -240,8 +242,6 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         this.initialMousePosition = null
 
         this.currentHover = null
-
-        this.currentAggregation = []
 
         this.state = {
             // clusters to display using force-directed layout
@@ -363,6 +363,10 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
         switch (this.props.currentTool) {
             case Tool.Default:
+                if (this.props.displayMode == DisplayMode.OnlyClusters) {
+                    break;
+                }
+
                 // In case we have a line in the sequence UI
                 if (this.props.activeLine) {
                     break;
@@ -471,6 +475,9 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         switch (this.props.currentTool) {
             case Tool.Default:
                 // In case we have a line in the sequence UI
+                if (this.props.displayMode == DisplayMode.OnlyClusters) {
+                    break;
+                }
                 if (this.props.activeLine) {
                     break;
                 }
@@ -484,31 +491,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                     if (indices.length > 0 && wasDrawing) {
                         var selected = indices.map(index => this.vectors[index])
 
-
-
-                        // Toggle selected states
-                        selected.forEach(vector => {
-                            vector.view.selected = !vector.view.selected
-
-                            if (this.currentAggregation.includes(vector) && !vector.view.selected) {
-                                this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
-                            } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
-                                this.currentAggregation.push(vector)
-                            }
-                        })
-
-
-                        if (this.props.dataset.isSequential) {
-                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
-
-                            this.lines.groupHighlight(uniqueIndices)
-                        } else {
-                            this.particles.groupHighlight(this.currentAggregation)
-                        }
-
-                        this.props.onAggregate(this.currentAggregation)
-                        this.props.setCurrentAggregation(this.currentAggregation.slice(0))
-
+                        this.props.toggleAggregation(selected)
                     } else if (wasDrawing) {
                         this.clearSelection()
                     }
@@ -517,25 +500,7 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 } else {
                     if (this.currentHover != null) {
                         // There is a hover target ... select it
-                        this.currentHover.view.selected = !this.currentHover.view.selected
-
-                        if (this.currentAggregation.includes(this.currentHover) && !this.currentHover.view.selected) {
-                            this.currentAggregation.splice(this.currentAggregation.indexOf(this.currentHover), 1)
-                            this.props.onAggregate(this.currentAggregation)
-                            this.props.setCurrentAggregation(this.currentAggregation.slice(0))
-                        } else if (!this.currentAggregation.includes(this.currentHover) && this.currentHover.view.selected) {
-                            this.currentAggregation.push(this.currentHover)
-                            this.props.onAggregate(this.currentAggregation)
-                            this.props.setCurrentAggregation(this.currentAggregation.slice(0))
-                        }
-
-                        if (this.props.dataset.isSequential) {
-                            let uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
-
-                            this.lines.groupHighlight(uniqueIndices)
-                        } else {
-                            this.particles.groupHighlight(this.currentAggregation)
-                        }
+                        this.props.toggleAggregation([this.currentHover])
                     }
                 }
 
@@ -557,29 +522,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
                                     if (event.button == 0) {
                                         var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
-                                        
-                                        selected.forEach(vector => {
-                                            vector.view.selected = !vector.view.selected
 
-                                            if (this.currentAggregation.includes(vector) && !vector.view.selected) {
-                                                this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
-                                            } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
-                                                this.currentAggregation.push(vector)
-                                            }
-                                        })
-
-
-                                        if (this.props.dataset.isSequential) {
-                                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
-
-                                            this.lines.groupHighlight(uniqueIndices)
-                                        } else {
-                                            this.particles.groupHighlight(this.currentAggregation)
-                                        }
-
-
-                                        this.props.onAggregate(this.currentAggregation)
-                                        this.props.setCurrentAggregation(this.currentAggregation)
+                                        this.props.toggleAggregation(selected)
                                     } else if (event.button == 1) {
                                         this.setZoomTarget(cluster.vectors, 1)
                                     }
@@ -600,29 +544,11 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                                 minDist = dist
                             }
                         })
-                        
+
                         // Toggle
                         if (selected) {
-                            selected.vectors.forEach(vector => {
-                                vector.view.selected = !vector.view.selected
-    
-                                if (this.currentAggregation.includes(vector) && !vector.view.selected) {
-                                    this.currentAggregation.splice(this.currentAggregation.indexOf(vector), 1)
-                                } else if (!this.currentAggregation.includes(vector) && vector.view.selected) {
-                                    this.currentAggregation.push(vector)
-                                }
-                            })
-
                             this.props.toggleSelectedCluster(selected)
                             this.props.toggleAggregation(selected.vectors)
-                        }
-                        
-                        if (this.props.dataset.isSequential) {
-                            var uniqueIndices = [...new Set(this.currentAggregation.map(vector => vector.view.segment.lineKey))]
-
-                            this.lines.groupHighlight(uniqueIndices)
-                        } else {
-                            this.particles.groupHighlight(this.currentAggregation)
                         }
                     }
                 }
@@ -630,6 +556,10 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
                 break;
             case Tool.Crosshair:
+                if (this.props.displayMode == DisplayMode.OnlyClusters) {
+                    break;
+                }
+
                 var idx = this.choose(coords)
                 if (idx >= 0) {
                     var vector = this.props.dataset.vectors[idx]
@@ -646,7 +576,6 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
     clearSelection() {
         this.lasso = null
-        this.currentAggregation = []
 
         if (this.props.dataset.isSequential) {
             this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
@@ -660,7 +589,6 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
             vector.view.selected = false
         })
 
-        this.props.onAggregate([])
         this.props.setCurrentAggregation([])
     }
 
@@ -1021,30 +949,30 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
 
-/**     debugD3(edgeClusters) {
-        this.trees = this.detectBundles(edgeClusters)
-        this.edgeClusters = edgeClusters.toMatrix()
-
-        var process = []
-        this.trees.forEach(tree => {
-            tree.forEach((connection, i) => {
-                process.push(this.edgeClusters[connection.source])
-                if (i == tree.length - 1) {
-                    process.push(this.edgeClusters[connection.target])
-                }
+    /**     debugD3(edgeClusters) {
+            this.trees = this.detectBundles(edgeClusters)
+            this.edgeClusters = edgeClusters.toMatrix()
+    
+            var process = []
+            this.trees.forEach(tree => {
+                tree.forEach((connection, i) => {
+                    process.push(this.edgeClusters[connection.source])
+                    if (i == tree.length - 1) {
+                        process.push(this.edgeClusters[connection.target])
+                    }
+                })
             })
-        })
-
-        var cc = process.map(edgeCluster => {
-            var vecs = edgeCluster.map(m => m.target)
-            var c = new Cluster(vecs, null, null, null)
-
-            c.vectors = c.points
-            return c
-        })
-
-        return [this.trees, cc]
-    }*/
+    
+            var cc = process.map(edgeCluster => {
+                var vecs = edgeCluster.map(m => m.target)
+                var c = new Cluster(vecs, null, null, null)
+    
+                c.vectors = c.points
+                return c
+            })
+    
+            return [this.trees, cc]
+        }*/
 
     filterLines(algo, show) {
 
@@ -1126,7 +1054,6 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
     disposeScene() {
         this.currentHover = null
-        this.currentAggregation = []
 
         this.setState({
             displayClusters: []
@@ -1189,6 +1116,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
         this.updateZoom(deltaTime)
 
         try {
+            let forceLayout = this.state.forceLayoutRef.current
+
             this.renderer.clear()
             this.renderer.render(this.scene, this.camera)
             this.renderer.render(this.pointScene, this.camera)
@@ -1200,8 +1129,8 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 this.getHeight() * window.devicePixelRatio)
 
             this.renderLasso(ctx)
-            this.state.forceLayoutRef.current.renderLinks(ctx)
-            this.state.forceLayoutRef.current.renderClusterEdges(ctx)
+            forceLayout.renderLinks(ctx)
+            forceLayout.renderClusterEdges(ctx)
             //this.renderEdge(ctx)
 
             if (this.props.highlightedSequence != null) {
@@ -1229,6 +1158,53 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
                 }
             }
         }**/
+
+
+
+        if (prevProps.displayMode != this.props.displayMode) {
+            switch (this.props.displayMode) {
+                case DisplayMode.StatesAndClusters:
+                    if (this.props.dataset.isSequential) {
+                        this.lines.meshes.forEach(line => {
+                            this.scene.remove(line.line)
+                            this.scene.add(line.line)
+                        })
+                    }
+
+                    this.pointScene.remove(this.particles.mesh)
+                    this.pointScene.add(this.particles.mesh)
+
+                    break;
+                case DisplayMode.OnlyClusters:
+                    if (this.props.dataset.isSequential) {
+                        this.lines.meshes.forEach(line => {
+                            this.scene.remove(line.line)
+                        })
+                    }
+
+                    this.pointScene.remove(this.particles.mesh)
+                    break;
+            }
+        }
+
+
+        if (!arraysEqual(prevProps.currentAggregation, this.props.currentAggregation)) {
+            if (this.props.dataset.isSequential) {
+                var uniqueIndices = [...new Set(this.props.currentAggregation.map(vector => vector.view.segment.lineKey))]
+
+                this.lines.groupHighlight(uniqueIndices)
+            } else {
+                this.particles.groupHighlight(this.props.currentAggregation)
+            }
+
+            this.vectors.forEach(sample => sample.view.selected = false)
+            this.props.currentAggregation.forEach(sample => {
+                sample.view.selected = true
+            })
+
+            this.particles.update()
+        }
+
         // If we have clusters now... and are on clusters tab... create cluster visualization
         if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters != null) {
             if (this.props.openTab == 1) {
@@ -1247,13 +1223,13 @@ export var ThreeView = connect(mapStateToProps, mapDispatchToProps, null, { forw
 
 
         if ((this.props.currentTool == Tool.Default && !arraysEqual(prevProps.currentAggregation, this.props.currentAggregation))
-        || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Default)) {
+            || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Default)) {
             this.multivariateClusterView?.highlightSamples(this.props.currentAggregation)
         }
 
         // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
         if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)
-        || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Grab)) {
+            || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Grab)) {
             this.multivariateClusterView?.highlightCluster(this.props.selectedClusters)
         }
 

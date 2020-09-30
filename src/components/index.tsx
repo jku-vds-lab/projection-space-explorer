@@ -1,7 +1,7 @@
 import "regenerator-runtime/runtime";
 
 import Typography from '@material-ui/core/Typography';
-import { ThreeView } from './WebGLView/WebGLView'
+import { WebGLView } from './WebGLView/WebGLView'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
@@ -66,6 +66,7 @@ import selectedClusters from "./Reducers/SelectedClustersReducer";
 import { CSVLoader } from "../model/Loaders/CSVLoader";
 import { GithubLink } from "./Overlays/GithubLink/GithubLink";
 import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
+import displayMode from "./Reducers/DisplayModeReducer";
 
 
 
@@ -104,7 +105,8 @@ function a11yProps(index) {
 
 
 const mapStateToProps = state => ({
-  openTab: state.openTab
+  openTab: state.openTab,
+  activeStory: state.activeStory
 })
 
 
@@ -136,7 +138,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.state = {
       selectionState: [],
-      selectionAggregation: [],
 
       fileDialogOpen: true,
 
@@ -181,7 +182,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setWebGLView(this.threeRef)
     this.legend = React.createRef()
     this.onHover = this.onHover.bind(this)
-    this.onAggregate = this.onAggregate.bind(this)
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
     this.onColorScaleChanged = this.onColorScaleChanged.bind(this)
@@ -231,18 +231,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       this.setState({ selectionState: selected })
     }
   }
-
-  onAggregate(selected) {
-    if (selected == null || selected.length <= 0) {
-      if (this.state.selectionAggregation != null) {
-        this.setState({ selectionAggregation: [] })
-      }
-
-    } else {
-      this.setState({ selectionAggregation: selected })
-    }
-  }
-
 
 
   /**
@@ -294,8 +282,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       selectedLines: selLines,
       selectedLineAlgos: algos,
       pathLengthRange: [0, this.dataset.getMaxPathLength()],
-      maxPathLength: this.dataset.getMaxPathLength(),
-      selectionAggregation: []
+      maxPathLength: this.dataset.getMaxPathLength()
     })
 
     this.props.setHighlightedSequence(null)
@@ -306,7 +293,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setProjectionColumns(this.dataset.getColumns().map(column => ({
       name: column,
-      checked: this.dataset.preselectedProjectionColumns.includes(column)
+      checked: this.dataset.preselectedProjectionColumns.includes(column),
+      normalized: true
     })))
 
     this.legend.current?.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
@@ -830,16 +818,15 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
 
-      <ThreeView
+      <WebGLView
         ref={this.threeRef}
         //clusters={this.state.clusters}
         onHover={this.onHover}
         algorithms={this.state.selectedLineAlgos}
-        onAggregate={this.onAggregate}
         selectionState={this.state.selectionState}
         pathLengthRange={this.state.pathLengthRange}
         type={this.state.datasetType}>
-      </ThreeView>
+      </WebGLView>
 
       <StateSequenceDrawer></StateSequenceDrawer>
 
@@ -869,9 +856,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         vectors={this.state.vectors}
         datasetType={this.state.datasetType}
         selectionState={this.state.selectionState}
-        selectionAggregation={this.state.selectionAggregation}
       ></SelectionClusters>
-      
+
+      {this.props.activeStory && <StoryEditor></StoryEditor>}
 
     </div >
   }
@@ -905,7 +892,8 @@ const rootReducer = combineReducers({
   projectionWorker: projectionWorker,
   webGLView: webGLView,
   clusterMode: clusterMode,
-  selectedClusters: selectedClusters
+  selectedClusters: selectedClusters,
+  displayMode: displayMode
 })
 
 

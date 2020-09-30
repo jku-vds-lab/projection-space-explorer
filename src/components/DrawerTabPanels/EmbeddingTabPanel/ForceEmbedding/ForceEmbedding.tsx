@@ -1,11 +1,12 @@
 import React = require('react');
-import { Button, Box, LinearProgress, Typography, Checkbox, FormControlLabel, TextField, Paper, Tooltip } from '@material-ui/core';
+import { Button, Box, LinearProgress, Typography, Checkbox, FormControlLabel, TextField, Paper, Tooltip, Grid } from '@material-ui/core';
 import { Dataset, DataLine } from '../../../util/datasetselector';
 import { connect } from 'react-redux'
 const Graph = require('graphology');
 import Modal from '@material-ui/core/Modal';
 import './ForceEmbedding.scss'
 import Alert from '@material-ui/lab/Alert';
+import { FlexParent } from '../../../util/FlexParent';
 
 type ForceEmbeddingProps = {
     webGLView: any
@@ -151,16 +152,27 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
     }
 
     render() {
-        return <div>
+        return <FlexParent
+            alignItems='stretch'
+            flexDirection='column'
+            margin='8px 16px'
+            justifyContent=''>
             {
                 this.props.dataset && !this.props.dataset.isSequential && <Alert severity="info">Force Embedding is only available with a valid line attribute!</Alert>
             }
             <Button disabled={!this.props.dataset?.isSequential} onClick={() => {
-                //this.force()
-                this.setState({
-                    openModal: true
-                })
-            }}>Force Embedding</Button>
+                if (this.state.worker) {
+                    this.state.worker.terminate()
+                    this.setState({
+                        worker: null
+                    })
+                } else {
+                    this.setState({
+                        openModal: true
+                    })
+                }
+                
+            }}>{this.state.worker ? "Stop Force Embedding" : "Start Force Embedding"}</Button>
 
 
             <Modal
@@ -226,6 +238,6 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
             <br></br>
 
             {this.state.worker && <LinearProgressWithLabel value={this.state.progress} />}
-        </div>
+        </FlexParent>
     }
 })

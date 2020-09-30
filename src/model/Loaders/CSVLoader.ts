@@ -26,10 +26,10 @@ export class CSVLoader implements Loader {
         })
     }
 
-   parseRange(str) {
-       var range = str.match(/-?\d+\.?\d*/g)
-       return { min: range[0], max: range[1] }
-   }
+    parseRange(str) {
+        var range = str.match(/-?\d+\.?\d*/g)
+        return { min: range[0], max: range[1] }
+    }
 
     resolveContent(content, finished) {
         this.vectors = convertFromCSV(d3v5.csvParse(content))
@@ -38,10 +38,14 @@ export class CSVLoader implements Loader {
         this.resolve(finished)
     }
 
+
+
+
     resolve(finished) {
         var header = Object.keys(this.vectors[0])
         var ranges = header.reduce((map, value) => {
             var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
+
             if (matches != null) {
                 var cutHeader = value.substring(0, value.length - matches[0].length)
                 this.vectors.forEach(vector => {
@@ -51,6 +55,7 @@ export class CSVLoader implements Loader {
                 header[header.indexOf(value)] = cutHeader
                 map[cutHeader] = this.parseRange(matches[0])
             }
+
             return map
         }, {})
 

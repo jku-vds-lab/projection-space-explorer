@@ -11,6 +11,7 @@ import Cluster, { Story } from "../../util/Cluster"
 import { graphLayout, Edge } from "../../util/graphs"
 import { setActiveStoryAction, setStoriesAction, setClusterEdgesAction, setStoryModeAction, setCurrentClustersAction } from "../../Actions/Actions"
 import { StoryMode } from "../../Reducers/StoryModeReducer"
+import { DisplayMode, setDisplayMode } from "../../Reducers/DisplayModeReducer"
 
 var worker = new Worker('dist/cluster.js')
 
@@ -68,6 +69,8 @@ type ClusteringTabPanelProps = {
     annotate?: any
     open?: boolean,
     storyMode?: StoryMode
+    setDisplayMode?: any
+    displayMode?: DisplayMode
 }
 
 
@@ -76,7 +79,8 @@ const mapStateToProps = state => ({
     stories: state.stories,
     activeStory: state.activeStory,
     storyMode?: state.storyMode,
-    currentClusters: state.currentClusters
+    currentClusters: state.currentClusters,
+    displayMode: state.displayMode
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -84,7 +88,8 @@ const mapDispatchToProps = dispatch => ({
     setStories: stories => dispatch(setStoriesAction(stories)),
     setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
-    setStoryMode: storyMode => dispatch(setStoryModeAction(storyMode))
+    setStoryMode: storyMode => dispatch(setStoryModeAction(storyMode)),
+    setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode))
 })
 
 
@@ -94,7 +99,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
     setStories, setActiveStory,
     currentAggregation, open, backendRunning, clusteringWorker,
     dataset, stories, setClusterEdges, storyMode, setStoryMode,
-    currentClusters }) => {
+    currentClusters, setDisplayMode, displayMode }) => {
 
     const [clusterId, setClusterId] = React.useState(0)
 
@@ -297,7 +302,41 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
     }
 
 
-
+    /**
+     *         <Button
+                variant='outlined'
+                style={{
+                    margin: '8px 0'
+                }}
+                onClick={() => {
+                    annotateVectors(currentAggregation, clusterId)
+                    setClusterId(clusterId + 1)
+                }}
+            >Annotate Cluster</Button>
+    
+            <Button
+                variant='outlined'
+                style={{
+                    margin: '8px 0'
+                }}
+                onClick={() => {
+                    annotateVectors(dataset.vectors, -1)
+                }}
+            >Reset Clustering</Button>
+    
+    <Button
+                variant="outlined"
+                disabled={backendRunning == false}
+                style={{
+                    margin: '8px 0'
+                }}
+                onClick={() => {
+                    //onClusteringStart()
+                    onClusteringStartClick()
+                }}>Start Clustering</Button>
+    
+            {backendRunning ? <div></div> : <Alert severity="error">No backend detected!</Alert>}
+     */
 
 
     React.useEffect(() => {
@@ -317,39 +356,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
         justifyContent=''
     >
 
-        <Button
-            variant='outlined'
-            style={{
-                margin: '8px 0'
-            }}
-            onClick={() => {
-                annotateVectors(currentAggregation, clusterId)
-                setClusterId(clusterId + 1)
-            }}
-        >Annotate Cluster</Button>
 
-        <Button
-            variant='outlined'
-            style={{
-                margin: '8px 0'
-            }}
-            onClick={() => {
-                annotateVectors(dataset.vectors, -1)
-            }}
-        >Reset Clustering</Button>
-
-        <Button
-            variant="outlined"
-            disabled={backendRunning == false}
-            style={{
-                margin: '8px 0'
-            }}
-            onClick={() => {
-                //onClusteringStart()
-                onClusteringStartClick()
-            }}>Start Clustering</Button>
-
-        {backendRunning ? <div></div> : <Alert severity="error">No backend detected!</Alert>}
 
         <Button
             variant="outlined"
@@ -376,6 +383,12 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
             label="Show Differences"
         />
 
+        <FormControlLabel
+            control={<Switch checked={displayMode == DisplayMode.OnlyClusters} onChange={(event) => {
+                setDisplayMode(event.target.checked ? DisplayMode.OnlyClusters : DisplayMode.StatesAndClusters)
+            }} name="test" />}
+            label="Show Clusters Only"
+        />
 
         <ClusterWindow
             worker={clusteringWorker}

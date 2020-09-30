@@ -1,9 +1,5 @@
 .StoryEditorParent {
-    width: 400px;
-    height: 400px;
-    position: absolute;
-    left: 200px;
-    top: 200px;
+    background: 'black'
 }
 
 .StoryEditorDraggable {
@@ -17,8 +13,19 @@
 }
 
 .StoryEditorSVG {
-    position: absolute;
-    background-color: lightyellow;
-    width: 400px;
-    height: 400px;
+    background-color: white;
+    width: 100%;
+    display: block;
+    height: 100%;
+}
+
+.StoryEditorStrong {
+    background: #ddd;
+    border: 1px solid #999;
+    border-radius: 3px;
+    display: block;
+    margin-bottom: 8px;
+    padding: 3px 5px;
+    text-align: center;
+    cursor: move;
 }

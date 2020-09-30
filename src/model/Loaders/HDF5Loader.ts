@@ -23,6 +23,28 @@ export class HDF5Loader implements Loader {
         this.resolve(file, finished, null)
     }
 
+    inferRangeForAttribute(key: string) {
+
+        let values = this.vectors.map(sample => sample[key])
+        let numeric = true
+        let min = Number.MAX_SAFE_INTEGER
+        let max = Number.MIN_SAFE_INTEGER
+
+        values.forEach(value => {
+            if (isNaN(value)) {
+                numeric = false
+            } else if (numeric) {
+                if (value < min) {
+                    min = value
+                } else if (value > max) {
+                    max = value
+                }
+            }
+        })
+
+        return numeric ? { min: min, max: max } : null
+    }
+
 
     resolve(content, finished, datasetType) {
         let fileSamples = content.samples[0]
