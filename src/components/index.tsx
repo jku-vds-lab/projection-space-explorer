@@ -858,7 +858,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         selectionState={this.state.selectionState}
       ></SelectionClusters>
 
-      {this.props.activeStory && <StoryEditor></StoryEditor>}
+      {this.props.activeStory && false && <StoryEditor></StoryEditor>}
 
     </div >
   }
