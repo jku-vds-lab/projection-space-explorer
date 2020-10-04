@@ -135,6 +135,12 @@ export class LineVisualization {
     this.lineColorScheme = lineColorScheme
   }
 
+  setBrightness(brightness: number) {
+    this.segments.forEach(segment => {
+      segment.view.lineMesh.material.opacity = brightness / 100
+    })
+  }
+
   dispose(scene) {
     this.meshes.forEach(mesh => {
       scene.remove(mesh.line)
@@ -230,8 +236,7 @@ export class LineVisualization {
   }
 
 
-  createMesh() {
-    var opacity = getLineOpacity(this.segments.length)
+  createMesh(lineBrightness: number) {
     var lines = []
 
     this.segments.forEach((segment, index) => {
@@ -244,7 +249,7 @@ export class LineVisualization {
         transparent: true,
 
         // Calculate opacity
-        opacity: opacity
+        opacity: lineBrightness / 100
         // 1 - 1     100 - 0.1    200 - 0.05      50 - 0.2     25 - 0.4
       });
 
@@ -304,7 +309,7 @@ export class LineVisualization {
 
     this.segments.forEach(segment => {
 
-      segment.view.lineMesh.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
+     // segment.view.lineMesh.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
 
       segment.view.lineMesh.visible = segment.view.detailVisible
         && segment.view.globalVisible
@@ -443,6 +448,8 @@ export class PointVisualization {
 
     this.sizeAttribute = this.mesh.geometry.attributes.size
   }
+
+
 
   hide() {
     

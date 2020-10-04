@@ -9,15 +9,13 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
 import { Divider } from "@material-ui/core";
-import { Dataset, DatasetType, DatasetDatabase } from './util/datasetselector'
+import { Dataset, DatasetDatabase } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import { arraysEqual } from "./WebGLView/UtilityFunctions";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Button from '@material-ui/core/Button';
 import { ChooseFileDialog } from './util/dataselectui'
-import { FlexParent } from './util/FlexParent'
 import { DataEdge, MultiDictionary } from "./util/datasetselector"
 import * as React from "react";
 import { SelectionClusters } from "./Overlays/SelectionClusters/SelectionClusters";
@@ -67,6 +65,8 @@ import { CSVLoader } from "../model/Loaders/CSVLoader";
 import { GithubLink } from "./Overlays/GithubLink/GithubLink";
 import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
 import displayMode from "./Reducers/DisplayModeReducer";
+import { PathBrightnessSliderRedux } from "./DrawerTabPanels/StatesTabPanel/PathTransparencySlider/PathBrightnessSlider";
+import lineBrightness from "./Reducers/LineBrightnessReducer";
 
 
 
@@ -585,6 +585,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                       pathLengthRange: newValue
                     })
                   }}></PathLengthFilter>
+
+
+                <PathBrightnessSliderRedux></PathBrightnessSliderRedux>
               </div>
               }
 
@@ -893,7 +896,8 @@ const rootReducer = combineReducers({
   webGLView: webGLView,
   clusterMode: clusterMode,
   selectedClusters: selectedClusters,
-  displayMode: displayMode
+  displayMode: displayMode,
+  lineBrightness: lineBrightness
 })
 
 

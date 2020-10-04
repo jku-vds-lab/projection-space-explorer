@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { connect } from 'react-redux'
 import * as React from 'react'
-import { Paper, Typography, Divider, Link, IconButton, Card, CardHeader, CardContent } from "@material-ui/core";
+import { Paper, Typography, Divider, IconButton, Card, CardHeader, CardContent } from "@material-ui/core";
 import './StateSequenceDrawer.scss'
 import { Tool } from "../ToolSelection/ToolSelection";
 import { DataLine, Dataset } from "../../util/datasetselector";
@@ -73,7 +73,7 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
     const [playing, setPlaying] = React.useState(null)
     React.useEffect(() => {
         setSelected(0)
-        
+
         setHighlightedSequence({
             previous: null,
             current: activeLine.vectors[0],
@@ -153,7 +153,7 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                             setPlaying(interval)
                         }
                     }}>
-                        { playing ? <StopIcon /> : <PlayArrowIcon /> }
+                        {playing ? <StopIcon /> : <PlayArrowIcon />}
                     </IconButton>
                     <IconButton aria-label="next" id="nextBtn" onClick={() => {
                         if (selected + 1 < activeLine.vectors.length) {
@@ -196,9 +196,8 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                     <Timeline style={{ padding: 0 }}>
                         {
                             activeLine.vectors.map((vector, index) => {
-                                return <TimelineItem
+                                return <div
                                     id={`ssdChild${index}`}
-                                    key={index}
                                     onClick={() => {
                                         setHighlightedSequence({
                                             previous: activeLine.vectors[index - 1],
@@ -207,31 +206,32 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
                                         })
                                         setCurrentAggregation([vector])
                                         setSelected(index)
-                                    }}
-                                >
-                                    <TimelineOppositeContent style={{
-                                        width: 0,
-                                        minWidth: 0,
-                                        display: 'none'
                                     }}>
-                                    </TimelineOppositeContent>
-                                    <TimelineSeparator>
-                                        <TimelineDot variant={selected == index ? 'default' : 'outlined'} color={selected == index ? 'primary' : 'grey'}>
+                                    <TimelineItem key={index}>
+                                        <TimelineOppositeContent style={{
+                                            width: 0,
+                                            minWidth: 0,
+                                            display: 'none'
+                                        }}>
+                                        </TimelineOppositeContent>
+                                        <TimelineSeparator>
+                                            <TimelineDot variant={selected == index ? 'default' : 'outlined'} color={selected == index ? 'primary' : 'grey'}>
 
-                                        </TimelineDot>
-                                        <TimelineConnector className={selected == index || selected == index + 1 ? classes.primaryTail : ''} />
-                                    </TimelineSeparator>
-                                    <TimelineContent>
-                                        <Paper elevation={3} className={classes.paper}>
+                                            </TimelineDot>
+                                            <TimelineConnector className={selected == index || selected == index + 1 ? classes.primaryTail : ''} />
+                                        </TimelineSeparator>
+                                        <TimelineContent>
+                                            <Paper elevation={3} className={classes.paper}>
 
-                                            <Typography><img src={imageFromShape(vector.view.shapeType)} style={{
-                                                width: '1rem',
-                                                height: '1rem',
-                                                textAlign: 'center'
-                                            }} /> {dataset.hasColumn('changes') ? vector['changes'] : `Point ${index}`}</Typography>
-                                        </Paper>
-                                    </TimelineContent>
-                                </TimelineItem>
+                                                <Typography><img src={imageFromShape(vector.view.shapeType)} style={{
+                                                    width: '1rem',
+                                                    height: '1rem',
+                                                    textAlign: 'center'
+                                                }} /> {dataset.hasColumn('changes') ? vector['changes'] : `Point ${index}`}</Typography>
+                                            </Paper>
+                                        </TimelineContent>
+                                    </TimelineItem>
+                                </div>
                             })
                         }
                     </Timeline>

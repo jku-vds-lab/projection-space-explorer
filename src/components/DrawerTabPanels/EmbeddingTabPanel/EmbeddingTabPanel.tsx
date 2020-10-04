@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { FunctionComponent } from 'react'
 import React = require('react')
 import { FlexParent } from '../../util/FlexParent'
-import { Button, Divider, Grid } from '@material-ui/core'
+import { Button, Divider } from '@material-ui/core'
 import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
 import { setProjectionOpenAction, setProjectionWorkerAction } from '../../Actions/Actions'
 import { Dataset } from '../../util/datasetselector'

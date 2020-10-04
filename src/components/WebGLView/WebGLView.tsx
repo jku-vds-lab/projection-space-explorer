@@ -151,6 +151,7 @@ type ViewProps = {
     toggleAggregation: any
     selectedClusters: Cluster[]
     displayMode: DisplayMode
+    lineBrightness: number
 }
 
 type ViewState = {
@@ -174,7 +175,8 @@ const mapStateToProps = state => ({
     advancedColoringSelection: state.advancedColoringSelection,
     clusterMode: state.clusterMode,
     selectedClusters: state.selectedClusters,
-    displayMode: state.displayMode
+    displayMode: state.displayMode,
+    lineBrightness: state.lineBrightness
 })
 
 
@@ -839,13 +841,13 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
         if (this.props.dataset.isSequential) {
             this.lines = new LineVisualization(this.segments, this.lineColorScheme)
-            this.lines.createMesh()
+            this.lines.createMesh(this.props.lineBrightness)
             this.lines.setZoom(this.camera.zoom)
 
             // First add lines, then particles
             this.lines.meshes.forEach(line => this.scene.add(line.line))
         }
-
+        
 
         this.particles = new PointVisualization(this.vectorColorScheme, this.dataset)
         this.particles.createMesh(this.vectors, this.segments)
@@ -1160,6 +1162,9 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         }**/
 
 
+        if (prevProps.lineBrightness != this.props.lineBrightness) {
+            this.lines?.setBrightness(this.props.lineBrightness)
+        }
 
         if (prevProps.displayMode != this.props.displayMode) {
             switch (this.props.displayMode) {

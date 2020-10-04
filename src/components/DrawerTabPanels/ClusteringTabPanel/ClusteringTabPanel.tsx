@@ -2,11 +2,9 @@ import { FunctionComponent } from "react"
 import { FlexParent } from "../../util/FlexParent"
 import React = require("react")
 import { Button, FormControlLabel, Switch } from "@material-ui/core"
-import Alert from "@material-ui/lab/Alert"
 import { ClusterWindow } from "../../projection/integration"
 import { StoryPreview } from "./StoryPreview/StoryPreview"
 import { connect } from 'react-redux'
-import { annotateVectors } from "../../WebGLView/tools"
 import Cluster, { Story } from "../../util/Cluster"
 import { graphLayout, Edge } from "../../util/graphs"
 import { setActiveStoryAction, setStoriesAction, setClusterEdgesAction, setStoryModeAction, setCurrentClustersAction } from "../../Actions/Actions"
@@ -78,7 +76,7 @@ const mapStateToProps = state => ({
     currentAggregation: state.currentAggregation,
     stories: state.stories,
     activeStory: state.activeStory,
-    storyMode?: state.storyMode,
+    storyMode: state.storyMode,
     currentClusters: state.currentClusters,
     displayMode: state.displayMode
 })
@@ -242,7 +240,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
             console.log("set state")
             console.log(clusters)
 
-            var story = new Story(clusters.slice(0, 9))
+            var story = new Story(clusters.slice(0, 9), null)
             setCurrentClusters(clusters)
             setStories([story])
             setActiveStory(story)
@@ -402,6 +400,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
                     clusteringWorker: null,
                     clusteringOpen: false
                 })
+
             }}
         ></ClusterWindow>
 

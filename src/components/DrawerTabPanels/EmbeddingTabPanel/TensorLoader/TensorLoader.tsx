@@ -14,6 +14,7 @@ type TensorLoaderProps = {
     projectionOpen: boolean
     setProjectionColumnsEntry: any
     setProjectionColumnsShift: any
+    setProjectionParams: any
 }
 
 const mapStateToProps = state => ({

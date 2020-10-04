@@ -10,7 +10,6 @@ import { ViewTransform } from '../ViewTransform'
 import { GenericChanges } from '../../legends/GenericChanges/GenericChanges'
 import { StoryMode } from '../../Reducers/StoryModeReducer'
 import { ThrustLayout } from '../../util/ThrustLayout'
-import { cpuUsage } from 'process'
 import { ClusterMode } from '../../Reducers/ClusterModeReducer'
 import { RenderingContextEx } from '../../util/RenderingContextEx'
 
@@ -30,7 +29,7 @@ type ForceLayoutProps = {
 type ForceLayoutState = {
     physicsRef: React.Ref<HTMLDivElement>
     link: any
-    displayClusters: { cluster: Cluster, forceLabelPosition, shiftX, shiftY }[],
+    displayClusters: any[],
     differenceClusters: any,
     graphLayout: any,
     labelLayout: any,
