@@ -19,21 +19,9 @@ const useStyles = makeStyles({
   },
 });
 
-function createDataOld(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
 function createData(feature, score, char) {
   return {feature, score, char}
 }
-
-const barData = {
-  "values": [
-    { "a": "A", "b": 20 }, { "a": "B", "b": 34 }, { "a": "C", "b": 55 },
-    { "a": "D", "b": 19 }, { "a": "E", "b": 40 }, { "a": "F", "b": 34 },
-    { "a": "G", "b": 91 }, { "a": "H", "b": 78 }, { "a": "I", "b": 25 }
-  ]
-};
 
 function mapHistData(data, feature) {
   const mapped = data.map((d) => {
@@ -66,22 +54,6 @@ function mapBarChartData(data, feature) {
   return {'values': barChartData}
 }
 
-const getVariance = (data) => {
-  const total = data.reduce(function (a, b) {
-    return a + b
-  });
-  const mean = total / data.length
-  function var_numerator(value) {
-    return ((value - mean) * (value - mean));
-  }
-  var variance = data.map(var_numerator);
-  variance = variance.reduce(function (a, b) {
-    return (a + b);
-  });
-  variance = variance / data.length;
-  return variance
-}
-
 const getSTD = (data) => {
   const total = data.reduce(function (a, b) {
     return a + b
@@ -97,29 +69,6 @@ const getSTD = (data) => {
   variance = variance / data.length;
   const std = Math.sqrt(variance)
   return std
-}
-
-// coefficient of variation
-const getCV = (data) => {
-  const total = data.reduce(function (a, b) {
-    return a + b
-  });
-  const mean = total / data.length
-  function var_numerator(value) {
-    return ((value - mean) * (value - mean));
-  }
-  var variance = data.map(var_numerator);
-  variance = variance.reduce(function (a, b) {
-    return (a + b);
-  });
-  variance = variance / data.length;
-  const std = Math.sqrt(variance)
-  return std / (Math.abs(mean) + 1e-9)
-}
-
-const getMean = (data) => {
-  const meanValue = data.reduce((sum, element) => sum + element, 0) / data.length;
-  return meanValue;
 }
 
 function dictionary(list) {
@@ -183,23 +132,24 @@ function getExplainingFeatures(data) {
   return features
 }
 
-function genRows(vectors) {
+function getProjectionColumns(projectionColumns) {
+  const pcol = []
+  for (var i = 0; i <= projectionColumns.length; i++) {
+    if (projectionColumns[i] !== undefined && projectionColumns[i]['checked']) {
+      pcol.push(projectionColumns[i]['name'])
+    }
+  }
+  return pcol
+}
+
+function genRows(vectors, projectionColumns) {
   const rows = []
   const dictOfArrays = dictionary(vectors)  
-
-  // TODO create dynamic implementation
-  const preselect = [
-    "KRAS: AA Mutated",
-    "KRAS: AA Mutation",
-    "Tumor Type",
-    "MDM2: Copy Number Class",
-    "TP53: AA Mutation",
-    "Age"
-  ]
+  const preselect = getProjectionColumns(projectionColumns)
 
   // loop through dict
   for (var key in dictOfArrays) {
-    // TODO comment out for all features
+    // filter for preselect features
     if (preselect.indexOf(key) > -1) {
       // feature cat?
       if (isCategoricalFeature(dictOfArrays[key])) {
@@ -211,7 +161,6 @@ function genRows(vectors) {
         var histData = mapHistData(vectors, key)
         rows.push([key, 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
       }
-      // TODO comment out for all features
     }
   }
 
@@ -219,11 +168,8 @@ function genRows(vectors) {
   rows.sort(sortByScore)
 
   // turn into array of dicts
-  // TODO set appropriate limit of features to show
   const ret = []
-  // for (var i = 0; i < rows.length; i++) {
-    // TODO comment out for all features
-  for (var i = 0; i < Math.min(rows.length, 6); i++) {
+  for (var i = 0; i < rows.length; i++) {
     ret.push(createData(rows[i][0], rows[i][1], rows[i][2]))
   }
 
@@ -231,9 +177,8 @@ function genRows(vectors) {
 }
 
 function getTable(vectors, aggregation, setProjectionColumns, projectionColumns) {
-  const dictOfArrays = dictionary(vectors)
   const classes = useStyles()
-  const rows = genRows(vectors)
+  const rows = genRows(vectors, projectionColumns)
 
   return (
     <div>
