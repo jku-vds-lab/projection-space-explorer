@@ -4,7 +4,6 @@ import {createClassFromLiteSpec} from 'react-vega-lite';
 export default createClassFromLiteSpec('BarChart', {
   "width": 50,
   "height": 50,
-  "description": "A simple bar chart with embedded data.",
   "transform": [
     {
       "window": [{
@@ -16,9 +15,9 @@ export default createClassFromLiteSpec('BarChart', {
       "filter": "datum.rank <= 5"
     }
   ],
-  "mark": "bar",
+  "mark": {"type": "bar", "tooltip": true},
   "encoding": {
-    "x": {"field": "category", "type": "ordinal", "axis": {"title": null}, "sort": "-y"},
+    "x": {"field": "category", "type": "ordinal", "axis": {"title": null, "labels": false}, "sort": "-y"},
     "y": {"field": "count", "type": "quantitative", "axis": {"title": null}}
   }
 });

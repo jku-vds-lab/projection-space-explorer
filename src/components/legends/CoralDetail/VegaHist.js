@@ -4,7 +4,7 @@ import {createClassFromLiteSpec} from 'react-vega-lite';
 export default createClassFromLiteSpec('VegaHist', {
   "width": 50,
   "height": 50,
-  "mark": "bar",
+  "mark": {"type": "bar", "tooltip": true},
   "transform": [{"filter": "datum.feature != null"}],
   "encoding": {
     "x": {

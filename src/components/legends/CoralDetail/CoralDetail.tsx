@@ -1,6 +1,7 @@
 var d3 = require('d3')
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
 import VegaHist from './VegaHist.js';
 import { makeStyles } from '@material-ui/core/styles';
@@ -53,26 +54,16 @@ function mapBarChartData(data, feature) {
     }
   }
 
+  const sortCountDesc = (a,b) => {
+    return b['count'] - a['count']
+  }
+
   const barChartData = []
   for (var key in counts) {
     barChartData.push({'category': key, 'count': counts[key]/data.length})
   }
+  barChartData.sort(sortCountDesc)
   return {'values': barChartData}
-}
-
-function genRowsOld(vectors) {
-  const barTumorType = <BarChart data={mapBarChartData(vectors, 'Tumor Type')} actions={false} />
-  const chartAge = <VegaHist data={mapHistData(vectors, 'Age')} actions={false} />
-  const chartBMI = <VegaHist data={mapHistData(vectors, 'Body Mass Index (BMI)')} actions={false} />
-  const chartDTD = <VegaHist data={mapHistData(vectors, 'Days to death')} actions={false} />
-  return [
-    createDataOld('Tumor Type', 123, barTumorType, 24, 4.0),
-    createDataOld('Age', 159, chartAge, 24, 4.0),
-    createDataOld('BMI', 237, chartBMI, 37, 4.3),
-    createDataOld('Days to death', 262, chartDTD, 24, 6.0)//,//,
-    // createData('Cupcake', 305, 3.7, 67, 4.3),
-    // createData('Gingerbread', 356, 16.0, 49, 3.9),
-  ];
 }
 
 const getVariance = (data) => {
@@ -177,10 +168,24 @@ function sortByScore(a, b) {
   }
 }
 
+function getExplainingFeatures(data) {
+  // data format [{'category': x, 'count': y}, ...]
+  // data should be sorted descendingly
+  const n = data.length
+  const features = []
+  for (var i = 0; i < n; i++) {
+    if (data[i]['count'] >= (1/n)) { 
+      features.push(data[i]['category'])
+    } else {
+      return features
+    }
+  }
+  return features
+}
 
 function genRows(vectors) {
   const rows = []
-  const dictOfArrays = dictionary(vectors)
+  const dictOfArrays = dictionary(vectors)  
 
   // TODO create dynamic implementation
   const preselect = [
@@ -194,17 +199,17 @@ function genRows(vectors) {
 
   // loop through dict
   for (var key in dictOfArrays) {
-    console.log(key)
     // TODO comment out for all features
     if (preselect.indexOf(key) > -1) {
       // feature cat?
       if (isCategoricalFeature(dictOfArrays[key])) {
         var barData = mapBarChartData(vectors, key)
-      rows.push([key, getMaxMean(barData), <BarChart data={barData} actions={false} />])
+        var feature = key + ': \n' + getExplainingFeatures(barData['values']).join(', ')
+        rows.push([feature, getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
       } else {
         // feature quant?
         var histData = mapHistData(vectors, key)
-      rows.push([key, getCV(dictOfArrays[key]), <VegaHist data={histData} actions={false} />])
+        rows.push([key, 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
       }
       // TODO comment out for all features
     }
@@ -227,72 +232,37 @@ function genRows(vectors) {
 
 function getTable(vectors, aggregation, setProjectionColumns, projectionColumns) {
   const dictOfArrays = dictionary(vectors)
-  const classes = useStyles();
-  // const rows = genRowsOld(vectors)
+  const classes = useStyles()
   const rows = genRows(vectors)
 
   return (
     <div>
-    <TableContainer component={Paper} style={{
-      height: "400px",
-      width: "100%",
-      overflow: "auto"
-    }}>
-      <Table className={classes.table} aria-label="simple table" size={'small'}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Feature</TableCell>
-            <TableCell>Dissimilarity</TableCell>
-            <TableCell>Characteristic</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.feature}>
-              <TableCell component="th" scope="row">
-                {row.feature}
-              </TableCell>
-              <TableCell>{(Math.round(row.score * 1000) / 1000).toFixed(3)}</TableCell>
-              <TableCell>{row.char}</TableCell>
+      <TableContainer component={Paper} style={{
+        height: "400px",
+        width: "100%",
+        overflow: "auto"
+      }}>
+        <Table className={classes.table} aria-label="simple table" size={'small'}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Feature</TableCell>
+              <TableCell>Characteristic</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={row.feature}>
+                <TableCell component="th" scope="row">
+                  {row.feature}
+                </TableCell>
+                <TableCell>{row.char}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
-
-  // return (
-  //   <div
-  //   style={{
-  //     height: "400px",
-  //     width: "100%",
-  //     overflow: "auto"
-  //   }}>
-  //   <TableContainer component={Paper}>
-  //     <Table className={classes.table} aria-label="simple table" size={'small'}>
-  //       <TableHead>
-  //         <TableRow>
-  //           <TableCell>Feature</TableCell>
-  //           <TableCell>Dissimilarity</TableCell>
-  //           <TableCell>Characteristic</TableCell>
-  //         </TableRow>
-  //       </TableHead>
-  //       <TableBody>
-  //         {rows.map((row) => (
-  //           <TableRow key={row.name}>
-  //             <TableCell component="th" scope="row">
-  //               {row.name}
-  //             </TableCell>
-  //             <TableCell>{row.calories}</TableCell>
-  //             <TableCell>{row.fat}</TableCell>
-  //           </TableRow>
-  //         ))}
-  //       </TableBody>
-  //     </Table>
-  //   </TableContainer>
-  //   </div>
-  // );
 }
 
 const mapStateToProps = state => {
