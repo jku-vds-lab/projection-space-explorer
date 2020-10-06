@@ -1,6 +1,5 @@
 import * as React from 'react'
 import Cluster from "../../../util/Cluster";
-import { RubikFingerprint } from '../../../legends/RubikFingerprint/RubikFingerprint';
 import './FingerprintPreview.scss'
 import { GenericFingerprint } from '../../../legends/Generic';
 import { DatasetType } from '../../../util/datasetselector';

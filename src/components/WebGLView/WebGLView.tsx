@@ -712,8 +712,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 color: 0x000000,
                 side: THREE.DoubleSide,
                 transparent: true,
-                opacity: 0.1,
-                // vertexColors: true
+                opacity: 0.1
             });
             var mesh = new THREE.Mesh(geometry, meshMat);
             clusterMeshes.push(mesh)
@@ -722,8 +721,6 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         })
 
         this.clusterVisualization = new ClusterVisualization(clusterMeshes, lineMeshes)
-
-        //this.createTrajectories(clusters)
     }
 
 

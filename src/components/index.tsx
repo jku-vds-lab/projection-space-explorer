@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
-import { Divider } from "@material-ui/core";
+import { Divider, Icon, SvgIcon, Tooltip } from "@material-ui/core";
 import { Dataset, DatasetDatabase } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
@@ -19,7 +19,7 @@ import { ChooseFileDialog } from './util/dataselectui'
 import { DataEdge, MultiDictionary } from "./util/datasetselector"
 import * as React from "react";
 import { SelectionClusters } from "./Overlays/SelectionClusters/SelectionClusters";
-import { ToolSelection, Tool } from "./Overlays/ToolSelection/ToolSelection";
+import { Tool, ToolSelectionRedux } from "./Overlays/ToolSelection/ToolSelection";
 import { PathLengthFilter } from "./DrawerTabPanels/StatesTabPanel/PathLengthFilter/PathLengthFilter";
 import { SizeSlider } from "./DrawerTabPanels/StatesTabPanel/SizeSlider/SizeSlider";
 import { ClusterOverview } from "./Overlays/ClusterOverview/ClusterOverview";
@@ -41,7 +41,7 @@ import openTab from "./Reducers/OpenTabReducer";
 import clusterEdges from "./Reducers/ClusterEdgesReducer";
 import { selectedVectorByShape, vectorByShape, checkedShapes } from "./Reducers/VectorByReducers";
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
-import { StateSequenceDrawer } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
+import { StateSequenceDrawerRedux } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
 import activeLine from "./Reducers/ActiveLineReducer";
 import dataset from "./Reducers/DatasetReducer";
 import highlightedSequence from "./Reducers/HighlightedSequenceReducer";
@@ -67,6 +67,16 @@ import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
 import displayMode from "./Reducers/DisplayModeReducer";
 import { PathBrightnessSliderRedux } from "./DrawerTabPanels/StatesTabPanel/PathTransparencySlider/PathBrightnessSlider";
 import lineBrightness from "./Reducers/LineBrightnessReducer";
+import TimelineIcon from '@material-ui/icons/Timeline';
+import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import { PointsIcon } from "./Icons/PointsIcon";
+import { ClusterIcon } from "./Icons/ClusterIcon";
+import SettingsIcon from '@material-ui/icons/Settings';
+
+
+
+
 
 
 
@@ -95,18 +105,11 @@ function TabPanel(props) {
 
 
 
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
-
-
 
 const mapStateToProps = state => ({
   openTab: state.openTab,
-  activeStory: state.activeStory
+  activeStory: state.activeStory,
+  dataset: state.dataset
 })
 
 
@@ -131,7 +134,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   vectors: any;
   segments: any;
   threeRef: any;
-  
+
 
   constructor(props) {
     super(props)
@@ -244,29 +247,27 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     // Set new dataset as variable
     this.props.setDataset(dataset)
-    this.dataset = dataset
     this.vectors = dataset.vectors
     this.segments = dataset.segments
 
     this.setState({
-      datasetType: this.dataset.info.type,
-      dataset: dataset,
+      datasetType: dataset.info.type,
       vectors: this.vectors
     })
 
     // Load new view
-    let lineScheme = this.mappingFromScale(NamedCategoricalScales.DARK2, { key: 'algo' })
+    let lineScheme = this.mappingFromScale(NamedCategoricalScales.DARK2, { key: 'algo' }, dataset)
 
     this.setState({
       lineColorScheme: lineScheme
     })
 
-    this.threeRef.current.createVisualization(this.dataset, lineScheme, null)
+    this.threeRef.current.createVisualization(dataset, lineScheme, null)
 
-    this.finite(lineScheme, json)
+    this.finite(lineScheme, json, dataset)
   }
 
-  finite(lineColorScheme, categories) {
+  finite(lineColorScheme, categories, dataset) {
     var algos = LineSelectionTree_GenAlgos(this.vectors)
     var selLines = LineSelectionTree_GetChecks(algos)
 
@@ -281,37 +282,37 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       selectedVectorBySize: "",
       selectedLines: selLines,
       selectedLineAlgos: algos,
-      pathLengthRange: [0, this.dataset.getMaxPathLength()],
-      maxPathLength: this.dataset.getMaxPathLength()
+      pathLengthRange: [0, dataset.getMaxPathLength()],
+      maxPathLength: dataset.getMaxPathLength()
     })
 
     this.props.setHighlightedSequence(null)
     this.props.setActiveLine(null)
     this.props.setActiveStory(null)
     this.props.setStories(null)
-    this.props.setClusterMode(this.dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
+    this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
 
-    this.props.setProjectionColumns(this.dataset.getColumns().map(column => ({
+    this.props.setProjectionColumns(dataset.getColumns().map(column => ({
       name: column,
-      checked: this.dataset.preselectedProjectionColumns.includes(column),
+      checked: dataset.preselectedProjectionColumns.includes(column),
       normalized: true
     })))
 
-    this.legend.current?.load(this.dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
+    this.legend.current?.load(dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
     this.initializeEncodings()
   }
 
-  mappingFromScale(scale, attribute) {
+  mappingFromScale(scale, attribute, dataset) {
     if (scale instanceof DiscreteScale) {
       // Generate scale
       return new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[attribute.key]))])
     }
     if (scale instanceof ContinuosScale) {
       var min = null, max = null
-      if (attribute.key in this.dataset.ranges) {
-        min = this.dataset.ranges[attribute.key].min
-        max = this.dataset.ranges[attribute.key].max
+      if (attribute.key in dataset.ranges) {
+        min = dataset.ranges[attribute.key].min
+        max = dataset.ranges[attribute.key].max
       } else {
         var filtered = this.vectors.map(vector => vector[attribute.key])
         max = Math.max(...filtered)
@@ -325,7 +326,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
   initializeEncodings() {
     var state = {} as any
-    
+
     this.threeRef.current.particles.shapeCat(null)
 
     var defaultSizeAttribute = this.state.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
@@ -485,7 +486,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         flexDirection: 'column'
       }}>
 
-        
+
 
         <div>
           <ChooseFileDialog onChange={this.onDataSelected}></ChooseFileDialog>
@@ -498,9 +499,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             onChange={(e, newVal) => { this.props.setOpenTab(newVal) }}
             aria-label="disabled tabs example"
           >
-            <Tab label="States" style={{ minWidth: 0, flexGrow: 1 }} />
-            <Tab label="Clusters" style={{ minWidth: 0, flexGrow: 1 }} />
-            <Tab label="Embedding" style={{ minWidth: 0, flexGrow: 1 }} />
+            <Tooltip title="Points and Lines"><Tab icon={<PointsIcon></PointsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            <Tooltip title="Clusters"><Tab icon={<ClusterIcon></ClusterIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            <Tooltip title="Embedding"><Tab icon={<SettingsIcon style={{ fontSize: 48, color: 'black' }}></SettingsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
           </Tabs>
         </div>
 
@@ -522,7 +523,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             <Divider style={{ margin: '8px 0px' }} />
 
             <TabPanel value={this.props.openTab} index={0}>
-              {this.dataset && this.dataset.isSequential && <div>
+              {this.props.dataset && this.props.dataset.isSequential && <div>
                 <div>
                   <Typography
                     style={{ margin: '0px 0 0px 16px' }}
@@ -592,6 +593,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               }
 
               <Divider style={{ margin: '8px 0px' }} />
+
               <div>
                 <Typography
                   style={{ margin: '0px 0 0px 16px' }}
@@ -600,14 +602,14 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                   display="block"
                 >
                   Points
-            </Typography>
+                </Typography>
               </div>
 
 
 
               <StatesTabPanel
                 categoryOptions={this.state.categoryOptions}
-                dataset={this.state.dataset}></StatesTabPanel>
+                dataset={this.props.dataset}></StatesTabPanel>
 
 
 
@@ -753,7 +755,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                             }
 
 
-                            this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute))
+                            this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute, this.props.dataset))
 
 
                             state.showColorMapping = this.threeRef.current.particles.getMapping()
@@ -796,13 +798,14 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
             </TabPanel>
 
+
             <TabPanel value={this.props.openTab} index={1}>
-              {this.state.dataset != null ?
+              {this.props.dataset != null ?
                 <ClusteringTabPanel
                   open={this.props.openTab == 1}
                   backendRunning={this.state.backendRunning}
                   clusteringWorker={this.state.clusteringWorker}
-                  dataset={this.state.dataset}
+                  dataset={this.props.dataset}
                 ></ClusteringTabPanel> : <div></div>
               }
 
@@ -823,15 +826,13 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
       <WebGLView
         ref={this.threeRef}
-        //clusters={this.state.clusters}
         onHover={this.onHover}
         algorithms={this.state.selectedLineAlgos}
         selectionState={this.state.selectionState}
         pathLengthRange={this.state.pathLengthRange}
-        type={this.state.datasetType}>
-      </WebGLView>
+      />
 
-      <StateSequenceDrawer></StateSequenceDrawer>
+      <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
 
       <ClusterOverview
         type={this.state.datasetType}
@@ -842,12 +843,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
 
-      <ToolSelection onChangeTool={(value) => {
-        if (value != Tool.Crosshair) {
-          //this.props.setActiveLine(null)
-          //this.props.setHighlightedSequence(null)
-        }
-      }} />
+      <ToolSelectionRedux />
 
       <GithubLink></GithubLink>
 

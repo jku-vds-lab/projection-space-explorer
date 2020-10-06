@@ -309,7 +309,7 @@ export class LineVisualization {
 
     this.segments.forEach(segment => {
 
-     // segment.view.lineMesh.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
+      segment.view.lineMesh.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
 
       segment.view.lineMesh.visible = segment.view.detailVisible
         && segment.view.globalVisible

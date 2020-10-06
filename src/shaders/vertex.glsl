@@ -1,3 +1,5 @@
+// Vertex shader of the particle mesh.
+
 
 uniform float zoom;
 uniform float scale;
@@ -24,10 +26,3 @@ void main() {
     gl_PointSize = ((size / 2.0) + (size / 16.0) * zoom) * scale;
     gl_Position = projectionMatrix * mvPosition;
 }
-
-
-
-
-
-
-

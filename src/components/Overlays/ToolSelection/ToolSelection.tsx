@@ -7,17 +7,9 @@ import BlurOffIcon from '@material-ui/icons/BlurOff';
 import './ToolSelection.scss'
 import { connect } from 'react-redux'
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
+import { Tooltip, Typography } from "@material-ui/core";
 
-const mapStateToProps = state => ({
-    currentTool: state.currentTool
-})
-
-const mapDispatchToProps = dispatch => ({
-    setCurrentTool: id => dispatch({
-        type: 'SET_TOOL',
-        tool: id
-    })
-})
+const ENTER_DELAY = 500
 
 export enum Tool {
     Default,
@@ -39,7 +31,7 @@ export function getToolCursor(tool: Tool) {
     }
 }
 
-export var ToolSelection = connect(mapStateToProps, mapDispatchToProps)(function ({ currentTool, setCurrentTool, onChangeTool }) {
+function ToolSelection({ currentTool, setCurrentTool }) {
     return <div className="ToolSelectionParent">
         <ToggleButtonGroup
             style={{ pointerEvents: 'auto' }}
@@ -48,22 +40,70 @@ export var ToolSelection = connect(mapStateToProps, mapDispatchToProps)(function
             exclusive
             onChange={(e, newValue) => {
                 setCurrentTool(newValue)
-                onChangeTool(newValue)
             }}
             aria-label="text alignment"
         >
+
             <ToggleButton value={Tool.Default}>
-                <SelectAllIcon />
+                <Tooltip enterDelay={ENTER_DELAY} title={
+                    <React.Fragment>
+                        <Typography variant="subtitle2">Lasso Selection Tool</Typography>
+                        <Typography variant="body2">This tool can be used to make a lasso selection around states which selects or deselects them.</Typography>
+                    </React.Fragment>
+                }>
+                    <SelectAllIcon />
+                </Tooltip>
             </ToggleButton>
+
+
             <ToggleButton value={Tool.Move}>
-                <ControlCameraIcon />
+                <Tooltip enterDelay={ENTER_DELAY} title={
+                    <React.Fragment>
+                        <Typography variant="subtitle2">Panning Tool</Typography>
+                        <Typography variant="body2">With this tool you can move the projection around by dragging it.</Typography>
+                    </React.Fragment>
+                }>
+                    <ControlCameraIcon />
+                </Tooltip>
             </ToggleButton>
+
+
             <ToggleButton value={Tool.Grab}>
-                <BlurOffIcon />
+                <Tooltip enterDelay={ENTER_DELAY} title={
+                    <React.Fragment>
+                        <Typography variant="subtitle2">Cluster Tool</Typography>
+                        <Typography variant="body2">This tool can select or deselect clusters and show information on hover.</Typography>
+                    </React.Fragment>
+                }>
+                    <BlurOffIcon />
+                </Tooltip>
             </ToggleButton>
+
+
             <ToggleButton value={Tool.Crosshair}>
-                <LinearScaleIcon />
+                <Tooltip enterDelay={ENTER_DELAY} title={
+                    <React.Fragment>
+                        <Typography variant="subtitle2">Line Inspection Tool</Typography>
+                        <Typography variant="body2">When clicking on a state of a line while this tool is active, the line will become selected and you can inspect it state by state.</Typography>
+                    </React.Fragment>
+                }>
+                    <LinearScaleIcon />
+                </Tooltip>
             </ToggleButton>
+
         </ToggleButtonGroup>
     </div>
+}
+
+const mapStateToProps = state => ({
+    currentTool: state.currentTool
 })
+
+const mapDispatchToProps = dispatch => ({
+    setCurrentTool: id => dispatch({
+        type: 'SET_TOOL',
+        tool: id
+    })
+})
+
+export const ToolSelectionRedux = connect(mapStateToProps, mapDispatchToProps)(ToolSelection)

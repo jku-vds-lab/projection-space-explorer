@@ -1,4 +1,3 @@
-import { FunctionComponent } from "react";
 import { connect } from 'react-redux'
 import * as React from 'react'
 import { Paper, Typography, Divider, IconButton, Card, CardHeader, CardContent } from "@material-ui/core";
@@ -22,27 +21,16 @@ import SkipNextIcon from '@material-ui/icons/SkipNext';
 import StopIcon from '@material-ui/icons/Stop';
 
 type StateSequenceDrawerProps = {
-    activeLine?: DataLine,
-    currentTool?: Tool,
-    setHighlightedSequence?: any,
-    highlightedSequence?: any,
-    dataset?: Dataset,
-    setActiveLine?: any
-    setCurrentAggregation?: any
+    activeLine: DataLine,
+    currentTool: Tool,
+    setHighlightedSequence: any,
+    highlightedSequence: any,
+    dataset: Dataset,
+    setActiveLine: any
+    setCurrentAggregation: any
 }
 
-const mapStateToProps = state => ({
-    activeLine: state.activeLine,
-    currentTool: state.currentTool,
-    highlightedSequence: state.highlightedSequence,
-    dataset: state.dataset
-})
 
-const mapDispatchToProps = dispatch => ({
-    setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence)),
-    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine)),
-    setCurrentAggregation: currentAggregation => dispatch(setAggregationAction(currentAggregation))
-})
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -57,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
  * The StateSequenceDrawer is the UI element that is shown when one line is selected by the line selection tool. In this case
  * the user wants to navigate the sequence of one line only.
  */
-export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = connect(mapStateToProps, mapDispatchToProps)(({
+const StateSequenceDrawer = ({
     activeLine,
     setHighlightedSequence,
     dataset,
@@ -240,4 +228,22 @@ export const StateSequenceDrawer: FunctionComponent<StateSequenceDrawerProps> = 
         </CardContent>
     </Card >
 
+}
+
+
+
+const mapStateToProps = state => ({
+    activeLine: state.activeLine,
+    currentTool: state.currentTool,
+    highlightedSequence: state.highlightedSequence,
+    dataset: state.dataset
 })
+
+const mapDispatchToProps = dispatch => ({
+    setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence)),
+    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine)),
+    setCurrentAggregation: currentAggregation => dispatch(setAggregationAction(currentAggregation))
+})
+
+
+export const StateSequenceDrawerRedux = connect(mapStateToProps, mapDispatchToProps)(StateSequenceDrawer)

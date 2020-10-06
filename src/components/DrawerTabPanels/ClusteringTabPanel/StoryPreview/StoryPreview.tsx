@@ -1,34 +1,33 @@
 import * as React from 'react'
 import { Story } from '../../../util/Cluster'
-import { Button, Fade, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@material-ui/core';
+import { Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
 import { connect } from 'react-redux'
 import './StoryPreview.scss'
 import DeleteIcon from '@material-ui/icons/Delete';
-import { addStoryAction, deleteStoryAction } from '../../../Actions/Actions';
+import { addStoryAction, deleteStoryAction, setActiveStoryAction } from '../../../Actions/Actions';
 
-type StoryPreviewProps = {
+type OwnProps = {
     stories: Story[]
     onChange: any
-    activeStory: number
+    activeStory: any
     type: String
+    addStory: any
 }
 
+type StateProps = {
 
-const mapStateToProps = state => ({
-    activeStory: state.activeStory
-})
+}
 
-const mapDispatchToProps = dispatch => ({
-    setActiveStory: activeStory => dispatch({
-        type: 'SET_ACTIVE_STORY',
-        activeStory: activeStory
-    }),
-    deleteStory: story => dispatch(deleteStoryAction(story)),
-    addStory: story => dispatch(addStoryAction(story))
-})
+type DispatchProps = {
+    setActiveStory: any
+    deleteStory: any
+}
 
+type Props = StateProps & DispatchProps & OwnProps
 
-export const StoryPreview = connect(mapStateToProps, mapDispatchToProps)(({ stories, setActiveStory, activeStory, deleteStory, addStory }) => {
+const StoryPreviewFull = ({
+    stories, setActiveStory, activeStory,
+    deleteStory, addStory }: Props) => {
     const deleteHandler = (story) => {
         if (activeStory == story) {
             setActiveStory(null)
@@ -73,4 +72,17 @@ export const StoryPreview = connect(mapStateToProps, mapDispatchToProps)(({ stor
             >Add Story</Button>
         </Grid>
     </div>
+}
+
+
+const mapStateToProps = state => ({
+    activeStory: state.activeStory
 })
+
+const mapDispatchToProps = dispatch => ({
+    setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
+    deleteStory: story => dispatch(deleteStoryAction(story)),
+    addStory: story => dispatch(addStoryAction(story))
+})
+
+export const StoryPreview = connect<StateProps, DispatchProps, OwnProps>(mapStateToProps, mapDispatchToProps)(StoryPreviewFull)

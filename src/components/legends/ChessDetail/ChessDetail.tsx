@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import * as React from 'react'
+import './chess.scss'
 
 
 // Lookup table for chess UNICODE symbols

@@ -23,7 +23,7 @@ const mapStateToProps = state => ({
     storyMode: state.storyMode
 })
 
-export var ClusterOverview = connect(mapStateToProps)(function ({ type, story, itemClicked, storyMode }: ClusterOverviewProps) {
+const ClusterOverviewFull = function ({ type, story, itemClicked, storyMode }: ClusterOverviewProps) {
     if (story == null) {
         return <div></div>
     }
@@ -91,4 +91,7 @@ export var ClusterOverview = connect(mapStateToProps)(function ({ type, story, i
             </CardContent>
         </Card>
     </Grow>
-})
+}
+
+
+export const ClusterOverview = connect(mapStateToProps)(ClusterOverviewFull)

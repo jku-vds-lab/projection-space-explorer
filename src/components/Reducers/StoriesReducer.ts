@@ -1,5 +1,9 @@
 import { ActionTypeLiteral } from "../Actions/Actions"
 
+const SET = "components/stories/SET"
+const ADD = "components/stories/ADD"
+const DELETE = "components/stories/DELETE"
+
 const stories = (state = [], action) => {
     switch (action.type) {
         case ActionTypeLiteral.SetStories:
@@ -21,5 +25,20 @@ const stories = (state = [], action) => {
             return state
     }
 }
+
+export const setStories = stories => ({
+    type: SET,
+    stores: stories
+})
+
+export const addStory = story => ({
+    type: ADDRCONFIG,
+    story: story
+})
+
+export const deleteStory = story => ({
+    type: DELETE,
+    story: story
+})
 
 export default stories

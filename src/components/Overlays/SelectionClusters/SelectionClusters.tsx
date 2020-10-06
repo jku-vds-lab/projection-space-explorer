@@ -6,11 +6,9 @@ import { connect } from 'react-redux'
 import AdjustIcon from '@material-ui/icons/Adjust';
 
 
-const mapStateToProps = state => ({
-    currentAggregation: state.currentAggregation
-})
 
-export var SelectionClusters = connect(mapStateToProps)(function ({
+
+const SelectionClustersFull = function ({
     selectionState,
     datasetType,
     currentAggregation
@@ -42,4 +40,12 @@ export var SelectionClusters = connect(mapStateToProps)(function ({
             </Card>
         </div>
     </div>
+}
+
+
+const mapStateToProps = state => ({
+    currentAggregation: state.currentAggregation
 })
+
+
+export const SelectionClusters = connect(mapStateToProps)(SelectionClustersFull)
