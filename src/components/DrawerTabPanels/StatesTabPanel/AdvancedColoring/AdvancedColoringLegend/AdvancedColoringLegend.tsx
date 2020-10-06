@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { DiscreteMapping } from '../../../../util/colors'
 import React = require('react')
 import { FormControlLabel, Checkbox, Typography, Grid } from '@material-ui/core'
-import { setAdvancedColoringSelectionAction } from '../../../../Actions/Actions'
+import { setAdvancedColoringSelectionAction } from "../../../../Ducks/AdvancedColoringSelectionDuck"
 
 const mapStateToProps = state => ({
     advancedColoringSelection: state.advancedColoringSelection

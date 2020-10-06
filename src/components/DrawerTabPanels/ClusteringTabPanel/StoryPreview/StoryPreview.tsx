@@ -4,7 +4,8 @@ import { Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, List
 import { connect } from 'react-redux'
 import './StoryPreview.scss'
 import DeleteIcon from '@material-ui/icons/Delete';
-import { addStoryAction, deleteStoryAction, setActiveStoryAction } from '../../../Actions/Actions';
+import { setActiveStory } from '../../../Ducks/ActiveStoryDuck';
+import { addStory, deleteStory } from '../../../Ducks/StoriesDuck';
 
 type OwnProps = {
     stories: Story[]
@@ -80,9 +81,9 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
-    deleteStory: story => dispatch(deleteStoryAction(story)),
-    addStory: story => dispatch(addStoryAction(story))
+    setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
+    deleteStory: story => dispatch(deleteStory(story)),
+    addStory: story => dispatch(addStory(story))
 })
 
 export const StoryPreview = connect<StateProps, DispatchProps, OwnProps>(mapStateToProps, mapDispatchToProps)(StoryPreviewFull)

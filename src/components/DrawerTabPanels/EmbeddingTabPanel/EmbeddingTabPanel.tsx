@@ -4,7 +4,8 @@ import React = require('react')
 import { FlexParent } from '../../util/FlexParent'
 import { Button, Divider } from '@material-ui/core'
 import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
-import { setProjectionOpenAction, setProjectionWorkerAction } from '../../Actions/Actions'
+import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
+import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
 import { Dataset } from '../../util/datasetselector'
 import { TensorLoader } from './TensorLoader/TensorLoader'
 import { ForceEmbedding } from './ForceEmbedding/ForceEmbedding'

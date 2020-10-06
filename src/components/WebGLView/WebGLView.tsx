@@ -19,13 +19,17 @@ import { connect } from 'react-redux'
 import { graphLayout } from '../util/graphs';
 import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
 import { Dataset, DataLine, Vect } from '../util/datasetselector';
-import { setAggregationAction, setActiveLineAction, setClusterEdgesAction, setViewTransformAction, toggleSelectedClusterAction, toggleAggregationAction } from '../Actions/Actions';
+import { setClusterEdgesAction } from "../Ducks/ClusterEdgesDuck";
+import { setViewTransform } from "../Ducks/ViewTransformDuck";
+import { toggleSelectedCluster } from "../Ducks/SelectedClustersDuck";
+import { setAggregationAction, toggleAggregationAction } from "../Ducks/AggregationDuck";
 import { ViewTransform } from './ViewTransform'
 import { Camera } from 'three';
 import { LineVisualization, PointVisualization, ClusterVisualization } from './meshes';
 import { MultivariateClustering } from './Visualizations/MultivariateClustering';
-import { ClusterMode } from '../Reducers/ClusterModeReducer';
-import { DisplayMode } from '../Reducers/DisplayModeReducer';
+import { DisplayMode } from '../Ducks/DisplayModeDuck';
+import { setActiveLine } from '../Ducks/ActiveLineDuck';
+import { ClusterMode } from '../Ducks/ClusterModeDuck';
 
 
 const useStyles = makeStyles(theme => ({
@@ -183,9 +187,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     setCurrentAggregation: id => dispatch(setAggregationAction(id)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
-    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine)),
-    setViewTransform: viewTransform => dispatch(setViewTransformAction(viewTransform)),
-    toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedClusterAction(selectedCluster)),
+    setActiveLine: activeLine => dispatch(setActiveLine(activeLine)),
+    setViewTransform: viewTransform => dispatch(setViewTransform(viewTransform)),
+    toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedCluster(selectedCluster)),
     toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation))
 })
 

@@ -8,6 +8,7 @@ import './ToolSelection.scss'
 import { connect } from 'react-redux'
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import { Tooltip, Typography } from "@material-ui/core";
+import { setCurrentTool } from "../../Ducks/CurrentToolDuck";
 
 const ENTER_DELAY = 500
 
@@ -100,10 +101,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    setCurrentTool: id => dispatch({
-        type: 'SET_TOOL',
-        tool: id
-    })
+    setCurrentTool: id => dispatch(setCurrentTool(id))
 })
 
 export const ToolSelectionRedux = connect(mapStateToProps, mapDispatchToProps)(ToolSelection)

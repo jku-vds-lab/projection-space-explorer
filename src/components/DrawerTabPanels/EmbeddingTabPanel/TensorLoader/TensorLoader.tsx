@@ -1,10 +1,12 @@
 import { Dataset } from "../../../util/datasetselector"
 import { makeStyles, Modal, Box, Grid, Card, ListItem, Checkbox, ListItemIcon, ListItemText, Button } from "@material-ui/core";
 import { connect } from 'react-redux'
-import { setProjectionColumnsEntry, setProjectionColumnsShift, setProjectionOpenAction, setProjectionParamsAction } from "../../../Actions/Actions";
+import { setProjectionOpenAction } from "../../../Ducks/ProjectionOpenDuck";
+import { setProjectionParamsAction } from "../../../Ducks/ProjectionParamsDuck";
 import React = require("react");
 import { List } from 'react-virtualized';
 import { ProjectionSettings } from "./ProjectionSettings/ProjectionSettings";
+import { setProjectionColumnsEntry, setProjectionColumnsShift } from "../../../Ducks/ProjectionColumnsDuck";
 
 type TensorLoaderProps = {
     onTensorInitiated: any

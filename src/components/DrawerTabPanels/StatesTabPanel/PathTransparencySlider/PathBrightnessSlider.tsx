@@ -1,7 +1,7 @@
 import React = require("react");
 import { Typography, Slider } from "@material-ui/core";
 import { connect } from 'react-redux'
-import { setLineBrightness } from "../../../Reducers/LineBrightnessReducer";
+import { setLineBrightness } from "../../../Ducks/LineBrightnessDuck";
 
 const PathBrightnessSlider = ({ lineBrightness, setLineBrightness }) => {
     const marks = [

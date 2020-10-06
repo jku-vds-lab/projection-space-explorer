@@ -13,6 +13,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import './coral.scss';
+import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 
 const useStyles = makeStyles({
   table: {
@@ -177,7 +178,7 @@ function genRows(vectors, projectionColumns) {
   return ret
 }
 
-function getTable(vectors, aggregation, setProjectionColumns, projectionColumns) {
+function getTable(vectors, aggregation, projectionColumns) {
   const classes = useStyles()
   const rows = genRows(vectors, projectionColumns)
 
@@ -217,15 +218,6 @@ const mapStateToProps = state => {
   })
 }
 
-const mapDispatchToProps = dispatch => ({
-  setProjectionColumns: projectionColumns => {
-    dispatch({
-      type: 'SET_PROJECTION_COLUMNS',
-      projectionColumns: projectionColumns
-    })
-  }
-})
-
-export var CoralLegend = connect(mapStateToProps, mapDispatchToProps)(({ selection, aggregate, setProjectionColumns, projectionColumns }) => {
-  return getTable(selection, aggregate, setProjectionColumns, projectionColumns)
+export var CoralLegend = connect(mapStateToProps, null)(({ selection, aggregate, projectionColumns }) => {
+  return getTable(selection, aggregate, projectionColumns)
 })

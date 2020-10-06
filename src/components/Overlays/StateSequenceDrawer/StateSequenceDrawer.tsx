@@ -5,7 +5,8 @@ import './StateSequenceDrawer.scss'
 import { Tool } from "../ToolSelection/ToolSelection";
 import { DataLine, Dataset } from "../../util/datasetselector";
 import { imageFromShape } from "../../WebGLView/meshes";
-import { setHighlightedSequenceAction, setActiveLineAction, setAggregationAction } from "../../Actions/Actions";
+import { setHighlightedSequenceAction } from "../../Ducks/HighlightedSequenceDuck";
+import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
 import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
@@ -19,6 +20,7 @@ import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import StopIcon from '@material-ui/icons/Stop';
+import { setActiveLine } from '../../Ducks/ActiveLineDuck';
 
 type StateSequenceDrawerProps = {
     activeLine: DataLine,
@@ -241,7 +243,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence)),
-    setActiveLine: activeLine => dispatch(setActiveLineAction(activeLine)),
+    setActiveLine: activeLine => dispatch(setActiveLine(activeLine)),
     setCurrentAggregation: currentAggregation => dispatch(setAggregationAction(currentAggregation))
 })
 

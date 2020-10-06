@@ -11,7 +11,7 @@ import { DatasetType, Vect, VectBase } from '../../util/datasetselector';
 import GestureIcon from '@material-ui/icons/Gesture';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
-import { setAggregationAction } from '../../Actions/Actions';
+import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import Draggable from 'react-draggable';
 import { Rnd } from 'react-rnd'
 

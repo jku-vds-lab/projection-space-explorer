@@ -8,10 +8,10 @@ import { Edge } from '../../util/graphs'
 import THREE = require('three')
 import { ViewTransform } from '../ViewTransform'
 import { GenericChanges } from '../../legends/GenericChanges/GenericChanges'
-import { StoryMode } from '../../Reducers/StoryModeReducer'
 import { ThrustLayout } from '../../util/ThrustLayout'
-import { ClusterMode } from '../../Reducers/ClusterModeReducer'
 import { RenderingContextEx } from '../../util/RenderingContextEx'
+import { StoryMode } from '../../Ducks/StoryModeDuck'
+import { ClusterMode } from '../../Ducks/ClusterModeDuck'
 
 type ForceLayoutProps = {
     activeStory: Story

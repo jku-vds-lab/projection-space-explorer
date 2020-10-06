@@ -32,48 +32,44 @@ import { triangulate } from "./WebGLView/tools";
 import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { connect } from 'react-redux'
-import currentTool from "./Reducers/CurrentToolReducer";
-import currentAggregation from "./Reducers/CurrentAggregationReducer";
-import activeStory from "./Reducers/ActiveStoryReducer";
-import stories from "./Reducers/StoriesReducer";
-import currentClusters from "./Reducers/CurrentCLustersReducer";
-import openTab from "./Reducers/OpenTabReducer";
-import clusterEdges from "./Reducers/ClusterEdgesReducer";
-import { selectedVectorByShape, vectorByShape, checkedShapes } from "./Reducers/VectorByReducers";
+import currentTool from "./Ducks/CurrentToolDuck";
+import activeStory, { setActiveStory } from "./Ducks/ActiveStoryDuck";
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
-import activeLine from "./Reducers/ActiveLineReducer";
-import dataset from "./Reducers/DatasetReducer";
-import highlightedSequence from "./Reducers/HighlightedSequenceReducer";
-import { viewTransform } from "./Reducers/ViewTransformReducer";
-import advancedColoringSelection from "./Reducers/AdvancedColoringSelection";
-import { setAdvancedColoringSelectionAction, setHighlightedSequenceAction, setActiveLineAction, setActiveStoryAction, setStoriesAction, setDatasetAction, setOpenTabAction, setProjectionColumns, setProjectionOpenAction, setWebGLViewAction, setClusterModeAction } from "./Actions/Actions";
+import projectionOpen, { setProjectionOpenAction } from "./Ducks/ProjectionOpenDuck";
+import highlightedSequence, { setHighlightedSequenceAction } from "./Ducks/HighlightedSequenceDuck";
+import dataset, { setDatasetAction } from "./Ducks/DatasetDuck";
+import openTab, { setOpenTabAction } from "./Ducks/OpenTabDuck";
+import webGLView, { setWebGLView } from "./Ducks/WebGLViewDuck";
+import clusterMode, { ClusterMode, setClusterModeAction } from "./Ducks/ClusterModeDuck";
+import advancedColoringSelection, { setAdvancedColoringSelectionAction } from "./Ducks/AdvancedColoringSelectionDuck";
 import { CategoryOptions } from "./WebGLView/CategoryOptions";
 import { AdvancedColoringPopover } from "./DrawerTabPanels/StatesTabPanel/AdvancedColoring/AdvancedColoringPopover/AdvancedColoringPopover";
 import { ColorScaleSelect } from "./DrawerTabPanels/StatesTabPanel/ColorScaleSelect/ColorScaleSelect";
-import storyMode from "./Reducers/StoryModeReducer";
-import projectionColumns from "./Reducers/ProjectionColumnsReducer";
-import projectionOpen from "./Reducers/ProjectionOpenReducer";
-import projectionParams from "./Reducers/ProjectionParamsReducer";
-import { ProjectionControlCard } from "./DrawerTabPanels/EmbeddingTabPanel/ProjectionControlCard/ProjectionControlCard";
-import projectionWorker from "./Reducers/ProjectionWorkerReducer";
+import projectionColumns, { setProjectionColumns } from "./Ducks/ProjectionColumnsDuck";
 import { EmbeddingTabPanel } from "./DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel";
-import webGLView from "./Reducers/WebGLViewReducer";
-import clusterMode, { ClusterMode } from "./Reducers/ClusterModeReducer";
-import selectedClusters from "./Reducers/SelectedClustersReducer";
 import { CSVLoader } from "../model/Loaders/CSVLoader";
 import { GithubLink } from "./Overlays/GithubLink/GithubLink";
 import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
-import displayMode from "./Reducers/DisplayModeReducer";
+import displayMode from "./Ducks/DisplayModeDuck";
 import { PathBrightnessSliderRedux } from "./DrawerTabPanels/StatesTabPanel/PathTransparencySlider/PathBrightnessSlider";
-import lineBrightness from "./Reducers/LineBrightnessReducer";
-import TimelineIcon from '@material-ui/icons/Timeline';
-import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
-import ListAltIcon from '@material-ui/icons/ListAlt';
+import lineBrightness from "./Ducks/LineBrightnessDuck";
 import { PointsIcon } from "./Icons/PointsIcon";
 import { ClusterIcon } from "./Icons/ClusterIcon";
 import SettingsIcon from '@material-ui/icons/Settings';
-
+import activeLine, { setActiveLine } from "./Ducks/ActiveLineDuck";
+import stories, { setStories } from "./Ducks/StoriesDuck";
+import storyMode from "./Ducks/StoryModeDuck";
+import currentAggregation from "./Ducks/AggregationDuck";
+import selectedClusters from "./Ducks/SelectedClustersDuck";
+import { viewTransform } from "./Ducks/ViewTransformDuck";
+import currentClusters from "./Ducks/CurrentClustersDuck";
+import projectionParams from "./Ducks/ProjectionParamsDuck";
+import checkedShapes from "./Ducks/CheckedShapesDuck";
+import projectionWorker from "./Ducks/ProjectionWorkerDuck";
+import vectorByShape from "./Ducks/VectorByShapeDuck";
+import clusterEdges from "./Ducks/ClusterEdgesDuck";
+import selectedVectorByShape from "./Ducks/SelectedVectorByShapeDuck";
 
 
 
@@ -118,12 +114,12 @@ const mapDispatchToProps = dispatch => ({
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
   setHighlightedSequence: value => dispatch(setHighlightedSequenceAction(value)),
-  setActiveLine: value => dispatch(setActiveLineAction(value)),
-  setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
-  setStories: stories => dispatch(setStoriesAction(stories)),
+  setActiveLine: value => dispatch(setActiveLine(value)),
+  setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
+  setStories: stories => dispatch(setStories(stories)),
   setProjectionColumns: projectionColumns => dispatch(setProjectionColumns(projectionColumns)),
   setProjectionOpen: projectionOpen => dispatch(setProjectionOpenAction(projectionOpen)),
-  setWebGLView: webGLView => dispatch(setWebGLViewAction(webGLView)),
+  setWebGLView: webGLView => dispatch(setWebGLView(webGLView)),
   setClusterMode: clusterMode => dispatch(setClusterModeAction(clusterMode))
 })
 
@@ -300,7 +296,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.legend.current?.load(dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
 
-    this.initializeEncodings()
+    this.initializeEncodings(dataset)
   }
 
   mappingFromScale(scale, attribute, dataset) {
@@ -324,7 +320,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     return null
   }
 
-  initializeEncodings() {
+  initializeEncodings(dataset) {
     var state = {} as any
 
     this.threeRef.current.particles.shapeCat(null)
@@ -344,7 +340,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       state.selectedVectorByColor = defaultColorAttribute.key
       state.vectorByColor = defaultColorAttribute
 
-      this.threeRef.current.particles.colorCat(defaultColorAttribute, this.mappingFromScale(state.definedScales[state.selectedScaleIndex], defaultColorAttribute))
+      this.threeRef.current.particles.colorCat(defaultColorAttribute, this.mappingFromScale(state.definedScales[state.selectedScaleIndex], defaultColorAttribute, dataset))
       state.showColorMapping = this.threeRef.current.particles.getMapping()
     }
 

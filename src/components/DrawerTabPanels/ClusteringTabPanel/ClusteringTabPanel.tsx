@@ -7,9 +7,12 @@ import { StoryPreview } from "./StoryPreview/StoryPreview"
 import { connect } from 'react-redux'
 import Cluster, { Story } from "../../util/Cluster"
 import { graphLayout, Edge } from "../../util/graphs"
-import { setActiveStoryAction, setStoriesAction, setClusterEdgesAction, setStoryModeAction, setCurrentClustersAction } from "../../Actions/Actions"
-import { StoryMode } from "../../Reducers/StoryModeReducer"
-import { DisplayMode, setDisplayMode } from "../../Reducers/DisplayModeReducer"
+import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
+import { setCurrentClustersAction } from "../../Ducks/CurrentClustersDuck"
+import { setStoryMode, StoryMode } from "../../Ducks/StoryModeDuck"
+import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
+import { setActiveStory } from "../../Ducks/ActiveStoryDuck"
+import { setStories } from "../../Ducks/StoriesDuck"
 
 var worker = new Worker('dist/cluster.js')
 
@@ -83,10 +86,10 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     setCurrentClusters: clusters => dispatch(setCurrentClustersAction(clusters)),
-    setStories: stories => dispatch(setStoriesAction(stories)),
-    setActiveStory: activeStory => dispatch(setActiveStoryAction(activeStory)),
+    setStories: stories => dispatch(setStories(stories)),
+    setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
-    setStoryMode: storyMode => dispatch(setStoryModeAction(storyMode)),
+    setStoryMode: storyMode => dispatch(setStoryMode(storyMode)),
     setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode))
 })
 

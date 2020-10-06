@@ -7,8 +7,8 @@ import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect } from 'react-redux'
 import { DatasetType } from "../../util/datasetselector";
-import { StoryMode } from "../../Reducers/StoryModeReducer";
 import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
+import { StoryMode } from "../../Ducks/StoryModeDuck";
 
 
 type ClusterOverviewProps = {
