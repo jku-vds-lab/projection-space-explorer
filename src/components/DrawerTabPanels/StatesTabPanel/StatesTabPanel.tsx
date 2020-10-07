@@ -14,7 +14,9 @@ type StatesTabPanelProps = {
 
 const mapStateToProps = state => ({
     selectedVectorByShape: state.selectedVectorByShape,
-    vectorByShape: state.vectorByShape
+    vectorByShape: state.vectorByShape,
+    dataset: state.dataset,
+    categoryOptions: state.categoryOptions
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -23,14 +25,14 @@ const mapDispatchToProps = dispatch => ({
     setCheckedShapes: checkedShapes => dispatch(setCheckedShapesAction(checkedShapes))
 })
 
-export const StatesTabPanel: FunctionComponent<StatesTabPanelProps> = connect(mapStateToProps, mapDispatchToProps)(({
-    categoryOptions,
+export const StatesTabPanelFull: FunctionComponent<StatesTabPanelProps> = ({
     selectedVectorByShape,
     vectorByShape,
     dataset,
     setSelectedVectorByShape,
     setVectorByShape,
-    setCheckedShapes
+    setCheckedShapes,
+    categoryOptions
 }) => {
     return <div>
         {
@@ -48,8 +50,6 @@ export const StatesTabPanel: FunctionComponent<StatesTabPanelProps> = connect(ma
                             displayEmpty
                             value={selectedVectorByShape}
                             onChange={(event) => {
-
-                                console.log(event.target.value)
                                 setSelectedVectorByShape(event.target.value)
 
                                 if (event.target.value != null && event.target.value != "") {
@@ -81,4 +81,7 @@ export const StatesTabPanel: FunctionComponent<StatesTabPanelProps> = connect(ma
                 }}></ShapeLegend>
         </Grid>
     </div>
-})
+}
+
+
+export const StatesTabPanel = connect(mapStateToProps, mapDispatchToProps)(StatesTabPanelFull)

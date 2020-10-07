@@ -166,7 +166,6 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
 
                 setCurrentClusters(clusters)
 
-                console.log(dataset)
                 if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
                     setClusterEdges(dataset.clusterEdges)
 
@@ -238,10 +237,6 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
                 })
                 cluster.vectors = vecs
             })
-
-
-            console.log("set state")
-            console.log(clusters)
 
             var story = new Story(clusters.slice(0, 9), null)
             setCurrentClusters(clusters)
@@ -342,7 +337,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
 
     React.useEffect(() => {
         worker.onmessage = function () {
-            console.log("resulted in ...")
+            
         }
         worker.postMessage({
             type: 'triangulate',

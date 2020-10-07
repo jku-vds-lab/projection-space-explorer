@@ -1,8 +1,9 @@
 import React = require("react");
 import { Typography, Slider } from "@material-ui/core";
+import { connect } from 'react-redux'
+import { setPathLengthRange } from "../../../Ducks/PathLengthRange";
 
-
-export var PathLengthFilter = ({ pathLengthRange, onChange, maxPathLength }) => {
+export var PathLengthFilterFull = ({ pathLengthRange, setPathLengthRange }) => {
     if (pathLengthRange == null) {
         return <div></div>
     }
@@ -13,8 +14,8 @@ export var PathLengthFilter = ({ pathLengthRange, onChange, maxPathLength }) => 
             label: '0',
         },
         {
-            value: maxPathLength,
-            label: `${maxPathLength}`,
+            value: pathLengthRange.maximum,
+            label: `${pathLengthRange.maximum}`,
         },
     ];
 
@@ -24,11 +25,23 @@ export var PathLengthFilter = ({ pathLengthRange, onChange, maxPathLength }) => 
       </Typography>
         <Slider
             min={0}
-            max={maxPathLength}
-            value={pathLengthRange}
-            onChange={onChange}
+            max={pathLengthRange.maximum}
+            value={pathLengthRange.range}
+            onChange={(_, newValue) => {
+                setPathLengthRange(newValue)
+            }}
             marks={marks}
             valueLabelDisplay="auto"
         ></Slider>
     </div>
 }
+
+const mapStateToProps = state => ({
+    pathLengthRange: state.pathLengthRange
+})
+
+const mapDispatchToProps = dispatch => ({
+    setPathLengthRange: pathLengthRange => dispatch(setPathLengthRange(pathLengthRange))
+})
+
+export const PathLengthFilter = connect(mapStateToProps, mapDispatchToProps)(PathLengthFilterFull)

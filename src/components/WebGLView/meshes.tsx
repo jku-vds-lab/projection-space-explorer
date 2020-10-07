@@ -621,10 +621,11 @@ export class PointVisualization {
     this.updateColor()
   }
 
-  sizeCat(category) {
+  sizeCat(category, range) {
+    console.log(category)
     if (category == null) {
       this.vectors.forEach(vector => {
-        vector.view.baseSize = this.particleSize
+        vector.view.baseSize = this.particleSize * range[0]
       })
     } else {
       if (category.type == 'sequential') {
@@ -643,9 +644,9 @@ export class PointVisualization {
 
             segment.vectors.forEach(vector => {
               if (min == max) {
-                vector.view.baseSize = this.particleSize * category.values.range[0]
+                vector.view.baseSize = this.particleSize * range[0]
               } else {
-                vector.view.baseSize = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
+                vector.view.baseSize = this.particleSize * (range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min)))
               }
             })
           })
@@ -663,9 +664,9 @@ export class PointVisualization {
 
           this.vectors.forEach(vector => {
             if (min == max) {
-              vector.view.baseSize = this.particleSize * category.values.range[0]
+              vector.view.baseSize = this.particleSize * range[0]
             } else {
-              vector.view.baseSize = this.particleSize * (category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min)))
+              vector.view.baseSize = this.particleSize * (range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min)))
             }
           })
         }

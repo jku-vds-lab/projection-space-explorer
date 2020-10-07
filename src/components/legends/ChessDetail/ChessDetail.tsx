@@ -34,10 +34,10 @@ function createChess(d) {
   var container = d3.create("div")
 
   var board = container.append("div")
-  .attr("class", "chessboard")
+    .attr("class", "chessboard")
 
   // horizontal chess keys
-  var keys = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ]
+  var keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
   // variable determining the current field color
   var col = "white d-flex align-items-center justify-content-center"
@@ -55,12 +55,12 @@ function createChess(d) {
     var num = 8 - ((i / 8) >> 0)
 
     var imgwrap = board.append("div")
-    .attr("class", col)
+      .attr("class", col)
 
     if (symbols[d["" + key + num]] != "") {
       imgwrap.append("img")
-      .attr("src", symbols[d["" + key + num]])
-      .attr("class", "figure")
+        .attr("src", symbols[d["" + key + num]])
+        .attr("class", "figure")
     }
   }
 
@@ -77,8 +77,8 @@ function aggregateChess(vectors) {
   // Generate chess keys
   var keys = []
 
-  var nums = [ 1, 2, 3, 4, 5, 6, 7, 8 ]
-  var chars = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ]
+  var nums = [1, 2, 3, 4, 5, 6, 7, 8]
+  var chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
   nums.forEach((index) => {
     chars.forEach((char) => {
@@ -106,10 +106,10 @@ function aggregateChess(vectors) {
   var container = d3.create("div")
 
   var board = container.append("div")
-  .attr("class", "chessboard")
+    .attr("class", "chessboard")
 
   // horizontal chess keys
-  keys = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ]
+  keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
   // variable determining the current field color
   var col = "white d-flex align-items-center justify-content-center"
@@ -146,19 +146,18 @@ function aggregateChess(vectors) {
         }
       }
 
-      if (opacity < 0.05) console.log("he")
-      opacity = (max / total)
+        opacity = (max / total)
     }
 
     var imgwrap = board.append("div")
-    .attr("class", col)
-    .style("color", `rgba(1.0, 1.0, 1.0, ${opacity})`)
+      .attr("class", col)
+      .style("color", `rgba(1.0, 1.0, 1.0, ${opacity})`)
 
     if (content != "") {
       imgwrap.append("img")
-      .attr("src", content)
-      .attr("class", "figure")
-      .style("opacity", opacity)
+        .attr("src", content)
+        .attr("class", "figure")
+        .style("opacity", opacity)
     }
   }
 
@@ -169,5 +168,5 @@ function aggregateChess(vectors) {
 
 
 export var ChessLegend = ({ selection }) => {
-    return <div dangerouslySetInnerHTML={{ __html: aggregateChess(selection) }}></div>
+  return <div dangerouslySetInnerHTML={{ __html: aggregateChess(selection) }}></div>
 }

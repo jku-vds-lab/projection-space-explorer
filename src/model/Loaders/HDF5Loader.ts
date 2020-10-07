@@ -85,7 +85,6 @@ export class HDF5Loader implements Loader {
         let dataset = new Dataset(this.vectors, ranges, preselection, { type: this.datasetType })
         dataset.clusters = clusters
         dataset.clusterEdges = edges
-        console.log(dataset.clusterEdges)
 
         finished(dataset, new InferCategory(this.vectors).load(ranges))
     }

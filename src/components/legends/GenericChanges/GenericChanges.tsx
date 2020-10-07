@@ -23,7 +23,6 @@ export const GenericChanges = connect(mapStateToProps, mapDispatchToProps)(({ ve
         case DatasetType.Rubik:
             return <RubikChanges vectorsA={vectorsA} vectorsB={vectorsB}></RubikChanges>
         case DatasetType.Chess:
-            console.log("creating chess...")
             return <ChessChanges vectorsA={vectorsA} vectorsB={vectorsB}></ChessChanges>
         default:
             return <div></div>

@@ -3,7 +3,7 @@ import { Typography, Slider } from "@material-ui/core";
 import { connect } from 'react-redux'
 import { setLineBrightness } from "../../../Ducks/LineBrightnessDuck";
 
-const PathBrightnessSlider = ({ lineBrightness, setLineBrightness }) => {
+const PathBrightnessSliderFull = ({ lineBrightness, setLineBrightness }) => {
     const marks = [
         {
             value: 0,
@@ -45,5 +45,5 @@ const mapDispatchToProps = dispatch => ({
     setLineBrightness: lineBrightness => dispatch(setLineBrightness(lineBrightness))
 })
 
-export const PathBrightnessSliderRedux = connect(mapStateToProps, mapDispatchToProps)(PathBrightnessSlider)
+export const PathBrightnessSlider = connect(mapStateToProps, mapDispatchToProps)(PathBrightnessSliderFull)
 

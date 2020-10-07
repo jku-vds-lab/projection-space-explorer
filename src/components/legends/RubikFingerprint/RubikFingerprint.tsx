@@ -32,7 +32,6 @@ export class RubikFingerprint extends React.Component<RubikFingerprintProps> {
     renderToContext() {
         var vectors = this.props.vectors
 
-        console.log(vectors)
         // Get layout size, on retina display, canvas width is actually larger
         var cssWidth = this.props.width ? this.props.width : this.canvasRef.current.getBoundingClientRect().width
         var cssHeight = this.props.height ? this.props.height : this.canvasRef.current.getBoundingClientRect().height

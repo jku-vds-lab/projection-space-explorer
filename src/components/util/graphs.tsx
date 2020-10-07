@@ -78,6 +78,6 @@ export function graphLayout(clusters) {
         })
 
     })
-    console.log(edges)
+
     return [edges]
 }

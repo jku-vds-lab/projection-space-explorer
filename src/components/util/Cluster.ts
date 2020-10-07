@@ -78,7 +78,6 @@ export default class Cluster {
         this.points.forEach(p => {
             avg = avg + p.score
         })
-        console.log(this.points)
         return avg / this.points.length
     }
 

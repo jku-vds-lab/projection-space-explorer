@@ -271,9 +271,6 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
     }
 
     onNodeMouseDown(node) {
-
-        console.log(this.action)
-
         switch (this.state.tool) {
             case SETool.Draw:
                 switch (this.action) {
@@ -288,8 +285,6 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
     }
 
     onNodeMouseUp(node) {
-        console.log("up")
-
         switch (this.action) {
             case SEAction.PreparingMove:
                 this.pressedElement = null

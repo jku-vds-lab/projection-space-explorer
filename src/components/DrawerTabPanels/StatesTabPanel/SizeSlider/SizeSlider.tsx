@@ -1,8 +1,10 @@
 import React = require("react");
 import { Typography, Slider } from "@material-ui/core";
 import './SizeSlider.scss'
+import { connect } from 'react-redux'
+import { setGlobalPointSize } from "../../../Ducks/GlobalPointSizeDuck";
 
-export var SizeSlider = ({ sizeScale, onChange }) => {
+const SizeSliderFull = ({ sizeScale, setRange }) => {
     const marks = [
         {
             value: 0,
@@ -38,10 +40,41 @@ export var SizeSlider = ({ sizeScale, onChange }) => {
             min={0}
             max={5}
             value={sizeScale}
-            onChange={onChange}
+            onChange={(_, newValue) => setRange(newValue)}
             step={0.25}
             marks={marks}
             valueLabelDisplay="auto"
         ></Slider>
     </div>
 }
+
+/**
+ * 
+ * @param state                 sizeScale={this.state.vectorBySize.values.range}
+                onChange={(e, newVal) => {
+                  if (arraysEqual(newVal, this.state.vectorBySize.values.range)) {
+                    return;
+                  }
+
+                  this.state.vectorBySize.values.range = newVal
+
+                  this.setState({
+                    vectorBySize: this.state.vectorBySize
+                  })
+
+                  if (this.state.vectorBySize != null) {
+                    this.threeRef.current.particles.sizeCat(this.state.vectorBySize)
+                    this.threeRef.current.particles.updateSize()
+                  }
+                }}
+ */
+
+const mapStateToProps = state => ({
+    sizeScale: state.globalPointSize
+})
+
+const mapDispatchToProps = dispatch => ({
+    setRange: value => dispatch(setGlobalPointSize(value))
+})
+
+export const SizeSlider = connect(mapStateToProps, mapDispatchToProps)(SizeSliderFull)

@@ -298,7 +298,6 @@ export function annotateVectors(vectors: Vect[], clusterId) {
 var tessy = (function initTesselator() {
     // function called for each vertex of tesselator output
     function vertexCallback(data, polyVertArray) {
-        // console.log(data[0], data[1]);
         polyVertArray[polyVertArray.length] = data[0];
         polyVertArray[polyVertArray.length] = data[1];
     }

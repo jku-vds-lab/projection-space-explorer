@@ -11,7 +11,8 @@ import AdjustIcon from '@material-ui/icons/Adjust';
 const SelectionClustersFull = function ({
     selectionState,
     datasetType,
-    currentAggregation
+    currentAggregation,
+    hoverState
 }) {
 
     return <div className="Parent">
@@ -20,7 +21,7 @@ const SelectionClustersFull = function ({
             <Card style={{ pointerEvents: 'auto' }}>
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
-                    <GenericLegend aggregate={false} type={datasetType} vectors={selectionState}></GenericLegend>
+                    <GenericLegend aggregate={false} type={datasetType} vectors={hoverState}></GenericLegend>
 
                 </CardContent>
             </Card>
@@ -44,7 +45,8 @@ const SelectionClustersFull = function ({
 
 
 const mapStateToProps = state => ({
-    currentAggregation: state.currentAggregation
+    currentAggregation: state.currentAggregation,
+    hoverState: state.hoverState
 })
 
 

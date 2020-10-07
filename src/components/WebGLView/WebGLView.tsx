@@ -30,6 +30,7 @@ import { MultivariateClustering } from './Visualizations/MultivariateClustering'
 import { DisplayMode } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { ClusterMode } from '../Ducks/ClusterModeDuck';
+import { setHoverState } from '../Ducks/HoverStateDuck';
 
 
 const useStyles = makeStyles(theme => ({
@@ -143,7 +144,6 @@ type ViewProps = {
     highlightedSequence: any
     setCurrentAggregation: any
     viewTransform: ViewTransform
-    onHover: any
     setClusterEdges: any
     setViewTransform: any
     checkedShapes: any
@@ -156,6 +156,7 @@ type ViewProps = {
     selectedClusters: Cluster[]
     displayMode: DisplayMode
     lineBrightness: number
+    globalPointSize: []
 }
 
 type ViewState = {
@@ -180,7 +181,10 @@ const mapStateToProps = state => ({
     clusterMode: state.clusterMode,
     selectedClusters: state.selectedClusters,
     displayMode: state.displayMode,
-    lineBrightness: state.lineBrightness
+    lineBrightness: state.lineBrightness,
+    pathLengthRange: state.pathLengthRange,
+    globalPointSize: state.globalPointSize,
+    channelSize: state.channelSize
 })
 
 
@@ -190,7 +194,8 @@ const mapDispatchToProps = dispatch => ({
     setActiveLine: activeLine => dispatch(setActiveLine(activeLine)),
     setViewTransform: viewTransform => dispatch(setViewTransform(viewTransform)),
     toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedCluster(selectedCluster)),
-    toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation))
+    toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation)),
+    setHoverState: hoverState => dispatch(setHoverState(hoverState))
 })
 
 
@@ -415,7 +420,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                         } else {
                             this.currentHover = null
                         }
-                        this.props.onHover(list)
+
+                        this.props.setHoverState(list)
 
                     }, 10);
                 }
@@ -1162,6 +1168,11 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             }
         }**/
 
+        if (prevProps.globalPointSize != this.props.globalPointSize) {
+            this.particles.sizeCat(this.props.channelSize, this.props.globalPointSize)
+            this.particles.updateSize()
+        }
+
 
         if (prevProps.lineBrightness != this.props.lineBrightness) {
             this.lines?.setBrightness(this.props.lineBrightness)
@@ -1240,10 +1251,10 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         }
 
         // Path length range has changed, update view accordingly
-        if (this.props.dataset && this.props.dataset.isSequential && !arraysEqual(prevProps.pathLengthRange, this.props.pathLengthRange)) {
+        if (this.props.dataset && this.props.dataset.isSequential && prevProps.pathLengthRange !== this.props.pathLengthRange) {
             // Set path length range on all segment views, and update them
             this.segments.forEach(segment => {
-                segment.view.pathLengthRange = this.props.pathLengthRange
+                segment.view.pathLengthRange = this.props.pathLengthRange.range
             })
 
             this.lines.update()
