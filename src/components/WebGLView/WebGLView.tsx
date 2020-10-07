@@ -31,6 +31,7 @@ import { DisplayMode } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { ClusterMode } from '../Ducks/ClusterModeDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
+import { ClusterLayer } from './ClusterLayer/ClusterLayer';
 
 
 const useStyles = makeStyles(theme => ({
@@ -854,7 +855,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             // First add lines, then particles
             this.lines.meshes.forEach(line => this.scene.add(line.line))
         }
-        
+
 
         this.particles = new PointVisualization(this.vectorColorScheme, this.dataset)
         this.particles.createMesh(this.vectors, this.segments)
@@ -1129,6 +1130,18 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
             this.renderer.clear()
             this.renderer.render(this.scene, this.camera)
+
+
+            if (this.multivariateClusterView) {
+                let camera = new THREE.OrthographicCamera(this.getWidth() / - 2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / - 2, 1, 1000);
+                camera.position.z = 1;
+                camera.position.x = this.camera.position.x * this.camera.zoom
+                camera.position.y = this.camera.position.y * this.camera.zoom
+                camera.updateProjectionMatrix();
+                this.multivariateClusterView.updatePositions(this.camera.zoom)
+                this.renderer.render(this.multivariateClusterView.scene, camera)
+            }
+            
             this.renderer.render(this.pointScene, this.camera)
 
             var ctx = this.selectionRef.current.getContext()
@@ -1227,7 +1240,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             if (this.props.openTab == 1) {
                 if (this.props.dataset.multivariateLabels) {
                     this.multivariateClusterView?.destroy()
-                    this.multivariateClusterView = new MultivariateClustering(this.props.dataset, this.scene, this.props.clusters)
+                    this.multivariateClusterView = new MultivariateClustering(this.props.dataset, new THREE.Scene(), this.props.clusters)
                     this.multivariateClusterView?.create()
                 } else {
                     this.clusterVisualization?.dispose(this.scene)
@@ -1397,9 +1410,12 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                         <div></div>
                 }
 
+
+
             </div>
 
             <LassoLayer ref={this.selectionRef}></LassoLayer>
+
 
             <ForceLayout
                 ref={this.state.forceLayoutRef}
@@ -1407,6 +1423,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 camera={this.state.camera}
                 width={this.getWidth()}
                 height={this.getHeight()}></ForceLayout>
+
+
 
 
         </div>

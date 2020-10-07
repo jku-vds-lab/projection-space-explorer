@@ -3,6 +3,7 @@ import { Scene } from "three";
 import Cluster from "../../util/Cluster";
 import THREE = require("three");
 import { Dataset, Vect } from "../../util/datasetselector";
+import { ArrowGeometry } from "../../util/ArrowMesh";
 
 const SELECTED_COLOR = 0x4d94ff
 const DEFAULT_COLOR = 0xa3a3c2
@@ -16,6 +17,7 @@ export class MultivariateClustering {
     clusters: Cluster[]
     scene: Scene
     dataset: Dataset
+    lineMesh: THREE.Mesh
 
     clusterObjects: any[] = []
 
@@ -25,13 +27,63 @@ export class MultivariateClustering {
         this.clusters = clusters
     }
 
+    updatePositions(zoom: number) {
+        
+        if (this.uu) {
+            return;
+        } else {
+            this.uu = true
+        }
+        console.log("update positions")
+
+        let lineGeometry = this.lineMesh.geometry as THREE.Geometry
+        lineGeometry.vertices = []
+        lineGeometry.faces = []
+
+
+
+        this.clusterObjects.forEach(clusterObject => {
+            let cluster = clusterObject.cluster
+            let center = cluster.getCenter()
+            let mesh = clusterObject.mesh
+            
+            mesh.position.set(center.x * zoom, center.y * zoom, -1)
+
+            clusterObject.children.forEach((child, index) => {
+                let sample = child.sample
+                let dir = new THREE.Vector2(center.x - child.sample.x, center.y - child.sample.y).normalize()
+                let rigth = new THREE.Vector2(-dir.x, dir.y).normalize().multiplyScalar(0.1)
+                let left = new THREE.Vector2(dir.x, -dir.y).normalize().multiplyScalar(0.1)
+
+                lineGeometry.vertices.push(new THREE.Vector3((center.x + left.x) * zoom, (center.y + left.y) * zoom))
+                lineGeometry.vertices.push(new THREE.Vector3((center.x + rigth.x) * zoom, (center.y + rigth.y) * zoom))
+                lineGeometry.vertices.push(new THREE.Vector3((sample.x + left.x) * zoom, (sample.y + left.y) * zoom))
+                lineGeometry.vertices.push(new THREE.Vector3((sample.x + rigth.x) * zoom, (sample.y + rigth.y) * zoom))
+
+                let i = index * 4
+                lineGeometry.faces.push(new THREE.Face3(i, i + 1, i + 2))
+                lineGeometry.faces.push(new THREE.Face3(i + 1, i + 3, i + 2))
+            })
+        })
+
+        this.lineMesh.geometry
+        console.log(lineGeometry.vertices.length)
+    }
+
+
+
     /**
      * Creates the visualization.
      */
     create() {
+        let lineMateral = new THREE.MeshBasicMaterial({ color: LINE_COLOR, side: THREE.DoubleSide })
+        lineMateral.opacity = 0.5
+        lineMateral.transparent = true
+        let lineGeometry = new THREE.Geometry()
+
         this.clusters.forEach(cluster => {
             // Add circle to scene
-            var geometry = new THREE.CircleGeometry(3 * this.dataset.bounds.scaleFactor, 32);
+            var geometry = new THREE.CircleGeometry(20 * this.dataset.bounds.scaleFactor, 32);
             var material = new THREE.MeshBasicMaterial({ color: DEFAULT_COLOR });
             var circle = new THREE.Mesh(geometry, material);
             var center = cluster.getCenter()
@@ -49,29 +101,15 @@ export class MultivariateClustering {
 
             // Create line geometry
             cluster.vectors.forEach(vector => {
-                var temp = new THREE.Vector2(vector.x - center.x, vector.y - center.y)
-                var geometry = new THREE.PlaneGeometry(0.3 * this.dataset.bounds.scaleFactor, temp.length(), 32);
-                var material = new THREE.MeshBasicMaterial({ color: LINE_COLOR, side: THREE.DoubleSide });
-                var plane = new THREE.Mesh(geometry, material);
-                plane.visible = false
-                material.opacity = 0.5
-                material.transparent = true
-                
-                plane.position.set((center.x + vector.x) / 2, (center.y + vector.y) / 2, -1)
-                var temp = new THREE.Vector2(vector.x - center.x, vector.y - center.y)
-                plane.rotateZ(temp.angle() + Math.PI / 2)
-
-                this.scene.add(plane);
-                
-
                 clusterObject.children.push({
                     sample: vector,
-                    geometry: geometry,
-                    material: material,
-                    mesh: plane
+                    visible: false
                 })
             })
         })
+
+        this.lineMesh = new THREE.Mesh(lineGeometry, lineMateral)
+        this.scene.add(this.lineMesh)
     }
 
     // Activates the lines from given samples to their corresponding clusters
@@ -85,7 +123,7 @@ export class MultivariateClustering {
                 if (clusterObject) {
                     clusterObject.children.forEach(child => {
                         if (child.sample == sample) {
-                            child.mesh.visible = true
+                            child.visible = true
                         }
                     })
                 }
@@ -98,7 +136,7 @@ export class MultivariateClustering {
             clusterObject.material.color = new THREE.Color(DEFAULT_COLOR)
 
             clusterObject.children.forEach(child => {
-                child.mesh.visible = false
+                child.visible = false
             })
         })
     }
@@ -112,7 +150,7 @@ export class MultivariateClustering {
             clusterObject.material.color = visible ? new THREE.Color(SELECTED_COLOR) : new THREE.Color(DEFAULT_COLOR)
 
             clusterObject.children.forEach(child => {
-                child.mesh.visible = visible
+                child.visible = visible
             })
         })
     }
