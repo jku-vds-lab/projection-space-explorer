@@ -334,9 +334,9 @@ export class PointVisualization {
   sizeAttribute: any
   colorAttribute
 
-  constructor(vectorColorScheme, dataset) {
+  constructor(vectorColorScheme, dataset, size) {
     this.highlightIndex = null
-    this.particleSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
+    this.particleSize = size
     this.vectorColorScheme = vectorColorScheme
     this.dataset = dataset
 
@@ -622,7 +622,6 @@ export class PointVisualization {
   }
 
   sizeCat(category, range) {
-    console.log(category)
     if (category == null) {
       this.vectors.forEach(vector => {
         vector.view.baseSize = this.particleSize * range[0]

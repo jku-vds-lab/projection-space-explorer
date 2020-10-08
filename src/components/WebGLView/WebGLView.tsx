@@ -862,7 +862,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         }
 
 
-        this.particles = new PointVisualization(this.vectorColorScheme, this.dataset)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.dataset, window.devicePixelRatio * 16)
         this.particles.createMesh(this.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
@@ -1186,6 +1186,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 }
             }
         }**/
+
+        
 
         if (prevProps.globalPointSize != this.props.globalPointSize) {
             this.particles.sizeCat(this.props.channelSize, this.props.globalPointSize)

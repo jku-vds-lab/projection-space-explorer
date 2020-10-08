@@ -1,22 +1,12 @@
 import { Face } from "@material-ui/icons"
-import { Face3, Vector3 } from "three"
+import { Face3, Geometry, Mesh, Vector3 } from "three"
 import THREE = require("three")
 
 export class ArrowGeometry extends THREE.Geometry  {
+
+
     constructor(length: number, thickness: number) {
         super()
-
-        let marker = 10
-
-        this.vertices.push(new Vector3(-length / 2, thickness / 2, 0))
-        this.vertices.push(new Vector3(-length / 2, -thickness / 2, 0))
-        this.vertices.push(new Vector3(length / 2, thickness / 2, 0))
-        this.vertices.push(new Vector3(length / 2, -thickness / 2, 0))
-
-        this.faces.push(new Face3(0, 1, 2))
-        this.faces.push(new Face3(0, 1, 3))
-
-
     }
 
 
@@ -33,5 +23,11 @@ export class ArrowGeometry extends THREE.Geometry  {
 
         this.faces.push(new Face3(0, 1, 2))
         this.faces.push(new Face3(0, 1, 3))
+
+        this.verticesNeedUpdate = true
+    }
+
+    dispose() {
+
     }
 }

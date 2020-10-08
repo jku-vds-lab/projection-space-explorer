@@ -72,7 +72,7 @@ export class MultivariateClustering {
      * Creates the visualization.
      */
     create() {
-        let lineMateral = new THREE.MeshBasicMaterial({ color: LINE_COLOR, side: THREE.DoubleSide })
+        let lineMateral = new THREE.MeshBasicMaterial({ color: LINE_COLOR, side: THREE.FrontSide })
         lineMateral.opacity = 0.5
         lineMateral.transparent = true
         let lineGeometry = new THREE.Geometry()

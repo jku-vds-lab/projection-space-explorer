@@ -23,6 +23,6 @@ void main() {
     vShow = show;
     vSelected = selected;
     vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-    gl_PointSize = ((size / 2.0) + (size / 16.0) * zoom) * scale;
+    gl_PointSize = size * scale;
     gl_Position = projectionMatrix * mvPosition;
 }
