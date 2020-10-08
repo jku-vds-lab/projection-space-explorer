@@ -1253,7 +1253,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             if (this.props.openTab == 1) {
                 if (this.props.dataset.multivariateLabels) {
                     this.multivariateClusterView?.destroy()
-                    this.multivariateClusterView = new MultivariateClustering(this.props.dataset, new THREE.Scene(), this.props.clusters, this.props.displayMode)
+                    this.multivariateClusterView = new MultivariateClustering(this.props.dataset, new THREE.Scene(), this.props.clusters, this.props.displayMode, window.devicePixelRatio)
                     this.multivariateClusterView?.create()
                 } else {
                     this.clusterVisualization?.dispose(this.scene)

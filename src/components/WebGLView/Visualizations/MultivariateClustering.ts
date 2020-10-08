@@ -22,12 +22,14 @@ export class MultivariateClustering {
     lineMesh: THREE.Mesh
     displayMode: DisplayMode
     clusterObjects: any[] = []
+    devicePixelRatio: number
 
-    constructor(dataset: Dataset, scene: Scene, clusters: Cluster[], displayMode: DisplayMode) {
+    constructor(dataset: Dataset, scene: Scene, clusters: Cluster[], displayMode: DisplayMode, devicePixelRatio: numer) {
         this.dataset = dataset
         this.scene = scene
         this.clusters = clusters
         this.displayMode = displayMode
+        this.devicePixelRatio = devicePixelRatio
     }
 
     updatePositions(zoom: number) {
@@ -48,8 +50,8 @@ export class MultivariateClustering {
                 if (child.visible && this.displayMode == DisplayMode.StatesAndClusters) {
                     let sample = child.sample
                     let dir = new THREE.Vector2(child.sample.x - center.x, child.sample.y - center.y).normalize()
-                    let rigth = new Vector2(dir.y, -dir.x).multiplyScalar(1)
-                    let left = new Vector2(-dir.y, dir.x).multiplyScalar(1)
+                    let rigth = new Vector2(dir.y, -dir.x).multiplyScalar(this.devicePixelRatio)
+                    let left = new Vector2(-dir.y, dir.x).multiplyScalar(this.devicePixelRatio)
     
                     lineGeometry.vertices.push(new THREE.Vector3(center.x * zoom + left.x, center.y * zoom + left.y, 0))
                     lineGeometry.vertices.push(new THREE.Vector3(center.x * zoom + rigth.x, center.y * zoom + rigth.y, 0))
@@ -84,7 +86,7 @@ export class MultivariateClustering {
 
         this.clusters.forEach(cluster => {
             // Add circle to scene
-            var geometry = new THREE.CircleGeometry(30 * this.dataset.bounds.scaleFactor, 32);
+            var geometry = new THREE.CircleGeometry(this.devicePixelRatio * 16, 32);
             var material = new THREE.MeshBasicMaterial({ color: DEFAULT_COLOR });
             var circle = new THREE.Mesh(geometry, material);
             var center = cluster.getCenter()
