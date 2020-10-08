@@ -5,6 +5,7 @@ import THREE = require("three");
 import { Dataset, Vect } from "../../util/datasetselector";
 import { ArrowGeometry } from "../../util/ArrowMesh";
 import { Zoom } from "@material-ui/core";
+import { DisplayMode } from "../../Ducks/DisplayModeDuck";
 
 const SELECTED_COLOR = 0x4d94ff
 const DEFAULT_COLOR = 0xa3a3c2
@@ -19,13 +20,14 @@ export class MultivariateClustering {
     scene: Scene
     dataset: Dataset
     lineMesh: THREE.Mesh
-
+    displayMode: DisplayMode
     clusterObjects: any[] = []
 
-    constructor(dataset: Dataset, scene: Scene, clusters: Cluster[]) {
+    constructor(dataset: Dataset, scene: Scene, clusters: Cluster[], displayMode: DisplayMode) {
         this.dataset = dataset
         this.scene = scene
         this.clusters = clusters
+        this.displayMode = displayMode
     }
 
     updatePositions(zoom: number) {
@@ -43,7 +45,7 @@ export class MultivariateClustering {
             mesh.position.set(center.x * zoom, center.y * zoom, 0)
 
             clusterObject.children.forEach(child => {
-                if (child.visible) {
+                if (child.visible && this.displayMode == DisplayMode.StatesAndClusters) {
                     let sample = child.sample
                     let dir = new THREE.Vector2(child.sample.x - center.x, child.sample.y - center.y).normalize()
                     let rigth = new Vector2(dir.y, -dir.x).multiplyScalar(1)
@@ -115,10 +117,18 @@ export class MultivariateClustering {
         // Deactivate all lines
         this.deactivateAll()
 
+        this.clusterObjects.forEach(clusterObject => {
+            clusterObject.material.color = new THREE.Color(DEFAULT_COLOR)
+        })
+
         samples.forEach(sample => {
             sample.clusterLabel.forEach(label => {
                 let clusterObject = this.clusterObjects.find(e => e.cluster.label == label)
+                
+                
                 if (clusterObject) {
+                    clusterObject.material.color = new THREE.Color(SELECTED_COLOR)
+
                     clusterObject.children.forEach(child => {
                         if (child.sample == sample) {
                             child.visible = true
@@ -137,6 +147,20 @@ export class MultivariateClustering {
                 child.visible = false
             })
         })
+    }
+
+    setDisplayMode(displayMode: DisplayMode) {
+        this.displayMode = displayMode
+
+        switch (displayMode) {
+            case DisplayMode.OnlyClusters:
+                this.clusterObjects.forEach(clusterObject => {
+                    clusterObject.children.forEach(child => {
+                        child.visible = false
+                    })
+                })
+                break;
+        }
     }
 
     highlightCluster(clusters?: Cluster[]) {

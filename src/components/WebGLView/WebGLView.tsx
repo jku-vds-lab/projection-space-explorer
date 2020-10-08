@@ -1212,6 +1212,9 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                     this.pointScene.remove(this.particles.mesh)
                     this.pointScene.add(this.particles.mesh)
 
+                    this.multivariateClusterView?.setDisplayMode(this.props.displayMode)
+                    this.multivariateClusterView?.highlightCluster(this.props.selectedClusters)
+
                     break;
                 case DisplayMode.OnlyClusters:
                     if (this.props.dataset.isSequential) {
@@ -1221,6 +1224,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                     }
 
                     this.pointScene.remove(this.particles.mesh)
+
+                    this.multivariateClusterView?.setDisplayMode(this.props.displayMode)
                     break;
             }
         }
@@ -1248,7 +1253,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             if (this.props.openTab == 1) {
                 if (this.props.dataset.multivariateLabels) {
                     this.multivariateClusterView?.destroy()
-                    this.multivariateClusterView = new MultivariateClustering(this.props.dataset, new THREE.Scene(), this.props.clusters)
+                    this.multivariateClusterView = new MultivariateClustering(this.props.dataset, new THREE.Scene(), this.props.clusters, this.props.displayMode)
                     this.multivariateClusterView?.create()
                 } else {
                     this.clusterVisualization?.dispose(this.scene)
