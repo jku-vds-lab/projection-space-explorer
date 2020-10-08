@@ -61,4 +61,4 @@ export const rootReducer = combineReducers({
   channelSize: channelSize,
   globalPointSize: globalPointSize,
   hoverState: hoverState
-});
+})

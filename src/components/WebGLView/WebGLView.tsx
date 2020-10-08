@@ -552,16 +552,21 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                         let minDist = Number.MAX_VALUE
                         this.props.clusters?.forEach(cluster => {
                             let dist = new THREE.Vector2(coords.x, coords.y).distanceTo(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y))
-                            if (dist < 1 && dist < minDist) {
+                            if (dist < 2 && dist < minDist) {
                                 selected = cluster
                                 minDist = dist
                             }
                         })
 
+                        function deriveFromClusters(clusters: Cluster[]) {
+                            let agg = clusters.map(cluster => cluster.vectors).flat()
+                            return [...new Set(agg)]
+                        }
+
                         // Toggle
                         if (selected) {
                             this.props.toggleSelectedCluster(selected)
-                            this.props.toggleAggregation(selected.vectors)
+                            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
                         }
                     }
                 }
@@ -1134,6 +1139,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
             if (this.multivariateClusterView) {
                 let camera = new THREE.OrthographicCamera(this.getWidth() / - 2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / - 2, 1, 1000);
+                camera.lookAt(0, 0, 0)
                 camera.position.z = 1;
                 camera.position.x = this.camera.position.x * this.camera.zoom
                 camera.position.y = this.camera.position.y * this.camera.zoom
@@ -1141,7 +1147,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 this.multivariateClusterView.updatePositions(this.camera.zoom)
                 this.renderer.render(this.multivariateClusterView.scene, camera)
             }
-            
+
             this.renderer.render(this.pointScene, this.camera)
 
             var ctx = this.selectionRef.current.getContext()
@@ -1251,7 +1257,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             this.deleteClusters()
         }
 
-
+        // If 
         if ((this.props.currentTool == Tool.Default && !arraysEqual(prevProps.currentAggregation, this.props.currentAggregation))
             || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Default)) {
             this.multivariateClusterView?.highlightSamples(this.props.currentAggregation)
@@ -1261,6 +1267,12 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)
             || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Grab)) {
             this.multivariateClusterView?.highlightCluster(this.props.selectedClusters)
+            function deriveFromClusters(clusters: Cluster[]) {
+                let agg = clusters.map(cluster => cluster.vectors).flat()
+                return [...new Set(agg)]
+            }
+
+            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
         }
 
         // Path length range has changed, update view accordingly

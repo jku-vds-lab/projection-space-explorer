@@ -61,6 +61,7 @@ import { setPathLengthMaximum, setPathLengthRange } from "./Ducks/PathLengthRang
 import { setCategoryOptions } from "./Ducks/CategoryOptionsDuck";
 import { setChannelSize } from "./Ducks/ChannelSize";
 import { setGlobalPointSize } from "./Ducks/GlobalPointSizeDuck";
+import { setSelectedClusters } from "./Ducks/SelectedClustersDuck";
 
 
 
@@ -116,7 +117,8 @@ const mapDispatchToProps = dispatch => ({
   setPathLengthRange: range => dispatch(setPathLengthRange(range)),
   setCategoryOptions: categoryOptions => dispatch(setCategoryOptions(categoryOptions)),
   setChannelSize: channelSize => dispatch(setChannelSize(channelSize)),
-  setGlobalPointSize: size => dispatch(setGlobalPointSize(size))
+  setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
+  setSelectedClusters: value => dispatch(setSelectedClusters(value))
 })
 
 
@@ -263,6 +265,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setActiveLine(null)
     this.props.setActiveStory(null)
     this.props.setStories(null)
+    this.props.setSelectedClusters([])
     this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
 
     this.props.setProjectionColumns(dataset.getColumns().map(column => ({

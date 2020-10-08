@@ -7,12 +7,14 @@ import { StoryPreview } from "./StoryPreview/StoryPreview"
 import { connect } from 'react-redux'
 import Cluster, { Story } from "../../util/Cluster"
 import { graphLayout, Edge } from "../../util/graphs"
-import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
+
+import { setSelectedClusters } from "../../Ducks/SelectedClustersDuck"
 import { setCurrentClustersAction } from "../../Ducks/CurrentClustersDuck"
-import { setStoryMode, StoryMode } from "../../Ducks/StoryModeDuck"
-import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { setActiveStory } from "../../Ducks/ActiveStoryDuck"
+import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
+import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { setStories } from "../../Ducks/StoriesDuck"
+import { StoryMode, setStoryMode } from "../../Ducks/StoryModeDuck"
 
 var worker = new Worker('dist/cluster.js')
 
@@ -90,7 +92,8 @@ const mapDispatchToProps = dispatch => ({
     setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setStoryMode: storyMode => dispatch(setStoryMode(storyMode)),
-    setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode))
+    setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode)),
+    setSelectedClusters: value => dispatch(setSelectedClusters(value))
 })
 
 
@@ -100,7 +103,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
     setStories, setActiveStory,
     currentAggregation, open, backendRunning, clusteringWorker,
     dataset, stories, setClusterEdges, storyMode, setStoryMode,
-    currentClusters, setDisplayMode, displayMode }) => {
+    currentClusters, setDisplayMode, displayMode, setSelectedClusters }) => {
 
     const [clusterId, setClusterId] = React.useState(0)
 
@@ -195,9 +198,11 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
             })
 
         } else {
+            console.log("RESETTING STATE")
             setStories(null)
             setActiveStory(null)
             setCurrentClusters(null)
+            setSelectedClusters([])
         }
     }
 
