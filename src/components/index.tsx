@@ -268,10 +268,19 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setSelectedClusters([])
     this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
 
+    const formatRange = range => {
+      try {
+        return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
+      } catch {
+        return 'unknown'
+      }
+    }
+
     this.props.setProjectionColumns(dataset.getColumns().map(column => ({
       name: column,
       checked: dataset.preselectedProjectionColumns.includes(column),
-      normalized: true
+      normalized: true,
+      range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown"
     })))
 
     this.legend.current?.load(dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
