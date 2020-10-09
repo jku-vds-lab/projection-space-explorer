@@ -185,7 +185,8 @@ const mapStateToProps = state => ({
     lineBrightness: state.lineBrightness,
     pathLengthRange: state.pathLengthRange,
     globalPointSize: state.globalPointSize,
-    channelSize: state.channelSize
+    channelSize: state.channelSize,
+    activeStory: state.activeStory
 })
 
 
@@ -1145,8 +1146,10 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 camera.position.y = this.camera.position.y * this.camera.zoom
                 camera.updateProjectionMatrix();
                 this.multivariateClusterView.updatePositions(this.camera.zoom)
+                this.multivariateClusterView.updateArrows(this.camera.zoom, this.props.activeStory)
                 this.renderer.render(this.multivariateClusterView.scene, camera)
             }
+
 
             this.renderer.render(this.pointScene, this.camera)
 
@@ -1158,7 +1161,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
             this.renderLasso(ctx)
             forceLayout.renderLinks(ctx)
-            forceLayout.renderClusterEdges(ctx)
+            //forceLayout.renderClusterEdges(ctx)
             //this.renderEdge(ctx)
 
             if (this.props.highlightedSequence != null) {
@@ -1172,23 +1175,6 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
 
     componentDidUpdate(prevProps, prevState) {
-        /**if (prevProps.openTab != this.props.openTab) {
-            // openTab changed, check if we left clustering tab
-            if (this.props.openTab != 1) {
-                // Remove clustering view
-                this.clusterVisualization?.dispose(this.scene)
-                this.clusterVisualization = null
-            }
-            // If we changed to clustering tab... and we have clusters... create visualization
-            if (this.props.openTab == 1) {
-                if (this.clusterVisualization == null) {
-                    this.createClusters(this.props.clusters)
-                }
-            }
-        }**/
-
-        
-
         if (prevProps.globalPointSize != this.props.globalPointSize) {
             this.particles.sizeCat(this.props.channelSize, this.props.globalPointSize)
             this.particles.updateSize()

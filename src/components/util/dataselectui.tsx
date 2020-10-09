@@ -15,7 +15,7 @@ import Button from '@material-ui/core/Button';
 import WidgetsIcon from '@material-ui/icons/Widgets';
 import * as React from 'react'
 import { CSVLoader } from '../../model/Loaders/CSVLoader';
-import { HDF5Loader } from '../../model/Loaders/HDF5Loader';
+import { JSONLoader } from '../../model/Loaders/JSONLoader';
 
 
 
@@ -76,7 +76,7 @@ export var DatasetList = ({ onChange }) => {
 
     var handleClick = (entry) => {
         if (entry.path.endsWith('json')) {
-            new HDF5Loader().resolvePath(entry, onChange)
+            new JSONLoader().resolvePath(entry, onChange)
         } else {
             new CSVLoader().resolvePath(entry, onChange)
         }
@@ -142,7 +142,7 @@ export var DatasetList = ({ onChange }) => {
                                 var content = event.target.result
 
                                 if (fileName.endsWith('json')) {
-                                    new HDF5Loader().resolveContent(content, onChange)
+                                    new JSONLoader().resolveContent(content, onChange)
                                 } else {
                                     new CSVLoader().resolveContent(content, onChange)
                                 }

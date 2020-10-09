@@ -4,7 +4,7 @@ import { Vect, Preprocessor, Dataset, InferCategory, DatasetType } from "../../c
 import Cluster from "../../components/util/Cluster";
 import { Edge } from "../../components/util/graphs";
 
-export class HDF5Loader implements Loader {
+export class JSONLoader implements Loader {
     vectors: Vect[]
     datasetType: DatasetType
 
@@ -45,9 +45,30 @@ export class HDF5Loader implements Loader {
         return numeric ? { min: min, max: max } : null
     }
 
+    parseRange(str) {
+        var range = str.match(/-?\d+\.?\d*/g)
+        return { min: range[0], max: range[1] }
+    }
+
 
     resolve(content, finished, datasetType) {
         let fileSamples = content.samples[0]
+
+
+
+        let ranges = {}
+
+        // Parse predefined ranges
+        fileSamples.columns.forEach((column, ci) => {
+            console.log("parsing " + column)
+            var matches = column.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
+            if (matches) {
+                let prefix = column.substring(0, column.length - matches[0].length)
+
+                fileSamples.columns[ci] = prefix
+                ranges[prefix] = this.parseRange(matches[0])
+            }
+        })
 
         this.vectors = []
         fileSamples.data.forEach(row => {
@@ -56,11 +77,9 @@ export class HDF5Loader implements Loader {
                 data[column] = row[ci]
             })
             this.vectors.push(new Vect(data))
-
         })
 
-        this.datasetType = datasetType ?  datasetType : new InferCategory(this.vectors).inferType()
-        let ranges = {}
+        this.datasetType = datasetType ? datasetType : new InferCategory(this.vectors).inferType()
 
         let clusters: Cluster[] = []
         content.clusters[0].data.forEach(row => {
@@ -72,12 +91,12 @@ export class HDF5Loader implements Loader {
             cluster.label = row[0]
             clusters.push(cluster)
         })
-        
+
         let edges = []
         content.edges[0].data.forEach(row => {
             edges.push(new Edge(clusters.find(cluster => cluster.label == row[1]), clusters.find(cluster => cluster.label == row[2]), null))
         })
-        
+
         let preselection = content.preselection[0].data.flat()
 
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
