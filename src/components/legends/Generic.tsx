@@ -39,7 +39,7 @@ export var GenericLegend = ({ type, vectors, aggregate }: GenericLegendProps) =>
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
         default:
-            return <div></div>
+            return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
     }
 }
 
