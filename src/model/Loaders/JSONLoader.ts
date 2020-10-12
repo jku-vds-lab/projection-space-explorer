@@ -47,14 +47,12 @@ export class JSONLoader implements Loader {
 
     parseRange(str) {
         var range = str.match(/-?\d+\.?\d*/g)
-        return { min: range[0], max: range[1] }
+        return { min: parseFloat(range[0]), max: parseFloat(range[1]), inferred: true }
     }
 
 
     resolve(content, finished, datasetType) {
         let fileSamples = content.samples[0]
-
-
 
         let ranges = {}
 

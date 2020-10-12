@@ -593,7 +593,7 @@ export class Dataset {
             }
         })
 
-        return numeric ? { min: min, max: max } : null
+        return numeric ? { min: min, max: max, inferred: false } : null
     }
 
     reloadRanges() {
@@ -634,17 +634,16 @@ export class Dataset {
             this.columns[columnName] = {}
 
             // Check data type
-            if (this.vectors.find(vector => isNaN(vector[columnName]))) {
-                this.columns[columnName].distinct = Array.from(new Set([... this.vectors.map(vector => vector[columnName])]))
-                this.columns[columnName].isNumeric = false
+            if (columnName in ranges) {
+                this.columns[columnName].range = ranges[columnName]
             } else {
-                this.columns[columnName].isNumeric = true
-                if (columnName in ranges) {
-                    this.columns[columnName].range = ranges[columnName]
+                if (this.vectors.find(vector => isNaN(vector[columnName]))) {
+                    this.columns[columnName].distinct = Array.from(new Set([... this.vectors.map(vector => vector[columnName])]))
+                    this.columns[columnName].isNumeric = false
                 } else {
+                    this.columns[columnName].isNumeric = true
                     this.columns[columnName].range = this.inferRangeForAttribute(columnName)
                 }
-                
             }
         })
     }
@@ -694,10 +693,10 @@ export class Dataset {
                     if (column in this.ranges) {
                         let abs = Math.max(Math.abs(this.ranges[column].min), Math.abs(this.ranges[column].max))
                         data.push(+vector[column] / abs)
-                    } else{
+                    } else {
                         data.push(+vector[column])
                     }
-                    
+
                 } else {
                     // Not numeric data can be converted using one-hot encoding
                     data = data.concat(oneHot(this.columns[column].distinct.indexOf(vector[column]), this.columns[column].distinct.length))

@@ -268,6 +268,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setSelectedClusters([])
     this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
 
+    console.log(dataset.columns)
     const formatRange = range => {
       try {
         return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
@@ -458,7 +459,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
   render() {
-    console.log("RENDER BAD")
 
     return <div style={
       {

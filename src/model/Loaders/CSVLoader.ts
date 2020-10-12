@@ -28,7 +28,7 @@ export class CSVLoader implements Loader {
 
     parseRange(str) {
         var range = str.match(/-?\d+\.?\d*/g)
-        return { min: range[0], max: range[1] }
+        return { min: range[0], max: range[1], inferred: true }
     }
 
     resolveContent(content, finished) {

@@ -266,7 +266,6 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
         setProjectionOpen(false);
     };
 
-    console.log(projectionColumns)
     return <div className={classes.root}>
         <Modal
             open={projectionOpen}
@@ -277,9 +276,9 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
                 alignItems: 'center'
             }}>
 
-            <Card>
+            <Card style={{width:'80%'}}>
                 <Box p={2}>
-                    <Grid spacing={2} container direction="column" alignItems='center' justify='center'>
+                    <Grid spacing={2} container direction="column" alignItems='stretch' justify='center'>
                         <Grid item>
                             <div>
                                 <Grid spacing={2} container direction="column" alignItems='stretch' justify='center'>

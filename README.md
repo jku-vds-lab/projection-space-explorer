@@ -4,8 +4,7 @@ This is the documentation for the demonstrator including the installation proces
 
 ## Controls
 
-- Use the **mouse** to **drag** around the visualization
-- Pressing the **alt** key while dragging the mouse will select multiple states for an **aggregation**
+- On the bottom right there is a tool list which let you select one of the predefined tools (select, move, etc). Hovering over them will show you a description of what they do.
 - Use the **mouse wheel** to **zoom** in and out
 
 ## Data Format
@@ -14,7 +13,7 @@ This section describes how the .csv data has to be formatted in order to be read
 
 ### File type
 
-The file name is irrelevant, however the data needs to be formatted as **csv** file. The seperator used is the normal comma **,**.
+The file name needs to end with **.csv** and the data needs to be formatted as a correct **csv** file including a header row. The seperator used is the normal comma **,** (instead of the **;** which is used sometimes). We use the .csv reader provided by **d3** in this application. (You can read exact specifications like how spaces in data fields are handled in their API).
 
 ### Columns
 
@@ -22,25 +21,26 @@ The minimal columns a file needs are
 
  - **x**: the x value of the coordinates (floating point format)
  - **y**: the y value of the coordinates (floating point format)
- - **line**: the unique identifier for one line (string format)
- - **algo**: the unique identifier for the algorithm/linegroup (string format)
+
 
 An example file could looke like this
 
-|x|y|line|algo|
+|x|y|
 |--|--|--|--|
-|1|1|L0|A0
-|-1|-1|L0|A0
-|1|-1|L1|A0
-|-1|1|L1|A0
+|1|1|
+|-1|-1|
+|1|-1|
+|-1|1|
 
 which will be displayed like this
 
 ![Sample](https://github.com/JKU-ICG/projection-path-explorer/blob/develop/readme/minimalcsv.PNG)
 
-Note that **L0** and **L1** are the same identifiers in each row corresponding to a line whereas **A0** is the algorithm identifier and determines the coloring of the lines (in this case, only 1 color is needed).
+### Other Predefined Columns
 
-If the attributes **line** and **algo** are missing they will be added to the dataset on the fly and filled with default values.
+The columns **x** and **y** are necessary for the file to load, but there other columns which are **optional** and only help you to explore the data. This includes:
+ - **line** an attribute that specifies a sequence along the data, this attribute can be numerical or categorical, but it has to be distinct for every line. The line index of the current line is inferred automatically by the order of the data points in the csv file.
+ - **algo** the group this data point belongs to. This attribute can also be categorical or numerical.
 
 
 ### Additional Columns
