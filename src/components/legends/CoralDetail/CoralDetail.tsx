@@ -151,7 +151,6 @@ function genRows(vectors, projectionColumns, dataset) {
   const rows = []
   const dictOfArrays = dictionary(vectors)  
   const preselect = getProjectionColumns(projectionColumns)
-  preselect.push('Age')
 
   // loop through dict
   for (var key in dictOfArrays) {
