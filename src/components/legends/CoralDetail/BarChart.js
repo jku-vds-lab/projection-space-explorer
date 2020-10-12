@@ -22,7 +22,7 @@ export default createClassFromLiteSpec('BarChart', {
     "y": {"field": "count", "type": "quantitative", "axis": null},
     "color": {
       "condition": {
-        "test": "datum.category === 'null' || datum.category === null",
+        "test": "indexof(['null', 'undefined', 'unknown', 'none', 'Null', 'Undefined', 'Unknown', 'None', 'NULL', 'UNDEFINED', 'UNKNOWN', 'NONE'], datum.category) >= 0 || datum.category === null",
         "value": "#aaaaaa"
       },
       "field": "color",
