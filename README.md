@@ -40,7 +40,7 @@ which will be displayed like this
 
 Note that **L0** and **L1** are the same identifiers in each row corresponding to a line whereas **A0** is the algorithm identifier and determines the coloring of the lines (in this case, only 1 color is needed).
 
-If the attributes **line** and **algo** are missing they will be added to the dataset on the fly and filled with default values.
+If the attributes **line** and **algo** are omitted, the data is projected as points without lines.
 
 
 ### Additional Columns
