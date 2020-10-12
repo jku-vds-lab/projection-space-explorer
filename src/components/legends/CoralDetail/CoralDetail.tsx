@@ -159,7 +159,7 @@ function genRows(vectors, projectionColumns, dataset) {
     if (preselect.indexOf(key) > -1) {
         // has range been inferred or does the redux dataset already contain info about whether it is numeric?
         var isNumeric = false
-        if ('isNumeric' in dataset.columns[key]) {
+        if (key in dataset.columns && 'isNumeric' in dataset.columns[key]) {
           isNumeric = dataset.columns[key]['isNumeric']
         } else {
           isNumeric = !isCategoricalFeature(dictOfArrays[key])
