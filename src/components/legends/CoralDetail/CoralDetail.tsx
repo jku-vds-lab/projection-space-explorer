@@ -135,6 +135,9 @@ function getExplainingFeatures(data) {
 }
 
 function getProjectionColumns(projectionColumns) {
+  if (projectionColumns === null) {
+    return []
+  }
   const pcol = []
   for (var i = 0; i <= projectionColumns.length; i++) {
     if (projectionColumns[i] !== undefined && projectionColumns[i]['checked']) {
@@ -144,7 +147,7 @@ function getProjectionColumns(projectionColumns) {
   return pcol
 }
 
-function genRows(vectors, projectionColumns) {
+function genRows(vectors, projectionColumns, dataset) {
   const rows = []
   const dictOfArrays = dictionary(vectors)  
   const preselect = getProjectionColumns(projectionColumns)
@@ -153,15 +156,23 @@ function genRows(vectors, projectionColumns) {
   for (var key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-      // feature cat?
-      if (isCategoricalFeature(dictOfArrays[key])) {
-        var barData = mapBarChartData(vectors, key)
-        var feature = key + ': \n' + barData['values'][0]['category']
-        rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
+        // has range been inferred or does the redux dataset already contain info about whether it is numeric?
+        var isNumeric = false
+        if (key in dataset.columns && 'isNumeric' in dataset.columns[key]) {
+          isNumeric = dataset.columns[key]['isNumeric']
+        } else {
+          isNumeric = !isCategoricalFeature(dictOfArrays[key])
+        }
+
+        if (isNumeric) {
+          // numeric feature
+          var histData = mapHistData(vectors, key)
+          rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
       } else {
-        // feature quant?
-        var histData = mapHistData(vectors, key)
-        rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
+          // categorical feature
+          var barData = mapBarChartData(vectors, key)
+          var feature = key + ': \n' + barData['values'][0]['category']
+          rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
       }
     }
   }
@@ -178,9 +189,9 @@ function genRows(vectors, projectionColumns) {
   return ret
 }
 
-function getTable(vectors, aggregation, projectionColumns) {
+function getTable(vectors, aggregation, projectionColumns, dataset) {
   const classes = useStyles()
-  const rows = genRows(vectors, projectionColumns)
+  const rows = genRows(vectors, projectionColumns, dataset)
 
   return (
     <div>
@@ -214,10 +225,11 @@ function getTable(vectors, aggregation, projectionColumns) {
 
 const mapStateToProps = state => {
   return ({
-    projectionColumns: state.projectionColumns
+    projectionColumns: state.projectionColumns,
+    dataset: state.dataset
   })
 }
 
-export var CoralLegend = connect(mapStateToProps, null)(({ selection, aggregate, projectionColumns }) => {
-  return getTable(selection, aggregate, projectionColumns)
+export var CoralLegend = connect(mapStateToProps, null)(({ selection, aggregate, projectionColumns, dataset }) => {
+  return getTable(selection, aggregate, projectionColumns, dataset)
 })
