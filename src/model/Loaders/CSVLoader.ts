@@ -73,6 +73,10 @@ export class CSVLoader implements Loader {
             return map
         }, {}))
 
+        if (preselection == null || preselection.length == 0) {
+            preselection = null
+        }
+
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
 
         finished(new Dataset(this.vectors, ranges, preselection, { type: this.datasetType }), new InferCategory(this.vectors).load(ranges))

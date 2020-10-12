@@ -6,11 +6,10 @@ import { List } from 'react-virtualized';
 import { ProjectionSettings } from "./ProjectionSettings/ProjectionSettings";
 import { AutoSizer, Column, Table } from 'react-virtualized';
 import TableCell from '@material-ui/core/TableCell';
-import { setProjectionColumnsEntry, setProjectionColumnsShift } from "../../../Ducks/ProjectionColumnsDuck";
+import { setProjectionColumns, setProjectionColumnsEntry, setProjectionColumnsShift } from "../../../Ducks/ProjectionColumnsDuck";
 import { setProjectionOpenAction } from "../../../Ducks/ProjectionOpenDuck";
 import { setProjectionParamsAction } from "../../../Ducks/ProjectionParamsDuck";
 import clsx from 'clsx';
-import { projection } from "vega";
 
 type TensorLoaderProps = {
     onTensorInitiated: any
@@ -21,6 +20,7 @@ type TensorLoaderProps = {
     setProjectionColumnsEntry: any
     setProjectionColumnsShift: any
     setProjectionParams: any
+    
 }
 
 const mapStateToProps = state => ({
@@ -30,10 +30,9 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    setProjectionColumnsEntry: (index, value) => dispatch(setProjectionColumnsEntry(index, value)),
-    setProjectionColumnsShift: (last, index) => dispatch(setProjectionColumnsShift(last, index)),
     setProjectionOpen: (projectionOpen) => dispatch(setProjectionOpenAction(projectionOpen)),
-    setProjectionParams: (projectionParams) => dispatch(setProjectionParamsAction(projectionParams))
+    setProjectionParams: (projectionParams) => dispatch(setProjectionParamsAction(projectionParams)),
+    setProjectionColumns: value => dispatch(setProjectionColumns(value))
 })
 
 const useStylesTensorLoader = makeStyles(theme => ({
@@ -177,29 +176,6 @@ class MuiVirtualizedTable extends React.PureComponent {
 
 const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
 
-// ---
-
-const sample = [
-    ['Frozen yoghurt', 159, 6.0, 24, 4.0],
-    ['Ice cream sandwich', 237, 9.0, 37, 4.3],
-    ['Eclair', 262, 16.0, 24, 6.0],
-    ['Cupcake', 305, 3.7, 67, 4.3],
-    ['Gingerbread', 356, 16.0, 49, 3.9],
-];
-
-function createData(id, dessert, calories, fat, carbs, protein) {
-    return { id, dessert, calories, fat, carbs, protein };
-}
-
-const rows = [];
-
-for (let i = 0; i < 200; i += 1) {
-    const randomSelection = sample[Math.floor(Math.random() * sample.length)];
-    rows.push(createData(i, ...randomSelection));
-}
-
-console.log(rows)
-
 
 function TransferList({ projectionColumns, handleToggle, normalizeClick }) {
     const rowRenderer = function ({
@@ -247,11 +223,25 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
     dataset,
     projectionOpen,
     setProjectionOpen,
-    setProjectionColumnsEntry,
     setProjectionParams,
     projectionColumns,
-    setProjectionColumnsShift }: TensorLoaderProps) => {
-    if (dataset == null) return <div></div>
+    setProjectionColumns }: TensorLoaderProps) => {
+    if (dataset == null) return null
+
+
+
+    const cloneColumns = () => {
+        return projectionColumns.map(val => {
+            return {
+                name: val.name,
+                normalized: val.normalized,
+                checked: val.checked,
+                range: val.range
+            }
+        })
+    }
+
+
 
     const classes = useStylesTensorLoader()
 
@@ -260,11 +250,44 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
     const [method, setMethod] = React.useState(0)
     const [nNeighbors, setNNeighbors] = React.useState(15)
     const [last, setLast] = React.useState(0)
-
+    const [selection, setSelection] = React.useState(cloneColumns)
+    
+    React.useEffect(() => {
+        if (projectionOpen) {
+            setSelection(cloneColumns)
+        }
+    }, [projectionColumns, projectionOpen])
 
     const handleClose = () => {
         setProjectionOpen(false);
     };
+
+    const setProjectionColumnsShift = (last, rowIndex) => {
+        let copy = selection.slice(0)
+            
+        if (last <= rowIndex) {
+            for (let i = last + 1; i <= rowIndex; i++) {
+                copy[i].checked = !copy[i].checked
+            }
+        } else {
+            for (let i = rowIndex; i <= last - 1; i++) {
+                copy[i].checked = !copy[i].checked
+            }
+        }
+        
+        setSelection(copy)
+    }
+
+    const setProjectionColumnsEntry = (rowIndex, action) => {
+        let copy = selection.slice(0)
+            
+        if ("checked" in action)
+            copy[rowIndex].checked = action.checked
+        if ("normalized" in action)
+            copy[rowIndex].normalized = action.normalized
+
+        setSelection(copy)
+    }
 
     return <div className={classes.root}>
         <Modal
@@ -284,7 +307,7 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
                                 <Grid spacing={2} container direction="column" alignItems='stretch' justify='center'>
                                     <Grid item>
                                         <Paper style={{ height: 400, width: "100%" }}>
-                                            {projectionColumns && <VirtualizedTable
+                                            {selection && <VirtualizedTable
                                                 onCheckbox={(columnIndex, rowIndex, shiftKey, value) => {
                                                     if (columnIndex == 1) {
                                                         if (shiftKey) {
@@ -298,8 +321,8 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
                                                         setProjectionColumnsEntry(rowIndex, { normalized: value })
                                                     }
                                                 }}
-                                                rowCount={projectionColumns.length}
-                                                rowGetter={({ index }) => projectionColumns[index]}
+                                                rowCount={selection.length}
+                                                rowGetter={({ index }) => selection[index]}
                                                 columns={[
                                                     {
                                                         width: 300,
@@ -358,7 +381,8 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
                                         learningRate: learningRate,
                                         nNeighbors: nNeighbors
                                     })
-                                    onTensorInitiated(e, projectionColumns.filter(e => e.checked))
+                                    setProjectionColumns(selection)
+                                    onTensorInitiated(e, selection.filter(e => e.checked))
 
                                 }}>Start Projection</Button>
                         </Grid>
@@ -369,20 +393,3 @@ export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
         </Modal>
     </div>
 })
-
-/**
- *                                         <TransferList
-                                            projectionColumns={projectionColumns}
-                                            handleToggle={(index, value, shiftKey) => {
-                                                if (shiftKey) {
-                                                    setProjectionColumnsShift(last, index)
-                                                } else {
-                                                    setProjectionColumnsEntry(index, { checked: value })
-                                                    setLast(index)
-                                                }
-                                            }}
-                                            normalizeClick={(index, value) => {
-                                                setProjectionColumnsEntry(index, { normalized: value })
-                                            }}
-                                        />
- */

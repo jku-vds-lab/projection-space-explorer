@@ -94,7 +94,11 @@ export class JSONLoader implements Loader {
             edges.push(new Edge(clusters.find(cluster => cluster.label == row[1]), clusters.find(cluster => cluster.label == row[2]), null))
         })
 
-        let preselection = content.preselection[0].data.flat()
+        let preselection = null
+        if ('preselection' in content) {
+            preselection = content.preselection[0].data.flat()
+        }
+        
 
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
 

@@ -269,7 +269,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setProjectionColumns(dataset.getColumns().map(column => ({
       name: column,
-      checked: dataset.preselectedProjectionColumns.includes(column),
+      checked: dataset.preselectedProjectionColumns ? dataset.preselectedProjectionColumns.includes(column) : true,
       normalized: true,
       range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown"
     })))
