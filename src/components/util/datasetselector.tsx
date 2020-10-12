@@ -202,48 +202,70 @@ export class Preprocessor {
      * Returns a unique array of distinct line values.
      */
     distinctLines() {
-        return [... new Set(this.vectors.map(vector => vector.line))]
+        if (this.getColumns().includes("line")) {
+            return [... new Set(this.vectors.map(vector => vector.line))]
+        } else {
+            return []
+        }
     }
 
     /**
      * Infers the multiplicity attribute for this dataset.
      */
     inferMultiplicity() {
-        if (this.getColumns().includes('multiplicity')) {
+        if (this.getColumns().includes('multiplicity') || !this.getColumns().includes('x') || !this.getColumns().includes('y')) {
             return;
         }
 
-        // Build line pools
-        var linePools = {}
-        this.distinctLines().forEach(line => {
-            // Dictionary holding the x/y values of the line
-            linePools[line] = {}
-        })
-
-        // Builds x attributes for linepools
-        this.vectors.forEach(vector => {
-            linePools[vector.line][vector.x] = {}
-        })
-
         var distinctLines = this.distinctLines()
-        // Count multiplicities
-        this.vectors.forEach(vector => {
-            distinctLines.forEach(line => {
-                if (linePools[line][vector.x] != null) {
-                    if (linePools[line][vector.x][vector.y] == null) {
-                        linePools[line][vector.x][vector.y] = 1
-                    } else {
-                        linePools[line][vector.x][vector.y] = linePools[line][vector.x][vector.y] + 1
+
+        if (distinctLines.length > 0) {
+            // Build line pools
+            var linePools = {}
+            this.distinctLines().forEach(line => {
+                // Dictionary holding the x/y values of the line
+                linePools[line] = {}
+            })
+
+            // Builds x attributes for linepools
+            this.vectors.forEach(vector => {
+                linePools[vector.line][vector.x] = {}
+            })
+
+            var distinctLines = this.distinctLines()
+            // Count multiplicities
+            this.vectors.forEach(vector => {
+                distinctLines.forEach(line => {
+                    if (linePools[line][vector.x] != null) {
+                        if (linePools[line][vector.x][vector.y] == null) {
+                            linePools[line][vector.x][vector.y] = 1
+                        } else {
+                            linePools[line][vector.x][vector.y] = linePools[line][vector.x][vector.y] + 1
+                        }
                     }
+                })
+            })
+
+            // Apply multiplicities
+            this.vectors.forEach(vector => {
+                vector.multiplicity = linePools[vector.line][vector.x][vector.y]
+            })
+        } else {
+            let pool = {}
+            this.vectors.forEach(sample => {
+                if (sample.x in pool) {
+                    pool[sample.x][sample.y] = pool[sample.x][sample.y] + 1
+                } else {
+                    let o = {}
+                    pool[sample.x] = o
+                    o[sample.y] = 1
                 }
             })
-        })
 
-
-        // Apply multiplicities
-        this.vectors.forEach(vector => {
-            vector.multiplicity = linePools[vector.line][vector.x][vector.y]
-        })
+            this.vectors.forEach(sample => {
+                sample.multiplicity = pool[sample.x][sample.y]
+            })
+        }
     }
 
 

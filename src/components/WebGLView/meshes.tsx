@@ -737,6 +737,9 @@ export class PointVisualization {
           }
         } else {
           if (this.colorAttribute != null) {
+            console.log(vector)
+            console.log(vector[this.colorAttribute.key])
+            console.log(this.vectorColorScheme)
             var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
             rgb = m.rgb
   

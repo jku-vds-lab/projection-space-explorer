@@ -9,11 +9,13 @@ import AdjustIcon from '@material-ui/icons/Adjust';
 
 
 const SelectionClustersFull = function ({
-    selectionState,
-    datasetType,
+    dataset,
     currentAggregation,
     hoverState
 }) {
+    if (!dataset) {
+        return null
+    }
 
     return <div className="Parent">
         <div className="Cluster">
@@ -21,7 +23,7 @@ const SelectionClustersFull = function ({
             <Card style={{ pointerEvents: 'auto' }}>
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
-                    <GenericLegend aggregate={false} type={datasetType} vectors={hoverState}></GenericLegend>
+                    <GenericLegend aggregate={false} type={dataset.type} vectors={hoverState}></GenericLegend>
 
                 </CardContent>
             </Card>
@@ -36,7 +38,7 @@ const SelectionClustersFull = function ({
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">{`Fingerprint (${currentAggregation.length})`}</Typography>
 
-                    <GenericLegend aggregate={true} type={datasetType} vectors={currentAggregation}></GenericLegend>
+                    <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation}></GenericLegend>
                 </CardContent>
             </Card>
         </div>
@@ -46,7 +48,8 @@ const SelectionClustersFull = function ({
 
 const mapStateToProps = state => ({
     currentAggregation: state.currentAggregation,
-    hoverState: state.hoverState
+    hoverState: state.hoverState,
+    dataset: state.dataset
 })
 
 

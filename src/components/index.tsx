@@ -118,14 +118,14 @@ const mapDispatchToProps = dispatch => ({
   setCategoryOptions: categoryOptions => dispatch(setCategoryOptions(categoryOptions)),
   setChannelSize: channelSize => dispatch(setChannelSize(channelSize)),
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
-  setSelectedClusters: value => dispatch(setSelectedClusters(value))
+  setSelectedClusters: value => dispatch(setSelectedClusters(value)),
+  wipeState: () => dispatch({ type: 'RESET_APP' })
 })
 
 
 var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component<any, any> {
   legend: React.RefObject<Legend>;
   dataset: Dataset;
-  vectors: any;
   segments: any;
   threeRef: any;
 
@@ -134,8 +134,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     super(props)
 
     this.state = {
-      selectionState: [],
-
       fileDialogOpen: true,
 
       vectorByTransparency: null,
@@ -148,13 +146,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       selectedScale: null,
       definedScales: null,
 
-      datasetType: 'none',
-
       selectedLines: {},
-
-      projectionComputing: false,
-
-      sizeScale: [1, 2],
 
       backendRunning: false
     }
@@ -219,18 +211,14 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
    * @param json 
    */
   onDataSelected(dataset, json) {
+
+
     // Dispose old view
     this.threeRef.current.disposeScene()
 
     // Set new dataset as variable
     this.props.setDataset(dataset)
-    this.vectors = dataset.vectors
     this.segments = dataset.segments
-
-    this.setState({
-      datasetType: dataset.info.type,
-      vectors: this.vectors
-    })
 
     // Load new view
     let lineScheme = this.mappingFromScale(NamedCategoricalScales.DARK2, { key: 'algo' }, dataset)
@@ -241,11 +229,16 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.threeRef.current.createVisualization(dataset, lineScheme, null)
 
+
+    // Wipe old state
+    this.props.wipeState()
+
+
     this.finite(lineScheme, json, dataset)
   }
 
   finite(lineColorScheme, categories, dataset) {
-    var algos = LineSelectionTree_GenAlgos(this.vectors)
+    var algos = LineSelectionTree_GenAlgos(this.props.dataset.vectors)
     var selLines = LineSelectionTree_GetChecks(algos)
 
     // Update shape legend
@@ -258,17 +251,14 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       selectedLineAlgos: algos
     })
 
-    this.props.setCategoryOptions(new CategoryOptions(this.vectors, categories))
+
+
+
+    this.props.setCategoryOptions(new CategoryOptions(this.props.dataset.vectors, categories))
     this.props.setPathLengthMaximum(dataset.getMaxPathLength())
     this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
-    this.props.setHighlightedSequence(null)
-    this.props.setActiveLine(null)
-    this.props.setActiveStory(null)
-    this.props.setStories(null)
-    this.props.setSelectedClusters([])
     this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
 
-    console.log(dataset.columns)
     const formatRange = range => {
       try {
         return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
@@ -292,7 +282,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   mappingFromScale(scale, attribute, dataset) {
     if (scale instanceof DiscreteScale) {
       // Generate scale
-      return new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[attribute.key]))])
+      return new DiscreteMapping(scale, [... new Set(this.props.dataset.vectors.map(vector => vector[attribute.key]))])
     }
     if (scale instanceof ContinuosScale) {
       var min = null, max = null
@@ -300,7 +290,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         min = dataset.ranges[attribute.key].min
         max = dataset.ranges[attribute.key].max
       } else {
-        var filtered = this.vectors.map(vector => vector[attribute.key])
+        var filtered = this.props.dataset.vectors.map(vector => vector[attribute.key])
         max = Math.max(...filtered)
         min = Math.min(...filtered)
       }
@@ -318,13 +308,19 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     var defaultSizeAttribute = this.props.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
 
     if (defaultSizeAttribute) {
+      console.log("SETTING DEFAULT")
       this.props.setGlobalPointSize([1, 2])
       this.props.setChannelSize(defaultSizeAttribute)
 
-      this.threeRef.current.particles.sizeCat(defaultSizeAttribute, [1,2])
+      this.threeRef.current.particles.sizeCat(defaultSizeAttribute, [1, 2])
     } else {
       this.props.setGlobalPointSize([1])
+      this.props.setChannelSize(null)
+
+      this.threeRef.current.particles.sizeCat(defaultSizeAttribute, [1])
     }
+
+
 
     var defaultColorAttribute = this.props.categoryOptions.getAttribute("color", "algo", "categorical")
     if (defaultColorAttribute) {
@@ -401,7 +397,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           }
 
 
-          edgeClusters.insert(label, new DataEdge(this.vectors[load[i][7]], this.vectors[load[i][8]]))
+          edgeClusters.insert(label, new DataEdge(this.props.dataset.vectors[load[i][7]], this.props.dataset.vectors[load[i][8]]))
         }
       })
 
@@ -459,14 +455,12 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
   render() {
-
     return <div style={
       {
         display: 'flex',
         alignItems: 'stretch',
         width: "100vw",
-        height: "100vh",
-        pointerEvents: this.state.projectionComputing ? 'none' : 'auto'
+        height: "100vh"
       }}>
 
       <div style={{
@@ -661,12 +655,12 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                             attribute = null
                           }
 
-                          let pointSize = attribute ? [1,2] : [1]
-                        
+                          let pointSize = attribute ? [1, 2] : [1]
+
                           this.props.setGlobalPointSize(pointSize)
-                        
+
                           this.props.setChannelSize(attribute)
-                          
+
                           this.threeRef.current.particles.sizeCat(attribute, pointSize)
                         }}
                       >
@@ -809,8 +803,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
 
       <ClusterOverview
-        type={this.state.datasetType}
-        //story={this.state.activeStory}
         itemClicked={(cluster) => {
           this.threeRef.current.setZoomTarget(cluster.vectors, 1)
         }}></ClusterOverview>
@@ -825,11 +817,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
 
-      <SelectionClusters
-        vectors={this.state.vectors}
-        datasetType={this.state.datasetType}
-        selectionState={this.state.selectionState}
-      ></SelectionClusters>
+      <SelectionClusters></SelectionClusters>
 
       {this.props.activeStory && false && <StoryEditor></StoryEditor>}
 

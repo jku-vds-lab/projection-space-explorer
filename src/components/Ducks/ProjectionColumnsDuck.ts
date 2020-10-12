@@ -2,7 +2,7 @@ const SET_ENTRY = "ducks/projectionColumns/SET_ENTRY"
 const SET_SHIFT = "ducks/projectionColumns/SET_SHIFT"
 const SET = "ducks/projectionColumns/SET"
 
-const projectionColumns = (state = null, action) => {
+const projectionColumns = (state = [], action) => {
     let copy = null
     switch (action.type) {
         case SET:

@@ -30,7 +30,7 @@ import channelSize from '../Ducks/ChannelSize';
 import globalPointSize from '../Ducks/GlobalPointSizeDuck';
 import hoverState from '../Ducks/HoverStateDuck';
 
-export const rootReducer = combineReducers({
+const allReducers = {
   currentTool: currentTool,
   currentAggregation: currentAggregation,
   activeStory: activeStory,
@@ -61,4 +61,15 @@ export const rootReducer = combineReducers({
   channelSize: channelSize,
   globalPointSize: globalPointSize,
   hoverState: hoverState
-})
+}
+
+const appReducer = combineReducers(allReducers)
+
+export const rootReducer = (state, action) => {
+  if (action.type === 'RESET_APP') {
+    const { dataset, openTab, viewTransform, webGLView } = state;
+    state = { dataset, openTab, viewTransform, webGLView };
+  }
+
+  return appReducer(state, action)
+}

@@ -58,7 +58,6 @@ export class JSONLoader implements Loader {
 
         // Parse predefined ranges
         fileSamples.columns.forEach((column, ci) => {
-            console.log("parsing " + column)
             var matches = column.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
             if (matches) {
                 let prefix = column.substring(0, column.length - matches[0].length)

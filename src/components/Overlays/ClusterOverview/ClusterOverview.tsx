@@ -6,7 +6,7 @@ import { Card, Grow, Link, CardHeader, CardContent } from "@material-ui/core";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect } from 'react-redux'
-import { DatasetType } from "../../util/datasetselector";
+import { Dataset, DatasetType } from "../../util/datasetselector";
 import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
 import { StoryMode } from "../../Ducks/StoryModeDuck";
 
@@ -16,14 +16,16 @@ type ClusterOverviewProps = {
     story?: Story
     itemClicked: any
     storyMode?: StoryMode
+    dataset: Dataset
 }
 
 const mapStateToProps = state => ({
     story: state.activeStory,
-    storyMode: state.storyMode
+    storyMode: state.storyMode,
+    dataset: state.dataset
 })
 
-const ClusterOverviewFull = function ({ type, story, itemClicked, storyMode }: ClusterOverviewProps) {
+const ClusterOverviewFull = function ({ dataset, story, itemClicked, storyMode }: ClusterOverviewProps) {
     if (story == null) {
         return <div></div>
     }
@@ -64,7 +66,7 @@ const ClusterOverviewFull = function ({ type, story, itemClicked, storyMode }: C
                                 onClick={() => {
                                     itemClicked(cluster)
                                 }}><GenericFingerprint
-                                    type={type}
+                                    type={dataset.type}
                                     vectors={cluster.vectors}
                                     scale={1}
                                 ></GenericFingerprint>
