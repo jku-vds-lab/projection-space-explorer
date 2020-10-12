@@ -21,8 +21,8 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(feature, score, char) {
-  return {feature, score, char}
+function createData(feature, category, score, char) {
+  return {feature, category, score, char}
 }
 
 function mapHistData(data, feature) {
@@ -156,12 +156,12 @@ function genRows(vectors, projectionColumns) {
       // feature cat?
       if (isCategoricalFeature(dictOfArrays[key])) {
         var barData = mapBarChartData(vectors, key)
-        var feature = key + ': \n' + getExplainingFeatures(barData['values']).join(', ')
-        rows.push([feature, getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
+        var feature = key + ': \n' + barData['values'][0]['category']
+        rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
       } else {
         // feature quant?
         var histData = mapHistData(vectors, key)
-        rows.push([key, 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
+        rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
       }
     }
   }
@@ -172,7 +172,7 @@ function genRows(vectors, projectionColumns) {
   // turn into array of dicts
   const ret = []
   for (var i = 0; i < rows.length; i++) {
-    ret.push(createData(rows[i][0], rows[i][1], rows[i][2]))
+    ret.push(createData(rows[i][0], rows[i][1], rows[i][2], rows[i][3]))
   }
 
   return ret
@@ -200,7 +200,7 @@ function getTable(vectors, aggregation, projectionColumns) {
             {rows.map((row) => (
               <TableRow key={row.feature}>
                 <TableCell component="th" scope="row">
-                  {row.feature}
+                {row.feature}<br/><b>{row.category}</b>
                 </TableCell>
                 <TableCell>{row.char}</TableCell>
               </TableRow>

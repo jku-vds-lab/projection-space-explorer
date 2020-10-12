@@ -41,7 +41,7 @@ which will be displayed like this
 The columns **x** and **y** are necessary for the file to load, but there other columns which are **optional** and only help you to explore the data. This includes:
  - **line** an attribute that specifies a sequence along the data, this attribute can be numerical or categorical, but it has to be distinct for every line. The line index of the current line is inferred automatically by the order of the data points in the csv file.
  - **algo** the group this data point belongs to. This attribute can also be categorical or numerical.
-
+ - If the attributes **line** and **algo** are omitted, the data is projected as points without lines.
 
 ### Additional Columns
 Additional columns might exist in the source file. If this is the case the tool will display meaningful options to change visualization properties in respect to these attributes.
