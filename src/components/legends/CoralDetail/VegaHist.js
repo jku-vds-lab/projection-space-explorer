@@ -10,11 +10,11 @@ export default createClassFromLiteSpec('VegaHist', {
     "x": {
       "bin": true,
       "field": "feature",
-      "axis": {"title": null}
+      "axis": null
     },
     "y": {
       "aggregate": "count",
-      "axis": {"title": null}
+      "axis": null
     }
   }
 });
