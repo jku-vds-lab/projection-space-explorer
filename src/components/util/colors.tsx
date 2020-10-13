@@ -145,7 +145,6 @@ export class ContinuosScale extends LinearColorScale {
   }
 
   map(value) {
-    console.log(value)
     var d3color = d3v5.color(this.interpolator(value))
     return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b)
   }
@@ -210,6 +209,9 @@ export class ContinuousMapping extends Mapping {
   }
 
   map(value) {
+    if (this.range.max == this.range.min) {
+      return this.scale.map(0)
+    }
     var normalized = (value - this.range.min) / (this.range.max - this.range.min)
     return this.scale.map(normalized)
   }
@@ -261,7 +263,7 @@ export function hexToRGB(color) {
 
 
 export var NamedScales = {
-  VIRIDIS: new ContinuosScale([
+  VIRIDIS: () => new ContinuosScale([
     new SchemeColor("#440154"),
     new SchemeColor("#482475"),
     new SchemeColor("#414487"),
@@ -274,7 +276,7 @@ export var NamedScales = {
     new SchemeColor("#bddf26"),
     new SchemeColor("#bddf26")
   ]),
-  RdYlGn: new ContinuosScale([
+  RdYlGn: () => new ContinuosScale([
     new SchemeColor("#a50026"),
     new SchemeColor("#d3322b"),
     new SchemeColor("#f16d43"),
@@ -290,7 +292,7 @@ export var NamedScales = {
 }
 
 export var NamedCategoricalScales = {
-  SET1: new DiscreteScale([
+  SET1: () => new DiscreteScale([
     new SchemeColor("#e41a1c"),
     new SchemeColor("#377eb8"),
     new SchemeColor("#4daf4a"),
@@ -301,7 +303,7 @@ export var NamedCategoricalScales = {
     new SchemeColor("#f781bf"),
     new SchemeColor("#999999")
   ]),
-  DARK2: new DiscreteScale([
+  DARK2: () => new DiscreteScale([
     new SchemeColor("#1b9e77"),
     new SchemeColor("#d95f02"),
     new SchemeColor("#7570b3"),
@@ -316,11 +318,32 @@ export var NamedCategoricalScales = {
 
 
 
+export const mappingFromScale = (scale, attribute, dataset) => {
+  if (scale instanceof DiscreteScale) {
+    // Generate scale
+    return new DiscreteMapping(scale, [... new Set(dataset.vectors.map(vector => vector[attribute.key]))])
+  }
+  if (scale instanceof ContinuosScale) {
+    var min = null, max = null
+    if (attribute.key in dataset.ranges) {
+      min = dataset.ranges[attribute.key].min
+      max = dataset.ranges[attribute.key].max
+    } else {
+      var filtered = dataset.vectors.map(vector => vector[attribute.key])
+      max = Math.max(...filtered)
+      min = Math.min(...filtered)
+    }
+
+    return new ContinuousMapping(scale, { min: min, max: max })
+  }
+  return null
+}
+
 export function defaultScalesForAttribute(attribute) {
   if (attribute.type == 'categorical') {
     return [
-      NamedCategoricalScales.DARK2,
-      NamedCategoricalScales.SET1,
+      NamedCategoricalScales.DARK2(),
+      NamedCategoricalScales.SET1(),
       new DiscreteScale([
         new SchemeColor("#1f77b4"),
         new SchemeColor("#ff7f0e"),
@@ -336,8 +359,8 @@ export function defaultScalesForAttribute(attribute) {
     ]
   } else {
     return [
-      NamedScales.VIRIDIS,
-      NamedScales.RdYlGn,
+      NamedScales.VIRIDIS(),
+      NamedScales.RdYlGn(),
       new ContinuosScale([
         new SchemeColor('#fdcc8a'),
         new SchemeColor('#b30000')

@@ -32,6 +32,8 @@ import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { ClusterMode } from '../Ducks/ClusterModeDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { ClusterLayer } from './ClusterLayer/ClusterLayer';
+import { mappingFromScale } from '../util/colors';
+import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 
 
 const useStyles = makeStyles(theme => ({
@@ -158,6 +160,8 @@ type ViewProps = {
     displayMode: DisplayMode
     lineBrightness: number
     globalPointSize: []
+    pointColorScale: any
+    channelColor: any
 }
 
 type ViewState = {
@@ -186,6 +190,8 @@ const mapStateToProps = state => ({
     pathLengthRange: state.pathLengthRange,
     globalPointSize: state.globalPointSize,
     channelSize: state.channelSize,
+    channelColor: state.channelColor,
+    pointColorScale: state.pointColorScale,
     activeStory: state.activeStory
 })
 
@@ -197,7 +203,8 @@ const mapDispatchToProps = dispatch => ({
     setViewTransform: viewTransform => dispatch(setViewTransform(viewTransform)),
     toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedCluster(selectedCluster)),
     toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation)),
-    setHoverState: hoverState => dispatch(setHoverState(hoverState))
+    setHoverState: hoverState => dispatch(setHoverState(hoverState)),
+    setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping))
 })
 
 
@@ -1175,6 +1182,17 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
 
     componentDidUpdate(prevProps, prevState) {
+        if (prevProps.pointColorScale != this.props.pointColorScale) {
+            if (this.props.channelColor && this.props.pointColorScale) {
+                let mapping = mappingFromScale(this.props.pointColorScale, this.props.channelColor, this.props.dataset)
+                this.props.setPointColorMapping(mapping)
+                this.particles.colorCat(this.props.channelColor, mapping)
+            } else {
+                this.props.setPointColorMapping(null)
+                this.particles.colorCat(null, null)
+            }
+        }
+
         if (prevProps.globalPointSize != this.props.globalPointSize) {
             this.particles.sizeCat(this.props.channelSize, this.props.globalPointSize)
             this.particles.updateSize()

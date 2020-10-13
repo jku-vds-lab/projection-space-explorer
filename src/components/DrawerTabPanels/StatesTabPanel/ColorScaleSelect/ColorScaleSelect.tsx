@@ -1,11 +1,26 @@
 import React = require("react");
 import { List, ListItem, Menu, MenuItem } from "@material-ui/core";
+import { connect } from 'react-redux'
+import { defaultScalesForAttribute } from "../../../util/colors";
+import { setPointColorScale } from "../../../Ducks/PointColorScaleDuck";
 
 /**
  * Component that lets user pick from a list of color scales.
  */
-export var ColorScaleSelect = ({ selectedScaleIndex, onChange, definedScales }) => {
+export var ColorScaleSelectFull = ({ channelColor, pointColorScale, setPointColorScale }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [definedScales, setDefinedScales] = React.useState([])
+
+    React.useEffect(() => {
+        if (channelColor) {
+            let a = defaultScalesForAttribute(channelColor)
+            setDefinedScales(a)
+            setPointColorScale(a[0])
+        } else {
+            setDefinedScales([])
+            setPointColorScale(null)
+        }
+    }, [channelColor])
 
     const handleClickListItem = event => {
         setAnchorEl(event.currentTarget);
@@ -13,13 +28,16 @@ export var ColorScaleSelect = ({ selectedScaleIndex, onChange, definedScales }) 
 
     const handleMenuItemClick = (event, index) => {
         setAnchorEl(null);
-
-        onChange(definedScales[index], index)
     };
 
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+
+    if (!channelColor || definedScales.length == 0 || !pointColorScale) {
+        return null
+    }
 
     return (
         <div>
@@ -31,7 +49,7 @@ export var ColorScaleSelect = ({ selectedScaleIndex, onChange, definedScales }) 
                     aria-label="when device is locked"
                     onClick={handleClickListItem}
                 >
-                    <ColorScaleMenuItem scale={definedScales[selectedScaleIndex]}></ColorScaleMenuItem>
+                    <ColorScaleMenuItem scale={pointColorScale}></ColorScaleMenuItem>
 
                 </ListItem>
             </List>
@@ -45,8 +63,11 @@ export var ColorScaleSelect = ({ selectedScaleIndex, onChange, definedScales }) 
                 {definedScales.map((scale, index) => (
                     <MenuItem
                         key={index}
-                        selected={index === selectedScaleIndex}
-                        onClick={event => handleMenuItemClick(event, index)}
+                        selected={pointColorScale == scale}
+                        onClick={(event) => {
+                            setPointColorScale(definedScales[index])
+                            handleMenuItemClick(event, index)
+                        }}
                     >
                         <ColorScaleMenuItem scale={scale}></ColorScaleMenuItem>
                     </MenuItem>
@@ -65,3 +86,14 @@ export var ColorScaleMenuItem = ({ scale }) => {
         </div>
     }
 }
+
+const mapStateToProps = state => ({
+    channelColor: state.channelColor,
+    pointColorScale: state.pointColorScale
+})
+
+const mapDispatchToProps = dispatch => ({
+    setPointColorScale: value => dispatch(setPointColorScale(value))
+})
+
+export const ColorScaleSelect = connect(mapStateToProps, mapDispatchToProps)(ColorScaleSelectFull)

@@ -62,6 +62,7 @@ import { setCategoryOptions } from "./Ducks/CategoryOptionsDuck";
 import { setChannelSize } from "./Ducks/ChannelSize";
 import { setGlobalPointSize } from "./Ducks/GlobalPointSizeDuck";
 import { setSelectedClusters } from "./Ducks/SelectedClustersDuck";
+import { setChannelColor } from "./Ducks/ChannelColorDuck";
 
 
 
@@ -97,7 +98,8 @@ const mapStateToProps = state => ({
   activeStory: state.activeStory,
   dataset: state.dataset,
   categoryOptions: state.categoryOptions,
-  channelSize: state.channelSize
+  channelSize: state.channelSize,
+  channelColor: state.channelColor
 })
 
 
@@ -119,7 +121,8 @@ const mapDispatchToProps = dispatch => ({
   setChannelSize: channelSize => dispatch(setChannelSize(channelSize)),
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
   setSelectedClusters: value => dispatch(setSelectedClusters(value)),
-  wipeState: () => dispatch({ type: 'RESET_APP' })
+  wipeState: () => dispatch({ type: 'RESET_APP' }),
+  setChannelColor: channelColor => dispatch(setChannelColor(channelColor))
 })
 
 
@@ -138,13 +141,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
       vectorByTransparency: null,
       selectedVectorByTransparency: "",
-
-      vectorByColor: null,
-      selectedVectorByColor: "",
-
-      selectedScaleIndex: 0,
-      selectedScale: null,
-      definedScales: null,
 
       selectedLines: {},
 
@@ -167,7 +163,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.legend = React.createRef()
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
-    this.onColorScaleChanged = this.onColorScaleChanged.bind(this)
   }
 
 
@@ -221,7 +216,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.segments = dataset.segments
 
     // Load new view
-    let lineScheme = this.mappingFromScale(NamedCategoricalScales.DARK2, { key: 'algo' }, dataset)
+    let lineScheme = this.mappingFromScale(NamedCategoricalScales.DARK2(), { key: 'algo' }, dataset)
 
     this.setState({
       lineColorScheme: lineScheme
@@ -245,8 +240,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.setState({
       vectorByTransparency: null,
       selectedVectorByTransparency: "",
-      vectorByColor: null,
-      selectedVectorByColor: "",
       selectedLines: selLines,
       selectedLineAlgos: algos
     })
@@ -324,17 +317,18 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     var defaultColorAttribute = this.props.categoryOptions.getAttribute("color", "algo", "categorical")
     if (defaultColorAttribute) {
-      state.definedScales = defaultScalesForAttribute(defaultColorAttribute)
-      state.selectedScaleIndex = 0
-      state.selectedVectorByColor = defaultColorAttribute.key
-      state.vectorByColor = defaultColorAttribute
+      this.props.setChannelColor(defaultColorAttribute)
+      console.log("setting channel color")
 
-      this.threeRef.current.particles.colorCat(defaultColorAttribute, this.mappingFromScale(state.definedScales[state.selectedScaleIndex], defaultColorAttribute, dataset))
-      state.showColorMapping = this.threeRef.current.particles.getMapping()
+      //this.threeRef.current.particles.colorCat(defaultColorAttribute, this.mappingFromScale(state.definedScales[state.selectedScaleIndex], defaultColorAttribute, dataset))
+      //state.showColorMapping = this.threeRef.current.particles.getMapping()
+    } else {
+      this.props.setChannelColor(null)
     }
 
     var defaultBrightnessAttribute = this.props.categoryOptions.getAttribute("transparency", "age", "sequential")
     if (defaultBrightnessAttribute) {
+      
       state.selectedVectorByTransparency = defaultBrightnessAttribute.key
       state.vectorByTransparency = defaultBrightnessAttribute
     }
@@ -342,16 +336,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.setState(state)
 
     this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute)
-  }
-
-  onColorScaleChanged(scale, index) {
-    this.setState({
-      selectedScale: scale,
-      selectedScaleIndex: index
-    })
-
-    this.threeRef.current.particles.setColorScale(scale)
-    this.threeRef.current.particles.updateColor()
   }
 
   onLineSelect(algo, show) {
@@ -695,44 +679,30 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                         <Select labelId="vectorByColorSelectLabel"
                           id="vectorByColorSelect"
                           displayEmpty
-                          value={this.state.selectedVectorByColor}
+                          value={this.props.channelColor ? this.props.channelColor.key : ""}
                           onChange={(event) => {
                             var attribute = null
                             if (event.target.value != "") {
                               attribute = this.props.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
                             }
                             var state = {
-                              selectedVectorByColor: event.target.value,
-                              vectorByColor: attribute,
-                              definedScales: [],
-                              selectedScaleIndex: 0,
                               showColorMapping: undefined
                             }
 
                             this.props.setAdvancedColoringSelection(new Array(100).fill(true))
+                            this.props.setChannelColor(attribute)
 
                             var scale = null
 
-                            if (attribute != null && attribute.type == 'categorical') {
-                              state.selectedScaleIndex = 0
-                              state.definedScales = defaultScalesForAttribute(attribute)
-
-                              scale = state.definedScales[state.selectedScaleIndex]
-                            } else if (attribute != null) {
-                              state.selectedScaleIndex = 0
-                              state.definedScales = defaultScalesForAttribute(attribute)
-
-                              scale = state.definedScales[state.selectedScaleIndex]
-                            }
 
 
-                            this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute, this.props.dataset))
+                            //this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute, this.props.dataset))
 
 
-                            state.showColorMapping = this.threeRef.current.particles.getMapping()
+                            //state.showColorMapping = this.threeRef.current.particles.getMapping()
                             this.setState(state)
 
-                            this.threeRef.current.particles.update()
+                            //this.threeRef.current.particles.update()
                           }}
                         >
                           <MenuItem value="">None</MenuItem>
@@ -748,15 +718,14 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               }
 
               <Grid item>
-                {this.state.definedScales != null && this.state.definedScales.length > 0 ?
-                  <ColorScaleSelect selectedScaleIndex={this.state.selectedScaleIndex} onChange={this.onColorScaleChanged} definedScales={this.state.definedScales}></ColorScaleSelect>
-                  : <div></div>}
+                
+                <ColorScaleSelect></ColorScaleSelect>
               </Grid>
 
 
               <Grid item>
                 {
-                  this.state.vectorByColor != null && this.state.vectorByColor.type == 'categorical' ?
+                  this.props.channelColor != null && this.props.channelColor.type == 'categorical' ?
 
                     <AdvancedColoringPopover
                       showColorMapping={this.state.showColorMapping}></AdvancedColoringPopover>

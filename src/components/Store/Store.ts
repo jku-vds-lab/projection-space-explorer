@@ -27,8 +27,11 @@ import selectedVectorByShape from "../Ducks/SelectedVectorByShapeDuck";
 import pathLengthRange from '../Ducks/PathLengthRange';
 import categoryOptions from '../Ducks/CategoryOptionsDuck';
 import channelSize from '../Ducks/ChannelSize';
+import channelColor from '../Ducks/ChannelColorDuck';
 import globalPointSize from '../Ducks/GlobalPointSizeDuck';
 import hoverState from '../Ducks/HoverStateDuck';
+import pointColorScale from '../Ducks/PointColorScaleDuck'
+import pointColorMapping from '../Ducks/PointColorMappingDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -59,8 +62,11 @@ const allReducers = {
   pathLengthRange: pathLengthRange,
   categoryOptions: categoryOptions,
   channelSize: channelSize,
+  channelColor: channelColor,
   globalPointSize: globalPointSize,
-  hoverState: hoverState
+  hoverState: hoverState,
+  pointColorScale: pointColorScale,
+  pointColorMapping: pointColorMapping
 }
 
 const appReducer = combineReducers(allReducers)

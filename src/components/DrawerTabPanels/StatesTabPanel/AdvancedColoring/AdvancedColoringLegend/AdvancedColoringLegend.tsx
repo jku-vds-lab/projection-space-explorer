@@ -5,7 +5,8 @@ import { FormControlLabel, Checkbox, Typography, Grid } from '@material-ui/core'
 import { setAdvancedColoringSelectionAction } from "../../../../Ducks/AdvancedColoringSelectionDuck"
 
 const mapStateToProps = state => ({
-    advancedColoringSelection: state.advancedColoringSelection
+    advancedColoringSelection: state.advancedColoringSelection,
+    mapping: state.pointColorMapping
 })
 
 
@@ -19,7 +20,8 @@ type ShowColorLegendProps = {
     setAdvancedColoringSelection: Function
 }
 
-export var AdvancedColoringLegend = connect(mapStateToProps, mapDispatchToProps)(({ mapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps) => {
+
+export var AdvancedColoringLegendFull = ({ mapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps) => {
     if (mapping == undefined || mapping == null) {
         return <div></div>
     }
@@ -41,4 +43,6 @@ export var AdvancedColoringLegend = connect(mapStateToProps, mapDispatchToProps)
     }
 
     return <div></div>
-})
+}
+
+export const AdvancedColoringLegend = connect(mapStateToProps, mapDispatchToProps)(AdvancedColoringLegendFull)
