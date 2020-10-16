@@ -19,6 +19,14 @@ var symbols = {
     '': ''
 }
 
+export const requiredChessColumns = [];
+
+['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].forEach(c => {
+    [1, 2, 3, 4, 5, 6, 7, 8].forEach(n => {
+        requiredChessColumns.push(`${c}${n}`)
+    })
+})
+
 Object.keys(symbols).filter(key => key != '').forEach(key => {
     var path = symbols[key]
     var img = new Image(45, 45)

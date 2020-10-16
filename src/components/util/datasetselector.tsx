@@ -1,6 +1,8 @@
 import { Shapes } from "../WebGLView/meshes"
 import { Edge } from "./graphs"
 import Cluster from "./Cluster"
+import { requiredChessColumns } from "../legends/ChessFingerprint/ChessFingerprint"
+import { requiredRubikColumns } from "../legends/RubikFingerprint/RubikFingerprint"
 
 var d3v5 = require('d3')
 
@@ -377,18 +379,35 @@ export class InferCategory {
     inferType() {
         var header = Object.keys(this.vectors[0])
 
-        if (header.includes('up00') && header.includes('back00')) {
+        // Checks if the header has all the required columns
+        const hasLayout = (header: string[], columns: string[]) => {
+            for (let key in columns) {
+                let val = columns[key]
+
+                if (!header.includes(val)) {
+                    return false
+                }
+            }
+
+            return true
+        }
+
+        if (hasLayout(header, requiredRubikColumns)) {
             return DatasetType.Rubik
         }
+
         if (header.includes('cf00')) {
             return DatasetType.Neural
         }
-        if (header.includes('a8')) {
+
+        if (hasLayout(header, requiredChessColumns)) {
             return DatasetType.Chess
         }
+
         if (header.includes('new_y')) {
             return DatasetType.Story
         }
+        
         if (header.includes('aa')) {
             return DatasetType.Go
         }

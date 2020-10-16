@@ -81,7 +81,8 @@ export var ProjectionControlCard = connect(mapStateToProps)(({
         }, false);
 
         worker.postMessage({
-            input: input,
+            input: input.data,
+            seed: input.seed,
             params: projectionParams
         })
     }, [worker])

@@ -1,12 +1,11 @@
 import { Dataset } from "../../../util/datasetselector"
-import { makeStyles, Modal, Box, Grid, Card, ListItem, Checkbox, ListItemIcon, ListItemText, Button, withStyles, Paper } from "@material-ui/core";
+import { makeStyles, Modal, Box, Grid, Card, Checkbox, Button, withStyles, Paper } from "@material-ui/core";
 import { connect } from 'react-redux'
 import React = require("react");
-import { List } from 'react-virtualized';
 import { ProjectionSettings } from "./ProjectionSettings/ProjectionSettings";
 import { AutoSizer, Column, Table } from 'react-virtualized';
 import TableCell from '@material-ui/core/TableCell';
-import { setProjectionColumns, setProjectionColumnsEntry, setProjectionColumnsShift } from "../../../Ducks/ProjectionColumnsDuck";
+import { setProjectionColumns } from "../../../Ducks/ProjectionColumnsDuck";
 import { setProjectionOpenAction } from "../../../Ducks/ProjectionOpenDuck";
 import { setProjectionParamsAction } from "../../../Ducks/ProjectionParamsDuck";
 import clsx from 'clsx';
@@ -176,47 +175,6 @@ class MuiVirtualizedTable extends React.PureComponent {
 
 const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
 
-
-function TransferList({ projectionColumns, handleToggle, normalizeClick }) {
-    const rowRenderer = function ({
-        key, // Unique key within array of rows
-        index, // Index of row within collection
-        isScrolling, // The List is currently being scrolled
-        isVisible, // This row is visible within the List (eg it is not an overscanned row)
-        style, // Style object to be applied to row (to position it)
-    }) {
-        return <ListItem key={key} style={style} role="listitem">
-            <ListItemIcon>
-                <Checkbox
-                    checked={projectionColumns[index].checked}
-                    onClick={(event) => {
-                        handleToggle(index, !projectionColumns[index].checked, event.shiftKey)
-                    }}
-                />
-            </ListItemIcon>
-            <ListItemText id={index} style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} primary={`${projectionColumns[index].name}`} />
-            <ListItemIcon>
-                <Checkbox
-                    checked={projectionColumns[index].normalized}
-                    onChange={(event) => {
-                        normalizeClick(index, event.target.checked)
-                    }}
-                />
-            </ListItemIcon>
-        </ListItem>
-    }
-
-
-    return <List
-        width={500}
-        height={500}
-        rowCount={projectionColumns.length}
-        rowHeight={42}
-        rowRenderer={rowRenderer}
-
-
-    />
-}
 
 export var TensorLoader = connect(mapStateToProps, mapDispatchToProps)(({
     onTensorInitiated,

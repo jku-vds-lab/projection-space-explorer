@@ -56,17 +56,6 @@ var TypeIcon = ({ type }) => {
     }
 }
 
-function convertFromCSV(vectors) {
-    return vectors.map(vector => {
-        return new Vect(vector)
-    })
-}
-
-
-
-
-
-
 
 
 export var DatasetList = ({ onChange }) => {

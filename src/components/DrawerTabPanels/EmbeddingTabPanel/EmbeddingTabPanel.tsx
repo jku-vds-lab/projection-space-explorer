@@ -57,7 +57,7 @@ export const EmbeddingTabPanel: FunctionComponent<EmbeddingTabPanelProps> = conn
             onTensorInitiated={(event, selected) => {
                 props.setProjectionWorker(new Worker('dist/worker.js'))
 
-                setInput(props.dataset.asTensor(selected))
+                setInput({ seed: props.dataset.vectors.map(sample => [sample.x, sample.y]), data: props.dataset.asTensor(selected) })
             }}
         ></TensorLoader>
 
@@ -78,6 +78,7 @@ export const EmbeddingTabPanel: FunctionComponent<EmbeddingTabPanelProps> = conn
                     vector.y = Y[i][1]
                 })
                 props.webGLView.current.updateXY()
+                //props.webGLView.current.repositionClusters()
             }} />
 
 

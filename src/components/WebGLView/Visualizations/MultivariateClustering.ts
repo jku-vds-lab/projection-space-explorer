@@ -3,10 +3,7 @@ import { Scene, Vector2 } from "three";
 import Cluster, { Story } from "../../util/Cluster";
 import THREE = require("three");
 import { Dataset, Vect } from "../../util/datasetselector";
-import { ArrowGeometry } from "../../util/ArrowMesh";
-import { Zoom } from "@material-ui/core";
 import { DisplayMode } from "../../Ducks/DisplayModeDuck";
-import { off } from "process";
 
 const SELECTED_COLOR = 0x4d94ff
 const DEFAULT_COLOR = 0xa3a3c2
@@ -19,7 +16,7 @@ const LINE_COLOR = 0xFF5733
 export class MultivariateClustering {
     // arrowMesh
     arrowMesh: THREE.Mesh
-
+    trailMesh: THREE.Mesh
     clusters: Cluster[]
     scene: Scene
     dataset: Dataset
@@ -38,14 +35,18 @@ export class MultivariateClustering {
 
 
     updateArrows(zoom: number, activeStory: Story) {
-        if (!activeStory) return;
+        if (!activeStory) {
+            this.arrowMesh.visible = false;
+            return;
+        }
+
+        this.arrowMesh.visible = true;
         this.arrowMesh.geometry.dispose()
         let arrowGeometry = new THREE.Geometry()
         arrowGeometry.vertices = []
         arrowGeometry.faces = []
 
-
-
+    
         let index = 0
         activeStory.edges.forEach(edge => {
             let start = new THREE.Vector2(edge.source.getCenter().x, edge.source.getCenter().y)
@@ -80,6 +81,48 @@ export class MultivariateClustering {
 
         this.arrowMesh.geometry = arrowGeometry
     }
+
+
+
+    iterateTrail(zoom) {
+        if (this.scene.getObjectById(this.trailMesh.id)) {
+            
+        } else {
+            //this.scene.add(this.trailMesh)
+        }
+
+
+        this.clusterObjects.forEach(clusterObject => {
+            let center = clusterObject.cluster.getCenter()
+           
+            let last = clusterObject.trailPositions[clusterObject.trailPositions.length - 1]
+            if (!last || new THREE.Vector3(center.x * zoom, center.y * zoom, 0).distanceTo(last.position) > 16) {
+
+                var geometry = new THREE.CircleGeometry(this.devicePixelRatio * 12, 32);
+                var material = new THREE.MeshBasicMaterial({ color: DEFAULT_COLOR });
+                material.transparent = true
+                material.opacity = 1
+                var circle = new THREE.Mesh(geometry, material);
+                
+                circle.position.x = center.x * zoom
+                circle.position.y = center.y * zoom
+    
+                
+
+                clusterObject.trailPositions.push(circle)
+                let len= clusterObject.trailPositions.length
+                clusterObject.trailPositions.forEach((pos,i) => {
+                    pos.material.opacity = i / len
+                })
+    
+                this.scene.add(circle)
+            }
+
+        })
+
+
+    }
+
 
 
     updatePositions(zoom: number) {
@@ -119,7 +162,6 @@ export class MultivariateClustering {
         })
 
         this.lineMesh.geometry = lineGeometry
-        
     }
 
 
@@ -145,9 +187,13 @@ export class MultivariateClustering {
 
         this.scene.add(this.arrowMesh)
 
+
+        this.trailMesh = new THREE.Mesh(new THREE.Geometry(), new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide }))
+
         this.clusters.forEach(cluster => {
+            
             // Add circle to scene
-            var geometry = new THREE.CircleGeometry(this.devicePixelRatio * 16, 32);
+            var geometry = new THREE.CircleGeometry(this.devicePixelRatio * 12, 32);
             var material = new THREE.MeshBasicMaterial({ color: DEFAULT_COLOR });
             var circle = new THREE.Mesh(geometry, material);
             var center = cluster.getCenter()
@@ -159,7 +205,8 @@ export class MultivariateClustering {
                 geometry: geometry,
                 material: material,
                 mesh: circle,
-                children: []
+                children: [],
+                trailPositions: []
             }
             this.clusterObjects.push(clusterObject)
 
@@ -239,6 +286,7 @@ export class MultivariateClustering {
             })
         })
     }
+
 
     /**
      * Destroys the visualization.

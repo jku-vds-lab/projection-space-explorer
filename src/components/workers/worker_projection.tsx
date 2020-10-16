@@ -208,6 +208,29 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
       this.initSolution(); // refresh this
     },
 
+    initDataSeeded: function (X, seed) {
+      var N = X.length;
+      var D = X[0].length;
+      assert(N > 0, " X is empty? You must have some data!");
+      assert(D > 0, " X[0] is empty? Where is the data?");
+      var dists = xtod(X); // convert X to distances using gaussian kernel
+      this.P = d2p(dists, this.perplexity, 1e-4); // attach to object
+      this.N = N; // back up the size of the dataset
+
+      // generate random solution to t-SNE
+      this.Y = randn2d(this.N, this.dim, undefined); // the solution
+      let result = []
+      for (let i = 0; i < this.N; i++) {
+        result.push([seed[i][0] / 50, seed[i][1] / 50])
+      }
+      this.Y = result
+      console.log("seed")
+      console.log(this.Y)
+      this.gains = randn2d(this.N, this.dim, 1.0); // step gains to accelerate progress in unchanging directions
+      this.ystep = randn2d(this.N, this.dim, 0.0); // momentum accumulator
+      this.iter = 0;
+    },
+
     // this function takes a given distance matrix and creates
     // matrix P from them.
     // D is assumed to be provided as a list of lists, and should be symmetric
@@ -384,6 +407,7 @@ self.addEventListener('message', function (e) {
         context.tsne.initDataRaw(e.data.input)
         context.tsne.step()
         context.postMessage(context.tsne.getSolution())
+        console.log(context.tsne.getSolution())
         break;
       case 1:
         context.raw = e.data
@@ -392,6 +416,7 @@ self.addEventListener('message', function (e) {
         })
         context.umap.initializeFit(e.data.input)
         context.umap.step()
+        
         context.postMessage(context.umap.getEmbedding())
         break;
     }

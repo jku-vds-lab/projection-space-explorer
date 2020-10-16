@@ -85,6 +85,7 @@ export class JSONLoader implements Loader {
                 points.push(this.vectors[i])
             })
             let cluster = new Cluster(points)
+            
             cluster.label = row[0]
             clusters.push(cluster)
         })

@@ -165,9 +165,12 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
                         vecs.push(dataset.vectors[point.meshIndex])
                     })
                     cluster.vectors = vecs
+                    cluster.points = cluster.vectors
                 })
+                
 
                 setCurrentClusters(clusters)
+                console.log(clusters)
 
                 if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
                     setClusterEdges(dataset.clusterEdges)

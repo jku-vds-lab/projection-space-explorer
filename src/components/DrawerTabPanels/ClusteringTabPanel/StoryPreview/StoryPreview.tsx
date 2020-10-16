@@ -49,7 +49,13 @@ const StoryPreviewFull = ({
                     return <ListItem
                         button
                         selected={activeStory == story}
-                        onClick={(event) => setActiveStory(story)}
+                        onClick={(event) => {
+                            if (activeStory == story) {
+                                setActiveStory(null)
+                            } else {
+                                setActiveStory(story)
+                            }
+                        }}
                     >
                         <ListItemText primary={"Story " + index} secondary={`${story.clusters.length} nodes`} />
                         <ListItemSecondaryAction onClick={() => {

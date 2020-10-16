@@ -31,7 +31,6 @@ import { DisplayMode } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { ClusterMode } from '../Ducks/ClusterModeDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
-import { ClusterLayer } from './ClusterLayer/ClusterLayer';
 import { mappingFromScale } from '../util/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 
@@ -1360,7 +1359,10 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     }
 
 
-
+    repositionClusters() {
+        this.multivariateClusterView?.updatePositions(this.camera.zoom)
+        this.multivariateClusterView?.iterateTrail(this.camera.zoom)
+    }
 
     renderEdge(ctx) {
         if (this.trees) {
