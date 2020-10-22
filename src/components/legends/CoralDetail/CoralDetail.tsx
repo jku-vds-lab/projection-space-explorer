@@ -142,39 +142,10 @@ enum FeatureType {
   Date
 }
 
-function getFeatureType(dictOfArrays, key) {
-  const feature = dictOfArrays[key]
-
-  if (feature === undefined) {
-    return FeatureType.Categorical
-  }
-  var hasDate = false
-  var hasNumber = false
-  for (var i = 0; i < feature.length; i++) {
-    if (feature[i] === null) {
-      continue
-    }
-    if (typeof feature[i] === "number") {
-      hasNumber = true
-    } else if (typeof feature[i] === "string") {
-      if (""+new Date(feature[i]) !== "Invalid Date") {
-        hasDate = true
-      } else {
-        return FeatureType.Categorical
-      }
-    }
-  }
-
-  if (hasDate && !hasNumber) {
-    return FeatureType.Date
-  } else if (!hasDate && hasNumber) {
-    return FeatureType.Quantitative
-  } else {
-    return FeatureType.Categorical
-  }
-}
-
 function genRows(vectors, projectionColumns, dataset) {
+  if (dataset === undefined) {
+    return []
+  }
   const rows = []
   const dictOfArrays = dictionary(vectors)  
   const preselect = getProjectionColumns(projectionColumns)
@@ -183,18 +154,17 @@ function genRows(vectors, projectionColumns, dataset) {
   for (var key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-        const featureType = getFeatureType(dictOfArrays, key)
 
-        if (featureType === FeatureType.Quantitative) {
+        if (dataset.featureTypes[key] === 'quantitative') {
           // quantitative feature
           var histData = mapHistData(vectors, key)
           rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
-        } else if (featureType === FeatureType.Categorical) {
+        } else if (dataset.featureTypes[key] === 'categorical') {
           // categorical feature
           var barData = mapBarChartData(vectors, key)
           var feature = key + ': \n' + barData['values'][0]['category']
           rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
-        } else if (featureType === FeatureType.Date) {
+        } else if (dataset.featureTypes[key] === 'date') {
           // date feature
           var histData = mapHistData(vectors, key)
           rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaDate data={histData} actions={false} tooltip={new Handler().call}/>])

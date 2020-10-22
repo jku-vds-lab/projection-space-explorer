@@ -582,6 +582,9 @@ export class Dataset {
     // The type of the dataset (or unknown if not possible to derive)
     type: DatasetType
 
+    // dictionary - keys are feature names, values are string with categorical/quantitative/date
+    featureTypes: any
+
     // True if the dataset has multiple labels per sample
     multivariateLabels: boolean
 
@@ -596,9 +599,10 @@ export class Dataset {
     // The edges between clusters.
     clusterEdges: Edge[]
 
-    constructor(vectors, ranges, preselection, info) {
+    constructor(vectors, ranges, preselection, info, featureTypes) {
         this.vectors = vectors
         this.ranges = ranges
+        this.featureTypes = featureTypes
         this.info = info
         this.columns = {}
         this.type = this.info.type
