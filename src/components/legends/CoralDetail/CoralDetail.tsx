@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
 import VegaHist from './VegaHist.js';
+import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -89,14 +90,32 @@ function dictionary(list) {
 
 function isCategoricalFeature(feature) {
   if (feature === undefined) {
-    return true
+    return FeatureType.Categorical
   }
+  var hasDate = false
+  var hasNumber = false
   for (var i = 0; i < feature.length; i++) {
-    if ((feature[i] !== null) && (typeof feature[i] !== "number")) {
-      return true
+    if (feature[i] === null) {
+      continue
+    }
+    if (typeof feature[i] === "number") {
+      hasNumber = true
+    } else if (typeof feature[i] === "string") {
+      if (""+new Date(feature[i]) !== "Invalid Date") {
+        hasDate = true
+      } else {
+        return FeatureType.Categorical
+      }
     }
   }
-  return false
+
+  if (hasDate && !hasNumber) {
+    return FeatureType.Date
+  } else if (!hasDate && hasNumber) {
+    return FeatureType.Quantitative
+  } else {
+    return FeatureType.Categorical
+  }
 }
 
 function getMaxMean(data) {
@@ -147,33 +166,63 @@ function getProjectionColumns(projectionColumns) {
   return pcol
 }
 
+enum FeatureType {
+  Quantitative,
+  Categorical,
+  Date
+}
+
+function getFeatureType(dataset, dictOfArrays, key) {
+  // if (dataset !== null && dataset.columns !== null && key in dataset.columns && 'isNumeric' in dataset.columns[key]) {
+  //     if (dataset.columns[key]['isNumeric']) {
+  //       console.log('mo says', key, 'is numeric')
+  //       return FeatureType.Quantitative
+  //     } else {
+  //       console.log('mo says', key, 'is categorical')
+  //       return FeatureType.Categorical
+  //     }
+      
+  //   } else if (isCategoricalFeature(dictOfArrays[key])) {
+  //       return FeatureType.Categorical
+  //   }
+  //   else {
+  //     return FeatureType.Quantitative
+  //   }
+  // if (isCategoricalFeature(dictOfArrays[key])) {
+  //   return FeatureType.Categorical
+  // } else {
+  //   return FeatureType.Quantitative
+  // }
+  return isCategoricalFeature(dictOfArrays[key])
+}
+
 function genRows(vectors, projectionColumns, dataset) {
   const rows = []
   const dictOfArrays = dictionary(vectors)  
   const preselect = getProjectionColumns(projectionColumns)
+  preselect.push('Age')
 
   // loop through dict
   for (var key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-        // has range been inferred or does the redux dataset already contain info about whether it is numeric?
-        var isNumeric = false
-        if (key in dataset.columns && 'isNumeric' in dataset.columns[key]) {
-          isNumeric = dataset.columns[key]['isNumeric']
-        } else {
-          isNumeric = !isCategoricalFeature(dictOfArrays[key])
-        }
+        const featureType = getFeatureType(dataset, dictOfArrays, key)
 
-        if (isNumeric) {
-          // numeric feature
+        if (featureType === FeatureType.Quantitative) {
+          // quantitative feature
           var histData = mapHistData(vectors, key)
           rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
-      } else {
+        } else if (featureType === FeatureType.Categorical) {
           // categorical feature
           var barData = mapBarChartData(vectors, key)
           var feature = key + ': \n' + barData['values'][0]['category']
           rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
-      }
+        } else if (featureType === FeatureType.Date) {
+          console.log('using date for', key)
+          var histData = mapHistData(vectors, key)
+          console.log('std is', getSTD(dictOfArrays[key]))
+          rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaDate data={histData} actions={false} tooltip={new Handler().call}/>])
+        }
     }
   }
 
