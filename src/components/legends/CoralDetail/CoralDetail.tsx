@@ -88,36 +88,6 @@ function dictionary(list) {
   return map
 }
 
-function isCategoricalFeature(feature) {
-  if (feature === undefined) {
-    return FeatureType.Categorical
-  }
-  var hasDate = false
-  var hasNumber = false
-  for (var i = 0; i < feature.length; i++) {
-    if (feature[i] === null) {
-      continue
-    }
-    if (typeof feature[i] === "number") {
-      hasNumber = true
-    } else if (typeof feature[i] === "string") {
-      if (""+new Date(feature[i]) !== "Invalid Date") {
-        hasDate = true
-      } else {
-        return FeatureType.Categorical
-      }
-    }
-  }
-
-  if (hasDate && !hasNumber) {
-    return FeatureType.Date
-  } else if (!hasDate && hasNumber) {
-    return FeatureType.Quantitative
-  } else {
-    return FeatureType.Categorical
-  }
-}
-
 function getMaxMean(data) {
   var max = Number.NEGATIVE_INFINITY
   data = data['values']
@@ -172,41 +142,48 @@ enum FeatureType {
   Date
 }
 
-function getFeatureType(dataset, dictOfArrays, key) {
-  // if (dataset !== null && dataset.columns !== null && key in dataset.columns && 'isNumeric' in dataset.columns[key]) {
-  //     if (dataset.columns[key]['isNumeric']) {
-  //       console.log('mo says', key, 'is numeric')
-  //       return FeatureType.Quantitative
-  //     } else {
-  //       console.log('mo says', key, 'is categorical')
-  //       return FeatureType.Categorical
-  //     }
-      
-  //   } else if (isCategoricalFeature(dictOfArrays[key])) {
-  //       return FeatureType.Categorical
-  //   }
-  //   else {
-  //     return FeatureType.Quantitative
-  //   }
-  // if (isCategoricalFeature(dictOfArrays[key])) {
-  //   return FeatureType.Categorical
-  // } else {
-  //   return FeatureType.Quantitative
-  // }
-  return isCategoricalFeature(dictOfArrays[key])
+function getFeatureType(dictOfArrays, key) {
+  const feature = dictOfArrays[key]
+
+  if (feature === undefined) {
+    return FeatureType.Categorical
+  }
+  var hasDate = false
+  var hasNumber = false
+  for (var i = 0; i < feature.length; i++) {
+    if (feature[i] === null) {
+      continue
+    }
+    if (typeof feature[i] === "number") {
+      hasNumber = true
+    } else if (typeof feature[i] === "string") {
+      if (""+new Date(feature[i]) !== "Invalid Date") {
+        hasDate = true
+      } else {
+        return FeatureType.Categorical
+      }
+    }
+  }
+
+  if (hasDate && !hasNumber) {
+    return FeatureType.Date
+  } else if (!hasDate && hasNumber) {
+    return FeatureType.Quantitative
+  } else {
+    return FeatureType.Categorical
+  }
 }
 
 function genRows(vectors, projectionColumns, dataset) {
   const rows = []
   const dictOfArrays = dictionary(vectors)  
   const preselect = getProjectionColumns(projectionColumns)
-  preselect.push('Age')
 
   // loop through dict
   for (var key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-        const featureType = getFeatureType(dataset, dictOfArrays, key)
+        const featureType = getFeatureType(dictOfArrays, key)
 
         if (featureType === FeatureType.Quantitative) {
           // quantitative feature
@@ -218,9 +195,8 @@ function genRows(vectors, projectionColumns, dataset) {
           var feature = key + ': \n' + barData['values'][0]['category']
           rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
         } else if (featureType === FeatureType.Date) {
-          console.log('using date for', key)
+          // date feature
           var histData = mapHistData(vectors, key)
-          console.log('std is', getSTD(dictOfArrays[key]))
           rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaDate data={histData} actions={false} tooltip={new Handler().call}/>])
         }
     }
