@@ -568,6 +568,12 @@ export enum DatasetType {
     None
 }
 
+export enum FeatureType {
+    Categorical,
+    Quantitative,
+    Date
+}
+
 /**
  * Dataset class that holds all data, the ranges and additional stuff
  */
@@ -582,7 +588,7 @@ export class Dataset {
     // The type of the dataset (or unknown if not possible to derive)
     type: DatasetType
 
-    // dictionary - keys are feature names, values are string with categorical/quantitative/date
+    // dict of 'featureName': featureType
     featureTypes: any
 
     // True if the dataset has multiple labels per sample

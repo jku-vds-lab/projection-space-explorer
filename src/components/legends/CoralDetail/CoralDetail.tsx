@@ -15,6 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
+import { FeatureType } from "../../../components/util/datasetselector"
 
 const useStyles = makeStyles({
   table: {
@@ -136,12 +137,6 @@ function getProjectionColumns(projectionColumns) {
   return pcol
 }
 
-enum FeatureType {
-  Quantitative,
-  Categorical,
-  Date
-}
-
 function genRows(vectors, projectionColumns, dataset) {
   if (dataset === undefined) {
     return []
@@ -155,16 +150,16 @@ function genRows(vectors, projectionColumns, dataset) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
 
-        if (dataset.featureTypes[key] === 'quantitative') {
+        if (dataset.featureTypes[key] === FeatureType.Quantitative) {
           // quantitative feature
           var histData = mapHistData(vectors, key)
           rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
-        } else if (dataset.featureTypes[key] === 'categorical') {
+        } else if (dataset.featureTypes[key] === FeatureType.Categorical) {
           // categorical feature
           var barData = mapBarChartData(vectors, key)
           var feature = key + ': \n' + barData['values'][0]['category']
           rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
-        } else if (dataset.featureTypes[key] === 'date') {
+        } else if (dataset.featureTypes[key] === FeatureType.Date) {
           // date feature
           var histData = mapHistData(vectors, key)
           rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaDate data={histData} actions={false} tooltip={new Handler().call}/>])

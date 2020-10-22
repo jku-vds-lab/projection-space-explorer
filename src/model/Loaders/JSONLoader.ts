@@ -1,6 +1,6 @@
 import { Loader } from "./Loader";
 import * as hdf5 from 'jsfive';
-import { Vect, Preprocessor, Dataset, InferCategory, DatasetType } from "../../components/util/datasetselector";
+import { Vect, Preprocessor, Dataset, InferCategory, DatasetType, FeatureType } from "../../components/util/datasetselector";
 import Cluster from "../../components/util/Cluster";
 import { Edge } from "../../components/util/graphs";
 
@@ -109,13 +109,13 @@ export class JSONLoader implements Loader {
             if (contains_number[f] && !contains_date[f] && !contains_arbitrary[f]) {
                 // only numbers -> quantitative type
                 // (no way to tell if a feature of only numbers should be categorical, even if it is all integers)
-                types[f] = 'quantitative'
+                types[f] = FeatureType.Quantitative
             } else if (!contains_number[f] && contains_date[f] && !contains_arbitrary[f]) {
                 // only date -> date type
-                types[f] = 'date'
+                types[f] = FeatureType.Date
             } else {
                 // otherwise categorical
-                types[f] = 'categorical'
+                types[f] = FeatureType.Categorical
             }
         })
 
