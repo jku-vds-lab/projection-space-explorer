@@ -1,6 +1,10 @@
+import { Story } from "../util/Cluster"
+
 const SET = "ducks/activeStory/SET"
 
-const activeStory = (state = null, action) => {
+const initialState: Story = null
+
+export default function activeStory (state = initialState, action): Story {
     switch (action.type) {
         case SET:
             return action.activeStory
@@ -13,5 +17,3 @@ export const setActiveStory = activeStory => ({
     type: SET,
     activeStory: activeStory
 })
-
-export default activeStory

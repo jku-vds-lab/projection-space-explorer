@@ -13,15 +13,30 @@
 
 
   <title>Projection Path Explorer</title>
+
+  <style>
+    body {
+      overflow: hidden;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .hiddenSvgs {
+      display: none;
+    }
+  </style>
 </head>
 
-<body style="overflow: hidden;margin:0px; padding: 0px">
+<body>
+  <!-- Mounting point for the application -->
   <div id="mountingPoint"></div>
+
+  <!-- Bundle script -->
   <script src="dist/bundle.js"></script>
 
 
-  
-  <div style="display:none;">
+  <!-- Workaround chess svgs, do not remove -->
+  <div class="hiddenSvgs">
     <img id="wr" src="textures/chess/Chess_rlt45.svg" width="45" height="45">
     <img id="wn" src="textures/chess/Chess_nlt45.svg" width="45" height="45">
     <img id="wb" src="textures/chess/Chess_blt45.svg" width="45" height="45">

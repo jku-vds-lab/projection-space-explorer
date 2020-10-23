@@ -3,7 +3,8 @@ import { Card, CardHeader, IconButton, makeStyles } from "@material-ui/core";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import StopIcon from '@material-ui/icons/Stop';
 import CloseIcon from '@material-ui/icons/Close';
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
+import { RootState } from "../../../Store/Store";
 
 /**
  * Styles for the projection card that allows to stop/resume projection steps.
@@ -40,21 +41,34 @@ const useStylesMedia = makeStyles(theme => ({
 }));
 
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
     projectionParams: state.projectionParams,
     worker: state.projectionWorker
 })
 
+const mapDispatch = dispatch => ({})
+
+const connector = connect(mapStateToProps, mapDispatch)
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+    input: any
+    onClose: any
+    onComputingChanged: any
+    onStep: any
+}
+
 /**
  * Projection card that allows to start/stop the projection and shows the current steps.
  */
-export var ProjectionControlCard = connect(mapStateToProps)(({
+export var ProjectionControlCard = connector(({
     worker,
     input,
     onStep,
     onComputingChanged,
     projectionParams,
-    onClose }) => {
+    onClose }: Props) => {
     if (input == null || worker == null) return <div></div>
 
     const classes = useStylesMedia();
@@ -65,7 +79,9 @@ export var ProjectionControlCard = connect(mapStateToProps)(({
 
     React.useEffect(() => {
         if (step < 1000 && computing && worker != null) {
-            worker.postMessage(null)
+            worker.postMessage({
+                messageType: 'step'
+            })
         }
     }, [step, computing])
 
@@ -74,17 +90,16 @@ export var ProjectionControlCard = connect(mapStateToProps)(({
         var counter = step
         worker.addEventListener('message', (e) => {
             var Y = e.data
-
             counter = counter + 1
             setStep(counter)
             onStep(Y)
         }, false);
 
-        worker.postMessage({
+        /**worker.postMessage({
             input: input.data,
             seed: input.seed,
             params: projectionParams
-        })
+        })**/
     }, [worker])
 
     return (

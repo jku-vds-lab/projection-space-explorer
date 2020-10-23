@@ -5,9 +5,10 @@ module.exports = {
   watch: true,
   entry: {
     bundle: "./src/components/index.tsx",
-    worker: './src/components/workers/worker_projection.tsx',
+    tsne: './src/components/workers/embeddings/worker_tsne.ts',
+    umap: './src/components/workers/embeddings/worker_umap.ts',
     cluster: './src/components/workers/worker_cluster.tsx',
-    force: './src/components/workers/worker_force.ts',
+    forceatlas2: './src/components/workers/embeddings/worker_forceatlas2.ts',
     healthcheck: './src/components/workers/worker_healthcheck.tsx'
   },
   output: {

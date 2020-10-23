@@ -1,3 +1,5 @@
+import { Cluster } from "cluster";
+
 const SET = "ducks/selectedClusters/SET"
 const TOGGLE = "ducks/selectedClusters/TOGGLE"
 
@@ -12,7 +14,9 @@ export const setSelectedClusters = selectedClusters => ({
     selectedClusters: selectedClusters
 });
 
-const selectedClusters = (state = [], action) => {
+const initialState: Cluster[] = []
+
+export default function selectedClusters (state = initialState, action): Cluster[] {
     switch (action.type) {
         case SET:
             return action.selectedClusters
@@ -28,5 +32,3 @@ const selectedClusters = (state = [], action) => {
             return state
     }
 }
-
-export default selectedClusters

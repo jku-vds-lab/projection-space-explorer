@@ -6,7 +6,7 @@ export enum DisplayMode {
     StatesAndClusters
 }
 
-const displayMode = (state = DisplayMode.StatesAndClusters, action) => {
+export default function displayMode (state = DisplayMode.StatesAndClusters, action): DisplayMode  {
     switch (action.type) {
         case SET:
             return action.displayMode
@@ -21,5 +21,3 @@ export const setDisplayMode = (displayMode) => {
         displayMode: displayMode
     }
 }
-
-export default displayMode

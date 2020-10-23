@@ -1,5 +1,4 @@
 import { Loader } from "./Loader";
-import * as hdf5 from 'jsfive';
 import { Vect, Preprocessor, Dataset, InferCategory, DatasetType } from "../../components/util/datasetselector";
 import Cluster from "../../components/util/Cluster";
 import { Edge } from "../../components/util/graphs";

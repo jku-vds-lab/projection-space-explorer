@@ -1,10 +1,10 @@
 import { FunctionComponent } from "react"
 import { FlexParent } from "../../util/FlexParent"
 import React = require("react")
-import { Button, FormControlLabel, Switch } from "@material-ui/core"
+import { Button, FormControl, FormControlLabel, FormGroup, FormLabel, Switch } from "@material-ui/core"
 import { ClusterWindow } from "../../projection/integration"
 import { StoryPreview } from "./StoryPreview/StoryPreview"
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
 import Cluster, { Story } from "../../util/Cluster"
 import { graphLayout, Edge } from "../../util/graphs"
 
@@ -15,6 +15,7 @@ import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { setStories } from "../../Ducks/StoriesDuck"
 import { StoryMode, setStoryMode } from "../../Ducks/StoryModeDuck"
+import { RootState } from "../../Store/Store"
 
 var worker = new Worker('dist/cluster.js')
 
@@ -59,31 +60,15 @@ function vectorAsXml(vectors, segments) {
 }
 
 
-
-
-type ClusteringTabPanelProps = {
-    backendRunning?: boolean
-    clusteringWorker?: any
-    dataset?: any
-    activeStory?: any
-    setActiveStory?: any
-    stories?: any
-    onClusteringStart?: any
-    annotate?: any
-    open?: boolean,
-    storyMode?: StoryMode
-    setDisplayMode?: any
-    displayMode?: DisplayMode
-}
-
-
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
     stories: state.stories,
     activeStory: state.activeStory,
     storyMode: state.storyMode,
     currentClusters: state.currentClusters,
-    displayMode: state.displayMode
+    displayMode: state.displayMode,
+    dataset: state.dataset,
+    trailSettings: state.trailSettings
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -96,14 +81,20 @@ const mapDispatchToProps = dispatch => ({
     setSelectedClusters: value => dispatch(setSelectedClusters(value))
 })
 
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>
 
+type Props = PropsFromRedux & {
+    open,
+    backendRunning,
+    clusteringWorker
+}
 
-
-export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = connect(mapStateToProps, mapDispatchToProps)(({ setCurrentClusters,
+export const ClusteringTabPanel = connector(({ setCurrentClusters,
     setStories, setActiveStory,
     currentAggregation, open, backendRunning, clusteringWorker,
     dataset, stories, setClusterEdges, storyMode, setStoryMode,
-    currentClusters, setDisplayMode, displayMode, setSelectedClusters }) => {
+    currentClusters, setDisplayMode, displayMode, setSelectedClusters, trailSettings }: Props) => {
 
     const [clusterId, setClusterId] = React.useState(0)
 
@@ -167,10 +158,9 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
                     cluster.vectors = vecs
                     cluster.points = cluster.vectors
                 })
-                
+
 
                 setCurrentClusters(clusters)
-                console.log(clusters)
 
                 if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
                     setClusterEdges(dataset.clusterEdges)
@@ -178,7 +168,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
                     let stories = storyLayout(dataset.clusterEdges)
 
                     setStories(stories)
-                    setActiveStory(stories[0])
+                    //setActiveStory(stories[0])
                 } else {
                     if (dataset.isSequential) {
                         const [edges] = graphLayout(clusters)
@@ -189,7 +179,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
                             let stories = storyLayout(edges)
 
                             setStories(stories)
-                            setActiveStory(stories[0])
+                            //setActiveStory(stories[0])
                         }
                     }
                 }
@@ -201,7 +191,6 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
             })
 
         } else {
-            console.log("RESETTING STATE")
             setStories(null)
             setActiveStory(null)
             setCurrentClusters(null)
@@ -345,7 +334,7 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
 
     React.useEffect(() => {
         worker.onmessage = function () {
-            
+
         }
         worker.postMessage({
             type: 'triangulate',
@@ -393,6 +382,18 @@ export const ClusteringTabPanel: FunctionComponent<ClusteringTabPanelProps> = co
             }} name="test" />}
             label="Show Clusters Only"
         />
+
+
+        <FormControl>
+            <FormLabel component="legend">Trail Settings</FormLabel>
+            <FormGroup>
+                <FormControlLabel
+                    control={<Switch checked={trailSettings.show} onChange={(_, checked) => null} name="gilad" />}
+                    label="Show Trail"
+                />
+            </FormGroup>
+        </FormControl>
+
 
         <ClusterWindow
             worker={clusteringWorker}

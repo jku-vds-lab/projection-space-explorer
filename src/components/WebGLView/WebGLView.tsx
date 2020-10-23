@@ -14,7 +14,7 @@ import * as React from "react";
 import * as THREE from 'three'
 import { LassoLayer } from './LassoLayer/LassoLayer';
 import { ForceLayout } from './ForceLayout/ForceLayout';
-import Cluster from '../util/Cluster';
+import Cluster, { Story } from '../util/Cluster';
 import { connect } from 'react-redux'
 import { graphLayout } from '../util/graphs';
 import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
@@ -25,7 +25,7 @@ import { toggleSelectedCluster } from "../Ducks/SelectedClustersDuck";
 import { setAggregationAction, toggleAggregationAction } from "../Ducks/AggregationDuck";
 import { ViewTransform } from './ViewTransform'
 import { Camera } from 'three';
-import { LineVisualization, PointVisualization, ClusterVisualization } from './meshes';
+import { LineVisualization, PointVisualization } from './meshes';
 import { MultivariateClustering } from './Visualizations/MultivariateClustering';
 import { DisplayMode } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
@@ -33,6 +33,7 @@ import { ClusterMode } from '../Ducks/ClusterModeDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { mappingFromScale } from '../util/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
+import { RootState } from '../Store/Store';
 
 
 const useStyles = makeStyles(theme => ({
@@ -161,6 +162,10 @@ type ViewProps = {
     globalPointSize: []
     pointColorScale: any
     channelColor: any
+    setPointColorMapping: any
+    setHoverState: any
+    activeStory: Story
+    channelSize: any
 }
 
 type ViewState = {
@@ -170,7 +175,7 @@ type ViewState = {
     forceLayoutRef: any
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
     currentTool: state.currentTool,
     currentAggregation: state.currentAggregation,
     clusters: state.currentClusters,
@@ -191,7 +196,8 @@ const mapStateToProps = state => ({
     channelSize: state.channelSize,
     channelColor: state.channelColor,
     pointColorScale: state.pointColorScale,
-    activeStory: state.activeStory
+    activeStory: state.activeStory,
+    trailSettings: state.trailSettings
 })
 
 
@@ -238,14 +244,13 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     trees: any[];
     edgeClusters: any;
     lastTime: number;
-    clusterVisualization: any;
     mouseMoveListener: any;
     mouseDownListener: any;
     keyDownListener: any;
     wheelListener: any;
     mouseUpListener: any;
     infoTimeout: any
-    multivariateClusterView: MultivariateClustering
+    multivariateClusterView = React.createRef()
 
 
     constructor(props) {
@@ -334,6 +339,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
     componentDidMount() {
         this.setupRenderer()
+        this.startRendering()
     }
 
     normaliseMouse(event) {
@@ -669,85 +675,6 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     }
 
 
-
-    deleteClusters() {
-        this.clusterVisualization?.dispose(this.scene)
-        this.clusterVisualization = null
-        this.multivariateClusterView?.destroy()
-        this.multivariateClusterView = null
-    }
-
-
-    /**
-     * Creates the triangulated mesh that visualizes the clustering.
-     * @param clusters an array of clusters
-     */
-    createClusters(clusters) {
-
-        clusters.sort((a, b) => b.order() - a.order())
-
-
-        if (this.clusterVisualization != null) {
-            this.clusterVisualization.dispose(this.scene)
-            this.clusterVisualization = null
-        }
-
-        var clusterMeshes = []
-        var lineMeshes = []
-
-        clusters.forEach((cluster, ii) => {
-            if (cluster.label == -1 || ii > 15) return;
-
-            var test = cluster.triangulation
-            var polygon = cluster.hull
-
-            var points = [];
-
-            let material = new THREE.LineBasicMaterial({ color: 0x0000ff });
-            polygon.forEach(pt => {
-                points.push(new THREE.Vector3(pt[0], pt[1], -5));
-            })
-            var linege = new THREE.BufferGeometry().setFromPoints(points);
-            var line = new THREE.Line(linege, material);
-            this.scene.add(line);
-
-            var geometry = new THREE.Geometry();
-
-            var vi = 0
-            for (var i = 0; i < test.length; i += 6) {
-                var faceIn = []
-
-                for (var x = 0; x < 3; x++) {
-
-                    faceIn.push(vi)
-                    var vertex = new THREE.Vector3(test[i + x * 2], test[i + x * 2 + 1])
-                    vi = vi + 1
-                    geometry.vertices.push(vertex)
-                }
-
-                geometry.faces.push(
-                    new THREE.Face3(faceIn[0], faceIn[1], faceIn[2])
-                )
-
-            }
-
-            let meshMat = new THREE.MeshBasicMaterial({
-                color: 0x000000,
-                side: THREE.DoubleSide,
-                transparent: true,
-                opacity: 0.1
-            });
-            var mesh = new THREE.Mesh(geometry, meshMat);
-            clusterMeshes.push(mesh)
-            lineMeshes.push(line)
-            this.scene.add(mesh);
-        })
-
-        this.clusterVisualization = new ClusterVisualization(clusterMeshes, lineMeshes)
-    }
-
-
-
     createTrajectories(clusters) {
         const [edges] = graphLayout(clusters)
 
@@ -835,7 +762,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         this.props.setViewTransform(new ViewTransform(this.camera, this.getWidth(), this.getHeight()))
 
         this.prevTime = performance.now()
-        this.startRendering()
+        
     }
 
     createVisualization(dataset, lineColorScheme, vectorColorScheme) {
@@ -903,98 +830,6 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     }
 
 
-
-
-
-    /**
-     * Getting a list of edges this function will return the indices of all subtrees.
-     * eg [[[0,1],[1,2],[1,3]], [...]]
-     * @param {*} edgeClusters 
-     */
-    detectBundles(edgeClusters) {
-        var MIN_CLUSTER_SIZE = 5
-
-        var overlap = []
-        var trees = []
-
-        var uncheckt = edgeClusters.toMatrix().slice(0)
-        uncheckt.forEach((a, ai) => {
-            uncheckt.forEach((b, bi) => {
-                if (a != b) {
-                    if (a.length > MIN_CLUSTER_SIZE && b.length > MIN_CLUSTER_SIZE) {
-                        var targetCluster = a.map(edge => edge.target)
-                        var sourceCluster = b.map(edge => edge.source)
-
-                        // Check for overlap between these clusters
-                        var overlapNodes = targetCluster.filter(value => sourceCluster.includes(value))
-                        var overlapPercentage = Math.max(overlapNodes.length / sourceCluster.length, overlapNodes.length / targetCluster.length)
-
-                        if (overlapPercentage > 0.4) {
-                            // We have enough overlap, construct a tree instance
-                            overlap.push(new EdgeOverlap(ai, bi, overlapPercentage))
-                        }
-                    }
-                }
-
-            })
-        })
-
-        var nonStart = []
-
-        // Find any overlap that has no start point
-        for (var i = 0; i < overlap.length; i++) {
-            var a = overlap[i]
-
-            var predecessor = overlap.find(b => a.source == b.target)
-            if (predecessor == undefined) {
-                trees.push([a])
-            } else {
-                nonStart.push(a)
-            }
-        }
-
-        while (nonStart.length > 0) {
-            var a = nonStart.splice(0, 1)[0]
-            for (var i = 0; i < trees.length; i++) {
-                var tree = trees[i]
-                var last = tree[tree.length - 1]
-
-                if (last.target == a.source) {
-                    tree.push(a)
-                }
-            }
-        }
-
-
-        return trees
-    }
-
-
-
-    /**     debugD3(edgeClusters) {
-            this.trees = this.detectBundles(edgeClusters)
-            this.edgeClusters = edgeClusters.toMatrix()
-    
-            var process = []
-            this.trees.forEach(tree => {
-                tree.forEach((connection, i) => {
-                    process.push(this.edgeClusters[connection.source])
-                    if (i == tree.length - 1) {
-                        process.push(this.edgeClusters[connection.target])
-                    }
-                })
-            })
-    
-            var cc = process.map(edgeCluster => {
-                var vecs = edgeCluster.map(m => m.target)
-                var c = new Cluster(vecs, null, null, null)
-    
-                c.vectors = c.points
-                return c
-            })
-    
-            return [this.trees, cc]
-        }*/
 
     filterLines(algo, show) {
 
@@ -1143,17 +978,24 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             this.renderer.clear()
             this.renderer.render(this.scene, this.camera)
 
-
-            if (this.multivariateClusterView) {
+            if (this.multivariateClusterView.current) {
                 let camera = new THREE.OrthographicCamera(this.getWidth() / - 2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / - 2, 1, 1000);
                 camera.lookAt(0, 0, 0)
                 camera.position.z = 1;
                 camera.position.x = this.camera.position.x * this.camera.zoom
                 camera.position.y = this.camera.position.y * this.camera.zoom
                 camera.updateProjectionMatrix();
-                this.multivariateClusterView.updatePositions(this.camera.zoom)
-                this.multivariateClusterView.updateArrows(this.camera.zoom, this.props.activeStory)
-                this.renderer.render(this.multivariateClusterView.scene, camera)
+                this.multivariateClusterView.current.updatePositions(this.camera.zoom)
+                this.multivariateClusterView.current.updateArrows(this.camera.zoom, this.props.activeStory)
+
+                if (this.multivariateClusterView.current.scene) {
+                    this.renderer.render(this.multivariateClusterView.current.scene, camera)
+                    
+                }
+                if (this.multivariateClusterView.current.scalingScene) {
+                    this.renderer.render(this.multivariateClusterView.current.scalingScene, this.camera)
+                }
+
             }
 
 
@@ -1214,10 +1056,6 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
                     this.pointScene.remove(this.particles.mesh)
                     this.pointScene.add(this.particles.mesh)
-
-                    this.multivariateClusterView?.setDisplayMode(this.props.displayMode)
-                    this.multivariateClusterView?.highlightCluster(this.props.selectedClusters)
-
                     break;
                 case DisplayMode.OnlyClusters:
                     if (this.props.dataset.isSequential) {
@@ -1227,8 +1065,6 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                     }
 
                     this.pointScene.remove(this.particles.mesh)
-
-                    this.multivariateClusterView?.setDisplayMode(this.props.displayMode)
                     break;
             }
         }
@@ -1252,7 +1088,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         }
 
         // If we have clusters now... and are on clusters tab... create cluster visualization
-        if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters != null) {
+        /**if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters != null) {
             if (this.props.openTab == 1) {
                 if (this.props.dataset.multivariateLabels) {
                     this.multivariateClusterView?.destroy()
@@ -1265,18 +1101,18 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             }
         } else if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters == null) {
             this.deleteClusters()
-        }
+        }**/
 
         // If 
         if ((this.props.currentTool == Tool.Default && !arraysEqual(prevProps.currentAggregation, this.props.currentAggregation))
             || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Default)) {
-            this.multivariateClusterView?.highlightSamples(this.props.currentAggregation)
+            this.multivariateClusterView?.current.highlightSamples(this.props.currentAggregation)
         }
 
         // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
         if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)
             || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Grab)) {
-            this.multivariateClusterView?.highlightCluster(this.props.selectedClusters)
+            this.multivariateClusterView?.current.highlightCluster(this.props.selectedClusters)
             function deriveFromClusters(clusters: Cluster[]) {
                 let agg = clusters.map(cluster => cluster.vectors).flat()
                 return [...new Set(agg)]
@@ -1360,8 +1196,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
 
     repositionClusters() {
-        this.multivariateClusterView?.updatePositions(this.camera.zoom)
-        this.multivariateClusterView?.iterateTrail(this.camera.zoom)
+        this.multivariateClusterView?.current.updatePositions(this.camera.zoom)
+        this.multivariateClusterView?.current.iterateTrail(this.camera.zoom)
     }
 
     renderEdge(ctx) {
@@ -1450,22 +1286,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 height={this.getHeight()}></ForceLayout>
 
 
-
+            <MultivariateClustering ref={this.multivariateClusterView}></MultivariateClustering>
 
         </div>
     }
 })
-
-
-
-class EdgeOverlap {
-    source: any;
-    target: any;
-    overlap: any;
-
-    constructor(source, target, overlap) {
-        this.source = source
-        this.target = target
-        this.overlap = overlap
-    }
-}

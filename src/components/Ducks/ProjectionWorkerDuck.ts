@@ -5,7 +5,9 @@ export const setProjectionWorkerAction = projectionWorker => ({
     projectionWorker: projectionWorker
 });
 
-const projectionWorker = (state = null, action) => {
+const initialState: Worker = null
+
+export default function projectionWorker (state = initialState, action): Worker {
     switch (action.type) {
         case SET:
             return action.projectionWorker
@@ -13,5 +15,3 @@ const projectionWorker = (state = null, action) => {
             return state
     }
 }
-
-export default projectionWorker

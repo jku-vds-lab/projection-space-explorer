@@ -2,7 +2,7 @@ import { Button, Popover } from "@material-ui/core";
 import React = require("react");
 import { AdvancedColoringLegend } from "../AdvancedColoringLegend/AdvancedColoringLegend";
 
-export var AdvancedColoringPopover = ({ showColorMapping }) => {
+export var AdvancedColoringPopover = ({ }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
 
@@ -38,8 +38,7 @@ export var AdvancedColoringPopover = ({ showColorMapping }) => {
 
 
 
-            <AdvancedColoringLegend
-                mapping={showColorMapping} />
+            <AdvancedColoringLegend/>
 
         </Popover>
     </div>

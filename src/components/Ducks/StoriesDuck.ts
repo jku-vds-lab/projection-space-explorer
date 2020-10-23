@@ -1,3 +1,5 @@
+import { Story } from "../util/Cluster";
+
 const ADD = "ducks/stories/ADD"
 const DELETE = "ducks/stories/DELETE"
 const SET = "ducks/stories/SET"
@@ -19,7 +21,9 @@ export const setStories = stories => ({
     stories: stories
 })
 
-const stories = (state = [], action) => {
+const initialState: Story[] = []
+
+export default function stories(state = initialState, action): Story[] {
     switch (action.type) {
         case SET:
             return action.stories
@@ -40,7 +44,3 @@ const stories = (state = [], action) => {
             return state
     }
 }
-
-
-
-export default stories

@@ -5,9 +5,17 @@ export const setProjectionParamsAction = projectionParams => ({
     projectionParams: projectionParams
 });
 
-const projectionParams = (state = {
+const initialState = {
+    perplexity: 50,
+    learningRate: 50,
+    nNeighbors: 15,
+    iterations: 1000,
+    seeded: false
+}
 
-}, action) => {
+type ProjectionParamsState = typeof initialState
+
+const projectionParams = (state = initialState, action): ProjectionParamsState => {
     switch (action.type) {
         case SET:
             return action.projectionParams

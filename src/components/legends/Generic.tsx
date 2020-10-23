@@ -16,12 +16,12 @@ import * as React from 'react'
 import { FunctionComponent } from "react";
 import { RubikFingerprint } from "./RubikFingerprint/RubikFingerprint";
 import { ChessFingerprint } from "./ChessFingerprint/ChessFingerprint";
-import { DatasetType, Dataset } from "../util/datasetselector";
+import { DatasetType, Dataset, Vect } from "../util/datasetselector";
 
 type GenericLegendProps = {
     type: DatasetType
-    vectors: Array<any>
-    aggregate: Boolean
+    vectors: Vect[]
+    aggregate: boolean
 }
 
 export var GenericLegend = ({ type, vectors, aggregate }: GenericLegendProps) => {

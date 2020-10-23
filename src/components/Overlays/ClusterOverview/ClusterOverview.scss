@@ -14,9 +14,20 @@
     position: absolute;
     right: 0px;
     top: 64px;
+
 }
 
 .ClusterItem {
     margin-top: 16px;
     margin-bottom: 16px;
+}
+
+
+
+.CORightItem {
+    transform: translateY(50%);
+}
+
+.COLeftItem {
+    transform: translateY(1px);
 }

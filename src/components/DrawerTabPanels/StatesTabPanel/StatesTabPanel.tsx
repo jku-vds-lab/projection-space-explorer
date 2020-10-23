@@ -10,6 +10,11 @@ import { setCheckedShapesAction } from "../../Ducks/CheckedShapesDuck"
 type StatesTabPanelProps = {
     categoryOptions: any
     dataset: any
+    selectedVectorByShape: any
+    vectorByShape: any
+    setSelectedVectorByShape: any
+    setCheckedShapes: any
+    setVectorByShape: any
 }
 
 const mapStateToProps = state => ({

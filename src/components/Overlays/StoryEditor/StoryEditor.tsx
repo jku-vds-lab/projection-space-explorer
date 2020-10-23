@@ -5,15 +5,14 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 import Cluster, { Story } from '../../util/Cluster';
 const Graph = require('graphology');
 import { connect } from 'react-redux'
-import { centerOfMass } from '../../WebGLView/UtilityFunctions';
-import { GenericFingerprint } from '../../legends/Generic';
 import { DatasetType, Vect, VectBase } from '../../util/datasetselector';
 import GestureIcon from '@material-ui/icons/Gesture';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
 import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import Draggable from 'react-draggable';
-import { Rnd } from 'react-rnd'
+import { GenericFingerprint } from '../../legends/Generic';
+import { Rnd } from 'react-rnd';
 
 export function rescalePoints(
     points: { x: number, y: number }[],

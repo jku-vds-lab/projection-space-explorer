@@ -25,13 +25,13 @@ import { JSONLoader } from '../../model/Loaders/JSONLoader';
 
 var TypeIcon = ({ type }) => {
     switch (type) {
-        case 'neural':
+        case DatasetType.Neural:
             return <ListItemIcon><ShareIcon>
             </ShareIcon></ListItemIcon>
-        case 'story':
+        case DatasetType.Story:
             return <ListItemIcon><MenuBookIcon>
             </MenuBookIcon></ListItemIcon>
-        case 'chess':
+        case DatasetType.Chess:
             return <ListItemIcon><SvgIcon viewBox="0 0 45 45">
                 <g style={{ opacity: 1, fill: 'none', fillRule: 'evenodd', fillOpacity: 1, stroke: '#000000', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round', strokeMiterlimit: 4, strokeDasharray: 'none', strokeOpacity: 1 }}>
                     <g style={{ fill: '#000000', stroke: '#000000', strokeLinecap: 'butt' }}>
@@ -47,7 +47,7 @@ var TypeIcon = ({ type }) => {
                         style={{ fill: 'none', stroke: '#ffffff', strokeLinejoin: 'miter' }} />
                 </g>
             </SvgIcon></ListItemIcon>
-        case 'rubik':
+        case DatasetType.Rubik:
             return <ListItemIcon>
                 <WidgetsIcon />
             </ListItemIcon>
@@ -94,6 +94,7 @@ export var DatasetList = ({ onChange }) => {
                                         <ul style={{ backgroundColor: 'inherit', paddingInlineStart: '0px' }}>
                                             <ListSubheader>{Object.keys(DatasetType)[Object.values(DatasetType).indexOf(type)]}</ListSubheader>
                                             {
+                                               
                                                 database.data.filter(value => value.type == type).map(entry => {
                                                     return <ListItem key={entry.path} button onClick={() => {
                                                         setLoad(true)
@@ -135,19 +136,6 @@ export var DatasetList = ({ onChange }) => {
                                 } else {
                                     new CSVLoader().resolveContent(content, onChange)
                                 }
-                                
-                                /**var vectors = d3v5.csvParse(content)
-
-                                // Convert raw dictionaries to classes ...
-                                vectors = convertFromCSV(vectors)
-
-                                var ranges = new Preprocessor(vectors).preprocess()
-
-                                var segments = getSegs(vectors)
-
-                                var infer = new InferCategory(vectors)
-
-                                onChange(new Dataset(vectors, segments, ranges, { type: infer.inferType() }), infer.load(ranges))**/
                             }
 
                             reader.readAsText(file)

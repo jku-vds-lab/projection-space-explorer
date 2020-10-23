@@ -1,6 +1,6 @@
 var d3 = require('d3')
 import * as React from 'react'
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
 import VegaHist from './VegaHist.js';
@@ -14,6 +14,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
+import { Vect } from '../../util/datasetselector.js';
 
 const useStyles = makeStyles({
   table: {
@@ -223,13 +224,24 @@ function getTable(vectors, aggregation, projectionColumns, dataset) {
   );
 }
 
-const mapStateToProps = state => {
+const mapState = state => {
   return ({
     projectionColumns: state.projectionColumns,
     dataset: state.dataset
   })
 }
 
-export var CoralLegend = connect(mapStateToProps, null)(({ selection, aggregate, projectionColumns, dataset }) => {
+const mapDispatch = dispatch => ({})
+
+const connector = connect(mapState, mapDispatch);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+    aggregate: boolean
+    selection: Vect[]
+}
+
+export var CoralLegend = connector(({ selection, aggregate, projectionColumns, dataset }: Props) => {
   return getTable(selection, aggregate, projectionColumns, dataset)
 })

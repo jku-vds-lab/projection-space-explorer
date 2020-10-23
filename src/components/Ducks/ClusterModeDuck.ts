@@ -10,7 +10,7 @@ export const setClusterModeAction = clusterMode => ({
     clusterMode: clusterMode
 });
 
-const clusterMode = (state = ClusterMode.Univariate, action) => {
+export default function clusterMode (state = ClusterMode.Univariate, action): ClusterMode {
     switch (action.type) {
         case SET:
             return action.clusterMode
@@ -18,5 +18,3 @@ const clusterMode = (state = ClusterMode.Univariate, action) => {
             return state
     }
 }
-
-export default clusterMode

@@ -7,10 +7,8 @@ const projectionColumns = (state = [], action) => {
     
     switch (action.type) {
         case SET:
-            console.log("reducing columns")
             return action.projectionColumns
         case SET_ENTRY:
-            console.log("reducing columns")
             copy = [...state]
             
             if ("checked" in action.value)

@@ -32,6 +32,7 @@ import globalPointSize from '../Ducks/GlobalPointSizeDuck';
 import hoverState from '../Ducks/HoverStateDuck';
 import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
+import trailSettings from '../Ducks/TrailSettingsDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -66,7 +67,8 @@ const allReducers = {
   globalPointSize: globalPointSize,
   hoverState: hoverState,
   pointColorScale: pointColorScale,
-  pointColorMapping: pointColorMapping
+  pointColorMapping: pointColorMapping,
+  trailSettings: trailSettings
 }
 
 const appReducer = combineReducers(allReducers)
@@ -79,3 +81,12 @@ export const rootReducer = (state, action) => {
 
   return appReducer(state, action)
 }
+
+const rootReducer2 = combineReducers({
+  dataset: dataset
+})
+
+export type RootState = ReturnType<typeof rootReducer>
+export type RootState2 = ReturnType<typeof rootReducer2>
+
+let r: RootState2 = null

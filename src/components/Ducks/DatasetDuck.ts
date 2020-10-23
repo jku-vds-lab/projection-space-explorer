@@ -1,11 +1,26 @@
+import { Dataset } from "../util/datasetselector";
+
 const SET = "ducks/database/SET"
 
-export const setDatasetAction = dataset => ({
-    type: SET,
-    dataset: dataset
-});
+interface SetDatasetAction {
+    type: typeof SET
+    dataset: Dataset
+}
 
-const dataset = (state = null, action) => {
+type DatasetActionTypes = SetDatasetAction
+
+export function setDatasetAction(dataset: Dataset): DatasetActionTypes {
+    return {
+        type: SET,
+        dataset: dataset
+    }
+}
+
+
+
+const initialState: Dataset = null
+
+export default function dataset(state = initialState, action: DatasetActionTypes): Dataset {
     switch (action.type) {
         case SET:
             return action.dataset
@@ -13,5 +28,3 @@ const dataset = (state = null, action) => {
             return state
     }
 }
-
-export default dataset

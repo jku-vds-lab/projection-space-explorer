@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
-import { BottomNavigation, BottomNavigationAction, Divider, Icon, SvgIcon, Tooltip } from "@material-ui/core";
+import { BottomNavigation, BottomNavigationAction, Divider, Drawer, Icon, SvgIcon, Tooltip } from "@material-ui/core";
 import { Dataset, DatasetDatabase } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
@@ -129,7 +129,6 @@ const mapDispatchToProps = dispatch => ({
 var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component<any, any> {
   legend: React.RefObject<Legend>;
   dataset: Dataset;
-  segments: any;
   threeRef: any;
 
 
@@ -213,7 +212,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     // Set new dataset as variable
     this.props.setDataset(dataset)
-    this.segments = dataset.segments
 
     // Load new view
     let lineScheme = this.mappingFromScale(NamedCategoricalScales.DARK2(), { key: 'algo' }, dataset)
@@ -301,7 +299,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     var defaultSizeAttribute = this.props.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
 
     if (defaultSizeAttribute) {
-      console.log("SETTING DEFAULT")
       this.props.setGlobalPointSize([1, 2])
       this.props.setChannelSize(defaultSizeAttribute)
 
@@ -318,17 +315,13 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     var defaultColorAttribute = this.props.categoryOptions.getAttribute("color", "algo", "categorical")
     if (defaultColorAttribute) {
       this.props.setChannelColor(defaultColorAttribute)
-      console.log("setting channel color")
-
-      //this.threeRef.current.particles.colorCat(defaultColorAttribute, this.mappingFromScale(state.definedScales[state.selectedScaleIndex], defaultColorAttribute, dataset))
-      //state.showColorMapping = this.threeRef.current.particles.getMapping()
     } else {
       this.props.setChannelColor(null)
     }
 
     var defaultBrightnessAttribute = this.props.categoryOptions.getAttribute("transparency", "age", "sequential")
     if (defaultBrightnessAttribute) {
-      
+
       state.selectedVectorByTransparency = defaultBrightnessAttribute.key
       state.vectorByTransparency = defaultBrightnessAttribute
     }
@@ -341,101 +334,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   onLineSelect(algo, show) {
     this.threeRef.current.filterLines(algo, show)
   }
-
-
-  onSegmentClustering() {
-    var worker = new Worker('dist/cluster.js')
-
-    // Try to extract puth bundles
-    var load = []
-
-    this.segments.forEach((segment, i) => {
-      segment.vectors.forEach((vec, vi) => {
-        if (vi < segment.vectors.length - 1) {
-          load.push([
-            segment.vectors[vi].x,
-            segment.vectors[vi].y,
-            segment.vectors[vi + 1].x,
-            segment.vectors[vi + 1].y,
-            segment.lineKey,
-            segment.vectors[vi].clusterLabel == undefined ? 0 : segment.vectors[vi].clusterLabel,
-            segment.vectors[vi + 1].clusterLabel == undefined ? 0 : segment.vectors[vi + 1].clusterLabel,
-            segment.vectors[vi].view.meshIndex,
-            segment.vectors[vi + 1].view.meshIndex])
-        }
-      })
-    })
-
-    worker.onmessage = (e) => {
-      // Retreived segment clusters
-      var bundles = {}
-      var edgeClusters = new MultiDictionary()
-      e.data.result.forEach((entry, i) => {
-        const [label, probability] = entry
-
-        if (label >= 0) {
-          if (label in bundles) {
-            bundles[label].push(load[i])
-          } else {
-            bundles[label] = [load[i]]
-          }
-
-
-          edgeClusters.insert(label, new DataEdge(this.props.dataset.vectors[load[i][7]], this.props.dataset.vectors[load[i][8]]))
-        }
-      })
-
-      // Get center point for bundles
-      var result = this.threeRef.current.debugD3(edgeClusters)
-      var clusters = result[1]
-
-      clusters.forEach(cluster => {
-        var pts = cluster.vectors.map(vector => [vector.x, vector.y])
-        // Get hull of cluster
-        var polygon = concaveman(pts);
-
-        // Get triangulated hull for cluster
-        var triangulated = triangulate([polygon.flat()])
-
-
-        cluster.hull = polygon
-        cluster.triangulation = triangulated
-      })
-
-
-      //this.threeRef.current.debugSegs(bundles, edgeClusters)
-
-
-      this.setState((state, props) => {
-        this.threeRef.current.createClusters(clusters)
-
-        var story = new Story(clusters.slice(0, 9), null)
-
-        return {
-          clusteringOpen: false,
-          clusteringWorker: null,
-          //clusters: clusters,
-          stories: [story],
-          activeStory: story
-        }
-      })
-    }
-
-    this.setState((state, props) => {
-      return {
-        clusteringOpen: true,
-        clusteringWorker: worker
-      }
-    })
-
-    worker.postMessage({
-      type: 'segment',
-      load: load
-    })
-  }
-
-
-
 
 
   render() {
@@ -685,24 +583,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                             if (event.target.value != "") {
                               attribute = this.props.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
                             }
-                            var state = {
-                              showColorMapping: undefined
-                            }
 
                             this.props.setAdvancedColoringSelection(new Array(100).fill(true))
                             this.props.setChannelColor(attribute)
-
-                            var scale = null
-
-
-
-                            //this.threeRef.current.particles.colorCat(attribute, this.mappingFromScale(scale, attribute, this.props.dataset))
-
-
-                            //state.showColorMapping = this.threeRef.current.particles.getMapping()
-                            this.setState(state)
-
-                            //this.threeRef.current.particles.update()
                           }}
                         >
                           <MenuItem value="">None</MenuItem>
@@ -718,7 +601,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               }
 
               <Grid item>
-                
+
                 <ColorScaleSelect></ColorScaleSelect>
               </Grid>
 
@@ -727,8 +610,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                 {
                   this.props.channelColor != null && this.props.channelColor.type == 'categorical' ?
 
-                    <AdvancedColoringPopover
-                      showColorMapping={this.state.showColorMapping}></AdvancedColoringPopover>
+                    <AdvancedColoringPopover></AdvancedColoringPopover>
                     :
                     <div></div>
                 }
@@ -745,7 +627,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                   open={this.props.openTab == 1}
                   backendRunning={this.state.backendRunning}
                   clusteringWorker={this.state.clusteringWorker}
-                  dataset={this.props.dataset}
                 ></ClusteringTabPanel> : <div></div>
               }
 

@@ -101,7 +101,7 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
         })
 
 
-        let worker = new Worker("dist/force.js")
+        let worker = new Worker("dist/forceatlas2.js")
         this.setState({
             worker: worker
         })
@@ -172,7 +172,7 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
                     })
                 }
                 
-            }}>{this.state.worker ? "Stop Force Embedding" : "Start Force Embedding"}</Button>
+            }}>{this.state.worker ? "Stop Force Embedding" : "ForceAtlas2"}</Button>
 
 
             <Modal
@@ -182,15 +182,12 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
                 aria-describedby="simple-modal-description"
             >
                 <Paper className="ForceEmbeddingModal">
-                    <h2 id="simple-modal-title">Force Embedding</h2>
+                    <h2 id="simple-modal-title">ForceAtlas2</h2>
                     <div>
                         <TextField
                             id="standard-number"
                             label="Iterations"
                             type="number"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
                             value={this.state.iterations}
                             onChange={(event) => {
                                 if (this.isNumeric(event.target.value) && parseFloat(event.target.value) > 0) {
