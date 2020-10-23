@@ -699,11 +699,11 @@ export class Dataset {
                 }
             }
         })
-        this.columns['algo'].featureType = FeatureType.Categorical
-        this.columns['clusterLabel'].featureType = FeatureType.Categorical
-        this.columns['clusterProbability'].featureType = FeatureType.Quantitative
-        this.columns['x'].featureType = FeatureType.Quantitative
-        this.columns['y'].featureType = FeatureType.Quantitative
+        if ('algo' in this.columns) this.columns['algo'].featureType = FeatureType.Categorical
+        if ('clusterLabel' in this.columns) this.columns['clusterLabel'].featureType = FeatureType.Categorical
+        if ('clusterProbability' in this.columns) this.columns['clusterProbability'].featureType = FeatureType.Quantitative
+        if ('x' in this.columns) this.columns['x'].featureType = FeatureType.Quantitative
+        if ('y' in this.columns) this.columns['y'].featureType = FeatureType.Quantitative
     }
 
     mapProjectionInitialization = entry => {
