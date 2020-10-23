@@ -1109,6 +1109,7 @@ function abstractSynchronousLayout(graph, params) {
 
 
 self.addEventListener('message', function (e) {
+    let postMessage = self.postMessage as any
     const nodes = e.data.nodes
     const edges = e.data.edges
     const params = e.data.params
@@ -1146,7 +1147,7 @@ self.addEventListener('message', function (e) {
         if (i % Math.floor(iterations / 100) == 0) {
             let res = collectLayoutChanges(graph, matrices.nodes)
 
-            self.postMessage({
+            postMessage({
                 type: 'progress',
                 progress: (i / iterations) * 100,
                 positions: res
@@ -1158,7 +1159,8 @@ self.addEventListener('message', function (e) {
 
     let res = collectLayoutChanges(graph, matrices.nodes);
 
-    self.postMessage({
+
+    postMessage({
         type: 'finish',
         positions: res,
         progress: 0

@@ -17,8 +17,7 @@ import clsx from 'clsx';
 const styles = (theme) => ({
     flexContainer: {
         display: 'flex',
-        alignItems: 'center',
-        boxSizing: 'border-box'
+        alignItems: 'center'
     },
     table: {
         // temporary right-to-left patch, waiting for

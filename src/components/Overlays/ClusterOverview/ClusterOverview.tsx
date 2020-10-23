@@ -35,7 +35,6 @@ class Trace {
 
 
 type ClusterOverviewProps = {
-    type: DatasetType
     story?: Story
     itemClicked: any
     storyMode?: StoryMode

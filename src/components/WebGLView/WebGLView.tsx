@@ -250,7 +250,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     wheelListener: any;
     mouseUpListener: any;
     infoTimeout: any
-    multivariateClusterView = React.createRef()
+    multivariateClusterView: any = React.createRef()
 
 
     constructor(props) {

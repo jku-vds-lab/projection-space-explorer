@@ -78,7 +78,7 @@ export var ProjectionControlCard = connector(({
     const [computing, setComputing] = React.useState(true)
 
     React.useEffect(() => {
-        if (step < 1000 && computing && worker != null) {
+        if (step < projectionParams.iterations && computing && worker != null) {
             worker.postMessage({
                 messageType: 'step'
             })
@@ -115,8 +115,8 @@ export var ProjectionControlCard = connector(({
                             <CloseIcon />
                         </IconButton>
                     }
-                    title={projectionParams.method == 0 ? 't-SNE' : 'UMAP'}
-                    subheader={`${step}/1000`}
+                    title={projectionParams.method == 'tsne' ? 't-SNE' : 'UMAP'}
+                    subheader={`${step}/${projectionParams.iterations}`}
                 />
                 <div className={classes.controls}>
 

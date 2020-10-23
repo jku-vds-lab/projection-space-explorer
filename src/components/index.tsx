@@ -647,7 +647,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
       <WebGLView
         ref={this.threeRef}
-        algorithms={this.state.selectedLineAlgos}
       />
 
       <StateSequenceDrawerRedux></StateSequenceDrawerRedux>

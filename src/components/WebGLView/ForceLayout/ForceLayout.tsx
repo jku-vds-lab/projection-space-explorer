@@ -17,7 +17,6 @@ type ForceLayoutProps = {
     activeStory: Story
     width: number
     height: number
-    type: String
     clusterEdges: Edge[]
     camera: THREE.Camera
     dataset: any,
@@ -328,7 +327,7 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
                             top: differenceCluster.forceLabelPosition.y + this.props.viewTransform.cameraOffsetToScreen().y,
                             transform: `translate(${differenceCluster.shiftX.toFixed(1)}px, ${differenceCluster.shiftY.toFixed(1)}px)`
                         }}>
-                        <GenericChanges vectorsA={differenceCluster.clusterEdge.source.vectors} vectorsB={differenceCluster.clusterEdge.destination.vectors}></GenericChanges>
+                        <GenericChanges vectorsA={differenceCluster.clusterEdge.source.vectors} vectorsB={differenceCluster.clusterEdge.destination.vectors} scale={1}></GenericChanges>
                     </div>
                 })
             }

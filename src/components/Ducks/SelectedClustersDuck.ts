@@ -1,4 +1,5 @@
-import { Cluster } from "cluster";
+import Cluster from "../util/Cluster";
+
 
 const SET = "ducks/selectedClusters/SET"
 const TOGGLE = "ducks/selectedClusters/TOGGLE"

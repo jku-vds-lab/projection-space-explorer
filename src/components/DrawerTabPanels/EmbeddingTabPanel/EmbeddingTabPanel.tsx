@@ -1,22 +1,17 @@
 import { connect, ConnectedProps } from 'react-redux'
-import { FunctionComponent } from 'react'
 import React = require('react')
 import { FlexParent } from '../../util/FlexParent'
-import { Button, Dialog, Divider, FormGroup, Modal, TextField } from '@material-ui/core'
+import { Button, Dialog } from '@material-ui/core'
 import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
 import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
 import { DataLine, Dataset } from '../../util/datasetselector'
-import { TensorLoader } from './TensorLoader/TensorLoader'
 import { ForceEmbedding } from './ForceEmbedding/ForceEmbedding'
 import { GenericSettings } from './GenericSettings/GenericSettings'
-import { UMAP } from '../../util/UMAP'
-import { projection } from 'vega'
 import { RootState } from '../../Store/Store'
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck'
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck'
 import { BrandingWatermark } from '@material-ui/icons'
-import { ProjectionControlCard2 } from './ProjectionControlCard2/ProjectionControlCard2'
 const Graph = require('graphology');
 
 const mapStateToProps = (state: RootState) => ({

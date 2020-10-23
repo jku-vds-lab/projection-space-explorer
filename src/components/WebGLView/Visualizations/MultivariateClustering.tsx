@@ -49,6 +49,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     devicePixelRatio: number
     scalingScene: Scene
     length: number
+    clusterVis: any
 
 
 
@@ -68,7 +69,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     }
 
     componentDidUpdate(prevProps) {
-        if (!prevProps.activeStory != this.props.activeStory) {
+        if (prevProps.activeStory != this.props.activeStory) {
+            
         }
 
         // If we have clusters now... and are on clusters tab... create cluster visualization
@@ -271,6 +273,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             var geometry = new THREE.CircleGeometry(this.devicePixelRatio * 12, 32);
             var material = new THREE.MeshBasicMaterial({ color: DEFAULT_COLOR });
             var circle = new THREE.Mesh(geometry, material);
+            
             var center = cluster.getCenter()
             circle.position.set(center.x, center.y, 0)
             this.scene.add(circle);

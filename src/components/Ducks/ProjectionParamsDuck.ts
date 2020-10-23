@@ -10,7 +10,8 @@ const initialState = {
     learningRate: 50,
     nNeighbors: 15,
     iterations: 1000,
-    seeded: false
+    seeded: false,
+    method: ''
 }
 
 type ProjectionParamsState = typeof initialState

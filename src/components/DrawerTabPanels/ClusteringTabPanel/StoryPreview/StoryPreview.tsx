@@ -1,30 +1,32 @@
 import * as React from 'react'
 import { Story } from '../../../util/Cluster'
 import { Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText } from '@material-ui/core';
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
 import './StoryPreview.scss'
 import DeleteIcon from '@material-ui/icons/Delete';
 import { setActiveStory } from '../../../Ducks/ActiveStoryDuck';
 import { addStory, deleteStory } from '../../../Ducks/StoriesDuck';
 
-type OwnProps = {
+const mapStateToProps = state => ({
+    activeStory: state.activeStory
+})
+
+const mapDispatchToProps = dispatch => ({
+    setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
+    deleteStory: story => dispatch(deleteStory(story)),
+    addStory: story => dispatch(addStory(story))
+})
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
     stories: Story[]
-    onChange: any
     activeStory: any
     type: String
     addStory: any
 }
-
-type StateProps = {
-
-}
-
-type DispatchProps = {
-    setActiveStory: any
-    deleteStory: any
-}
-
-type Props = StateProps & DispatchProps & OwnProps
 
 const StoryPreviewFull = ({
     stories, setActiveStory, activeStory,
@@ -82,14 +84,4 @@ const StoryPreviewFull = ({
 }
 
 
-const mapStateToProps = state => ({
-    activeStory: state.activeStory
-})
-
-const mapDispatchToProps = dispatch => ({
-    setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
-    deleteStory: story => dispatch(deleteStory(story)),
-    addStory: story => dispatch(addStory(story))
-})
-
-export const StoryPreview = connect<StateProps, DispatchProps, OwnProps>(mapStateToProps, mapDispatchToProps)(StoryPreviewFull)
+export const StoryPreview = connector(StoryPreviewFull)
