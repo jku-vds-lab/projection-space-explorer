@@ -614,7 +614,7 @@ export class Dataset {
         this.type = this.info.type
 
         this.calculateBounds()
-        this.calculateColumnTypes(ranges)
+        this.calculateColumnTypes(ranges, featureTypes)
         this.checkLabels()
 
         // If the dataset is sequential, calculate the segments
@@ -679,10 +679,12 @@ export class Dataset {
     /**
      * Creates a map which shows the distinct types and data types of the columns.
      */
-    calculateColumnTypes(ranges) {
+    calculateColumnTypes(ranges, featureTypes) {
         var columnNames = Object.keys(this.vectors[0])
         columnNames.forEach(columnName => {
             this.columns[columnName] = {}
+
+            this.columns[columnName].featureType = featureTypes[columnName]
 
             // Check data type
             if (columnName in ranges) {
@@ -697,6 +699,11 @@ export class Dataset {
                 }
             }
         })
+        this.columns['algo'].featureType = FeatureType.Categorical
+        this.columns['clusterLabel'].featureType = FeatureType.Categorical
+        this.columns['clusterProbability'].featureType = FeatureType.Quantitative
+        this.columns['x'].featureType = FeatureType.Quantitative
+        this.columns['y'].featureType = FeatureType.Quantitative
     }
 
     mapProjectionInitialization = entry => {
