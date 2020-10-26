@@ -608,7 +608,6 @@ export class Dataset {
     constructor(vectors, ranges, preselection, info, featureTypes) {
         this.vectors = vectors
         this.ranges = ranges
-        this.featureTypes = featureTypes
         this.info = info
         this.columns = {}
         this.type = this.info.type

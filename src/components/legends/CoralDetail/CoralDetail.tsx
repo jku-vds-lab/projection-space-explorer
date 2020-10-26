@@ -149,16 +149,16 @@ function genRows(vectors, projectionColumns, dataset) {
   for (var key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-      if (dataset.columns[key].featureType === FeatureType.Quantitative) {
+      if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
         var histData = mapHistData(vectors, key)
         rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
-      } else if (dataset.columns[key].featureType === FeatureType.Categorical) {
+      } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
         // categorical feature
         var barData = mapBarChartData(vectors, key)
         var feature = key + ': \n' + barData['values'][0]['category']
         rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
-      } else if (dataset.columns[key].featureType === FeatureType.Date) {
+      } else if (dataset.columns[key]?.featureType === FeatureType.Date) {
         // date feature
         var histData = mapHistData(vectors, key)
         rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaDate data={histData} actions={false} tooltip={new Handler().call}/>])
