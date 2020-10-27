@@ -119,6 +119,31 @@ export class JSONLoader implements Loader {
             }
         })
 
+        // replace date features by their numeric timestamp equivalent
+        // and fix all quantitative features to be numbers
+        // list of filter headers for date
+        const dateFeatures = []
+        const quantFeatures = []
+        for (var key in types) {
+            if (types[key] === FeatureType.Date) {
+                dateFeatures.push(key)
+            } else if (types[key] === FeatureType.Quantitative) {
+                quantFeatures.push(key)
+            }
+        }
+        // for all rows
+        for (var i=0; i < this.vectors.length; i++) {
+            // for all date features f
+            dateFeatures.forEach(f => {
+                // overwrite sample with its timestamp
+                this.vectors[i][f] = Date.parse(this.vectors[i][f])
+            });
+            quantFeatures.forEach(f => {
+                // overwrite sample with its timestamp
+                this.vectors[i][f] = +this.vectors[i][f]
+            });
+        }
+
         this.datasetType = datasetType ? datasetType : new InferCategory(this.vectors).inferType()
 
         let clusters: Cluster[] = []

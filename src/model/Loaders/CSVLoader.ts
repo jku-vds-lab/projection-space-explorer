@@ -88,7 +88,6 @@ export class CSVLoader implements Loader {
         header.forEach((f) => {
             if (contains_number[f] && !contains_date[f] && !contains_arbitrary[f]) {
                 // only numbers -> quantitative type
-                // (no way to tell if a feature of only numbers should be categorical, even if it is all integers)
                 types[f] = FeatureType.Quantitative
             } else if (!contains_number[f] && contains_date[f] && !contains_arbitrary[f]) {
                 // only date -> date type
@@ -98,6 +97,31 @@ export class CSVLoader implements Loader {
                 types[f] = FeatureType.Categorical
             }
         })
+
+        // replace date features by their numeric timestamp equivalent
+        // and fix all quantitative features to be numbers
+        // list of filter headers for date
+        const dateFeatures = []
+        const quantFeatures = []
+        for (var key in types) {
+            if (types[key] === FeatureType.Date) {
+                dateFeatures.push(key)
+            } else if (types[key] === FeatureType.Quantitative) {
+                quantFeatures.push(key)
+            }
+        }
+        // for all rows
+        for (var i=0; i < this.vectors.length; i++) {
+            // for all date features f
+            dateFeatures.forEach(f => {
+                // overwrite sample with its timestamp
+                this.vectors[i][f] = Date.parse(this.vectors[i][f])
+            });
+            quantFeatures.forEach(f => {
+                // overwrite sample with its timestamp
+                this.vectors[i][f] = +this.vectors[i][f]
+            });
+        }
 
         var preselection = Object.keys(header.reduce((map, value) => {
             if (value.startsWith('*')) {
