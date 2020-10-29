@@ -248,7 +248,7 @@ self.addEventListener('message', function (e) {
             cluster.triangulation = triangulated
         })
 
-        console.log(clusters)
+        
         let context = self as any
         context.postMessage(clusters)
     }

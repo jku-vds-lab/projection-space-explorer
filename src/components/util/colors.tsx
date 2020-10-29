@@ -156,7 +156,7 @@ export class DiscreteScale extends LinearColorScale {
   }
 
   map(value) {
-    return this.stops[value]
+    return this.stops[value % this.stops.length]
   }
 }
 

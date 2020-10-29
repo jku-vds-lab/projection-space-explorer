@@ -1,9 +1,9 @@
 import { FunctionComponent } from "react"
 import { FlexParent } from "../../util/FlexParent"
 import React = require("react")
-import { Button, FormControl, FormControlLabel, FormGroup, FormLabel, Switch } from "@material-ui/core"
+import { Avatar, Button, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Switch, Typography } from "@material-ui/core"
 import { ClusterWindow } from "../../projection/integration"
-import { StoryPreview } from "./StoryPreview/StoryPreview"
+import { StoryPreview } from "../StoryTabPanel/StoryPreview/StoryPreview"
 import { connect, ConnectedProps } from 'react-redux'
 import Cluster, { Story } from "../../util/Cluster"
 import { graphLayout, Edge } from "../../util/graphs"
@@ -16,8 +16,20 @@ import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { setStories } from "../../Ducks/StoriesDuck"
 import { StoryMode, setStoryMode } from "../../Ducks/StoryModeDuck"
 import { RootState } from "../../Store/Store"
+import FolderIcon from '@material-ui/icons/Folder';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 var worker = new Worker('dist/cluster.js')
+
+const useStyles = makeStyles((theme) => ({
+    title: {
+        margin: theme.spacing(4, 0, 2),
+    },
+    list: {
+        maxHeight: 400,
+        overflow: 'auto'
+    }
+}));
 
 
 function downloadCSV(csv, filename) {
@@ -67,8 +79,7 @@ const mapStateToProps = (state: RootState) => ({
     storyMode: state.storyMode,
     currentClusters: state.currentClusters,
     displayMode: state.displayMode,
-    dataset: state.dataset,
-    trailSettings: state.trailSettings
+    dataset: state.dataset
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -94,10 +105,10 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
     setStories, setActiveStory,
     currentAggregation, open, backendRunning, clusteringWorker,
     dataset, stories, setClusterEdges, storyMode, setStoryMode,
-    currentClusters, setDisplayMode, displayMode, setSelectedClusters, trailSettings }: Props) => {
+    currentClusters, setDisplayMode, displayMode, setSelectedClusters }: Props) => {
 
     const [clusterId, setClusterId] = React.useState(0)
-
+    const classes = useStyles()
 
     function storyLayout(edges: Edge[]) {
         var stories: Story[] = []
@@ -240,45 +251,7 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
             setStories([story])
             setActiveStory(story)
 
-            /**this.setState((state, props) => {
-                var colorAttribute = state.categoryOptions.json.find(e => e.category == 'color').attributes
-                if (!colorAttribute.find(e => e.key == 'clusterLabel')) {
-                    colorAttribute.push({
-                        "key": 'clusterLabel',
-                        "name": 'clusterLabel',
-                        "type": "categorical"
-                    })
-                }
-
-
-
-                var transparencyAttribute = state.categoryOptions.json.find(e => e.category == 'transparency').attributes
-                if (!transparencyAttribute.find(e => e.key == 'clusterProbability')) {
-                    transparencyAttribute.push({
-                        "key": 'clusterProbability',
-                        "name": 'clusterProbability',
-                        "type": "sequential",
-                        "values": {
-                            "range": [0.2, 1]
-                        }
-                    })
-                }
-
-
-
-                this.threeRef.current.createClusters(clusters)
-
-                var story = new Story(clusters.slice(0, 9))
-
-                return {
-                    categoryOptions: state.categoryOptions,
-                    clusteringOpen: false,
-                    clusteringWorker: null,
-                    clusters: clusters,
-                    stories: [story],
-                    activeStory: story
-                }
-            })**/
+            
         }
         worker.postMessage({
             type: 'point',
@@ -286,51 +259,13 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
         })
 
 
-        /**this.setState((state, props) => {
-            return {
-                clusteringOpen: true,
-                clusteringWorker: worker
-            }
-        })**/
+
     }
 
 
-    /**
-     *         <Button
-                variant='outlined'
-                style={{
-                    margin: '8px 0'
-                }}
-                onClick={() => {
-                    annotateVectors(currentAggregation, clusterId)
-                    setClusterId(clusterId + 1)
-                }}
-            >Annotate Cluster</Button>
-    
-            <Button
-                variant='outlined'
-                style={{
-                    margin: '8px 0'
-                }}
-                onClick={() => {
-                    annotateVectors(dataset.vectors, -1)
-                }}
-            >Reset Clustering</Button>
-    
-    <Button
-                variant="outlined"
-                disabled={backendRunning == false}
-                style={{
-                    margin: '8px 0'
-                }}
-                onClick={() => {
-                    //onClusteringStart()
-                    onClusteringStartClick()
-                }}>Start Clustering</Button>
-    
-            {backendRunning ? <div></div> : <Alert severity="error">No backend detected!</Alert>}
-     */
+ 
 
+    React.useEffect(() => toggleClusters(), [dataset])
 
     React.useEffect(() => {
         worker.onmessage = function () {
@@ -383,18 +318,6 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
             label="Show Clusters Only"
         />
 
-
-        <FormControl>
-            <FormLabel component="legend">Trail Settings</FormLabel>
-            <FormGroup>
-                <FormControlLabel
-                    control={<Switch checked={trailSettings.show} onChange={(_, checked) => null} name="gilad" />}
-                    label="Show Trail"
-                />
-            </FormGroup>
-        </FormControl>
-
-
         <ClusterWindow
             worker={clusteringWorker}
             onClose={() => {
@@ -411,7 +334,36 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
             }}
         ></ClusterWindow>
 
-        <StoryPreview type={dataset?.info.type} stories={stories}></StoryPreview>
+
+        <Typography variant="h6" className={classes.title}>
+            Clusters
+        </Typography>
+        <div>
+            <List className={classes.list}>
+                {currentClusters?.map((cluster, index) => {
+                    return <ListItem>
+                        <ListItemAvatar>
+                            <Avatar>
+                                <FolderIcon />
+                            </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={`Cluster ${index}`}
+                            secondary={`${cluster.vectors.length} Samples`}
+                        />
+                        <ListItemSecondaryAction>
+                            <IconButton edge="end" aria-label="delete">
+                                <DeleteIcon />
+                            </IconButton>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                })
+                }
+            </List>
+        </div>
+
+
+
     </FlexParent>
 
 })

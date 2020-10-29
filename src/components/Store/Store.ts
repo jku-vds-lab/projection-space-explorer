@@ -33,6 +33,8 @@ import hoverState from '../Ducks/HoverStateDuck';
 import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
+import storyEditor from '../Ducks/StoryEditorDuck';
+import activeTrace from '../Ducks/ActiveTraceDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -68,7 +70,9 @@ const allReducers = {
   hoverState: hoverState,
   pointColorScale: pointColorScale,
   pointColorMapping: pointColorMapping,
-  trailSettings: trailSettings
+  trailSettings: trailSettings,
+  storyEditor: storyEditor,
+  activeTrace: activeTrace
 }
 
 const appReducer = combineReducers(allReducers)

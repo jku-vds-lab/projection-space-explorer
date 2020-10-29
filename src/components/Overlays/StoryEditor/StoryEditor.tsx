@@ -4,7 +4,7 @@ import { Button, Paper, requirePropFactory, Tooltip, Typography } from '@materia
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 import Cluster, { Story } from '../../util/Cluster';
 const Graph = require('graphology');
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
 import { DatasetType, Vect, VectBase } from '../../util/datasetselector';
 import GestureIcon from '@material-ui/icons/Gesture';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -13,6 +13,9 @@ import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import Draggable from 'react-draggable';
 import { GenericFingerprint } from '../../legends/Generic';
 import { Rnd } from 'react-rnd';
+import { RootState } from '../../Store/Store';
+import { unweighted } from 'graphology-shortest-path';
+import { setActiveTrace } from '../../Ducks/ActiveTraceDuck';
 
 export function rescalePoints(
     points: { x: number, y: number }[],
@@ -53,7 +56,8 @@ export function rescalePoints(
 enum SETool {
     Draw,
     Delete,
-    Select
+    Select,
+    Dijkstra
 }
 
 enum SEAction {
@@ -68,27 +72,36 @@ type StoryEditorState = {
     edges: any[]
     tool: SETool
     dragLine: any
+    source: any
+    destination: any
 }
 
-type StoryEditorProps = {
+const mapStateToProps = (state: RootState) => ({
+    activeStory: state.activeStory,
+    currentAggregation: state.currentAggregation,
+    webGLView: state.webGLView,
+    storyEditor: state.storyEditor,
+    activeTrace: state.activeTrace
+})
+
+
+const mapDispatchToProps = dispatch => ({
+    setCurrentAggregation: id => dispatch(setAggregationAction(id)),
+    setActiveTrace: trace => dispatch(setActiveTrace(trace))
+})
+
+const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
     setCurrentAggregation: any
     activeStory: Story
     currentAggregation: Vect[]
     webGLView: any
 }
 
-const mapStateToProps = state => ({
-    activeStory: state.activeStory,
-    currentAggregation: state.currentAggregation,
-    webGLView: state.webGLView
-})
-
-
-const mapDispatchToProps = dispatch => ({
-    setCurrentAggregation: id => dispatch(setAggregationAction(id))
-})
-
-export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<StoryEditorProps, StoryEditorState> {
+export const StoryEditor = connector(class extends React.Component<Props, StoryEditorState> {
     svgRef: any = React.createRef()
     pressedElement: any = null
     lastPosition: any
@@ -101,7 +114,9 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
             nodes: [],
             edges: [],
             tool: SETool.Draw,
-            dragLine: null
+            dragLine: null,
+            source: null,
+            destination: null
         }
     }
 
@@ -114,7 +129,9 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
             nodes: [],
             edges: [],
             tool: SETool.Draw,
-            dragLine: null
+            dragLine: null,
+            source: null,
+            destination: null
         })
     }
 
@@ -204,6 +221,19 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
 
     }
 
+    toGraph(story: Story) {
+        let graph = new Graph()
+
+        story.clusters.forEach(cluster => {
+            graph.addNode(cluster.label)
+        })
+        story.edges.forEach(edge => {
+            graph.addDirectedEdge(edge.source.label, edge.destination.label)
+        })
+
+        return graph
+    }
+
     onNodeClick(event, node) {
         switch (this.state.tool) {
             case SETool.Delete:
@@ -216,6 +246,37 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
             case SETool.Select:
                 this.props.setCurrentAggregation(node.cluster.vectors)
                 this.props.webGLView.current.setZoomTarget(node.cluster.vectors, 1)
+                break;
+            case SETool.Dijkstra:
+                if (!this.state.source) {
+                    this.setState({
+                        source: node
+                    })
+                } else {
+                    if (!this.state.destination) {
+                        this.setState({
+                            destination: node
+                        })
+
+                        let g = this.toGraph(this.props.activeStory)
+                        const path = unweighted(g, this.state.source.cluster.label, node.cluster.label)
+
+                        if (path) {
+                            let mainPath = path.map(id => this.state.nodes.find(e => e.cluster.label == id).cluster)
+                            this.props.setActiveTrace({
+                                mainPath: mainPath,
+                                mainEdges: mainPath.slice(1).map((item, index) => {
+                                    return this.props.activeStory.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
+                                })
+                            })
+                        }
+
+                        this.setState({
+                            source: null,
+                            destination: null
+                        })
+                    }
+                }
                 break;
             case SETool.Draw:
                 switch (this.action) {
@@ -253,21 +314,7 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
         }
     }
 
-    componentDidMount() {
-        this.onMouseDown = this.onMouseDown.bind(this)
-        this.onMouseUp = this.onMouseUp.bind(this)
-        this.onMouseMove = this.onMouseMove.bind(this)
-        this.onMouseLeave = this.onMouseLeave.bind(this)
-        this.onMouseClick = this.onMouseClick.bind(this)
 
-        let svg = this.svgRef.current as SVGElement
-
-        svg.addEventListener('mousedown', this.onMouseDown)
-        svg.addEventListener('mouseup', this.onMouseUp)
-        svg.addEventListener('mousemove', this.onMouseMove)
-        svg.addEventListener('mouseleave', this.onMouseLeave)
-        svg.addEventListener('click', this.onMouseClick)
-    }
 
     onNodeMouseDown(node) {
         switch (this.state.tool) {
@@ -298,6 +345,8 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
 
 
     initWithStory(story: Story) {
+        console.log("loaded story...")
+
         const nodes = story.clusters.map(cluster => ({
             meshIndex: cluster.label,
             x: Math.random(),
@@ -312,7 +361,7 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
             destination: nodes.find(node => node.meshIndex == edge.destination.label)
         }))
 
-        let worker = new Worker("dist/force.js")
+        let worker = new Worker("dist/forceatlas2.js")
 
         let self = this
         worker.onmessage = function (e) {
@@ -359,8 +408,35 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
         node.cluster = Cluster.fromSamples(this.props.currentAggregation)
     }
 
+    componentDidMount() {
+        this.onMouseDown = this.onMouseDown.bind(this)
+        this.onMouseUp = this.onMouseUp.bind(this)
+        this.onMouseMove = this.onMouseMove.bind(this)
+        this.onMouseLeave = this.onMouseLeave.bind(this)
+        this.onMouseClick = this.onMouseClick.bind(this)
+
+        let svg = this.svgRef.current as SVGElement
+
+        svg.addEventListener('mousedown', this.onMouseDown)
+        svg.addEventListener('mouseup', this.onMouseUp)
+        svg.addEventListener('mousemove', this.onMouseMove)
+        svg.addEventListener('mouseleave', this.onMouseLeave)
+        svg.addEventListener('click', this.onMouseClick)
+
+        console.log("mount")
+    }
+
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.activeStory != this.props.activeStory) {
+        if (prevProps.storyEditor.visible != this.props.storyEditor.visible) {
+            if (this.props.storyEditor.visible) {
+                if (this.props.activeStory) {
+                    this.initWithStory(this.props.activeStory)
+                }
+            } else {
+                this.clear()
+            }
+        }
+        if (prevProps.activeStory != this.props.activeStory && this.props.storyEditor.visible) {
             if (this.props.activeStory) {
                 this.initWithStory(this.props.activeStory)
             } else {
@@ -370,17 +446,7 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
     }
 
     render() {
-        return <Rnd
-            minWidth={250}
-            minHeight={200}
-            maxWidth={500}
-            default={{
-                width: 300,
-                height: 200,
-                x: 500,
-                y: 500
-            }}
-            dragHandleClassName="StoryEditorStrong">
+        return <div hidden={!this.props.activeStory || !this.props.storyEditor.visible} style={{ width: '50%', height: '50%' }}>
             <Paper
                 elevation={3}
                 style={{
@@ -421,10 +487,10 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
 
                                 const vecA = new VectBase(source.x, source.y)
                                 const vecB = new VectBase(destination.x, destination.y)
-                        
+
                                 const dir = VectBase.subtract(vecB, vecA).normalize()
                                 dir.multiplyScalar(35)
-                                
+
                                 let p2 = VectBase.subtract(vecB, dir)
 
                                 return <line strokeWidth="3" x1={source.x} y1={source.y}
@@ -448,6 +514,8 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
                                         nodes: this.state.nodes.slice(0)
                                     })
                                 }}
+                                    destination={this.state.destination}
+                                    source={this.state.source}
                                     onMouseDown={() => { this.onNodeMouseDown(node) }}
                                     onClick={(event) => { this.onNodeClick(event, node) }}
                                     onMouseUp={() => { this.onNodeMouseUp(node) }}
@@ -468,17 +536,19 @@ export const StoryEditor = connect(mapStateToProps, mapDispatchToProps, null, { 
                             <ToggleButton value={SETool.Select} aria-label="quilt">
                                 <SelectAllIcon />
                             </ToggleButton>
+                            <ToggleButton value={SETool.Dijkstra}>
+                                <SelectAllIcon></SelectAllIcon>
+                            </ToggleButton>
                         </ToggleButtonGroup>
                     </div>
                 </div>
-
             </Paper>
-        </Rnd>
+        </div>
     }
 })
 
 class VectorMath {
-    static test (a, b) {
+    static test(a, b) {
         const vecA = new VectBase(a.x, a.y)
         const vecB = new VectBase(b.x, b.y)
 
@@ -487,7 +557,7 @@ class VectorMath {
     }
 }
 
-function NodeContainer({ node, onNodeChange, onMouseDown, onClick, onMouseUp }) {
+function NodeContainer({ node, onNodeChange, onMouseDown, onClick, onMouseUp, destination, source }) {
     const [edit, setEdit] = React.useState(false)
     const [initial, setInitial] = React.useState(node.id)
 
@@ -512,7 +582,7 @@ function NodeContainer({ node, onNodeChange, onMouseDown, onClick, onMouseUp }) 
 
             </React.Fragment>
         }>
-            <circle cx={0} cy={0} r={node.radius} stroke="black" strokeWidth="3" fill="white" />
+            <circle cx={0} cy={0} r={node.radius} stroke="black" strokeWidth="3" fill={node == source || node == destination ? 'yellow' : 'white'} />
         </Tooltip>
 
 

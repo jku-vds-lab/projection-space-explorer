@@ -57,6 +57,78 @@ var TypeIcon = ({ type }) => {
 }
 
 
+export var PredefinedDatasets = ({ onChange }) => {
+    var database = new DatasetDatabase()
+    var types = database.getTypes()
+
+    var handleClick = (entry) => {
+        if (entry.path.endsWith('json')) {
+            new JSONLoader().resolvePath(entry, onChange)
+        } else {
+            new CSVLoader().resolvePath(entry, onChange)
+        }
+    }
+
+    return <Grid item style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
+        <List subheader={<li />} style={{ backgroundColor: 'white' }}>
+            {
+                types.map(type => (
+                    <li key={type} style={{ backgroundColor: 'inherit' }}>
+                        <ul style={{ backgroundColor: 'inherit', paddingInlineStart: '0px' }}>
+                            <ListSubheader>{Object.keys(DatasetType)[Object.values(DatasetType).indexOf(type)]}</ListSubheader>
+                            {
+
+                                database.data.filter(value => value.type == type).map(entry => {
+                                    return <ListItem key={entry.path} button onClick={() => {
+                                        handleClick(entry)
+                                    }
+                                    }>
+                                        <TypeIcon type={entry.type} />
+                                        <ListItemText primary={entry.display}></ListItemText>
+                                    </ListItem>
+                                })
+                            }
+                        </ul>
+                    </li>
+                ))
+            }
+
+        </List>
+    </Grid>
+}
+
+
+
+export var DatasetDrop = ({ onChange }) => {
+    return <Grid container item alignItems="stretch" justify="center" direction="column" style={{ padding: '16px' }}>
+        <DragAndDrop accept="image/*" handleDrop={(files) => {
+            if (files == null || files.length <= 0) {
+                return;
+            }
+
+            var file = files[0]
+            var fileName = file.name as string
+
+            var reader = new FileReader()
+            reader.onload = (event) => {
+                var content = event.target.result
+
+                if (fileName.endsWith('json')) {
+                    new JSONLoader().resolveContent(content, onChange)
+                } else {
+                    new CSVLoader().resolveContent(content, onChange)
+                }
+            }
+
+            reader.readAsText(file)
+
+
+        }}>
+            <div style={{ height: 200 }}></div>
+        </DragAndDrop>
+    </Grid>
+}
+
 
 export var DatasetList = ({ onChange }) => {
     var database = new DatasetDatabase()
@@ -94,7 +166,7 @@ export var DatasetList = ({ onChange }) => {
                                         <ul style={{ backgroundColor: 'inherit', paddingInlineStart: '0px' }}>
                                             <ListSubheader>{Object.keys(DatasetType)[Object.values(DatasetType).indexOf(type)]}</ListSubheader>
                                             {
-                                               
+
                                                 database.data.filter(value => value.type == type).map(entry => {
                                                     return <ListItem key={entry.path} button onClick={() => {
                                                         setLoad(true)
@@ -139,8 +211,8 @@ export var DatasetList = ({ onChange }) => {
                             }
 
                             reader.readAsText(file)
-                            
-                            
+
+
                         }}>
                             <div style={{ height: 200 }}></div>
                         </DragAndDrop>

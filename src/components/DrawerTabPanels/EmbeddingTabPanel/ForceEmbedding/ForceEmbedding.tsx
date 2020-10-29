@@ -155,24 +155,24 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
         return <FlexParent
             alignItems='stretch'
             flexDirection='column'
-            margin='8px 16px'
             justifyContent=''>
             {
                 this.props.dataset && !this.props.dataset.isSequential && <Alert severity="info">Force Embedding is only available with a valid line attribute!</Alert>
             }
-            <Button disabled={!this.props.dataset?.isSequential} onClick={() => {
-                if (this.state.worker) {
-                    this.state.worker.terminate()
-                    this.setState({
-                        worker: null
-                    })
-                } else {
-                    this.setState({
-                        openModal: true
-                    })
-                }
-                
-            }}>{this.state.worker ? "Stop Force Embedding" : "ForceAtlas2"}</Button>
+            <Button
+                variant="outlined" disabled={!this.props.dataset?.isSequential} onClick={() => {
+                    if (this.state.worker) {
+                        this.state.worker.terminate()
+                        this.setState({
+                            worker: null
+                        })
+                    } else {
+                        this.setState({
+                            openModal: true
+                        })
+                    }
+
+                }}>{this.state.worker ? "Stop Force Embedding" : "ForceAtlas2"}</Button>
 
 
             <Modal
@@ -231,8 +231,6 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
                 </Paper>
             </Modal>
 
-
-            <br></br>
 
             {this.state.worker && <LinearProgressWithLabel value={this.state.progress} />}
         </FlexParent>

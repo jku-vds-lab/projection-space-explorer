@@ -5,6 +5,7 @@ import StopIcon from '@material-ui/icons/Stop';
 import CloseIcon from '@material-ui/icons/Close';
 import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from "../../../Store/Store";
+import { SettingsBackupRestoreSharp } from "@material-ui/icons";
 
 /**
  * Styles for the projection card that allows to stop/resume projection steps.
@@ -53,10 +54,10 @@ const connector = connect(mapStateToProps, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    input: any
     onClose: any
     onComputingChanged: any
     onStep: any
+    controller: any
 }
 
 /**
@@ -64,43 +65,37 @@ type Props = PropsFromRedux & {
  */
 export var ProjectionControlCard = connector(({
     worker,
-    input,
     onStep,
     onComputingChanged,
     projectionParams,
+    controller,
     onClose }: Props) => {
-    if (input == null || worker == null) return <div></div>
+    if (controller == null) return null
 
     const classes = useStylesMedia();
 
 
     const [step, setStep] = React.useState(0)
+    const ref = React.useRef(step)
+
     const [computing, setComputing] = React.useState(true)
 
+    controller.notifier = () => {
+        updateState(ref.current + 1)
+    }
+
     React.useEffect(() => {
-        if (step < projectionParams.iterations && computing && worker != null) {
-            worker.postMessage({
-                messageType: 'step'
-            })
+        if (step < projectionParams.iterations && computing) {
+            controller.step()
         }
     }, [step, computing])
 
+    function updateState(newState) {
+        ref.current = newState;
+        setStep(newState);
+    }
 
-    React.useEffect(() => {
-        var counter = step
-        worker.addEventListener('message', (e) => {
-            var Y = e.data
-            counter = counter + 1
-            setStep(counter)
-            onStep(Y)
-        }, false);
 
-        /**worker.postMessage({
-            input: input.data,
-            seed: input.seed,
-            params: projectionParams
-        })**/
-    }, [worker])
 
     return (
         <Card className={classes.root}>

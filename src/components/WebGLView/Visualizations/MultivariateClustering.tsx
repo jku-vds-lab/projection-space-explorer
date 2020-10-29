@@ -1,5 +1,5 @@
 
-import { Scene, Vector2 } from "three";
+import { Scene, Vector2, Vector3 } from "three";
 import Cluster, { Story } from "../../util/Cluster";
 import THREE = require("three");
 import { Vect } from "../../util/datasetselector";
@@ -9,6 +9,7 @@ import { RootState } from "../../Store/Store";
 import { connect, ConnectedProps } from "react-redux";
 import { arraysEqual } from "../UtilityFunctions";
 import { ClusterMode } from "../../Ducks/ClusterModeDuck";
+import { NamedCategoricalScales, NamedScales } from "../../util/colors";
 
 const SELECTED_COLOR = 0x4d94ff
 const DEFAULT_COLOR = 0xa3a3c2
@@ -21,7 +22,8 @@ const mapState = (state: RootState) => ({
     webGLView: state.webGLView,
     selectedClusters: state.selectedClusters,
     clusterMode: state.clusterMode,
-    activeStory: state.activeStory
+    activeStory: state.activeStory,
+    trailSettings: state.trailSettings
 })
 
 const mapDispatch = dispatch => ({
@@ -69,8 +71,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.activeStory != this.props.activeStory) {
-            
+        if (prevProps.trailSettings != this.props.trailSettings) {
+
         }
 
         // If we have clusters now... and are on clusters tab... create cluster visualization
@@ -104,10 +106,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     break;
             }
         }
-    }
-
-    trailSettings(trailSettings) {
-        this.length = trailSettings.length
     }
 
     updateArrows(zoom: number) {
@@ -157,6 +155,14 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.arrowMesh.geometry = arrowGeometry
     }
 
+
+    hideTrail() {
+
+    }
+
+    showTrail() {
+        
+    }
 
 
     iterateTrail(zoom) {
@@ -211,9 +217,11 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         let lineGeometry = new THREE.Geometry()
         lineGeometry.vertices = []
         lineGeometry.faces = []
+        lineGeometry.colors = []
 
         let index = 0
 
+        
         this.clusterObjects.forEach(clusterObject => {
             let cluster = clusterObject.cluster
             let center = cluster.getCenter()
@@ -234,10 +242,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     lineGeometry.vertices.push(new THREE.Vector3(sample.x * zoom + rigth.x, sample.y * zoom + rigth.y, 0))
 
                     let i = index * 4
-                    lineGeometry.faces.push(new THREE.Face3(i, i + 1, i + 2))
-                    lineGeometry.faces.push(new THREE.Face3(i + 1, i + 3, i + 2))
+                    lineGeometry.faces.push(new THREE.Face3(i, i + 1, i + 2, new Vector3(0, 0, -1), new THREE.Color(clusterObject.lineColor.hex)))
+                    lineGeometry.faces.push(new THREE.Face3(i + 1, i + 3, i + 2, new Vector3(0, 0, -1), new THREE.Color(clusterObject.lineColor.hex)))
 
                     index = index + 1
+
+                    
                 }
             })
         })
@@ -256,7 +266,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
      * Creates the visualization.
      */
     create() {
-        let lineMateral = new THREE.MeshBasicMaterial({ color: LINE_COLOR, side: THREE.DoubleSide })
+        let lineMateral = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, vertexColors: true })
 
         lineMateral.opacity = 0.5
         lineMateral.transparent = true
@@ -267,10 +277,13 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         this.trailMesh = new THREE.Mesh(new THREE.Geometry(), new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide }))
 
-        this.props.clusters.forEach(cluster => {
+        
+        let scale = NamedCategoricalScales.DARK2()
+
+        this.props.clusters.forEach((cluster, ci) => {
 
             // Add circle to scene
-            var geometry = new THREE.CircleGeometry(this.devicePixelRatio * 12, 32);
+            var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * 16, this.devicePixelRatio * 16);
             var material = new THREE.MeshBasicMaterial({ color: DEFAULT_COLOR });
             var circle = new THREE.Mesh(geometry, material);
             
@@ -284,7 +297,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 material: material,
                 mesh: circle,
                 children: [],
-                trailPositions: []
+                trailPositions: [],
+                lineColor: scale.map(ci)
             }
             this.clusterObjects.push(clusterObject)
 

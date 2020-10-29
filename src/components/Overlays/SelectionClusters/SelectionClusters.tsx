@@ -20,13 +20,14 @@ const SelectionClustersFull = function ({
     return <div className="Parent">
         <div className="Cluster">
 
-            <Card style={{ pointerEvents: 'auto' }}>
+
+            {hoverState && hoverState.length > 0 &&  <Card style={{ pointerEvents: 'auto' }}>
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
                     <GenericLegend aggregate={false} type={dataset.type} vectors={hoverState}></GenericLegend>
 
                 </CardContent>
-            </Card>
+            </Card>}
 
         </div>
         <div className="Cluster">

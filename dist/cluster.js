@@ -3257,7 +3257,6 @@ self.addEventListener('message', function (e) {
       cluster.hull = polygon;
       cluster.triangulation = triangulated;
     });
-    console.log(clusters);
     var context = self;
     context.postMessage(clusters);
   }

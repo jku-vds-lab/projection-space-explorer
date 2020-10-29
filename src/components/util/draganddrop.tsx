@@ -1,10 +1,11 @@
 import Button from '@material-ui/core/Button';
-import { Grid } from '@material-ui/core';
+import { Grid, ThemeProvider, withTheme } from '@material-ui/core';
 import * as React from 'react'
 
 type DragAndDropProps = {
     handleDrop: Function
     accept: string
+    theme: any
 }
 
 type DragAndDropState = {
@@ -83,8 +84,9 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
                 {this.state.drag ?
                     <div
                         style={{
-                            border: 'dashed blue 4px',
+                            border: 'dashed blue 2px',
                             position: 'absolute',
+                            borderRadius: '16px',
                             top: 0,
                             bottom: 0,
                             left: 0,
@@ -105,8 +107,9 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
                     </div> :
                     <div
                         style={{
-                            border: 'dashed grey 4px',
+                            border: 'dashed grey 2px',
                             position: 'absolute',
+                            borderRadius: '16px',
                             top: 0,
                             bottom: 0,
                             left: 0,
@@ -146,4 +149,4 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
         )
     }
 }
-export default DragAndDrop
+export default withTheme(DragAndDrop)

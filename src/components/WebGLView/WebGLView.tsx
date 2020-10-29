@@ -34,6 +34,7 @@ import { setHoverState } from '../Ducks/HoverStateDuck';
 import { mappingFromScale } from '../util/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
+import { StoryEditor } from '../Overlays/StoryEditor/StoryEditor';
 
 
 const useStyles = makeStyles(theme => ({
@@ -507,6 +508,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 if (this.props.activeLine) {
                     break;
                 }
+
+                
                 if (this.lasso != null) {
                     // If there is an active lasso, process it
                     var wasDrawing = this.lasso.drawing
@@ -1034,7 +1037,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             }
         }
 
-        if (prevProps.globalPointSize != this.props.globalPointSize) {
+        if (prevProps.globalPointSize != this.props.globalPointSize && this.particles) {
             this.particles.sizeCat(this.props.channelSize, this.props.globalPointSize)
             this.particles.updateSize()
         }
@@ -1132,12 +1135,12 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             this.particles.update()
         }
 
-        if (prevProps.vectorByShape != this.props.vectorByShape) {
+        if (prevProps.vectorByShape != this.props.vectorByShape && this.particles) {
             this.filterPoints({ 'star': true, 'cross': true, 'circle': true, 'square': true })
             this.particles.shapeCat(this.props.vectorByShape)
         }
 
-        if (prevProps.checkedShapes != this.props.checkedShapes) {
+        if (prevProps.checkedShapes != this.props.checkedShapes && this.particles) {
             this.filterPoints(this.props.checkedShapes)
         }
 
@@ -1153,7 +1156,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             }
         }
 
-        if (prevProps.advancedColoringSelection != this.props.advancedColoringSelection) {
+        if (prevProps.advancedColoringSelection != this.props.advancedColoringSelection && this.particles) {
             this.particles.colorFilter(this.props.advancedColoringSelection)
         }
     }
@@ -1288,6 +1291,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
             <MultivariateClustering ref={this.multivariateClusterView}></MultivariateClustering>
 
+            <StoryEditor></StoryEditor>
         </div>
     }
 })

@@ -57,6 +57,8 @@ export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({
             return <RubikFingerprint width={81 * scale} height={108 * scale} vectors={vectors}></RubikFingerprint>
         case DatasetType.Chess:
             return <ChessFingerprint width={80 * scale} height={80 * scale} vectors={vectors}></ChessFingerprint>
+        case DatasetType.Coral:
+            return <CoralLegend selection={vectors} aggregate={true}></CoralLegend>
         default:
             return <div></div>
     }

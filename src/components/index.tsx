@@ -8,14 +8,15 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
-import { BottomNavigation, BottomNavigationAction, Divider, Drawer, Icon, SvgIcon, Tooltip } from "@material-ui/core";
+import { BottomNavigation, BottomNavigationAction, createMuiTheme, Divider, Drawer, Icon, IconButton, List, ListItem, ListItemIcon, ListItemText, MuiThemeProvider, Paper, SvgIcon, Tooltip } from "@material-ui/core";
 import { Dataset, DatasetDatabase } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import { arraysEqual } from "./WebGLView/UtilityFunctions";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { ChooseFileDialog } from './util/dataselectui'
+import MenuIcon from '@material-ui/icons/Menu';
+import { ChooseFileDialog, DatasetDrop, DatasetList, PredefinedDatasets } from './util/dataselectui'
 import { DataEdge, MultiDictionary } from "./util/datasetselector"
 import * as React from "react";
 import { SelectionClusters } from "./Overlays/SelectionClusters/SelectionClusters";
@@ -23,7 +24,7 @@ import { Tool, ToolSelectionRedux } from "./Overlays/ToolSelection/ToolSelection
 import { PathLengthFilter } from "./DrawerTabPanels/StatesTabPanel/PathLengthFilter/PathLengthFilter";
 import { SizeSlider } from "./DrawerTabPanels/StatesTabPanel/SizeSlider/SizeSlider";
 import { ClusterOverview } from "./Overlays/ClusterOverview/ClusterOverview";
-import { Story } from "./util/Cluster";
+import Cluster, { Story } from "./util/Cluster";
 import { Legend } from "./DrawerTabPanels/StatesTabPanel/LineSelection/LineSelection";
 import concaveman = require("concaveman");
 import * as ReactDOM from 'react-dom';
@@ -63,6 +64,9 @@ import { setChannelSize } from "./Ducks/ChannelSize";
 import { setGlobalPointSize } from "./Ducks/GlobalPointSizeDuck";
 import { setSelectedClusters } from "./Ducks/SelectedClustersDuck";
 import { setChannelColor } from "./Ducks/ChannelColorDuck";
+import { MenuOpen } from "@material-ui/icons";
+import { StoryTabPanel } from "./DrawerTabPanels/StoryTabPanel/StoryTabPanel";
+import { setCurrentClustersAction } from "./Ducks/CurrentClustersDuck";
 
 
 
@@ -85,7 +89,24 @@ function TabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {<Box style={{ overflowY: 'auto', height: '100%' }}>{children}</Box>}
+      {<Box style={{ overflow: 'auto' }}>{children}</Box>}
+    </Typography>
+  );
+}
+
+function TabPanel2(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {<Paper style={{ overflow: 'hidden', height: '100vh' }}>{children}</Paper>}
     </Typography>
   );
 }
@@ -122,7 +143,8 @@ const mapDispatchToProps = dispatch => ({
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
   setSelectedClusters: value => dispatch(setSelectedClusters(value)),
   wipeState: () => dispatch({ type: 'RESET_APP' }),
-  setChannelColor: channelColor => dispatch(setChannelColor(channelColor))
+  setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
+  setCurrentClusters: currentClusters => dispatch(setCurrentClustersAction(currentClusters))
 })
 
 
@@ -194,7 +216,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   }
 
   onResize() {
-    this.threeRef.current.resize(window.innerWidth - this.convertRemToPixels(18 * 1), window.innerHeight)
+    this.threeRef.current.resize(window.innerWidth - this.convertRemToPixels(18 * 1) - 72, window.innerHeight)
   }
 
 
@@ -205,7 +227,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
    * @param json 
    */
   onDataSelected(dataset, json) {
-
+    // Wipe old state
+    this.props.wipeState()
 
     // Dispose old view
     this.threeRef.current.disposeScene()
@@ -222,13 +245,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.threeRef.current.createVisualization(dataset, lineScheme, null)
 
-
-    // Wipe old state
-    this.props.wipeState()
-
-
     this.finite(lineScheme, json, dataset)
   }
+
 
   finite(lineColorScheme, categories, dataset) {
     var algos = LineSelectionTree_GenAlgos(this.props.dataset.vectors)
@@ -345,48 +364,58 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         height: "100vh"
       }}>
 
-      <div style={{
-        flexShrink: 0,
-        width: "18rem",
-        height: '100vh',
-        overflowX: 'hidden',
-        overflowY: 'hidden',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
+      <Drawer
+        variant="permanent"
+        style={{
+          width: 72
+        }}
+      >
+        <Divider />
+        <Tabs
+          value={this.props.openTab}
+          orientation="vertical"
+          indicatorColor="primary"
+          textColor="primary"
+          onChange={(e, newVal) => { this.props.setOpenTab(newVal) }}
+          aria-label="disabled tabs example"
+        >
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Load Dataset</Typography>
+            <Typography variant="body2">Lets you load new datasets.</Typography>
+          </React.Fragment>}><Tab icon={<PointsIcon></PointsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Point and Line Channels</Typography>
+            <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
+          </React.Fragment>}><Tab icon={<PointsIcon></PointsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Clustering</Typography>
+            <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
+          </React.Fragment>}><Tab icon={<ClusterIcon></ClusterIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Stories</Typography>
+            <Typography variant="body2">Story telling options.</Typography>
+          </React.Fragment>}><Tab icon={<SettingsIcon style={{ fontSize: 48, color: 'black' }}></SettingsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Embedding and Projection</Typography>
+            <Typography variant="body2">Contains options to perform projection techniques like t-SNE and other approaches like a force-directed layout.</Typography>
+          </React.Fragment>}><Tab icon={<SettingsIcon style={{ fontSize: 48, color: 'black' }}></SettingsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+        </Tabs>
+      </Drawer>
 
-
-
-        <div>
-          <ChooseFileDialog onChange={this.onDataSelected}></ChooseFileDialog>
-
-
-          <Tabs
-            value={this.props.openTab}
-            indicatorColor="primary"
-            textColor="primary"
-            onChange={(e, newVal) => { this.props.setOpenTab(newVal) }}
-            aria-label="disabled tabs example"
-          >
-            <Tooltip enterDelay={500} title={<React.Fragment>
-              <Typography variant="subtitle2">Point and Line Channels</Typography>
-              <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
-            </React.Fragment>}><Tab icon={<PointsIcon></PointsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-            <Tooltip enterDelay={500} title={<React.Fragment>
-              <Typography variant="subtitle2">Clustering</Typography>
-              <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
-            </React.Fragment>}><Tab icon={<ClusterIcon></ClusterIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-            <Tooltip enterDelay={500} title={<React.Fragment>
-              <Typography variant="subtitle2">Embedding and Projection</Typography>
-              <Typography variant="body2">Contains options to perform projection techniques like t-SNE and other approaches like a force-directed layout.</Typography>
-            </React.Fragment>}><Tab icon={<SettingsIcon style={{ fontSize: 48, color: 'black' }}></SettingsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-          </Tabs>
-        </div>
-
-
+      <Box
+        style={{
+          flexShrink: 0,
+          width: "18rem",
+          height: '100vh',
+          overflowX: 'hidden',
+          overflowY: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          border: '1px solid rgba(0, 0, 0, 0.12)'
+        }}>
         <div style={{
           flexGrow: 1,
-          overflowY: 'auto'
+          overflowY: 'hidden'
         }}>
 
 
@@ -398,9 +427,15 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
 
-            <Divider style={{ margin: '8px 0px' }} />
+            <TabPanel2 value={this.props.openTab} index={0} >
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <DatasetDrop onChange={this.onDataSelected}></DatasetDrop>
 
-            <TabPanel value={this.props.openTab} index={0}>
+                <PredefinedDatasets onChange={this.onDataSelected}></PredefinedDatasets>
+              </div>
+            </TabPanel2>
+
+            <TabPanel value={this.props.openTab} index={1}>
 
               {this.props.dataset && this.props.dataset.isSequential && <div>
                 <div>
@@ -621,25 +656,28 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             </TabPanel>
 
 
-            <TabPanel value={this.props.openTab} index={1}>
+            <TabPanel value={this.props.openTab} index={2}>
               {this.props.dataset != null ?
                 <ClusteringTabPanel
-                  open={this.props.openTab == 1}
+                  open={this.props.openTab == 2}
                   backendRunning={this.state.backendRunning}
                   clusteringWorker={this.state.clusteringWorker}
                 ></ClusteringTabPanel> : <div></div>
               }
-
             </TabPanel>
 
-            <TabPanel value={this.props.openTab} index={2}>
+            <TabPanel value={this.props.openTab} index={3}>
+              <StoryTabPanel></StoryTabPanel>
+            </TabPanel>
+
+            <TabPanel value={this.props.openTab} index={4}>
               <EmbeddingTabPanel></EmbeddingTabPanel>
             </TabPanel>
           </Grid>
 
         </div>
 
-      </div>
+      </Box>
 
 
 
@@ -663,16 +701,21 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       <GithubLink></GithubLink>
 
 
-
-
-
       <SelectionClusters></SelectionClusters>
-
-      {this.props.activeStory && false && <StoryEditor></StoryEditor>}
-
     </div >
   }
 })
 
+const theme = createMuiTheme({
+  palette: {
+    type: 'light'
+  }
+})
 
-ReactDOM.render(<Provider store={createStore(rootReducer)}><Application /></Provider>, document.getElementById("mountingPoint"))
+ReactDOM.render(
+  <Provider store={createStore(rootReducer)}>
+    <MuiThemeProvider theme={theme}>
+      <Application />
+    </MuiThemeProvider>
+
+  </Provider>, document.getElementById("mountingPoint"))

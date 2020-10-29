@@ -11,7 +11,10 @@ import { GenericSettings } from './GenericSettings/GenericSettings'
 import { RootState } from '../../Store/Store'
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck'
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck'
-import { BrandingWatermark } from '@material-ui/icons'
+import { TSNEEmbeddingController } from './EmbeddingController/TSNEEmbeddingController'
+import { UMAPEmbeddingController } from './EmbeddingController/UMAPEmbeddingController'
+import { ClusterTrailSettings } from './ClusterTrailSettings/ClusterTrailSettings'
+import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck'
 const Graph = require('graphology');
 
 const mapStateToProps = (state: RootState) => ({
@@ -30,7 +33,8 @@ const mapDispatchToProps = dispatch => ({
     setProjectionOpen: value => dispatch(setProjectionOpenAction(value)),
     setProjectionWorker: value => dispatch(setProjectionWorkerAction(value)),
     setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
-    setProjectionColumns: value => dispatch(setProjectionColumns(value))
+    setProjectionColumns: value => dispatch(setProjectionColumns(value)),
+    setTrailVisibility: visibility => dispatch(setTrailVisibility(visibility))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -46,40 +50,27 @@ type Props = PropsFromRedux & {
     webGLView?: any
 }
 
-const modal = () => {
-    return <Dialog
-        open={false}
-        style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-        }}>
-    </Dialog>
-}
-
 
 export const EmbeddingTabPanel = connector((props: Props) => {
-    const [input, setInput] = React.useState(null)
-
     const [open, setOpen] = React.useState(false)
     const [domainSettings, setDomainSettings] = React.useState('')
 
+    const [controller, setController] = React.useState(null)
 
 
     return <FlexParent
         alignItems='stretch'
         flexDirection='column'
-        margin='0 16px'
         justifyContent=''
     >
         <ProjectionControlCard
-            input={input}
+            controller={controller}
             onClose={() => {
-                if (props.projectionWorker) {
-                    props.projectionWorker.terminate()
+                if (controller) {
+                    controller.terminate()
                 }
-
-                setInput(null)
+                setController(null)
+                props.setTrailVisibility(false)
             }}
             onComputingChanged={(e, newVal) => {
             }}
@@ -97,15 +88,19 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         <ForceEmbedding></ForceEmbedding>
 
 
-        <Button onClick={() => {
-            setDomainSettings('umap')
-            setOpen(true)
-        }}>{'UMAP'}</Button>
+        <Button
+            variant="outlined"
+            onClick={() => {
+                setDomainSettings('umap')
+                setOpen(true)
+            }}>{'UMAP'}</Button>
 
-        <Button onClick={() => {
-            setDomainSettings('tsne')
-            setOpen(true)
-        }}>{'t-SNE'}</Button>
+        <Button
+            variant="outlined"
+            onClick={() => {
+                setDomainSettings('tsne')
+                setOpen(true)
+            }}>{'t-SNE'}</Button>
 
 
         <GenericSettings
@@ -119,31 +114,43 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
                 let worker = null
                 switch (domainSettings) {
-                    case 'tsne':
-                        worker = new Worker('dist/tsne.js')
-                        worker.postMessage({
-                            messageType: 'init',
-                            input: props.dataset.asTensor(selection.filter(e => e.checked)),
-                            seed: props.dataset.vectors.map(sample => [sample.x, sample.y]),
-                            params: params
-                        })
+                    case 'tsne': {
+                        let controller = new TSNEEmbeddingController()
+                        controller.init(props.dataset, selection, params)
+                        controller.stepper = (Y) => {
+                            props.dataset.vectors.forEach((vector, i) => {
+                                vector.x = Y[i][0]
+                                vector.y = Y[i][1]
+                            })
+                            props.webGLView.current.updateXY()
+                            props.webGLView.current.repositionClusters()
+                        }
+
+                        setController(controller)
                         break;
-                    case 'umap':
-                        worker = new Worker('dist/umap.js')
-                        worker.postMessage({
-                            messageType: 'init',
-                            input: props.dataset.asTensor(selection.filter(e => e.checked)),
-                            seed: props.dataset.vectors.map(sample => [sample.x, sample.y]),
-                            params: params
-                        })
+                    }
+
+                    case 'umap': {
+                        let controller = new UMAPEmbeddingController()
+                        controller.init(props.dataset, selection, params)
+                        controller.stepper = (Y) => {
+                            props.dataset.vectors.forEach((vector, i) => {
+                                vector.x = Y[i][0]
+                                vector.y = Y[i][1]
+                            })
+                            props.webGLView.current.updateXY()
+                            props.webGLView.current.repositionClusters()
+                        }
+
+                        setController(controller)
                         break;
+                    }
+
                 }
-
-                props.setProjectionWorker(worker)
-
-                setInput({ seed: props.dataset.vectors.map(sample => [sample.x, sample.y]), data: props.dataset.asTensor(selection.filter(e => e.checked)) })
             }}
         ></GenericSettings>
 
+        
+        <ClusterTrailSettings></ClusterTrailSettings>
     </FlexParent>
 })

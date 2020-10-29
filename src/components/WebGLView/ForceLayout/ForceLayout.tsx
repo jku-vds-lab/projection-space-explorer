@@ -1,7 +1,6 @@
-import * as d3 from 'd3'
 import * as React from 'react'
 import './ForceLayout.scss'
-import Cluster, { Story } from '../../util/Cluster'
+import { Story } from '../../util/Cluster'
 import { GenericFingerprint } from '../../legends/Generic'
 import { connect } from 'react-redux'
 import { Edge } from '../../util/graphs'

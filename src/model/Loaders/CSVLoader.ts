@@ -1,4 +1,4 @@
-import { Vect, DatasetDatabase, Preprocessor, getSegs, Dataset, InferCategory, DatasetType } from "../../components/util/datasetselector"
+import { Vect, Preprocessor, Dataset, InferCategory, DatasetType } from "../../components/util/datasetselector"
 import { Loader } from "./Loader"
 
 
