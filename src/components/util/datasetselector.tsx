@@ -568,6 +568,12 @@ export enum DatasetType {
     None
 }
 
+export enum FeatureType {
+    Categorical,
+    Quantitative,
+    Date
+}
+
 /**
  * Dataset class that holds all data, the ranges and additional stuff
  */
@@ -581,6 +587,9 @@ export class Dataset {
 
     // The type of the dataset (or unknown if not possible to derive)
     type: DatasetType
+
+    // dict of 'featureName': featureType
+    featureTypes: any
 
     // True if the dataset has multiple labels per sample
     multivariateLabels: boolean
@@ -596,7 +605,7 @@ export class Dataset {
     // The edges between clusters.
     clusterEdges: Edge[]
 
-    constructor(vectors, ranges, preselection, info) {
+    constructor(vectors, ranges, preselection, info, featureTypes) {
         this.vectors = vectors
         this.ranges = ranges
         this.info = info
@@ -604,7 +613,7 @@ export class Dataset {
         this.type = this.info.type
 
         this.calculateBounds()
-        this.calculateColumnTypes(ranges)
+        this.calculateColumnTypes(ranges, featureTypes)
         this.checkLabels()
 
         // If the dataset is sequential, calculate the segments
@@ -669,10 +678,12 @@ export class Dataset {
     /**
      * Creates a map which shows the distinct types and data types of the columns.
      */
-    calculateColumnTypes(ranges) {
+    calculateColumnTypes(ranges, featureTypes) {
         var columnNames = Object.keys(this.vectors[0])
         columnNames.forEach(columnName => {
             this.columns[columnName] = {}
+
+            this.columns[columnName].featureType = featureTypes[columnName]
 
             // Check data type
             if (columnName in ranges) {
@@ -687,6 +698,11 @@ export class Dataset {
                 }
             }
         })
+        if ('algo' in this.columns) this.columns['algo'].featureType = FeatureType.Categorical
+        if ('clusterLabel' in this.columns) this.columns['clusterLabel'].featureType = FeatureType.Categorical
+        if ('clusterProbability' in this.columns) this.columns['clusterProbability'].featureType = FeatureType.Quantitative
+        if ('x' in this.columns) this.columns['x'].featureType = FeatureType.Quantitative
+        if ('y' in this.columns) this.columns['y'].featureType = FeatureType.Quantitative
     }
 
     mapProjectionInitialization = entry => {

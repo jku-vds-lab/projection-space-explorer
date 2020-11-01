@@ -1,4 +1,4 @@
-import { Vect, DatasetDatabase, Preprocessor, getSegs, Dataset, InferCategory, DatasetType } from "../../components/util/datasetselector"
+import { Vect, DatasetDatabase, Preprocessor, getSegs, Dataset, InferCategory, DatasetType, FeatureType } from "../../components/util/datasetselector"
 import { Loader } from "./Loader"
 
 
@@ -38,8 +38,15 @@ export class CSVLoader implements Loader {
         this.resolve(finished)
     }
 
-
-
+    getFeatureType(x) {
+        if (typeof x  === "number" || !isNaN(Number(x))) {
+            return 'number'
+        } else if (""+new Date(x) !== "Invalid Date") {
+            return 'date'
+        } else {
+            return 'arbitrary'
+        }
+    }
 
     resolve(finished) {
         var header = Object.keys(this.vectors[0])
@@ -58,6 +65,63 @@ export class CSVLoader implements Loader {
 
             return map
         }, {})
+
+        // infer for each feature whether it contains numeric, date, or arbitrary values
+        var contains_number = {}
+        var contains_date = {}
+        var contains_arbitrary = {}
+        this.vectors.forEach((r) => {
+            header.forEach(f => {
+                const type = this.getFeatureType(r[f])
+                if (type === 'number') {
+                    contains_number[f] = true
+                } else if (type === 'date') {
+                    contains_date[f] = true
+                } else {
+                    contains_arbitrary[f] = true
+                }
+            })
+
+        })
+        var types = {}
+        // decide the type of each feature - categorical/quantitative/date
+        header.forEach((f) => {
+            if (contains_number[f] && !contains_date[f] && !contains_arbitrary[f]) {
+                // only numbers -> quantitative type
+                types[f] = FeatureType.Quantitative
+            } else if (!contains_number[f] && contains_date[f] && !contains_arbitrary[f]) {
+                // only date -> date type
+                types[f] = FeatureType.Date
+            } else {
+                // otherwise categorical
+                types[f] = FeatureType.Categorical
+            }
+        })
+
+        // replace date features by their numeric timestamp equivalent
+        // and fix all quantitative features to be numbers
+        // list of filter headers for date
+        const dateFeatures = []
+        const quantFeatures = []
+        for (var key in types) {
+            if (types[key] === FeatureType.Date) {
+                dateFeatures.push(key)
+            } else if (types[key] === FeatureType.Quantitative) {
+                quantFeatures.push(key)
+            }
+        }
+        // for all rows
+        for (var i=0; i < this.vectors.length; i++) {
+            // for all date features f
+            dateFeatures.forEach(f => {
+                // overwrite sample with its timestamp
+                this.vectors[i][f] = Date.parse(this.vectors[i][f])
+            });
+            quantFeatures.forEach(f => {
+                // overwrite sample with its timestamp
+                this.vectors[i][f] = +this.vectors[i][f]
+            });
+        }
 
         var preselection = Object.keys(header.reduce((map, value) => {
             if (value.startsWith('*')) {
@@ -79,6 +143,6 @@ export class CSVLoader implements Loader {
 
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
 
-        finished(new Dataset(this.vectors, ranges, preselection, { type: this.datasetType }), new InferCategory(this.vectors).load(ranges))
+        finished(new Dataset(this.vectors, ranges, preselection, { type: this.datasetType }, types), new InferCategory(this.vectors).load(ranges))
     }
 }

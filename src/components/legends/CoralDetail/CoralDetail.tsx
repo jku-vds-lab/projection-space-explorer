@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
 import VegaHist from './VegaHist.js';
+import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -14,6 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
+import { FeatureType } from "../../../components/util/datasetselector"
 
 const useStyles = makeStyles({
   table: {
@@ -28,7 +30,7 @@ function createData(feature, category, score, char) {
 function mapHistData(data, feature) {
   const mapped = data.map((d) => {
     return {
-      feature: d[feature]
+      feature: +d[feature]
     }
   })
   return {"values": mapped}
@@ -87,18 +89,6 @@ function dictionary(list) {
   return map
 }
 
-function isCategoricalFeature(feature) {
-  if (feature === undefined) {
-    return true
-  }
-  for (var i = 0; i < feature.length; i++) {
-    if ((feature[i] !== null) && (typeof feature[i] !== "number")) {
-      return true
-    }
-  }
-  return false
-}
-
 function getMaxMean(data) {
   var max = Number.NEGATIVE_INFINITY
   data = data['values']
@@ -111,11 +101,11 @@ function getMaxMean(data) {
 }
 
 function sortByScore(a, b) {
-  if (a[1] === b[1]) {
+  if (a['score'] === b['score']) {
       return 0;
   }
   else {
-      return (a[1] < b[1]) ? 1 : -1;
+      return (a['score'] < b['score']) ? 1 : -1;
   }
 }
 
@@ -147,44 +137,56 @@ function getProjectionColumns(projectionColumns) {
   return pcol
 }
 
+function getNormalizedSTD(data, min, max) {
+  if (min === max) {
+    return 0
+  }
+  data.forEach( (x, i, self) => {
+    self[i] = (+x - +min)/(+max - +min)
+  });
+  
+  return getSTD(data)
+  
+}
+
 function genRows(vectors, projectionColumns, dataset) {
+  if (dataset === undefined) {
+    return []
+  }
   const rows = []
-  const dictOfArrays = dictionary(vectors)  
+  const dictOfArrays = dictionary(vectors)
   const preselect = getProjectionColumns(projectionColumns)
 
   // loop through dict
   for (var key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-        // has range been inferred or does the redux dataset already contain info about whether it is numeric?
-        var isNumeric = false
-        if (key in dataset.columns && 'isNumeric' in dataset.columns[key]) {
-          isNumeric = dataset.columns[key]['isNumeric']
-        } else {
-          isNumeric = !isCategoricalFeature(dictOfArrays[key])
-        }
+      if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
+        // quantitative feature
+        var histData = mapHistData(vectors, key)
+        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
 
-        if (isNumeric) {
-          // numeric feature
-          var histData = mapHistData(vectors, key)
-          rows.push([key, "", 1 - getSTD(dictOfArrays[key]), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
-      } else {
-          // categorical feature
-          var barData = mapBarChartData(vectors, key)
-          var feature = key + ': \n' + barData['values'][0]['category']
-          rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
+      } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
+        // categorical feature
+        var barData = mapBarChartData(vectors, key)
+        rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
+        
+      } else if (dataset.columns[key]?.featureType === FeatureType.Date) {
+        // date feature
+        var histData = mapHistData(vectors, key)
+        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDate data={histData} actions={false} tooltip={new Handler().call}/>])
       }
     }
   }
-
-  // sort rows by score
-  rows.sort(sortByScore)
 
   // turn into array of dicts
   const ret = []
   for (var i = 0; i < rows.length; i++) {
     ret.push(createData(rows[i][0], rows[i][1], rows[i][2], rows[i][3]))
   }
+
+  // sort rows by score
+  ret.sort(sortByScore)
 
   return ret
 }
