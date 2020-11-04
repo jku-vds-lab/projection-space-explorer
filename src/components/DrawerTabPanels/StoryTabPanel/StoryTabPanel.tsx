@@ -9,7 +9,6 @@ const Graph = require('graphology');
 
 const mapStateToProps = (state: RootState) => ({
     stories: state.stories,
-    activeStory: state.activeStory,
     storyEditor: state.storyEditor
 })
 
@@ -27,7 +26,7 @@ type Props = PropsFromRedux & {
 
 const useStyles = makeStyles((theme) => ({
     title: {
-        margin: theme.spacing(4, 0, 2),
+        margin: theme.spacing(0, 0, 2),
     },
     list: {
         maxHeight: 400,
@@ -37,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 export var StoryTabPanel = connector(({
-    activeStory,
     stories,
     openStoryEditor,
     storyEditor }: Props) => {
@@ -48,17 +46,9 @@ export var StoryTabPanel = connector(({
     return <Grid container spacing={0} direction="column" alignItems="stretch">
         <Grid item>
             <Box p={2}>
-
-                <Typography variant="h6" className={classes.title}>Stories</Typography>
-                <StoryPreview stories={stories}></StoryPreview>
-
+                <Typography variant="h6" className={classes.title}>Story Books</Typography>
+                <StoryPreview></StoryPreview>
             </Box>
         </Grid>
-
-
-        {activeStory && <Grid item>
-            <Button onClick={() => openStoryEditor(!storyEditor.visible)} variant="outlined">{`${storyEditor.visible ? 'Close' : 'Open'} Story Editor`}</Button>
-        </Grid>}
-
     </Grid>
 })

@@ -56,7 +56,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & {
     onClose: any
     onComputingChanged: any
-    onStep: any
     controller: any
 }
 
@@ -64,8 +63,6 @@ type Props = PropsFromRedux & {
  * Projection card that allows to start/stop the projection and shows the current steps.
  */
 export var ProjectionControlCard = connector(({
-    worker,
-    onStep,
     onComputingChanged,
     projectionParams,
     controller,
@@ -95,7 +92,11 @@ export var ProjectionControlCard = connector(({
         setStep(newState);
     }
 
-
+    const titles = {
+        forceatlas2: 'ForceAtlas2',
+        umap: 'UMAP',
+        tsne: 't-SNE'
+    }
 
     return (
         <Card className={classes.root}>
@@ -110,7 +111,7 @@ export var ProjectionControlCard = connector(({
                             <CloseIcon />
                         </IconButton>
                     }
-                    title={projectionParams.method == 'tsne' ? 't-SNE' : 'UMAP'}
+                    title={titles[projectionParams.method]}
                     subheader={`${step}/${projectionParams.iterations}`}
                 />
                 <div className={classes.controls}>

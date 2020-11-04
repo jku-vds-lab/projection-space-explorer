@@ -716,7 +716,7 @@ export class Dataset {
      * Returns the vectors in this dataset as a 2d array, which
      * can be used as input for tsne for example.
      */
-    asTensor(columns) {
+    asTensor(columns, samples?) {
         var tensor = []
 
         function oneHot(n, length) {
@@ -725,7 +725,8 @@ export class Dataset {
             return arr
         }
 
-        this.vectors.forEach(vector => {
+    
+        (samples ?? this.vectors).forEach(vector => {
             var data = []
             columns.forEach(entry => {
                 let column = entry.name

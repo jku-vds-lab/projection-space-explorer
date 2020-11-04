@@ -78,6 +78,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
     const [nNeighbors, setNNeighbors] = React.useState(projectionParams.nNeighbors)
     const [iterations, setIterations] = React.useState(projectionParams.iterations)
     const [seeded, setSeeded] = React.useState(projectionParams.seeded)
+    const [useSelection, setUseSelection] = React.useState(projectionParams.useSelection)
 
     const cloneColumns = (projectionColumns) => {
         return projectionColumns.map(val => {
@@ -105,7 +106,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
 
         <DialogContent>
             <Container >
-                <FeaturePicker selection={selection} setSelection={setSelection}></FeaturePicker>
+                {domainSettings != 'forceatlas2' && <FeaturePicker selection={selection} setSelection={setSelection}></FeaturePicker>}
 
 
                 <Grid container justify="center" style={{ width: '100%' }}>
@@ -135,6 +136,10 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                     control={<Checkbox checked={seeded} onChange={(_, checked) => setSeeded(checked)} name="jason" />}
                                     label="Seed Position"
                                 />
+                                <FormControlLabel
+                                    control={<Checkbox checked={useSelection} onChange={(_, checked) => setUseSelection(checked)} />}
+                                    label="Project Selection Only"
+                                />
                             </FormGroup>
                         </FormControl>
                     </Grid>
@@ -150,7 +155,8 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                     learningRate: learningRate,
                     seeded: seeded,
                     nNeighbors: nNeighbors,
-                    method: domainSettings
+                    method: domainSettings,
+                    useSelection: useSelection
                 }, selection)
             }}>Start</Button>
         </DialogActions>

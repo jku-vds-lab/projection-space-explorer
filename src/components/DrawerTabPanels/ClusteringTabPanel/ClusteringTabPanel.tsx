@@ -1,81 +1,28 @@
 import { FunctionComponent } from "react"
 import { FlexParent } from "../../util/FlexParent"
 import React = require("react")
-import { Avatar, Button, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Switch, Typography } from "@material-ui/core"
+import { Avatar, Box, Button, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Switch, Typography } from "@material-ui/core"
 import { ClusterWindow } from "../../projection/integration"
 import { StoryPreview } from "../StoryTabPanel/StoryPreview/StoryPreview"
 import { connect, ConnectedProps } from 'react-redux'
-import Cluster, { Story } from "../../util/Cluster"
+import Cluster from "../../util/Cluster"
+import { Story } from "../../util/Story"
 import { graphLayout, Edge } from "../../util/graphs"
 
 import { setSelectedClusters } from "../../Ducks/SelectedClustersDuck"
-import { setCurrentClustersAction } from "../../Ducks/CurrentClustersDuck"
-import { setActiveStory } from "../../Ducks/ActiveStoryDuck"
+import { addCluster, removeCluster, setCurrentClustersAction } from "../../Ducks/CurrentClustersDuck"
 import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
-import { setStories } from "../../Ducks/StoriesDuck"
+import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories } from "../../Ducks/StoriesDuck"
 import { StoryMode, setStoryMode } from "../../Ducks/StoryModeDuck"
 import { RootState } from "../../Store/Store"
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-var worker = new Worker('dist/cluster.js')
-
-const useStyles = makeStyles((theme) => ({
-    title: {
-        margin: theme.spacing(4, 0, 2),
-    },
-    list: {
-        maxHeight: 400,
-        overflow: 'auto'
-    }
-}));
-
-
-function downloadCSV(csv, filename) {
-    var csvFile;
-    var downloadLink;
-
-    // CSV file
-    csvFile = new Blob([csv], { type: "text/plain" });
-
-    // Download link
-    downloadLink = document.createElement("a");
-
-    // File name
-    downloadLink.download = filename;
-
-    // Create a link to the file
-    downloadLink.href = window.URL.createObjectURL(csvFile);
-
-    // Hide download link
-    downloadLink.style.display = "none";
-
-    // Add the link to DOM
-    document.body.appendChild(downloadLink);
-
-    // Click download link
-    downloadLink.click();
-}
-
-function arrayToCsv(values: any[]) {
-    return values.join(',') + '\n'
-}
-
-function vectorAsXml(vectors, segments) {
-    var str = ""
-    str += vectors[0].pureHeader().join(',') + '\n'
-    vectors.map((vector, i) => {
-        str += arrayToCsv(vector.pureValues())
-    })
-    return str
-}
-
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
     stories: state.stories,
-    activeStory: state.activeStory,
     storyMode: state.storyMode,
     currentClusters: state.currentClusters,
     displayMode: state.displayMode,
@@ -85,11 +32,16 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = dispatch => ({
     setCurrentClusters: clusters => dispatch(setCurrentClustersAction(clusters)),
     setStories: stories => dispatch(setStories(stories)),
-    setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
+    setActiveStory: (activeStory: Story) => dispatch(setActiveStory(activeStory)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setStoryMode: storyMode => dispatch(setStoryMode(storyMode)),
     setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode)),
-    setSelectedClusters: value => dispatch(setSelectedClusters(value))
+    setSelectedClusters: value => dispatch(setSelectedClusters(value)),
+    addCluster: cluster => dispatch(addCluster(cluster)),
+    addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
+    removeCluster: cluster => dispatch(removeCluster(cluster)),
+    addStory: story => dispatch(addStory(story)),
+    removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -101,14 +53,17 @@ type Props = PropsFromRedux & {
     clusteringWorker
 }
 
+
+
+
+
 export const ClusteringTabPanel = connector(({ setCurrentClusters,
     setStories, setActiveStory,
-    currentAggregation, open, backendRunning, clusteringWorker,
+    currentAggregation, clusteringWorker,
     dataset, stories, setClusterEdges, storyMode, setStoryMode,
-    currentClusters, setDisplayMode, displayMode, setSelectedClusters }: Props) => {
+    currentClusters, setDisplayMode, displayMode, setSelectedClusters,
+    addCluster, removeCluster, addStory, addClusterToStory, removeClusterFromStories }: Props) => {
 
-    const [clusterId, setClusterId] = React.useState(0)
-    const classes = useStyles()
 
     function storyLayout(edges: Edge[]) {
         var stories: Story[] = []
@@ -179,6 +134,7 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
                     let stories = storyLayout(dataset.clusterEdges)
 
                     setStories(stories)
+
                     //setActiveStory(stories[0])
                 } else {
                     if (dataset.isSequential) {
@@ -202,7 +158,7 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
             })
 
         } else {
-            setStories(null)
+            setStories(stories)
             setActiveStory(null)
             setCurrentClusters(null)
             setSelectedClusters([])
@@ -210,113 +166,27 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
     }
 
 
-
-
-
-    function onClusteringStartClick() {
-        var worker = new Worker('dist/cluster.js')
-        worker.onmessage = (e) => {
-            // Point clusteruing
-            var clusters = []
-            Object.keys(e.data).forEach(k => {
-                var t = e.data[k]
-                var f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
-                f.label = k
-                clusters.push(f)
-            })
-
-
-            // Inject cluster attributes
-            clusters.forEach(cluster => {
-                var vecs = []
-                cluster.points.forEach(point => {
-                    var label = point.label
-                    var probability = point.probability
-                    var index = point.meshIndex
-                    vecs.push(dataset.vectors[point.meshIndex])
-
-                    dataset.vectors[index]['clusterLabel'] = label
-
-                    if (isNaN(probability)) {
-                        dataset.vectors[index]['clusterProbability'] = 0
-                    } else {
-                        dataset.vectors[index]['clusterProbability'] = probability
-                    }
-                })
-                cluster.vectors = vecs
-            })
-
-            var story = new Story(clusters.slice(0, 9), null)
-            setCurrentClusters(clusters)
-            setStories([story])
-            setActiveStory(story)
-
-            
-        }
-        worker.postMessage({
-            type: 'point',
-            load: dataset.vectors.map(vector => [vector.x, vector.y])
-        })
-
-
-
-    }
-
-
- 
-
     React.useEffect(() => toggleClusters(), [dataset])
 
-    React.useEffect(() => {
-        worker.onmessage = function () {
 
-        }
-        worker.postMessage({
-            type: 'triangulate',
-            message: dataset.vectors.map(vector => [vector.x, vector.y, vector.clusterLabel])
-        })
-    }, [open])
+    return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box p={2}>
+            <FormControlLabel
+                control={<Switch checked={storyMode == StoryMode.Difference} onChange={(event) => {
+                    setStoryMode(event.target.checked ? StoryMode.Difference : StoryMode.Cluster)
+                }} name="test" />}
+                label="Show Differences"
+            />
 
-    return <FlexParent
-        alignItems='stretch'
-        flexDirection='column'
-        margin='0 16px'
-        justifyContent=''
-    >
+            <FormControlLabel
+                control={<Switch checked={displayMode == DisplayMode.OnlyClusters} onChange={(event) => {
+                    setDisplayMode(event.target.checked ? DisplayMode.OnlyClusters : DisplayMode.StatesAndClusters)
+                }} name="test" />}
+                label="Show Clusters Only"
+            />
 
 
-
-        <Button
-            variant="outlined"
-            style={{
-                margin: '8px 0'
-            }}
-            onClick={() => {
-                downloadCSV(vectorAsXml(dataset.vectors, dataset.segments), "output.csv")
-            }}>Download Dataset (CSV)</Button>
-
-        <Button
-            variant="outlined"
-            style={{
-                margin: '8px 0'
-            }}
-            onClick={() => {
-                toggleClusters()
-            }}>Toggle Clusters</Button>
-
-        <FormControlLabel
-            control={<Switch checked={storyMode == StoryMode.Difference} onChange={(event) => {
-                setStoryMode(event.target.checked ? StoryMode.Difference : StoryMode.Cluster)
-            }} name="test" />}
-            label="Show Differences"
-        />
-
-        <FormControlLabel
-            control={<Switch checked={displayMode == DisplayMode.OnlyClusters} onChange={(event) => {
-                setDisplayMode(event.target.checked ? DisplayMode.OnlyClusters : DisplayMode.StatesAndClusters)
-            }} name="test" />}
-            label="Show Clusters Only"
-        />
+        </Box>
 
         <ClusterWindow
             worker={clusteringWorker}
@@ -334,25 +204,51 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
             }}
         ></ClusterWindow>
 
+        <Box p={2}>
+            <Typography variant="h6">
+                Clusters
+            </Typography>
+        </Box>
 
-        <Typography variant="h6" className={classes.title}>
-            Clusters
-        </Typography>
-        <div>
-            <List className={classes.list}>
-                {currentClusters?.map((cluster, index) => {
-                    return <ListItem>
+        <Box paddingLeft={2} paddingRight={2}>
+            <Button
+                variant="outlined"
+                style={{
+                    width: '100%'
+                }}
+                onClick={() => {
+                    if (currentAggregation.length > 0) {
+                        let cluster = Cluster.fromSamples(currentAggregation)
+                        addCluster(cluster)
+                        if (!stories.active) {
+                            let story = new Story([cluster], [])
+                            addStory(story)
+                            setActiveStory(story)
+                        } else {
+                            addClusterToStory(cluster)
+                        }
+                    }
+                }}>Add From Selection</Button>
+        </Box>
+
+        <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
+            <List>
+                {currentClusters?.map((cluster, key) => {
+                    return <ListItem key={key}>
                         <ListItemAvatar>
                             <Avatar>
                                 <FolderIcon />
                             </Avatar>
                         </ListItemAvatar>
                         <ListItemText
-                            primary={`Cluster ${index}`}
+                            primary={`Cluster ${cluster.label}`}
                             secondary={`${cluster.vectors.length} Samples`}
                         />
                         <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="delete">
+                            <IconButton edge="end" aria-label="delete" onClick={() => {
+                                removeClusterFromStories(cluster)
+                                removeCluster(cluster)
+                            }}>
                                 <DeleteIcon />
                             </IconButton>
                         </ListItemSecondaryAction>
@@ -364,7 +260,9 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
 
 
 
-    </FlexParent>
+
+
+    </div>
 
 })
 

@@ -1,5 +1,5 @@
 import { valueInRange } from './UtilityFunctions'
-import { ContinuousMapping } from '../util/colors'
+import { ContinuousMapping } from "../util/Colors/ContinuousMapping"
 import * as THREE from 'three'
 import { Vect, DataLine, Dataset } from '../util/datasetselector'
 

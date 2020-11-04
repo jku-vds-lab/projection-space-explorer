@@ -11,6 +11,7 @@ const initialState = {
     nNeighbors: 15,
     iterations: 1000,
     seeded: false,
+    useSelection: false,
     method: ''
 }
 

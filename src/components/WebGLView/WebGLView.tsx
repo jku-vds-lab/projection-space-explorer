@@ -1,11 +1,4 @@
 
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
-import IconButton from '@material-ui/core/IconButton';
-import SettingsIcon from '@material-ui/icons/Settings';
-import { makeStyles } from '@material-ui/core/styles';
-import Popover from '@material-ui/core/Popover';
-import Grid from '@material-ui/core/Grid';
 import { getDefaultZoom, arraysEqual, normalizeWheel, centerOfMass, interpolateLinear, generateZoomForSet } from './UtilityFunctions';
 import { LassoSelection } from './tools'
 import { isPointInConvaveHull } from '../util/geometry'
@@ -13,8 +6,8 @@ import { GenericClusterLegend } from '../legends/Generic'
 import * as React from "react";
 import * as THREE from 'three'
 import { LassoLayer } from './LassoLayer/LassoLayer';
-import { ForceLayout } from './ForceLayout/ForceLayout';
-import Cluster, { Story } from '../util/Cluster';
+import Cluster from '../util/Cluster';
+import { Story } from "../util/Story";
 import { connect } from 'react-redux'
 import { graphLayout } from '../util/graphs';
 import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
@@ -31,116 +24,14 @@ import { DisplayMode } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { ClusterMode } from '../Ducks/ClusterModeDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
-import { mappingFromScale } from '../util/colors';
+import { mappingFromScale } from '../util/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
-import { StoryEditor } from '../Overlays/StoryEditor/StoryEditor';
-
-
-const useStyles = makeStyles(theme => ({
-    margin: {
-        height: theme.spacing(3),
-    }
-}));
-
-const SettingsPopover = ({ onChangeSlider }) => {
-    const classes = useStyles();
-
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [value, setValue] = React.useState(100);
-
-    const handleClick = event => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
-
-    const marks = [
-        {
-            value: 50,
-            label: '50%',
-        },
-        {
-            value: 75,
-            label: '75%',
-        },
-        {
-            value: 100,
-            label: '100%',
-        },
-        {
-            value: 125,
-            label: '125%',
-        },
-        {
-            value: 150,
-            label: '150%'
-        }
-    ];
-
-    return (
-        <div>
-            <IconButton onClick={handleClick}>
-                <SettingsIcon />
-            </IconButton>
-            <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-            >
-                <Grid
-                    container
-                    direction="column"
-                    justify="center"
-                    alignItems="stretch"
-
-                    style={{ width: '16rem', height: '16rem', margin: '2rem' }}>
-                    <div>
-                        <Typography id="discrete-slider" gutterBottom>
-                            Point Scale
-                        </Typography>
-                        <Slider
-                            onChange={(event, val: number) => { setValue(val); onChangeSlider(val / 100.0) }}
-                            value={value}
-                            aria-labelledby="discrete-slider"
-                            valueLabelDisplay="auto"
-                            step={5}
-                            marks={marks}
-                            min={50}
-                            max={150}
-                        />
-                    </div>
-                </Grid>
-            </Popover>
-        </div>
-    );
-}
-
-
-
-
-
-
 
 
 type ViewProps = {
     dataset: Dataset
     currentTool: Tool
-    openTab: number
     currentAggregation: any
     clusters: Cluster[]
     setActiveLine: any
@@ -165,22 +56,20 @@ type ViewProps = {
     channelColor: any
     setPointColorMapping: any
     setHoverState: any
-    activeStory: Story
     channelSize: any
+    stories: any
 }
 
 type ViewState = {
     hoverCluster: any
     displayClusters: any
     camera: Camera
-    forceLayoutRef: any
 }
 
 const mapStateToProps = (state: RootState) => ({
     currentTool: state.currentTool,
     currentAggregation: state.currentAggregation,
     clusters: state.currentClusters,
-    openTab: state.openTab,
     vectorByShape: state.vectorByShape,
     checkedShapes: state.checkedShapes,
     dataset: state.dataset,
@@ -197,7 +86,7 @@ const mapStateToProps = (state: RootState) => ({
     channelSize: state.channelSize,
     channelColor: state.channelColor,
     pointColorScale: state.pointColorScale,
-    activeStory: state.activeStory,
+    stories: state.stories,
     trailSettings: state.trailSettings
 })
 
@@ -252,6 +141,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     mouseUpListener: any;
     infoTimeout: any
     multivariateClusterView: any = React.createRef()
+    invalidated: boolean
 
 
     constructor(props) {
@@ -272,7 +162,6 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             // clusters to display using force-directed layout
             displayClusters: [],
             camera: null,
-            forceLayoutRef: React.createRef(),
             hoverCluster: undefined
         }
     }
@@ -289,8 +178,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         var best = 30 / (this.camera.zoom * 2.0)
         var res = -1
 
-        for (var index = 0; index < this.vectors.length; index++) {
-            var value = this.vectors[index]
+        for (var index = 0; index < this.props.dataset.vectors.length; index++) {
+            var value = this.props.dataset.vectors[index]
 
             // Skip points matching some criteria
             if (!this.particles.isPointVisible(value)) {
@@ -363,6 +252,9 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         this.renderer.setSize(width, height)
         this.props.viewTransform.width = width
         this.props.viewTransform.height = height
+
+
+        this.requestRender()
     }
 
     onMouseDown(event) {
@@ -422,7 +314,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
                         if (this.props.dataset.isSequential) {
                             if (idx >= 0) {
-                                this.lines.highlight([this.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
+                                this.lines.highlight([this.props.dataset.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
                             } else {
                                 this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
                             }
@@ -430,13 +322,21 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
                         var list = []
                         if (idx >= 0) {
-                            this.currentHover = this.vectors[idx]
-                            list.push(this.vectors[idx])
+                            if (this.currentHover != this.props.dataset.vectors[idx]) {
+                                this.currentHover = this.props.dataset.vectors[idx]
+                                list.push(this.props.dataset.vectors[idx])
+                                this.props.setHoverState(list)
+                                this.requestRender()
+                            }
                         } else {
-                            this.currentHover = null
+                            if (this.currentHover) {
+                                this.currentHover = null
+                                this.props.setHoverState(list)
+                                this.requestRender()
+                            }
+
                         }
 
-                        this.props.setHoverState(list)
 
                     }, 10);
                 }
@@ -452,6 +352,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                     this.camera.position.y = this.camera.position.y - (this.mouse.y - this.mouseDownPosition.y) * (600 / this.camera.zoom);
                     this.mouseDownPosition = this.normaliseMouse(event)
                     this.camera.updateProjectionMatrix()
+
+                    this.requestRender()
                 }
                 break;
             case Tool.Grab:
@@ -467,25 +369,30 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                             if (cluster.containsPoint(coords)) {
                                 if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
                                     found = true
-                                    this.setState({
-                                        hoverCluster: cluster
-                                    })
+                                    if (this.state.hoverCluster != cluster) {
+                                        this.setState({
+                                            hoverCluster: cluster
+                                        })
+                                    }
                                 }
                             }
                         }
                         case ClusterMode.Multivariate: {
                             if (new THREE.Vector2(coords.x, coords.y).distanceTo(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y)) < 1) {
                                 found = true
-                                this.setState({
-                                    hoverCluster: cluster
-                                })
+                                if (this.state.hoverCluster != cluster) {
+                                    this.setState({
+                                        hoverCluster: cluster
+                                    })
+                                }
+
                             }
                         }
 
                     }
 
                 })
-                if (!found) {
+                if (!found && this.state.hoverCluster) {
                     this.setState({
                         hoverCluster: null
                     })
@@ -509,16 +416,16 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                     break;
                 }
 
-                
+
                 if (this.lasso != null) {
                     // If there is an active lasso, process it
                     var wasDrawing = this.lasso.drawing
 
                     this.lasso.mouseUp(coords.x, coords.y)
 
-                    var indices = this.lasso.selection(this.vectors, (vector) => this.particles.isPointVisible(vector))
+                    var indices = this.lasso.selection(this.props.dataset.vectors, (vector) => this.particles.isPointVisible(vector))
                     if (indices.length > 0 && wasDrawing) {
-                        var selected = indices.map(index => this.vectors[index])
+                        var selected = indices.map(index => this.props.dataset.vectors[index])
 
                         this.props.toggleAggregation(selected)
                     } else if (wasDrawing) {
@@ -540,28 +447,31 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                     break;
                 }
 
+                function deriveFromClusters(clusters: Cluster[]) {
+                    let agg = clusters.map(cluster => cluster.vectors).flat()
+                    return [...new Set(agg)]
+                }
+
                 switch (this.props.clusterMode) {
                     case ClusterMode.Univariate: {
                         // current hover is null, check if we are inside a cluster
-                        var found = false
+                        let selected: Cluster = null
+                        let minDist = Number.MAX_VALUE
                         this.props.clusters?.forEach(cluster => {
-                            if (cluster.label != '-1') {
-                                if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
-                                    found = true
-
-                                    if (event.button == 0) {
-                                        var selected = cluster.points.map(h => this.dataset.vectors[h.meshIndex])
-
-                                        this.props.toggleAggregation(selected)
-                                    } else if (event.button == 1) {
-                                        this.setZoomTarget(cluster.vectors, 1)
-                                    }
-                                }
+                            let dist = new THREE.Vector2(coords.x, coords.y).distanceTo(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y))
+                            if (dist < 2 && dist < minDist) {
+                                selected = cluster
+                                minDist = dist
                             }
                         })
-                        if (!found) {
-                            this.clearSelection()
+
+                        if (selected) {
+                            this.props.toggleSelectedCluster(selected)
+                            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
+                        } else {
+
                         }
+                        break;
                     }
                     case ClusterMode.Multivariate: {
                         let selected: Cluster = null
@@ -574,16 +484,14 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                             }
                         })
 
-                        function deriveFromClusters(clusters: Cluster[]) {
-                            let agg = clusters.map(cluster => cluster.vectors).flat()
-                            return [...new Set(agg)]
-                        }
-
                         // Toggle
                         if (selected) {
                             this.props.toggleSelectedCluster(selected)
                             this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
+                        } else {
+
                         }
+                        break;
                     }
                 }
 
@@ -619,7 +527,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             this.particles.groupHighlight([])
         }
 
-        this.vectors.forEach((vector, index) => {
+        this.props.dataset.vectors.forEach((vector, index) => {
             vector.view.selected = false
         })
 
@@ -637,9 +545,9 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         var worldBefore = this.props.viewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top })
         var screenBefore = this.relativeMousePosition(event)
 
-        var newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.dataset.bounds.scaleFactor
-        if (newZoom < 1.0 / this.dataset.bounds.scaleFactor) {
-            this.camera.zoom = 1.0 / this.dataset.bounds.scaleFactor
+        var newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.props.dataset.bounds.scaleFactor
+        if (newZoom < 1.0 / this.props.dataset.bounds.scaleFactor) {
+            this.camera.zoom = 1.0 / this.props.dataset.bounds.scaleFactor
         } else {
             this.camera.zoom = newZoom
         }
@@ -656,6 +564,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
         // Update projection matrix
         this.camera.updateProjectionMatrix();
+
+        this.requestRender()
     }
 
     restoreCamera(world, screen) {
@@ -765,21 +675,19 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         this.props.setViewTransform(new ViewTransform(this.camera, this.getWidth(), this.getHeight()))
 
         this.prevTime = performance.now()
-        
+
     }
 
     createVisualization(dataset, lineColorScheme, vectorColorScheme) {
         this.scene = new THREE.Scene()
         this.pointScene = new THREE.Scene()
-        this.vectors = dataset.vectors
         this.segments = dataset.segments
-        this.dataset = dataset
         this.lineColorScheme = lineColorScheme
         this.vectorColorScheme = vectorColorScheme
 
 
         // Update camera zoom to fit the problem
-        this.camera.zoom = getDefaultZoom(this.vectors, this.getWidth(), this.getHeight())
+        this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight())
         this.camera.position.x = 0.0
         this.camera.position.y = 0.0
         this.camera.updateProjectionMatrix()
@@ -799,8 +707,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         }
 
 
-        this.particles = new PointVisualization(this.vectorColorScheme, this.dataset, window.devicePixelRatio * 16)
-        this.particles.createMesh(this.vectors, this.segments)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 16)
+        this.particles.createMesh(this.props.dataset.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
 
@@ -876,11 +784,13 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         if (this.props.dataset.isSequential) {
             this.lines.updatePosition()
         }
-        this.dataset.calculateBounds()
-        this.camera.zoom = getDefaultZoom(this.vectors, this.getWidth(), this.getHeight())
+        this.props.dataset.calculateBounds()
+        this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight())
         this.camera.position.x = 0.0
         this.camera.position.y = 0.0
         this.camera.updateProjectionMatrix();
+
+        this.requestRender()
 
     }
 
@@ -938,7 +848,13 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     startRendering() {
         requestAnimationFrame(() => this.startRendering());
 
-        this.renderFrame()
+        try {
+            this.renderLoop()
+        }
+        catch {
+
+        }
+
     }
 
 
@@ -954,6 +870,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             //this.camera.zoom = interpolateLinear(this.sourceZoom, this.targetZoom, this.transitionTime)
             this.camera.updateProjectionMatrix()
 
+            this.requestRender()
+
             // End transition
             if (this.transitionTime == 1) {
                 this.sourcePosition = null
@@ -966,7 +884,28 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     }
 
 
+
+    renderLoop() {
+        var ctx = this.selectionRef.current.getContext()
+        ctx.clearRect(0, 0, this.getWidth(), this.getHeight(), 'white');
+
+        this.selectionRef.current.setDimensions(this.getWidth() * window.devicePixelRatio,
+            this.getHeight() * window.devicePixelRatio)
+
+        this.renderLasso(ctx)
+
+
+
+
+        if (this.props.highlightedSequence != null) {
+            this.selectionRef.current.renderHighlightedSequence(ctx, this.props.highlightedSequence)
+        }
+    }
+
+
     renderFrame() {
+        this.invalidated = false
+
         // Calculate delta time
         var nextTime = performance.now()
         var deltaTime = (nextTime - this.lastTime) / 1000
@@ -976,47 +915,43 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         this.updateZoom(deltaTime)
 
         try {
-            let forceLayout = this.state.forceLayoutRef.current
+            let camera = new THREE.OrthographicCamera(this.getWidth() / - 2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / - 2, 1, 1000);
+            camera.lookAt(0, 0, 0)
+            camera.position.z = 1;
+            camera.position.x = this.camera.position.x * this.camera.zoom
+            camera.position.y = this.camera.position.y * this.camera.zoom
+            camera.updateProjectionMatrix();
+
+
 
             this.renderer.clear()
             this.renderer.render(this.scene, this.camera)
 
             if (this.multivariateClusterView.current) {
-                let camera = new THREE.OrthographicCamera(this.getWidth() / - 2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / - 2, 1, 1000);
-                camera.lookAt(0, 0, 0)
-                camera.position.z = 1;
-                camera.position.x = this.camera.position.x * this.camera.zoom
-                camera.position.y = this.camera.position.y * this.camera.zoom
-                camera.updateProjectionMatrix();
                 this.multivariateClusterView.current.updatePositions(this.camera.zoom)
-                this.multivariateClusterView.current.updateArrows(this.camera.zoom, this.props.activeStory)
+                this.multivariateClusterView.current.updateArrows(this.camera.zoom, this.props.stories.active)
+                this.multivariateClusterView.current.updateTrail(this.camera.zoom)
 
                 if (this.multivariateClusterView.current.scene) {
                     this.renderer.render(this.multivariateClusterView.current.scene, camera)
-                    
                 }
                 if (this.multivariateClusterView.current.scalingScene) {
                     this.renderer.render(this.multivariateClusterView.current.scalingScene, this.camera)
                 }
-
             }
 
 
-            this.renderer.render(this.pointScene, this.camera)
+            if (this.pointScene) {
+                this.renderer.render(this.pointScene, this.camera)
+            }
 
-            var ctx = this.selectionRef.current.getContext()
-            ctx.clearRect(0, 0, this.getWidth(), this.getHeight(), 'white');
 
-            this.selectionRef.current.setDimensions(this.getWidth() * window.devicePixelRatio,
-                this.getHeight() * window.devicePixelRatio)
 
-            this.renderLasso(ctx)
-            forceLayout.renderLinks(ctx)
-            //forceLayout.renderClusterEdges(ctx)
-            //this.renderEdge(ctx)
 
-            if (this.props.highlightedSequence != null) {
-                this.selectionRef.current.renderHighlightedSequence(ctx, this.props.highlightedSequence)
+            if (this.multivariateClusterView.current) {
+                if (this.multivariateClusterView.current.clusterScene) {
+                    this.renderer.render(this.multivariateClusterView.current.clusterScene, camera)
+                }
             }
 
         } catch (e) {
@@ -1082,29 +1017,13 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 this.particles.groupHighlight(this.props.currentAggregation)
             }
 
-            this.vectors.forEach(sample => sample.view.selected = false)
+            this.props.dataset.vectors.forEach(sample => sample.view.selected = false)
             this.props.currentAggregation.forEach(sample => {
                 sample.view.selected = true
             })
 
             this.particles.update()
         }
-
-        // If we have clusters now... and are on clusters tab... create cluster visualization
-        /**if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters != null) {
-            if (this.props.openTab == 1) {
-                if (this.props.dataset.multivariateLabels) {
-                    this.multivariateClusterView?.destroy()
-                    this.multivariateClusterView = new MultivariateClustering(this.props.dataset, new THREE.Scene(), this.props.clusters, this.props.displayMode, window.devicePixelRatio)
-                    this.multivariateClusterView?.create()
-                } else {
-                    this.clusterVisualization?.dispose(this.scene)
-                    this.createClusters(this.props.clusters)
-                }
-            }
-        } else if (!arraysEqual(prevProps.clusters, this.props.clusters) && this.props.clusters == null) {
-            this.deleteClusters()
-        }**/
 
         // If 
         if ((this.props.currentTool == Tool.Default && !arraysEqual(prevProps.currentAggregation, this.props.currentAggregation))
@@ -1115,7 +1034,9 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
         if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)
             || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Grab)) {
+
             this.multivariateClusterView?.current.highlightCluster(this.props.selectedClusters)
+
             function deriveFromClusters(clusters: Cluster[]) {
                 let agg = clusters.map(cluster => cluster.vectors).flat()
                 return [...new Set(agg)]
@@ -1159,6 +1080,16 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         if (prevProps.advancedColoringSelection != this.props.advancedColoringSelection && this.particles) {
             this.particles.colorFilter(this.props.advancedColoringSelection)
         }
+
+        this.requestRender()
+    }
+
+    requestRender() {
+        if (this.invalidated) {
+            return;
+        }
+        this.invalidated = true
+        requestAnimationFrame(() => this.renderFrame())
     }
 
 
@@ -1201,6 +1132,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     repositionClusters() {
         this.multivariateClusterView?.current.updatePositions(this.camera.zoom)
         this.multivariateClusterView?.current.iterateTrail(this.camera.zoom)
+        this.multivariateClusterView?.current.createTriangulatedMesh(this.props.clusters)
     }
 
     renderEdge(ctx) {
@@ -1252,46 +1184,11 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 width: "100%",
                 height: "100%"
             }} ref={this.containerRef} tabIndex={0}>
-
-
-                {
-                    this.props.clusterMode == ClusterMode.Univariate && this.state.hoverCluster != null && this.props.currentTool == Tool.Grab ?
-                        <div
-                            className='speech-bubble-ds'
-                            style={{
-                                position: 'absolute',
-                                right: this.getWidth() - this.props.viewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).x,
-                                bottom: this.getHeight() - this.props.viewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).y - 10,
-                            }}>
-                            <GenericClusterLegend
-                                cluster={this.state.hoverCluster}
-                                type={this.dataset.info.type}
-                            ></GenericClusterLegend>
-                        </div>
-
-
-                        :
-                        <div></div>
-                }
-
-
-
             </div>
 
             <LassoLayer ref={this.selectionRef}></LassoLayer>
 
-
-            <ForceLayout
-                ref={this.state.forceLayoutRef}
-                dataset={this.dataset}
-                camera={this.state.camera}
-                width={this.getWidth()}
-                height={this.getHeight()}></ForceLayout>
-
-
             <MultivariateClustering ref={this.multivariateClusterView}></MultivariateClustering>
-
-            <StoryEditor></StoryEditor>
         </div>
     }
 })

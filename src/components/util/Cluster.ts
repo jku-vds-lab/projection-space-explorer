@@ -1,4 +1,3 @@
-import { Edge } from "./graphs"
 import { Vect } from "./datasetselector"
 
 export default class Cluster {
@@ -16,6 +15,30 @@ export default class Cluster {
         this.triangulation = triangulation
     }
 
+
+    static calcBounds(samples: Vect[]) {
+        // Get rectangle that fits around data set
+        var minX = 1000, maxX = -1000, minY = 1000, maxY = -1000;
+        samples.forEach(sample => {
+          minX = Math.min(minX, sample.x)
+          maxX = Math.max(maxX, sample.x)
+          minY = Math.min(minY, sample.y)
+          maxY = Math.max(maxY, sample.y)
+        })
+      
+        return {
+            x: minX,
+            y: minY,
+            width: maxX - minX,
+            height: maxY - minY,
+            left: minX,
+            top: minY,
+            right: maxX,
+            bottom: maxY
+        }
+    }
+
+
     static fromSamples(samples: Vect[]) {
         let cluster = new Cluster(samples.map(sample => ({
             x: sample.x,
@@ -24,6 +47,8 @@ export default class Cluster {
         })))
 
         cluster.vectors = samples
+        cluster.label = Math.floor(Math.random() * 1000)
+        cluster.bounds = Cluster.calcBounds(samples)
 
         return cluster
     }
@@ -87,27 +112,5 @@ export default class Cluster {
 
     order() {
         return this.points.length / 10 + this.getProbability() - this.getSTD() + this.differentLines()
-    }
-}
-
-
-
-
-
-
-
-
-
-
-/**
- * A story is a list of clusters with a specific order.
- */
-export class Story {
-    clusters: Cluster[]
-    edges: Edge[]
-
-    constructor(clusters, edges) {
-        this.clusters = clusters
-        this.edges = edges
     }
 }

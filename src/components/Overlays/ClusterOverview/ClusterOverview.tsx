@@ -1,8 +1,9 @@
 import "./ClusterOverview.scss";
 import * as React from 'react'
-import Cluster, { Story } from "../../util/Cluster";
+import Cluster from "../../util/Cluster";
+import { Story } from "../../util/Story";
 import { GenericFingerprint } from "../../legends/Generic";
-import { Card, Grow, Link, CardHeader, CardContent } from "@material-ui/core";
+import { Card, Grow, Link, CardHeader, CardContent, Button, Typography } from "@material-ui/core";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect, ConnectedProps } from 'react-redux'
@@ -10,28 +11,44 @@ import { Dataset, DatasetType } from "../../util/datasetselector";
 import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
 import { StoryMode } from "../../Ducks/StoryModeDuck";
 import { RootState } from "../../Store/Store";
+import { addCluster } from "../../Ducks/CurrentClustersDuck";
+import { addClusterToStory, addClusterToTrace, setActiveTraceState } from "../../Ducks/StoriesDuck";
 
 
 const mapStateToProps = (state: RootState) => ({
-    story: state.activeStory,
     storyMode: state.storyMode,
     dataset: state.dataset,
-    activeTrace: state.activeTrace
+    stories: state.stories,
+    currentAggregation: state.currentAggregation
 })
 
-const connector = connect(mapStateToProps, null);
+const mapDispatch = dispatch => ({
+    addCluster: cluster => dispatch(addCluster(cluster)),
+    addClusterToTrace: cluster => dispatch(addClusterToTrace(cluster)),
+    setActiveTraceState: cluster => dispatch(setActiveTraceState(cluster))
+})
+
+const connector = connect(mapStateToProps, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    story?: Story
     itemClicked: any
     storyMode?: StoryMode
     dataset: Dataset
 }
 
-export const ClusterOverview = connector(function ({ dataset, itemClicked, storyMode, activeTrace, story }: Props) {
-    if (activeTrace == null || story == null) {
+export const ClusterOverview = connector(function ({
+    dataset,
+    itemClicked,
+    storyMode,
+    stories,
+    currentAggregation,
+    addCluster,
+    addClusterToTrace,
+    setActiveTraceState }: Props) {
+
+    if (stories.trace == null || stories.active == null) {
         return null
     }
 
@@ -55,33 +72,26 @@ export const ClusterOverview = connector(function ({ dataset, itemClicked, story
             }
             setPositions(state)
         }
+    }, [stories])
 
-    }, [activeTrace])
+    React.useEffect(() => {
+        setActiveTraceState(stories.trace.mainPath[0])
+    }, [stories.trace])
 
-    return <Grow in={story != null}>
+
+
+    return <Grow in={stories.active != null}>
         <Card className="ClusterOverviewParent">
-            <CardContent>
-                <Link href="#" onClick={() => {
-                    var newActive = (active + 1) % story.clusters.length
-                    setActive(newActive)
-                    itemClicked(story.clusters[newActive])
-                }}>
-                    Next
-            </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
 
-                <hr></hr>
-
-                <div style={{
-                    display: 'flex',
-                    overflowY: 'auto',
-                    height: '100vh',
-                    position: 'relative'
-                }}>
-                    <div >
+                    <div>
+                        <Typography align="center" variant="subtitle2">Provenance</Typography>
                         <svg style={{
                             width: '100%',
                             height: '100%',
-                            maxWidth: '120px'
+                            maxWidth: '120px',
+                            minHeight: '200px'
                         }}>
 
                             {position.map(p => {
@@ -95,9 +105,36 @@ export const ClusterOverview = connector(function ({ dataset, itemClicked, story
 
                                     return <line x1={50} y1={p1.y} x2={50} y2={p2.y} stroke="blue" strokeWidth="2"></line>
                                 } else {
-                                    return null
+                                    let p1 = p
+                                    let p2 = { x: p1.x, y: p1.y + 50 }
+
+                                    return <g>
+                                        <line x1={50} y1={p1.y} x2={50} y2={p2.y} stroke="blue" strokeWidth="2"></line>
+                                        <circle cx="50" cy={p2.y} r="6" fill="red" onClick={() => {
+                                            let cluster = Cluster.fromSamples(currentAggregation)
+                                            addCluster(cluster)
+                                            addClusterToTrace(cluster)
+
+                                        }} />
+                                    </g>
                                 }
                             })}
+
+                            {
+                                position.length == 0 ? <g>
+                                    <line x1={50} y1={0} x2={50} y2={100} stroke="blue" strokeWidth="2"></line>
+                                    <circle cx="50" cy={100} r="6" fill="red" onClick={() => {
+
+                                        if (currentAggregation.length > 0) {
+                                            let cluster = Cluster.fromSamples(currentAggregation)
+                                            addCluster(cluster)
+                                            addClusterToTrace(cluster)
+                                        }
+
+
+                                    }} />
+                                </g> : <div></div>
+                            }
 
 
 
@@ -108,14 +145,17 @@ export const ClusterOverview = connector(function ({ dataset, itemClicked, story
                         display: 'flex',
                         flexDirection: 'column'
                     }}>
+                        <Typography align="center" variant="subtitle2">Cluster</Typography>
                         {
-                            activeTrace?.mainPath.map((cluster, index) => {
+                            stories.trace?.mainPath.map((cluster, index) => {
                                 return <ToggleButton
                                     key={index}
                                     className="ClusterItem"
+                                    selected={stories.activeTraceState == cluster}
                                     value={index}
                                     onClick={() => {
                                         itemClicked(cluster)
+                                        setActiveTraceState(cluster)
                                     }}><GenericFingerprint
                                         type={dataset.type}
                                         vectors={cluster.vectors}
@@ -129,8 +169,9 @@ export const ClusterOverview = connector(function ({ dataset, itemClicked, story
                         display: 'flex',
                         flexDirection: 'column'
                     }}>
+                        <Typography align="center" variant="subtitle2">Change</Typography>
                         {
-                            activeTrace?.mainEdges.map((edge, index) => {
+                            stories.trace?.mainEdges.map((edge, index) => {
                                 return <ToggleButton
                                     key={index}
                                     className="ClusterItem CORightItem"
@@ -148,7 +189,7 @@ export const ClusterOverview = connector(function ({ dataset, itemClicked, story
                         }
                     </div>
                 </div>
-            </CardContent>
+            </div>
         </Card>
-    </Grow>
+    </Grow >
 })

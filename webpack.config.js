@@ -9,7 +9,8 @@ module.exports = {
     umap: './src/components/workers/embeddings/worker_umap.ts',
     cluster: './src/components/workers/worker_cluster.tsx',
     forceatlas2: './src/components/workers/embeddings/worker_forceatlas2.ts',
-    healthcheck: './src/components/workers/worker_healthcheck.tsx'
+    healthcheck: './src/components/workers/worker_healthcheck.tsx',
+    tessy: './src/components/workers/worker_triangulate.ts'
   },
   output: {
     filename: "[name].js",

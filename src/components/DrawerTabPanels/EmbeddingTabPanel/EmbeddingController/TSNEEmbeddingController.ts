@@ -1,11 +1,7 @@
 import { Dataset } from "../../../util/datasetselector"
 import { EmbeddingController } from "./EmbeddingController"
 
-export class TSNEEmbeddingController extends EmbeddingController {
-    stepper: any
-
-    notifier: any
-    
+export class TSNEEmbeddingController extends EmbeddingController {    
     init(dataset: Dataset, selection: any, params: any) {
         this.worker = new Worker('dist/tsne.js')
         this.worker.postMessage({

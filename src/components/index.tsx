@@ -7,33 +7,31 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import { defaultScalesForAttribute, ContinuosScale, DiscreteScale, DiscreteMapping, ContinuousMapping, NamedCategoricalScales } from "./util/colors";
-import { BottomNavigation, BottomNavigationAction, createMuiTheme, Divider, Drawer, Icon, IconButton, List, ListItem, ListItemIcon, ListItemText, MuiThemeProvider, Paper, SvgIcon, Tooltip } from "@material-ui/core";
+import { NamedCategoricalScales } from "./util/Colors/NamedCategoricalScales";
+import { ContinuousMapping } from "./util/Colors/ContinuousMapping";
+import { DiscreteMapping } from "./util/Colors/DiscreteMapping";
+import { ContinuosScale, DiscreteScale } from "./util/Colors/ContinuosScale";
+import { createMuiTheme, Divider, Drawer, Icon, IconButton, List, ListItem, ListItemIcon, ListItemText, MuiThemeProvider, Paper, SvgIcon, Tooltip } from "@material-ui/core";
 import { Dataset, DatasetDatabase } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
-import { arraysEqual } from "./WebGLView/UtilityFunctions";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import MenuIcon from '@material-ui/icons/Menu';
-import { ChooseFileDialog, DatasetDrop, DatasetList, PredefinedDatasets } from './util/dataselectui'
-import { DataEdge, MultiDictionary } from "./util/datasetselector"
 import * as React from "react";
 import { SelectionClusters } from "./Overlays/SelectionClusters/SelectionClusters";
 import { Tool, ToolSelectionRedux } from "./Overlays/ToolSelection/ToolSelection";
 import { PathLengthFilter } from "./DrawerTabPanels/StatesTabPanel/PathLengthFilter/PathLengthFilter";
 import { SizeSlider } from "./DrawerTabPanels/StatesTabPanel/SizeSlider/SizeSlider";
 import { ClusterOverview } from "./Overlays/ClusterOverview/ClusterOverview";
-import Cluster, { Story } from "./util/Cluster";
+import Cluster from "./util/Cluster";
+import { Story } from "./util/Story";
 import { Legend } from "./DrawerTabPanels/StatesTabPanel/LineSelection/LineSelection";
-import concaveman = require("concaveman");
 import * as ReactDOM from 'react-dom';
 import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
 import { triangulate } from "./WebGLView/tools";
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import { connect } from 'react-redux'
-import { setActiveStory } from "./Ducks/ActiveStoryDuck";
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
 import { setProjectionOpenAction } from "./Ducks/ProjectionOpenDuck";
@@ -48,15 +46,13 @@ import { AdvancedColoringPopover } from "./DrawerTabPanels/StatesTabPanel/Advanc
 import { ColorScaleSelect } from "./DrawerTabPanels/StatesTabPanel/ColorScaleSelect/ColorScaleSelect";
 import { setProjectionColumns } from "./Ducks/ProjectionColumnsDuck";
 import { EmbeddingTabPanel } from "./DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel";
-import { CSVLoader } from "../model/Loaders/CSVLoader";
-import { GithubLink } from "./Overlays/GithubLink/GithubLink";
+import { CSVLoader } from "./util/Loaders/CSVLoader";
 import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
 import { PathBrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/PathTransparencySlider/PathBrightnessSlider";
 import { PointsIcon } from "./Icons/PointsIcon";
 import { ClusterIcon } from "./Icons/ClusterIcon";
 import SettingsIcon from '@material-ui/icons/Settings';
 import { setActiveLine } from "./Ducks/ActiveLineDuck";
-import { setStories } from "./Ducks/StoriesDuck";
 import { rootReducer } from "./Store/Store";
 import { setPathLengthMaximum, setPathLengthRange } from "./Ducks/PathLengthRange";
 import { setCategoryOptions } from "./Ducks/CategoryOptionsDuck";
@@ -67,6 +63,12 @@ import { setChannelColor } from "./Ducks/ChannelColorDuck";
 import { MenuOpen } from "@material-ui/icons";
 import { StoryTabPanel } from "./DrawerTabPanels/StoryTabPanel/StoryTabPanel";
 import { setCurrentClustersAction } from "./Ducks/CurrentClustersDuck";
+import { UploadIcon } from "./Icons/UploadIcon";
+import { VisualChannelIcon } from "./Icons/VisualChannelIcon";
+import { StoryIcon } from "./Icons/StoryIcon";
+import { EmbeddingIcon } from "./Icons/EmbeddingIcon";
+import { DatasetDrop } from "./DrawerTabPanels/DatasetTabPanel/DatasetDrop";
+import { PredefinedDatasets } from "./DrawerTabPanels/DatasetTabPanel/PredefinedDatasets";
 
 
 
@@ -116,7 +118,6 @@ function TabPanel2(props) {
 
 const mapStateToProps = state => ({
   openTab: state.openTab,
-  activeStory: state.activeStory,
   dataset: state.dataset,
   categoryOptions: state.categoryOptions,
   channelSize: state.channelSize,
@@ -130,8 +131,6 @@ const mapDispatchToProps = dispatch => ({
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
   setHighlightedSequence: value => dispatch(setHighlightedSequenceAction(value)),
   setActiveLine: value => dispatch(setActiveLine(value)),
-  setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
-  setStories: stories => dispatch(setStories(stories)),
   setProjectionColumns: projectionColumns => dispatch(setProjectionColumns(projectionColumns)),
   setProjectionOpen: projectionOpen => dispatch(setProjectionOpenAction(projectionOpen)),
   setWebGLView: webGLView => dispatch(setWebGLView(webGLView)),
@@ -352,6 +351,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
   onLineSelect(algo, show) {
     this.threeRef.current.filterLines(algo, show)
+    this.threeRef.current.requestRender()
   }
 
 
@@ -382,11 +382,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Load Dataset</Typography>
             <Typography variant="body2">Lets you load new datasets.</Typography>
-          </React.Fragment>}><Tab icon={<PointsIcon></PointsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+          </React.Fragment>}><Tab icon={<UploadIcon></UploadIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Point and Line Channels</Typography>
             <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
-          </React.Fragment>}><Tab icon={<PointsIcon></PointsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+          </React.Fragment>}><Tab icon={<VisualChannelIcon></VisualChannelIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Clustering</Typography>
             <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
@@ -394,11 +394,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Stories</Typography>
             <Typography variant="body2">Story telling options.</Typography>
-          </React.Fragment>}><Tab icon={<SettingsIcon style={{ fontSize: 48, color: 'black' }}></SettingsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+          </React.Fragment>}><Tab icon={<StoryIcon></StoryIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Embedding and Projection</Typography>
             <Typography variant="body2">Contains options to perform projection techniques like t-SNE and other approaches like a force-directed layout.</Typography>
-          </React.Fragment>}><Tab icon={<SettingsIcon style={{ fontSize: 48, color: 'black' }}></SettingsIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+          </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
         </Tabs>
       </Drawer>
 
@@ -476,6 +476,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                       })
 
                       this.threeRef.current.setLineFilter(ch)
+                      this.threeRef.current.requestRender()
                     }}
                     onChange={(id, checked) => {
                       var ch = this.state.selectedLines
@@ -486,6 +487,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                       })
 
                       this.threeRef.current.setLineFilter(ch)
+                      this.threeRef.current.requestRender()
                     }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme} />
                 </Grid>
 
@@ -539,6 +541,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                           })
 
                           this.threeRef.current.particles.transparencyCat(attribute)
+                          this.threeRef.current.requestRender()
                         }}
                       >
                         <MenuItem value="">None</MenuItem>
@@ -656,7 +659,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             </TabPanel>
 
 
-            <TabPanel value={this.props.openTab} index={2}>
+            <TabPanel2 value={this.props.openTab} index={2}>
+              
               {this.props.dataset != null ?
                 <ClusteringTabPanel
                   open={this.props.openTab == 2}
@@ -664,7 +668,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                   clusteringWorker={this.state.clusteringWorker}
                 ></ClusteringTabPanel> : <div></div>
               }
-            </TabPanel>
+            </TabPanel2>
 
             <TabPanel value={this.props.openTab} index={3}>
               <StoryTabPanel></StoryTabPanel>
@@ -681,7 +685,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
 
-
+      
 
       <WebGLView
         ref={this.threeRef}
@@ -694,14 +698,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           this.threeRef.current.setZoomTarget(cluster.vectors, 1)
         }}></ClusterOverview>
 
-
-
       <ToolSelectionRedux />
 
-      <GithubLink></GithubLink>
-
-
       <SelectionClusters></SelectionClusters>
+
+      <StoryEditor></StoryEditor>
     </div >
   }
 })

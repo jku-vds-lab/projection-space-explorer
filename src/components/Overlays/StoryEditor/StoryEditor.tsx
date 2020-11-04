@@ -1,8 +1,9 @@
 import './StoryEditor.scss'
 import React = require('react')
-import { Button, Paper, requirePropFactory, Tooltip, Typography } from '@material-ui/core'
+import { Paper, Tooltip, Typography } from '@material-ui/core'
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
-import Cluster, { Story } from '../../util/Cluster';
+import Cluster from '../../util/Cluster';
+import { Story } from "../../util/Story";
 const Graph = require('graphology');
 import { connect, ConnectedProps } from 'react-redux'
 import { DatasetType, Vect, VectBase } from '../../util/datasetselector';
@@ -10,12 +11,11 @@ import GestureIcon from '@material-ui/icons/Gesture';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
 import { setAggregationAction } from "../../Ducks/AggregationDuck";
-import Draggable from 'react-draggable';
 import { GenericFingerprint } from '../../legends/Generic';
-import { Rnd } from 'react-rnd';
 import { RootState } from '../../Store/Store';
-import { unweighted } from 'graphology-shortest-path';
-import { setActiveTrace } from '../../Ducks/ActiveTraceDuck';
+import { addEdgeToActive, setActiveTrace } from '../../Ducks/StoriesDuck';
+import { Edge } from '../../util/graphs';
+import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
 
 export function rescalePoints(
     points: { x: number, y: number }[],
@@ -77,17 +77,18 @@ type StoryEditorState = {
 }
 
 const mapStateToProps = (state: RootState) => ({
-    activeStory: state.activeStory,
+    stories: state.stories,
     currentAggregation: state.currentAggregation,
     webGLView: state.webGLView,
-    storyEditor: state.storyEditor,
-    activeTrace: state.activeTrace
+    storyEditor: state.storyEditor
 })
 
 
 const mapDispatchToProps = dispatch => ({
     setCurrentAggregation: id => dispatch(setAggregationAction(id)),
-    setActiveTrace: trace => dispatch(setActiveTrace(trace))
+    setActiveTrace: trace => dispatch(setActiveTrace(trace)),
+    addEdgeToActive: edge => dispatch(addEdgeToActive(edge)),
+    openStoryEditor: visible => dispatch(openStoryEditor(visible))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
@@ -96,7 +97,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
     setCurrentAggregation: any
-    activeStory: Story
     currentAggregation: Vect[]
     webGLView: any
 }
@@ -113,7 +113,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
         this.state = {
             nodes: [],
             edges: [],
-            tool: SETool.Draw,
+            tool: SETool.Dijkstra,
             dragLine: null,
             source: null,
             destination: null
@@ -128,7 +128,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
         this.setState({
             nodes: [],
             edges: [],
-            tool: SETool.Draw,
+            tool: SETool.Dijkstra,
             dragLine: null,
             source: null,
             destination: null
@@ -258,23 +258,62 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                             destination: node
                         })
 
-                        let g = this.toGraph(this.props.activeStory)
-                        const path = unweighted(g, this.state.source.cluster.label, node.cluster.label)
+                        function DFS(graph, source, target) {
+                            let visited = {}
+                            let pathList = [source]
+                            let output = []
 
-                        if (path) {
-                            let mainPath = path.map(id => this.state.nodes.find(e => e.cluster.label == id).cluster)
+                            DFS_iter(source, target, visited, pathList)
+
+                            function DFS_iter(source, target, visited, pathList: any[]) {
+                                if (source == target) {
+                                    output.push(pathList.slice(0))
+                                    return;
+                                }
+
+                                visited[source] = true
+
+                                graph.outNeighbors(source).forEach(neighbor => {
+                                    if (!visited[neighbor]) {
+                                        pathList.push(neighbor)
+
+                                        DFS_iter(neighbor, target, visited, pathList)
+
+                                        pathList.pop()
+                                    }
+                                })
+
+                                visited[source] = false
+                            }
+                            
+                            return output.sort((a, b) => a.length - b.length)
+                        }
+
+
+
+                        let g = this.toGraph(this.props.stories.active)
+                        const paths = DFS(g, this.state.source.cluster.label, node.cluster.label)
+
+                        if (paths.length > 0) {
+                            let mainPath = paths[0].map(id => this.state.nodes.find(e => e.cluster.label == id).cluster)
+
                             this.props.setActiveTrace({
                                 mainPath: mainPath,
                                 mainEdges: mainPath.slice(1).map((item, index) => {
-                                    return this.props.activeStory.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
-                                })
+                                    return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
+                                }),
+                                sidePaths: paths.slice(1)
                             })
+
+                            this.props.openStoryEditor(false)
                         }
 
                         this.setState({
                             source: null,
                             destination: null
                         })
+
+                        
                     }
                 }
                 break;
@@ -301,6 +340,8 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                             })
                             this.action = SEAction.None
                             this.pressedElement = null
+
+                            this.props.addEdgeToActive(new Edge(this.state.dragLine.node.cluster, node.cluster, null))
                         } else {
                             this.action = SEAction.None
                             this.pressedElement = null
@@ -345,8 +386,6 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
 
 
     initWithStory(story: Story) {
-        console.log("loaded story...")
-
         const nodes = story.clusters.map(cluster => ({
             meshIndex: cluster.label,
             x: Math.random(),
@@ -422,23 +461,22 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
         svg.addEventListener('mousemove', this.onMouseMove)
         svg.addEventListener('mouseleave', this.onMouseLeave)
         svg.addEventListener('click', this.onMouseClick)
-
-        console.log("mount")
     }
 
     componentDidUpdate(prevProps, prevState) {
+
         if (prevProps.storyEditor.visible != this.props.storyEditor.visible) {
             if (this.props.storyEditor.visible) {
-                if (this.props.activeStory) {
-                    this.initWithStory(this.props.activeStory)
+                if (this.props.stories.active) {
+                    this.initWithStory(this.props.stories.active)
                 }
             } else {
                 this.clear()
             }
         }
-        if (prevProps.activeStory != this.props.activeStory && this.props.storyEditor.visible) {
-            if (this.props.activeStory) {
-                this.initWithStory(this.props.activeStory)
+        if (prevProps.stories.active != this.props.stories.active && this.props.storyEditor.visible) {
+            if (this.props.stories.active) {
+                this.initWithStory(this.props.stories.active)
             } else {
                 this.clear()
             }
@@ -446,7 +484,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
     }
 
     render() {
-        return <div hidden={!this.props.activeStory || !this.props.storyEditor.visible} style={{ width: '50%', height: '50%' }}>
+        return <div hidden={!this.props.stories.active || !this.props.storyEditor.visible} className="StoryEditorParent">
             <Paper
                 elevation={3}
                 style={{
@@ -495,7 +533,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
 
                                 return <line strokeWidth="3" x1={source.x} y1={source.y}
                                     x2={p2.x} y2={p2.y} stroke="black"
-                                    marker-end="url(#arrowhead)" />
+                                    markerEnd="url(#arrowhead)" />
                             })
                         }
 
@@ -503,7 +541,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                             this.state.dragLine &&
                             <line strokeWidth="2" x1={this.state.dragLine.node.x} y1={this.state.dragLine.node.y}
                                 x2={this.state.dragLine.x2} y2={this.state.dragLine.y2} stroke="black"
-                                marker-end="url(#arrowhead)" />
+                                markerEnd="url(#arrowhead)" />
                         }
 
                         {
@@ -553,7 +591,6 @@ class VectorMath {
         const vecB = new VectBase(b.x, b.y)
 
         const dir = VectBase.subtract(vecB, vecA).normalize()
-
     }
 }
 

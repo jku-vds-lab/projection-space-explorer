@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import currentTool from "../Ducks/CurrentToolDuck";
-import activeStory from "../Ducks/ActiveStoryDuck";
 import projectionOpen from "../Ducks/ProjectionOpenDuck";
 import highlightedSequence from "../Ducks/HighlightedSequenceDuck";
 import dataset from "../Ducks/DatasetDuck";
@@ -34,12 +33,10 @@ import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
 import storyEditor from '../Ducks/StoryEditorDuck';
-import activeTrace from '../Ducks/ActiveTraceDuck';
 
 const allReducers = {
   currentTool: currentTool,
   currentAggregation: currentAggregation,
-  activeStory: activeStory,
   stories: stories,
   currentClusters: currentClusters,
   openTab: openTab,
@@ -71,8 +68,7 @@ const allReducers = {
   pointColorScale: pointColorScale,
   pointColorMapping: pointColorMapping,
   trailSettings: trailSettings,
-  storyEditor: storyEditor,
-  activeTrace: activeTrace
+  storyEditor: storyEditor
 }
 
 const appReducer = combineReducers(allReducers)

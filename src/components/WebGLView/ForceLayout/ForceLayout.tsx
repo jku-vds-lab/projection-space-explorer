@@ -1,8 +1,8 @@
 import * as React from 'react'
 import './ForceLayout.scss'
-import { Story } from '../../util/Cluster'
+import { Story } from "../../util/Story"
 import { GenericFingerprint } from '../../legends/Generic'
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
 import { Edge } from '../../util/graphs'
 import THREE = require('three')
 import { ViewTransform } from '../ViewTransform'
@@ -11,18 +11,8 @@ import { ThrustLayout } from '../../util/ThrustLayout'
 import { RenderingContextEx } from '../../util/RenderingContextEx'
 import { StoryMode } from '../../Ducks/StoryModeDuck'
 import { ClusterMode } from '../../Ducks/ClusterModeDuck'
+import { RootState } from '../../Store/Store'
 
-type ForceLayoutProps = {
-    activeStory: Story
-    width: number
-    height: number
-    clusterEdges: Edge[]
-    camera: THREE.Camera
-    dataset: any,
-    viewTransform: ViewTransform,
-    storyMode: StoryMode
-    clusterMode: ClusterMode
-}
 
 type ForceLayoutState = {
     physicsRef: React.Ref<HTMLDivElement>
@@ -40,16 +30,35 @@ type ForceLayoutState = {
 
 
 
-const mapStateToProps = state => ({
-    activeStory: state.activeStory,
+const mapStateToProps = (state: RootState) => ({
+    stories: state.stories,
     clusterEdges: state.clusterEdges,
     viewTransform: state.viewTransform,
     storyMode: state.storyMode,
-    clusterMode: state.clusterMode
+    clusterMode: state.clusterMode,
+    clusters: state.currentClusters
 })
 
 
-export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true })(class extends React.Component<ForceLayoutProps, ForceLayoutState> {
+const connector = connect(mapStateToProps, null, null, { forwardRef: true });
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+    stories: any
+    width: number
+    height: number
+    clusterEdges: Edge[]
+    camera: THREE.Camera
+    dataset: any,
+    viewTransform: ViewTransform,
+    storyMode: StoryMode
+    clusterMode: ClusterMode
+}
+
+
+
+export var ForceLayout = connector(class extends React.Component<Props, ForceLayoutState> {
 
 
     constructor(props) {
@@ -101,7 +110,7 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
     createForceLayout() {
         var self = this
 
-        var displayClusters = this.props.activeStory.clusters.map(cluster => {
+        var displayClusters = this.props.stories.active.clusters.map(cluster => {
             var center = cluster.getCenter()
             var screen = this.worldToScreen(center)
             return {
@@ -120,19 +129,6 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
         var width = this.props.width;
         var height = this.props.height;
 
-        /**var graph = {
-            nodes: displayClusters.map(m => {
-                // Preinitialize x/y
-                var center = m.cluster.getCenter()
-                var screen = this.worldToScreen(center)
-                return {
-                    id: Math.random(),
-                    center: center,
-                    x: screen.x,
-                    y: screen.y
-                }
-            })
-        }**/
 
 
         var layout = new ThrustLayout(this.props.viewTransform, 50)
@@ -153,7 +149,7 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
 
 
 
-        var differenceClusters = this.props.activeStory.edges?.map(clusterEdge => {
+        var differenceClusters = this.props.stories.active.edges?.map(clusterEdge => {
             var center = this.middle(clusterEdge.source.getCenter(), clusterEdge.destination.getCenter())
             var screen = this.worldToScreen(center)
             return {
@@ -195,19 +191,19 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
     componentDidUpdate(prevProps) {
 
         // Create new force layout
-        if (this.props.clusterMode == ClusterMode.Univariate && prevProps.activeStory == null && prevProps.activeStory != this.props.activeStory && this.props.activeStory != null) {
+        if (this.props.clusterMode == ClusterMode.Univariate && prevProps.stories.active == null && prevProps.stories.active != this.props.stories.active && this.props.stories.active != null) {
             this.createForceLayout()
         }
 
         // Delete old create new
-        if (this.props.clusterMode == ClusterMode.Univariate && prevProps.activeStory != null && prevProps.activeStory != this.props.activeStory && this.props.activeStory != null) {
+        if (this.props.clusterMode == ClusterMode.Univariate && prevProps.stories.active != null && prevProps.stories.active != this.props.stories.active && this.props.stories.active != null ||
+            this.props.clusters != prevProps.clusters && this.props.clusters && this.props.stories.active) {
             this.deleteForceLayout()
-
             this.createForceLayout()
         }
 
         // Delete only
-        if (this.props.clusterMode == ClusterMode.Univariate && prevProps.activeStory != null && this.props.activeStory == null) {
+        if (this.props.clusterMode == ClusterMode.Univariate && prevProps.stories.active != null && this.props.stories.active == null) {
             this.deleteForceLayout()
         }
     }
@@ -276,9 +272,9 @@ export var ForceLayout = connect(mapStateToProps, null, null, { forwardRef: true
             context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
         }
 
-        if (this.props.activeStory && this.props.activeStory.edges) {
+        if (this.props.stories.active && this.props.stories.active.edges) {
 
-            this.props.activeStory.edges.forEach(edge => {
+            this.props.stories.active.edges.forEach(edge => {
                 const { x: x0, y: y0 } = this.props.viewTransform.worldToScreen(edge.source.getCenter())
                 const { x: x1, y: y1 } = this.props.viewTransform.worldToScreen(edge.destination.getCenter())
 
