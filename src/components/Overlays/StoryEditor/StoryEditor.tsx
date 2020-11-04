@@ -395,44 +395,54 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
             cluster: cluster
         }))
 
-        const edges = story.edges.map(edge => ({
-            source: nodes.find(node => node.meshIndex == edge.source.label),
-            destination: nodes.find(node => node.meshIndex == edge.destination.label)
-        }))
-
-        let worker = new Worker("dist/forceatlas2.js")
-
-        let self = this
-        worker.onmessage = function (e) {
-            switch (e.data.type) {
-                case 'progress':
-                case 'finish':
-                    if (e.data.type == 'finish') {
-                        // finish
-                        const positions = e.data.positions
-
-                        const rect = self.svgRef.current.getBoundingClientRect()
-                        rescalePoints(positions, rect.width, rect.height)
-
-                        nodes.forEach(node => {
-                            node.x = positions[node.meshIndex].x
-                            node.y = positions[node.meshIndex].y
-                        })
-
-                        self.setState({
-                            nodes: nodes,
-                            edges: edges
-                        })
-                    }
-                    break
+        if (story.clusters.length > 1) {
+            const edges = story.edges.map(edge => ({
+                source: nodes.find(node => node.meshIndex == edge.source.label),
+                destination: nodes.find(node => node.meshIndex == edge.destination.label)
+            }))
+    
+            let worker = new Worker("dist/forceatlas2.js")
+    
+            let self = this
+            worker.onmessage = function (e) {
+                switch (e.data.type) {
+                    case 'progress':
+                    case 'finish':
+                        if (e.data.type == 'finish') {
+                            // finish
+                            const positions = e.data.positions
+    
+                            const rect = self.svgRef.current.getBoundingClientRect()
+                            rescalePoints(positions, rect.width, rect.height)
+    
+                            nodes.forEach(node => {
+                                node.x = positions[node.meshIndex].x
+                                node.y = positions[node.meshIndex].y
+                            })
+    
+                            self.setState({
+                                nodes: nodes,
+                                edges: edges
+                            })
+                        }
+                        break
+                }
+    
             }
+            worker.postMessage({
+                nodes: nodes.map(node => ({ meshIndex: node.meshIndex, x: node.x, y: node.y })),
+                edges: edges.map(edge => ({ source: edge.source.meshIndex, destination: edge.destination.meshIndex })),
+                params: { iterations: 1000 }
+            })
+        } else {
+            nodes[0].x = 100
+            nodes[0].y = 100
 
-        }
-        worker.postMessage({
-            nodes: nodes.map(node => ({ meshIndex: node.meshIndex, x: node.x, y: node.y })),
-            edges: edges.map(edge => ({ source: edge.source.meshIndex, destination: edge.destination.meshIndex })),
-            params: { iterations: 1000 }
-        })
+            this.setState({
+                nodes: nodes,
+                edges: []
+            })
+        }      
     }
 
     onDrop(event) {

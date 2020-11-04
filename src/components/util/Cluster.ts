@@ -7,6 +7,7 @@ export default class Cluster {
     hull: any
     triangulation: any
     vectors: Vect[]
+    name: string
 
     constructor(points, bounds?, hull?, triangulation?) {
         this.points = points
@@ -112,5 +113,14 @@ export default class Cluster {
 
     order() {
         return this.points.length / 10 + this.getProbability() - this.getSTD() + this.differentLines()
+    }
+
+
+    getTextRepresentation() {
+        if (this.name) {
+            return this.name
+        } else {
+            return this.label
+        }
     }
 }

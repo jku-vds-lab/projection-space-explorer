@@ -312,7 +312,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     })
                 })
             }
-
         })
     }
 

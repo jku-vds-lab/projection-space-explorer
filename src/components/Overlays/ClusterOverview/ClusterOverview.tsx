@@ -38,6 +38,16 @@ type Props = PropsFromRedux & {
     dataset: Dataset
 }
 
+const Plus = ({ onClick, x, y, r }) => {
+    return <g onClick={() => {
+        onClick()
+    }}>
+        <circle cx={x} cy={y} r={r} fill="#F0F0F0" stroke-width="2" stroke="red" ></circle>
+        <line x1={x - r + 3} y1={y} x2={x + r - 3} y2={y} stroke-width="2" stroke="red"></line>
+        <line x1={x} y1={y - r + 3} x2={x} y2={y + r - 3} stroke-width="2" stroke="red"></line>
+    </g>
+}
+
 export const ClusterOverview = connector(function ({
     dataset,
     itemClicked,
@@ -64,7 +74,7 @@ export const ClusterOverview = connector(function ({
         const current = itemRef.current
         if (current) {
             const state = []
-            for (var i = 0; i < current.children.length; i++) {
+            for (var i = 1; i < current.children.length; i++) {
                 const child = current.children[i];
                 const rect = child.getBoundingClientRect()
 
@@ -82,6 +92,7 @@ export const ClusterOverview = connector(function ({
 
     return <Grow in={stories.active != null}>
         <Card className="ClusterOverviewParent">
+            
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
 
@@ -91,7 +102,8 @@ export const ClusterOverview = connector(function ({
                             width: '100%',
                             height: '100%',
                             maxWidth: '120px',
-                            minHeight: '200px'
+                            minHeight: '200px',
+                            minWidth: '100px'
                         }}>
 
                             {position.map(p => {
@@ -106,11 +118,11 @@ export const ClusterOverview = connector(function ({
                                     return <line x1={50} y1={p1.y} x2={50} y2={p2.y} stroke="blue" strokeWidth="2"></line>
                                 } else {
                                     let p1 = p
-                                    let p2 = { x: p1.x, y: p1.y + 50 }
+                                    let p2 = { x: p1.x, y: p1.y + 40 }
 
                                     return <g>
                                         <line x1={50} y1={p1.y} x2={50} y2={p2.y} stroke="blue" strokeWidth="2"></line>
-                                        <circle cx="50" cy={p2.y} r="6" fill="red" onClick={() => {
+                                        <Plus x={50} y={p2.y} r={10} onClick={() => {
                                             let cluster = Cluster.fromSamples(currentAggregation)
                                             addCluster(cluster)
                                             addClusterToTrace(cluster)
@@ -121,9 +133,9 @@ export const ClusterOverview = connector(function ({
                             })}
 
                             {
-                                position.length == 0 ? <g>
+                                position.length == 0 && <g>
                                     <line x1={50} y1={0} x2={50} y2={100} stroke="blue" strokeWidth="2"></line>
-                                    <circle cx="50" cy={100} r="6" fill="red" onClick={() => {
+                                    <Plus x={50} y={50} r={10} onClick={() => {
 
                                         if (currentAggregation.length > 0) {
                                             let cluster = Cluster.fromSamples(currentAggregation)
@@ -133,7 +145,7 @@ export const ClusterOverview = connector(function ({
 
 
                                     }} />
-                                </g> : <div></div>
+                                </g>
                             }
 
 
@@ -143,7 +155,8 @@ export const ClusterOverview = connector(function ({
 
                     <div ref={itemRef} style={{
                         display: 'flex',
-                        flexDirection: 'column'
+                        flexDirection: 'column',
+                        minWidth: '100px'
                     }}>
                         <Typography align="center" variant="subtitle2">Cluster</Typography>
                         {
@@ -167,7 +180,8 @@ export const ClusterOverview = connector(function ({
                     </div>
                     <div style={{
                         display: 'flex',
-                        flexDirection: 'column'
+                        flexDirection: 'column',
+                        minWidth: '100px'
                     }}>
                         <Typography align="center" variant="subtitle2">Change</Typography>
                         {

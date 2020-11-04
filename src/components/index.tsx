@@ -11,7 +11,7 @@ import { NamedCategoricalScales } from "./util/Colors/NamedCategoricalScales";
 import { ContinuousMapping } from "./util/Colors/ContinuousMapping";
 import { DiscreteMapping } from "./util/Colors/DiscreteMapping";
 import { ContinuosScale, DiscreteScale } from "./util/Colors/ContinuosScale";
-import { createMuiTheme, Divider, Drawer, Icon, IconButton, List, ListItem, ListItemIcon, ListItemText, MuiThemeProvider, Paper, SvgIcon, Tooltip } from "@material-ui/core";
+import { createMuiTheme, Divider, Drawer, MuiThemeProvider, Paper, Tooltip } from "@material-ui/core";
 import { Dataset, DatasetDatabase } from './util/datasetselector'
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
@@ -19,16 +19,13 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import * as React from "react";
 import { SelectionClusters } from "./Overlays/SelectionClusters/SelectionClusters";
-import { Tool, ToolSelectionRedux } from "./Overlays/ToolSelection/ToolSelection";
+import { ToolSelectionRedux } from "./Overlays/ToolSelection/ToolSelection";
 import { PathLengthFilter } from "./DrawerTabPanels/StatesTabPanel/PathLengthFilter/PathLengthFilter";
 import { SizeSlider } from "./DrawerTabPanels/StatesTabPanel/SizeSlider/SizeSlider";
 import { ClusterOverview } from "./Overlays/ClusterOverview/ClusterOverview";
-import Cluster from "./util/Cluster";
-import { Story } from "./util/Story";
 import { Legend } from "./DrawerTabPanels/StatesTabPanel/LineSelection/LineSelection";
 import * as ReactDOM from 'react-dom';
 import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
-import { triangulate } from "./WebGLView/tools";
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import { connect } from 'react-redux'
@@ -49,18 +46,14 @@ import { EmbeddingTabPanel } from "./DrawerTabPanels/EmbeddingTabPanel/Embedding
 import { CSVLoader } from "./util/Loaders/CSVLoader";
 import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
 import { PathBrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/PathTransparencySlider/PathBrightnessSlider";
-import { PointsIcon } from "./Icons/PointsIcon";
 import { ClusterIcon } from "./Icons/ClusterIcon";
-import SettingsIcon from '@material-ui/icons/Settings';
 import { setActiveLine } from "./Ducks/ActiveLineDuck";
-import { rootReducer } from "./Store/Store";
 import { setPathLengthMaximum, setPathLengthRange } from "./Ducks/PathLengthRange";
 import { setCategoryOptions } from "./Ducks/CategoryOptionsDuck";
 import { setChannelSize } from "./Ducks/ChannelSize";
 import { setGlobalPointSize } from "./Ducks/GlobalPointSizeDuck";
 import { setSelectedClusters } from "./Ducks/SelectedClustersDuck";
 import { setChannelColor } from "./Ducks/ChannelColorDuck";
-import { MenuOpen } from "@material-ui/icons";
 import { StoryTabPanel } from "./DrawerTabPanels/StoryTabPanel/StoryTabPanel";
 import { setCurrentClustersAction } from "./Ducks/CurrentClustersDuck";
 import { UploadIcon } from "./Icons/UploadIcon";
@@ -69,6 +62,7 @@ import { StoryIcon } from "./Icons/StoryIcon";
 import { EmbeddingIcon } from "./Icons/EmbeddingIcon";
 import { DatasetDrop } from "./DrawerTabPanels/DatasetTabPanel/DatasetDrop";
 import { PredefinedDatasets } from "./DrawerTabPanels/DatasetTabPanel/PredefinedDatasets";
+import { rootReducer } from "./Store/Store";
 
 
 
@@ -232,6 +226,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     // Dispose old view
     this.threeRef.current.disposeScene()
 
+    this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
+
     // Set new dataset as variable
     this.props.setDataset(dataset)
 
@@ -266,7 +262,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setCategoryOptions(new CategoryOptions(this.props.dataset.vectors, categories))
     this.props.setPathLengthMaximum(dataset.getMaxPathLength())
     this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
-    this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
+
 
     const formatRange = range => {
       try {

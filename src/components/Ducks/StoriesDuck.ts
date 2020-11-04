@@ -192,6 +192,8 @@ export default function stories(state: StoriesType = initialState, action): Stor
                     sidePaths: []
                 }
                 activeTraceState = null
+            } else {
+                trace = null
             }
 
             return {

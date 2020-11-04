@@ -27,6 +27,7 @@ import { setHoverState } from '../Ducks/HoverStateDuck';
 import { mappingFromScale } from '../util/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
+import { Typography } from '@material-ui/core';
 
 
 type ViewProps = {
@@ -1184,6 +1185,25 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                 width: "100%",
                 height: "100%"
             }} ref={this.containerRef} tabIndex={0}>
+
+                {
+                    this.state.hoverCluster != null && this.props.currentTool == Tool.Grab ?
+                        <div
+                            className='speech-bubble-ds'
+                            style={{
+                                position: 'absolute',
+                                right: this.getWidth() - this.props.viewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).x,
+                                bottom: this.getHeight() - this.props.viewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).y - 10,
+                            }}>
+                            <Typography>{this.state.hoverCluster.getTextRepresentation()}</Typography>
+                        </div>
+
+
+                        :
+                        <div></div>
+                }
+
+
             </div>
 
             <LassoLayer ref={this.selectionRef}></LassoLayer>
