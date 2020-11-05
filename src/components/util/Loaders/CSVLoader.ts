@@ -48,7 +48,7 @@ export class CSVLoader implements Loader {
         }
     }
 
-    resolve(finished, vectors, datasetType) {
+    async resolve(finished, vectors, datasetType) {
         var header = Object.keys(vectors[0])
         var ranges = header.reduce((map, value) => {
             var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)

@@ -88,7 +88,7 @@ export class JSONLoader implements Loader {
         }
     }
 
-    resolve(content, finished, datasetType) {
+    async resolve(content, finished, datasetType) {
         let fileSamples = content.samples[0]
 
         let ranges = {}

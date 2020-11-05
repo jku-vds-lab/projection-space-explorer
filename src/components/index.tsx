@@ -255,13 +255,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       selectedLineAlgos: algos
     })
 
-
-
-
     this.props.setCategoryOptions(new CategoryOptions(this.props.dataset.vectors, categories))
     this.props.setPathLengthMaximum(dataset.getMaxPathLength())
     this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
-
 
     const formatRange = range => {
       try {
