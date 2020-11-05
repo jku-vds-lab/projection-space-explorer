@@ -1,3 +1,6 @@
+import SelectInput from "@material-ui/core/Select/SelectInput"
+import { threadId } from "worker_threads"
+
 export class DownloadJob {
     entry
     terminated: boolean
@@ -7,9 +10,12 @@ export class DownloadJob {
         this.terminated = false
     }
 
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async download(response: Response, callback, onProgress) {
         const reader = response.body.getReader()
-        let length = Number.parseInt(response.headers.get("content-length"))
         let chunks = []
         let receivedLength = 0
         while (true) {
@@ -22,7 +28,9 @@ export class DownloadJob {
             chunks.push(value)
             receivedLength += value.length
 
-            onProgress(receivedLength / length)
+            onProgress(receivedLength)
+
+            await this.sleep(50)
         }
 
         if (this.terminated) {
