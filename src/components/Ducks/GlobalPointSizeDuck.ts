@@ -5,7 +5,7 @@ export const setGlobalPointSize = globalPointSize => ({
     globalPointSize: globalPointSize
 });
 
-const globalPointSize = (state = [1], action) => {
+const globalPointSize = (state = [1], action): number[] => {
     switch (action.type) {
         case SET:
             return action.globalPointSize

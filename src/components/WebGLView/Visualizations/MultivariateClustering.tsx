@@ -13,7 +13,7 @@ import { TrailVisualization } from "./TrailVisualization";
 import { ClusterMode } from "../../Ducks/ClusterModeDuck";
 
 const SELECTED_COLOR = 0x4d94ff
-const DEFAULT_COLOR = 0xa3a3c2
+const DEFAULT_COLOR = 0x000000
 
 type ClusterObjectType = {
     cluster: Cluster,
@@ -34,7 +34,8 @@ const mapState = (state: RootState) => ({
     selectedClusters: state.selectedClusters,
     clusterMode: state.clusterMode,
     trailSettings: state.trailSettings,
-    stories: state.stories
+    stories: state.stories,
+    globalPointSize: state.globalPointSize
 })
 
 
@@ -87,7 +88,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.trail.create(this.clusterObjects)
         this.scene.add(this.trail.mesh)
 
-
         this.triangulationWorker = new Worker('dist/tessy.js')
     }
 
@@ -139,9 +139,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         let arrowGeometry = new THREE.Geometry()
         arrowGeometry.vertices = []
         arrowGeometry.faces = []
-
-
-
 
         let index = 0
         this.props.stories.active?.edges.forEach(edge => {
@@ -231,6 +228,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             let mesh = clusterObject.mesh
 
             mesh.position.set(center.x * zoom, center.y * zoom, -0.5)
+
+            mesh.scale.set(this.props.globalPointSize[0], this.props.globalPointSize[0], this.props.globalPointSize[0])
 
             clusterObject.children.forEach(child => {
                 if (child.visible && this.props.displayMode == DisplayMode.StatesAndClusters) {
@@ -389,7 +388,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
      * Destroys the visualization.
      */
     destroy() {
-
         if (this.clusterObjects && this.clusterObjects.length > 0) {
             this.clusterObjects.forEach(clusterObject => {
                 this.clusterScene.remove(clusterObject.mesh)

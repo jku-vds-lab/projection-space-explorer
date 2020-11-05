@@ -2,19 +2,18 @@ import { Grid, List, ListItem, ListItemText, ListSubheader } from "@material-ui/
 import React = require("react")
 import { TypeIcon } from "../../Icons/TypeIcon"
 import { DatasetDatabase, DatasetType } from "../../util/datasetselector"
-import { CSVLoader } from "../../util/Loaders/CSVLoader"
-import { JSONLoader } from "../../util/Loaders/JSONLoader"
 
 export var PredefinedDatasets = ({ onChange }) => {
     var database = new DatasetDatabase()
     var types = database.getTypes()
 
     var handleClick = (entry) => {
-        if (entry.path.endsWith('json')) {
-            new JSONLoader().resolvePath(entry, onChange)
-        } else {
-            new CSVLoader().resolvePath(entry, onChange)
-        }
+        onChange(entry)
+        //if (entry.path.endsWith('json')) {
+        //    new JSONLoader().resolvePath(entry, onChange)
+        //} else {
+        //    new CSVLoader().resolvePath(entry, onChange)
+        //}
     }
 
     return <Grid item style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>

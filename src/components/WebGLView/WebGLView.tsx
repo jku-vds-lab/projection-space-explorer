@@ -707,8 +707,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             this.lines.meshes.forEach(line => this.scene.add(line.line))
         }
 
-
-        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 16)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 13)
         this.particles.createMesh(this.props.dataset.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()

@@ -1,12 +1,11 @@
 import { connect, ConnectedProps } from 'react-redux'
 import React = require('react')
 import { FlexParent } from '../../util/FlexParent'
-import { Box, Button, Dialog } from '@material-ui/core'
+import { Box, Button } from '@material-ui/core'
 import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
 import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
 import { Dataset } from '../../util/datasetselector'
-import { ForceEmbedding } from './ForceEmbedding/ForceEmbedding'
 import { GenericSettings } from './GenericSettings/GenericSettings'
 import { RootState } from '../../Store/Store'
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck'

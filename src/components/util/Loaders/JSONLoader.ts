@@ -8,14 +8,42 @@ export class JSONLoader implements Loader {
     vectors: Vect[]
     datasetType: DatasetType
 
+    async download(response: Response) {
+        const reader = response.body.getReader()
+        let chunks = []
+        let receivedLength = 0
+        while (true) {
+            const { done, value } = await reader.read()
+
+            if (done) {
+                break
+            }
+            chunks.push(value)
+            receivedLength += value.length
+
+            console.log("received " + value.length + " bytes")
+        }
+
+        let chunksAll = new Uint8Array(receivedLength)
+        let position = 0
+        for (let chunk of chunks) {
+            chunksAll.set(chunk, position)
+            position += chunk.length
+        }
+
+        let result = new TextDecoder("utf-8").decode(chunksAll)
+        console.log(result)
+    }
+
     resolvePath(entry: any, finished: any) {
         fetch(entry.path)
             .then(response => {
-                return response.json()
+                this.download(response)
+                //return response.json()
             })
-            .then(data => {
-                this.resolve(data, finished, entry.type)
-            });
+        //.then(data => {
+        //   this.resolve(data, finished, entry.type)
+        //});
     }
 
     resolveContent(content: any, finished: any) {
@@ -51,9 +79,9 @@ export class JSONLoader implements Loader {
     }
 
     getFeatureType(x) {
-        if (typeof x  === "number" || !isNaN(Number(x))) {
+        if (typeof x === "number" || !isNaN(Number(x))) {
             return 'number'
-        } else if (""+new Date(x) !== "Invalid Date") {
+        } else if ("" + new Date(x) !== "Invalid Date") {
             return 'date'
         } else {
             return 'arbitrary'
@@ -132,7 +160,7 @@ export class JSONLoader implements Loader {
             }
         }
         // for all rows
-        for (var i=0; i < this.vectors.length; i++) {
+        for (var i = 0; i < this.vectors.length; i++) {
             // for all date features f
             dateFeatures.forEach(f => {
                 // overwrite sample with its timestamp
@@ -169,7 +197,7 @@ export class JSONLoader implements Loader {
         if ('preselection' in content) {
             preselection = content.preselection[0].data.flat()
         }
-        
+
 
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
 

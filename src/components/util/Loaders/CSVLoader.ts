@@ -22,7 +22,7 @@ export class CSVLoader implements Loader {
             this.vectors = convertFromCSV(vectors)
             this.datasetType = entry.type
 
-            this.resolve(finished)
+            this.resolve(finished, this.vectors, this.datasetType)
         })
     }
 
@@ -35,7 +35,7 @@ export class CSVLoader implements Loader {
         this.vectors = convertFromCSV(d3v5.csvParse(content))
         this.datasetType = new InferCategory(this.vectors).inferType()
 
-        this.resolve(finished)
+        this.resolve(finished, this.vectors, this.datasetType)
     }
 
     getFeatureType(x) {
@@ -48,14 +48,14 @@ export class CSVLoader implements Loader {
         }
     }
 
-    resolve(finished) {
-        var header = Object.keys(this.vectors[0])
+    resolve(finished, vectors, datasetType) {
+        var header = Object.keys(vectors[0])
         var ranges = header.reduce((map, value) => {
             var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
 
             if (matches != null) {
                 var cutHeader = value.substring(0, value.length - matches[0].length)
-                this.vectors.forEach(vector => {
+                vectors.forEach(vector => {
                     vector[cutHeader] = vector[value]
                     delete vector[value]
                 })
@@ -70,7 +70,7 @@ export class CSVLoader implements Loader {
         var contains_number = {}
         var contains_date = {}
         var contains_arbitrary = {}
-        this.vectors.forEach((r) => {
+        vectors.forEach((r) => {
             header.forEach(f => {
                 const type = this.getFeatureType(r[f])
                 if (type === 'number') {
@@ -111,22 +111,22 @@ export class CSVLoader implements Loader {
             }
         }
         // for all rows
-        for (var i=0; i < this.vectors.length; i++) {
+        for (var i=0; i < vectors.length; i++) {
             // for all date features f
             dateFeatures.forEach(f => {
                 // overwrite sample with its timestamp
-                this.vectors[i][f] = Date.parse(this.vectors[i][f])
+                vectors[i][f] = Date.parse(vectors[i][f])
             });
             quantFeatures.forEach(f => {
                 // overwrite sample with its timestamp
-                this.vectors[i][f] = +this.vectors[i][f]
+                vectors[i][f] = +vectors[i][f]
             });
         }
 
         var preselection = Object.keys(header.reduce((map, value) => {
             if (value.startsWith('*')) {
                 var cutHeader = value.substring(1)
-                this.vectors.forEach(vector => {
+                vectors.forEach(vector => {
                     vector[cutHeader] = vector[value]
                     delete vector[value]
                 })
@@ -141,8 +141,8 @@ export class CSVLoader implements Loader {
             preselection = null
         }
 
-        ranges = new Preprocessor(this.vectors).preprocess(ranges)
+        ranges = new Preprocessor(vectors).preprocess(ranges)
 
-        finished(new Dataset(this.vectors, ranges, preselection, { type: this.datasetType }, types), new InferCategory(this.vectors).load(ranges))
+        finished(new Dataset(vectors, ranges, preselection, { type: datasetType }, types), new InferCategory(vectors).load(ranges))
     }
 }

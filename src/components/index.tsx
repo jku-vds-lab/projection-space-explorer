@@ -60,9 +60,8 @@ import { UploadIcon } from "./Icons/UploadIcon";
 import { VisualChannelIcon } from "./Icons/VisualChannelIcon";
 import { StoryIcon } from "./Icons/StoryIcon";
 import { EmbeddingIcon } from "./Icons/EmbeddingIcon";
-import { DatasetDrop } from "./DrawerTabPanels/DatasetTabPanel/DatasetDrop";
-import { PredefinedDatasets } from "./DrawerTabPanels/DatasetTabPanel/PredefinedDatasets";
 import { rootReducer } from "./Store/Store";
+import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 
 
 
@@ -424,11 +423,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
             <TabPanel2 value={this.props.openTab} index={0} >
-              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <DatasetDrop onChange={this.onDataSelected}></DatasetDrop>
-
-                <PredefinedDatasets onChange={this.onDataSelected}></PredefinedDatasets>
-              </div>
+              <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
             </TabPanel2>
 
             <TabPanel value={this.props.openTab} index={1}>

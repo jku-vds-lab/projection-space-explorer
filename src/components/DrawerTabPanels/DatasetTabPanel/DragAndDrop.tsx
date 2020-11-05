@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import { Grid, ThemeProvider, withTheme } from '@material-ui/core';
+import { Grid, withTheme } from '@material-ui/core';
 import * as React from 'react'
 
 type DragAndDropProps = {
