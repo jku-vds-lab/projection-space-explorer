@@ -2,6 +2,7 @@ import { RubikLegend } from "./RubikDetail/RubikDetail";
 import { NeuralLegend } from "./NeuralDetail/NeuralDetail";
 import { ChessLegend } from "./ChessDetail/ChessDetail";
 import { CoralLegend } from "./CoralDetail/CoralDetail";
+import { SudokuLegend } from "./SudokuDetail/SudokuDetail";
 import { StoryLegend } from "./StoryDetail/StoryDetail";
 import { GoLegend } from "./GoDetail/GoDetail";
 
@@ -35,11 +36,12 @@ export var GenericLegend = ({ type, vectors, aggregate }: GenericLegendProps) =>
         case DatasetType.Chess:
             return <ChessLegend selection={vectors}></ChessLegend>
         case DatasetType.Coral:
-            return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
+            return <SudokuLegend selection={vectors} aggregate={aggregate}></SudokuLegend>
+            // return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
         default:
-            return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
+            return <SudokuLegend selection={vectors} aggregate={aggregate}></SudokuLegend>
     }
 }
 
