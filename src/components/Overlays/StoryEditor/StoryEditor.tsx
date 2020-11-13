@@ -285,7 +285,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
 
                                 visited[source] = false
                             }
-                            
+
                             return output.sort((a, b) => a.length - b.length)
                         }
 
@@ -302,7 +302,15 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                                 mainEdges: mainPath.slice(1).map((item, index) => {
                                     return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
                                 }),
-                                sidePaths: paths.slice(1)
+                                sidePaths: paths.slice(1).map(ids => {
+                                    let path = ids.map(id => this.state.nodes.find(e => e.cluster.label == id).cluster)
+                                    return {
+                                        nodes: path,
+                                        edges: path.slice(1).map((item, index) => {
+                                            return this.props.stories.active.edges.find(edge => edge.source == path[index] && edge.destination == item)
+                                        })
+                                    }
+                                })
                             })
 
                             this.props.openStoryEditor(false)
@@ -313,7 +321,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                             destination: null
                         })
 
-                        
+
                     }
                 }
                 break;
@@ -400,9 +408,9 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                 source: nodes.find(node => node.meshIndex == edge.source.label),
                 destination: nodes.find(node => node.meshIndex == edge.destination.label)
             }))
-    
+
             let worker = new Worker("dist/forceatlas2.js")
-    
+
             let self = this
             worker.onmessage = function (e) {
                 switch (e.data.type) {
@@ -411,15 +419,15 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                         if (e.data.type == 'finish') {
                             // finish
                             const positions = e.data.positions
-    
+
                             const rect = self.svgRef.current.getBoundingClientRect()
                             rescalePoints(positions, rect.width, rect.height)
-    
+
                             nodes.forEach(node => {
                                 node.x = positions[node.meshIndex].x
                                 node.y = positions[node.meshIndex].y
                             })
-    
+
                             self.setState({
                                 nodes: nodes,
                                 edges: edges
@@ -427,7 +435,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                         }
                         break
                 }
-    
+
             }
             worker.postMessage({
                 nodes: nodes.map(node => ({ meshIndex: node.meshIndex, x: node.x, y: node.y })),
@@ -442,7 +450,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                 nodes: nodes,
                 edges: []
             })
-        }      
+        }
     }
 
     onDrop(event) {

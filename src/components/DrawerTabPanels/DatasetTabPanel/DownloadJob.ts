@@ -1,11 +1,17 @@
-import SelectInput from "@material-ui/core/Select/SelectInput"
-import { threadId } from "worker_threads"
+import { DatasetType } from "../../util/datasetselector"
 
+/**
+ * Helper for fetching a resource asynchronous.
+ */
 export class DownloadJob {
-    entry
+
+    // The entry to fetch with this job
+    entry: { path: string, type: DatasetType }
+
+    // If this job terminated from outside?
     terminated: boolean
 
-    constructor(entry) {
+    constructor(entry: { path: string, type: DatasetType }) {
         this.entry = entry
         this.terminated = false
     }
@@ -14,10 +20,11 @@ export class DownloadJob {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async download(response: Response, callback, onProgress) {
+    async download(response: Response, callback: (string) => void, onProgress: (number) => void) {
         const reader = response.body.getReader()
         let chunks = []
         let receivedLength = 0
+
         while (true) {
             const { done, value } = await reader.read()
 
@@ -26,10 +33,12 @@ export class DownloadJob {
             }
 
             chunks.push(value)
+            
+            // Update progress
             receivedLength += value.length
-
             onProgress(receivedLength)
 
+            // This sleep is necessary to have a fluid animated UI, else it would stutter since everything is on the same thread
             await this.sleep(50)
         }
 
@@ -37,6 +46,7 @@ export class DownloadJob {
             return;
         }
 
+        // Combine all small chunks to one big chunk
         let chunksAll = new Uint8Array(receivedLength)
         let position = 0
         for (let chunk of chunks) {
@@ -44,16 +54,22 @@ export class DownloadJob {
             position += chunk.length
         }
 
+        // Encode result as string
         let result = new TextDecoder("utf-8").decode(chunksAll)
+
+        // call finish
         callback(result)
     }
 
-    start(callback, onProgress) {
+    start(callback: (string) => void, onProgress: (number) => void) {
         fetch(this.entry.path).then(response => {
             this.download(response, callback, onProgress)
         })
     }
 
+    /**
+     * Terminates this job
+     */
     terminate() {
         this.terminated = true
     }

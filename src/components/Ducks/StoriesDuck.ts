@@ -12,6 +12,7 @@ const ADD_EDGE_TO_ACTIVE = "ducks/stories/ADD_EDGE_TO_ACTIVE"
 const SET_ACTIVE_TRACE = "ducks/stories/SET_ACTIVE_TRACE"
 const ADD_CLUSTER_TO_TRACE = "ducks/stories/ADD_CLUSTER_TO_TRACE"
 const SET_ACTIVE_TRACE_STATE = "ducks/stories/SET_ACTIVE_TRACE_STATE"
+const SELECT_SIDE_BRANCH = "ducks/stories/SELECT_SIDE_BRANCH"
 
 export const addStory = story => ({
     type: ADD_STORY_BOOK,
@@ -75,6 +76,13 @@ export function setActiveTraceState(cluster: Cluster) {
     }
 }
 
+export function selectSideBranch(i: number) {
+    return {
+        type: SELECT_SIDE_BRANCH,
+        index: i
+    }
+}
+
 const initialState = {
     stories: [],
     active: null,
@@ -91,6 +99,23 @@ type StoriesType = {
 
 export default function stories(state: StoriesType = initialState, action): StoriesType {
     switch (action.type) {
+        case SELECT_SIDE_BRANCH: {
+            let sidePaths = state.trace.sidePaths.slice(0)
+            sidePaths.splice(action.index, 1)
+            sidePaths.push({ nodes: state.trace.mainPath, edges: state.trace.mainEdges })
+            let trace = {
+                mainPath: state.trace.sidePaths[action.index].nodes,
+                mainEdges: state.trace.sidePaths[action.index].edges,
+                sidePaths: sidePaths
+            }
+
+            return {
+                stories: state.stories,
+                active: state.active,
+                trace: trace,
+                activeTraceState: state.activeTraceState
+            }
+        }
         case SET_ACTIVE_TRACE_STATE: {
             return {
                 stories: state.stories,
@@ -181,7 +206,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
         case SET_ACTIVE_STORY_BOOK: {
             let storyBook = action.activeStory as Story
 
-            
+
 
             let trace = state.trace
             let activeTraceState = state.activeTraceState

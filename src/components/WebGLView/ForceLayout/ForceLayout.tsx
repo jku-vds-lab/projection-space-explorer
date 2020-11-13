@@ -1,6 +1,5 @@
 import * as React from 'react'
 import './ForceLayout.scss'
-import { Story } from "../../util/Story"
 import { GenericFingerprint } from '../../legends/Generic'
 import { connect, ConnectedProps } from 'react-redux'
 import { Edge } from '../../util/graphs'
@@ -217,7 +216,7 @@ export var ForceLayout = connector(class extends React.Component<Props, ForceLay
      * @param ctx the rendering context of the canvas
      */
     renderLinks(ctx: CanvasRenderingContext2D) {
-        var offset = this.props.viewTransform.cameraOffsetToScreen()
+        var offset = ViewTransform.cameraOffsetToScreen(this.props.viewTransform)
 
         if (this.state.displayClusters || this.state.differenceClusters) {
             let link = null
@@ -275,8 +274,8 @@ export var ForceLayout = connector(class extends React.Component<Props, ForceLay
         if (this.props.stories.active && this.props.stories.active.edges) {
 
             this.props.stories.active.edges.forEach(edge => {
-                const { x: x0, y: y0 } = this.props.viewTransform.worldToScreen(edge.source.getCenter())
-                const { x: x1, y: y1 } = this.props.viewTransform.worldToScreen(edge.destination.getCenter())
+                const { x: x0, y: y0 } = ViewTransform.worldToScreen(edge.source.getCenter(), this.props.viewTransform)
+                const { x: x1, y: y1 } = ViewTransform.worldToScreen(edge.destination.getCenter(), this.props.viewTransform)
 
                 ctx.strokeStyle = 'rgba(70, 130, 180, 0.5)'
                 ctx.lineWidth = 5 * window.devicePixelRatio
@@ -303,8 +302,8 @@ export var ForceLayout = connector(class extends React.Component<Props, ForceLay
                         key={index}
                         style={{
                             position: 'absolute',
-                            left: displayCluster.forceLabelPosition.x + this.props.viewTransform.cameraOffsetToScreen().x,
-                            top: displayCluster.forceLabelPosition.y + this.props.viewTransform.cameraOffsetToScreen().y,
+                            left: displayCluster.forceLabelPosition.x + ViewTransform.cameraOffsetToScreen(this.props.viewTransform).x,
+                            top: displayCluster.forceLabelPosition.y + ViewTransform.cameraOffsetToScreen(this.props.viewTransform).y,
                             transform: `translate(${displayCluster.shiftX.toFixed(1)}px, ${displayCluster.shiftY.toFixed(1)}px)`
                         }}
                     >
@@ -318,8 +317,8 @@ export var ForceLayout = connector(class extends React.Component<Props, ForceLay
                         key={index}
                         style={{
                             position: 'absolute',
-                            left: differenceCluster.forceLabelPosition.x + this.props.viewTransform.cameraOffsetToScreen().x,
-                            top: differenceCluster.forceLabelPosition.y + this.props.viewTransform.cameraOffsetToScreen().y,
+                            left: differenceCluster.forceLabelPosition.x + ViewTransform.cameraOffsetToScreen(this.props.viewTransform).x,
+                            top: differenceCluster.forceLabelPosition.y + ViewTransform.cameraOffsetToScreen(this.props.viewTransform).y,
                             transform: `translate(${differenceCluster.shiftX.toFixed(1)}px, ${differenceCluster.shiftY.toFixed(1)}px)`
                         }}>
                         <GenericChanges vectorsA={differenceCluster.clusterEdge.source.vectors} vectorsB={differenceCluster.clusterEdge.destination.vectors} scale={1}></GenericChanges>

@@ -12,7 +12,7 @@ import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
 import { StoryMode } from "../../Ducks/StoryModeDuck";
 import { RootState } from "../../Store/Store";
 import { addCluster } from "../../Ducks/CurrentClustersDuck";
-import { addClusterToStory, addClusterToTrace, setActiveTraceState } from "../../Ducks/StoriesDuck";
+import { addClusterToStory, addClusterToTrace, selectSideBranch, setActiveTraceState } from "../../Ducks/StoriesDuck";
 
 
 const mapStateToProps = (state: RootState) => ({
@@ -25,7 +25,8 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatch = dispatch => ({
     addCluster: cluster => dispatch(addCluster(cluster)),
     addClusterToTrace: cluster => dispatch(addClusterToTrace(cluster)),
-    setActiveTraceState: cluster => dispatch(setActiveTraceState(cluster))
+    setActiveTraceState: cluster => dispatch(setActiveTraceState(cluster)),
+    selectSideBranch: index => dispatch(selectSideBranch(index))
 })
 
 const connector = connect(mapStateToProps, mapDispatch);
@@ -48,6 +49,10 @@ const Plus = ({ onClick, x, y, r }) => {
     </g>
 }
 
+const Circle = ({ x, y, onClick }) => {
+    return <circle cx={x} cy={y} r="6" fill="blue" onClick={onClick} />
+}
+
 export const ClusterOverview = connector(function ({
     dataset,
     itemClicked,
@@ -56,7 +61,8 @@ export const ClusterOverview = connector(function ({
     currentAggregation,
     addCluster,
     addClusterToTrace,
-    setActiveTraceState }: Props) {
+    setActiveTraceState,
+    selectSideBranch }: Props) {
 
     if (stories.trace == null || stories.active == null) {
         return null
@@ -76,9 +82,8 @@ export const ClusterOverview = connector(function ({
             const state = []
             for (var i = 1; i < current.children.length; i++) {
                 const child = current.children[i];
-                const rect = child.getBoundingClientRect()
 
-                state.push({ y: child.offsetTop + 80 })
+                state.push({ y: child.offsetTop + child.offsetHeight / 2 - current.children[1].offsetTop })
             }
             setPositions(state)
         }
@@ -92,7 +97,7 @@ export const ClusterOverview = connector(function ({
 
     return <Grow in={stories.active != null}>
         <Card className="ClusterOverviewParent">
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
 
@@ -106,8 +111,25 @@ export const ClusterOverview = connector(function ({
                             minWidth: '100px'
                         }}>
 
-                            {position.map(p => {
-                                return <circle cx="50" cy={p.y} r="6" fill="blue" />
+                            {position.map((p, index) => {
+                                let cluster = stories.trace.mainPath[index]
+                                let sidePathIndex = stories.trace.sidePaths.findIndex(sidePath => {
+                                    return sidePath.edges.find(edge => edge.source == cluster)
+                                })
+
+
+                                return <g>
+                                    <text x="60" y={p.y} fill="black">{index}</text>
+                                    <circle cx="50" cy={p.y} r="6" fill="blue" />
+
+                                    {sidePathIndex >= 0 &&
+                                        <g>
+                                            <line x1={50} y1={p.y} x2={30} y2={p.y + 40} stroke="gray" strokeWidth={2}></line>
+                                            <Circle x={30} y={p.y + 40} onClick={() => {
+                                                selectSideBranch(sidePathIndex)
+                                            }}></Circle>
+                                        </g>}
+                                </g>
                             })}
 
                             {position.map((p, i) => {

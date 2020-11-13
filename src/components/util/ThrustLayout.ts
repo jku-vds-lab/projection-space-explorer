@@ -99,7 +99,7 @@ export class ThrustLayout {
             var k = 0.2 * this.alpha();
 
             graph.nodes.forEach((o, i) => {
-                var center = self.viewTransform.worldToScreenWithoutOffset(o.center)
+                var center = ViewTransform.worldToScreenWithoutOffset(o.center, self.viewTransform)
                 o.x += (center.x - o.x) * k;
                 o.y += (center.y - o.y) * k;
             })
