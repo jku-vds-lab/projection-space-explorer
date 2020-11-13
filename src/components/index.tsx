@@ -184,22 +184,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
-    var preselect = "datasets/rubik/cube10x2_different_origins.csv"
-    if (set != null) {
-
-      if (set == "neural") {
-        preselect = "datasets/neural/learning_confmat.csv"
-      } else if (set == "rubik") {
-        preselect = "datasets/rubik/cube10x2_different_origins.csv"
-      } else if (set == "chess") {
-        preselect = "datasets/chess/chess16k.csv"
-      }
-
+    var preselect = "datasets/story/withnames.csv"
       new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
-    } else {
-      new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
-    }
-
     window.addEventListener('resize', this.onResize.bind(this))
   }
 
