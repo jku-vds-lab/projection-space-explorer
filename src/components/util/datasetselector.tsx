@@ -36,17 +36,17 @@ export class DatasetDatabase {
         this.data = [
             {
                 display: "Synthetic Stories t-SNE",
-                path: "datasets/story/new_artificial_tSNE_now",
+                path: "datasets/story/new_artificial_tSNE_now.csv",
                 type: DatasetType.Story
             },
             {
                 display: "Synthetic Stories (Data Type) t-SNE",
-                path: "datasets/story/new_our_artificial_tSNE_now",
+                path: "datasets/story/new_our_artificial_tSNE_now.csv",
                 type: DatasetType.Story
             },
             {
                 display: "Actual User Sessions t-SNE",
-                path: "datasets/story/new_stories_tSNE_now",
+                path: "datasets/story/new_stories_tSNE_now.csv",
                 type: DatasetType.Story
             }
         ]

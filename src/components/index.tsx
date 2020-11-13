@@ -184,7 +184,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
-    var preselect = "datasets/story/new_stories_tSNE_now"
+    var preselect = "datasets/story/new_stories_tSNE_now.csv"
       new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     window.addEventListener('resize', this.onResize.bind(this))
   }
@@ -243,7 +243,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setCategoryOptions(new CategoryOptions(this.props.dataset.vectors, categories))
     this.props.setPathLengthMaximum(dataset.getMaxPathLength())
-    if (dataset.info.path == "datasets/story/new_stories_tSNE_now"){
+    if (dataset.info.path == "datasets/story/new_stories_tSNE_now.csv"){
       this.props.setPathLengthRange([0,31])
     } else{
     this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
