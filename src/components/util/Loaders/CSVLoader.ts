@@ -1,4 +1,4 @@
-import { Vect, DatasetDatabase, Preprocessor, getSegs, Dataset, InferCategory, DatasetType, FeatureType } from "../datasetselector"
+import { Vect, Preprocessor, Dataset, InferCategory, DatasetType, FeatureType, DatasetEntry } from "../datasetselector"
 import { Loader } from "./Loader"
 
 
@@ -17,12 +17,12 @@ export class CSVLoader implements Loader {
     constructor() {
     }
 
-    resolvePath(entry, finished) {
+    resolvePath(entry: DatasetEntry, finished) {
         d3v5.csv(entry.path).then(vectors => {
             this.vectors = convertFromCSV(vectors)
             this.datasetType = entry.type
 
-            this.resolve(finished, this.vectors, this.datasetType)
+            this.resolve(finished, this.vectors, this.datasetType, entry)
         })
     }
 
@@ -35,7 +35,7 @@ export class CSVLoader implements Loader {
         this.vectors = convertFromCSV(d3v5.csvParse(content))
         this.datasetType = new InferCategory(this.vectors).inferType()
 
-        this.resolve(finished, this.vectors, this.datasetType)
+        this.resolve(finished, this.vectors, this.datasetType, { display: "", type: this.datasetType, path: "" })
     }
 
     getFeatureType(x) {
@@ -48,7 +48,7 @@ export class CSVLoader implements Loader {
         }
     }
 
-    async resolve(finished, vectors, datasetType) {
+    async resolve(finished, vectors, datasetType, entry: DatasetEntry) {
         var header = Object.keys(vectors[0])
         var ranges = header.reduce((map, value) => {
             var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
@@ -143,6 +143,6 @@ export class CSVLoader implements Loader {
 
         ranges = new Preprocessor(vectors).preprocess(ranges)
 
-        finished(new Dataset(vectors, ranges, preselection, { type: datasetType }, types), new InferCategory(vectors).load(ranges))
+        finished(new Dataset(vectors, ranges, preselection, { type: datasetType, path: entry.path }, types), new InferCategory(vectors).load(ranges))
     }
 }

@@ -19,14 +19,18 @@ enum PrebuiltFeatures {
 }
 
 
-
+export type DatasetEntry = {
+    display: string
+    path: string
+    type: DatasetType
+}
 
 
 /**
  * Dummy class that holds information about the files that can be preselected.
  */
 export class DatasetDatabase {
-    data: { display: string, path: string, type: DatasetType }[]
+    data: DatasetEntry[]
 
     constructor() {
         this.data = [
@@ -407,7 +411,7 @@ export class InferCategory {
         if (header.includes('new_y')) {
             return DatasetType.Story
         }
-        
+
         if (header.includes('aa')) {
             return DatasetType.Go
         }
@@ -582,7 +586,7 @@ export class Dataset {
     segments: DataLine[]
     bounds: { x, y, scaleBase, scaleFactor }
     ranges: any
-    info: any
+    info: { path: string, type: DatasetType }
     columns: any
 
     // The type of the dataset (or unknown if not possible to derive)
@@ -741,7 +745,7 @@ export class Dataset {
             return arr
         }
 
-    
+
         (samples ?? this.vectors).forEach(vector => {
             var data = []
             columns.forEach(entry => {

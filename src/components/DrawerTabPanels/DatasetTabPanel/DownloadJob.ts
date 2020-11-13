@@ -39,7 +39,7 @@ export class DownloadJob {
             onProgress(receivedLength)
 
             // This sleep is necessary to have a fluid animated UI, else it would stutter since everything is on the same thread
-            await this.sleep(50)
+            await this.sleep(10)
         }
 
         if (this.terminated) {
