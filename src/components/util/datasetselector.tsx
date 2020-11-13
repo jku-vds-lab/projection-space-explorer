@@ -44,6 +44,11 @@ export class DatasetDatabase {
                 display: "Story: Test",
                 path: "datasets/story/teststories.csv",
                 type: DatasetType.Story
+            },
+            {
+                display: "Story: Test",
+                path: "datasets/story/teststories.csv",
+                type: DatasetType.Story
             }
         ]
     }
