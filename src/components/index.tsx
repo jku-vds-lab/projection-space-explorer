@@ -243,7 +243,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setCategoryOptions(new CategoryOptions(this.props.dataset.vectors, categories))
     this.props.setPathLengthMaximum(dataset.getMaxPathLength())
+    if (dataset.info.path == "datasets/story/stories_dup-del_p50_with-names.csv"){
+      this.props.setPathLengthRange([0,31])
+    } else{
     this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
+    }
 
     const formatRange = range => {
       try {
