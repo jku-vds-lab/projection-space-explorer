@@ -35,23 +35,18 @@ export class DatasetDatabase {
     constructor() {
         this.data = [
             {
-                display: "Story: With Names",
-                path: "datasets/story/withnames.csv",
+                display: "Synthetic Stories t-SNE",
+                path: "datasets/story/new_artificial_tSNE_now",
                 type: DatasetType.Story
             },
             {
-                display: "Story: No Duplicates",
-                path: "datasets/story/stories_dup-del_p50_with-names.csv",
+                display: "Synthetic Stories (Data Type) t-SNE",
+                path: "datasets/story/new_our_artificial_tSNE_now",
                 type: DatasetType.Story
             },
             {
-                display: "Story: Test",
-                path: "datasets/story/teststories.csv",
-                type: DatasetType.Story
-            },
-            {
-                display: "Story: Test",
-                path: "datasets/story/teststories.csv",
+                display: "Actual User Sessions t-SNE",
+                path: "datasets/story/new_stories_tSNE_now",
                 type: DatasetType.Story
             }
         ]
