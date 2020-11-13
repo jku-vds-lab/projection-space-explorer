@@ -1,9 +1,6 @@
-import { FunctionComponent } from "react"
-import { FlexParent } from "../../util/FlexParent"
 import React = require("react")
-import { Avatar, Box, Button, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Switch, Typography } from "@material-ui/core"
+import { Avatar, Box, Button, FormControlLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Switch, Typography } from "@material-ui/core"
 import { ClusterWindow } from "../../projection/integration"
-import { StoryPreview } from "../StoryTabPanel/StoryPreview/StoryPreview"
 import { connect, ConnectedProps } from 'react-redux'
 import Cluster from "../../util/Cluster"
 import { Story } from "../../util/Story"
@@ -14,7 +11,6 @@ import { addCluster, removeCluster, setCurrentClustersAction } from "../../Ducks
 import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories } from "../../Ducks/StoriesDuck"
-import { StoryMode, setStoryMode } from "../../Ducks/StoryModeDuck"
 import { RootState } from "../../Store/Store"
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -25,7 +21,9 @@ const mapStateToProps = (state: RootState) => ({
     stories: state.stories,
     currentClusters: state.currentClusters,
     displayMode: state.displayMode,
-    dataset: state.dataset
+    dataset: state.dataset,
+    webGLView: state.webGLView,
+    selectedClusters: state.selectedClusters
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -51,16 +49,25 @@ type Props = PropsFromRedux & {
     clusteringWorker
 }
 
-
-
-
-
 export const ClusteringTabPanel = connector(({ setCurrentClusters,
-    setStories, setActiveStory,
-    currentAggregation, clusteringWorker,
-    dataset, stories, setClusterEdges,
-    currentClusters, setDisplayMode, displayMode, setSelectedClusters,
-    addCluster, removeCluster, addStory, addClusterToStory, removeClusterFromStories }: Props) => {
+    setStories,
+    setActiveStory,
+    currentAggregation,
+    clusteringWorker,
+    dataset,
+    stories,
+    setClusterEdges,
+    currentClusters,
+    setDisplayMode,
+    displayMode,
+    setSelectedClusters,
+    addCluster,
+    removeCluster,
+    addStory,
+    addClusterToStory,
+    removeClusterFromStories,
+    webGLView,
+    selectedClusters }: Props) => {
 
 
     function storyLayout(edges: Edge[]) {
@@ -253,7 +260,9 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
             <List>
                 {currentClusters?.map((cluster, key) => {
-                    return <ListItem key={key}>
+                    return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={() => {
+                        webGLView.current.onClusterClicked(cluster)
+                    }}>
                         <ListItemAvatar>
                             <Avatar>
                                 <FolderIcon />
@@ -276,14 +285,5 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
                 }
             </List>
         </div>
-
-
-
-
-
     </div>
-
 })
-
-
-

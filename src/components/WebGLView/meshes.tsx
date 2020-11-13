@@ -700,6 +700,7 @@ export class PointVisualization {
       var rgb = null
 
       if (this.dataset.isSequential) {
+        
         if (vector.view.segment.view.grayed) {
           rgb = {
             r: 192.0,

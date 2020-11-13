@@ -28,7 +28,7 @@ export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true 
 
     renderHighlightedSequence(context: CanvasRenderingContext2D, highlightedSequence: { previous, current, next }) {
         var ctx = new RenderingContextEx(context, window.devicePixelRatio)
-        let current = this.props.viewTransform.worldToScreen({ x: highlightedSequence.current.x, y: highlightedSequence.current.y })
+        let current = ViewTransform.worldToScreen({ x: highlightedSequence.current.x, y: highlightedSequence.current.y }, this.props.viewTransform)
 
 
 
@@ -40,7 +40,7 @@ export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true 
 
         if (highlightedSequence.previous) {
             ctx.beginPath()
-            let previous = this.props.viewTransform.worldToScreen({ x: highlightedSequence.previous.x, y: highlightedSequence.previous.y })
+            let previous = ViewTransform.worldToScreen({ x: highlightedSequence.previous.x, y: highlightedSequence.previous.y }, this.props.viewTransform)
             ctx.moveTo(previous.x, previous.y)
 
             ctx.strokeStyle = "rgba(0.5, 0.5, 0.5, 0.4)"
@@ -49,7 +49,7 @@ export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true 
             ctx.closePath()
         }
         if (highlightedSequence.next) {
-            let next = this.props.viewTransform.worldToScreen({ x: highlightedSequence.next.x, y: highlightedSequence.next.y })
+            let next = ViewTransform.worldToScreen({ x: highlightedSequence.next.x, y: highlightedSequence.next.y }, this.props.viewTransform)
             ctx.beginPath()
             ctx.moveTo(current.x, current.y)
             

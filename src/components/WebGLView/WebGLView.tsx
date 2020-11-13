@@ -8,7 +8,7 @@ import * as THREE from 'three'
 import { LassoLayer } from './LassoLayer/LassoLayer';
 import Cluster from '../util/Cluster';
 import { Story } from "../util/Story";
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
 import { graphLayout } from '../util/graphs';
 import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
 import { Dataset, DataLine, Vect } from '../util/datasetselector';
@@ -27,44 +27,14 @@ import { setHoverState } from '../Ducks/HoverStateDuck';
 import { mappingFromScale } from '../util/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
-import { Typography } from '@material-ui/core';
-
-
-type ViewProps = {
-    dataset: Dataset
-    currentTool: Tool
-    currentAggregation: any
-    clusters: Cluster[]
-    setActiveLine: any
-    activeLine: DataLine
-    highlightedSequence: any
-    setCurrentAggregation: any
-    viewTransform: ViewTransform
-    setClusterEdges: any
-    setViewTransform: any
-    checkedShapes: any
-    vectorByShape: any
-    pathLengthRange: any
-    advancedColoringSelection: boolean[]
-    clusterMode: ClusterMode
-    toggleSelectedCluster: any
-    toggleAggregation: any
-    selectedClusters: Cluster[]
-    displayMode: DisplayMode
-    lineBrightness: number
-    globalPointSize: []
-    pointColorScale: any
-    channelColor: any
-    setPointColorMapping: any
-    setHoverState: any
-    channelSize: any
-    stories: any
-}
+import { Menu, MenuItem, Typography } from '@material-ui/core';
 
 type ViewState = {
     hoverCluster: any
     displayClusters: any
     camera: Camera
+    menuX: number
+    menuY: number
 }
 
 const mapStateToProps = (state: RootState) => ({
@@ -76,7 +46,6 @@ const mapStateToProps = (state: RootState) => ({
     dataset: state.dataset,
     highlightedSequence: state.highlightedSequence,
     activeLine: state.activeLine,
-    viewTransform: state.viewTransform,
     advancedColoringSelection: state.advancedColoringSelection,
     clusterMode: state.clusterMode,
     selectedClusters: state.selectedClusters,
@@ -96,7 +65,7 @@ const mapDispatchToProps = dispatch => ({
     setCurrentAggregation: id => dispatch(setAggregationAction(id)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setActiveLine: activeLine => dispatch(setActiveLine(activeLine)),
-    setViewTransform: viewTransform => dispatch(setViewTransform(viewTransform)),
+    setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
     toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedCluster(selectedCluster)),
     toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation)),
     setHoverState: hoverState => dispatch(setHoverState(hoverState)),
@@ -104,7 +73,17 @@ const mapDispatchToProps = dispatch => ({
 })
 
 
-export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(class extends React.Component<ViewProps, ViewState> {
+const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux
+
+
+
+
+
+export const WebGLView = connector(class extends React.Component<Props, ViewState> {
     lasso: LassoSelection
     particles: PointVisualization
     containerRef: any
@@ -137,6 +116,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     lastTime: number;
     mouseMoveListener: any;
     mouseDownListener: any;
+    contextMenuListener: any
     keyDownListener: any;
     wheelListener: any;
     mouseUpListener: any;
@@ -163,7 +143,9 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             // clusters to display using force-directed layout
             displayClusters: [],
             camera: null,
-            hoverCluster: undefined
+            hoverCluster: undefined,
+            menuX: null,
+            menuY: null
         }
     }
 
@@ -251,8 +233,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
         this.camera.updateProjectionMatrix()
         this.renderer.setSize(width, height)
-        this.props.viewTransform.width = width
-        this.props.viewTransform.height = height
+
+        this.props.setViewTransform(this.camera, width, height)
 
 
         this.requestRender()
@@ -261,9 +243,18 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     onMouseDown(event) {
         event.preventDefault();
 
-        this.mouseDown = true
-        this.initialMousePosition = new THREE.Vector2(event.clientX, event.clientY)
-        this.mouseDownPosition = this.normaliseMouse(event)
+        switch (event.button) {
+            case 0:
+                this.mouseDown = true
+                this.initialMousePosition = new THREE.Vector2(event.clientX, event.clientY)
+                this.mouseDownPosition = this.normaliseMouse(event)
+                break;
+            case 2:
+                this.setState({
+                    menuX: event.clientX,
+                    menuY: event.clientY,
+                })
+        }
     }
 
 
@@ -278,7 +269,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         event.preventDefault();
 
         var bounds = this.containerRef.current.getBoundingClientRect()
-        var coords = this.props.viewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top })
+        var coords = ViewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
 
         switch (this.props.currentTool) {
             case Tool.Default:
@@ -355,6 +346,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                     this.camera.updateProjectionMatrix()
 
                     this.requestRender()
+
+                    this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight())
                 }
                 break;
             case Tool.Grab:
@@ -404,8 +397,9 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     }
 
     onMouseUp(event) {
+
         var bounds = this.containerRef.current.getBoundingClientRect()
-        var coords = this.props.viewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top })
+        var coords = ViewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
 
         switch (this.props.currentTool) {
             case Tool.Default:
@@ -448,10 +442,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                     break;
                 }
 
-                function deriveFromClusters(clusters: Cluster[]) {
-                    let agg = clusters.map(cluster => cluster.vectors).flat()
-                    return [...new Set(agg)]
-                }
+
 
                 switch (this.props.clusterMode) {
                     case ClusterMode.Univariate: {
@@ -467,10 +458,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                         })
 
                         if (selected) {
-                            this.props.toggleSelectedCluster(selected)
-                            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
-                        } else {
-
+                            this.onClusterClicked(selected)
                         }
                         break;
                     }
@@ -487,10 +475,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
                         // Toggle
                         if (selected) {
-                            this.props.toggleSelectedCluster(selected)
-                            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
-                        } else {
-
+                            this.onClusterClicked(selected)
                         }
                         break;
                     }
@@ -543,7 +528,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
         // Store world position under mouse
         var bounds = this.containerRef.current.getBoundingClientRect()
-        var worldBefore = this.props.viewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top })
+        let worldBefore = ViewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
         var screenBefore = this.relativeMousePosition(event)
 
         var newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.props.dataset.bounds.scaleFactor
@@ -566,33 +551,15 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         // Update projection matrix
         this.camera.updateProjectionMatrix();
 
+        this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight())
+
         this.requestRender()
+
     }
 
     restoreCamera(world, screen) {
         this.camera.position.x = world.x - ((screen.x - this.getWidth() / 2) / this.camera.zoom)
         this.camera.position.y = (world.y + ((screen.y - this.getHeight() / 2) / this.camera.zoom))
-    }
-
-    generateNoisyLoop(count, ccw, radius, noiseSize) {
-        var verts = new Array(count * 2);
-        var thetaPer = Math.PI * 2 / count;
-        var backwards = ccw ? -1 : 1;
-        for (var i = 0; i < count; i++) {
-            var theta = thetaPer * i * backwards;
-            var randomRadius = radius * (1 + Math.random() * noiseSize);
-            verts[i * 2] = Math.cos(theta) * randomRadius;
-            verts[i * 2 + 1] = Math.sin(theta) * randomRadius;
-        }
-
-        return verts;
-    }
-
-
-    createTrajectories(clusters) {
-        const [edges] = graphLayout(clusters)
-
-        this.props.setClusterEdges(edges)
     }
 
 
@@ -603,51 +570,6 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     getHeight() {
         return this.containerRef.current?.offsetHeight
     }
-
-
-
-    /**
-     * Create debug clustering for segments.
-     * @param {*} bundles 
-     */
-    debugSegs(bundles, edgeClusters) {
-        var cols = ['#ff0000',
-            '#ff4000',
-            '#ff8000',
-            '#ffff00',
-            '#bfff00',
-            '#80ff00',
-            '#40ff00',
-            '#00ff00',
-            '#00ff40',
-            '#00ffbf',
-            '#ff0040',
-            '#ff00bf',
-            '#bf00ff',
-            '#4000ff',
-            '#0040ff',
-        ]
-        Object.keys(bundles).forEach((label, i) => {
-            var bundle = bundles[label]
-
-
-            if (bundle.length > 10) {
-                bundle.forEach(part => {
-                    var geometry = new THREE.Geometry()
-                    var material = new THREE.LineBasicMaterial({
-                        color: cols[i % cols.length]
-                    })
-
-                    geometry.vertices.push(new THREE.Vector3(part[0], part[1], -1.0))
-                    geometry.vertices.push(new THREE.Vector3(part[2], part[3], -1.0))
-
-                    var line = new THREE.Line(geometry, material);
-                    this.scene.add(line)
-                })
-            }
-        })
-    }
-
 
 
 
@@ -673,7 +595,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
 
         this.scene = new THREE.Scene()
 
-        this.props.setViewTransform(new ViewTransform(this.camera, this.getWidth(), this.getHeight()))
+        this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight())
 
         this.prevTime = performance.now()
 
@@ -707,7 +629,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             this.lines.meshes.forEach(line => this.scene.add(line.line))
         }
 
-        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 13)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 12)
         this.particles.createMesh(this.props.dataset.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
@@ -724,6 +646,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         container.removeEventListener('mouseup', this.mouseUpListener)
         container.removeEventListener('keydown', this.keyDownListener)
         container.removeEventListener('wheel', this.wheelListener)
+        container.removeEventListener('contextmenu', this.contextMenuListener)
 
         // Store new listeners
         this.wheelListener = event => this.onWheel(event)
@@ -731,6 +654,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         this.mouseMoveListener = event => this.onMouseMove(event)
         this.mouseUpListener = event => this.onMouseUp(event)
         this.keyDownListener = event => this.onKeyDown(event)
+        this.contextMenuListener = event => this.onContextMenu(event)
 
         // Add new listeners
         container.addEventListener('mousemove', this.mouseMoveListener, false);
@@ -738,9 +662,13 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         container.addEventListener('mouseup', this.mouseUpListener, false);
         container.addEventListener('keydown', this.keyDownListener)
         container.addEventListener('wheel', this.wheelListener, false);
+        container.addEventListener('contextmenu', this.contextMenuListener)
     }
 
-
+    onContextMenu(event) {
+        console.log("hi")
+        event.preventDefault()
+    }
 
     filterLines(algo, show) {
 
@@ -791,6 +719,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         this.camera.updateProjectionMatrix();
 
         this.requestRender()
+
 
     }
 
@@ -900,6 +829,16 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         if (this.props.highlightedSequence != null) {
             this.selectionRef.current.renderHighlightedSequence(ctx, this.props.highlightedSequence)
         }
+    }
+
+    onClusterClicked(cluster: Cluster) {
+        function deriveFromClusters(clusters: Cluster[]) {
+            let agg = clusters.map(cluster => cluster.vectors).flat()
+            return [...new Set(agg)]
+        }
+
+        this.props.toggleSelectedCluster(cluster)
+        this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
     }
 
 
@@ -1092,6 +1031,13 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         requestAnimationFrame(() => this.renderFrame())
     }
 
+    createTransform() {
+        return {
+            camera: this.camera,
+            width: this.getWidth(),
+            height: this.getHeight()
+        }
+    }
 
     renderLasso(ctx) {
         if (this.lasso == null) return;
@@ -1109,7 +1055,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         ctx.beginPath();
         for (var index = 0; index < points.length; index++) {
             var point = points[index];
-            point = this.props.viewTransform.worldToScreen(point)
+            point = ViewTransform.worldToScreen(point, this.createTransform())
 
             if (index == 0) {
                 ctx.moveTo(point.x * window.devicePixelRatio, point.y * window.devicePixelRatio);
@@ -1119,7 +1065,7 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
         }
 
         if (!this.lasso.drawing) {
-            var conv = this.props.viewTransform.worldToScreen(points[0])
+            var conv = ViewTransform.worldToScreen(points[0], this.createTransform())
             ctx.lineTo(conv.x * window.devicePixelRatio, conv.y * window.devicePixelRatio);
         }
 
@@ -1149,14 +1095,14 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                     var a = this.edgeClusters[connection.source]
                     var b = this.edgeClusters[connection.target]
 
-                    var p0 = this.props.viewTransform.worldToScreen(new Cluster(a.map(e => e.source)).getCenter())
-                    var p1 = this.props.viewTransform.worldToScreen(new Cluster(a.map(e => e.target)).getCenter())
+                    var p0 = ViewTransform.worldToScreen(new Cluster(a.map(e => e.source)).getCenter(), this.createTransform())
+                    var p1 = ViewTransform.worldToScreen(new Cluster(a.map(e => e.target)).getCenter(), this.createTransform())
 
                     ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
                     ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
 
-                    p0 = this.props.viewTransform.worldToScreen(new Cluster(b.map(e => e.source)).getCenter())
-                    p1 = this.props.viewTransform.worldToScreen(new Cluster(b.map(e => e.target)).getCenter())
+                    p0 = ViewTransform.worldToScreen(new Cluster(b.map(e => e.source)).getCenter(), this.createTransform())
+                    p1 = ViewTransform.worldToScreen(new Cluster(b.map(e => e.target)).getCenter(), this.createTransform())
                     ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
                     ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
                 })
@@ -1168,7 +1114,15 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
     }
 
     render() {
+        const handleClose = () => {
+            this.setState({
+                menuX: null,
+                menuY: null
+            });
+        };
+
         return <div
+            onContextMenu={(event) => { event.preventDefault() }}
             style={{
                 display: 'flex',
                 flexGrow: 1,
@@ -1191,8 +1145,8 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
                             className='speech-bubble-ds'
                             style={{
                                 position: 'absolute',
-                                right: this.getWidth() - this.props.viewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).x,
-                                bottom: this.getHeight() - this.props.viewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors)).y - 10,
+                                right: this.getWidth() - ViewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors), this.createTransform()).x,
+                                bottom: this.getHeight() - ViewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors), this.createTransform()).y - 10,
                             }}>
                             <Typography>{this.state.hoverCluster.getTextRepresentation()}</Typography>
                         </div>
@@ -1208,6 +1162,25 @@ export const WebGLView = connect(mapStateToProps, mapDispatchToProps, null, { fo
             <LassoLayer ref={this.selectionRef}></LassoLayer>
 
             <MultivariateClustering ref={this.multivariateClusterView}></MultivariateClustering>
+
+
+
+            <Menu
+                keepMounted
+                open={this.state.menuY !== null}
+                onClose={handleClose}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    this.state.menuY !== null && this.state.menuX !== null
+                        ? { top: this.state.menuY, left: this.state.menuX }
+                        : undefined
+                }
+            >
+                <MenuItem onClick={handleClose}>Select Trace in Story</MenuItem>
+                <MenuItem onClick={handleClose}>Select Cluster</MenuItem>
+                <MenuItem onClick={handleClose}>Connect To Other</MenuItem>
+                <MenuItem onClick={handleClose}>Connect To Other</MenuItem>
+            </Menu>
         </div>
     }
 })

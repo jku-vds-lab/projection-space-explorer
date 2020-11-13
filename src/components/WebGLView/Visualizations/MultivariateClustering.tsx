@@ -11,19 +11,23 @@ import { arraysEqual } from "../UtilityFunctions";
 import { NamedCategoricalScales } from "../../util/Colors/NamedCategoricalScales";
 import { TrailVisualization } from "./TrailVisualization";
 import { ClusterMode } from "../../Ducks/ClusterModeDuck";
+import { Typography } from "@material-ui/core";
+import { ViewTransform } from "../ViewTransform";
 
 const SELECTED_COLOR = 0x4d94ff
 const DEFAULT_COLOR = 0x000000
+const GRAYED = 0x3c3c3c
 
 type ClusterObjectType = {
     cluster: Cluster,
     geometry: THREE.Geometry,
     material: THREE.MeshBasicMaterial,
-    mesh: THREE.Mesh,
+    mesh: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>,
     children: any[],
     trailPositions: any[],
     lineColor: any,
     triangulatedMesh: any
+    sampleConnection: boolean
 }
 
 const mapState = (state: RootState) => ({
@@ -35,7 +39,8 @@ const mapState = (state: RootState) => ({
     clusterMode: state.clusterMode,
     trailSettings: state.trailSettings,
     stories: state.stories,
-    globalPointSize: state.globalPointSize
+    globalPointSize: state.globalPointSize,
+    viewTransform: state.viewTransform
 })
 
 
@@ -149,30 +154,41 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             let start = new THREE.Vector2(edge.source.getCenter().x, edge.source.getCenter().y)
             let end = new THREE.Vector2(edge.destination.getCenter().x, edge.destination.getCenter().y)
+            let middle = new THREE.Vector2().addVectors(start, new THREE.Vector2().subVectors(end, start).multiplyScalar(0.5))
 
             let dir = end.clone().sub(start).normalize()
             let markerOffset = start.clone().sub(end).normalize().multiplyScalar(24)
             let left = new Vector2(-dir.y, dir.x).multiplyScalar(2)
             let right = new Vector2(dir.y, -dir.x).multiplyScalar(2)
-            let markerLeft = new Vector2(-dir.y, dir.x).multiplyScalar(10)
-            let markerRight = new Vector2(dir.y, -dir.x).multiplyScalar(10)
-            let markerEnd = end.clone().multiplyScalar(zoom).add(markerOffset)
             let offset = dir.clone().multiplyScalar(this.devicePixelRatio * 12)
 
+            // line without arrow
             arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + left.x + offset.x, start.y * zoom + left.y + offset.y, 0))
             arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + right.x + offset.x, start.y * zoom + right.y + offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(markerEnd.x + left.x - offset.x, markerEnd.y + left.y - offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(markerEnd.x + right.x - offset.x, markerEnd.y + right.y - offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(end.x * zoom + left.x - offset.x, end.y * zoom + left.y - offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(end.x * zoom + right.x - offset.x, end.y * zoom + right.y - offset.y, 0))
 
-            arrowGeometry.vertices.push(new THREE.Vector3(markerEnd.x + markerLeft.x - offset.x, markerEnd.y + markerLeft.y - offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(markerEnd.x + markerRight.x - offset.x, markerEnd.y + markerRight.y - offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(end.x * zoom - offset.x, end.y * zoom - offset.y, 0))
+            // left wing
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x - offset.x, middle.y * zoom + left.y - offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x + offset.x, middle.y * zoom + left.y + offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x * 3 - offset.x, middle.y * zoom + left.y * 3 - offset.y, 0))
 
-            let i = index * 7
+            // Right wing
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x - offset.x, middle.y * zoom + right.y - offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x + offset.x, middle.y * zoom + right.y + offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x * 3 - offset.x, middle.y * zoom + right.y * 3 - offset.y, 0))
+
+            let i = index * 10
+            // line without arrow
             arrowGeometry.faces.push(new THREE.Face3(i, i + 1, i + 2, new Vector3(0, 0, -1), color))
             arrowGeometry.faces.push(new THREE.Face3(i + 1, i + 3, i + 2, new Vector3(0, 0, -1), color))
 
+            // left wing
             arrowGeometry.faces.push(new THREE.Face3(i + 4, i + 6, i + 5, new Vector3(0, 0, -1), color))
+
+            // Right wing
+            arrowGeometry.faces.push(new THREE.Face3(i + 7, i + 9, i + 8, new Vector3(0, 0, -1), color))
+
             index = index + 1
         })
 
@@ -229,6 +245,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             mesh.position.set(center.x * zoom, center.y * zoom, -0.5)
 
+            mesh.material.color = this.getColorForClusterObject(clusterObject)
+
             mesh.scale.set(this.props.globalPointSize[0], this.props.globalPointSize[0], this.props.globalPointSize[0])
 
             clusterObject.children.forEach(child => {
@@ -255,6 +273,17 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.lineMesh.geometry = lineGeometry
     }
 
+    getColorForClusterObject(clusterObject) {
+        if (this.props.selectedClusters.includes(clusterObject.cluster) || clusterObject.sampleConnection) {
+            return new THREE.Color(SELECTED_COLOR)
+        }
+
+        if (this.props.stories.active?.clusters?.includes(clusterObject.cluster)) {
+            return new THREE.Color(DEFAULT_COLOR)
+        } else {
+            return new THREE.Color(GRAYED)
+        }
+    }
 
     /**
      * Creates the visualization.
@@ -279,9 +308,13 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             // Add circle to scene
             var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * 16, this.devicePixelRatio * 16);
-            var material = new THREE.MeshBasicMaterial({ color: DEFAULT_COLOR });
+            var material = new THREE.MeshBasicMaterial({ color: new THREE.Color() });
             var circle = new THREE.Mesh(geometry, material);
-            material.opacity = 0.8
+
+
+            material.opacity = 0.92
+
+
             material.transparent = true
 
             var center = cluster.getCenter()
@@ -298,8 +331,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 lineColor: scale.map(ci),
                 triangulatedMesh: {
 
-                }
+                },
+                sampleConnection: false
             }
+
+            material.color = this.getColorForClusterObject(clusterObject)
+
             this.clusterObjects.push(clusterObject)
 
             if (this.props.clusterMode == ClusterMode.Multivariate) {
@@ -329,7 +366,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
                 if (clusterObject) {
-                    clusterObject.material.color = new THREE.Color(SELECTED_COLOR)
+                    clusterObject.sampleConnection = true
 
                     clusterObject.children.forEach(child => {
                         if (child.sample == sample) {
@@ -343,7 +380,9 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
     deactivateAll() {
         this.clusterObjects.forEach(clusterObject => {
-            clusterObject.material.color = new THREE.Color(DEFAULT_COLOR)
+            clusterObject.sampleConnection = false
+
+            clusterObject.material.color = this.getColorForClusterObject(clusterObject)
 
             clusterObject.children.forEach(child => {
                 child.visible = false
@@ -498,7 +537,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         if (this.clusterVis != null) {
             const { clusterMeshes, lineMeshes } = this.clusterVis
             clusterMeshes.forEach(mesh => {
-                
+
                 mesh.geometry.dispose()
                 mesh.material.dispose()
                 this.scalingScene.remove(mesh)
@@ -517,6 +556,14 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
      * Render an empty div, so componentDidMount will get called.
      */
     render() {
-        return <div></div>
+        return <div>
+            {
+                this.props.stories.trace && this.props.stories.trace.mainPath.map((cluster, index) => {
+                    let screen = ViewTransform.worldToScreen(cluster.getCenter(), this.props.viewTransform)
+
+                    return <Typography style={{ position: 'absolute', left: screen.x - 6, top: screen.y + 8, background: 'white' }}>{index}</Typography>
+                })
+            }
+        </div>
     }
 })

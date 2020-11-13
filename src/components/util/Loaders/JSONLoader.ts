@@ -8,47 +8,13 @@ export class JSONLoader implements Loader {
     vectors: Vect[]
     datasetType: DatasetType
 
-    async download(response: Response) {
-        const reader = response.body.getReader()
-        let chunks = []
-        let receivedLength = 0
-        while (true) {
-            const { done, value } = await reader.read()
-
-            if (done) {
-                break
-            }
-            chunks.push(value)
-            receivedLength += value.length
-
-            console.log("received " + value.length + " bytes")
-        }
-
-        let chunksAll = new Uint8Array(receivedLength)
-        let position = 0
-        for (let chunk of chunks) {
-            chunksAll.set(chunk, position)
-            position += chunk.length
-        }
-
-        let result = new TextDecoder("utf-8").decode(chunksAll)
-        console.log(result)
-    }
-
     resolvePath(entry: any, finished: any) {
-        fetch(entry.path)
-            .then(response => {
-                this.download(response)
-                //return response.json()
-            })
-        //.then(data => {
-        //   this.resolve(data, finished, entry.type)
-        //});
+        throw new Error("Method not implemented.");
     }
 
     resolveContent(content: any, finished: any) {
         let file = JSON.parse(content)
-        this.resolve(file, finished, null)
+        this.resolve(file, finished, null, { path: "" })
     }
 
     inferRangeForAttribute(key: string) {
@@ -88,7 +54,7 @@ export class JSONLoader implements Loader {
         }
     }
 
-    async resolve(content, finished, datasetType) {
+    async resolve(content, finished, datasetType, entry) {
         let fileSamples = content.samples[0]
 
         let ranges = {}
@@ -201,7 +167,7 @@ export class JSONLoader implements Loader {
 
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
 
-        let dataset = new Dataset(this.vectors, ranges, preselection, { type: this.datasetType }, types)
+        let dataset = new Dataset(this.vectors, ranges, preselection, { type: this.datasetType, path: entry.path }, types)
         dataset.clusters = clusters
         dataset.clusterEdges = edges
 
