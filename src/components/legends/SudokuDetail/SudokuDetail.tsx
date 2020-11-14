@@ -191,22 +191,106 @@ function genRows(vectors, projectionColumns, dataset) {
   return ret
 }
 
+const str2number = []
+str2number['Zero'] = 0
+str2number['One'] = 1
+str2number['Two'] = 2
+str2number['Three'] = 3
+str2number['Four'] = 4
+str2number['Five'] = 5
+str2number['Six'] = 6
+str2number['Seven'] = 7
+str2number['Eight'] = 8
+str2number['Nine'] = 9
+
+function FieldData(data, feature) {
+  const mapped = data.map((d) => {
+    return {
+      feature: +d[feature]
+    }
+  })
+  return {"values": mapped}
+}
+
+function valueCount(arr) {
+  var a = [],
+    b = [],
+    prev;
+
+  arr.sort();
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i] !== prev) {
+      a.push(arr[i]);
+      b.push(1);
+    } else {
+      b[b.length - 1]++;
+    }
+    prev = arr[i];
+  }
+
+  const sum = b.reduce((a, b) => a + b, 0);
+  const c = b.map(function (d, i) {
+    return (d / sum);
+  });
+
+  const d = c.indexOf(Math.max(...c));
+
+  return [a, b, c, d];
+}
+
 function getTable(vectors, aggregation, projectionColumns, dataset) {
+  // dictOfArrays[featureName] = array of i[featureName] for all i in the selection
+  const dictOfArrays = dictionary(vectors)
+
+  // featureValuesCounts[featureName] = [[list of features], [how often they occur], [percentage of how often they occur]]
+  const featureValuesCounts = []
+
+  // collect all values / frequencies for dictOfArrays
+  for (var key in dictOfArrays) {
+    featureValuesCounts[key] = valueCount(dictOfArrays[key])
+  }
+
   const classes = useStyles()
-  // const rows = genRows(vectors, projectionColumns, dataset)
-  var xOffset = 20
-  var yOffset = 20
-  var xInter = 20
-  var yInter = 20
-  var maxSize = 20
+  var xOffset = 25
+  var yOffset = 25
+  var xInter = 25
+  var yInter = 25
+  var maxSize = 25
 
   var svg = '<svg width="300" height="300">'
-  const size = ['0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,1.0']
 
   for (var i = 0; i < 9; i++) {
     for (var j = 0; j < 9; j++) {
-      var s = '<text x='+((Math.floor(i/3)+i) * xOffset)+' y='+((Math.floor(j/3)+j+1) * yOffset)+' font-size=\"'+(Math.random() * maxSize)+'\">'+(((i+j)%9)+1)+'</text>' 
-      console.log(s)
+      // current feature key
+      var key = ''+i+''+j
+
+      if (featureValuesCounts[key]) {
+        // categories
+        var categories = featureValuesCounts[key][0]
+        // relative frequencies
+        var relFreq = featureValuesCounts[key][2]
+        // index of most frequent category of that feature
+        var i2 = featureValuesCounts[key][3]
+        // most frequent category of that feature
+        var category = categories[i2]
+        // relative frequency of that category
+        var freq = relFreq[i2]
+        // relative frequency of that category
+
+        var category = str2number[category]
+        if (category === 0) {
+          category = '-'
+        }
+        
+      } else {
+        category = '-'
+        var freq = 1.0
+
+      }
+      // underline categories that are equivalent in the entire selection
+      var textDec = freq === 1.0 ? 'underline' : 'normal'
+      // opacity + font-size encode frequency linearly
+      var s = '<text x='+((Math.floor(i/3)+i) * xOffset)+' y='+((Math.floor(j/3)+j+1) * yOffset)+' text-decoration=\"'+textDec+'\" font-weight=\"normal\" opacity=\"'+(freq)+'\" font-size=\"'+(freq * maxSize)+'\">'+category+'</text>' 
       svg += s
     }
   }
@@ -255,6 +339,5 @@ type Props = PropsFromRedux & {
 }
 
 export var SudokuLegend = connector(({ selection, aggregate, projectionColumns, dataset }: Props) => {
-  console.log('exporting sudoku legend')
   return getTable(selection, aggregate, projectionColumns, dataset)
 })
