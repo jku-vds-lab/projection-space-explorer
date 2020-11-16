@@ -206,7 +206,7 @@ function getTable(vectors, aggregation, projectionColumns, dataset) {
           <TableHead>
             <TableRow>
               <TableCell>Feature</TableCell>
-              <TableCell>Characteristic</TableCell>
+              <TableCell>Char</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
