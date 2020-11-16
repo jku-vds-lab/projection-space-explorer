@@ -82,7 +82,7 @@ function createData(feature, category, score, char) {
 
 function getBins(a, n = 10) {
   const bin = d3.histogram()
-    .thresholds(n-1)
+    .thresholds(n - 1)
   return bin(a)
 }
 
@@ -133,53 +133,105 @@ function getCombinedCounts(a, b) {
 
 function getFeaturesCounts(a, b) {
   // data like ["asd", "asd", "qwe", ...]
-    // turn into ["asd", "qwe", ...], [2, 43, ...]
-    var countsA = getCounts(a)
-    var countsB = getCounts(b)
-    // add missing features that didn't occur in respectively other array
-    const combinedCounts = getCombinedCounts(countsA, countsB)
-    return combinedCounts
+  // turn into ["asd", "qwe", ...], [2, 43, ...]
+  var countsA = getCounts(a)
+  var countsB = getCounts(b)
+  // add missing features that didn't occur in respectively other array
+  const combinedCounts = getCombinedCounts(countsA, countsB)
+  return combinedCounts
 }
 
-function getBinnedCounts(a, b) {
-  // if quantitative bucket data
-  a = getBins(a)
-  b = getBins(b)
-  // returns [Array(4), Array(43), ...]
-  // turn into [4, 43, ...]
-  for (let i = 0; i < a.length; i++) {
-    a[i] = a[i].length()
-    b[i] = b[i].length()
+function isInBin(x, i, lowerBounds, upperBounds) {
+  return x >= lowerBounds[i] && x <= upperBounds[i]
+}
+
+function getFlattenedBins(a, b) {
+  // bin a,b together to find sensible bins
+  // then e.g. if resulting bins are 1: [1,2] and 2: [2,3]
+  // and a = [1.2, 1.7, 2.2, 2.8, 3.0]
+  // returns [1, 1, 2, 2, 2] for a
+  // similar for b
+
+  // find sensible bins for both a,b together
+  const bin = d3.histogram()
+    .thresholds(10 - 1)
+  const binned = bin(a.concat(b))
+  const lowerBounds = []
+  const upperBounds = []
+  binned.forEach(e => {
+    lowerBounds.push(e.x0)
+    upperBounds.push(e.x1)
+  });
+
+  a = a.sort()
+  b = b.sort()
+
+  const retA = []
+  const retB = []
+
+  var binIdx = 0
+
+  // go over each element of a
+  for (var i = 0; i < a.length; i++) {
+    const e = a[i]
+    // starting at lowest bin, go to next bin until current element fits in
+    while (!isInBin(e, binIdx, lowerBounds, upperBounds) && binIdx < lowerBounds.length) {
+      binIdx++
+    }
+    retA.push(binIdx)
+    
   }
-  return [a, b]
+
+  binIdx = 0
+
+  // go over each element of b
+  for (var i = 0; i < b.length; i++) {
+    const e = b[i]
+    // starting at lowest bin, go to next bin until current element fits in
+    while (!isInBin(e, binIdx, lowerBounds, upperBounds) && binIdx < lowerBounds.length) {
+      binIdx++
+    }
+    retB.push(binIdx)
+    
+  }
+
+  return [retA, retB]
+}
+
+
+function getMostDifferingCategory(a, b) {
+  const featuresCounts = getFeaturesCounts(a, b)
+  const features = featuresCounts[0]
+  a = featuresCounts[1]
+  b = featuresCounts[2]
+  const maxDifIndex = getMaxDif(a, b)[1]
+  return features[maxDifIndex]
 }
 
 function getDifference(a, b, type) {
   // a, b are arrays of values of the same feature for both selections A and B
-  // if categorical those are strings
+  // a = ["qwe", "qwe", "qwe", "asd", ...]
+  //  or
+  //  a = [1, 1, 1, 1, 1, 1, 1, 2.3, 2.3, 2.3, ...]
   // determine difference score
 
   var maxDifFeature = ""
 
   if (type !== FeatureType.Categorical) {
-    const binnedCounts = getBinnedCounts(a, b)
-    a = binnedCounts[0]
-    b = binnedCounts[1]
+    // bin continuous data and turn into categorical data using bin numbers
+    const flatBins = getFlattenedBins(a, b)
+    a = flatBins[0]
+    b = flatBins[1]
   } else {
-    const featuresCounts = getFeaturesCounts(a, b)
-    const features = featuresCounts[0]
-    a = featuresCounts[1]
-    b = featuresCounts[2]
-
-    const maxDifIndex = getMaxDif(a, b)[1]
-    maxDifFeature = features[maxDifIndex]
+    // find most differing category
+    maxDifFeature = getMostDifferingCategory(a, b)
   }
-  // chi-square distance
-  // const dif = chisquare(a, b)
+
+  // calculate chi-sqaure score
   const test = new ChiSquareTest()
   const dif = test.calc(a, b)
 
-  return [dif, maxDifFeature]
+  return [dif.scoreValue, maxDifFeature]
 }
 
 function getVis(a, b, type) {
@@ -197,26 +249,6 @@ function chisquare(a, b) {
 }
 
 function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
-  
-  
-  // score value 0 for:
-  // const a = [1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]
-  // const b = [1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]
-  // score value 1 for:
-  // const a = [1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]
-  // const b = [7,7,7,7,7,7,8,8,8,8,8,8,8,9,9,9,9,9,9,9,9,9,9,9,6,6,6,6,6,6,6,6,6,6]
-  // 0.82 for:
-  // const a = ['qwe','qwe','qwe','qwe','asd','asd','asd','asd','asd','asd','asd','asd','asd']
-  // const b = ['qwe','qwe','qwe','qwe','qwe','qwe','yxc','yxc','yxc','yxc','yxc','yxc','yxc','yxc','yxc','yxc','yxc']
-  // const type = FeatureType.Categorical
-
-  // console.log('a :>> ', a);
-  // console.log('b :>> ', b);
-
-  // const test = new ChiSquareTest()
-  // const dif = test.calc(a, b)
-  // console.log('dif :>> ', dif);
-  
 
   if (dataset === undefined) {
     return []
@@ -239,6 +271,8 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
     // create visualization for those features and append to rows
     var vis = getVis(valuesA, valuesB, type)
 
+    // console.log('key, mostDifCat, difScore:', key, mostDifCat, difScore)
+
     // append to rows: key, most differing category, dif score, vis
     rows.push([key, mostDifCat, difScore, vis])
   });
@@ -259,6 +293,10 @@ function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
   const classes = useStyles()
   const rows = genRows(vectorsA, vectorsB, projectionColumns, dataset)
 
+  rows.forEach(e => {
+    console.log('e.score :>> ', e.score);
+  });
+
   // TODO
   // return null
 
@@ -273,6 +311,7 @@ function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
           <TableHead>
             <TableRow>
               <TableCell>Feature</TableCell>
+              <TableCell>Score</TableCell>
               <TableCell>Char</TableCell>
             </TableRow>
           </TableHead>
@@ -282,6 +321,7 @@ function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
                 <TableCell component="th" scope="row">
                   {row.feature}<br /><b>{row.category}</b>
                 </TableCell>
+                <TableCell>{row.score}</TableCell>
                 <TableCell>{row.char}</TableCell>
               </TableRow>
             ))}
