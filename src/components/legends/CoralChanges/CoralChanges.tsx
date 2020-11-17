@@ -14,6 +14,7 @@ import '../CoralDetail/coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { FeatureType, Vect, Dataset, DatasetType } from "../../../components/util/datasetselector"
 import { ChiSquareTest } from './ChiSquare'
+import BarChart from './VegaBarChanges.js';
 
 const useStyles = makeStyles({
   table: {
@@ -234,7 +235,55 @@ function getDifference(a, b, type) {
   return [dif.scoreValue, maxDifFeature]
 }
 
-function getVis(a, b, type) {
+function sortByAbsDifference(a, b) {
+  if (Math.abs(a['difference']) === Math.abs(b['difference'])) {
+      return 0;
+  }
+  else {
+      return (Math.abs(a['difference']) < Math.abs(b['difference'])) ? 1 : -1;
+  }
+}
+
+function mapBarChangesData(setA, setB, feature) {
+  // a, b like ["qwe","qwe","asd"], ...
+  // turn into {'values': [{'category': 'qwe', 'difference': 0.8}, {'category': 'asd', 'difference': -0.6}]
+  // should be sorted by absolute difference
+
+  console.log('a :>> ', setA);
+  console.log('b :>> ', setB);
+
+  const data = []
+
+  const setACategories = setA.filter((item, index, self) => self.indexOf(item) === index);
+  const setBCategories = setB.filter((item, index, self) => self.indexOf(item) === index);
+  const allCategories = setACategories.concat(setBCategories).filter((item, index, self) => self.indexOf(item) === index);
+    
+  console.log('allCategories :>> ', allCategories);
+
+  const setASize = setA.length;
+  const setBSize = setB.length;
+  const overallSize = setASize + setBSize;
+
+  for (const currCat of allCategories) {
+    const amountSetA = setA.filter((item) => (item === currCat)).length;
+    const amountSetB = setB.filter((item) => (item === currCat)).length;
+
+    const relDif = (amountSetB - amountSetA) / amountSetA
+    data.push({'category': currCat, 'difference': relDif})
+  }
+
+  return {'values': data.sort(sortByAbsDifference)}
+}
+
+function getCategoricalVis(a, b, feature) {
+  const barChangesData = mapBarChangesData(a, b, feature)
+  return <BarChart data={barChangesData} actions={false} tooltip={new Handler().call}/>
+}
+
+function getVis(a, b, type, feature) {
+  if (type === FeatureType.Categorical) {
+    return getCategoricalVis(a, b, feature)
+  }
   return null
 }
 
@@ -269,7 +318,7 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
     var mostDifCat = dif[1]
     // append dif to rows
     // create visualization for those features and append to rows
-    var vis = getVis(valuesA, valuesB, type)
+    var vis = getVis(valuesA, valuesB, type, key)
 
     // console.log('key, mostDifCat, difScore:', key, mostDifCat, difScore)
 
