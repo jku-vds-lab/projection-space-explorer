@@ -1,15 +1,15 @@
 import "./ClusterOverview.scss";
 import * as React from 'react'
-import Cluster from "../../util/Cluster";
-import { Story } from "../../util/Story";
-import { GenericFingerprint } from "../../legends/Generic";
+import Cluster from "../../Utility/Data/Cluster";
+import { Story } from "../../Utility/Data/Story";
+import { GenericFingerprint } from "../../Legends/Generic";
 import { Card, Grow, Link, CardHeader, CardContent, Button, Typography } from "@material-ui/core";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect, ConnectedProps } from 'react-redux'
-import { DatasetType } from "../../util/datasetselector";
-import { Dataset } from "../../util/Data/Dataset";
-import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
+import { DatasetType } from "../../Utility/Data/DatasetType";
+import { Dataset } from "../../Utility/Data/Dataset";
+import { GenericChanges } from "../../Legends/GenericChanges/GenericChanges";
 import { StoryMode } from "../../Ducks/StoryModeDuck";
 import { RootState } from "../../Store/Store";
 import { addCluster } from "../../Ducks/CurrentClustersDuck";

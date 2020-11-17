@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Card, CardContent, Typography } from '@material-ui/core'
-import { GenericLegend } from '../../legends/Generic'
+import { GenericLegend } from '../../Legends/Generic'
 import './SelectionClusters.scss'
 import { connect } from 'react-redux'
 import AdjustIcon from '@material-ui/icons/Adjust';

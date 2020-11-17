@@ -1,4 +1,4 @@
-import { Dataset } from "../util/Data/Dataset";
+import { Dataset } from "../Utility/Data/Dataset";
 
 const SET = "ducks/database/SET"
 

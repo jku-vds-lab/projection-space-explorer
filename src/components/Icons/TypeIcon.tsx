@@ -1,6 +1,6 @@
 import { ListItemIcon, SvgIcon } from "@material-ui/core"
 import React = require("react")
-import { DatasetType } from "../util/datasetselector"
+import { DatasetType } from "../Utility/Data/DatasetType";
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ShareIcon from '@material-ui/icons/Share';
 import WidgetsIcon from '@material-ui/icons/Widgets';

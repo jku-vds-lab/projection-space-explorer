@@ -1,4 +1,4 @@
-import { Vect } from "../util/datasetselector"
+import { Vect } from "../Utility/Data/Vect"
 import * as libtess from 'libtess'
 import * as THREE from 'three'
 

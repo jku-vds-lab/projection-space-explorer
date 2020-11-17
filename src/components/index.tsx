@@ -7,13 +7,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import { NamedCategoricalScales } from "./util/Colors/NamedCategoricalScales";
-import { ContinuousMapping } from "./util/Colors/ContinuousMapping";
-import { DiscreteMapping } from "./util/Colors/DiscreteMapping";
-import { ContinuosScale, DiscreteScale } from "./util/Colors/ContinuosScale";
+import { NamedCategoricalScales } from "./Utility/Colors/NamedCategoricalScales";
+import { ContinuousMapping } from "./Utility/Colors/ContinuousMapping";
+import { DiscreteMapping } from "./Utility/Colors/DiscreteMapping";
+import { ContinuosScale, DiscreteScale } from "./Utility/Colors/ContinuosScale";
 import { createMuiTheme, Divider, Drawer, MuiThemeProvider, Paper, Tooltip } from "@material-ui/core";
-import { DatasetDatabase } from "./util/Data/DatasetDatabase";
-import { Dataset } from "./util/Data/Dataset";
+import { DatasetDatabase } from "./Utility/Data/DatasetDatabase";
+import { Dataset } from "./Utility/Data/Dataset";
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
@@ -44,7 +44,7 @@ import { AdvancedColoringPopover } from "./DrawerTabPanels/StatesTabPanel/Advanc
 import { ColorScaleSelect } from "./DrawerTabPanels/StatesTabPanel/ColorScaleSelect/ColorScaleSelect";
 import { setProjectionColumns } from "./Ducks/ProjectionColumnsDuck";
 import { EmbeddingTabPanel } from "./DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel";
-import { CSVLoader } from "./util/Loaders/CSVLoader";
+import { CSVLoader } from "./Utility/Loaders/CSVLoader";
 import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
 import { PathBrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/PathTransparencySlider/PathBrightnessSlider";
 import { ClusterIcon } from "./Icons/ClusterIcon";

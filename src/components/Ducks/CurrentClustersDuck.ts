@@ -1,4 +1,4 @@
-import Cluster from "../util/Cluster";
+import Cluster from "../Utility/Data/Cluster";
 
 const ADD = "ducks/currentClusters/ADD"
 const SET = "ducks/currentClusters/SET"

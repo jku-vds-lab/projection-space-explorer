@@ -1,4 +1,4 @@
-import { DatasetType } from "../../util/datasetselector"
+import { DatasetType } from "../../Utility/Data/DatasetType"
 
 /**
  * Helper for fetching a resource asynchronous.

@@ -5,7 +5,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { getCountryCode } from '../../util/CountryCodes';
+import { getCountryCode } from '../../Utility/CountryCodes';
 import { Divider } from '@material-ui/core';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import * as React from 'react'

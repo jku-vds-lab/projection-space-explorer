@@ -1,5 +1,6 @@
-import { Vect, DatasetType } from "../../util/datasetselector";
-import { Dataset } from "../../util/Data/Dataset";
+import { DatasetType } from "../../Utility/Data/DatasetType";
+import { Vect } from "../../Utility/Data/Vect";
+import { Dataset } from "../../Utility/Data/Dataset";
 import { connect } from 'react-redux'
 import { RubikChanges } from "../RubikChanges/RubikChanges";
 import React = require("react");

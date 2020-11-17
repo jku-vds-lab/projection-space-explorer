@@ -6261,10 +6261,10 @@ try {
 
 /***/ }),
 
-/***/ "./src/components/util/UMAP/heap.ts":
-/*!******************************************!*\
-  !*** ./src/components/util/UMAP/heap.ts ***!
-  \******************************************/
+/***/ "./src/components/Utility/UMAP/heap.ts":
+/*!*********************************************!*\
+  !*** ./src/components/Utility/UMAP/heap.ts ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6294,7 +6294,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.smallestFlagged = exports.deheapSort = exports.buildCandidates = exports.uncheckedHeapPush = exports.heapPush = exports.rejectionSample = exports.makeHeap = void 0;
 
-var utils = __webpack_require__(/*! ./utils */ "./src/components/util/UMAP/utils.ts");
+var utils = __webpack_require__(/*! ./utils */ "./src/components/Utility/UMAP/utils.ts");
 /**
  *  Constructor for the heap objects. The heaps are used
  * for approximate nearest neighbor search, maintaining a list of potential
@@ -6577,10 +6577,10 @@ exports.smallestFlagged = smallestFlagged;
 
 /***/ }),
 
-/***/ "./src/components/util/UMAP/index.ts":
-/*!*******************************************!*\
-  !*** ./src/components/util/UMAP/index.ts ***!
-  \*******************************************/
+/***/ "./src/components/Utility/UMAP/index.ts":
+/*!**********************************************!*\
+  !*** ./src/components/Utility/UMAP/index.ts ***!
+  \**********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6609,7 +6609,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var umap_1 = __webpack_require__(/*! ./umap */ "./src/components/util/UMAP/umap.ts");
+var umap_1 = __webpack_require__(/*! ./umap */ "./src/components/Utility/UMAP/umap.ts");
 
 Object.defineProperty(exports, "UMAP", {
   enumerable: true,
@@ -6620,10 +6620,10 @@ Object.defineProperty(exports, "UMAP", {
 
 /***/ }),
 
-/***/ "./src/components/util/UMAP/matrix.ts":
-/*!********************************************!*\
-  !*** ./src/components/util/UMAP/matrix.ts ***!
-  \********************************************/
+/***/ "./src/components/Utility/UMAP/matrix.ts":
+/*!***********************************************!*\
+  !*** ./src/components/Utility/UMAP/matrix.ts ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6677,7 +6677,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getCSR = exports.normalize = exports.eliminateZeros = exports.multiplyScalar = exports.maximum = exports.subtract = exports.add = exports.pairwiseMultiply = exports.identity = exports.transpose = exports.SparseMatrix = void 0;
 
-var utils = __webpack_require__(/*! ./utils */ "./src/components/util/UMAP/utils.ts");
+var utils = __webpack_require__(/*! ./utils */ "./src/components/Utility/UMAP/utils.ts");
 /**
  * Internal 2-dimensional sparse matrix class
  */
@@ -7155,10 +7155,10 @@ exports.getCSR = getCSR;
 
 /***/ }),
 
-/***/ "./src/components/util/UMAP/nn_descent.ts":
-/*!************************************************!*\
-  !*** ./src/components/util/UMAP/nn_descent.ts ***!
-  \************************************************/
+/***/ "./src/components/Utility/UMAP/nn_descent.ts":
+/*!***************************************************!*\
+  !*** ./src/components/Utility/UMAP/nn_descent.ts ***!
+  \***************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7233,13 +7233,13 @@ exports.initializeSearch = exports.makeInitializedNNSearch = exports.makeInitial
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var heap = __webpack_require__(/*! ./heap */ "./src/components/util/UMAP/heap.ts");
+var heap = __webpack_require__(/*! ./heap */ "./src/components/Utility/UMAP/heap.ts");
 
-var matrix = __webpack_require__(/*! ./matrix */ "./src/components/util/UMAP/matrix.ts");
+var matrix = __webpack_require__(/*! ./matrix */ "./src/components/Utility/UMAP/matrix.ts");
 
-var tree = __webpack_require__(/*! ./tree */ "./src/components/util/UMAP/tree.ts");
+var tree = __webpack_require__(/*! ./tree */ "./src/components/Utility/UMAP/tree.ts");
 
-var utils = __webpack_require__(/*! ./utils */ "./src/components/util/UMAP/utils.ts");
+var utils = __webpack_require__(/*! ./utils */ "./src/components/Utility/UMAP/utils.ts");
 /**
  * Create a version of nearest neighbor descent.
  */
@@ -7443,10 +7443,10 @@ exports.initializeSearch = initializeSearch;
 
 /***/ }),
 
-/***/ "./src/components/util/UMAP/tree.ts":
-/*!******************************************!*\
-  !*** ./src/components/util/UMAP/tree.ts ***!
-  \******************************************/
+/***/ "./src/components/Utility/UMAP/tree.ts":
+/*!*********************************************!*\
+  !*** ./src/components/Utility/UMAP/tree.ts ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7531,7 +7531,7 @@ exports.searchFlatTree = exports.makeLeafArray = exports.makeForest = exports.Fl
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var utils = __webpack_require__(/*! ./utils */ "./src/components/util/UMAP/utils.ts");
+var utils = __webpack_require__(/*! ./utils */ "./src/components/Utility/UMAP/utils.ts");
 
 var FlatTree = function FlatTree(hyperplanes, offsets, children, indices) {
   _classCallCheck(this, FlatTree);
@@ -7835,10 +7835,10 @@ exports.searchFlatTree = searchFlatTree;
 
 /***/ }),
 
-/***/ "./src/components/util/UMAP/umap.ts":
-/*!******************************************!*\
-  !*** ./src/components/util/UMAP/umap.ts ***!
-  \******************************************/
+/***/ "./src/components/Utility/UMAP/umap.ts":
+/*!*********************************************!*\
+  !*** ./src/components/Utility/UMAP/umap.ts ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7965,15 +7965,15 @@ exports.initTransform = exports.resetLocalConnectivity = exports.fastIntersectio
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-var heap = __webpack_require__(/*! ./heap */ "./src/components/util/UMAP/heap.ts");
+var heap = __webpack_require__(/*! ./heap */ "./src/components/Utility/UMAP/heap.ts");
 
-var matrix = __webpack_require__(/*! ./matrix */ "./src/components/util/UMAP/matrix.ts");
+var matrix = __webpack_require__(/*! ./matrix */ "./src/components/Utility/UMAP/matrix.ts");
 
-var nnDescent = __webpack_require__(/*! ./nn_descent */ "./src/components/util/UMAP/nn_descent.ts");
+var nnDescent = __webpack_require__(/*! ./nn_descent */ "./src/components/Utility/UMAP/nn_descent.ts");
 
-var tree = __webpack_require__(/*! ./tree */ "./src/components/util/UMAP/tree.ts");
+var tree = __webpack_require__(/*! ./tree */ "./src/components/Utility/UMAP/tree.ts");
 
-var utils = __webpack_require__(/*! ./utils */ "./src/components/util/UMAP/utils.ts");
+var utils = __webpack_require__(/*! ./utils */ "./src/components/Utility/UMAP/utils.ts");
 
 var ml_levenberg_marquardt_1 = __webpack_require__(/*! ml-levenberg-marquardt */ "./node_modules/ml-levenberg-marquardt/src/index.js");
 
@@ -9156,10 +9156,10 @@ exports.initTransform = initTransform;
 
 /***/ }),
 
-/***/ "./src/components/util/UMAP/utils.ts":
-/*!*******************************************!*\
-  !*** ./src/components/util/UMAP/utils.ts ***!
-  \*******************************************/
+/***/ "./src/components/Utility/UMAP/utils.ts":
+/*!**********************************************!*\
+  !*** ./src/components/Utility/UMAP/utils.ts ***!
+  \**********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9436,7 +9436,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var UMAP_1 = __webpack_require__(/*! ../../util/UMAP */ "./src/components/util/UMAP/index.ts");
+var UMAP_1 = __webpack_require__(/*! ../../Utility/UMAP */ "./src/components/Utility/UMAP/index.ts");
 
 __webpack_require__(/*! regenerator-runtime/runtime */ "./node_modules/regenerator-runtime/runtime.js");
 /**

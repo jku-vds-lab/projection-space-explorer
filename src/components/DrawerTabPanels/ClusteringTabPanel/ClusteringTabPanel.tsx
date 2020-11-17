@@ -1,9 +1,9 @@
 import React = require("react")
 import { Avatar, Box, Button, FormControlLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Switch, Typography } from "@material-ui/core"
 import { connect, ConnectedProps } from 'react-redux'
-import Cluster from "../../util/Cluster"
-import { Story } from "../../util/Story"
-import { graphLayout, Edge } from "../../util/graphs"
+import Cluster from "../../Utility/Data/Cluster"
+import { Story } from "../../Utility/Data/Story"
+import { graphLayout, Edge } from "../../Utility/graphs"
 
 import { setSelectedClusters } from "../../Ducks/SelectedClustersDuck"
 import { addCluster, removeCluster, setCurrentClustersAction } from "../../Ducks/CurrentClustersDuck"

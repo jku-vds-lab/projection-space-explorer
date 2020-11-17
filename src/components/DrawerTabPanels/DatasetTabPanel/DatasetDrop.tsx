@@ -1,7 +1,7 @@
 import { Grid } from "@material-ui/core";
 import React = require("react");
-import { CSVLoader } from "../../util/Loaders/CSVLoader";
-import { JSONLoader } from "../../util/Loaders/JSONLoader";
+import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
+import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
 import DragAndDrop from "./DragAndDrop";
 
 export var DatasetDrop = ({ onChange }) => {

@@ -1,7 +1,7 @@
 import { getSyncNodes } from "../NumTs/NumTs";
-import Cluster from "../util/Cluster";
-import { Edge } from "../util/graphs";
-import { Story } from "../util/Story";
+import Cluster from "../Utility/Data/Cluster";
+import { Edge } from "../Utility/graphs";
+import { Story } from "../Utility/Data/Story";
 
 const ADD_STORY_BOOK = "ducks/stories/ADD"
 const DELETE = "ducks/stories/DELETE"

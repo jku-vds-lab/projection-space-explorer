@@ -1,14 +1,14 @@
 
 import { getDefaultZoom, arraysEqual, normalizeWheel, centerOfMass, interpolateLinear, generateZoomForSet } from './UtilityFunctions';
 import { LassoSelection } from './tools'
-import { isPointInConvaveHull } from '../util/geometry'
+import { isPointInConvaveHull } from '../Utility/geometry'
 import * as React from "react";
 import * as THREE from 'three'
 import { LassoLayer } from './LassoLayer/LassoLayer';
-import Cluster from '../util/Cluster';
+import Cluster from '../Utility/Data/Cluster';
 import { connect, ConnectedProps } from 'react-redux'
 import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
-import { Vect } from '../util/datasetselector';
+import { Vect } from "../Utility/Data/Vect";
 import { setClusterEdgesAction } from "../Ducks/ClusterEdgesDuck";
 import { setViewTransform } from "../Ducks/ViewTransformDuck";
 import { toggleSelectedCluster } from "../Ducks/SelectedClustersDuck";
@@ -21,7 +21,7 @@ import { DisplayMode } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { ClusterMode } from '../Ducks/ClusterModeDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
-import { mappingFromScale } from '../util/Colors/colors';
+import { mappingFromScale } from '../Utility/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
 import { Menu, MenuItem, Typography } from '@material-ui/core';
@@ -228,11 +228,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 this.initialMousePosition = new THREE.Vector2(event.offsetX, event.offsetY)
                 this.mouseDownPosition = this.normaliseMouse(event)
                 break;
-            case 2:
-                this.setState({
-                    menuX: event.clientX,
-                    menuY: event.clientY,
-                })
+            //case 2:
+                //this.setState({
+                //    menuX: event.clientX,
+                //    menuY: event.clientY,
+                //})
+            default:
+                break;
         }
     }
 
@@ -1098,7 +1100,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         };
 
         return <div
-            onContextMenu={(event) => { event.preventDefault() }}
+            onContextMenu={null
+                //(event) => { event.preventDefault() }
+            }
             style={{
                 display: 'flex',
                 flexGrow: 1,

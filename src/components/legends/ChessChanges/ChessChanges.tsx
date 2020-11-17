@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { arraysEqual } from '../../WebGLView/UtilityFunctions'
-import { Vect } from '../../util/datasetselector'
+import { Vect } from "../../Utility/Data/Vect"
 
 
 // Lookup table for chess UNICODE symbols

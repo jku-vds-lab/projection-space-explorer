@@ -1,6 +1,6 @@
 import './LassoLayer.scss'
 import * as React from 'react'
-import { RenderingContextEx } from '../../util/RenderingContextEx'
+import { RenderingContextEx } from '../../Utility/RenderingContextEx'
 import { connect } from 'react-redux'
 import { ViewTransform } from '../ViewTransform'
 

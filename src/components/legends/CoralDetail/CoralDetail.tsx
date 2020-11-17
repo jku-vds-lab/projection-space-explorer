@@ -15,7 +15,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
-import { FeatureType, Vect } from "../../../components/util/datasetselector"
+import { FeatureType } from "../../Utility/Data/FeatureType";
+import { Vect } from "../../Utility/Data/Vect";
 
 const useStyles = makeStyles({
   table: {

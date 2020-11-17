@@ -2,21 +2,22 @@ import './StoryEditor.scss'
 import React = require('react')
 import { Paper, Tooltip, Typography } from '@material-ui/core'
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
-import Cluster from '../../util/Cluster';
-import { Story } from "../../util/Story";
+import Cluster from '../../Utility/Data/Cluster';
+import { Story } from "../../Utility/Data/Story";
 const Graph = require('graphology');
 import { connect, ConnectedProps } from 'react-redux'
-import { DatasetType, Vect, VectBase } from '../../util/datasetselector';
+import { DatasetType } from "../../Utility/Data/DatasetType";
+import { Vect } from "../../Utility/Data/Vect";
 import GestureIcon from '@material-ui/icons/Gesture';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
 import { setAggregationAction } from "../../Ducks/AggregationDuck";
-import { GenericFingerprint } from '../../legends/Generic';
+import { GenericFingerprint } from '../../Legends/Generic';
 import { RootState } from '../../Store/Store';
 import { addEdgeToActive, setActiveTrace } from '../../Ducks/StoriesDuck';
-import { Edge } from '../../util/graphs';
+import { Edge } from '../../Utility/graphs';
 import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
-import { getSyncNodes } from '../../NumTs/NumTs';
+import { getSyncNodes, VectBase } from '../../NumTs/NumTs';
 
 export function rescalePoints(
     points: { x: number, y: number }[],
@@ -607,14 +608,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
     }
 })
 
-class VectorMath {
-    static test(a, b) {
-        const vecA = new VectBase(a.x, a.y)
-        const vecB = new VectBase(b.x, b.y)
 
-        const dir = VectBase.subtract(vecB, vecA).normalize()
-    }
-}
 
 function NodeContainer({ node, onNodeChange, onMouseDown, onClick, onMouseUp, destination, source }) {
     const [edit, setEdit] = React.useState(false)

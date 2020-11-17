@@ -1,4 +1,4 @@
-import { Vect } from "../util/datasetselector";
+import { Vect } from "../Utility/Data/Vect";
 
 const SET = "ducks/aggregation/SET"
 const TOGGLE = "ducks/aggregation/TOGGLE"

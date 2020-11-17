@@ -1,4 +1,4 @@
-import { UMAP } from '../../util/UMAP';
+import { UMAP } from '../../Utility/UMAP';
 import "regenerator-runtime/runtime";
 
 /**

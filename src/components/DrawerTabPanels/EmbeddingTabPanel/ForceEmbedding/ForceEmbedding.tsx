@@ -1,13 +1,13 @@
 import React = require('react');
 import { Button, Box, LinearProgress, Typography, Checkbox, FormControlLabel, TextField, Paper, Tooltip, Grid } from '@material-ui/core';
-import { DataLine } from '../../../util/datasetselector';
-import { Dataset } from "../../../util/Data/Dataset";
+import { DataLine } from "../../../Utility/Data/DataLine";
+import { Dataset } from "../../../Utility/Data/Dataset";
 import { connect } from 'react-redux'
 const Graph = require('graphology');
 import Modal from '@material-ui/core/Modal';
 import './ForceEmbedding.scss'
 import Alert from '@material-ui/lab/Alert';
-import { FlexParent } from '../../../util/FlexParent';
+import { FlexParent } from '../../../Utility/FlexParent';
 
 type ForceEmbeddingProps = {
     webGLView: any

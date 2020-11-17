@@ -3,8 +3,8 @@ import * as React from 'react'
 import { Paper, Typography, Divider, IconButton, Card, CardHeader, CardContent } from "@material-ui/core";
 import './StateSequenceDrawer.scss'
 import { Tool } from "../ToolSelection/ToolSelection";
-import { DataLine } from "../../util/datasetselector";
-import { Dataset } from "../../util/Data/Dataset";
+import { DataLine } from "../../Utility/Data/DataLine";
+import { Dataset } from "../../Utility/Data/Dataset";
 import { imageFromShape } from "../../WebGLView/meshes";
 import { setHighlightedSequenceAction } from "../../Ducks/HighlightedSequenceDuck";
 import { setAggregationAction } from "../../Ducks/AggregationDuck";

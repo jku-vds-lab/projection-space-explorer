@@ -58,3 +58,64 @@ export function getSyncNodes(main, side) {
 
     return syncs
 }
+
+
+
+
+
+
+export type VectorType = {
+    x: number
+    y: number
+}
+
+/**
+ * Math class for vector calculations.
+ */
+export class VectBase implements VectorType {
+    x: number
+    y: number
+
+    constructor(x: number, y: number) {
+        this.x = x
+        this.y = y
+    }
+
+    lerp(v: VectorType, alpha: number) {
+        this.x += (v.x - this.x) * alpha
+        this.y += (v.y - this.y) * alpha
+
+        return this
+    }
+
+    angle() {
+        return Math.atan2(- this.y, - this.x) + Math.PI;
+    }
+
+    multiplyScalar(scalar) {
+        this.x *= scalar;
+        this.y *= scalar;
+
+        return this;
+    }
+
+    length() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+
+    divideScalar(scalar) {
+        return this.multiplyScalar(1 / scalar);
+    }
+
+    normalize() {
+        return this.divideScalar(this.length() || 1);
+    }
+
+    static subtract(a, b) {
+        return new VectBase(a.x - b.x, a.y - b.y)
+    }
+
+    static add(a, b) {
+        return new VectBase(a.x + b.x, a.y + b.y)
+    }
+}

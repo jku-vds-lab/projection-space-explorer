@@ -1,14 +1,14 @@
 
 import { Scene, Vector2, Vector3 } from "three";
-import Cluster from "../../util/Cluster";
+import Cluster from "../../Utility/Data/Cluster";
 import THREE = require("three");
-import { Vect } from "../../util/datasetselector";
+import { Vect } from "../../Utility/Data/Vect";
 import { DisplayMode } from "../../Ducks/DisplayModeDuck";
 import React = require("react");
 import { RootState } from "../../Store/Store";
 import { connect, ConnectedProps } from "react-redux";
 import { arraysEqual } from "../UtilityFunctions";
-import { NamedCategoricalScales } from "../../util/Colors/NamedCategoricalScales";
+import { NamedCategoricalScales } from "../../Utility/Colors/NamedCategoricalScales";
 import { TrailVisualization } from "./TrailVisualization";
 import { ClusterMode } from "../../Ducks/ClusterModeDuck";
 import { Typography } from "@material-ui/core";

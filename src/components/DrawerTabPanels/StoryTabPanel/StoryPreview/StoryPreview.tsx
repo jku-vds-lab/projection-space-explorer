@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Story } from "../../../util/Story";
+import { Story } from "../../../Utility/Data/Story";
 import { Button, FormControl, Grid, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, MenuItem, Select } from '@material-ui/core';
 import { connect, ConnectedProps } from 'react-redux'
 import './StoryPreview.scss'

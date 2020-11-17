@@ -1,4 +1,4 @@
-import Cluster from "../util/Cluster";
+import Cluster from "../Utility/Data/Cluster";
 
 
 const SET = "ducks/selectedClusters/SET"
