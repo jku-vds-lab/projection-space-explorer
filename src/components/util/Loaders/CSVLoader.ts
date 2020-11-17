@@ -1,5 +1,9 @@
-import { Vect, Preprocessor, Dataset, InferCategory, DatasetType, FeatureType, DatasetEntry } from "../datasetselector"
+import { Vect, DatasetType, FeatureType } from "../datasetselector"
+import { InferCategory } from "../Data/InferCategory"
+import { Preprocessor } from "../Data/Preprocessor"
+import { Dataset } from "../Data/Dataset"
 import { Loader } from "./Loader"
+import { DatasetEntry } from "../Data/DatasetDatabase"
 
 
 var d3v5 = require('d3')

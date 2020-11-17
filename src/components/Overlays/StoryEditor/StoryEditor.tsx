@@ -16,6 +16,7 @@ import { RootState } from '../../Store/Store';
 import { addEdgeToActive, setActiveTrace } from '../../Ducks/StoriesDuck';
 import { Edge } from '../../util/graphs';
 import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
+import { getSyncNodes } from '../../NumTs/NumTs';
 
 export function rescalePoints(
     points: { x: number, y: number }[],
@@ -294,21 +295,24 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                         let g = this.toGraph(this.props.stories.active)
                         const paths = DFS(g, this.state.source.cluster.label, node.cluster.label)
 
+
                         if (paths.length > 0) {
                             let mainPath = paths[0].map(id => this.state.nodes.find(e => e.cluster.label == id).cluster)
-
+                            let mainEdges = mainPath.slice(1).map((item, index) => {
+                                return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
+                            })
                             this.props.setActiveTrace({
                                 mainPath: mainPath,
-                                mainEdges: mainPath.slice(1).map((item, index) => {
-                                    return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
-                                }),
+                                mainEdges: mainEdges,
                                 sidePaths: paths.slice(1).map(ids => {
                                     let path = ids.map(id => this.state.nodes.find(e => e.cluster.label == id).cluster)
+                                    let edges = path.slice(1).map((item, index) => {
+                                        return this.props.stories.active.edges.find(edge => edge.source == path[index] && edge.destination == item)
+                                    })
                                     return {
                                         nodes: path,
-                                        edges: path.slice(1).map((item, index) => {
-                                            return this.props.stories.active.edges.find(edge => edge.source == path[index] && edge.destination == item)
-                                        })
+                                        edges: edges,
+                                        syncNodes: getSyncNodes({ nodes: mainPath, edges: mainEdges }, { nodes: path, edges: edges })
                                     }
                                 })
                             })

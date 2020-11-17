@@ -44,7 +44,7 @@ export class ViewTransform {
      * Converts screen coordinates in the range 0 - width, 0 - height to world coordinates taking into account
      * the position of the camera.
      */
-    static screenToWorld(screen, transform) {
+    static screenToWorld(screen: { x: number, y: number }, transform) {
         let camera = transform.camera as any
         return {
             x: (screen.x - transform.width / 2) / camera.zoom + transform.camera.position.x,

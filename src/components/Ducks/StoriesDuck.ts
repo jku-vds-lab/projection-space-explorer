@@ -1,3 +1,4 @@
+import { getSyncNodes } from "../NumTs/NumTs";
 import Cluster from "../util/Cluster";
 import { Edge } from "../util/graphs";
 import { Story } from "../util/Story";
@@ -93,7 +94,7 @@ const initialState = {
 type StoriesType = {
     stories: Story[]
     active: Story
-    trace: { mainPath: Cluster[], mainEdges: any[], sidePaths: any[] }
+    trace: { mainPath: Cluster[], mainEdges: any[], sidePaths: { nodes: Cluster[], edges: Edge[], syncNodes: number[] }[] }
     activeTraceState: Cluster
 }
 
@@ -101,13 +102,27 @@ export default function stories(state: StoriesType = initialState, action): Stor
     switch (action.type) {
         case SELECT_SIDE_BRANCH: {
             let sidePaths = state.trace.sidePaths.slice(0)
+
             sidePaths.splice(action.index, 1)
-            sidePaths.push({ nodes: state.trace.mainPath, edges: state.trace.mainEdges })
+            sidePaths.push({ nodes: state.trace.mainPath, edges: state.trace.mainEdges, syncNodes: [] })
+
             let trace = {
                 mainPath: state.trace.sidePaths[action.index].nodes,
                 mainEdges: state.trace.sidePaths[action.index].edges,
                 sidePaths: sidePaths
             }
+
+            trace.sidePaths.forEach(sidePath => {
+                sidePath.syncNodes = getSyncNodes({ nodes: trace.mainPath, edges: trace.mainEdges }, { nodes: sidePath.nodes, edges: sidePath.edges })
+            })
+
+            console.log("side branch")
+            console.log({
+                stories: state.stories,
+                active: state.active,
+                trace: trace,
+                activeTraceState: state.activeTraceState
+            })
 
             return {
                 stories: state.stories,

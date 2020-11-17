@@ -14,7 +14,7 @@ function convertFromCSV(vectors) {
     })
 }
 
-export function DatasetTabPanel({ onDataSelected, onFinishDownloading }) {
+export function DatasetTabPanel({ onDataSelected }) {
     const [job, setJob] = React.useState(null)
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>

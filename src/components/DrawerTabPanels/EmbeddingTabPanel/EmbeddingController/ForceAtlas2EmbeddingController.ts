@@ -1,4 +1,5 @@
-import { DataLine, Dataset } from "../../../util/datasetselector"
+import { DataLine } from "../../../util/datasetselector"
+import { Dataset } from "../../../util/Data/Dataset";
 import { EmbeddingController } from "./EmbeddingController"
 const Graph = require('graphology');
 

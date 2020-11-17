@@ -1,7 +1,8 @@
 import { valueInRange } from './UtilityFunctions'
 import { ContinuousMapping } from "../util/Colors/ContinuousMapping"
 import * as THREE from 'three'
-import { Vect, DataLine, Dataset } from '../util/datasetselector'
+import { Vect, DataLine } from '../util/datasetselector'
+import { Dataset } from "../util/Data/Dataset"
 
 /**
  * Generates a line mesh

@@ -12,7 +12,8 @@ import { ContinuousMapping } from "./util/Colors/ContinuousMapping";
 import { DiscreteMapping } from "./util/Colors/DiscreteMapping";
 import { ContinuosScale, DiscreteScale } from "./util/Colors/ContinuosScale";
 import { createMuiTheme, Divider, Drawer, MuiThemeProvider, Paper, Tooltip } from "@material-ui/core";
-import { Dataset, DatasetDatabase } from './util/datasetselector'
+import { DatasetDatabase } from "./util/Data/DatasetDatabase";
+import { Dataset } from "./util/Data/Dataset";
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
@@ -71,7 +72,9 @@ import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPan
 
 
 
-
+/**
+ * A TabPanel with automatic scrolling which should be used for fixed size content.
+ */
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -89,7 +92,11 @@ function TabPanel(props) {
   );
 }
 
-function TabPanel2(props) {
+
+/**
+ * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
+ */
+function FixedHeightTabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
@@ -105,7 +112,6 @@ function TabPanel2(props) {
     </Typography>
   );
 }
-
 
 
 
@@ -140,6 +146,15 @@ const mapDispatchToProps = dispatch => ({
 })
 
 
+
+
+
+
+
+
+/**
+ * Main application that contains all other components.
+ */
 var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component<any, any> {
   legend: React.RefObject<Legend>;
   dataset: Dataset;
@@ -243,7 +258,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   }
 
 
-  finite(lineColorScheme, categories, dataset) {
+  finite(lineColorScheme, categories, dataset: Dataset) {
     var algos = LineSelectionTree_GenAlgos(this.props.dataset.vectors)
     var selLines = LineSelectionTree_GetChecks(algos)
 
@@ -267,7 +282,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       }
     }
 
-    this.props.setProjectionColumns(dataset.getColumns().map(column => ({
+    this.props.setProjectionColumns(dataset.getColumns(true).map(column => ({
       name: column,
       checked: dataset.preselectedProjectionColumns ? dataset.preselectedProjectionColumns.includes(column) : true,
       normalized: true,
@@ -347,8 +362,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
   render() {
-    return <div style={
-      {
+    return <div
+      style={{
         display: 'flex',
         alignItems: 'stretch',
         width: "100vw",
@@ -418,9 +433,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
 
-            <TabPanel2 value={this.props.openTab} index={0} >
+            <FixedHeightTabPanel value={this.props.openTab} index={0} >
               <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
-            </TabPanel2>
+            </FixedHeightTabPanel>
 
             <TabPanel value={this.props.openTab} index={1}>
 
@@ -646,8 +661,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             </TabPanel>
 
 
-            <TabPanel2 value={this.props.openTab} index={2}>
-              
+            <FixedHeightTabPanel value={this.props.openTab} index={2}>
+
               {this.props.dataset != null ?
                 <ClusteringTabPanel
                   open={this.props.openTab == 2}
@@ -655,7 +670,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                   clusteringWorker={this.state.clusteringWorker}
                 ></ClusteringTabPanel> : <div></div>
               }
-            </TabPanel2>
+            </FixedHeightTabPanel>
 
             <TabPanel value={this.props.openTab} index={3}>
               <StoryTabPanel></StoryTabPanel>
@@ -670,9 +685,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
       </Box>
 
-
-
-      
 
       <WebGLView
         ref={this.threeRef}
@@ -695,12 +707,26 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   }
 })
 
+
+
+
+
+
+
+
+
+
+
+
+
+// Create theme for the application.
 const theme = createMuiTheme({
   palette: {
     type: 'light'
   }
 })
 
+// Render the application into our 'mountingPoint' div that is declared in 'index.html'.
 ReactDOM.render(
   <Provider store={createStore(rootReducer)}>
     <MuiThemeProvider theme={theme}>

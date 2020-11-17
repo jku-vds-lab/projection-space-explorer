@@ -16,7 +16,8 @@ import * as React from 'react'
 import { FunctionComponent } from "react";
 import { RubikFingerprint } from "./RubikFingerprint/RubikFingerprint";
 import { ChessFingerprint } from "./ChessFingerprint/ChessFingerprint";
-import { DatasetType, Dataset, Vect } from "../util/datasetselector";
+import { DatasetType, Vect } from "../util/datasetselector";
+import { Dataset } from "../util/Data/Dataset";
 
 type GenericLegendProps = {
     type: DatasetType

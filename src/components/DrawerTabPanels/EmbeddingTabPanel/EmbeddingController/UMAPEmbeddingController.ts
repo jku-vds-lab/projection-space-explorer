@@ -1,4 +1,5 @@
-import { Dataset, Vect } from "../../../util/datasetselector"
+import { Vect } from "../../../util/datasetselector"
+import { Dataset } from "../../../util/Data/Dataset"
 import { EmbeddingController } from "./EmbeddingController"
 
 export class UMAPEmbeddingController extends EmbeddingController {

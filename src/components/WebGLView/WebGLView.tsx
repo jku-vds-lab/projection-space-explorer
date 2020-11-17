@@ -2,16 +2,13 @@
 import { getDefaultZoom, arraysEqual, normalizeWheel, centerOfMass, interpolateLinear, generateZoomForSet } from './UtilityFunctions';
 import { LassoSelection } from './tools'
 import { isPointInConvaveHull } from '../util/geometry'
-import { GenericClusterLegend } from '../legends/Generic'
 import * as React from "react";
 import * as THREE from 'three'
 import { LassoLayer } from './LassoLayer/LassoLayer';
 import Cluster from '../util/Cluster';
-import { Story } from "../util/Story";
 import { connect, ConnectedProps } from 'react-redux'
-import { graphLayout } from '../util/graphs';
 import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
-import { Dataset, DataLine, Vect } from '../util/datasetselector';
+import { Vect } from '../util/datasetselector';
 import { setClusterEdgesAction } from "../Ducks/ClusterEdgesDuck";
 import { setViewTransform } from "../Ducks/ViewTransformDuck";
 import { toggleSelectedCluster } from "../Ducks/SelectedClustersDuck";
@@ -28,6 +25,7 @@ import { mappingFromScale } from '../util/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
 import { Menu, MenuItem, Typography } from '@material-ui/core';
+import * as nt from '../NumTs/NumTs'
 
 type ViewState = {
     hoverCluster: any
@@ -116,7 +114,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     lastTime: number;
     mouseMoveListener: any;
     mouseDownListener: any;
-    contextMenuListener: any
     keyDownListener: any;
     wheelListener: any;
     mouseUpListener: any;
@@ -149,14 +146,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
-    dist(x1, y1, x2, y2) {
-        var a = x1 - x2;
-        var b = y1 - y2;
-
-        var c = Math.sqrt(a * a + b * b);
-        return c
-    }
-
+    /**
+     * Gives the index of the nearest sample.
+     * 
+     * @param position - The position to pick a sample from
+     * @returns The index of a sample
+     */
     choose(position) {
         var best = 30 / (this.camera.zoom * 2.0)
         var res = -1
@@ -169,7 +164,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 continue
             }
 
-            var d = this.dist(position.x, position.y, value.x, value.y)
+            var d = nt.euclideanDistance(position.x, position.y, value.x, value.y)
 
             if (d < best) {
                 best = d
@@ -191,22 +186,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         return {
             x: (event.clientX - rect.left),
             y: (event.clientY - rect.top)
-        }
-    }
-
-
-    clientCoordinatesToWorld(clientX, clientY) {
-        var container = this.containerRef.current;
-        var width = container.offsetWidth;
-        var height = container.offsetHeight;
-
-        const rect = container.getBoundingClientRect();
-
-
-
-        return {
-            x: (clientX - rect.left - width / 2) / this.camera.zoom + this.camera.position.x,
-            y: -(clientY - rect.top - height / 2) / this.camera.zoom + this.camera.position.y
         }
     }
 
@@ -246,7 +225,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         switch (event.button) {
             case 0:
                 this.mouseDown = true
-                this.initialMousePosition = new THREE.Vector2(event.clientX, event.clientY)
+                this.initialMousePosition = new THREE.Vector2(event.offsetX, event.offsetY)
                 this.mouseDownPosition = this.normaliseMouse(event)
                 break;
             case 2:
@@ -284,7 +263,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 var mousePosition = new THREE.Vector2(event.clientX, event.clientY)
 
                 if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 10 && this.lasso == null && this.mouseDown) {
-                    var initialWorld = this.clientCoordinatesToWorld(this.initialMousePosition.x, this.initialMousePosition.y)
+                    //var initialWorld = this.clientCoordinatesToWorld(this.initialMousePosition.x, this.initialMousePosition.y)
+
+                    let initialWorld = ViewTransform.screenToWorld(this.initialMousePosition, this.createTransform())
 
                     this.lasso = new LassoSelection()
                     this.lasso.mouseDown(true, initialWorld.x, initialWorld.y)
@@ -646,7 +627,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         container.removeEventListener('mouseup', this.mouseUpListener)
         container.removeEventListener('keydown', this.keyDownListener)
         container.removeEventListener('wheel', this.wheelListener)
-        container.removeEventListener('contextmenu', this.contextMenuListener)
 
         // Store new listeners
         this.wheelListener = event => this.onWheel(event)
@@ -654,21 +634,15 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.mouseMoveListener = event => this.onMouseMove(event)
         this.mouseUpListener = event => this.onMouseUp(event)
         this.keyDownListener = event => this.onKeyDown(event)
-        this.contextMenuListener = event => this.onContextMenu(event)
 
         // Add new listeners
         container.addEventListener('mousemove', this.mouseMoveListener, false);
         container.addEventListener('mousedown', this.mouseDownListener, false);
         container.addEventListener('mouseup', this.mouseUpListener, false);
         container.addEventListener('keydown', this.keyDownListener)
-        container.addEventListener('wheel', this.wheelListener, false);
-        container.addEventListener('contextmenu', this.contextMenuListener)
+        container.addEventListener('wheel', this.wheelListener, false)
     }
 
-    onContextMenu(event) {
-        console.log("hi")
-        event.preventDefault()
-    }
 
     filterLines(algo, show) {
 
@@ -774,6 +748,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
 
+    /**
+     * Starts the render loop
+     */
     startRendering() {
         requestAnimationFrame(() => this.startRendering());
 
@@ -783,7 +760,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         catch {
 
         }
-
     }
 
 

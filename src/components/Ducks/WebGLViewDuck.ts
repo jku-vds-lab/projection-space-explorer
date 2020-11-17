@@ -5,9 +5,9 @@ export const setWebGLView = webGLView => ({
     webGLView: webGLView
 });
 
-const initialState: React.Component = null
+const initialState: React.RefObject<any> = null
 
-export default function webGLView (state = initialState, action): React.Component {
+export default function webGLView (state = initialState, action): React.RefObject<any> {
     switch (action.type) {
         case SET:
             return action.webGLView

@@ -46,7 +46,7 @@ export const StoryPreview = connector(({
     const addHandler = () => {
         addStory(new Story([], []))
     }
-
+    
     return <div className="StoryPreviewContent">
         <FormControl>
             <InputLabel id="demo-simple-select-label">Active Story Book</InputLabel>
@@ -60,18 +60,18 @@ export const StoryPreview = connector(({
             >
                 <ListItem
                     key={-1}
+                    {...{ value: '' }}
                     button
-                    value={''}
                 >
                     <ListItemText primary={"None"} />
                 </ListItem>
                 {
                     stories.stories && stories.stories.map((story, key) => {
-                        
+
                         return <ListItem
                             key={key}
                             button
-                            value={story.getId()}
+                            {...{ value: story.getId() }}
                         >
                             <ListItemText primary={"Story Book"} secondary={`${story.clusters.length} nodes`} />
                             <ListItemSecondaryAction>

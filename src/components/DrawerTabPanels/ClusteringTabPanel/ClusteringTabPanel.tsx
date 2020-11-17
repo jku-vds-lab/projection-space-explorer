@@ -1,6 +1,5 @@
 import React = require("react")
 import { Avatar, Box, Button, FormControlLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Switch, Typography } from "@material-ui/core"
-import { ClusterWindow } from "../../projection/integration"
 import { connect, ConnectedProps } from 'react-redux'
 import Cluster from "../../util/Cluster"
 import { Story } from "../../util/Story"
@@ -201,7 +200,6 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
 
     React.useEffect(() => toggleClusters(), [dataset])
 
-
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box p={2}>
             <FormControlLabel
@@ -214,21 +212,6 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
 
         </Box>
 
-        <ClusterWindow
-            worker={clusteringWorker}
-            onClose={() => {
-                var worker = clusteringWorker
-                if (worker != null) {
-                    worker.terminate()
-                }
-
-                this.setState({
-                    clusteringWorker: null,
-                    clusteringOpen: false
-                })
-
-            }}
-        ></ClusterWindow>
 
         <Box p={2}>
             <Typography variant="h6">

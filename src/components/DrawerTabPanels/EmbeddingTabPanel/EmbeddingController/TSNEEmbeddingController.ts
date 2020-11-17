@@ -1,4 +1,4 @@
-import { Dataset } from "../../../util/datasetselector"
+import { Dataset } from "../../../util/Data/Dataset";
 import { EmbeddingController } from "./EmbeddingController"
 
 export class TSNEEmbeddingController extends EmbeddingController {    
