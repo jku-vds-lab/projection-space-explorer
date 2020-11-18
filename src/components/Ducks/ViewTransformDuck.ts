@@ -1,5 +1,5 @@
 import { Camera } from "three";
-import { ViewTransform } from "../WebGLView/ViewTransform";
+import { CameraTransformations } from "../WebGLView/CameraTransformations";
 
 const SET = "ducks/viewTransform/SET"
 const INVALIDATE = "ducks/viewTransform/INVALIDATE"

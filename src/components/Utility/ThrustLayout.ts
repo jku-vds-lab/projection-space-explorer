@@ -1,15 +1,15 @@
-import { ViewTransform } from "../WebGLView/ViewTransform";
+import { CameraTransformations } from "../WebGLView/CameraTransformations";
 import d3 = require("d3");
 
 export class ThrustLayout {
-    viewTransform: ViewTransform
+    viewTransform: CameraTransformations
     output = []
     labelLayout
     graphLayout
     linkDistance
     onTick
 
-    constructor(viewTransform: ViewTransform, linkDistance) {
+    constructor(viewTransform: CameraTransformations, linkDistance) {
         this.viewTransform = viewTransform
         this.linkDistance = linkDistance
     }
@@ -99,7 +99,7 @@ export class ThrustLayout {
             var k = 0.2 * this.alpha();
 
             graph.nodes.forEach((o, i) => {
-                var center = ViewTransform.worldToScreenWithoutOffset(o.center, self.viewTransform)
+                var center = CameraTransformations.worldToScreenWithoutOffset(o.center, self.viewTransform)
                 o.x += (center.x - o.x) * k;
                 o.y += (center.y - o.y) * k;
             })

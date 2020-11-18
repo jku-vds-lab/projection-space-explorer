@@ -10,4 +10,6 @@ void main() {
     gl_FragColor = vColor;
 
     gl_FragColor = gl_FragColor * texture2D(atlas, gl_PointCoord);
+
+    if ( gl_FragColor.a < 0.05 ) discard;
 }

@@ -40,26 +40,6 @@ export class DatasetDatabase {
                 type: DatasetType.Coral
             },
             {
-                display: "Minimal Example",
-                path: "datasets/test/x_y.csv",
-                type: DatasetType.Test
-            },
-            {
-                display: "Range Header",
-                path: "datasets/test/rangeheader.csv",
-                type: DatasetType.Test
-            },
-            {
-                display: "Multivariate Test",
-                path: "datasets/test/multivariate.csv",
-                type: DatasetType.Test
-            },
-            {
-                display: "Test H5",
-                path: "datasets/test/coral_subsampled_normalized.h5",
-                type: DatasetType.Test
-            },
-            {
                 display: "Chess: 190 Games",
                 path: "datasets/chess/chess16k.csv",
                 type: DatasetType.Chess

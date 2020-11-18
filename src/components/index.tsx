@@ -695,7 +695,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       <ClusterOverview
         itemClicked={(cluster) => {
           //this.threeRef.current.setZoomTarget(cluster.vectors, 1)
-          this.threeRef.current.onClusterClicked(cluster)
+          this.threeRef.current.onClusterZoom(cluster)
         }}></ClusterOverview>
 
       <ToolSelectionRedux />

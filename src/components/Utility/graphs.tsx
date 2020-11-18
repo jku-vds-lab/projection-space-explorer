@@ -37,6 +37,7 @@ export class Edge {
     source: Cluster
     destination: Cluster
     bundle: number[]
+    name: string
 
     constructor(source, destination, bundle) {
         this.source = source

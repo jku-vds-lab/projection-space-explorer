@@ -3,7 +3,7 @@ import * as React from 'react'
 import Cluster from "../../Utility/Data/Cluster";
 import { Story } from "../../Utility/Data/Story";
 import { GenericFingerprint } from "../../Legends/Generic";
-import { Card, Grow, Link, CardHeader, CardContent, Button, Typography } from "@material-ui/core";
+import { Card, Grow, Typography, Tooltip, IconButton } from "@material-ui/core";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect, ConnectedProps } from 'react-redux'
@@ -13,9 +13,9 @@ import { GenericChanges } from "../../Legends/GenericChanges/GenericChanges";
 import { StoryMode } from "../../Ducks/StoryModeDuck";
 import { RootState } from "../../Store/Store";
 import { addCluster } from "../../Ducks/CurrentClustersDuck";
-import { addClusterToStory, addClusterToTrace, selectSideBranch, setActiveTraceState } from "../../Ducks/StoriesDuck";
-import { select } from "d3";
-import ReactDOM = require("react-dom");
+import { addClusterToTrace, selectSideBranch, setActiveTraceState } from "../../Ducks/StoriesDuck";
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 
 
 const mapStateToProps = (state: RootState) => ({
@@ -58,13 +58,21 @@ const Circle = ({ x, y, onClick }) => {
 
 
 class ProvenanceGraph extends React.PureComponent<any, any> {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            pageOffset: 0
+        }
+    }
+
     render() {
         const midX = 80
         const rectWidth = 16
         const margin = 12
 
-        const fillColors = [ "#F1DCA5", "#F8C7A0" ]
-        const strokeColors = [ "#e9c46a", "#f4a261" ]
+        const fillColors = ["#F1DCA5", "#F8C7A0"]
+        const strokeColors = ["#e9c46a", "#f4a261"]
         const mainColor = "#2a9d8f"
 
         if (!this.props.input) return null;
@@ -75,10 +83,26 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
         let selectSideBranch = this.props.selectSideBranch
         let addClusterToTrace = this.props.addClusterToTrace
         let addCluster = this.props.addCluster
+        let dataset = this.props.dataset
+        let pageOffset = this.state.pageOffset
 
+        let numSidePaths = Math.min(2, stories.trace.sidePaths.length)
 
         return <div>
             <Typography align="center" variant="subtitle2">Provenance</Typography>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <IconButton onClick={() => {
+                    this.setState({ pageOffset: pageOffset <= 1 ? numSidePaths : pageOffset - 2 })
+                }}>
+                    <NavigateBeforeIcon></NavigateBeforeIcon>
+                </IconButton>
+
+                <IconButton onClick={() => {
+                    this.setState({ pageOffset: pageOffset + 2 })
+                }}>
+                    <NavigateNextIcon></NavigateNextIcon>
+                </IconButton>
+            </div>
             <svg style={{
                 width: '100%',
                 height: '100%',
@@ -88,16 +112,12 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
             }}>
 
                 {
-
-
                     function () {
-
-
                         let components = []
-                        let numSidePaths = Math.min(2, stories.trace.sidePaths.length)
+                        
 
                         for (let si = 0; si < numSidePaths; si++) {
-                            let sidePathIndex = stories.trace.sidePaths.indexOf(stories.trace.sidePaths[si])
+                            let sidePathIndex = stories.trace.sidePaths.indexOf(stories.trace.sidePaths[(si + pageOffset) % stories.trace.sidePaths.length])
 
                             let sidePath = stories.trace.sidePaths[sidePathIndex]
 
@@ -142,6 +162,9 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                             let sync1 = position[i1]
                                             let sync2 = position[i2]
 
+                                            let syncLen = sidePath.nodes.indexOf(stories.trace.mainPath[i2]) - sidePath.nodes.indexOf(stories.trace.mainPath[i1]) - 1
+                                            let syncPart = sidePath.nodes.slice(sidePath.nodes.indexOf(stories.trace.mainPath[i1]) + 1, sidePath.nodes.indexOf(stories.trace.mainPath[i2]))
+
                                             if (i2 - i1 == 1 || true) {
                                                 let x = midX - rectWidth * (si + 1) - margin * (si + 1)
 
@@ -149,8 +172,24 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                                     selectSideBranch(sidePathIndex)
                                                 }}>
                                                     <line x1={x + rectWidth / 2} y1={sync1.y + 16 + si * 4} x2={x + rectWidth / 2} y2={sync2.y - 16 - si * 4} strokeWidth={2} stroke={strokeColors[si]}></line>
-                                                    <rect x={x} y={sync1.y + 35} rx="5" ry="5" width={rectWidth} height={sync2.y - sync1.y - 70} strokeWidth={2} stroke={strokeColors[si]} fill={fillColors[si]} />
-                                                    <text x={x + rectWidth / 2} y={sync1.y + (sync2.y - sync1.y) / 2} textAnchor="middle">{sidePath.nodes.indexOf(stories.trace.mainPath[i2]) - sidePath.nodes.indexOf(stories.trace.mainPath[i1]) - 1}</text>
+                                                    <Tooltip placement="left" title={<React.Fragment>
+                                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                            {
+                                                                syncPart.map(node => {
+                                                                    return <GenericFingerprint
+                                                                        type={dataset.type}
+                                                                        vectors={node.vectors}
+                                                                        scale={1}
+                                                                    ></GenericFingerprint>
+                                                                })
+                                                            }
+                                                        </div>
+                                                    </React.Fragment>}>
+                                                        <rect x={x} y={sync1.y + 35} rx="5" ry="5" width={rectWidth} height={sync2.y - sync1.y - 70} strokeWidth={2} stroke={strokeColors[si]} fill={fillColors[si]} />
+                                                    </Tooltip>
+
+
+                                                    <text x={x + rectWidth / 2} y={sync1.y + (sync2.y - sync1.y) / 2} textAnchor="middle">{syncLen}</text>
                                                 </g>
                                             } else {
                                                 return <g></g>
@@ -174,7 +213,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                 {
                     position.map((p, index) => {
                         return <g>
-                            <text x={midX + 10} y={p.y} fill="black">{index}</text>
+                            <text x={midX + 10} y={p.y} fill="black" font-weight="bold">{index}</text>
                             <circle cx={midX} cy={p.y} r="6" fill={mainColor} />
                         </g>
                     })
@@ -254,11 +293,9 @@ export const ClusterOverview = connector(function ({
             for (var i = 1; i < current.children.length; i++) {
                 const child = current.children[i];
 
-                state.push({ y: child.offsetTop + child.offsetHeight / 2 - current.children[1].offsetTop })
+                state.push({ y: child.offsetTop + child.offsetHeight / 2 - current.children[1].offsetTop - 30 })
             }
 
-            console.log("reacting to story change")
-            console.log(stories)
             setInput({ stories: stories, position: state })
         }
     }, [stories])
@@ -282,6 +319,7 @@ export const ClusterOverview = connector(function ({
                         addCluster={addCluster}
                         addClusterToTrace={addClusterToTrace}
                         selectSideBranch={selectSideBranch}
+                        dataset={dataset}
                     ></ProvenanceGraph>
 
                     <div ref={itemRef} style={{

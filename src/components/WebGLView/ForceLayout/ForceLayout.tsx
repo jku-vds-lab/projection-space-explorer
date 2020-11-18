@@ -4,7 +4,7 @@ import { GenericFingerprint } from '../../Legends/Generic'
 import { connect, ConnectedProps } from 'react-redux'
 import { Edge } from '../../Utility/graphs'
 import THREE = require('three')
-import { ViewTransform } from '../ViewTransform'
+import { CameraTransformations } from '../CameraTransformations'
 import { GenericChanges } from '../../Legends/GenericChanges/GenericChanges'
 import { ThrustLayout } from '../../Utility/ThrustLayout'
 import { RenderingContextEx } from '../../Utility/RenderingContextEx'
@@ -50,7 +50,7 @@ type Props = PropsFromRedux & {
     clusterEdges: Edge[]
     camera: THREE.Camera
     dataset: any,
-    viewTransform: ViewTransform,
+    viewTransform: CameraTransformations,
     storyMode: StoryMode
     clusterMode: ClusterMode
 }
@@ -216,7 +216,7 @@ export var ForceLayout = connector(class extends React.Component<Props, ForceLay
      * @param ctx the rendering context of the canvas
      */
     renderLinks(ctx: CanvasRenderingContext2D) {
-        var offset = ViewTransform.cameraOffsetToScreen(this.props.viewTransform)
+        var offset = CameraTransformations.cameraOffsetToScreen(this.props.viewTransform)
 
         if (this.state.displayClusters || this.state.differenceClusters) {
             let link = null
@@ -274,8 +274,8 @@ export var ForceLayout = connector(class extends React.Component<Props, ForceLay
         if (this.props.stories.active && this.props.stories.active.edges) {
 
             this.props.stories.active.edges.forEach(edge => {
-                const { x: x0, y: y0 } = ViewTransform.worldToScreen(edge.source.getCenter(), this.props.viewTransform)
-                const { x: x1, y: y1 } = ViewTransform.worldToScreen(edge.destination.getCenter(), this.props.viewTransform)
+                const { x: x0, y: y0 } = CameraTransformations.worldToScreen(edge.source.getCenter(), this.props.viewTransform)
+                const { x: x1, y: y1 } = CameraTransformations.worldToScreen(edge.destination.getCenter(), this.props.viewTransform)
 
                 ctx.strokeStyle = 'rgba(70, 130, 180, 0.5)'
                 ctx.lineWidth = 5 * window.devicePixelRatio
@@ -302,8 +302,8 @@ export var ForceLayout = connector(class extends React.Component<Props, ForceLay
                         key={index}
                         style={{
                             position: 'absolute',
-                            left: displayCluster.forceLabelPosition.x + ViewTransform.cameraOffsetToScreen(this.props.viewTransform).x,
-                            top: displayCluster.forceLabelPosition.y + ViewTransform.cameraOffsetToScreen(this.props.viewTransform).y,
+                            left: displayCluster.forceLabelPosition.x + CameraTransformations.cameraOffsetToScreen(this.props.viewTransform).x,
+                            top: displayCluster.forceLabelPosition.y + CameraTransformations.cameraOffsetToScreen(this.props.viewTransform).y,
                             transform: `translate(${displayCluster.shiftX.toFixed(1)}px, ${displayCluster.shiftY.toFixed(1)}px)`
                         }}
                     >
@@ -317,8 +317,8 @@ export var ForceLayout = connector(class extends React.Component<Props, ForceLay
                         key={index}
                         style={{
                             position: 'absolute',
-                            left: differenceCluster.forceLabelPosition.x + ViewTransform.cameraOffsetToScreen(this.props.viewTransform).x,
-                            top: differenceCluster.forceLabelPosition.y + ViewTransform.cameraOffsetToScreen(this.props.viewTransform).y,
+                            left: differenceCluster.forceLabelPosition.x + CameraTransformations.cameraOffsetToScreen(this.props.viewTransform).x,
+                            top: differenceCluster.forceLabelPosition.y + CameraTransformations.cameraOffsetToScreen(this.props.viewTransform).y,
                             transform: `translate(${differenceCluster.shiftX.toFixed(1)}px, ${differenceCluster.shiftY.toFixed(1)}px)`
                         }}>
                         <GenericChanges vectorsA={differenceCluster.clusterEdge.source.vectors} vectorsB={differenceCluster.clusterEdge.destination.vectors} scale={1}></GenericChanges>

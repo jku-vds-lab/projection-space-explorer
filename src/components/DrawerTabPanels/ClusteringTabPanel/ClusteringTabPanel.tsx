@@ -114,9 +114,10 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
                 if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
                     setClusterEdges(dataset.clusterEdges)
 
-                    let stories = storyLayout(dataset.clusterEdges)
+                    //let stories = storyLayout(dataset.clusterEdges)
 
-                    setStories(stories)
+                    //setStories(stories)
+                    setStories([ new Story(dataset.clusters, dataset.clusterEdges) ])
 
                     //setActiveStory(stories[0])
                 } else {
@@ -166,6 +167,7 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
                         let stories = storyLayout(dataset.clusterEdges)
 
                         setStories(stories)
+                        
 
                         //setActiveStory(stories[0])
                     } else {

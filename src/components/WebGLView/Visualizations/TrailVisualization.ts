@@ -61,7 +61,7 @@ export class TrailVisualization {
             for (let j = 0; j < range; j++, i++) {
                 let vector = clusterObject.trailPositions[clusterObject.trailPositions.length - 1 - j]
 
-                position.setXYZ(i, vector.x * zoom, vector.y * zoom, 0.0)
+                position.setXYZ(i, vector.x * zoom, vector.y * zoom, -2)
                 color.setXYZW(i, 0.33, 0.33, 0.33, 0.5 * ((clusterObject.trailPositions.length - 1 - j) / clusterObject.trailPositions.length))
 
                 i = i + 1

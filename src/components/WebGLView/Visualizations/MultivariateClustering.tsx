@@ -12,7 +12,9 @@ import { NamedCategoricalScales } from "../../Utility/Colors/NamedCategoricalSca
 import { TrailVisualization } from "./TrailVisualization";
 import { ClusterMode } from "../../Ducks/ClusterModeDuck";
 import { Typography } from "@material-ui/core";
-import { ViewTransform } from "../ViewTransform";
+import { CameraTransformations } from "../CameraTransformations";
+import { Story } from "../../Utility/Data/Story";
+import * as nt from '../../NumTs/NumTs'
 
 const SELECTED_COLOR = 0x4d94ff
 const DEFAULT_COLOR = 0x000000
@@ -537,7 +539,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         if (this.clusterVis != null) {
             const { clusterMeshes, lineMeshes } = this.clusterVis
             clusterMeshes.forEach(mesh => {
-
                 mesh.geometry.dispose()
                 mesh.material.dispose()
                 this.scalingScene.remove(mesh)
@@ -550,6 +551,57 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         }
     }
 
+    /**
+     * Returns the label color of a given cluster
+     * 
+     * @param cluster A cluster
+     */
+    textColor(cluster: Cluster) {
+        if (this.props.selectedClusters.includes(cluster)) {
+            return 'black'
+        } else {
+            return 'white'
+        }
+    }
+
+
+
+    /**
+     * Creates textual representations of the edges of the story.
+     */
+    createStreetLabels(story: Story) {
+        let labels = []
+
+        story.edges.filter(edge => edge.name && edge.name != "").map(edge => {
+            let source = CameraTransformations.worldToScreen(edge.source.getCenter(), this.props.viewTransform)
+            let dest = CameraTransformations.worldToScreen(edge.destination.getCenter(), this.props.viewTransform)
+
+            let angle = new nt.VectBase(dest.x - source.x, dest.y - source.y).angle()
+            if (angle > Math.PI / 2) {
+                angle = angle - Math.PI
+            }
+
+            // Only display edge name if it can fit inside the viewport
+            if (nt.euclideanDistanceVec(source, dest) > edge.name.length * 10) {
+                labels.push(
+                    <Typography style={{
+                        position: 'absolute',
+                        left: (source.x + dest.x) / 2,
+                        top: (source.y + dest.y) / 2,
+                        background: 'transparent',
+                        color: 'black',
+                        transform: `translate(-50%, 0px) rotateZ(${angle}rad) translate(0, -25px)`,
+                        pointerEvents: 'none'
+                    }}>{edge.name}</Typography>
+                )
+            }
+        })
+
+        
+
+        return labels
+    }
+
 
 
     /**
@@ -557,11 +609,25 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
      */
     render() {
         return <div>
+
+            {
+                this.props.stories.active && this.createStreetLabels(this.props.stories.active)
+            }
+
             {
                 this.props.stories.trace && this.props.stories.trace.mainPath.map((cluster, index) => {
-                    let screen = ViewTransform.worldToScreen(cluster.getCenter(), this.props.viewTransform)
+                    let screen = CameraTransformations.worldToScreen(cluster.getCenter(), this.props.viewTransform)
 
-                    return <Typography style={{ position: 'absolute', left: screen.x - 6, top: screen.y + 8, background: 'white' }}>{index}</Typography>
+                    return <Typography style={{
+                        position: 'absolute',
+                        left: screen.x,
+                        top: screen.y,
+                        background: 'transparent',
+                        color: 'white',
+                        fontWeight: "bold",
+                        transform: 'translate(-50%, -50%)',
+                        pointerEvents: 'none'
+                    }}>{index}</Typography>
                 })
             }
         </div>

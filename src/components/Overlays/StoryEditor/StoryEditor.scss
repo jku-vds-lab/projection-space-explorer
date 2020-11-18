@@ -1,7 +1,7 @@
 .StoryEditorParent {
     position: absolute;
-    width: 500px;
-    height: 400px;
+    width: calc(100% - 400px);
+    height: calc(100% - 200px);
     left: 350px;
     top: 10%;
 }

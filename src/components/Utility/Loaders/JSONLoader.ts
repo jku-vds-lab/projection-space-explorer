@@ -147,6 +147,8 @@ export class JSONLoader implements Loader {
 
         let clusters: Cluster[] = []
         content.clusters[0].data.forEach(row => {
+            let nameIndex = content.edges[0].columns.indexOf("name")
+
             let points = []
             row[1].forEach(i => {
                 points.push(this.vectors[i])
@@ -154,14 +156,22 @@ export class JSONLoader implements Loader {
             let cluster = new Cluster(points)
 
             cluster.vectors = points
-            cluster.name = row[2]
+            if (nameIndex >= 0) {
+                cluster.name = row[nameIndex]
+            }
+            
             cluster.label = row[0]
             clusters.push(cluster)
         })
 
         let edges = []
         content.edges[0].data.forEach(row => {
-            edges.push(new Edge(clusters.find(cluster => cluster.label == row[1]), clusters.find(cluster => cluster.label == row[2]), null))
+            let nameIndex = content.edges[0].columns.indexOf("name")
+            let edge = new Edge(clusters.find(cluster => cluster.label == row[1]), clusters.find(cluster => cluster.label == row[2]), null)
+            if (nameIndex >= 0) {
+                edge.name = row[nameIndex]
+            }
+            edges.push(edge)
         })
 
         let preselection = null

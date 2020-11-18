@@ -11,9 +11,9 @@ import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
 import { Vect } from "../Utility/Data/Vect";
 import { setClusterEdgesAction } from "../Ducks/ClusterEdgesDuck";
 import { setViewTransform } from "../Ducks/ViewTransformDuck";
-import { toggleSelectedCluster } from "../Ducks/SelectedClustersDuck";
+import { setSelectedClusters, toggleSelectedCluster } from "../Ducks/SelectedClustersDuck";
 import { setAggregationAction, toggleAggregationAction } from "../Ducks/AggregationDuck";
-import { ViewTransform } from './ViewTransform'
+import { CameraTransformations } from './CameraTransformations'
 import { Camera } from 'three';
 import { LineVisualization, PointVisualization } from './meshes';
 import { MultivariateClustering } from './Visualizations/MultivariateClustering';
@@ -24,8 +24,14 @@ import { setHoverState } from '../Ducks/HoverStateDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
-import { Menu, MenuItem, Typography } from '@material-ui/core';
+import { Dialog, DialogContent, Menu, MenuItem, Typography } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
+import { MouseController } from './MouseController';
+import { removeClusterFromStories } from '../Ducks/StoriesDuck';
+import { removeCluster } from '../Ducks/CurrentClustersDuck';
+import * as LineUpJS from 'lineupjs'
+
+
 
 type ViewState = {
     hoverCluster: any
@@ -33,6 +39,7 @@ type ViewState = {
     camera: Camera
     menuX: number
     menuY: number
+    menuTarget: any
 }
 
 const mapStateToProps = (state: RootState) => ({
@@ -67,7 +74,10 @@ const mapDispatchToProps = dispatch => ({
     toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedCluster(selectedCluster)),
     toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation)),
     setHoverState: hoverState => dispatch(setHoverState(hoverState)),
-    setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping))
+    setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping)),
+    removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
+    removeCluster: cluster => dispatch(removeCluster(cluster)),
+    setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters))
 })
 
 
@@ -121,6 +131,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     multivariateClusterView: any = React.createRef()
     invalidated: boolean
 
+    mouseController: MouseController = new MouseController()
 
     constructor(props) {
         super(props)
@@ -129,6 +140,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.selectionRef = React.createRef()
         this.physicsRef = React.createRef()
         this.mouseDown = false
+
+        this.initMouseController()
 
         this.mouse = { x: 0, y: 0 }
         this.mouseDownPosition = { x: 0, y: 0 }
@@ -142,9 +155,89 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             camera: null,
             hoverCluster: undefined,
             menuX: null,
-            menuY: null
+            menuY: null,
+            menuTarget: null
         }
     }
+
+
+
+
+
+
+
+    /**
+     * Initializes the callbacks for the MouseController.
+     */
+    initMouseController() {
+        this.mouseController.onDragStart = (event: MouseEvent, button: number) => {
+
+        }
+
+
+        this.mouseController.onDragEnd = (event: MouseEvent, button: number) => {
+
+        }
+
+        this.mouseController.onDragMove = (event: MouseEvent, button: number) => {
+            switch (button) {
+                case 2:
+                    this.camera.position.x = this.camera.position.x - CameraTransformations.pixelToWorldCoordinates(event.movementX, this.createTransform())
+                    this.camera.position.y = this.camera.position.y + CameraTransformations.pixelToWorldCoordinates(event.movementY, this.createTransform())
+
+                    this.camera.updateProjectionMatrix()
+                    this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight())
+
+                    this.requestRender()
+                    break;
+            }
+        }
+
+        this.mouseController.onContext = (event: MouseEvent, button: number) => {
+            switch (button) {
+                case 2:
+                    let cluster = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
+
+                    if (cluster) {
+                        this.setState({
+                            menuX: event.clientX,
+                            menuY: event.clientY,
+                            menuTarget: cluster
+                        })
+                    } else {
+                        //this.setState({
+                        //    menuX: event.clientX,
+                        //    menuY: event.clientY,
+                        //    menuTarget: null
+                        //})
+                    }
+
+                    break;
+            }
+        }
+    }
+
+
+
+    chooseCluster(screenPosition: { x: number, y: number }) {
+        let nearest = null
+        let min = Number.MAX_SAFE_INTEGER
+
+        this.props.clusters?.forEach(cluster => {
+            let clusterScreen = CameraTransformations.worldToScreen(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y), this.createTransform())
+            let dist = nt.euclideanDistance(screenPosition.x, screenPosition.y, clusterScreen.x, clusterScreen.y)
+
+            if (dist < min && dist < 16) {
+                nearest = cluster
+                min = dist
+            }
+        })
+
+        return nearest
+    }
+
+
+
 
     /**
      * Gives the index of the nearest sample.
@@ -220,7 +313,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
     onMouseDown(event) {
+        this.mouseController.mouseDown(event)
+
         event.preventDefault();
+
 
         switch (event.button) {
             case 0:
@@ -228,11 +324,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 this.initialMousePosition = new THREE.Vector2(event.offsetX, event.offsetY)
                 this.mouseDownPosition = this.normaliseMouse(event)
                 break;
-            //case 2:
-                //this.setState({
-                //    menuX: event.clientX,
-                //    menuY: event.clientY,
-                //})
+            case 2:
+
+            //this.setState({
+            //    menuX: event.clientX,
+            //    menuY: event.clientY,
+            //})
             default:
                 break;
         }
@@ -247,10 +344,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
     onMouseMove(event) {
+
+        this.mouseController.mouseMove(event)
+
         event.preventDefault();
 
         var bounds = this.containerRef.current.getBoundingClientRect()
-        var coords = ViewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
+        var coords = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
 
         switch (this.props.currentTool) {
             case Tool.Default:
@@ -267,7 +367,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 10 && this.lasso == null && this.mouseDown) {
                     //var initialWorld = this.clientCoordinatesToWorld(this.initialMousePosition.x, this.initialMousePosition.y)
 
-                    let initialWorld = ViewTransform.screenToWorld(this.initialMousePosition, this.createTransform())
+                    let initialWorld = CameraTransformations.screenToWorld(this.initialMousePosition, this.createTransform())
 
                     this.lasso = new LassoSelection()
                     this.lasso.mouseDown(true, initialWorld.x, initialWorld.y)
@@ -309,10 +409,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                                 this.props.setHoverState(list)
                                 this.requestRender()
                             }
-
                         }
-
-
                     }, 10);
                 }
                 break;
@@ -340,7 +437,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
                 var found = false
                 this.props.clusters?.forEach(cluster => {
-
                     switch (this.props.clusterMode) {
                         case ClusterMode.Univariate: {
                             if (cluster.containsPoint(coords)) {
@@ -365,9 +461,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                             }
                         }
-
                     }
-
                 })
                 if (!found && this.state.hoverCluster) {
                     this.setState({
@@ -375,14 +469,15 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     })
                 }
                 break;
-
         }
     }
 
-    onMouseUp(event) {
+    onMouseUp(event: MouseEvent) {
+
+        this.mouseController.mouseUp(event)
 
         var bounds = this.containerRef.current.getBoundingClientRect()
-        var coords = ViewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
+        var coords = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
 
         switch (this.props.currentTool) {
             case Tool.Default:
@@ -405,16 +500,26 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     if (indices.length > 0 && wasDrawing) {
                         var selected = indices.map(index => this.props.dataset.vectors[index])
 
-                        this.props.toggleAggregation(selected)
+                        if (event.shiftKey) {
+                            this.props.toggleAggregation(selected)
+                        } else {
+                            this.props.setCurrentAggregation(selected)
+                        }
+
                     } else if (wasDrawing) {
                         this.clearSelection()
                     }
 
                     this.lasso = null
                 } else {
-                    if (this.currentHover != null) {
-                        // There is a hover target ... select it
-                        this.props.toggleAggregation([this.currentHover])
+                    if (this.currentHover != null && event.button == 0) {
+                        if (event.shiftKey) {
+                            // There is a hover target ... select it
+                            this.props.toggleAggregation([this.currentHover])
+                        } else {
+                            this.props.setCurrentAggregation([this.currentHover])
+                        }
+
                     }
                 }
 
@@ -426,43 +531,15 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
 
 
+                if (event.button == 0) {
+                    let selected = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
 
-                switch (this.props.clusterMode) {
-                    case ClusterMode.Univariate: {
-                        // current hover is null, check if we are inside a cluster
-                        let selected: Cluster = null
-                        let minDist = Number.MAX_VALUE
-                        this.props.clusters?.forEach(cluster => {
-                            let dist = new THREE.Vector2(coords.x, coords.y).distanceTo(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y))
-                            if (dist < 2 && dist < minDist) {
-                                selected = cluster
-                                minDist = dist
-                            }
-                        })
-
-                        if (selected) {
-                            this.onClusterClicked(selected)
-                        }
-                        break;
-                    }
-                    case ClusterMode.Multivariate: {
-                        let selected: Cluster = null
-                        let minDist = Number.MAX_VALUE
-                        this.props.clusters?.forEach(cluster => {
-                            let dist = new THREE.Vector2(coords.x, coords.y).distanceTo(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y))
-                            if (dist < 2 && dist < minDist) {
-                                selected = cluster
-                                minDist = dist
-                            }
-                        })
-
-                        // Toggle
-                        if (selected) {
-                            this.onClusterClicked(selected)
-                        }
-                        break;
+                    // Toggle
+                    if (selected) {
+                        this.onClusterClicked(selected)
                     }
                 }
+
 
 
                 break;
@@ -511,7 +588,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         // Store world position under mouse
         var bounds = this.containerRef.current.getBoundingClientRect()
-        let worldBefore = ViewTransform.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
+        let worldBefore = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
         var screenBefore = this.relativeMousePosition(event)
 
         var newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.props.dataset.bounds.scaleFactor
@@ -562,6 +639,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         });
         this.renderer.autoClear = true
         this.renderer.autoClearColor = false
+
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(this.getWidth(), this.getHeight());
         this.renderer.setClearColor(0xf9f9f9, 1);
@@ -815,8 +893,17 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             return [...new Set(agg)]
         }
 
-        this.props.toggleSelectedCluster(cluster)
-        this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
+        switch (this.props.currentTool) {
+            case Tool.Default:
+                this.props.toggleSelectedCluster(cluster)
+                this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
+                break;
+            case Tool.Grab:
+                this.props.toggleSelectedCluster(cluster)
+                this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
+                break;
+
+        }
     }
 
 
@@ -1033,7 +1120,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         ctx.beginPath();
         for (var index = 0; index < points.length; index++) {
             var point = points[index];
-            point = ViewTransform.worldToScreen(point, this.createTransform())
+            point = CameraTransformations.worldToScreen(point, this.createTransform())
 
             if (index == 0) {
                 ctx.moveTo(point.x * window.devicePixelRatio, point.y * window.devicePixelRatio);
@@ -1043,7 +1130,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         if (!this.lasso.drawing) {
-            var conv = ViewTransform.worldToScreen(points[0], this.createTransform())
+            var conv = CameraTransformations.worldToScreen(points[0], this.createTransform())
             ctx.lineTo(conv.x * window.devicePixelRatio, conv.y * window.devicePixelRatio);
         }
 
@@ -1073,14 +1160,14 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     var a = this.edgeClusters[connection.source]
                     var b = this.edgeClusters[connection.target]
 
-                    var p0 = ViewTransform.worldToScreen(new Cluster(a.map(e => e.source)).getCenter(), this.createTransform())
-                    var p1 = ViewTransform.worldToScreen(new Cluster(a.map(e => e.target)).getCenter(), this.createTransform())
+                    var p0 = CameraTransformations.worldToScreen(new Cluster(a.map(e => e.source)).getCenter(), this.createTransform())
+                    var p1 = CameraTransformations.worldToScreen(new Cluster(a.map(e => e.target)).getCenter(), this.createTransform())
 
                     ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
                     ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
 
-                    p0 = ViewTransform.worldToScreen(new Cluster(b.map(e => e.source)).getCenter(), this.createTransform())
-                    p1 = ViewTransform.worldToScreen(new Cluster(b.map(e => e.target)).getCenter(), this.createTransform())
+                    p0 = CameraTransformations.worldToScreen(new Cluster(b.map(e => e.source)).getCenter(), this.createTransform())
+                    p1 = CameraTransformations.worldToScreen(new Cluster(b.map(e => e.target)).getCenter(), this.createTransform())
                     ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
                     ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
                 })
@@ -1091,6 +1178,14 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
+
+
+    onClusterZoom(cluster) {
+        this.props.setCurrentAggregation(cluster.vectors)
+        this.props.setSelectedClusters([cluster])
+    }
+
+
     render() {
         const handleClose = () => {
             this.setState({
@@ -1100,8 +1195,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         };
 
         return <div
-            onContextMenu={null
-                //(event) => { event.preventDefault() }
+            onContextMenu={
+                (event) => { event.preventDefault() }
             }
             style={{
                 display: 'flex',
@@ -1125,8 +1220,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                             className='speech-bubble-ds'
                             style={{
                                 position: 'absolute',
-                                right: this.getWidth() - ViewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors), this.createTransform()).x,
-                                bottom: this.getHeight() - ViewTransform.worldToScreen(this.state.hoverCluster.getCenter(this.vectors), this.createTransform()).y - 10,
+                                right: this.getWidth() - CameraTransformations.worldToScreen(this.state.hoverCluster.getCenter(this.vectors), this.createTransform()).x,
+                                bottom: this.getHeight() - CameraTransformations.worldToScreen(this.state.hoverCluster.getCenter(this.vectors), this.createTransform()).y - 10,
                             }}>
                             <Typography>{this.state.hoverCluster.getTextRepresentation()}</Typography>
                         </div>
@@ -1144,10 +1239,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             <MultivariateClustering ref={this.multivariateClusterView}></MultivariateClustering>
 
 
-
             <Menu
                 keepMounted
-                open={this.state.menuY !== null}
+                open={this.state.menuY !== null && !this.state.menuTarget}
                 onClose={handleClose}
                 anchorReference="anchorPosition"
                 anchorPosition={
@@ -1156,10 +1250,57 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         : undefined
                 }
             >
-                <MenuItem onClick={handleClose}>Select Trace in Story</MenuItem>
-                <MenuItem onClick={handleClose}>Select Cluster</MenuItem>
-                <MenuItem onClick={handleClose}>Connect To Other</MenuItem>
-                <MenuItem onClick={handleClose}>Connect To Other</MenuItem>
+                <MenuItem onClick={() => {
+                    // generate some data
+                    // generate some data
+                    const arr = [];
+                    const cats = ['c1', 'c2', 'c3'];
+                    for (let i = 0; i < 100; ++i) {
+                        arr.push({
+                            a: Math.random() * 10,
+                            d: 'Row ' + i,
+                            cat: cats[Math.floor(Math.random() * 3)],
+                            cat2: cats[Math.floor(Math.random() * 3)]
+                        })
+                    }
+                    const lineup = LineUpJS.asLineUp(document.getElementById("testy"), this.props.dataset.vectors);
+                    handleClose()
+                }}>Load Lineup</MenuItem>
+            </Menu>
+
+            <Dialog
+                fullWidth={true}
+                maxWidth={"lg"}
+                open={this.state.lineup != null}
+                onClose={handleClose}
+                aria-labelledby="max-width-dialog-title"
+            >
+
+                <DialogContent style={{ height: 500 }}>
+
+                    {this.state.lineup && <LineUp data={this.state.lineup} />}
+
+                </DialogContent>
+            </Dialog>
+
+            <Menu
+                keepMounted
+                open={this.state.menuY !== null && this.state.menuTarget instanceof Cluster}
+                onClose={handleClose}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    this.state.menuY !== null && this.state.menuX !== null
+                        ? { top: this.state.menuY, left: this.state.menuX }
+                        : undefined
+                }
+            >
+                <MenuItem onClick={() => {
+                    this.props.removeClusterFromStories(this.state.menuTarget)
+                    this.props.removeCluster(this.state.menuTarget)
+
+
+                    handleClose()
+                }}>Delete Cluster</MenuItem>
             </Menu>
         </div>
     }

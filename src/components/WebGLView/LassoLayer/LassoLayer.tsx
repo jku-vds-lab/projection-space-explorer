@@ -2,14 +2,14 @@ import './LassoLayer.scss'
 import * as React from 'react'
 import { RenderingContextEx } from '../../Utility/RenderingContextEx'
 import { connect } from 'react-redux'
-import { ViewTransform } from '../ViewTransform'
+import { CameraTransformations } from '../CameraTransformations'
 
 type LassoLayerProps = {
-    viewTransform: ViewTransform
+    viewTransform: CameraTransformations
 }
 
 const mapStateToProps = state => ({
-    viewTransform: state.viewTransform as ViewTransform
+    viewTransform: state.viewTransform as CameraTransformations
 })
 
 export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true })(class extends React.Component<LassoLayerProps, any> {
@@ -28,7 +28,7 @@ export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true 
 
     renderHighlightedSequence(context: CanvasRenderingContext2D, highlightedSequence: { previous, current, next }) {
         var ctx = new RenderingContextEx(context, window.devicePixelRatio)
-        let current = ViewTransform.worldToScreen({ x: highlightedSequence.current.x, y: highlightedSequence.current.y }, this.props.viewTransform)
+        let current = CameraTransformations.worldToScreen({ x: highlightedSequence.current.x, y: highlightedSequence.current.y }, this.props.viewTransform)
 
 
 
@@ -40,7 +40,7 @@ export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true 
 
         if (highlightedSequence.previous) {
             ctx.beginPath()
-            let previous = ViewTransform.worldToScreen({ x: highlightedSequence.previous.x, y: highlightedSequence.previous.y }, this.props.viewTransform)
+            let previous = CameraTransformations.worldToScreen({ x: highlightedSequence.previous.x, y: highlightedSequence.previous.y }, this.props.viewTransform)
             ctx.moveTo(previous.x, previous.y)
 
             ctx.strokeStyle = "rgba(0.5, 0.5, 0.5, 0.4)"
@@ -49,7 +49,7 @@ export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true 
             ctx.closePath()
         }
         if (highlightedSequence.next) {
-            let next = ViewTransform.worldToScreen({ x: highlightedSequence.next.x, y: highlightedSequence.next.y }, this.props.viewTransform)
+            let next = CameraTransformations.worldToScreen({ x: highlightedSequence.next.x, y: highlightedSequence.next.y }, this.props.viewTransform)
             ctx.beginPath()
             ctx.moveTo(current.x, current.y)
             

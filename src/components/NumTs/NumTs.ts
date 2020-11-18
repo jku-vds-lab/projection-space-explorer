@@ -12,6 +12,11 @@ export function euclideanDistance(x1: number, y1: number, x2: number, y2: number
 }
 
 
+export function euclideanDistanceVec(v1: VectorType, v2: VectorType) {
+    return euclideanDistance(v1.x, v1.y, v2.x, v2.y)
+}
+
+
 export function getSyncNodes(main, side) {
     const checkEdge = (edge1, edge2) => {
         return edge1.source != edge2.source || edge1.destination != edge2.destination
