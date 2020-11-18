@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { RubikChanges } from "../RubikChanges/RubikChanges";
 import React = require("react");
 import { ChessChanges } from "../ChessChanges/ChessChanges";
+import { SudokuChanges } from "../SudokuChanges/SudokuChanges";
 
 
 type GenericChangesType = {
@@ -26,6 +27,6 @@ export const GenericChanges = connect(mapStateToProps, mapDispatchToProps)(({ ve
         case DatasetType.Chess:
             return <ChessChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB}></ChessChanges>
         default:
-            return <div></div>
+            return <SudokuChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB}></SudokuChanges>
     }
 })

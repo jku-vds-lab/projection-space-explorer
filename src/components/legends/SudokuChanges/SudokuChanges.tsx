@@ -2,20 +2,9 @@ var d3 = require('d3')
 import * as React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
-import BarChart from './BarChart.js';
-import VegaHist from './VegaHist.js';
-import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import './Sudoku.scss';
-import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
-import { FeatureType, Vect } from "../../../components/util/datasetselector"
+import { FeatureType, Vect, Dataset, DatasetType } from "../../../components/util/datasetselector"
 
 const useStyles = makeStyles({
   table: {
@@ -149,47 +138,6 @@ function getNormalizedSTD(data, min, max) {
   
 }
 
-function genRows(vectors, projectionColumns, dataset) {
-  if (dataset === undefined) {
-    return []
-  }
-  const rows = []
-  const dictOfArrays = dictionary(vectors)
-  const preselect = getProjectionColumns(projectionColumns)
-
-  // loop through dict
-  for (var key in dictOfArrays) {
-    // filter for preselect features
-    if (preselect.indexOf(key) > -1) {
-      if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
-        // quantitative feature
-        var histData = mapHistData(vectors, key)
-        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
-
-      } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
-        // categorical feature
-        var barData = mapBarChartData(vectors, key)
-        rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
-        
-      } else if (dataset.columns[key]?.featureType === FeatureType.Date) {
-        // date feature
-        var histData = mapHistData(vectors, key)
-        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDate data={histData} actions={false} tooltip={new Handler().call}/>])
-      }
-    }
-  }
-
-  // turn into array of dicts
-  const ret = []
-  for (var i = 0; i < rows.length; i++) {
-    ret.push(createData(rows[i][0], rows[i][1], rows[i][2], rows[i][3]))
-  }
-
-  // sort rows by score
-  ret.sort(sortByScore)
-
-  return ret
-}
 
 const str2number = []
 str2number['Zero'] = 0
@@ -238,19 +186,24 @@ function valueCount(arr) {
   return [a, b, c, d];
 }
 
-function getTable(vectors, aggregation, projectionColumns, dataset) {
+function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
   // dictOfArrays[featureName] = array of i[featureName] for all i in the selection
-  const dictOfArrays = dictionary(vectors)
+  const dictOfArraysA = dictionary(vectorsA)
+  const dictOfArraysB = dictionary(vectorsB)
 
   // featureValuesCounts[featureName] = [[list of features], [how often they occur], [percentage of how often they occur]]
-  const featureValuesCounts = []
+  const featureValuesCountsA = []
+  const featureValuesCountsB = []
 
   // collect all values / frequencies for dictOfArrays
-  for (var key in dictOfArrays) {
-    featureValuesCounts[key] = valueCount(dictOfArrays[key])
+  for (var key in dictOfArraysA) {
+    featureValuesCountsA[key] = valueCount(dictOfArraysA[key])
   }
 
-  const classes = useStyles()
+  for (var key in dictOfArraysB) {
+    featureValuesCountsB[key] = valueCount(dictOfArraysB[key])
+  }
+
   var xOffset = 25
   var yOffset = 25
   var xInter = 25
@@ -264,33 +217,69 @@ function getTable(vectors, aggregation, projectionColumns, dataset) {
       // current feature key
       var key = ''+i+''+j
 
-      if (featureValuesCounts[key]) {
+      if (featureValuesCountsA[key]) {
         // categories
-        var categories = featureValuesCounts[key][0]
+        var categoriesA = featureValuesCountsA[key][0]
         // relative frequencies
-        var relFreq = featureValuesCounts[key][2]
+        var relFreqA = featureValuesCountsA[key][2]
         // index of most frequent category of that feature
-        var i2 = featureValuesCounts[key][3]
+        var i2A = featureValuesCountsA[key][3]
         // most frequent category of that feature
-        var category = categories[i2]
+        var categoryA = categoriesA[i2A]
         // relative frequency of that category
-        var freq = relFreq[i2]
+        var freqA = relFreqA[i2A]
         // relative frequency of that category
 
-        var category = str2number[category]
-        if (category === 0) {
-          category = '-'
+        var categoryA = str2number[categoryA]
+        if (categoryA === 0) {
+          categoryA = '-'
         }
         
       } else {
-        category = '-'
-        var freq = 1.0
+        categoryA = '-'
+        var freqA = 1.0
 
       }
+
+      if (featureValuesCountsB[key]) {
+        // categories
+        var categoriesB = featureValuesCountsB[key][0]
+        // relative frequencies
+        var relFreqB = featureValuesCountsB[key][2]
+        // index of most frequent category of that feature
+        var i2B = featureValuesCountsB[key][3]
+        // most frequent category of that feature
+        var categoryB = categoriesB[i2B]
+        // relative frequency of that category
+        var freqB = relFreqB[i2B]
+        // relative frequency of that category
+
+        var categoryB = str2number[categoryB]
+        if (categoryB === 0) {
+          categoryB = '-'
+        }
+        
+      } else {
+        categoryB = '-'
+        var freqB = 1.0
+
+      }
+
       // underline categories that are equivalent in the entire selection
-      var textDec = freq === 1.0 ? 'underline' : 'normal'
+      var textDec = freqB === 1.0 ? 'underline' : 'normal'
+
+      // encode features that haven't changed as *
+      var category = '*'
+      if (categoryA !== categoryB) {
+        // if features have changed use second selection's most frequent category
+        category = categoryB
+      } else {
+        // draw all stars at same opacity and size
+        freqB = 1.0
+        textDec = 'normal'
+      }
       // opacity + font-size encode frequency linearly
-      var s = '<text x='+((Math.floor(i/3)+i) * xOffset)+' y='+((Math.floor(j/3)+j+1) * yOffset)+' text-decoration=\"'+textDec+'\" font-weight=\"normal\" opacity=\"'+(freq)+'\" font-size=\"'+(freq * maxSize)+'\">'+category+'</text>' 
+      var s = '<text x='+((Math.floor(i/3)+i) * xOffset)+' y='+((Math.floor(j/3)+j+1) * yOffset)+' text-decoration=\"'+textDec+'\" font-weight=\"normal\" opacity=\"'+(freqB)+'\" font-size=\"'+(freqB * maxSize)+'\">'+category+'</text>' 
       svg += s
     }
   }
@@ -316,10 +305,14 @@ const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    aggregate: boolean
-    selection: Vect[]
+
+  width?: number
+  height?: number
+  vectorsA: Array<Vect>
+  vectorsB: Array<Vect>
+  dataset: Dataset
 }
 
-export var SudokuLegend = connector(({ selection, aggregate, projectionColumns, dataset }: Props) => {
-  return getTable(selection, aggregate, projectionColumns, dataset)
+export var SudokuChanges = connector(({ width, height, vectorsA, vectorsB, dataset, projectionColumns }: Props) => {
+  return getTable(vectorsA, vectorsB, projectionColumns, dataset)
 })
