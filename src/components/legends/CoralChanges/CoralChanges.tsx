@@ -88,6 +88,12 @@ function getBins(a, n = 10) {
 }
 
 function getMaxDif(a, b) {
+  console.log('getMaxDif');
+  
+
+  const aSum = a.reduce((x, y) => x + y, 0)
+  const bSum = b.reduce((x, y) => x + y, 0)
+  
   // get index where 2 arrays a and b differ the most + value
   var maxDif = 0
   var maxDifIndex = 0
@@ -95,12 +101,14 @@ function getMaxDif(a, b) {
   var x = a.map(function (item, index) {
     // In this case item correspond to currentValue of array a, 
     // using index to get value from array b
-    const dif = Math.abs(item - b[index])
+    // const dif = Math.abs(item - b[index])
+    const dif = Math.abs(item/aSum - b[index]/bSum)
     maxDifIndex = dif > maxDif ? index : maxDifIndex
     maxDif = dif > maxDif ? dif : maxDif
-    return Math.abs(item - b[index]);
+    return dif
   })
-
+  console.log('maxDif :>> ', maxDif);
+  console.log('maxDifIndex :>> ', maxDifIndex);
   return [maxDif, maxDifIndex]
 }
 
@@ -201,15 +209,24 @@ function getFlattenedBins(a, b) {
 
 
 function getMostDifferingCategory(a, b) {
+  if (!a || !b) {
+    return ""
+  }
   const featuresCounts = getFeaturesCounts(a, b)
   const features = featuresCounts[0]
   a = featuresCounts[1]
   b = featuresCounts[2]
+  console.log('max dif for features :>> ', features);
   const maxDifIndex = getMaxDif(a, b)[1]
+  console.log('features[maxDifIndex] :>> ', features[maxDifIndex]);
   return features[maxDifIndex]
 }
 
 function getDifference(a, b, type) {
+  if(!a || !b) {
+    return [0, ""]
+  }
+
   // a, b are arrays of values of the same feature for both selections A and B
   // a = ["qwe", "qwe", "qwe", "asd", ...]
   //  or
@@ -245,20 +262,18 @@ function sortByAbsDifference(a, b) {
 }
 
 function mapBarChangesData(setA, setB, feature) {
+  if (!setA || !setB) {
+    return {'values': []}
+  }
   // a, b like ["qwe","qwe","asd"], ...
   // turn into {'values': [{'category': 'qwe', 'difference': 0.8}, {'category': 'asd', 'difference': -0.6}]
   // should be sorted by absolute difference
-
-  console.log('a :>> ', setA);
-  console.log('b :>> ', setB);
 
   const data = []
 
   const setACategories = setA.filter((item, index, self) => self.indexOf(item) === index);
   const setBCategories = setB.filter((item, index, self) => self.indexOf(item) === index);
   const allCategories = setACategories.concat(setBCategories).filter((item, index, self) => self.indexOf(item) === index);
-    
-  console.log('allCategories :>> ', allCategories);
 
   const setASize = setA.length;
   const setBSize = setB.length;
@@ -268,7 +283,8 @@ function mapBarChangesData(setA, setB, feature) {
     const amountSetA = setA.filter((item) => (item === currCat)).length;
     const amountSetB = setB.filter((item) => (item === currCat)).length;
 
-    const relDif = (amountSetB - amountSetA) / amountSetA
+    // const relDif = (amountSetB - amountSetA) / amountSetA
+    const relDif = (amountSetB/setBSize - amountSetA/setASize)
     data.push({'category': currCat, 'difference': relDif})
   }
 
@@ -320,8 +336,6 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
     // create visualization for those features and append to rows
     var vis = getVis(valuesA, valuesB, type, key)
 
-    // console.log('key, mostDifCat, difScore:', key, mostDifCat, difScore)
-
     // append to rows: key, most differing category, dif score, vis
     rows.push([key, mostDifCat, difScore, vis])
   });
@@ -370,7 +384,7 @@ function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
                 <TableCell component="th" scope="row">
                   {row.feature}<br /><b>{row.category}</b>
                 </TableCell>
-                <TableCell>{row.score}</TableCell>
+                <TableCell>{(row.score).toFixed(2)}</TableCell>
                 <TableCell>{row.char}</TableCell>
               </TableRow>
             ))}
