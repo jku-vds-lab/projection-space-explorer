@@ -40,13 +40,41 @@ export class DatasetDatabase {
                 type: DatasetType.Story
             },
             {
+                display: "Synthetic Stories MDS",
+                path: "datasets/story/new_artificial_MDS_now.csv",
+                type: DatasetType.Story
+            },
+            {
+                display: "Synthetic Stories UMAP",
+                path: "datasets/story/new_artificial_UMAP_now.csv",
+                type: DatasetType.Story
+            },
+            {
                 display: "Synthetic Stories (Data Type) t-SNE",
                 path: "datasets/story/new_our_artificial_tSNE_now.csv",
+                type: DatasetType.Story
+            },{
+                display: "Synthetic Stories (Data Type) MDS",
+                path: "datasets/story/new_our_artificial_MDS_now.csv",
+                type: DatasetType.Story
+            },{
+                display: "Synthetic Stories (Data Type) UMAP",
+                path: "datasets/story/new_our_artificial_UMAP_now.csv",
                 type: DatasetType.Story
             },
             {
                 display: "Actual User Sessions t-SNE",
                 path: "datasets/story/new_stories_tSNE_now.csv",
+                type: DatasetType.Story
+            },
+            {
+                display: "Actual User Sessions MDS",
+                path: "datasets/story/new_stories_MDS_now.csv",
+                type: DatasetType.Story
+            },
+            {
+                display: "Actual User Sessions UMAP",
+                path: "datasets/story/new_stories_UMAP_now.csv",
                 type: DatasetType.Story
             }
         ]
