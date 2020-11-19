@@ -55,6 +55,11 @@ export class DatasetDatabase {
                 type: DatasetType.Story
             },
             {
+                display: "Synthetic Stories (Data Type) t-SNE (wnum=5)",
+                path: "datasets/story/new_our_artificial_tSNE_wy5.csv",
+                type: DatasetType.Story
+            },
+            {
                 display: "Synthetic Stories (Data Type) MDS",
                 path: "datasets/story/new_our_artificial_MDS_now.csv",
                 type: DatasetType.Story
@@ -76,12 +81,6 @@ export class DatasetDatabase {
             },
             {
                 display: "Actual User Sessions UMAP",
-                path: "datasets/story/new_stories_UMAP_now.csv",
-                type: DatasetType.Story
-            }
-            ,
-            {
-                display: "Actual User Sessions UMAP (wnum=10)",
                 path: "datasets/story/new_stories_UMAP_now.csv",
                 type: DatasetType.Story
             }
