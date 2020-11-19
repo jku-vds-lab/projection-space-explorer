@@ -30,6 +30,7 @@ import { MouseController } from './MouseController';
 import { removeClusterFromStories } from '../Ducks/StoriesDuck';
 import { removeCluster } from '../Ducks/CurrentClustersDuck';
 import * as LineUpJS from 'lineupjs'
+import { setLineUpInput } from '../Ducks/LineUpInputDuck';
 
 
 
@@ -77,7 +78,8 @@ const mapDispatchToProps = dispatch => ({
     setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping)),
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
     removeCluster: cluster => dispatch(removeCluster(cluster)),
-    setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters))
+    setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
+    setLineUpInput: input => dispatch(setLineUpInput(input))
 })
 
 
@@ -205,11 +207,11 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                             menuTarget: cluster
                         })
                     } else {
-                        //this.setState({
-                        //    menuX: event.clientX,
-                        //    menuY: event.clientY,
-                        //    menuTarget: null
-                        //})
+                        this.setState({
+                            menuX: event.clientX,
+                            menuY: event.clientY,
+                            menuTarget: null
+                        })
                     }
 
                     break;
@@ -721,6 +723,11 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         container.addEventListener('mouseup', this.mouseUpListener, false);
         container.addEventListener('keydown', this.keyDownListener)
         container.addEventListener('wheel', this.wheelListener, false)
+
+
+        new ResizeObserver(() => {
+            this.resize(container.offsetWidth, container.offsetHeight)
+        }).observe(container)
     }
 
 
@@ -1199,8 +1206,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 (event) => { event.preventDefault() }
             }
             style={{
-                display: 'flex',
-                flexGrow: 1,
+                //display: 'flex',
+                //flexGrow: 1,
+                width: '100%',
+                height: '100%',
                 overflow: "hidden",
                 position: "relative",
                 cursor: getToolCursor(this.props.currentTool)
@@ -1251,37 +1260,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             >
                 <MenuItem onClick={() => {
-                    // generate some data
-                    // generate some data
-                    const arr = [];
-                    const cats = ['c1', 'c2', 'c3'];
-                    for (let i = 0; i < 100; ++i) {
-                        arr.push({
-                            a: Math.random() * 10,
-                            d: 'Row ' + i,
-                            cat: cats[Math.floor(Math.random() * 3)],
-                            cat2: cats[Math.floor(Math.random() * 3)]
-                        })
-                    }
-                    const lineup = LineUpJS.asLineUp(document.getElementById("testy"), this.props.dataset.vectors);
+                    this.props.setLineUpInput(this.props.dataset.vectors)
+
                     handleClose()
                 }}>Load Lineup</MenuItem>
             </Menu>
 
-            <Dialog
-                fullWidth={true}
-                maxWidth={"lg"}
-                open={this.state.lineup != null}
-                onClose={handleClose}
-                aria-labelledby="max-width-dialog-title"
-            >
 
-                <DialogContent style={{ height: 500 }}>
-
-                    {this.state.lineup && <LineUp data={this.state.lineup} />}
-
-                </DialogContent>
-            </Dialog>
 
             <Menu
                 keepMounted

@@ -116,14 +116,6 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 sidePath.syncNodes = getSyncNodes({ nodes: trace.mainPath, edges: trace.mainEdges }, { nodes: sidePath.nodes, edges: sidePath.edges })
             })
 
-            console.log("side branch")
-            console.log({
-                stories: state.stories,
-                active: state.active,
-                trace: trace,
-                activeTraceState: state.activeTraceState
-            })
-
             return {
                 stories: state.stories,
                 active: state.active,

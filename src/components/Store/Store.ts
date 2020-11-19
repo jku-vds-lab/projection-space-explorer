@@ -33,6 +33,7 @@ import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
 import storyEditor from '../Ducks/StoryEditorDuck';
+import lineUpInput from '../Ducks/LineUpInputDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -68,7 +69,8 @@ const allReducers = {
   pointColorScale: pointColorScale,
   pointColorMapping: pointColorMapping,
   trailSettings: trailSettings,
-  storyEditor: storyEditor
+  storyEditor: storyEditor,
+  lineUpInput: lineUpInput
 }
 
 const appReducer = combineReducers(allReducers)

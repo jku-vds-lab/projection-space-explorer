@@ -63,6 +63,7 @@ import { StoryIcon } from "./Icons/StoryIcon";
 import { EmbeddingIcon } from "./Icons/EmbeddingIcon";
 import { rootReducer } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
+import { LineUpContext } from "./LineUpContext/LineUpContext";
 
 
 
@@ -214,16 +215,10 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     } else {
       new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     }
-
-    window.addEventListener('resize', this.onResize.bind(this))
   }
 
   convertRemToPixels(rem) {
     return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-  }
-
-  onResize() {
-    this.threeRef.current.resize(window.innerWidth - this.convertRemToPixels(18 * 1) - 72, window.innerHeight)
   }
 
 
@@ -387,7 +382,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         >
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Load Dataset</Typography>
-            <Typography variant="body2">Lets you load new datasets.</Typography>
+            <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
           </React.Fragment>}><Tab icon={<UploadIcon></UploadIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Point and Line Channels</Typography>
@@ -399,11 +394,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           </React.Fragment>}><Tab icon={<ClusterIcon></ClusterIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Stories</Typography>
-            <Typography variant="body2">Story telling options.</Typography>
+            <Typography variant="body2">Create a story by connecting data point clusters.</Typography>
           </React.Fragment>}><Tab icon={<StoryIcon></StoryIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Embedding and Projection</Typography>
-            <Typography variant="body2">Contains options to perform projection techniques like t-SNE and other approaches like a force-directed layout.</Typography>
+            <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
           </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
         </Tabs>
       </Drawer>
@@ -686,16 +681,30 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       </Box>
 
 
-      <WebGLView
-        ref={this.threeRef}
-      />
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%'
+      }}>
+        <div style={{ flexGrow: 1 }}>
+          <WebGLView
+            ref={this.threeRef}
+          />
+        </div>
+        <div style={{ flexGrow: 0 }}>
+          <LineUpContext></LineUpContext>
+        </div>
+      </div>
+
+
 
       <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
 
       <ClusterOverview
         itemClicked={(cluster) => {
           //this.threeRef.current.setZoomTarget(cluster.vectors, 1)
-          this.threeRef.current.onClusterZoom(cluster)
+          this.threeRef.current.onClusterClicked(cluster)
         }}></ClusterOverview>
 
       <ToolSelectionRedux />
