@@ -1,7 +1,8 @@
-import { LineUp } from "lineupjsx";
-import React = require("react");
-import { connect, ConnectedProps } from "react-redux";
-import { RootState } from "../Store/Store";
+import { LineUp } from "lineupjsx"
+import React = require("react")
+import { connect, ConnectedProps } from "react-redux"
+import { RootState } from "../Store/Store"
+import './LineUpContext.scss'
 
 
 /**
@@ -51,16 +52,16 @@ type Props = PropsFromRedux & {
 
 
 
-
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
 export const LineUpContext = connector(function({ lineUpInput }: Props) {
+    // In case we have no input, dont render at all
     if (!lineUpInput) {
         return null;
     }
     
-    return <div style={{ width: '100%', height: 500, position: 'relative' }}>
+    return <div className="LineUpParent">
         <LineUp data={lineUpInput}></LineUp>
     </div>
 })

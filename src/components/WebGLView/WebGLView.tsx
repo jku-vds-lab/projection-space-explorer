@@ -33,7 +33,6 @@ import * as LineUpJS from 'lineupjs'
 import { setLineUpInput } from '../Ducks/LineUpInputDuck';
 
 
-
 type ViewState = {
     hoverCluster: any
     displayClusters: any
@@ -724,7 +723,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         container.addEventListener('keydown', this.keyDownListener)
         container.addEventListener('wheel', this.wheelListener, false)
 
-
+        // @ts-ignore
         new ResizeObserver(() => {
             this.resize(container.offsetWidth, container.offsetHeight)
         }).observe(container)
@@ -1260,10 +1259,28 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             >
                 <MenuItem onClick={() => {
+                    // Set the whole dataset as input for LineUp
                     this.props.setLineUpInput(this.props.dataset.vectors)
 
                     handleClose()
-                }}>Load Lineup</MenuItem>
+                }}>Load LineUp</MenuItem>
+
+                <MenuItem onClick={() => {
+                    // Only load LineUp if the current selection is not empty
+                    if (this.props.currentAggregation.length > 0) {
+                        this.props.setLineUpInput(this.props.currentAggregation)
+
+                        handleClose()
+                    }
+                }}>Load LineUp (selection only)</MenuItem>
+
+                <MenuItem onClick={() => {
+                    // Set LineUp input to null closes it
+                    this.props.setLineUpInput(null)
+
+                    handleClose()
+                }}>{'Debug -> Close LineUp'}</MenuItem>
+
             </Menu>
 
 
