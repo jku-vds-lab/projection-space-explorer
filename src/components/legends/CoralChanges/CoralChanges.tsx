@@ -10,11 +10,12 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import '../CoralDetail/coral.scss';
+import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { FeatureType, Vect, Dataset, DatasetType } from "../../../components/util/datasetselector"
 import { ChiSquareTest } from './ChiSquare'
-import BarChart from './VegaBarChanges.js';
+import TextScatter from './VegaTextScatter.js';
+import Boxplot from './VegaBoxplot.js';
 
 const useStyles = makeStyles({
   table: {
@@ -88,8 +89,6 @@ function getBins(a, n = 10) {
 }
 
 function getMaxDif(a, b) {
-  console.log('getMaxDif');
-  
 
   const aSum = a.reduce((x, y) => x + y, 0)
   const bSum = b.reduce((x, y) => x + y, 0)
@@ -107,8 +106,6 @@ function getMaxDif(a, b) {
     maxDif = dif > maxDif ? dif : maxDif
     return dif
   })
-  console.log('maxDif :>> ', maxDif);
-  console.log('maxDifIndex :>> ', maxDifIndex);
   return [maxDif, maxDifIndex]
 }
 
@@ -216,9 +213,7 @@ function getMostDifferingCategory(a, b) {
   const features = featuresCounts[0]
   a = featuresCounts[1]
   b = featuresCounts[2]
-  console.log('max dif for features :>> ', features);
   const maxDifIndex = getMaxDif(a, b)[1]
-  console.log('features[maxDifIndex] :>> ', features[maxDifIndex]);
   return features[maxDifIndex]
 }
 
@@ -261,7 +256,7 @@ function sortByAbsDifference(a, b) {
   }
 }
 
-function mapBarChangesData(setA, setB, feature) {
+function mapCategoricalChangesData(setA, setB, feature) {
   if (!setA || !setB) {
     return {'values': []}
   }
@@ -288,19 +283,34 @@ function mapBarChangesData(setA, setB, feature) {
     data.push({'category': currCat, 'difference': relDif})
   }
 
-  return {'values': data.sort(sortByAbsDifference)}
+  const sorted = data.sort(sortByAbsDifference)
+  for (let i = 0; i < sorted.length; i++) {
+    sorted[i]['rank'] = (i+1)
+  }
+
+  return {'values': sorted}
 }
 
 function getCategoricalVis(a, b, feature) {
-  const barChangesData = mapBarChangesData(a, b, feature)
-  return <BarChart data={barChangesData} actions={false} tooltip={new Handler().call}/>
+  const data = mapCategoricalChangesData(a, b, feature)
+  return <div><b>{feature}</b><br/><TextScatter data={data} actions={false} tooltip={new Handler().call}/></div>
+}
+
+function mapContinuousChangesData(a, b, feature) {
+  return null
+}
+
+function getContinuousVis(a, b, feature) {
+  const data = mapContinuousChangesData(a, b, feature)
+  return <div><b>{feature}</b><br/><TextScatter data={data} actions={false} tooltip={new Handler().call}/></div>
 }
 
 function getVis(a, b, type, feature) {
   if (type === FeatureType.Categorical) {
     return getCategoricalVis(a, b, feature)
-  }
-  return null
+  } else {
+    return getContinuousVis(a, b, feature)
+  } 
 }
 
 function chisquare(a, b) {
@@ -356,12 +366,6 @@ function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
   const classes = useStyles()
   const rows = genRows(vectorsA, vectorsB, projectionColumns, dataset)
 
-  rows.forEach(e => {
-    console.log('e.score :>> ', e.score);
-  });
-
-  // TODO
-  // return null
 
   return (
     <div>
@@ -373,18 +377,12 @@ function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
         <Table className={classes.table} aria-label="simple table" size={'small'}>
           <TableHead>
             <TableRow>
-              <TableCell>Feature</TableCell>
-              <TableCell>Score</TableCell>
               <TableCell>Char</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row) => (
               <TableRow key={row.feature}>
-                <TableCell component="th" scope="row">
-                  {row.feature}<br /><b>{row.category}</b>
-                </TableCell>
-                <TableCell>{(row.score).toFixed(2)}</TableCell>
                 <TableCell>{row.char}</TableCell>
               </TableRow>
             ))}
