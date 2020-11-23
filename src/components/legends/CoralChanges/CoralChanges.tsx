@@ -297,12 +297,19 @@ function getCategoricalVis(a, b, feature) {
 }
 
 function mapContinuousChangesData(a, b, feature) {
-  return null
+  const data = []
+  a.forEach(e => {
+    data.push({'val': e, 'selection': 'A'})
+  });
+  b.forEach(e => {
+    data.push({'val': e, 'selection': 'B'})
+  });
+  return {'values': data}
 }
 
 function getContinuousVis(a, b, feature) {
   const data = mapContinuousChangesData(a, b, feature)
-  return <div><b>{feature}</b><br/><TextScatter data={data} actions={false} tooltip={new Handler().call}/></div>
+  return <div><b>{feature}</b><br/><Boxplot data={data} actions={false} tooltip={new Handler().call}/></div>
 }
 
 function getVis(a, b, type, feature) {
@@ -311,16 +318,6 @@ function getVis(a, b, type, feature) {
   } else {
     return getContinuousVis(a, b, feature)
   } 
-}
-
-function chisquare(a, b) {
-  var chisquare = 0
-  for (let i = 0; i < a.length; i++) {
-    const x = a[i]
-    const y = b[i]
-    chisquare += ((x - y) ** 2) / y
-  }
-  return chisquare
 }
 
 function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
@@ -417,9 +414,5 @@ type Props = PropsFromRedux & {
 }
 
 export var CoralChanges = connector(({ width, height, vectorsA, vectorsB, dataset, projectionColumns, scale }: Props) => {
-  console.log('coral changes:');
-  console.log('dataset :>> ', dataset);
-  console.log('vectorsA :>> ', vectorsA);
-  console.log('vectorsB :>> ', vectorsB);
   return getTable(vectorsA, vectorsB, projectionColumns, dataset)
 })

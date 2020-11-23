@@ -29,6 +29,6 @@ export const GenericChanges = connect(mapStateToProps, mapDispatchToProps)(({ ve
         case DatasetType.Coral:
             return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale}></CoralChanges>
         default:
-            return <div></div>
+            return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale}></CoralChanges>
     }
 })

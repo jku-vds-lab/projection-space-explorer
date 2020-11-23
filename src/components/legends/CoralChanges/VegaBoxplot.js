@@ -3,7 +3,7 @@ import {createClassFromLiteSpec} from 'react-vega-lite';
 
 export default createClassFromLiteSpec('BoxplotChanges', {
     "height": 100,
-    width: 250,
+    "width": 250,
     "mark": {
       "type": "boxplot",
       "extent": "min-max"
