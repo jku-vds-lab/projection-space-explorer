@@ -1372,7 +1372,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }}>Delete Cluster</MenuItem>
             </Menu>
 
-            <ToolSelectionRedux />
+            
         </div>
     }
 })

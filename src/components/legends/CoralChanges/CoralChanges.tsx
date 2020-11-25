@@ -12,10 +12,12 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
-import { FeatureType, Vect, Dataset, DatasetType } from "../../../components/util/datasetselector"
 import { ChiSquareTest } from './ChiSquare'
 import TextScatter from './VegaTextScatter.js';
 import Boxplot from './VegaBoxplot.js';
+import { Dataset } from '../../Utility/Data/Dataset';
+import { Vect } from '../../Utility/Data/Vect';
+import { FeatureType } from '../../Utility/Data/FeatureType';
 
 const useStyles = makeStyles({
   table: {

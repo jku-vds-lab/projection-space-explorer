@@ -712,6 +712,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       <SelectionClusters></SelectionClusters>
 
       <StoryEditor></StoryEditor>
+
+      <ToolSelectionRedux />
     </div >
   }
 })

@@ -20,6 +20,7 @@
     "graphology-layout-forceatlas2": "^0.4.4",
     "graphology-shortest-path": "^1.3.4",
     "jsfive": "^0.2.1",
+    "jstat": "^1.9.4",
     "libtess": "^1.2.2",
     "lineupjs": "^4.1.1",
     "lineupjsx": "^4.0.0",
