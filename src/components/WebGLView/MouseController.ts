@@ -23,6 +23,7 @@ export class MouseController {
     onDragEnd: (event: MouseEvent, button: number) => void
     onDragMove: (event: MouseEvent, button: number) => void
     onContext: (event: MouseEvent, button: number) => void
+    onMouseUp: (event: MouseEvent) => void
 
     constructor() {
         
@@ -57,6 +58,14 @@ export class MouseController {
         switch (event.button) {
             case LEFT_BUTTON:
                 this.pressed[LEFT_BUTTON] = false
+
+                if (this.mode == Mode.Pressed) {
+                    if (this.onContext) {
+                        this.onContext(event, LEFT_BUTTON)
+                    }
+
+                    this.mode = Mode.None
+                }
                 break;
             case RIGHT_BUTTON:
                 this.pressed[RIGHT_BUTTON] = false

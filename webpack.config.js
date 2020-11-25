@@ -32,8 +32,7 @@ module.exports = {
       {
         test: /\.(glsl|vs|fs)$/,
         loader: 'shader-loader'
-      },
-      { enforce: "pre", test: /\.js$/, loader: "source-map-loader" }
+      }
     ]
   },
   plugins: [

@@ -9,10 +9,6 @@ import { Vect } from "./Vect";
  * - ranges of columns
  * - type of data file (rubik, story...)
  */
-
-
-
-
 export class InferCategory {
     vectors: Vect[];
 

@@ -55,6 +55,8 @@ export class DataLineView {
      */
     grayed = false
 
+    
+
     /**
      * Is this segment visible through the detailed selection? (line selection treeview)
      */
