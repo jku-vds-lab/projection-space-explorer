@@ -91,7 +91,7 @@ const initialState = {
     activeTraceState: null
 }
 
-type StoriesType = {
+export type StoriesType = {
     stories: Story[]
     active: Story
     trace: { mainPath: Cluster[], mainEdges: any[], sidePaths: { nodes: Cluster[], edges: Edge[], syncNodes: number[] }[] }

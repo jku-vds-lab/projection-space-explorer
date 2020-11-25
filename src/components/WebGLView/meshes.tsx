@@ -4,6 +4,9 @@ import * as THREE from 'three'
 import { DataLine } from "../Utility/Data/DataLine"
 import { Vect } from "../Utility/Data/Vect"
 import { Dataset } from "../Utility/Data/Dataset"
+import { LayeringSystem } from './LayeringSystem/LayeringSystem'
+import { Story } from '../Utility/Data/Story'
+import { StoriesType } from '../Ducks/StoriesDuck'
 
 /**
  * Generates a line mesh
@@ -131,10 +134,24 @@ export class LineVisualization {
   zoom: any
   highlightMeshes
 
+  grayedLayerSystem: LayeringSystem
+
   constructor(segments, lineColorScheme) {
     this.segments = segments
     this.highlightIndices = null
     this.lineColorScheme = lineColorScheme
+
+    this.grayedLayerSystem = new LayeringSystem(this.segments.length)
+
+    // selection layer
+    this.grayedLayerSystem.registerLayer(5, true)
+    this.grayedLayerSystem.setLayerActive(5, false)
+
+    // trace layer
+    this.grayedLayerSystem.registerLayer(4, true)
+
+    // storybook layer
+    this.grayedLayerSystem.registerLayer(3, true)
   }
 
   setBrightness(brightness: number) {
@@ -162,21 +179,67 @@ export class LineVisualization {
 
   groupHighlight(indices) {
     if (indices != null && indices.length > 0) {
-      this.segments.forEach(segment => {
-        segment.view.grayed = true
-      })
-
+      this.grayedLayerSystem.setLayerActive(5, true)
+      this.grayedLayerSystem.clearLayer(5, true)
+      
       indices.forEach(index => {
-        this.segments.find(e => e.lineKey == index).view.grayed = false
+        this.grayedLayerSystem.setValue(this.segments.findIndex(e => e.lineKey == index), 5, false)
       })
     } else {
-      this.segments.forEach(segment => {
-        segment.view.grayed = false
-      })
+      this.grayedLayerSystem.clearLayer(5, false)
+      this.grayedLayerSystem.setLayerActive(5, false)
     }
 
     this.update()
   }
+
+
+
+
+  storyTelling(stories: StoriesType) {
+    if (stories && stories.active) {
+      this.grayedLayerSystem.clearLayer(3, true)
+
+      let lineIndices = new Set<number>()
+      stories.active.clusters.forEach(cluster => {
+        cluster.vectors.forEach(sample => {
+          lineIndices.add(sample.view.lineIndex)
+        })
+      })
+  
+      lineIndices.forEach(lineIndex => {
+        this.grayedLayerSystem.setValue(lineIndex, 3, false)
+      })
+
+      this.grayedLayerSystem.setLayerActive(3, true)
+    } else {
+      this.grayedLayerSystem.clearLayer(3, false)
+      this.grayedLayerSystem.setLayerActive(3, false)
+    }
+
+    if (stories && stories.trace) {
+      this.grayedLayerSystem.clearLayer(4, true)
+      this.grayedLayerSystem.setLayerActive(4, true)
+
+      let lineIndices = new Set<number>()
+      stories.trace.mainPath.forEach(cluster => {
+        cluster.vectors.forEach(sample => {
+          lineIndices.add(sample.view.lineIndex)
+        })
+      })
+  
+      lineIndices.forEach(lineIndex => {
+        this.grayedLayerSystem.setValue(lineIndex, 4, false)
+      })
+    } else {
+      this.grayedLayerSystem.clearLayer(4, false)
+      this.grayedLayerSystem.setLayerActive(4, false)
+    }
+    
+  }
+
+
+
 
   /**
    * Highlights the given lines that correspond to the indices
@@ -260,6 +323,7 @@ export class LineVisualization {
       var da = []
       segment.vectors.forEach(function (vector, vi) {
         da.push(new THREE.Vector2(vector.x, vector.y))
+        vector.view.lineIndex = index
       })
 
       var curve = new THREE.SplineCurve(da)
@@ -271,6 +335,7 @@ export class LineVisualization {
 
       // Store line data in segment...
       segment.view.lineMesh = line
+      
 
       lines.push(new LineVis(line))
     })
@@ -307,11 +372,9 @@ export class LineVisualization {
    * Updates visibility based on settings in the lines
    */
   update() {
+    this.segments.forEach((segment, si) => {
 
-
-    this.segments.forEach(segment => {
-
-      segment.view.lineMesh.material.color.setStyle(segment.view.grayed ? '#C0C0C0' : segment.view.intrinsicColor.hex)
+      segment.view.lineMesh.material.color.setStyle(this.grayedLayerSystem.getValue(si) ? '#C0C0C0' : segment.view.intrinsicColor.hex)
 
       segment.view.lineMesh.visible = segment.view.detailVisible
         && segment.view.globalVisible
@@ -330,13 +393,16 @@ export class PointVisualization {
   dataset: Dataset
   showSymbols: any
   colorsChecked: any
-  segments: any
+  segments: DataLine[]
   vectors: Vect[]
   mesh: any
   sizeAttribute: any
   colorAttribute
 
-  constructor(vectorColorScheme, dataset, size) {
+  grayedLayerSystem: LayeringSystem
+  lineLayerSystem: LayeringSystem
+
+  constructor(vectorColorScheme, dataset, size, lineLayerSystem: LayeringSystem) {
     this.highlightIndex = null
     this.particleSize = size
     this.vectorColorScheme = vectorColorScheme
@@ -344,13 +410,26 @@ export class PointVisualization {
 
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
     this.colorsChecked = [true, true, true, true, true, true, true, true, true]
+
+    this.grayedLayerSystem = new LayeringSystem(dataset.vectors.length)
+
+    // selection layer
+    this.grayedLayerSystem.registerLayer(5, true)
+    this.grayedLayerSystem.setLayerActive(5, false)
+
+    // trace layer
+    this.grayedLayerSystem.registerLayer(4, true)
+
+    // story layer
+    this.grayedLayerSystem.registerLayer(3, true)
+    
+
+    this.lineLayerSystem = lineLayerSystem
   }
 
   createMesh(data, segments) {
     this.segments = segments
     this.vectors = data
-
-
 
     var positions = new Float32Array(data.length * 3);
     var colors = new Float32Array(data.length * 4);
@@ -454,21 +533,63 @@ export class PointVisualization {
 
 
   hide() {
-    
+
   }
+
+
+
+  storyTelling(stories: StoriesType) {
+    if (stories && stories.active) {
+      this.grayedLayerSystem.setLayerActive(3, true)
+
+      let vecIndices = new Set<number>()
+      stories.active.clusters.forEach(cluster => {
+        cluster.vectors.forEach(sample => {
+          vecIndices.add(sample.view.meshIndex)
+        })
+      })
+
+      vecIndices.forEach(value => {
+        this.grayedLayerSystem.setValue(value, 3, false)
+      })
+    } else {
+      this.grayedLayerSystem.setLayerActive(3, false)
+    }
+
+
+    if (stories && stories.trace) {
+      this.grayedLayerSystem.clearLayer(4, true)
+      this.grayedLayerSystem.setLayerActive(4, true)
+
+      let vecIndices = new Set<number>()
+      stories.trace.mainPath.forEach(cluster => {
+        cluster.vectors.forEach(sample => {
+          vecIndices.add(sample.view.meshIndex)
+        })
+      })
+
+      vecIndices.forEach(value => {
+        this.grayedLayerSystem.setValue(value, 4, false)
+      })
+    } else {
+      this.grayedLayerSystem.clearLayer(4, false)
+      this.grayedLayerSystem.setLayerActive(4, false)
+    }
+  }
+
+
 
   groupHighlight(samples: Vect[]) {
     if (samples && samples.length > 0) {
-      this.vectors.forEach(sample => {
-        sample.view.grayed = true
-      })
+      this.grayedLayerSystem.clearLayer(5, true)
+      this.grayedLayerSystem.setLayerActive(5, true)
+
       samples?.forEach(sample => {
-        sample.view.grayed = null
+        this.grayedLayerSystem.setValue(sample.view.meshIndex, 5, null)
       })
     } else {
-      this.vectors.forEach(sample => {
-        sample.view.grayed = null
-      })
+      this.grayedLayerSystem.clearLayer(5, null)
+      this.grayedLayerSystem.setLayerActive(5, false)
     }
   }
 
@@ -702,8 +823,8 @@ export class PointVisualization {
       var rgb = null
 
       if (this.dataset.isSequential) {
-        
-        if (vector.view.segment.view.grayed) {
+
+        if (this.lineLayerSystem.getValue(vector.view.lineIndex)) {
           rgb = {
             r: 192.0,
             g: 192.0,
@@ -732,7 +853,7 @@ export class PointVisualization {
           }
         }
       } else {
-        if (vector.view.grayed == true) {
+        if (this.grayedLayerSystem.getValue(vector.view.meshIndex)) {
           rgb = {
             r: 192.0,
             g: 192.0,
@@ -742,7 +863,7 @@ export class PointVisualization {
           if (this.colorAttribute != null) {
             var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
             rgb = m.rgb
-  
+
             if (this.vectorColorScheme instanceof ContinuousMapping) {
               vector.view.intrinsicColor = null
             } else {
@@ -759,13 +880,13 @@ export class PointVisualization {
       color[i * 4 + 2] = rgb.b / 255.0
 
       if (this.dataset.isSequential) {
-        if (vector.view.segment.view.grayed) {
+        if (this.lineLayerSystem.getValue(vector.view.lineIndex)) {
           color[i * 4 + 3] = vector.view.brightness * 0.4
         } else {
           color[i * 4 + 3] = vector.view.brightness
         }
       } else {
-        if (vector.view.grayed) {
+        if (this.grayedLayerSystem.getValue(vector.view.meshIndex)) {
           color[i * 4 + 3] = vector.view.brightness * 0.4
         } else {
           color[i * 4 + 3] = vector.view.brightness
@@ -791,7 +912,7 @@ export class PointVisualization {
 
     this.vectors.forEach(vector => {
       let z = 0.0
-      if ((!this.dataset.isSequential && vector.view.grayed) || (this.dataset.isSequential && vector.view.segment.view.grayed)) {
+      if ((!this.dataset.isSequential && this.grayedLayerSystem.getValue(vector.view.meshIndex)) || (this.dataset.isSequential && this.lineLayerSystem.getValue(vector.view.lineIndex))) {
         z = -0.1
       }
       new THREE.Vector3(vector.x, vector.y, z).toArray(position, vector.view.meshIndex * 3);

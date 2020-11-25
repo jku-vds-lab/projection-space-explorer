@@ -1,3 +1,9 @@
+/**
+ * Duck file for the LineUp input data
+ */
+
+import { Vect } from "../Utility/Data/Vect";
+
 const SET = "ducks/lineUpInput/SET"
 
 export const setLineUpInput = input => ({
@@ -5,7 +11,9 @@ export const setLineUpInput = input => ({
     input: input
 });
 
-const lineUpInput = (state = null, action) => {
+const initialState: Vect[] = null
+
+const lineUpInput = (state = initialState, action): Vect[] => {
     switch (action.type) {
         case SET:
             return action.input

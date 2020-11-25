@@ -9,9 +9,9 @@ export const toggleAggregationAction = aggregation => ({
     aggregation: aggregation
 });
 
-export const setAggregationAction = id => ({
+export const setAggregationAction = samples => ({
     type: SET,
-    aggregation: id
+    aggregation: samples
 });
 
 export const mergeAggregation = (samples: Vect[]) => ({

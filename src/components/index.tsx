@@ -707,7 +707,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           this.threeRef.current.onClusterClicked(cluster)
         }}></ClusterOverview>
 
-      <ToolSelectionRedux />
+      
 
       <SelectionClusters></SelectionClusters>
 

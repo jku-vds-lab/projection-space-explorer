@@ -577,7 +577,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             let dest = CameraTransformations.worldToScreen(edge.destination.getCenter(), this.props.viewTransform)
 
             let angle = new nt.VectBase(dest.x - source.x, dest.y - source.y).angle()
-            if (angle > Math.PI / 2) {
+            if (angle > Math.PI * 0.5 && angle < Math.PI * 1.5) {
                 angle = angle - Math.PI
             }
 

@@ -84,11 +84,4 @@ export const rootReducer = (state, action) => {
   return appReducer(state, action)
 }
 
-const rootReducer2 = combineReducers({
-  dataset: dataset
-})
-
 export type RootState = ReturnType<typeof rootReducer>
-export type RootState2 = ReturnType<typeof rootReducer2>
-
-let r: RootState2 = null
