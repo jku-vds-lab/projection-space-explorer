@@ -4,6 +4,7 @@ import { DatasetType } from "../Utility/Data/DatasetType";
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ShareIcon from '@material-ui/icons/Share';
 import WidgetsIcon from '@material-ui/icons/Widgets';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 
 export const TypeIcon = ({ type }) => {
     switch (type) {
@@ -34,6 +35,6 @@ export const TypeIcon = ({ type }) => {
                 <WidgetsIcon />
             </ListItemIcon>
         default:
-            return <div></div>
+            return <ListItemIcon><HelpOutlineIcon></HelpOutlineIcon></ListItemIcon>
     }
 }

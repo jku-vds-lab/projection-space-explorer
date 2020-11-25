@@ -1,13 +1,9 @@
 details {
     visibility: hidden
 }
-
-div {
-    text-align: center
-}
   
-body .vega-embed {
+.vega-embed {
     position: relative;
     display: inline-block;
-    padding-right: 0px;
+    padding-right: 0px !important;
 }
