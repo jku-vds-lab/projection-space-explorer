@@ -1326,7 +1326,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             >
                 <MenuItem onClick={() => {
-                    this.props.setLineUpInput(this.props.dataset.vectors)
+                    this.props.setLineUpInput(
+                        {
+                        data: this.props.dataset.vectors,
+                        columns: this.props.dataset.columns
+                        } 
+                    )
 
                     handleClose()
                 }}>Load LineUp</MenuItem>
@@ -1334,7 +1339,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 <MenuItem onClick={() => {
                     // Only load LineUp if the current selection is not empty
                     if (this.props.currentAggregation.length > 0) {
-                        this.props.setLineUpInput(this.props.currentAggregation)
+                        this.props.setLineUpInput(
+                            {
+                            data: this.props.currentAggregation,
+                            columns: this.props.dataset.columns
+                            } 
+                        )
 
                         handleClose()
                     }

@@ -11,9 +11,16 @@ export const setLineUpInput = input => ({
     input: input
 });
 
-const initialState: Vect[] = null
+const initialState: LineUpType = {
+    data: null,
+    columns: null
+}
+export type LineUpType = {
+    data: Vect[],
+    columns: []
+}
 
-const lineUpInput = (state = initialState, action): Vect[] => {
+const lineUpInput = (state = initialState, action): LineUpType => {
     switch (action.type) {
         case SET:
             return action.input
@@ -21,5 +28,7 @@ const lineUpInput = (state = initialState, action): Vect[] => {
             return state
     }
 }
+
+
 
 export default lineUpInput
