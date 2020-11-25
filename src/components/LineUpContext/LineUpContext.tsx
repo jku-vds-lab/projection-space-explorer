@@ -63,15 +63,10 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
         return null;
     }
 
-
+    let ref = React.useRef()
 
     React.useEffect(() => {
-        let container = document.getElementById("lineupPPE")
-        container.innerHTML = ""
-        const lineup = LineUpJs.asLineUp(container, lineUpInput)
-
-        const firstRanking = lineup.data.getFirstRanking()
-        firstRanking.on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
+        ref.current.adapter.instance.data.getFirstRanking().on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
             if (dirtyReason.indexOf('filter') === -1) {
                 return;
             }
@@ -92,11 +87,7 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
     }, [lineUpInput])
 
 
-
-
-
-
     return <div className="LineUpParent">
-        <div id="lineupPPE"></div>
+        <LineUp ref={ref} data={lineUpInput}></LineUp>
     </div>
 })
