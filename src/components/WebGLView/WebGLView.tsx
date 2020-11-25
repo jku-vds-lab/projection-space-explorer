@@ -1326,12 +1326,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             >
                 <MenuItem onClick={() => {
-<<<<<<< HEAD
-                    this.props.setLineUpInput(this.props.dataset)
-=======
-                    // Set the whole dataset as input for LineUp
                     this.props.setLineUpInput(this.props.dataset.vectors)
->>>>>>> uidiscussion
 
                     handleClose()
                 }}>Load LineUp</MenuItem>

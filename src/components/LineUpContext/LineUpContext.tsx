@@ -63,7 +63,11 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
         return null;
     }
 
-
+    lineUpInput.forEach(element => {
+        if(element["clusterLabel"].length <= 0){
+            element["clusterLabel"] = [-1];
+        }
+    });
 
     React.useEffect(() => {
         let container = document.getElementById("lineupPPE")
@@ -90,9 +94,6 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
 
         })
     }, [lineUpInput])
-
-
-
 
 
 
