@@ -7,7 +7,7 @@ import * as THREE from 'three'
 import { LassoLayer } from './LassoLayer/LassoLayer';
 import Cluster from '../Utility/Data/Cluster';
 import { connect, ConnectedProps } from 'react-redux'
-import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
+import { Tool, getToolCursor, ToolSelectionRedux } from '../Overlays/ToolSelection/ToolSelection';
 import { Vect } from "../Utility/Data/Vect";
 import { setClusterEdgesAction } from "../Ducks/ClusterEdgesDuck";
 import { setViewTransform } from "../Ducks/ViewTransformDuck";
@@ -172,16 +172,63 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
      */
     initMouseController() {
         this.mouseController.onDragStart = (event: MouseEvent, button: number) => {
+            //console.log("on drag start")
+            switch (button) {
+                case 0:
+                    if (this.props.currentTool == Tool.Default) {
+                        let initialWorld = CameraTransformations.screenToWorld({ x: event.offsetX, y: event.offsetY }, this.createTransform())
 
+                        this.lasso = new LassoSelection()
+                        this.lasso.mouseDown(true, initialWorld.x, initialWorld.y)
+                    }
+                    break;
+            }
         }
 
 
         this.mouseController.onDragEnd = (event: MouseEvent, button: number) => {
+            // console.log("on drag end")
+            switch (button) {
+                case 0:
+                    if (this.props.currentTool == Tool.Default) {
+                        let coords = CameraTransformations.screenToWorld({ x: event.offsetX, y: event.offsetY }, this.createTransform())
+                        if (this.lasso != null) {
+                            // If there is an active lasso, process it
+                            var wasDrawing = this.lasso.drawing
 
+                            this.lasso.mouseUp(coords.x, coords.y)
+
+                            var indices = this.lasso.selection(this.props.dataset.vectors, (vector) => this.particles.isPointVisible(vector))
+                            if (indices.length > 0 && wasDrawing) {
+                                var selected = indices.map(index => this.props.dataset.vectors[index])
+
+                                if (event.shiftKey) {
+                                    this.props.toggleAggregation(selected)
+                                } else {
+                                    this.props.setCurrentAggregation(selected)
+                                }
+
+                            } else if (wasDrawing) {
+                                this.clearSelection()
+                            }
+
+                            this.lasso = null
+                        }
+                    }
+                    break;
+            }
         }
 
         this.mouseController.onDragMove = (event: MouseEvent, button: number) => {
+            //console.log("on drag move")
+
             switch (button) {
+                case 0:
+                    if (this.props.currentTool == Tool.Default) {
+                        let coords = CameraTransformations.screenToWorld({ x: event.offsetX, y: event.offsetY }, this.createTransform())
+                        this.lasso?.mouseMove(coords.x, coords.y)
+                    }
+                    break;
                 case 2:
                     this.camera.position.x = this.camera.position.x - CameraTransformations.pixelToWorldCoordinates(event.movementX, this.createTransform())
                     this.camera.position.y = this.camera.position.y + CameraTransformations.pixelToWorldCoordinates(event.movementY, this.createTransform())
@@ -195,7 +242,22 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.mouseController.onContext = (event: MouseEvent, button: number) => {
+            //console.log("on context")
+
             switch (button) {
+                case 0:
+                    if (this.props.currentTool == Tool.Default) {
+                        if (this.currentHover != null) {
+                            if (event.shiftKey) {
+                                // There is a hover target ... select it
+                                this.props.toggleAggregation([this.currentHover])
+                            } else {
+                                this.props.setCurrentAggregation([this.currentHover])
+                            }
+                        }
+                    }
+
+                    break;
                 case 2:
                     let cluster = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
 
@@ -215,6 +277,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                     break;
             }
+        }
+
+        this.mouseController.onMouseUp = (event: MouseEvent) => {
+            //console.log("mouse up")
         }
     }
 
@@ -325,12 +391,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 this.initialMousePosition = new THREE.Vector2(event.offsetX, event.offsetY)
                 this.mouseDownPosition = this.normaliseMouse(event)
                 break;
-            case 2:
-
-            //this.setState({
-            //    menuX: event.clientX,
-            //    menuY: event.clientY,
-            //})
             default:
                 break;
         }
@@ -363,19 +423,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 if (this.props.activeLine) {
                     break;
                 }
-                var mousePosition = new THREE.Vector2(event.clientX, event.clientY)
-
-                if (this.initialMousePosition != null && this.initialMousePosition.distanceTo(mousePosition) > 10 && this.lasso == null && this.mouseDown) {
-                    //var initialWorld = this.clientCoordinatesToWorld(this.initialMousePosition.x, this.initialMousePosition.y)
-
-                    let initialWorld = CameraTransformations.screenToWorld(this.initialMousePosition, this.createTransform())
-
-                    this.lasso = new LassoSelection()
-                    this.lasso.mouseDown(true, initialWorld.x, initialWorld.y)
-                } else if (this.lasso != null) {
-                    this.lasso.mouseMove(coords.x, coords.y)
-                }
-
 
                 if (this.infoTimeout != null) {
                     clearTimeout(this.infoTimeout)
@@ -491,7 +538,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
 
 
-                if (this.lasso != null) {
+                /**if (this.lasso != null) {
                     // If there is an active lasso, process it
                     var wasDrawing = this.lasso.drawing
 
@@ -522,7 +569,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         }
 
                     }
-                }
+                }**/
 
                 break;
             case Tool.Grab:
@@ -691,7 +738,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             this.lines.meshes.forEach(line => this.scene.add(line.line))
         }
 
-        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 12)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 12, this.lines?.grayedLayerSystem)
         this.particles.createMesh(this.props.dataset.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
@@ -826,6 +873,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         if (this.particles != null) {
             this.scene.remove(this.particles.mesh)
             this.particles.dispose()
+            this.particles = null
         }
 
         if (this.renderer != null) {
@@ -971,6 +1019,25 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
     componentDidUpdate(prevProps, prevState) {
+
+        if (prevProps.stories != this.props.stories) {
+            if (this.props.stories.active) {
+                this.particles?.storyTelling(this.props.stories)
+
+                this.lines?.storyTelling(this.props.stories)
+                this.lines?.update()
+
+                this.particles?.update()
+            } else {
+                this.particles?.storyTelling(null)
+
+                this.lines?.storyTelling(this.props.stories)
+                this.lines?.update()
+
+                this.particles?.update()
+            }
+        }
+
         if (prevProps.pointColorScale != this.props.pointColorScale) {
             if (this.props.channelColor && this.props.pointColorScale) {
                 let mapping = mappingFromScale(this.props.pointColorScale, this.props.channelColor, this.props.dataset)
@@ -1304,6 +1371,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     handleClose()
                 }}>Delete Cluster</MenuItem>
             </Menu>
+
+            <ToolSelectionRedux />
         </div>
     }
 })

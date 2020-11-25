@@ -146,10 +146,6 @@ export class VectView {
     // Brightness value of this sample.
     brightness = 1.0
 
-    // Is this point grayed out
-    // If this value is null the grayed value will be taken from the segment
-    grayed = null
-
     constructor() {
     }
 }

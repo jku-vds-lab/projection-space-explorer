@@ -1,6 +1,8 @@
+import * as LineUpJs from 'lineupjs'
 import { LineUp } from "lineupjsx"
 import React = require("react")
 import { connect, ConnectedProps } from "react-redux"
+import { setAggregationAction } from '../Ducks/AggregationDuck'
 import { RootState } from "../Store/Store"
 import './LineUpContext.scss'
 
@@ -23,7 +25,7 @@ const mapStateToProps = (state: RootState) => ({
  * @param dispatch The generic dispatch function declared in redux
  */
 const mapDispatchToProps = dispatch => ({
-    // setPropertyname1: value => dispatch(duckAction1(value))
+    setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
 })
 
 
@@ -55,13 +57,46 @@ type Props = PropsFromRedux & {
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function({ lineUpInput }: Props) {
+export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggregation }: Props) {
     // In case we have no input, dont render at all
     if (!lineUpInput) {
         return null;
     }
-    
+
+
+
+    React.useEffect(() => {
+        let container = document.getElementById("lineupPPE")
+        container.innerHTML = ""
+        const lineup = LineUpJs.asLineUp(container, lineUpInput)
+
+        const firstRanking = lineup.data.getFirstRanking()
+        firstRanking.on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
+            if (dirtyReason.indexOf('filter') === -1) {
+                return;
+            }
+
+            const onRankingChanged = (current) => {
+                let agg = []
+
+                current.forEach(index => {
+                    agg.push(lineUpInput[index])
+                })
+
+                setCurrentAggregation(agg)
+            }
+
+            onRankingChanged(current)
+
+        })
+    }, [lineUpInput])
+
+
+
+
+
+
     return <div className="LineUpParent">
-        <LineUp data={lineUpInput}></LineUp>
+        <div id="lineupPPE"></div>
     </div>
 })
