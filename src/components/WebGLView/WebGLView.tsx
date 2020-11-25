@@ -1260,7 +1260,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             >
                 <MenuItem onClick={() => {
-                    this.props.setLineUpInput(this.props.dataset.vectors)
+                    this.props.setLineUpInput(this.props.dataset)
 
                     handleClose()
                 }}>Load Lineup</MenuItem>

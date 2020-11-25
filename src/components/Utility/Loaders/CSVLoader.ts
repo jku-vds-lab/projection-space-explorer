@@ -37,6 +37,11 @@ export class CSVLoader implements Loader {
         return { min: range[0], max: range[1], inferred: true }
     }
 
+    parseMetaData(str){
+        var metadata = str.split(";");
+        return metadata;
+    }
+
     resolveContent(content, finished) {
         this.vectors = convertFromCSV(d3v5.csvParse(content))
         this.datasetType = new InferCategory(this.vectors).inferType()
@@ -56,8 +61,24 @@ export class CSVLoader implements Loader {
 
     async resolve(finished, vectors, datasetType, entry: DatasetEntry) {
         var header = Object.keys(vectors[0])
+
         var ranges = header.reduce((map, value) => {
-            var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d*\]/)
+            var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/) 
+
+            if (matches != null) {
+                var cutHeader = value.substring(0, value.length - matches[0].length)
+                vectors.forEach(vector => {
+                    vector[cutHeader] = vector[value]
+                    delete vector[value]
+                })
+                // header[header.indexOf(value)] = cutHeader
+                map[cutHeader] = this.parseRange(matches[0])
+            }
+            return map
+        }, {})
+        
+        var meta_data = header.reduce((map, value) => {
+            var matches = value.match(/\[(.*)\]/) // round brackets to get the string within the square brackets
 
             if (matches != null) {
                 var cutHeader = value.substring(0, value.length - matches[0].length)
@@ -66,11 +87,11 @@ export class CSVLoader implements Loader {
                     delete vector[value]
                 })
                 header[header.indexOf(value)] = cutHeader
-                map[cutHeader] = this.parseRange(matches[0])
+                map[cutHeader] = this.parseMetaData(matches[1]); // only take string inside the square brackets
             }
-
             return map
-        }, {})
+        }, {});
+
 
         // infer for each feature whether it contains numeric, date, or arbitrary values
         var contains_number = {}
@@ -146,9 +167,8 @@ export class CSVLoader implements Loader {
         if (preselection == null || preselection.length == 0) {
             preselection = null
         }
-
         ranges = new Preprocessor(vectors).preprocess(ranges)
 
-        finished(new Dataset(vectors, ranges, preselection, { type: datasetType, path: entry.path }, types), new InferCategory(vectors).load(ranges))
+        finished(new Dataset(vectors, ranges, preselection, { type: datasetType, path: entry.path }, types, meta_data), new InferCategory(vectors).load(ranges))
     }
 }

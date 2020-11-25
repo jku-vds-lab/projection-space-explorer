@@ -21,6 +21,7 @@ export class Dataset {
     segments: DataLine[];
     bounds: { x; y; scaleBase; scaleFactor; };
     ranges: any;
+    meta_data: any;
     info: { path: string; type: DatasetType; };
     columns: any;
 
@@ -44,15 +45,16 @@ export class Dataset {
     // The edges between clusters.
     clusterEdges: Edge[];
 
-    constructor(vectors, ranges, preselection, info, featureTypes) {
+    constructor(vectors, ranges, preselection, info, featureTypes, meta_data={}) {
         this.vectors = vectors;
         this.ranges = ranges;
+        this.meta_data = meta_data;
         this.info = info;
         this.columns = {};
         this.type = this.info.type;
 
         this.calculateBounds();
-        this.calculateColumnTypes(ranges, featureTypes);
+        this.calculateColumnTypes(ranges, featureTypes, meta_data);
         this.checkLabels();
 
         // If the dataset is sequential, calculate the segments
@@ -137,12 +139,13 @@ export class Dataset {
     /**
      * Creates a map which shows the distinct types and data types of the columns.
      */
-    calculateColumnTypes(ranges, featureTypes) {
+    calculateColumnTypes(ranges, featureTypes, meta_data) {
         var columnNames = Object.keys(this.vectors[0]);
         columnNames.forEach(columnName => {
             this.columns[columnName] = {};
 
             this.columns[columnName].featureType = featureTypes[columnName];
+            this.columns[columnName].meta_data = meta_data[columnName];
 
             // Check data type
             if (columnName in ranges) {
