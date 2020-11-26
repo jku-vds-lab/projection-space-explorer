@@ -133,6 +133,11 @@ export class DatasetDatabase {
                 display: "Go: Move features (wavelet)",
                 path: "datasets/go/move_wavelet.csv",
                 type: DatasetType.Go
+            },
+            {
+                display: "Toy: Iris",
+                path: "datasets/toy/iris.csv",
+                type: DatasetType.None
             }
         ];
     }

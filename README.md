@@ -26,7 +26,7 @@ The minimal columns a file needs are
 An example file could looke like this
 
 |x|y|
-|--|--|--|--|
+|--|--|
 |1|1|
 |-1|-1|
 |1|-1|

@@ -24,13 +24,14 @@ import { setHoverState } from '../Ducks/HoverStateDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
-import { Dialog, DialogContent, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Dialog, DialogContent, Divider, Menu, MenuItem, Typography } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
-import { removeClusterFromStories } from '../Ducks/StoriesDuck';
-import { removeCluster } from '../Ducks/CurrentClustersDuck';
+import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory } from '../Ducks/StoriesDuck';
+import { addCluster, removeCluster } from '../Ducks/CurrentClustersDuck';
 import * as LineUpJS from 'lineupjs'
 import { setLineUpInput } from '../Ducks/LineUpInputDuck';
+import { Story } from '../Utility/Data/Story';
 
 
 type ViewState = {
@@ -78,7 +79,11 @@ const mapDispatchToProps = dispatch => ({
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
     removeCluster: cluster => dispatch(removeCluster(cluster)),
     setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
-    setLineUpInput: input => dispatch(setLineUpInput(input))
+    setLineUpInput: input => dispatch(setLineUpInput(input)),
+    addCluster: cluster => dispatch(addCluster(cluster)),
+    addStory: story => dispatch(addStory(story)),
+    addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
+    setActiveStory: story => dispatch(setActiveStory(story))
 })
 
 
@@ -1357,6 +1362,25 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     handleClose()
                 }}>{'Debug -> Close LineUp'}</MenuItem>
 
+                <Divider orientation="horizontal"></Divider>
+
+
+                <MenuItem onClick={() => {
+                    // Set LineUp input to null closes it
+                    if (this.props.currentAggregation.length > 0) {
+                        let cluster = Cluster.fromSamples(this.props.currentAggregation)
+                        this.props.addCluster(cluster)
+                        if (!this.props.stories.active) {
+                            let story = new Story([cluster], [])
+                            this.props.addStory(story)
+                            this.props.setActiveStory(story)
+                        } else {
+                            this.props.addClusterToStory(cluster)
+                        }
+                    }
+
+                    handleClose()
+                }}>{"Create Cluster from Selection"}</MenuItem>
             </Menu>
 
 
@@ -1381,7 +1405,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }}>Delete Cluster</MenuItem>
             </Menu>
 
-            <ToolSelectionRedux />
+            
         </div>
     }
 })

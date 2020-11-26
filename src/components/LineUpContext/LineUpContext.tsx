@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 import { Folder } from "@material-ui/icons";
 import { LineUp, LineUpCategoricalColumnDesc, LineUpColumn, LineUpNumberColumnDesc, LineUpStringColumnDesc } from "lineupjsx";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../Store/Store";
 import * as LineUpJs from 'lineupjs'
+=======
+import { LineUp } from "lineupjsx"
+import React = require("react")
+import { connect, ConnectedProps } from "react-redux"
+import { setAggregationAction } from '../Ducks/AggregationDuck'
+import { RootState } from "../Store/Store"
+>>>>>>> develop
 import './LineUpContext.scss'
 import { setAggregationAction } from "../Ducks/AggregationDuck";
 
@@ -73,31 +81,28 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
     let ref = React.useRef()
 
     React.useEffect(() => {
-        if(ref){
-            ref.current.adapter.instance.data.getFirstRanking().on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
-                if (dirtyReason.indexOf('filter') === -1) {
-                    return;
-                }
+        // @ts-ignore
+        ref.current.adapter.instance.data.getFirstRanking().on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
+            if (dirtyReason.indexOf('filter') === -1) {
+                return;
+            }
 
-                const onRankingChanged = (current) => {
-                    let agg = []
+            const onRankingChanged = (current) => {
+                let agg = []
 
-                    current.forEach(index => {
-                        agg.push(lineUpInput.data[index])
-                    })
+                current.forEach(index => {
+                    agg.push(lineUpInput.data[index])
+                })
 
-                    setCurrentAggregation(agg)
-                }
+                setCurrentAggregation(agg)
+            }
 
-                onRankingChanged(current)
+            onRankingChanged(current)
 
-            })
-        }
+        })
     }, [lineUpInput.data])
 
-
     
-
     let cols = lineUpInput.columns;
 
     let lineup_col_list = [];

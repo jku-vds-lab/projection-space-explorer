@@ -59,10 +59,16 @@ export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({
             return <RubikFingerprint width={81 * scale} height={108 * scale} vectors={vectors}></RubikFingerprint>
         case DatasetType.Chess:
             return <ChessFingerprint width={80 * scale} height={80 * scale} vectors={vectors}></ChessFingerprint>
+        case DatasetType.Neural:
+            return <NeuralLegend selection={vectors} aggregate={true}></NeuralLegend>
+        case DatasetType.Story:
+            return <StoryLegend selection={vectors}></StoryLegend>
         case DatasetType.Coral:
             return <CoralLegend selection={vectors} aggregate={true}></CoralLegend>
+        case DatasetType.Go:
+            return <GoLegend selection={vectors} aggregate={true}></GoLegend>
         default:
-            return <div></div>
+            return <CoralLegend selection={vectors} aggregate={true}></CoralLegend>
     }
 }
 
