@@ -53,17 +53,15 @@ from rdkit.Chem import Draw
 import urllib
 @app.route('/get_mol_img/<smiles>', method=['GET'])
 def smiles_to_img(smiles):
-    # print(smiles)
     smiles = urllib.parse.unquote(smiles)
-    # print(smiles)
     m = Chem.MolFromSmiles(smiles)
     pil_img = Draw.MolToImage(m)
 
-    if os.path.exists("temp.jpg"):
-        os.remove("temp.jpg")
-    pil_img.save('temp.jpg')
+    if os.path.exists("mol_temp.jpg"):
+        os.remove("mol_temp.jpg")
+    pil_img.save('mol_temp.jpg')
 
-    return static_file('temp.jpg', root="./")
+    return static_file('mol_temp.jpg', root="./")
 
 
 app.install(EnableCors())
