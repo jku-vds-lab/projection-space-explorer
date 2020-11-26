@@ -96,6 +96,8 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
     }, [lineUpInput.data])
 
 
+    
+
     let cols = lineUpInput.columns;
 
     let lineup_col_list = [];
@@ -103,10 +105,16 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
         let col = cols[i];
         let show = typeof col.meta_data !== 'undefined' && col.meta_data.includes("lineup_show");
 
-        // if(col.meta_data && col.meta_data.includes("render_image"))
-        //     lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} renderer="image" />)
         if(show){ // if nothing is selected, everything will be shown
-            if(col.isNumeric)
+            if(col.meta_data.includes("image_from_url")){
+                // /get_mol_img/<smiles>
+                // lineUpInput.data.forEach(element => {
+                //     // console.log(element[i]);
+                //     element[i] = '/get_mol_img/' + element[i]; // todo parse url string
+                // });
+                // console.log(lineUpInput.data);
+                lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} renderer="image" pattern="${value}" width={100} />)
+            }else if(col.isNumeric)
                 lineup_col_list.push(<LineUpNumberColumnDesc key={i} column={i} domain={[col.range.min, col.range.max]} color={colors[Math.floor(Math.random()*colors.length)]} visible={show} />);
             else if(col.distinct)
                 if(col.distinct.length/lineUpInput.data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
@@ -119,9 +127,8 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
         
     }
 
-
     return <div className="LineUpParent">
-        <LineUp ref={ref} data={lineUpInput.data}>
+        <LineUp ref={ref} data={lineUpInput.data} rowHeight={100}>
             {lineup_col_list}
         </LineUp>
     </div>

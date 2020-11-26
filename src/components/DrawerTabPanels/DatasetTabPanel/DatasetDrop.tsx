@@ -2,6 +2,7 @@ import { Grid } from "@material-ui/core";
 import React = require("react");
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
+import { SDFLoader } from "../../Utility/Loaders/SDFLoader";
 import DragAndDrop from "./DragAndDrop";
 
 export var DatasetDrop = ({ onChange }) => {
@@ -14,18 +15,23 @@ export var DatasetDrop = ({ onChange }) => {
             var file = files[0]
             var fileName = file.name as string
 
-            var reader = new FileReader()
-            reader.onload = (event) => {
-                var content = event.target.result
+            if(fileName.endsWith('sdf')){
+                new SDFLoader().resolveContent(file, onChange)
+            }else{
 
-                if (fileName.endsWith('json')) {
-                    new JSONLoader().resolveContent(content, onChange)
-                } else {
-                    new CSVLoader().resolveContent(content, onChange)
+                var reader = new FileReader()
+                reader.onload = (event) => {
+                    var content = event.target.result
+
+                    if (fileName.endsWith('json')) {
+                        new JSONLoader().resolveContent(content, onChange)
+                    } else {
+                        new CSVLoader().resolveContent(content, onChange)
+                    }
                 }
-            }
 
-            reader.readAsText(file)
+                reader.readAsText(file)
+            }
 
 
         }}>

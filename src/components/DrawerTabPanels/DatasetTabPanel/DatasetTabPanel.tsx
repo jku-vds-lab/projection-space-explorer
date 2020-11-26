@@ -2,6 +2,7 @@ import React = require("react");
 import { Vect } from "../../Utility/Data/Vect";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
+import { SDFLoader } from "../../Utility/Loaders/SDFLoader";
 import { DatasetDrop } from "./DatasetDrop";
 import { DownloadJob } from "./DownloadJob";
 import { DownloadProgress } from "./DownloadProgress";

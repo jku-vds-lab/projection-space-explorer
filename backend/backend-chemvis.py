@@ -1,5 +1,7 @@
 import bottle
 from bottle import route, run, template, response, request
+from rdkit import Chem
+import rdkit
 
 
 
@@ -24,15 +26,48 @@ class EnableCors(object):
 app = bottle.app()
 
 
-
-
 @app.route('/', method=['OPTIONS', 'GET'])
 def index():
     return "test"
 
+import os
+@app.route('/get_csv', method=['POST'])
+def sdf_to_csv():
+    fileUpload = request.files.get("myFile")
+
+    if os.path.exists("temp.sdf"):
+        os.remove("temp.sdf")
+    fileUpload.save("temp.sdf")
+
+    suppl = Chem.SDMolSupplier("temp.sdf")
+
+    for mol in suppl:
+        print(Chem.MolToSmiles(mol))
+
+    return {
+        'result': 'ok'
+    }
+
+from bottle import static_file
+from rdkit.Chem import Draw
+import urllib
+@app.route('/get_mol_img/<smiles>', method=['GET'])
+def smiles_to_img(smiles):
+    print(smiles)
+    smiles = urllib.parse.unquote(smiles)
+    print(smiles)
+    m = Chem.MolFromSmiles(smiles)
+    pil_img = Draw.MolToImage(m)
+
+    if os.path.exists("temp.jpg"):
+        os.remove("temp.jpg")
+    pil_img.save('temp.jpg')
+
+    return static_file('temp.jpg', root="./")
+
 
 app.install(EnableCors())
 
-app.run(port=8090)
+app.run(port=8080)
 
-run(host='localhost', port=8090)
+run(host='localhost', port=8080)
