@@ -53,9 +53,9 @@ from rdkit.Chem import Draw
 import urllib
 @app.route('/get_mol_img/<smiles>', method=['GET'])
 def smiles_to_img(smiles):
-    print(smiles)
+    # print(smiles)
     smiles = urllib.parse.unquote(smiles)
-    print(smiles)
+    # print(smiles)
     m = Chem.MolFromSmiles(smiles)
     pil_img = Draw.MolToImage(m)
 
