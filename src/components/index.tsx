@@ -55,8 +55,6 @@ import { setChannelSize } from "./Ducks/ChannelSize";
 import { setGlobalPointSize } from "./Ducks/GlobalPointSizeDuck";
 import { setSelectedClusters } from "./Ducks/SelectedClustersDuck";
 import { setChannelColor } from "./Ducks/ChannelColorDuck";
-import { StoryTabPanel } from "./DrawerTabPanels/StoryTabPanel/StoryTabPanel";
-import { setCurrentClustersAction } from "./Ducks/CurrentClustersDuck";
 import { UploadIcon } from "./Icons/UploadIcon";
 import { VisualChannelIcon } from "./Icons/VisualChannelIcon";
 import { StoryIcon } from "./Icons/StoryIcon";
@@ -142,8 +140,7 @@ const mapDispatchToProps = dispatch => ({
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
   setSelectedClusters: value => dispatch(setSelectedClusters(value)),
   wipeState: () => dispatch({ type: 'RESET_APP' }),
-  setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
-  setCurrentClusters: currentClusters => dispatch(setCurrentClustersAction(currentClusters))
+  setChannelColor: channelColor => dispatch(setChannelColor(channelColor))
 })
 
 
@@ -392,10 +389,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             <Typography variant="subtitle2">Clustering</Typography>
             <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
           </React.Fragment>}><Tab icon={<ClusterIcon></ClusterIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-          <Tooltip placement="right" title={<React.Fragment>
-            <Typography variant="subtitle2">Stories</Typography>
-            <Typography variant="body2">Create a story by connecting data point clusters.</Typography>
-          </React.Fragment>}><Tab icon={<StoryIcon></StoryIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Embedding and Projection</Typography>
             <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
@@ -667,11 +660,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               }
             </FixedHeightTabPanel>
 
-            <TabPanel value={this.props.openTab} index={3}>
-              <StoryTabPanel></StoryTabPanel>
-            </TabPanel>
 
-            <TabPanel value={this.props.openTab} index={4}>
+            <TabPanel value={this.props.openTab} index={3}>
               <EmbeddingTabPanel></EmbeddingTabPanel>
             </TabPanel>
           </Grid>

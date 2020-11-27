@@ -6,19 +6,18 @@ import { Story } from "../../Utility/Data/Story"
 import { graphLayout, Edge } from "../../Utility/graphs"
 
 import { setSelectedClusters } from "../../Ducks/SelectedClustersDuck"
-import { addCluster, removeCluster, setCurrentClustersAction } from "../../Ducks/CurrentClustersDuck"
 import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories } from "../../Ducks/StoriesDuck"
 import { RootState } from "../../Store/Store"
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { StoryPreview } from "./StoryPreview"
 
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
     stories: state.stories,
-    currentClusters: state.currentClusters,
     displayMode: state.displayMode,
     dataset: state.dataset,
     webGLView: state.webGLView,
@@ -26,15 +25,12 @@ const mapStateToProps = (state: RootState) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    setCurrentClusters: clusters => dispatch(setCurrentClustersAction(clusters)),
     setStories: stories => dispatch(setStories(stories)),
     setActiveStory: (activeStory: Story) => dispatch(setActiveStory(activeStory)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode)),
     setSelectedClusters: value => dispatch(setSelectedClusters(value)),
-    addCluster: cluster => dispatch(addCluster(cluster)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
-    removeCluster: cluster => dispatch(removeCluster(cluster)),
     addStory: story => dispatch(addStory(story)),
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster))
 })
@@ -48,7 +44,7 @@ type Props = PropsFromRedux & {
     clusteringWorker
 }
 
-export const ClusteringTabPanel = connector(({ setCurrentClusters,
+export const ClusteringTabPanel = connector(({
     setStories,
     setActiveStory,
     currentAggregation,
@@ -56,12 +52,9 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
     dataset,
     stories,
     setClusterEdges,
-    currentClusters,
     setDisplayMode,
     displayMode,
     setSelectedClusters,
-    addCluster,
-    removeCluster,
     addStory,
     addClusterToStory,
     removeClusterFromStories,
@@ -105,11 +98,10 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
     }
 
     function toggleClusters() {
-        if (currentClusters == null) {
+        if (null == null) {
+            console.log("toggle")
             if (dataset.clusters && dataset.clusters.length > 0) {
                 let clusters = dataset.clusters
-
-                setCurrentClusters(clusters)
 
                 if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
                     setClusterEdges(dataset.clusterEdges)
@@ -117,7 +109,7 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
                     //let stories = storyLayout(dataset.clusterEdges)
 
                     //setStories(stories)
-                    setStories([ new Story(dataset.clusters, dataset.clusterEdges) ])
+                    setStories([new Story(dataset.clusters, dataset.clusterEdges)])
 
                     //setActiveStory(stories[0])
                 } else {
@@ -158,16 +150,13 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
                         cluster.points = cluster.vectors
                     })
 
-
-                    setCurrentClusters(clusters)
-
                     if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
                         setClusterEdges(dataset.clusterEdges)
 
                         let stories = storyLayout(dataset.clusterEdges)
 
                         setStories(stories)
-                        
+
 
                         //setActiveStory(stories[0])
                     } else {
@@ -191,11 +180,6 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
                     message: dataset.vectors.map(vector => [vector.x, vector.y, vector.clusterLabel])
                 })
             }
-        } else {
-            setStories(stories)
-            setActiveStory(null)
-            setCurrentClusters(null)
-            setSelectedClusters([])
         }
     }
 
@@ -221,6 +205,11 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
             </Typography>
         </Box>
 
+        <Box padding={2}>
+            <StoryPreview></StoryPreview>
+        </Box>
+
+
         <Box paddingLeft={2} paddingRight={2}>
             <Button
                 variant="outlined"
@@ -230,7 +219,7 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
                 onClick={() => {
                     if (currentAggregation.length > 0) {
                         let cluster = Cluster.fromSamples(currentAggregation)
-                        addCluster(cluster)
+
                         if (!stories.active) {
                             let story = new Story([cluster], [])
                             addStory(story)
@@ -244,7 +233,7 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
 
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
             <List>
-                {currentClusters?.map((cluster, key) => {
+                {stories.active?.clusters.map((cluster, key) => {
                     return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={() => {
                         webGLView.current.onClusterClicked(cluster)
                     }}>
@@ -260,7 +249,6 @@ export const ClusteringTabPanel = connector(({ setCurrentClusters,
                         <ListItemSecondaryAction>
                             <IconButton edge="end" aria-label="delete" onClick={() => {
                                 removeClusterFromStories(cluster)
-                                removeCluster(cluster)
                             }}>
                                 <DeleteIcon />
                             </IconButton>

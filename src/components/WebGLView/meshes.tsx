@@ -172,7 +172,7 @@ export class LineVisualization {
 
     if (this.highlightMeshes != null) {
       this.highlightMeshes.forEach(mesh => {
-        mesh.material.lineWidth = 0.002 + 0.0001 * this.zoom
+        mesh.material.lineWidth = 0.005
       })
     }
   }
@@ -285,7 +285,7 @@ export class LineVisualization {
       var material = new override.MeshLineMaterial({
         color: new THREE.Color(findSeg.view.lineMesh.material.color),
         resolution: new THREE.Vector2(width, height),
-        lineWidth: 0.002 + 0.0001 * this.zoom,
+        lineWidth: 0.005,
         sizeAttenuation: true,
         transparent: true,
         opacity: 0.5,

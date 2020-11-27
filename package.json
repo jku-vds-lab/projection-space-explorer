@@ -10,6 +10,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@types/concaveman": "^1.1.3",
     "@types/d3": "^5.7.2",
+    "@types/jest": "^26.0.15",
     "@types/node": "^14.0.11",
     "@types/react-redux": "^7.1.9",
     "clone": "^2.1.2",
@@ -51,6 +52,7 @@
     "@types/react-dom": "^16.9.5",
     "babel-loader": "^8.0.6",
     "css-loader": "^3.4.2",
+    "jest": "^26.6.3",
     "node-sass": "^4.13.1",
     "sass-loader": "^8.0.2",
     "shader-loader": "^1.3.1",
@@ -63,6 +65,7 @@
     "webpack-glsl-loader": "^1.0.1"
   },
   "scripts": {
-    "webpack:dev": "npx webpack --config webpack.config.js"
+    "webpack:dev": "npx webpack --config webpack.config.js",
+    "test": "jest"
   }
 }

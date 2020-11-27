@@ -4,24 +4,10 @@ const ADD = "ducks/currentClusters/ADD"
 const SET = "ducks/currentClusters/SET"
 const REMOVE = "ducks/currentClusters/REMOVE"
 
-export const setCurrentClustersAction = currentClusters => ({
-    type: SET,
-    currentClusters: currentClusters
-})
-
-export const addCluster = (cluster: Cluster) => ({
-    type: ADD,
-    cluster: cluster
-})
-
-export const removeCluster = (cluster: Cluster) => ({
-    type: REMOVE,
-    cluster: cluster
-})
 
 const initialState: Cluster[] = null
 
-export default function currentClusters(state = initialState, action): Cluster[] {
+function currentClusters(state = initialState, action): Cluster[] {
     switch (action.type) {
         case SET:
             return action.currentClusters

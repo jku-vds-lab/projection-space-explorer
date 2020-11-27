@@ -3,7 +3,7 @@ import * as React from 'react'
 import Cluster from "../../Utility/Data/Cluster";
 import { Story } from "../../Utility/Data/Story";
 import { GenericFingerprint } from "../../Legends/Generic";
-import { Card, Grow, Typography, Tooltip, IconButton } from "@material-ui/core";
+import { Card, Grow, Typography, Tooltip, IconButton, Input } from "@material-ui/core";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect, ConnectedProps } from 'react-redux'
@@ -12,7 +12,6 @@ import { Dataset } from "../../Utility/Data/Dataset";
 import { GenericChanges } from "../../Legends/GenericChanges/GenericChanges";
 import { StoryMode } from "../../Ducks/StoryModeDuck";
 import { RootState } from "../../Store/Store";
-import { addCluster } from "../../Ducks/CurrentClustersDuck";
 import { addClusterToTrace, selectSideBranch, setActiveTraceState } from "../../Ducks/StoriesDuck";
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
@@ -26,7 +25,6 @@ const mapStateToProps = (state: RootState) => ({
 })
 
 const mapDispatch = dispatch => ({
-    addCluster: cluster => dispatch(addCluster(cluster)),
     addClusterToTrace: cluster => dispatch(addClusterToTrace(cluster)),
     setActiveTraceState: cluster => dispatch(setActiveTraceState(cluster)),
     selectSideBranch: index => dispatch(selectSideBranch(index))
@@ -57,6 +55,25 @@ const Circle = ({ x, y, onClick }) => {
 }
 
 
+const SidePath = ({ dataset, syncPart, width, stroke, fill, x, y, height }) => {
+    return <Tooltip placement="left" title={<React.Fragment>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {
+                syncPart.map(node => {
+                    return <GenericFingerprint
+                        type={dataset.type}
+                        vectors={node.vectors}
+                        scale={1}
+                    ></GenericFingerprint>
+                })
+            }
+        </div>
+    </React.Fragment>}>
+        <rect x={x - width / 2} y={y} rx="5" ry="5" width={width} height={height} strokeWidth={2} stroke={stroke} fill={fill} />
+    </Tooltip>
+}
+
+
 class ProvenanceGraph extends React.PureComponent<any, any> {
     constructor(props) {
         super(props)
@@ -73,18 +90,19 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
         const fillColors = ["#F1DCA5", "#F8C7A0"]
         const strokeColors = ["#e9c46a", "#f4a261"]
-        const mainColor = "#2a9d8f"
+        const mainColor = "#4d94ff"
+        const stateSize = 12
 
         if (!this.props.input) return null;
 
-        let { position, stories } = this.props.input
+        let { position, stories, elementHeight } = this.props.input
 
         let currentAggregation = this.props.currentAggregation
         let selectSideBranch = this.props.selectSideBranch
         let addClusterToTrace = this.props.addClusterToTrace
-        let addCluster = this.props.addCluster
         let dataset = this.props.dataset
         let pageOffset = this.state.pageOffset
+        
 
         let numSidePaths = Math.min(2, stories.trace.sidePaths.length)
 
@@ -114,7 +132,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                 {
                     function () {
                         let components = []
-                        
+
 
                         for (let si = 0; si < numSidePaths; si++) {
                             let sidePathIndex = stories.trace.sidePaths.indexOf(stories.trace.sidePaths[(si + pageOffset) % stories.trace.sidePaths.length])
@@ -123,40 +141,36 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
                             components.push(<g>
                                 {
-                                    // Left markers bottom
-                                    sidePath.syncNodes.map((sync, i) => {
-                                        let p = position[sync]
-
-                                        if (i != sidePath.syncNodes.length - 1) {
-                                            let y = p.y + 16 + si * 4
-                                            return <line x1={midX} y1={y} x2={midX - rectWidth * (si + 1) - margin * (si + 1) + rectWidth / 2} y2={y} strokeWidth={2} stroke={strokeColors[si]}></line>
-                                        } else {
-                                            return <g></g>
-                                        }
-                                    })
-                                }
-
-
-                                {
-                                    // Left markers top
-                                    sidePath.syncNodes.map((sync, i) => {
-                                        let p = position[sync]
-                                        if (i != 0) {
-                                            let y = p.y - 16 - si * 4
-                                            return <line x1={midX} y1={y} x2={midX - rectWidth * (si + 1) - margin * (si + 1) + rectWidth / 2} y2={y} strokeWidth={2} stroke={strokeColors[si]}></line>
-                                        } else {
-                                            return <g></g>
-                                        }
-                                    })
-                                }
-
-                                {
-                                    // Rectangles
+                                    // Rectangles between outgoing and ingoing sync nodes
                                     sidePath.syncNodes.map((node, i) => {
-                                        if (i != sidePath.syncNodes.length - 1) {
+                                        let x = midX - rectWidth * (si + 1) - margin * (si + 1) + rectWidth / 2
 
-                                            let i1 = sidePath.syncNodes[i]
-                                            let i2 = sidePath.syncNodes[i + 1]
+                                        if (i == sidePath.syncNodes.length - 1 && node.out) {
+                                            // Case where its the last syncnode and its outgoing
+                                            let pos1 = position[node.index]
+                                            
+
+                                            return <g>
+                                                <path d={`M ${midX - stateSize / 2} ${pos1.y} Q ${x} ${pos1.y} ${x} ${pos1.y + 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
+                                                
+                                                <SidePath
+                                                    dataset={dataset}
+                                                    syncPart={[]}
+                                                    x={x}
+                                                    width={rectWidth}
+                                                    stroke={strokeColors[si]}
+                                                    fill={fillColors[si]}
+                                                    y={pos1.y + 35}
+                                                    height={elementHeight - 70}
+                                                ></SidePath>
+
+                                                <line x1={x} y1={pos1.y + 35 + 70 - 6} x2={x} y2={pos1.y + elementHeight} stroke={strokeColors[si]}></line>
+                                                <rect x={x - 6} y={pos1.y + elementHeight - 6} width={stateSize} height={stateSize} fill={fillColors[si]} />
+                                            </g>
+                                        } else if (node.out && i != sidePath.syncNodes.length - 1 && sidePath.syncNodes[i + 1].in) {
+
+                                            let i1 = sidePath.syncNodes[i].index
+                                            let i2 = sidePath.syncNodes[i + 1].index
 
 
                                             let sync1 = position[i1]
@@ -165,31 +179,30 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                             let syncLen = sidePath.nodes.indexOf(stories.trace.mainPath[i2]) - sidePath.nodes.indexOf(stories.trace.mainPath[i1]) - 1
                                             let syncPart = sidePath.nodes.slice(sidePath.nodes.indexOf(stories.trace.mainPath[i1]) + 1, sidePath.nodes.indexOf(stories.trace.mainPath[i2]))
 
+                                            let lineY1 = sync1.y
+                                            let lineY2 = sync2.y
+
                                             if (i2 - i1 == 1 || true) {
-                                                let x = midX - rectWidth * (si + 1) - margin * (si + 1)
 
                                                 return <g onClick={() => {
                                                     selectSideBranch(sidePathIndex)
                                                 }}>
-                                                    <line x1={x + rectWidth / 2} y1={sync1.y + 16 + si * 4} x2={x + rectWidth / 2} y2={sync2.y - 16 - si * 4} strokeWidth={2} stroke={strokeColors[si]}></line>
-                                                    <Tooltip placement="left" title={<React.Fragment>
-                                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                            {
-                                                                syncPart.map(node => {
-                                                                    return <GenericFingerprint
-                                                                        type={dataset.type}
-                                                                        vectors={node.vectors}
-                                                                        scale={1}
-                                                                    ></GenericFingerprint>
-                                                                })
-                                                            }
-                                                        </div>
-                                                    </React.Fragment>}>
-                                                        <rect x={x} y={sync1.y + 35} rx="5" ry="5" width={rectWidth} height={sync2.y - sync1.y - 70} strokeWidth={2} stroke={strokeColors[si]} fill={fillColors[si]} />
-                                                    </Tooltip>
+                                                    <path d={`M ${midX} ${lineY1} Q ${x} ${lineY1} ${x} ${lineY1 + 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
+                                                    <path d={`M ${midX} ${lineY2} Q ${x} ${lineY2} ${x} ${lineY2 - 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
 
 
-                                                    <text x={x + rectWidth / 2} y={sync1.y + (sync2.y - sync1.y) / 2} textAnchor="middle">{syncLen}</text>
+                                                    <SidePath
+                                                        dataset={dataset}
+                                                        syncPart={syncPart}
+                                                        x={x}
+                                                        width={rectWidth}
+                                                        stroke={strokeColors[si]}
+                                                        fill={fillColors[si]}
+                                                        y={sync1.y + 35}
+                                                        height={sync2.y - sync1.y - 70}
+                                                    ></SidePath>
+
+                                                    <text x={x} y={sync1.y + (sync2.y - sync1.y) / 2} textAnchor="middle">{syncLen}</text>
                                                 </g>
                                             } else {
                                                 return <g></g>
@@ -210,11 +223,12 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                     }()
                 }
 
-                {
+                {// <!--<circle cx={midX} cy={p.y} r="6" fill={mainColor} />-->
                     position.map((p, index) => {
                         return <g>
-                            <text x={midX + 10} y={p.y} fill="black" font-weight="bold">{index}</text>
-                            <circle cx={midX} cy={p.y} r="6" fill={mainColor} />
+                            <text x={midX + 10} y={p.y} fill="black" font-weight="bold" font-family="monospace">{index}</text>
+                            <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={mainColor} />
+
                         </g>
                     })
                 }
@@ -234,7 +248,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                 <line x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
                                 <Plus x={midX} y={p2.y} r={10} onClick={() => {
                                     let cluster = Cluster.fromSamples(currentAggregation)
-                                    addCluster(cluster)
+
                                     addClusterToTrace(cluster)
 
                                 }} />
@@ -250,7 +264,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
                             if (currentAggregation.length > 0) {
                                 let cluster = Cluster.fromSamples(this.props.currentAggregation)
-                                addCluster(cluster)
+
                                 addClusterToTrace(cluster)
                             }
                         }} />
@@ -268,7 +282,6 @@ export const ClusterOverview = connector(function ({
     storyMode,
     stories,
     currentAggregation,
-    addCluster,
     addClusterToTrace,
     setActiveTraceState,
     selectSideBranch }: Props) {
@@ -290,13 +303,15 @@ export const ClusterOverview = connector(function ({
         const current = itemRef.current
         if (current) {
             const state = []
+            let elementHeight = 0
+            
             for (var i = 1; i < current.children.length; i++) {
                 const child = current.children[i];
-
+                elementHeight = child.offsetHeight
                 state.push({ y: child.offsetTop + child.offsetHeight / 2 - current.children[1].offsetTop - 30 })
             }
 
-            setInput({ stories: stories, position: state })
+            setInput({ stories: stories, position: state, elementHeight: elementHeight })
         }
     }, [stories])
 
@@ -316,7 +331,6 @@ export const ClusterOverview = connector(function ({
                     <ProvenanceGraph
                         input={input}
                         currentAggregation={currentAggregation}
-                        addCluster={addCluster}
                         addClusterToTrace={addClusterToTrace}
                         selectSideBranch={selectSideBranch}
                         dataset={dataset}

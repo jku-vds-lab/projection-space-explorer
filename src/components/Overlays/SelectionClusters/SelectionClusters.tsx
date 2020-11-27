@@ -4,6 +4,7 @@ import { GenericLegend } from '../../Legends/Generic'
 import './SelectionClusters.scss'
 import { connect } from 'react-redux'
 import AdjustIcon from '@material-ui/icons/Adjust';
+import { Vect } from '../../Utility/Data/Vect'
 
 
 
@@ -21,10 +22,10 @@ const SelectionClustersFull = function ({
         <div className="Cluster">
 
 
-            {hoverState && hoverState.length > 0 && <Card style={{ pointerEvents: 'auto' }}>
+            {hoverState && hoverState instanceof Vect && <Card style={{ pointerEvents: 'auto' }}>
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
-                    <GenericLegend aggregate={false} type={dataset.type} vectors={hoverState}></GenericLegend>
+                    <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState]}></GenericLegend>
 
                 </CardContent>
             </Card>}

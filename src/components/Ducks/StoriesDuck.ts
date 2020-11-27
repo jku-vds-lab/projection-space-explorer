@@ -1,4 +1,4 @@
-import { getSyncNodes } from "../NumTs/NumTs";
+import { getSyncNodes, getSyncNodesAlt } from "../NumTs/NumTs";
 import Cluster from "../Utility/Data/Cluster";
 import { Edge } from "../Utility/graphs";
 import { Story } from "../Utility/Data/Story";
@@ -93,8 +93,11 @@ const initialState = {
 
 export type StoriesType = {
     stories: Story[]
+
     active: Story
+
     trace: { mainPath: Cluster[], mainEdges: any[], sidePaths: { nodes: Cluster[], edges: Edge[], syncNodes: number[] }[] }
+
     activeTraceState: Cluster
 }
 
@@ -113,7 +116,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             }
 
             trace.sidePaths.forEach(sidePath => {
-                sidePath.syncNodes = getSyncNodes({ nodes: trace.mainPath, edges: trace.mainEdges }, { nodes: sidePath.nodes, edges: sidePath.edges })
+                sidePath.syncNodes = getSyncNodesAlt(trace.mainPath, sidePath.nodes)
             })
 
             return {
