@@ -196,3 +196,13 @@ export class VectBase implements VectorType {
         return new VectBase(a.x + b.x, a.y + b.y)
     }
 }
+
+
+
+
+
+
+
+
+
+

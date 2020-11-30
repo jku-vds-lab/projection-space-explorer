@@ -27,12 +27,13 @@ import { RootState } from '../Store/Store';
 import { Backdrop, Dialog, DialogContent, Divider, Menu, MenuItem, Typography } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
-import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, setActiveStory } from '../Ducks/StoriesDuck';
+import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, setActiveStory, setActiveTrace } from '../Ducks/StoriesDuck';
 import { setLineUpInput } from '../Ducks/LineUpInputDuck';
 import { Story } from '../Utility/Data/Story';
-import { ClusterDragTool } from './Tools/ClusterDragTool';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
 import { Edge } from '../Utility/graphs';
+import { getSyncNodesAlt } from '../NumTs/NumTs';
+import { ClusterDragTool } from './Tools/ClusterDragTool';
 import { TraceSelectTool } from './Tools/TraceSelectTool';
 
 
@@ -82,7 +83,8 @@ const mapDispatchToProps = dispatch => ({
     addStory: story => dispatch(addStory(story)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
     setActiveStory: story => dispatch(setActiveStory(story)),
-    addEdgeToActive: edge => dispatch(addEdgeToActive(edge))
+    addEdgeToActive: edge => dispatch(addEdgeToActive(edge)),
+    setActiveTrace: trace => dispatch(setActiveTrace(trace))
 })
 
 
@@ -289,6 +291,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         if (this.props.activeLine) {
                             break;
                         }
+
+                        
+
 
                         if (this.currentHover && this.currentHover instanceof Vect) {
                             if (event.shiftKey) {
@@ -1327,10 +1332,39 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }}>{'Delete Cluster'}</MenuItem>
 
                 <MenuItem onClick={() => {
-                    //this.traceSelect = new TraceSelectTool(this.state.menuTarget)
+                    let paths = this.props.stories.active.getAllStoriesFromSource(this.state.menuTarget.label)
+
+                    if (paths.length > 0) {
+                        let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                        let mainEdges = mainPath.slice(1).map((item, index) => {
+                            return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
+                        })
+                        this.props.setActiveTrace({
+                            mainPath: mainPath,
+                            mainEdges: mainEdges,
+                            sidePaths: paths.slice(1).map(ids => {
+                                let path = ids.map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                                let edges = path.slice(1).map((item, index) => {
+                                    return this.props.stories.active.edges.find(edge => edge.source == path[index] && edge.destination == item)
+                                })
+                                return {
+                                    nodes: path,
+                                    edges: edges,
+                                    syncNodes: getSyncNodesAlt(mainPath, path)
+                                }
+                            })
+                        })
+                    }
 
                     handleClose()
-                }}>{'Search for Stories'}</MenuItem>
+                }}>{"Stories ... Starting from this Cluster"}</MenuItem>
+
+                <MenuItem onClick={() => {
+                    this.traceSelect = new TraceSelectTool(this.state.menuTarget)
+
+                    handleClose()
+                }}>{"Stories ... Between 2 Clusters"}</MenuItem>
+
             </Menu>
 
 
