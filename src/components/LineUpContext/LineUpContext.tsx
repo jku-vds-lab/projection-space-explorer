@@ -6,7 +6,7 @@ import { RootState } from "../Store/Store";
 // import * as LineUpJs from 'lineupjs'
 import './LineUpContext.scss';
 import { setAggregationAction } from "../Ducks/AggregationDuck";
-import { Column, ERenderMode, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM } from "lineupjs";
+import { Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn } from "lineupjs";
 
 
 /**
@@ -72,7 +72,7 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
     });
 
     let ref = React.useRef()
-
+    let ref_col = React.useRef();
     React.useEffect(() => {
         // @ts-ignore
         ref.current.adapter.instance.data.getFirstRanking().on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
@@ -93,7 +93,17 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
             onRankingChanged(current)
 
         })
+        console.log(ref_col);
+        console.log(ref.current.adapter);
+        //const col = ref.current.adapter.prevColumns.columns.find(x => x.label == smiles_col);
+            // col.on("widthChanged", (prev, current)=>{ 
+            //     // @ts-ignore
+            //     ref.current.adapter.instance.update()
+            // }); 
+
     }, [lineUpInput.data])
+
+
 
 
     let cols = lineUpInput.columns;
@@ -103,36 +113,56 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
         let col = cols[i];
         let show = typeof col.meta_data !== 'undefined' && col.meta_data.includes("lineup_show");
 
-        if(show){ // if nothing is selected, everything will be shown
-            if(col.meta_data.includes("image_from_url")){
-                // /get_mol_img/<smiles>
-                lineUpInput.data.forEach(element => {
-                    // console.log(element[i]);
-                    // element[i] = "http://127.0.0.1:8080/get_mol_img/CCC%28C%29%28C%29c1cc%28-n2nc3ccccc3n2%29c%28O%29c%28C%28C%29%28C%29CC%29c1"; //'/get_mol_img/' + element[i]; // todo parse url string
-                });
-                // console.log(lineUpInput.data);
-                lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} renderer="myImageRenderer" width={100} />)
-            }else if(col.isNumeric)
+        if(col.meta_data && !col.meta_data.includes("lineup_none")){ // if nothing is selected, everything will be shown
+            
+            if(col.meta_data.includes("smiles_to_img")){
+                smiles_col = i;
+                lineup_col_list.push(<LineUpStringColumnDesc ref={ref_col} key={i} column={i} visible={show} renderer="mySmilesRenderer" groupRenderer="mySmilesRenderer" width={200} />) 
+            }
+
+            if(col.isNumeric)
                 lineup_col_list.push(<LineUpNumberColumnDesc key={i} column={i} domain={[col.range.min, col.range.max]} color={colors[Math.floor(Math.random()*colors.length)]} visible={show} />);
             else if(col.distinct)
                 if(col.distinct.length/lineUpInput.data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                     lineup_col_list.push(<LineUpCategoricalColumnDesc key={i} column={i} categories={col.distinct} visible={show} />)
                 else
-                    lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />) 
+                    lineup_col_list.push(<LineUpStringColumnDesc width={100} key={i} column={i} visible={show} />) 
             else
                 lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />)
         }
         
     }
 
+    
+
     return <div className="LineUpParent">
-        <LineUp ref={ref} data={lineUpInput.data} rowHeight={100} renderers={{myImageRenderer: new MyImageCellRenderer()}}>
+        <LineUp ref={ref} data={lineUpInput.data} dynamicHeight={myDynamicHeight} renderers={{mySmilesRenderer: new MySmilesCellRenderer()}} >
             {lineup_col_list}
         </LineUp>
     </div>
 })
 
-export class MyImageCellRenderer implements ICellRendererFactory {
+
+let smiles_col = null;
+function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight{
+    if(smiles_col){
+        const col = ranking.children.find(x => x.label == smiles_col);
+        console.log(col);
+        const col_width = col.getWidth();
+
+        let height = function(item: IGroupItem | Readonly<IOrderedGroup>): number{
+            return col_width;
+        }
+        let padding = function(item: IGroupItem | Readonly<IOrderedGroup>): number{
+            return 0;
+        }
+        return { defaultHeight: col_width, height:height, padding:padding};
+    }
+    return null;
+}
+
+
+export class MySmilesCellRenderer implements ICellRendererFactory {
     readonly title: string = 'Image';
   
     canRender(col: Column, mode: ERenderMode): boolean {
@@ -143,20 +173,58 @@ export class MyImageCellRenderer implements ICellRendererFactory {
       return {
         template: `<img/>`,
         update: (n: HTMLImageElement, d: IDataRow) => {
-            console.log(d);
-            //TODO: try to send the smiles string in body.. maybe the uri encoding messes up some components
-            let uri = 'http://127.0.0.1:8080/get_mol_img/' + encodeURIComponent(d.v.Smiles);
-            n.src = d.v.smiles_url;
+            const formData = new FormData();
+            formData.append('smiles', d.v[col.label]);
+            fetch('http://127.0.0.1:8080/get_mol_img', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.text())
+            .then(data => n.src = "data:image/gif;base64," + data)
+            .catch(error => {
+                console.error(error)
+            });
         }
       };
     }
   
-    createGroup(): IGroupCellRenderer {
-      return null;
+    createGroup(col: LinkColumn, context: IRenderContext): IGroupCellRenderer {
+        return {
+            template: `<img/>`,
+            update: (n: HTMLImageElement, group: IOrderedGroup) => {
+                let smiles_list = [];
+                const formData = new FormData();
+                return context.tasks.groupRows(col, group, 'string', (rows) => {
+                        rows.every((row) => {
+                            const v = col.getLabel(row);
+                            smiles_list.push(v);
+                            formData.append('smiles_list', v);
+                            return true;
+                        });
+                    })
+                    .then(() => {
+                        fetch('http://127.0.0.1:8080/get_common_mol_img', {
+                            method: 'POST',
+                            body: formData,
+                        })
+                        .then(response => response.text())
+                        .then(data => n.src = "data:image/gif;base64," + data)
+                        .catch(error => {
+                            console.error(error)
+                        });
+                    });
+            }
+          };
     }
   
-    createSummary(): ISummaryRenderer {
-      return null;
+    createSummary(col: LinkColumn): ISummaryRenderer {
+        return null;
     }
   }
 
+//   export interface IGroup {
+//     name: string;
+//     color: string;
+//   }
+  
+  
