@@ -684,7 +684,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           />
         </div>
         <div style={{ flexGrow: 0 }}>
-          <LineUpContext></LineUpContext>
+          <LineUpContext onFilter={() => {this.threeRef.current.lineupFilterUpdate()}}></LineUpContext>
         </div>
       </div>
 

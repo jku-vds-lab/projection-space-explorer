@@ -168,7 +168,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
 
-
+    lineupFilterUpdate(){
+        this.particles.update()
+    }
 
 
 

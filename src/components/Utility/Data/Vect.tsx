@@ -146,6 +146,10 @@ export class VectView {
     // Brightness value of this sample.
     brightness = 1.0
 
+
+    // is this sample filtered out in lineup
+    lineUpFiltered: boolean = false
+
     constructor() {
     }
 }

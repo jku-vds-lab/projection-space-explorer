@@ -904,6 +904,7 @@ export class PointVisualization {
       && this.showSymbols[vector.view.shapeType]
       && (vector.view.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.view.intrinsicColor] : true)
       && (vector.view.segment == null || valueInRange(vector.view.segment.vectors.length, vector.view.segment.view.pathLengthRange))
+      && !vector.view.lineUpFiltered
   }
 
 
@@ -927,6 +928,7 @@ export class PointVisualization {
     var selected = this.mesh.geometry.attributes.selected.array
 
     this.vectors.forEach(vector => {
+      console.log(this.isPointVisible(vector))
       if (this.isPointVisible(vector)) {
         show[vector.view.meshIndex] = 1.0
       } else {
