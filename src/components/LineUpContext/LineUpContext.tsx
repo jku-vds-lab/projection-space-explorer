@@ -1,5 +1,5 @@
 // import { Folder } from "@material-ui/icons";
-import { LineUp, LineUpCategoricalColumnDesc, LineUpColumn, LineUpNumberColumnDesc, LineUpStringColumnDesc } from "lineupjsx";
+import { LineUp, LineUpCategoricalColumnDesc, LineUpColumn, LineUpColumnDesc, LineUpNumberColumnDesc, LineUpStringColumnDesc } from "lineupjsx";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../Store/Store";
@@ -57,12 +57,13 @@ type Props = PropsFromRedux & {
 
 // taken from: https://github.com/VirginiaSabando/ChemVA/blob/master/ChemVA_client/public/main.js
 var colors = ['#000000','#E69F00','#56B4E9','#009E73','#F0E442', '#0072B2', '#D55E00','#CC79A7'];
+var cur_col = 0;
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
 export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggregation }: Props) {
     // In case we have no input, dont render at all
-    if (!lineUpInput || !lineUpInput.data) {
+    if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
         return null;
     }
     lineUpInput.data.forEach(element => {
@@ -72,10 +73,10 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
     });
 
     let ref = React.useRef()
-    let ref_col = React.useRef();
     React.useEffect(() => {
         // @ts-ignore
         ref.current.adapter.instance.data.getFirstRanking().on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
+            
             if (dirtyReason.indexOf('filter') === -1) {
                 return;
             }
@@ -87,19 +88,20 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
                     agg.push(lineUpInput.data[index])
                 })
 
-                setCurrentAggregation(agg)
+                setCurrentAggregation(agg) //TODO: implement some additional Duck that manages points that should be currently shown (don't use dataset anymore...)
             }
 
             onRankingChanged(current)
 
         })
-        console.log(ref_col);
-        console.log(ref.current.adapter);
-        //const col = ref.current.adapter.prevColumns.columns.find(x => x.label == smiles_col);
-            // col.on("widthChanged", (prev, current)=>{ 
-            //     // @ts-ignore
-            //     ref.current.adapter.instance.update()
-            // }); 
+
+        // @ts-ignore
+        if(smiles_col)
+            // @ts-ignore
+            ref.current.adapter.instance.data.getFirstRanking().columns.find(x => x.label == smiles_col).on("widthChanged", (prev, current) => {
+                // @ts-ignore
+                ref.current.adapter.instance.update()
+            });
 
     }, [lineUpInput.data])
 
@@ -108,21 +110,22 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
 
     let cols = lineUpInput.columns;
 
+    cur_col = 0;
     let lineup_col_list = [];
     for (const i in cols) {
         let col = cols[i];
         let show = typeof col.meta_data !== 'undefined' && col.meta_data.includes("lineup_show");
 
-        if(col.meta_data && !col.meta_data.includes("lineup_none")){ // if nothing is selected, everything will be shown
-            
-            if(col.meta_data.includes("smiles_to_img")){
-                smiles_col = i;
-                lineup_col_list.push(<LineUpStringColumnDesc ref={ref_col} key={i} column={i} visible={show} renderer="mySmilesRenderer" groupRenderer="mySmilesRenderer" width={200} />) 
+        if(!col.meta_data || !col.meta_data.includes("lineup_none")){ // only if there is a "lineup_none" modifier at this column, we don't do anything
+            if(col.meta_data && col.meta_data.includes("smiles_to_img")){
+                smiles_col = "Structure";
+                lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} label={smiles_col} visible={show} renderer="mySmilesRenderer" groupRenderer="mySmilesRenderer" width={150} />) 
             }
 
-            if(col.isNumeric)
-                lineup_col_list.push(<LineUpNumberColumnDesc key={i} column={i} domain={[col.range.min, col.range.max]} color={colors[Math.floor(Math.random()*colors.length)]} visible={show} />);
-            else if(col.distinct)
+            if(col.isNumeric){
+                lineup_col_list.push(<LineUpNumberColumnDesc key={i} column={i} domain={[col.range.min, col.range.max]} color={colors[cur_col]} visible={show} />);
+                cur_col = (cur_col + 1) % colors.length;
+            }else if(col.distinct)
                 if(col.distinct.length/lineUpInput.data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                     lineup_col_list.push(<LineUpCategoricalColumnDesc key={i} column={i} categories={col.distinct} visible={show} />)
                 else
@@ -147,7 +150,6 @@ let smiles_col = null;
 function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight{
     if(smiles_col){
         const col = ranking.children.find(x => x.label == smiles_col);
-        console.log(col);
         const col_width = col.getWidth();
 
         let height = function(item: IGroupItem | Readonly<IOrderedGroup>): number{
@@ -174,7 +176,7 @@ export class MySmilesCellRenderer implements ICellRendererFactory {
         template: `<img/>`,
         update: (n: HTMLImageElement, d: IDataRow) => {
             const formData = new FormData();
-            formData.append('smiles', d.v[col.label]);
+            formData.append('smiles', d.v[col.desc.column]);
             fetch('http://127.0.0.1:8080/get_mol_img', {
                 method: 'POST',
                 body: formData,

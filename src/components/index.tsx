@@ -64,6 +64,7 @@ import { EmbeddingIcon } from "./Icons/EmbeddingIcon";
 import { rootReducer } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { LineUpContext } from "./LineUpContext/LineUpContext";
+import { devToolsEnhancer } from 'redux-devtools-extension';
 
 
 
@@ -739,7 +740,7 @@ const theme = createMuiTheme({
 
 // Render the application into our 'mountingPoint' div that is declared in 'index.html'.
 ReactDOM.render(
-  <Provider store={createStore(rootReducer)}>
+  <Provider store={createStore(rootReducer, devToolsEnhancer({}))}>
     <MuiThemeProvider theme={theme}>
       <Application />
     </MuiThemeProvider>

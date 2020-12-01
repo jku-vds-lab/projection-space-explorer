@@ -30,7 +30,7 @@ import { MouseController } from './MouseController';
 import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory } from '../Ducks/StoriesDuck';
 import { addCluster, removeCluster } from '../Ducks/CurrentClustersDuck';
 import * as LineUpJS from 'lineupjs'
-import { setLineUpInput } from '../Ducks/LineUpInputDuck';
+import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from '../Ducks/LineUpInputDuck';
 import { Story } from '../Utility/Data/Story';
 
 
@@ -79,7 +79,9 @@ const mapDispatchToProps = dispatch => ({
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
     removeCluster: cluster => dispatch(removeCluster(cluster)),
     setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
-    setLineUpInput: input => dispatch(setLineUpInput(input)),
+    setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
+    setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
+    setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
     addCluster: cluster => dispatch(addCluster(cluster)),
     addStory: story => dispatch(addStory(story)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
@@ -1331,12 +1333,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             >
                 <MenuItem onClick={() => {
-                    this.props.setLineUpInput(
-                        {
-                        data: this.props.dataset.vectors,
-                        columns: this.props.dataset.columns
-                        } 
-                    )
+                    this.props.setLineUpInput_data(this.props.dataset.vectors);
+                    this.props.setLineUpInput_columns(this.props.dataset.columns); //TODO: set columns once; when dataset is loaded
+                    this.props.setLineUpInput_visibility(true);
 
                     handleClose()
                 }}>Load LineUp</MenuItem>
@@ -1344,20 +1343,16 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 <MenuItem onClick={() => {
                     // Only load LineUp if the current selection is not empty
                     if (this.props.currentAggregation.length > 0) {
-                        this.props.setLineUpInput(
-                            {
-                            data: this.props.currentAggregation,
-                            columns: this.props.dataset.columns
-                            } 
-                        )
+                        this.props.setLineUpInput_data(this.props.currentAggregation);
+                        this.props.setLineUpInput_columns(this.props.dataset.columns); //TODO: set columns once; when dataset is loaded
+                        this.props.setLineUpInput_visibility(true);
 
                         handleClose()
                     }
                 }}>Load LineUp (selection only)</MenuItem>
 
                 <MenuItem onClick={() => {
-                    // Set LineUp input to null closes it
-                    this.props.setLineUpInput(null)
+                    this.props.setLineUpInput_visibility(false);
 
                     handleClose()
                 }}>{'Debug -> Close LineUp'}</MenuItem>
