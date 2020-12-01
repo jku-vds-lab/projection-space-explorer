@@ -17,7 +17,9 @@ import { RootState } from '../../Store/Store';
 import { addEdgeToActive, setActiveTrace } from '../../Ducks/StoriesDuck';
 import { Edge } from '../../Utility/graphs';
 import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
-import { getSyncNodes, VectBase } from '../../NumTs/NumTs';
+import { getSyncNodes, getSyncNodesAlt, VectBase } from '../../NumTs/NumTs';
+let unweighted = require('graphology-shortest-path')
+
 
 export function rescalePoints(
     points: { x: number, y: number }[],
@@ -292,10 +294,50 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                         }
 
 
+                        function ALL_PATHS(graph, start) {
+                            let visited = {}
+                            let pathList = [start]
+                            let output = []
+
+                            DFS_iter(start, visited, pathList)
+
+                            function DFS_iter(source, visited, pathList: any[]) {
+                                if (graph.outNeighbors(source).length == 0) {
+                                    output.push(pathList.slice(0))
+                                    return;
+                                }
+
+                                visited[source] = true
+
+                                graph.outNeighbors(source).forEach(neighbor => {
+                                    if (!visited[neighbor]) {
+                                        pathList.push(neighbor)
+
+                                        DFS_iter(neighbor, visited, pathList)
+
+                                        pathList.pop()
+                                    } else {
+                                        output.push(pathList.slice(0))
+                                    }
+                                })
+
+                                visited[source] = false
+                            }
+
+                            return output.sort((a, b) => a.length - b.length)
+                        }
+
+                        
 
                         let g = this.toGraph(this.props.stories.active)
-                        const paths = DFS(g, this.state.source.cluster.label, node.cluster.label)
+                        let paths = null
 
+                        if (this.state.source == node) {
+                            paths = ALL_PATHS(g, this.state.source.cluster.label)
+                            console.log(paths)
+                        } else {
+                            paths = DFS(g, this.state.source.cluster.label, node.cluster.label)
+                        }
 
                         if (paths.length > 0) {
                             let mainPath = paths[0].map(id => this.state.nodes.find(e => e.cluster.label == id).cluster)
@@ -313,7 +355,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                                     return {
                                         nodes: path,
                                         edges: edges,
-                                        syncNodes: getSyncNodes({ nodes: mainPath, edges: mainEdges }, { nodes: path, edges: edges })
+                                        syncNodes: getSyncNodesAlt(mainPath, path)
                                     }
                                 })
                             })

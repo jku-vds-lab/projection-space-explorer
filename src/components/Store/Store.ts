@@ -16,7 +16,6 @@ import storyMode from "../Ducks/StoryModeDuck";
 import currentAggregation from "../Ducks/AggregationDuck";
 import selectedClusters from "../Ducks/SelectedClustersDuck";
 import { viewTransform } from "../Ducks/ViewTransformDuck";
-import currentClusters from "../Ducks/CurrentClustersDuck";
 import projectionParams from "../Ducks/ProjectionParamsDuck";
 import checkedShapes from "../Ducks/CheckedShapesDuck";
 import projectionWorker from "../Ducks/ProjectionWorkerDuck";
@@ -39,7 +38,6 @@ const allReducers = {
   currentTool: currentTool,
   currentAggregation: currentAggregation,
   stories: stories,
-  currentClusters: currentClusters,
   openTab: openTab,
   clusterEdges: clusterEdges,
   selectedVectorByShape: selectedVectorByShape,

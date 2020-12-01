@@ -24,18 +24,20 @@ import { setHoverState } from '../Ducks/HoverStateDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
-import { Dialog, DialogContent, Divider, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Backdrop, Dialog, DialogContent, Divider, Menu, MenuItem, Typography } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
-import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory } from '../Ducks/StoriesDuck';
-import { addCluster, removeCluster } from '../Ducks/CurrentClustersDuck';
-import * as LineUpJS from 'lineupjs'
+import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, setActiveStory, setActiveTrace } from '../Ducks/StoriesDuck';
 import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from '../Ducks/LineUpInputDuck';
 import { Story } from '../Utility/Data/Story';
+import { RenderingContextEx } from '../Utility/RenderingContextEx';
+import { Edge } from '../Utility/graphs';
+import { getSyncNodesAlt } from '../NumTs/NumTs';
+import { ClusterDragTool } from './Tools/ClusterDragTool';
+import { TraceSelectTool } from './Tools/TraceSelectTool';
 
 
 type ViewState = {
-    hoverCluster: any
     displayClusters: any
     camera: Camera
     menuX: number
@@ -46,7 +48,6 @@ type ViewState = {
 const mapStateToProps = (state: RootState) => ({
     currentTool: state.currentTool,
     currentAggregation: state.currentAggregation,
-    clusters: state.currentClusters,
     vectorByShape: state.vectorByShape,
     checkedShapes: state.checkedShapes,
     dataset: state.dataset,
@@ -77,15 +78,15 @@ const mapDispatchToProps = dispatch => ({
     setHoverState: hoverState => dispatch(setHoverState(hoverState)),
     setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping)),
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
-    removeCluster: cluster => dispatch(removeCluster(cluster)),
     setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
     setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
     setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
-    addCluster: cluster => dispatch(addCluster(cluster)),
     addStory: story => dispatch(addStory(story)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
-    setActiveStory: story => dispatch(setActiveStory(story))
+    setActiveStory: story => dispatch(setActiveStory(story)),
+    addEdgeToActive: edge => dispatch(addEdgeToActive(edge)),
+    setActiveTrace: trace => dispatch(setActiveTrace(trace))
 })
 
 
@@ -101,6 +102,8 @@ type Props = PropsFromRedux
 
 export const WebGLView = connector(class extends React.Component<Props, ViewState> {
     lasso: LassoSelection
+    clusterDrag: ClusterDragTool
+    traceSelect: TraceSelectTool
     particles: PointVisualization
     containerRef: any
     selectionRef: any
@@ -147,13 +150,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.containerRef = React.createRef()
         this.selectionRef = React.createRef()
         this.physicsRef = React.createRef()
-        this.mouseDown = false
 
         this.initMouseController()
 
         this.mouse = { x: 0, y: 0 }
-        this.mouseDownPosition = { x: 0, y: 0 }
-        this.initialMousePosition = null
 
         this.currentHover = null
 
@@ -161,7 +161,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             // clusters to display using force-directed layout
             displayClusters: [],
             camera: null,
-            hoverCluster: undefined,
             menuX: null,
             menuY: null,
             menuTarget: null
@@ -178,15 +177,24 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
      * Initializes the callbacks for the MouseController.
      */
     initMouseController() {
-        this.mouseController.onDragStart = (event: MouseEvent, button: number) => {
-            //console.log("on drag start")
+        this.mouseController.onDragStart = (event: MouseEvent, button: number, initial: nt.VectorType) => {
             switch (button) {
                 case 0:
-                    if (this.props.currentTool == Tool.Default) {
-                        let initialWorld = CameraTransformations.screenToWorld({ x: event.offsetX, y: event.offsetY }, this.createTransform())
+                    switch (this.props.currentTool) {
+                        case Tool.Default:
+                            // Check if we have dragged from a cluster
+                            let cluster = this.chooseCluster(initial)
+                            if (cluster) {
+                                // Initiate action to let user drag an arrow to other cluster
+                                this.clusterDrag = new ClusterDragTool(cluster)
+                            } else {
+                                // Initiate lasso selection
+                                let initialWorld = CameraTransformations.screenToWorld(initial, this.createTransform())
 
-                        this.lasso = new LassoSelection()
-                        this.lasso.mouseDown(true, initialWorld.x, initialWorld.y)
+                                this.lasso = new LassoSelection()
+                                this.lasso.mouseDown(true, initialWorld.x, initialWorld.y)
+                            }
+                            break;
                     }
                     break;
             }
@@ -197,30 +205,44 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             // console.log("on drag end")
             switch (button) {
                 case 0:
-                    if (this.props.currentTool == Tool.Default) {
-                        let coords = CameraTransformations.screenToWorld({ x: event.offsetX, y: event.offsetY }, this.createTransform())
-                        if (this.lasso != null) {
-                            // If there is an active lasso, process it
-                            var wasDrawing = this.lasso.drawing
+                    switch (this.props.currentTool) {
+                        case Tool.Default:
+                            let coords = CameraTransformations.screenToWorld({ x: event.offsetX, y: event.offsetY }, this.createTransform())
 
-                            this.lasso.mouseUp(coords.x, coords.y)
-
-                            var indices = this.lasso.selection(this.props.dataset.vectors, (vector) => this.particles.isPointVisible(vector))
-                            if (indices.length > 0 && wasDrawing) {
-                                var selected = indices.map(index => this.props.dataset.vectors[index])
-
-                                if (event.shiftKey) {
-                                    this.props.toggleAggregation(selected)
-                                } else {
-                                    this.props.setCurrentAggregation(selected)
+                            // In case we dragged a cluster... connect them
+                            if (this.clusterDrag) {
+                                let cluster = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
+                                if (cluster) {
+                                    this.props.addEdgeToActive(new Edge(this.clusterDrag.cluster, cluster, null))
                                 }
 
-                            } else if (wasDrawing) {
-                                this.clearSelection()
+                                this.clusterDrag = null
                             }
 
-                            this.lasso = null
-                        }
+                            // In case we have a lasso, select states
+                            if (this.lasso) {
+                                // If there is an active lasso, process it
+                                var wasDrawing = this.lasso.drawing
+
+                                this.lasso.mouseUp(coords.x, coords.y)
+
+                                var indices = this.lasso.selection(this.props.dataset.vectors, (vector) => this.particles.isPointVisible(vector))
+                                if (indices.length > 0 && wasDrawing) {
+                                    var selected = indices.map(index => this.props.dataset.vectors[index])
+
+                                    if (event.shiftKey) {
+                                        this.props.toggleAggregation(selected)
+                                    } else {
+                                        this.props.setCurrentAggregation(selected)
+                                    }
+
+                                } else if (wasDrawing) {
+                                    this.clearSelection()
+                                }
+
+                                this.lasso = null
+                            }
+                            break;
                     }
                     break;
             }
@@ -231,9 +253,20 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
             switch (button) {
                 case 0:
-                    if (this.props.currentTool == Tool.Default) {
-                        let coords = CameraTransformations.screenToWorld({ x: event.offsetX, y: event.offsetY }, this.createTransform())
-                        this.lasso?.mouseMove(coords.x, coords.y)
+                    switch (this.props.currentTool) {
+                        case Tool.Default:
+                            let coords = CameraTransformations.screenToWorld({ x: event.offsetX, y: event.offsetY }, this.createTransform())
+                            this.lasso?.mouseMove(coords.x, coords.y)
+                            break;
+                        case Tool.Move:
+                            this.camera.position.x = this.camera.position.x - CameraTransformations.pixelToWorldCoordinates(event.movementX, this.createTransform())
+                            this.camera.position.y = this.camera.position.y + CameraTransformations.pixelToWorldCoordinates(event.movementY, this.createTransform())
+
+                            this.camera.updateProjectionMatrix()
+                            this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight())
+
+                            this.requestRender()
+                            break;
                     }
                     break;
                 case 2:
@@ -251,10 +284,20 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.mouseController.onContext = (event: MouseEvent, button: number) => {
             //console.log("on context")
 
-            switch (button) {
-                case 0:
-                    if (this.props.currentTool == Tool.Default) {
-                        if (this.currentHover != null) {
+            if (this.props.currentTool == Tool.Default) {
+                switch (button) {
+                    case 0:
+                        if (this.props.displayMode == DisplayMode.OnlyClusters) {
+                            break;
+                        }
+                        if (this.props.activeLine) {
+                            break;
+                        }
+
+                        
+
+
+                        if (this.currentHover && this.currentHover instanceof Vect) {
                             if (event.shiftKey) {
                                 // There is a hover target ... select it
                                 this.props.toggleAggregation([this.currentHover])
@@ -262,32 +305,120 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                                 this.props.setCurrentAggregation([this.currentHover])
                             }
                         }
+
+
+                        break;
+                    case 2:
+                        let cluster = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
+
+                        if (cluster) {
+                            this.setState({
+                                menuX: event.clientX,
+                                menuY: event.clientY,
+                                menuTarget: cluster
+                            })
+                        } else {
+                            this.setState({
+                                menuX: event.clientX,
+                                menuY: event.clientY,
+                                menuTarget: null
+                            })
+                        }
+
+                        break;
+                }
+            } else if (this.props.currentTool == Tool.Grab) {
+                // In case we have a line in the sequence UI
+                if (this.props.activeLine) {
+                    return;
+                }
+
+
+                if (event.button == 0) {
+                    let selected = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
+
+                    // Toggle
+                    if (selected) {
+                        this.onClusterClicked(selected)
                     }
-
-                    break;
-                case 2:
-                    let cluster = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
-
-                    if (cluster) {
-                        this.setState({
-                            menuX: event.clientX,
-                            menuY: event.clientY,
-                            menuTarget: cluster
-                        })
-                    } else {
-                        this.setState({
-                            menuX: event.clientX,
-                            menuY: event.clientY,
-                            menuTarget: null
-                        })
-                    }
-
-                    break;
+                }
             }
         }
 
         this.mouseController.onMouseUp = (event: MouseEvent) => {
             //console.log("mouse up")
+        }
+
+
+        this.mouseController.onMouseMove = (event: MouseEvent) => {
+            switch (this.props.currentTool) {
+                case Tool.Default:
+                    if (this.props.displayMode == DisplayMode.OnlyClusters) {
+                        break;
+                    }
+
+                    // In case we have a line in the sequence UI
+                    if (this.props.activeLine) {
+                        break;
+                    }
+
+                    if (this.infoTimeout != null) {
+                        clearTimeout(this.infoTimeout)
+                    }
+
+                    this.infoTimeout = setTimeout(() => {
+                        this.infoTimeout = null
+
+                        let cluster = this.chooseCluster(this.mouseController.currentMousePosition)
+                        if (cluster) {
+                            if (this.currentHover != cluster) {
+                                this.currentHover = cluster
+                                this.props.setHoverState(cluster)
+
+                                if (this.props.dataset.isSequential) {
+                                    this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+                                }
+                                this.particles.highlight(-1)
+
+                                this.requestRender()
+                            }
+                        } else {
+                            let coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform())
+
+                            // Get index of selected node
+                            var idx = this.choose(coords)
+                            this.particles.highlight(idx)
+
+                            if (this.props.dataset.isSequential) {
+                                if (idx >= 0) {
+                                    this.lines.highlight([this.props.dataset.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
+                                } else {
+                                    this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+                                }
+                            }
+
+
+
+                            if (idx >= 0) {
+                                if (this.currentHover != this.props.dataset.vectors[idx]) {
+                                    this.currentHover = this.props.dataset.vectors[idx]
+
+                                    this.props.setHoverState(this.props.dataset.vectors[idx])
+                                    this.requestRender()
+                                }
+                            } else {
+                                if (this.currentHover) {
+                                    this.currentHover = null
+                                    this.props.setHoverState(null)
+                                    this.requestRender()
+                                }
+                            }
+                        }
+                    }, 10);
+
+                    break;
+            }
+
         }
     }
 
@@ -297,7 +428,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         let nearest = null
         let min = Number.MAX_SAFE_INTEGER
 
-        this.props.clusters?.forEach(cluster => {
+        this.props.stories.active?.clusters.forEach(cluster => {
             let clusterScreen = CameraTransformations.worldToScreen(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y), this.createTransform())
             let dist = nt.euclideanDistance(screenPosition.x, screenPosition.y, clusterScreen.x, clusterScreen.y)
 
@@ -386,22 +517,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.requestRender()
     }
 
-    onMouseDown(event) {
-        this.mouseController.mouseDown(event)
 
-        event.preventDefault();
-
-
-        switch (event.button) {
-            case 0:
-                this.mouseDown = true
-                this.initialMousePosition = new THREE.Vector2(event.offsetX, event.offsetY)
-                this.mouseDownPosition = this.normaliseMouse(event)
-                break;
-            default:
-                break;
-        }
-    }
 
 
     onKeyDown(event) {
@@ -409,195 +525,24 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
 
-
+    onMouseDown(event) {
+        event.preventDefault()
+        this.mouseController.mouseDown(event)
+    }
 
     onMouseMove(event) {
-
-        this.mouseController.mouseMove(event)
-
         event.preventDefault();
-
-        var bounds = this.containerRef.current.getBoundingClientRect()
-        var coords = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
-
-        switch (this.props.currentTool) {
-            case Tool.Default:
-                if (this.props.displayMode == DisplayMode.OnlyClusters) {
-                    break;
-                }
-
-                // In case we have a line in the sequence UI
-                if (this.props.activeLine) {
-                    break;
-                }
-
-                if (this.infoTimeout != null) {
-                    clearTimeout(this.infoTimeout)
-                }
-                if (!this.mouseDown) {
-                    this.infoTimeout = setTimeout(() => {
-                        this.infoTimeout = null
-
-                        // Get index of selected node
-                        var idx = this.choose(coords)
-                        this.particles.highlight(idx)
-
-                        if (this.props.dataset.isSequential) {
-                            if (idx >= 0) {
-                                this.lines.highlight([this.props.dataset.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
-                            } else {
-                                this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
-                            }
-                        }
-
-                        var list = []
-                        if (idx >= 0) {
-                            if (this.currentHover != this.props.dataset.vectors[idx]) {
-                                this.currentHover = this.props.dataset.vectors[idx]
-                                list.push(this.props.dataset.vectors[idx])
-                                this.props.setHoverState(list)
-                                this.requestRender()
-                            }
-                        } else {
-                            if (this.currentHover) {
-                                this.currentHover = null
-                                this.props.setHoverState(list)
-                                this.requestRender()
-                            }
-                        }
-                    }, 10);
-                }
-                break;
-            case Tool.Move:
-                // If the selected tool is the move tool, process it
-                this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-
-                if (this.mouseDown) {
-                    this.camera.position.x = this.camera.position.x - (this.mouse.x - this.mouseDownPosition.x) * (600 / this.camera.zoom);
-                    this.camera.position.y = this.camera.position.y - (this.mouse.y - this.mouseDownPosition.y) * (600 / this.camera.zoom);
-                    this.mouseDownPosition = this.normaliseMouse(event)
-                    this.camera.updateProjectionMatrix()
-
-                    this.requestRender()
-
-                    this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight())
-                }
-                break;
-            case Tool.Grab:
-                // In case we have a line in the sequence UI
-                if (this.props.activeLine) {
-                    break;
-                }
-                var found = false
-                this.props.clusters?.forEach(cluster => {
-                    switch (this.props.clusterMode) {
-                        case ClusterMode.Univariate: {
-                            if (cluster.containsPoint(coords)) {
-                                if (isPointInConvaveHull(coords, cluster.hull.map(h => ({ x: h[0], y: h[1] })))) {
-                                    found = true
-                                    if (this.state.hoverCluster != cluster) {
-                                        this.setState({
-                                            hoverCluster: cluster
-                                        })
-                                    }
-                                }
-                            }
-                        }
-                        case ClusterMode.Multivariate: {
-                            if (new THREE.Vector2(coords.x, coords.y).distanceTo(new THREE.Vector2(cluster.getCenter().x, cluster.getCenter().y)) < 1) {
-                                found = true
-                                if (this.state.hoverCluster != cluster) {
-                                    this.setState({
-                                        hoverCluster: cluster
-                                    })
-                                }
-
-                            }
-                        }
-                    }
-                })
-                if (!found && this.state.hoverCluster) {
-                    this.setState({
-                        hoverCluster: null
-                    })
-                }
-                break;
-        }
+        this.mouseController.mouseMove(event)
     }
 
     onMouseUp(event: MouseEvent) {
-
+        event.preventDefault()
         this.mouseController.mouseUp(event)
 
         var bounds = this.containerRef.current.getBoundingClientRect()
         var coords = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
 
         switch (this.props.currentTool) {
-            case Tool.Default:
-                // In case we have a line in the sequence UI
-                if (this.props.displayMode == DisplayMode.OnlyClusters) {
-                    break;
-                }
-                if (this.props.activeLine) {
-                    break;
-                }
-
-
-                /**if (this.lasso != null) {
-                    // If there is an active lasso, process it
-                    var wasDrawing = this.lasso.drawing
-
-                    this.lasso.mouseUp(coords.x, coords.y)
-
-                    var indices = this.lasso.selection(this.props.dataset.vectors, (vector) => this.particles.isPointVisible(vector))
-                    if (indices.length > 0 && wasDrawing) {
-                        var selected = indices.map(index => this.props.dataset.vectors[index])
-
-                        if (event.shiftKey) {
-                            this.props.toggleAggregation(selected)
-                        } else {
-                            this.props.setCurrentAggregation(selected)
-                        }
-
-                    } else if (wasDrawing) {
-                        this.clearSelection()
-                    }
-
-                    this.lasso = null
-                } else {
-                    if (this.currentHover != null && event.button == 0) {
-                        if (event.shiftKey) {
-                            // There is a hover target ... select it
-                            this.props.toggleAggregation([this.currentHover])
-                        } else {
-                            this.props.setCurrentAggregation([this.currentHover])
-                        }
-
-                    }
-                }**/
-
-                break;
-            case Tool.Grab:
-                // In case we have a line in the sequence UI
-                if (this.props.activeLine) {
-                    break;
-                }
-
-
-                if (event.button == 0) {
-                    let selected = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
-
-                    // Toggle
-                    if (selected) {
-                        this.onClusterClicked(selected)
-                    }
-                }
-
-
-
-                break;
             case Tool.Crosshair:
                 if (this.props.displayMode == DisplayMode.OnlyClusters) {
                     break;
@@ -613,7 +558,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.particles.update()
-        this.mouseDown = false;
     }
 
 
@@ -833,8 +777,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.camera.updateProjectionMatrix();
 
         this.requestRender()
-
-
     }
 
 
@@ -897,10 +839,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         try {
             this.renderLoop()
-        }
-        catch {
-
-        }
+        } catch (e) { console.log(e) }
     }
 
 
@@ -931,17 +870,30 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
 
+    /**
+     * Render function that gets called with the display refresh rate.
+     * Only render overlays here like the lasso selection etc.
+     * The rendering of the states + lines and stuff that does not need to be
+     * re-rendered for animations should be put in 'requestRender'
+     */
     renderLoop() {
-        var ctx = this.selectionRef.current.getContext()
-        ctx.clearRect(0, 0, this.getWidth(), this.getHeight(), 'white');
+        var ctx = this.selectionRef.current.getContext() as CanvasRenderingContext2D
+        let extended = new RenderingContextEx(ctx, window.devicePixelRatio)
+        ctx.clearRect(0, 0, this.getWidth(), this.getHeight());
 
         this.selectionRef.current.setDimensions(this.getWidth() * window.devicePixelRatio,
             this.getHeight() * window.devicePixelRatio)
 
         this.renderLasso(ctx)
 
+        if (this.clusterDrag) {
+            this.clusterDrag.renderToContext(extended, CameraTransformations.worldToScreen(this.clusterDrag.cluster.getCenter(), this.createTransform()), this.mouseController.currentMousePosition)
+        }
 
-
+        if (this.traceSelect) {
+            this.traceSelect.viewTransform = this.createTransform()
+            this.traceSelect.renderToContext(extended)
+        }
 
         if (this.props.highlightedSequence != null) {
             this.selectionRef.current.renderHighlightedSequence(ctx, this.props.highlightedSequence)
@@ -1223,7 +1175,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     repositionClusters() {
         this.multivariateClusterView?.current.updatePositions(this.camera.zoom)
         this.multivariateClusterView?.current.iterateTrail(this.camera.zoom)
-        this.multivariateClusterView?.current.createTriangulatedMesh(this.props.clusters)
+        this.multivariateClusterView?.current.createTriangulatedMesh()
     }
 
     renderEdge(ctx) {
@@ -1296,22 +1248,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 height: "100%"
             }} ref={this.containerRef} tabIndex={0}>
 
-                {
-                    this.state.hoverCluster != null && this.props.currentTool == Tool.Grab ?
-                        <div
-                            className='speech-bubble-ds'
-                            style={{
-                                position: 'absolute',
-                                right: this.getWidth() - CameraTransformations.worldToScreen(this.state.hoverCluster.getCenter(this.vectors), this.createTransform()).x,
-                                bottom: this.getHeight() - CameraTransformations.worldToScreen(this.state.hoverCluster.getCenter(this.vectors), this.createTransform()).y - 10,
-                            }}>
-                            <Typography>{this.state.hoverCluster.getTextRepresentation()}</Typography>
-                        </div>
 
-
-                        :
-                        <div></div>
-                }
 
 
             </div>
@@ -1364,7 +1301,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     // Set LineUp input to null closes it
                     if (this.props.currentAggregation.length > 0) {
                         let cluster = Cluster.fromSamples(this.props.currentAggregation)
-                        this.props.addCluster(cluster)
+
                         if (!this.props.stories.active) {
                             let story = new Story([cluster], [])
                             this.props.addStory(story)
@@ -1393,14 +1330,49 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             >
                 <MenuItem onClick={() => {
                     this.props.removeClusterFromStories(this.state.menuTarget)
-                    this.props.removeCluster(this.state.menuTarget)
 
 
                     handleClose()
-                }}>Delete Cluster</MenuItem>
+                }}>{'Delete Cluster'}</MenuItem>
+
+                <MenuItem onClick={() => {
+                    let paths = this.props.stories.active.getAllStoriesFromSource(this.state.menuTarget.label)
+
+                    if (paths.length > 0) {
+                        let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                        let mainEdges = mainPath.slice(1).map((item, index) => {
+                            return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
+                        })
+                        this.props.setActiveTrace({
+                            mainPath: mainPath,
+                            mainEdges: mainEdges,
+                            sidePaths: paths.slice(1).map(ids => {
+                                let path = ids.map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                                let edges = path.slice(1).map((item, index) => {
+                                    return this.props.stories.active.edges.find(edge => edge.source == path[index] && edge.destination == item)
+                                })
+                                return {
+                                    nodes: path,
+                                    edges: edges,
+                                    syncNodes: getSyncNodesAlt(mainPath, path)
+                                }
+                            })
+                        })
+                    }
+
+                    handleClose()
+                }}>{"Stories ... Starting from this Cluster"}</MenuItem>
+
+                <MenuItem onClick={() => {
+                    this.traceSelect = new TraceSelectTool(this.state.menuTarget)
+
+                    handleClose()
+                }}>{"Stories ... Between 2 Clusters"}</MenuItem>
+
             </Menu>
 
-            
+
+
         </div>
     }
 })
