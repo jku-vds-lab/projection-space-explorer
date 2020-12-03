@@ -13,7 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { ChiSquareTest } from './ChiSquare'
-import TextScatter from './VegaTextScatter.js';
+import BarChanges from './VegaBarChanges.js';
 import Boxplot from './VegaBoxplot.js';
 import { Dataset } from '../../Utility/Data/Dataset';
 import { Vect } from '../../Utility/Data/Vect';
@@ -295,7 +295,7 @@ function mapCategoricalChangesData(setA, setB, feature) {
 
 function getCategoricalVis(a, b, feature) {
   const data = mapCategoricalChangesData(a, b, feature)
-  return <div><b>{feature}</b><br/><TextScatter data={data} actions={false} tooltip={new Handler().call}/></div>
+  return <div><b>{feature}</b><br/><BarChanges data={data} actions={false} tooltip={new Handler().call}/></div>
 }
 
 function mapContinuousChangesData(a, b, feature) {
