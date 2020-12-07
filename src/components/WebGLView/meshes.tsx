@@ -928,7 +928,6 @@ export class PointVisualization {
     var selected = this.mesh.geometry.attributes.selected.array
 
     this.vectors.forEach(vector => {
-      console.log(this.isPointVisible(vector))
       if (this.isPointVisible(vector)) {
         show[vector.view.meshIndex] = 1.0
       } else {

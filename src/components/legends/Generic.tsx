@@ -19,14 +19,17 @@ import { ChessFingerprint } from "./ChessFingerprint/ChessFingerprint";
 import { DatasetType } from "../Utility/Data/DatasetType";
 import { Vect } from "../Utility/Data/Vect";
 import { Dataset } from "../Utility/Data/Dataset";
+import { ChemLegend } from "./ChemDetail/ChemDetail";
 
 type GenericLegendProps = {
     type: DatasetType
     vectors: Vect[]
     aggregate: boolean
+    columns?: any
 }
 
-export var GenericLegend = ({ type, vectors, aggregate }: GenericLegendProps) => {
+//shows single and aggregated view
+export var GenericLegend = ({ type, vectors, aggregate, columns }: GenericLegendProps) => {
     switch (type) {
         case DatasetType.Story:
             return <StoryLegend selection={vectors}></StoryLegend>
@@ -40,6 +43,8 @@ export var GenericLegend = ({ type, vectors, aggregate }: GenericLegendProps) =>
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
+        case DatasetType.Chem:
+            return <ChemLegend selection={vectors} aggregate={aggregate} columns={columns}></ChemLegend>
         default:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
     }
@@ -53,6 +58,7 @@ type GenericFingerprintProps = {
     scale: number
 }
 
+//for storytelling?
 export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({ type, vectors, scale }: GenericFingerprintProps) => {
     switch (type) {
         case DatasetType.Rubik:

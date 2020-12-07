@@ -63,7 +63,7 @@ import { rootReducer } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { LineUpContext } from "./LineUpContext/LineUpContext";
 import { devToolsEnhancer } from 'redux-devtools-extension';
-
+import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
 
 
 
@@ -141,7 +141,10 @@ const mapDispatchToProps = dispatch => ({
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
   setSelectedClusters: value => dispatch(setSelectedClusters(value)),
   wipeState: () => dispatch({ type: 'RESET_APP' }),
-  setChannelColor: channelColor => dispatch(setChannelColor(channelColor))
+  setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
+  setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
+  setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
+  setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
 })
 
 
@@ -248,6 +251,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.threeRef.current.createVisualization(dataset, lineScheme, null)
 
     this.finite(lineScheme, json, dataset)
+
+    this.props.setLineUpInput_columns(dataset.columns);
+    this.props.setLineUpInput_data(dataset.vectors);
   }
 
 

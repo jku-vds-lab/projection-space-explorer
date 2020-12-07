@@ -27,24 +27,67 @@ class EnableCors(object):
 app = bottle.app()
 
 
+import os
+import time
+def cleanup_temp(): # TODO: cleanup temp-files, if they are older than one day? or only keep the 5 most recent files?
+    now = time.time()
+    folder = './temp-files'
+    files = [os.path.join(folder, filename) for filename in os.listdir(folder)]
+    for filename in files:
+        if (now - os.stat(filename).st_mtime) > 3600: #remove files that were last modified one hour ago
+            os.remove(filename)
+
 
 import os
-@app.route('/get_csv', method=['POST'])
-def sdf_to_csv():
-    fileUpload = request.files.get("myFile")
+import time
+@app.route('/upload_sdf', method=['OPTIONS', 'POST'])
+def upload_sdf():
+    if request.method == 'POST':
+        cleanup_temp()
+        fileUpload = request.files.get("myFile")
+        # TODO: find a solution that does not need to save a temp file... or maybe not?
+        # print(fileUpload.file.read().decode())
+        # print(fileUpload.file.read())
+        # print(fileUpload.file) # temporaryFileWrapper
+        filename = "%i%s"%(time.time(), fileUpload.filename)
+        fileUpload.save("./temp-files/%s"%filename, overwrite=True) # the save method can take a file-like object... https://www.kite.com/python/docs/bottle.FileUpload
+        
+        return {
+            'filename': fileUpload.filename,
+            'unique_filename': filename,
+        }
+    else:
+        return {}
 
-    if os.path.exists("temp.sdf"):
-        os.remove("temp.sdf")
-    fileUpload.save("temp.sdf")
 
-    suppl = Chem.SDMolSupplier("temp.sdf")
+from io import StringIO
+import pandas as pd
+from rdkit.Chem import PandasTools
+@app.route('/get_csv/<filename>', method=['GET'])
+def sdf_to_csv(filename):
+    frame = PandasTools.LoadSDF("./temp-files/%s"%filename, embedProps=True,smilesName='SMILES',molColName='Molecule')
+    frame = frame.drop(columns=[x for x in frame.columns if x.startswith('atom')])
+    frame = frame.drop(columns=["Molecule"])
 
-    for mol in suppl:
-        print(Chem.MolToSmiles(mol))
-
-    return {
-        'result': 'ok'
-    }
+    new_cols = []
+    for col in frame.columns:
+        modifier = ""
+        if col.startswith('fingerprint'):
+            modifier = "%slineup_none;"%modifier # this modifier tells lineup that the column should not be viewed at all (remove this modifier, if you want to be able to add the column with the sideview of lineup)
+        else:
+            modifier = "%slineup_show;"%modifier # this modifier tells lineup that the column should be initially viewed
+            
+        if col == "SMILES":
+            modifier = "%ssmiles_to_img;"%modifier # this modifier tells lineup that a structure image of this smiles string should be loaded
+            
+        
+        new_cols.append("%s[%s]"%(col,modifier[0:-1])) # remove the last semicolon
+        
+    frame.columns = new_cols
+    csv_buffer = StringIO()
+    frame.to_csv(csv_buffer, index=False)
+    
+    return csv_buffer.getvalue()
 
 
 from bottle import static_file
@@ -62,21 +105,76 @@ def smiles_to_img(smiles):
 
     return static_file('mol_temp.jpg', root="./")
 
+def smiles_to_base64(smiles):
+    m = Chem.MolFromSmiles(smiles)
+    return mol_to_base64(m)
+
+def mol_to_base64(m):
+    pil_img = Draw.MolToImage(m)
+
+    buffered = BytesIO()
+    pil_img.save(buffered, format="JPEG")
+    img_str = base64.b64encode(buffered.getvalue())
+    buffered.close()
+    return img_str.decode("utf-8")
+
+from io import BytesIO
+from PIL import Image
+def mol_to_base64_highlight(mol, patt):
+    d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(200, 200)
+    hit_ats = list(mol.GetSubstructMatch(patt))
+    hit_bonds = []
+    for bond in patt.GetBonds():
+        aid1 = hit_ats[bond.GetBeginAtomIdx()]
+        aid2 = hit_ats[bond.GetEndAtomIdx()]
+        hit_bonds.append(mol.GetBondBetweenAtoms(aid1,aid2).GetIdx())
+    
+    Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds)
+    d.FinishDrawing()
+
+    stream = BytesIO(d.GetDrawingText())
+    # image = Image.open(stream).convert("RGBA")
+
+    img_str = base64.b64encode(stream.getvalue())
+    stream.close()
+    return img_str.decode("utf-8")
 
 from rdkit.Chem import Draw
 import base64
 from io import BytesIO
 @app.route('/get_mol_img', method=['OPTIONS', 'POST'])
-def smiles_to_img():
+def smiles_to_img_post():
     if request.method == 'POST':
         smiles = request.forms.get("smiles")
-        m = Chem.MolFromSmiles(smiles)
-        pil_img = Draw.MolToImage(m)
+        return smiles_to_base64(smiles)
+    else:
+        return {}
 
-        buffered = BytesIO()
-        pil_img.save(buffered, format="JPEG")
-        img_str = base64.b64encode(buffered.getvalue())
-        return img_str.decode("utf-8")
+
+from rdkit import Chem
+from rdkit.Chem import TemplateAlign
+@app.route('/get_mol_imgs', method=['OPTIONS', 'POST'])
+def smiles_list_to_imgs():
+    if request.method == 'POST':
+        smiles_list = request.forms.getall("smiles_list")
+
+        if len(smiles_list) == 0:
+            return {}
+        if len(smiles_list) == 1:
+            return smiles_to_base64(smiles_list[0])
+
+        mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
+        res=Chem.rdFMCS.FindMCS(mol_lst, ringMatchesRingOnly=True) # there are different settings possible here
+        patt = res.queryMol
+        TemplateAlign.rdDepictor.Compute2DCoords(patt)
+
+        img_lst = []
+        for mol in mol_lst:
+            TemplateAlign.rdDepictor.Compute2DCoords(mol)
+            TemplateAlign.AlignMolToTemplate2D(mol,patt,clearConfs=True)
+            img_lst.append(mol_to_base64_highlight(mol, patt))
+
+        return {"img_lst": img_lst}
     else:
         return {}
 
@@ -86,7 +184,11 @@ from rdkit.Chem import rdFMCS
 def smiles_list_to_common_substructure_img():
     if request.method == 'POST':
         smiles_list = request.forms.getall("smiles_list")
-        
+        if len(smiles_list) == 0:
+            return {}
+        if len(smiles_list) == 1:
+            return smiles_to_base64(smiles_list[0])
+
         mol_list = [ Chem.MolFromSmiles(smiles) for smiles in smiles_list ]
         res = rdFMCS.FindMCS(mol_list, matchValences=True, ringMatchesRingOnly=True)
         m = res.queryMol

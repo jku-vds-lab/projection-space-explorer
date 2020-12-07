@@ -34,6 +34,7 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "regenerator-runtime": "^0.13.3",
+    "serve-dist": "^1.0.11",
     "sigma-webpack": "^1.2.0-1",
     "three": "^0.117.1",
     "three.meshline": "^1.2.0",

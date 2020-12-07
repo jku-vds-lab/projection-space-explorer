@@ -1,11 +1,8 @@
-import { FeatureType } from "../Data/FeatureType"
 import { DatasetType } from "../Data/DatasetType"
 import { Vect } from "../Data/Vect"
-import { InferCategory } from "../Data/InferCategory"
-import { Preprocessor } from "../Data/Preprocessor"
-import { Dataset } from "../Data/Dataset"
 import { Loader } from "./Loader"
-import { DatasetEntry } from "../Data/DatasetDatabase"
+import { CSVLoader } from "./CSVLoader"
+import * as backend_utils from "../../../utils/backend-connect";
 
 
 var d3v5 = require('d3')
@@ -27,25 +24,21 @@ export class SDFLoader implements Loader {
     }
 
     
-    resolveContent(file, finished) {
-              
-        const formData = new FormData()
-        formData.append('myFile', file)
-
-        fetch('http://127.0.0.1:8080/get_csv', {
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => console.log("response", response.json()))
-        .then(data => {
-            console.log("data", data)
+    resolveContent(file, finished) { //TODO: lineup not working with modifiers
+        backend_utils.upload_sdf_file(file).then(data => {
+            // request the server to return a csv file using the unique filename
+            d3v5.csv('http://127.0.0.1:8080/get_csv/' + data["unique_filename"]).then(vectors => {
+                this.vectors = convertFromCSV(vectors);
+                this.datasetType = DatasetType.Chem;
+                new CSVLoader().resolve(finished, this.vectors, this.datasetType, { display: "", type: this.datasetType, path: data["unique_filename"] });
+            });
         })
         .catch(error => {
-            console.error(error)
-        })
-        // this.vectors = convertFromCSV(d3v5.csvParse(content))
-        // this.datasetType = new InferCategory(this.vectors).inferType()
+            console.error(error);
+        });
 
     }
+
+    
 
 }

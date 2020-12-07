@@ -56,6 +56,10 @@ export class InferCategory {
             return DatasetType.Go;
         }
 
+        if (header.toString().toLowerCase().includes('smiles')){
+            return DatasetType.Chem;
+        }
+
         return DatasetType.None;
     }
 

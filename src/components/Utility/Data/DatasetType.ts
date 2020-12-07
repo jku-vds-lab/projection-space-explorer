@@ -9,5 +9,6 @@ export enum DatasetType {
     Test,
     Story,
     Coral,
+    Chem,
     None
 }

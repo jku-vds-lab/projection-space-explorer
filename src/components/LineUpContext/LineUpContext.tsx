@@ -1,4 +1,3 @@
-// import { Folder } from "@material-ui/icons";
 import { LineUp, LineUpCategoricalColumnDesc, LineUpColumn, LineUpColumnDesc, LineUpNumberColumnDesc, LineUpStringColumnDesc } from "lineupjsx";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
@@ -8,6 +7,7 @@ import './LineUpContext.scss';
 import { setAggregationAction } from "../Ducks/AggregationDuck";
 import { Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn } from "lineupjs";
 
+import * as backend_utils from "../../utils/backend-connect";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -15,7 +15,8 @@ import { Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContex
  * @param state The whole state of the application (contains a field for each duck!)
  */
 const mapStateToProps = (state: RootState) => ({
-    lineUpInput: state.lineUpInput
+    lineUpInput: state.lineUpInput,
+    currentAggregation: state.currentAggregation
 })
 
 
@@ -54,7 +55,12 @@ type Props = PropsFromRedux & {
     // My own property 2
 }
 
-
+function arrayEquals(a, b) {
+    return Array.isArray(a) &&
+      Array.isArray(b) &&
+      a.length === b.length &&
+      a.every((val, index) => val === b[index]);
+  }
 
 // taken from: https://github.com/VirginiaSabando/ChemVA/blob/master/ChemVA_client/public/main.js
 var colors = ['#000000','#E69F00','#56B4E9','#009E73','#F0E442', '#0072B2', '#D55E00','#CC79A7'];
@@ -62,7 +68,7 @@ var cur_col = 0;
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggregation, onFilter }: Props) {
+export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, onFilter }: Props) {
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
         return null;
@@ -89,13 +95,6 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
 
                 onFilter()
 
-                // let agg = []
-
-                // current.forEach(index => {
-                //     agg.push(lineUpInput.data[index])
-                // })
-
-                //setCurrentAggregation(agg) 
             }
 
             onRankingChanged(current)
@@ -103,15 +102,40 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
         })
 
         // @ts-ignore
+        const lineup = ref.current.adapter.instance;
+
+        lineup.on('selectionChanged', e => {
+            const currentSelection_lineup = lineup.getSelection();
+            if(currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
+            
+            const currentSelection_scatter = lineUpInput.data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
+            
+            if(!arrayEquals(currentSelection_lineup, currentSelection_scatter)){ // need to check, if the current lineup selection is already the current aggregation
+                let agg = [];
+                currentSelection_lineup.forEach(index => {
+                    agg.push(lineUpInput.data[index]);
+                })
+
+                setCurrentAggregation(agg);
+            }
+        });
+
         if(smiles_col)
-            // @ts-ignore
-            ref.current.adapter.instance.data.getFirstRanking().columns.find(x => x.label == smiles_col).on("widthChanged", (prev, current) => {
-                // @ts-ignore
-                ref.current.adapter.instance.update()
+            lineup.data.getFirstRanking().columns.find(x => x.label == smiles_col).on("widthChanged", (prev, current) => {
+                lineup.update()
             });
 
     }, [lineUpInput.data])
 
+    // this effect is allways executed after the component is rendered when currentAggregation changed
+    React.useEffect(() => {
+        // @ts-ignore
+        const lineup = ref.current.adapter.instance;
+        if(currentAggregation && currentAggregation.length > 0){
+            const currentSelection_scatter = lineUpInput.data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
+            lineup.setSelection(currentSelection_scatter);
+        }
+    }, [currentAggregation])
 
 
 
@@ -179,48 +203,29 @@ export class MySmilesCellRenderer implements ICellRendererFactory {
     }
   
     create(col: LinkColumn): ICellRenderer {
-      return {
-        template: `<img/>`,
-        update: (n: HTMLImageElement, d: IDataRow) => {
-            const formData = new FormData();
-            formData.append('smiles', d.v[col.desc.column]);
-            fetch('http://127.0.0.1:8080/get_mol_img', {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.text())
-            .then(data => n.src = "data:image/gif;base64," + data)
-            .catch(error => {
-                console.error(error)
-            });
-        }
-      };
+        return {
+            template: `<img/>`,
+            update: (n: HTMLImageElement, d: IDataRow) => {
+                backend_utils.get_structure_from_smiles(d.v[col.desc.column]).then(x => n.src = "data:image/gif;base64," + x);
+            }
+        };
     }
   
     createGroup(col: LinkColumn, context: IRenderContext): IGroupCellRenderer {
         return {
             template: `<img/>`,
             update: (n: HTMLImageElement, group: IOrderedGroup) => {
-                let smiles_list = [];
                 const formData = new FormData();
                 return context.tasks.groupRows(col, group, 'string', (rows) => {
                         rows.every((row) => {
                             const v = col.getLabel(row);
-                            smiles_list.push(v);
                             formData.append('smiles_list', v);
                             return true;
                         });
                     })
                     .then(() => {
-                        fetch('http://127.0.0.1:8080/get_common_mol_img', {
-                            method: 'POST',
-                            body: formData,
-                        })
-                        .then(response => response.text())
-                        .then(data => n.src = "data:image/gif;base64," + data)
-                        .catch(error => {
-                            console.error(error)
-                        });
+                        backend_utils.get_mcs_from_smiles_list(formData)
+                        .then(data => n.src = "data:image/gif;base64," + data);
                     });
             }
           };
@@ -231,9 +236,4 @@ export class MySmilesCellRenderer implements ICellRendererFactory {
     }
   }
 
-//   export interface IGroup {
-//     name: string;
-//     color: string;
-//   }
-  
   
