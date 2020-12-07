@@ -12,8 +12,7 @@ export default createClassFromLiteSpec('TextChanges', {
         "as": "rank"
       }],
       "sort": [{ "field": "abs", "order": "descending" }]
-    },
-    {"calculate": "datum.rank==1", "as": "color"}
+    }
   ],
 
   "encoding": {
@@ -30,8 +29,7 @@ export default createClassFromLiteSpec('TextChanges', {
         "test": "indexof(['null', 'undefined', 'unknown', 'none', 'Null', 'Undefined', 'Unknown', 'None', 'NULL', 'UNDEFINED', 'UNKNOWN', 'NONE'], datum.category) >= 0 || datum.category === null",
         "value": "#aaaaaa"
       },
-      "field": "color",
-      "scale": {"range": ["#4c78a8", "#000088"]},
+      "value": "#4c78a8",
       "legend": null
     }
   },
