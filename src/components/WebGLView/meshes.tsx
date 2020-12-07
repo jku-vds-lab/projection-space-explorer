@@ -172,7 +172,7 @@ export class LineVisualization {
 
     if (this.highlightMeshes != null) {
       this.highlightMeshes.forEach(mesh => {
-        mesh.material.lineWidth = 0.002 + 0.0001 * this.zoom
+        mesh.material.lineWidth = 0.005
       })
     }
   }
@@ -285,7 +285,7 @@ export class LineVisualization {
       var material = new override.MeshLineMaterial({
         color: new THREE.Color(findSeg.view.lineMesh.material.color),
         resolution: new THREE.Vector2(width, height),
-        lineWidth: 0.002 + 0.0001 * this.zoom,
+        lineWidth: 0.005,
         sizeAttenuation: true,
         transparent: true,
         opacity: 0.5,
@@ -904,6 +904,7 @@ export class PointVisualization {
       && this.showSymbols[vector.view.shapeType]
       && (vector.view.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.view.intrinsicColor] : true)
       && (vector.view.segment == null || valueInRange(vector.view.segment.vectors.length, vector.view.segment.view.pathLengthRange))
+      && !vector.view.lineUpFiltered
   }
 
 
@@ -927,6 +928,7 @@ export class PointVisualization {
     var selected = this.mesh.geometry.attributes.selected.array
 
     this.vectors.forEach(vector => {
+      console.log(this.isPointVisible(vector))
       if (this.isPointVisible(vector)) {
         show[vector.view.meshIndex] = 1.0
       } else {

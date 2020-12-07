@@ -49,6 +49,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
  * Type that holds every property that is relevant to our component, that is the props declared above + our OWN component props
  */
 type Props = PropsFromRedux & {
+    onFilter: any
     // My own property 1
     // My own property 2
 }
@@ -61,7 +62,7 @@ var cur_col = 0;
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggregation }: Props) {
+export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggregation, onFilter }: Props) {
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
         return null;
@@ -82,13 +83,19 @@ export const LineUpContext = connector(function ({ lineUpInput, setCurrentAggreg
             }
 
             const onRankingChanged = (current) => {
-                let agg = []
+                for (let i=0; i < lineUpInput.data.length; i++) {
+                    lineUpInput.data[i].view.lineUpFiltered = !current.includes(i);
+                }
 
-                current.forEach(index => {
-                    agg.push(lineUpInput.data[index])
-                })
+                onFilter()
 
-                setCurrentAggregation(agg) //TODO: implement some additional Duck that manages points that should be currently shown (don't use dataset anymore...)
+                // let agg = []
+
+                // current.forEach(index => {
+                //     agg.push(lineUpInput.data[index])
+                // })
+
+                //setCurrentAggregation(agg) 
             }
 
             onRankingChanged(current)

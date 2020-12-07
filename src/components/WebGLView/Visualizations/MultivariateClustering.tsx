@@ -34,7 +34,6 @@ type ClusterObjectType = {
 
 const mapState = (state: RootState) => ({
     dataset: state.dataset,
-    clusters: state.currentClusters,
     displayMode: state.displayMode,
     webGLView: state.webGLView,
     selectedClusters: state.selectedClusters,
@@ -106,11 +105,11 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         }
 
         // If we have clusters now... and are on clusters tab... create cluster visualization
-        if (!arraysEqual(prevProps.clusters, this.props.clusters)) {
+        if (prevProps.stories != this.props.stories) {
             this.destroy()
             this.disposeTriangulatedMesh()
 
-            if (this.props.clusters && this.props.clusters.length > 0) {
+            if (this.props.stories.active && this.props.stories.active.clusters.length > 0) {
                 if (this.props.dataset.multivariateLabels) {
                     this.create()
                 } else {
@@ -306,7 +305,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         let scale = NamedCategoricalScales.DARK2()
 
-        this.props.clusters.forEach((cluster, ci) => {
+        this.props.stories.active.clusters.forEach((cluster, ci) => {
 
             // Add circle to scene
             var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * 16, this.devicePixelRatio * 16);
@@ -469,10 +468,13 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         var lineMeshes = []
 
 
-        this.triangulationWorker.postMessage({
-            messageType: 'triangulate',
-            input: this.props.clusters.map(cluster => cluster.vectors.map(sample => [sample.x, sample.y]))
-        })
+        if (this.props.stories.active) {
+            this.triangulationWorker.postMessage({
+                messageType: 'triangulate',
+                input: this.props.stories.active.clusters.map(cluster => cluster.vectors.map(sample => [sample.x, sample.y]))
+            })
+        }
+
         this.triangulationWorker.onmessage = (e) => {
             let Y = e.data
 
@@ -548,6 +550,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 mesh.material.dispose()
                 this.scalingScene.remove(mesh)
             })
+
+            this.clusterVis = null
         }
     }
 
@@ -597,7 +601,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             }
         })
 
-        
+
 
         return labels
     }
