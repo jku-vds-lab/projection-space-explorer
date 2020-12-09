@@ -125,6 +125,11 @@ Whenever a file is changed while this server is running, it will automatically b
 
 To start the application you just need to start the index.html locally. The easiest way to this is by using the live server provided by either Atom or Visual Studio Code.
 
+## Starting the backend
+
+To start the backend you need to install python's "bottle" and "RDKit" frameworks. The requirements.txt contains a conda dump of the environment that I use for development. 
+The server can be started with "python backend-chemvis.py". If you are using VSC live server, make sure that the "/backend/temp-files" folder is not watched, since there will be files stored temporarilly, which should not prompt the server to reload.
+
 ## Preselect a set using a link
 
 You can share a link that automatically preselects a set when opened. For this the 'set' parameter can be one (1) neural (2) chess (3) rubik. So for instance the URL localhost:8080?set=neural will automatically open the application with the neural network data set.
