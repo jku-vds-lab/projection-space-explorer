@@ -60,30 +60,54 @@ def upload_sdf():
         return {}
 
 
+fingerprint_modifier = "fingerprint"
+descriptor_names_no_lineup = [fingerprint_modifier, "rep"]
+descriptor_names_show_lineup = ["pred", "predicted", "measured"]
+smiles_col = 'SMILES'
+
 from io import StringIO
 import pandas as pd
 from rdkit.Chem import PandasTools
+from rdkit.Chem import AllChem
+import numpy as np
 @app.route('/get_csv/<filename>', method=['GET'])
 def sdf_to_csv(filename):
-    frame = PandasTools.LoadSDF("./temp-files/%s"%filename, embedProps=True,smilesName='SMILES',molColName='Molecule')
+    frame = PandasTools.LoadSDF("./temp-files/%s"%filename, embedProps=True,smilesName=smiles_col,molColName='Molecule')
     frame = frame.drop(columns=[x for x in frame.columns if x.startswith('atom')])
+    molecule_df = frame["Molecule"]
     frame = frame.drop(columns=["Molecule"])
 
+    has_fingerprint = False
     new_cols = []
     for col in frame.columns:
         modifier = ""
-        if col.startswith('fingerprint'):
+        if col.startswith(fingerprint_modifier):
+            has_fingerprint = True
+
+        if col.startswith(tuple(descriptor_names_no_lineup)):
             modifier = "%slineup_none;"%modifier # this modifier tells lineup that the column should not be viewed at all (remove this modifier, if you want to be able to add the column with the sideview of lineup)
+            modifier = "%sgroup_%s;"%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
+            #col = col.split("_")[1]
+        elif col.startswith(tuple(descriptor_names_show_lineup)):
+            modifier = "%slineup_show;"%modifier # this modifier tells lineup that the column should be initially viewed
+            modifier = "%sgroup_%s;"%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
+            #col = col.split("_")[1]
         else:
             modifier = "%slineup_show;"%modifier # this modifier tells lineup that the column should be initially viewed
             
-        if col == "SMILES":
+        if col == smiles_col:
             modifier = "%ssmiles_to_img;"%modifier # this modifier tells lineup that a structure image of this smiles string should be loaded
             
         
         new_cols.append("%s[%s]"%(col,modifier[0:-1])) # remove the last semicolon
         
     frame.columns = new_cols
+
+    if not has_fingerprint: # when there are no morgan fingerprints included in the dataset, calculate them now
+        fps = pd.DataFrame([list(AllChem.GetMorganFingerprintAsBitVect(mol,5,nBits=256)) for mol in molecule_df])
+        fps.columns = ["fingerprint_%s[slineup_none;group_fingerprint]"%fp for fp in fps] 
+        frame = frame.join(fps)
+
     csv_buffer = StringIO()
     frame.to_csv(csv_buffer, index=False)
     
@@ -161,7 +185,7 @@ def smiles_list_to_imgs():
         if len(smiles_list) == 0:
             return {}
         if len(smiles_list) == 1:
-            return smiles_to_base64(smiles_list[0])
+            return {"img_lst": [smiles_to_base64(smiles_list[0])]}
 
         mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
         res=Chem.rdFMCS.FindMCS(mol_lst, ringMatchesRingOnly=True) # there are different settings possible here
@@ -200,9 +224,17 @@ def smiles_list_to_common_substructure_img():
         return img_str.decode("utf-8")
     else:
         return {}
+        
+        
+@app.route('/', method=["GET"])
+def home():
+    print("ok python")
+    return "ok3"
 
 app.install(EnableCors())
 
-app.run(port=8080)
+#app.run(port=8080) # not working for docker and apparently not needed
 
-run(host='localhost', port=8080)
+
+# run(host='localhost', port=8080, debug=True, reloader=True)
+run(host='0.0.0.0', port=8080) # use for docker

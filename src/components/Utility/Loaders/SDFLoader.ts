@@ -27,7 +27,7 @@ export class SDFLoader implements Loader {
     resolveContent(file, finished) { //TODO: lineup not working with modifiers
         backend_utils.upload_sdf_file(file).then(data => {
             // request the server to return a csv file using the unique filename
-            d3v5.csv('http://127.0.0.1:8080/get_csv/' + data["unique_filename"]).then(vectors => {
+            d3v5.csv(backend_utils.BASE_URL+'/get_csv/' + data["unique_filename"]).then(vectors => {
                 this.vectors = convertFromCSV(vectors);
                 this.datasetType = DatasetType.Chem;
                 new CSVLoader().resolve(finished, this.vectors, this.datasetType, { display: "", type: this.datasetType, path: data["unique_filename"] });
