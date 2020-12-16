@@ -64,6 +64,7 @@ import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPan
 import { LineUpContext } from "./LineUpContext/LineUpContext";
 import { devToolsEnhancer } from 'redux-devtools-extension';
 import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
+import { SDFLoader } from "./Utility/Loaders/SDFLoader";
 
 
 
@@ -201,9 +202,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
-    var preselect = "datasets/rubik/cube10x2_different_origins.csv"
+    // var preselect = "datasets/rubik/cube10x2_different_origins.csv"
+    var preselect = "datasets/chemvis/test.sdf"
     if (set != null) {
 
+      var preselect = "datasets/rubik/cube10x2_different_origins.csv"
       if (set == "neural") {
         preselect = "datasets/neural/learning_confmat.csv"
       } else if (set == "rubik") {
@@ -214,9 +217,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
       new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     } else {
-      new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
+      new SDFLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     }
   }
+
+
 
   convertRemToPixels(rem) {
     return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -254,6 +259,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setLineUpInput_columns(dataset.columns);
     this.props.setLineUpInput_data(dataset.vectors);
+
   }
 
 

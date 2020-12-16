@@ -3,7 +3,7 @@ import { Vect } from "../Data/Vect"
 import { Loader } from "./Loader"
 import { CSVLoader } from "./CSVLoader"
 import * as backend_utils from "../../../utils/backend-connect";
-
+// import sdf from "../../../../datasets/chemvis/test.sdf";
 
 var d3v5 = require('d3')
 
@@ -20,7 +20,8 @@ export class SDFLoader implements Loader {
     constructor() {
     }
     resolvePath(entry: any, finished: any) {
-        throw new Error("Method not implemented.")
+        fetch(entry.path).then(response => response.blob())
+        .then(result =>this.resolveContent(result, finished));
     }
 
     

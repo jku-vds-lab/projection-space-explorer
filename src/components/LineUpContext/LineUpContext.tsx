@@ -49,10 +49,14 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 /**
  * Type that holds every property that is relevant to our component, that is the props declared above + our OWN component props
  */
-type Props = PropsFromRedux & {
-    onFilter: any
-    // My own property 1
-    // My own property 2
+// type Props = PropsFromRedux & {
+//     onFilter: any
+//     // My own property 1
+//     // My own property 2
+// }
+
+type Props = {
+    lineUpInput, currentAggregation, setCurrentAggregation, onFilter
 }
 
 function arrayEquals(a, b) {
@@ -206,6 +210,7 @@ export class MySmilesCellRenderer implements ICellRendererFactory {
         return {
             template: `<img/>`,
             update: (n: HTMLImageElement, d: IDataRow) => {
+                // @ts-ignore
                 backend_utils.get_structure_from_smiles(d.v[col.desc.column]).then(x => n.src = "data:image/gif;base64," + x);
             }
         };

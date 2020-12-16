@@ -22,7 +22,11 @@ export function DatasetTabPanel({ onDataSelected }) {
         <DatasetDrop onChange={onDataSelected}></DatasetDrop>
 
         <PredefinedDatasets onChange={(entry) => {
-            setJob(new DownloadJob(entry))
+            if(entry.path.endsWith('sdf')){
+                new SDFLoader().resolvePath(entry, onDataSelected)
+            }else{
+                setJob(new DownloadJob(entry))
+            }
         }} ></PredefinedDatasets>
 
         <DownloadProgress job={job} onFinish={(result) => {

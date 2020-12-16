@@ -1,7 +1,7 @@
 
-// export const BASE_URL = 'http://127.0.0.1:8080';
+export const BASE_URL = 'http://127.0.0.1:8080';
 // export const BASE_URL = 'http://127.0.0.1:5000';
-export const BASE_URL = 'http://caleydoapp.org:32819';
+// export const BASE_URL = 'http://caleydoapp.org:32819';
 
 export async function get_structure_from_smiles(smiles:string) {
     const formData = new FormData();
