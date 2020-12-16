@@ -1,4 +1,5 @@
-import { Edge, Graph } from "../graphs";
+// import { Edge, Graph } from "../graphs";
+import { Edge } from "../graphs";
 import Cluster from "./Cluster";
 const Graph = require('graphology');
 

@@ -36,7 +36,8 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
                         formData.append('smiles_list', row[smiles_col]);
                     });
                     backend_utils.get_structures_from_smiles_list(formData).then(x => {
-                        const img_lst = x["img_lst"].map((base64,i) => <img className={"legend_multiple"} src={"data:image/gif;base64," + base64}/>)
+                        // @ts-ignore
+                        const img_lst = x["img_lst"].map((base64,i) => <img key={formData.getAll("smiles_list")[i]} className={"legend_multiple"} src={"data:image/gif;base64," + base64}/>)
                         this.setState({
                             comp: img_lst, 
                             current_selection:this.props.selection
