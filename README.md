@@ -4,8 +4,7 @@ This is the documentation for the demonstrator including the installation proces
 
 ## Controls
 
-- Use the **mouse** to **drag** around the visualization
-- Pressing the **alt** key while dragging the mouse will select multiple states for an **aggregation**
+- On the bottom right there is a tool list which let you select one of the predefined tools (select, move, etc). Hovering over them will show you a description of what they do.
 - Use the **mouse wheel** to **zoom** in and out
 
 ## Data Format
@@ -14,7 +13,7 @@ This section describes how the .csv data has to be formatted in order to be read
 
 ### File type
 
-The file name is irrelevant, however the data needs to be formatted as **csv** file. The seperator used is the normal comma **,**.
+The file name needs to end with **.csv** and the data needs to be formatted as a correct **csv** file including a header row. The seperator used is the normal comma **,** (instead of the **;** which is used sometimes). We use the .csv reader provided by **d3** in this application. (You can read exact specifications like how spaces in data fields are handled in their API).
 
 ### Columns
 
@@ -22,26 +21,27 @@ The minimal columns a file needs are
 
  - **x**: the x value of the coordinates (floating point format)
  - **y**: the y value of the coordinates (floating point format)
- - **line**: the unique identifier for one line (string format)
- - **algo**: the unique identifier for the algorithm/linegroup (string format)
+
 
 An example file could looke like this
 
-|x|y|line|algo|
-|--|--|--|--|
-|1|1|L0|A0
-|-1|-1|L0|A0
-|1|-1|L1|A0
-|-1|1|L1|A0
+|x|y|
+|--|--|
+|1|1|
+|-1|-1|
+|1|-1|
+|-1|1|
 
 which will be displayed like this
 
 ![Sample](https://github.com/JKU-ICG/projection-path-explorer/blob/develop/readme/minimalcsv.PNG)
 
-Note that **L0** and **L1** are the same identifiers in each row corresponding to a line whereas **A0** is the algorithm identifier and determines the coloring of the lines (in this case, only 1 color is needed).
+### Other Predefined Columns
 
-If the attributes **line** and **algo** are missing they will be added to the dataset on the fly and filled with default values.
-
+The columns **x** and **y** are necessary for the file to load, but there other columns which are **optional** and only help you to explore the data. This includes:
+ - **line** an attribute that specifies a sequence along the data, this attribute can be numerical or categorical, but it has to be distinct for every line. The line index of the current line is inferred automatically by the order of the data points in the csv file.
+ - **algo** the group this data point belongs to. This attribute can also be categorical or numerical.
+ - If the attributes **line** and **algo** are omitted, the data is projected as points without lines.
 
 ### Additional Columns
 Additional columns might exist in the source file. If this is the case the tool will display meaningful options to change visualization properties in respect to these attributes.
@@ -74,6 +74,17 @@ Range annotations are a way to set the value range of attributes directly in the
 Now **metadata** is an additional attribute with a range annotation that sets the value range to 0-10 and makes this attribute sequential. The value range is important for the correct mapping to the color scale (since the minimum and maximum values might not be the true value range).
 
 
+## Meta Columns
+Some columns can be set to provide additional metadata that can be displayed in the explorer.
+
+### Changes Column
+
+The column 'changes' can be supplied with text values that will be displayed with the line selection tool. It should annotate the change from the last state. For example a good value for 'changes' for the Rubik data would be the move that lead to this state (R, U...).
+
+### Multiplicity Column
+
+The column 'multiplicity' can be supplied to denote how often this state occurs in the dataset (with the exact same position). This is sometimes necessary if you want to project the data without any duplicates, but need it in the explorer to display the lines correctly (since only single edges are allowed). For example if the same state occurs in 3 lines, it would have a multiplicity of 3 in each row.
+
 ### Test Datasets
 
 There are some test datasets available in this repository under **datasets/test** which are small examples of how the files should look like.
@@ -100,17 +111,26 @@ and run the command to install the required packages
 npm install
 ```
 
-## Starting the application
+## Building the application
 
-To run the application simply navigate to the cloned folder and enter
+There is always a valid build in the repository, but in case you want to make changes, you can use the local build server. Start it with the command
 
-```bash
-npm start
+```
+npm run webpack:dev
 ```
 
-This will start a local webserver. You can then enter the URL that is displayed which
-is most likely 'localhost:8080'
+Whenever a file is changed while this server is running, it will automatically build a new version and deploy it in the /dist folder.
+
+## Starting the application
+
+To start the application you just need to start the index.html locally. The easiest way to this is by using the live server provided by either Atom or Visual Studio Code.
+
+## Starting the backend
+
+To start the backend you need to install python's "bottle" and "RDKit" frameworks. The requirements.txt contains a conda dump of the environment that I use for development. 
+The server can be started with "python backend-chemvis.py". If you are using VSC live server, make sure that the "/backend/temp-files" folder is not watched, since there will be files stored temporarilly, which should not prompt the server to reload.
 
 ## Preselect a set using a link
 
 You can share a link that automatically preselects a set when opened. For this the 'set' parameter can be one (1) neural (2) chess (3) rubik. So for instance the URL localhost:8080?set=neural will automatically open the application with the neural network data set.
+

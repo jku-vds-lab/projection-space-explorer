@@ -1,9 +1,16 @@
 {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-react"
-    ],
-    "plugins": [
-      "@babel/plugin-proposal-class-properties"
+  "presets": [
+    "@babel/react",
+    "@babel/typescript",
+    [
+      "@babel/env",
+      {
+        "modules": false,
+        "targets": {
+          "chrome": "58",
+          "ie": "11"
+        }
+      }
     ]
-  }
+  ],
+}

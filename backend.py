@@ -242,13 +242,6 @@ app = bottle.app()
 
 
 
-@app.route('/heart', method=['OPTIONS', 'POST'])
-def heart():
-    return {
-        'result': [ ]
-    }
-
-
 
 
 

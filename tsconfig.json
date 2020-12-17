@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "dist/",
+    "noImplicitAny": false,
+    "module": "commonjs",
+    "target": "es2015",
+    "jsx": "react",
+    "lib": ["ESNext","DOM"]
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

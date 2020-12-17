@@ -1,0 +1,17 @@
+.Parent {
+    width: 18rem;
+    height: 100%;
+    position: absolute;
+    left: 22rem;
+    top: 0px;
+    pointer-events: none;
+}
+
+
+.Cluster {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    height: 50%;
+}

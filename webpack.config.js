@@ -1,32 +1,44 @@
-const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
+  mode: "development",
+  watch: true,
   entry: {
-    bundle: './src/index.js',
-    worker: './src/workers/worker_projection.js',
-    cluster: './src/workers/worker_cluster.js',
-    healthcheck: './src/workers/worker_healthcheck.js'
+    bundle: "./src/components/index.tsx",
+    tsne: './src/components/workers/embeddings/worker_tsne.ts',
+    umap: './src/components/workers/embeddings/worker_umap.ts',
+    cluster: './src/components/workers/worker_cluster.tsx',
+    forceatlas2: './src/components/workers/embeddings/worker_forceatlas2.ts',
+    healthcheck: './src/components/workers/worker_healthcheck.tsx',
+    tessy: './src/components/workers/worker_triangulate.ts'
   },
   output: {
-    path: path.join(__dirname, 'dist'), // absolute path
-    filename: '[name].js' // file name
+    filename: "[name].js",
+    path: __dirname + "/dist"
   },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".json"]
+  },
+  devtool: "source-map",
   module: {
     rules: [
+      { test: /\.scss$/, use: [
+        "style-loader",
+        "css-loader",
+        "sass-loader"
+      ] },
+      { test: /\.tsx?$/, loader: "babel-loader" },
+      { test: /\.tsx?$/, loader: "ts-loader" },
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader'
+        test: /\.(glsl|vs|fs)$/,
+        loader: 'shader-loader'
       }
     ]
   },
   plugins: [
     new webpack.ProvidePlugin({
-      THREE: 'three',
       ReactDOM: 'react-dom',
-      React: 'react',
-      d3: 'd3'
+      React: 'react'
     })
   ]
 };
