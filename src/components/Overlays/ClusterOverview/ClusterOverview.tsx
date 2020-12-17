@@ -133,7 +133,6 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                     function () {
                         let components = []
 
-
                         for (let si = 0; si < numSidePaths; si++) {
                             let sidePathIndex = stories.trace.sidePaths.indexOf(stories.trace.sidePaths[(si + pageOffset) % stories.trace.sidePaths.length])
 
@@ -150,7 +149,9 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                             let pos1 = position[node.index]
                                             
 
-                                            return <g>
+                                            return <g onClick={() => {
+                                                selectSideBranch(sidePathIndex)
+                                            }}>
                                                 <path d={`M ${midX - stateSize / 2} ${pos1.y} Q ${x} ${pos1.y} ${x} ${pos1.y + 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
                                                 
                                                 <SidePath

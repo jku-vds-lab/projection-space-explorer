@@ -148,19 +148,6 @@ const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
 
 
 
-
-type TensorLoaderProps = {
-    onTensorInitiated: any
-    dataset: Dataset
-    setProjectionOpen: any
-    projectionColumns: any
-    projectionOpen: boolean
-    setProjectionColumnsEntry: any
-    setProjectionColumnsShift: any
-    setProjectionParams: any
-    setProjectionColumns: any
-}
-
 const mapState = state => ({
     projectionColumns: state.projectionColumns,
     projectionOpen: state.projectionOpen,
@@ -185,7 +172,7 @@ type Props = PropsFromRedux & {
 
 
 
-const FeaturePicker = connector(({ projectionColumns, selection, setSelection }: Props) => {
+const FeaturePicker = connector(({ selection, setSelection }: Props) => {
     const [last, setLast] = React.useState(0)
 
     const setProjectionColumnsShift = (last, rowIndex) => {
