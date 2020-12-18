@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import {createClassFromLiteSpec} from 'react-vega-lite';
 
-export default createClassFromLiteSpec('TextChanges', {
+export default createClassFromLiteSpec('BarChanges', {
   "width": 100,
   "transform": [
     {"calculate": "abs(datum.difference)", "as": "abs"},
@@ -41,7 +41,7 @@ export default createClassFromLiteSpec('TextChanges', {
           "type": "single", "fields": ["abs"],
           "init": {"abs": 0.25},
           "bind": {
-            "abs": {"input": "range", "min": 0,"max": 1,"step": 0.01, "name": "dif"}
+            "abs": false
           }
         }
       },
