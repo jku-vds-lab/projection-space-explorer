@@ -189,15 +189,21 @@ export const ClusteringTabPanel = connector(({
         backend_utils.calculate_hdbscan_clusters(points).then(data => {
             const cluster_labels = data["result"];
             const dist_cluster_labels = cluster_labels.filter((value, index, self) => {return self.indexOf(value) === index;}); //return distinct list of clusters
-
+            
+            let story = null;
             dist_cluster_labels.forEach(cluster_label => {
                 const current_cluster_vects = dataset.vectors.filter((x, i) => cluster_labels[i] == cluster_label);
                 const cluster = Cluster.fromSamples(current_cluster_vects);
-                addClusterToStory(cluster)
+                if(story){
+                    addClusterToStory(cluster);
+                }else{
+                    story = new Story([cluster], []);
+                    addStory(story)
+                    setActiveStory(story)
+                }
             });
             
-            // setStories([new Story(dataset.clusters, dataset.clusterEdges)])
-        }); //TODO: add cluster labels to vectors
+        });
     }
 
 
@@ -216,7 +222,12 @@ export const ClusteringTabPanel = connector(({
         </Box>
 
         <Box p={2}>
-            <Button onClick={calc_hdbscan}>Perform HDBSCAN</Button>
+            <Button
+                variant="outlined"
+                style={{
+                    width: '100%'
+                }}
+                onClick={calc_hdbscan}>Perform HDBSCAN</Button>
         </Box>
 
         <Box p={2}>

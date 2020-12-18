@@ -27,8 +27,6 @@ export class SDFLoader implements Loader {
     
     resolveContent(file, finished) {
         backend_utils.upload_sdf_file(file).then(data => {
-            console.log(data);
-            
             // request the server to return a csv file using the unique filename
             d3v5.csv(backend_utils.BASE_URL+'/get_csv/' + data["unique_filename"]).then(vectors => {
                 this.vectors = convertFromCSV(vectors);

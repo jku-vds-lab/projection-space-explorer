@@ -10,7 +10,7 @@ import { setPointColorScale } from "../../../Ducks/PointColorScaleDuck";
 export var ColorScaleSelectFull = ({ channelColor, pointColorScale, setPointColorScale }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [definedScales, setDefinedScales] = React.useState([])
-
+    
     React.useEffect(() => {
         if (channelColor) {
             let a = defaultScalesForAttribute(channelColor)

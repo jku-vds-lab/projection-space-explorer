@@ -191,7 +191,7 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
                 if(col.distinct.length/lineUpInput.data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                     lineup_col_list.push(<LineUpCategoricalColumnDesc key={i} column={i} categories={col.distinct} visible={show} />)
                 else
-                    lineup_col_list.push(<LineUpStringColumnDesc width={100} key={i} column={i} visible={show} />) 
+                    lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />) //width={100} 
             else
                 lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />)
 
