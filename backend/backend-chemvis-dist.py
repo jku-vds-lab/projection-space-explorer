@@ -245,7 +245,6 @@ import json
 def segmentation():
     if request.method == 'POST':
         X = np.array(json.load(request.body))
-        print(X)
 
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=10,
@@ -256,7 +255,6 @@ def segmentation():
         
         clusterer.fit_predict(X)
 
-        print(clusterer.labels_)
         #clusterer.probabilities_ = np.array(len(X))
 
         return {
