@@ -105,7 +105,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
         onClose={onClose}>
 
         <DialogContent>
-            <Container >
+            <Container>
                 {domainSettings != 'forceatlas2' && <FeaturePicker selection={selection} setSelection={setSelection}></FeaturePicker>}
 
 

@@ -202,8 +202,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
-    // var preselect = "datasets/rubik/cube10x2_different_origins.csv"
-    var preselect = "datasets/chemvis/test.sdf"
+    var preselect = "datasets/rubik/cube10x2_different_origins.csv"
+    // var preselect = "datasets/chemvis/test.sdf"
     if (set != null) {
 
       var preselect = "datasets/rubik/cube10x2_different_origins.csv"
@@ -213,11 +213,14 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         preselect = "datasets/rubik/cube10x2_different_origins.csv"
       } else if (set == "chess") {
         preselect = "datasets/chess/chess16k.csv"
+      } else if (set == "chemvis"){
+        new SDFLoader().resolvePath(new DatasetDatabase().getByPath("datasets/chemvis/test.sdf"), (dataset, json) => { this.onDataSelected(dataset, json) });
+        return;
       }
 
       new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     } else {
-      new SDFLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
+      new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     }
   }
 

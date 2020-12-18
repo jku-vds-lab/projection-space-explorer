@@ -21,12 +21,14 @@ export class SDFLoader implements Loader {
     }
     resolvePath(entry: any, finished: any) {
         fetch(entry.path).then(response => response.blob())
-        .then(result =>this.resolveContent(result, finished));
+        .then(result => this.resolveContent(result, finished));
     }
 
     
-    resolveContent(file, finished) { //TODO: lineup not working with modifiers
+    resolveContent(file, finished) {
         backend_utils.upload_sdf_file(file).then(data => {
+            console.log(data);
+            
             // request the server to return a csv file using the unique filename
             d3v5.csv(backend_utils.BASE_URL+'/get_csv/' + data["unique_filename"]).then(vectors => {
                 this.vectors = convertFromCSV(vectors);

@@ -1294,13 +1294,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     this.props.setLineUpInput_visibility(false);
 
                     handleClose()
-                }}>{'Debug -> Close LineUp'}</MenuItem>
+                }}>{'Close LineUp'}</MenuItem>
 
                 <Divider orientation="horizontal"></Divider>
 
 
                 <MenuItem onClick={() => {
-                    // Set LineUp input to null closes it
                     if (this.props.currentAggregation.length > 0) {
                         let cluster = Cluster.fromSamples(this.props.currentAggregation)
 

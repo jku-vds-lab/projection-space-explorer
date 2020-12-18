@@ -16,6 +16,7 @@ export var DatasetDrop = ({ onChange }) => {
             var fileName = file.name as string
 
             if(fileName.endsWith('sdf')){
+                //TODO: dialog that lets the user input custom modifiers
                 new SDFLoader().resolveContent(file, onChange)
             }else{
 

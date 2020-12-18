@@ -26,7 +26,7 @@ export const setLineUpInput_visibility = input => ({
 const initialState: LineUpType = {
     data: null,
     columns: null,
-    show: false
+    show: false,
 }
 export type LineUpType = {
     data: Vect[],

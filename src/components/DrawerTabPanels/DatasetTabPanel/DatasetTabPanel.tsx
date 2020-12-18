@@ -23,6 +23,7 @@ export function DatasetTabPanel({ onDataSelected }) {
 
         <PredefinedDatasets onChange={(entry) => {
             if(entry.path.endsWith('sdf')){
+                //TODO: dialog that lets the user input custom modifiers
                 new SDFLoader().resolvePath(entry, onDataSelected)
             }else{
                 setJob(new DownloadJob(entry))
