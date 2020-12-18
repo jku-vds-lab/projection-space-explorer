@@ -1,0 +1,3 @@
+conda install -c conda-forge bottle
+conda install -c conda-forge rdkit
+conda install -c conda-forge hdbscan
