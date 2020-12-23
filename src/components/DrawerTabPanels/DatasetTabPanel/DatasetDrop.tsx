@@ -4,8 +4,18 @@ import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
 import { SDFLoader } from "../../Utility/Loaders/SDFLoader";
 import DragAndDrop from "./DragAndDrop";
+import { SDFModifierDialog } from "./SDFModifierDialog";
 
 export var DatasetDrop = ({ onChange }) => {
+    const [entry, setEntry] = React.useState(null);
+    const [openSDFDialog, setOpen] = React.useState(false);
+
+    function onModifierDialogClose(modifiers){
+        setOpen(false); 
+        if(modifiers !== null)
+            new SDFLoader().resolveContent(entry, onChange, modifiers);
+    }
+
     return <Grid container item alignItems="stretch" justify="center" direction="column" style={{ padding: '16px' }}>
         <DragAndDrop accept="image/*" handleDrop={(files) => {
             if (files == null || files.length <= 0) {
@@ -16,8 +26,8 @@ export var DatasetDrop = ({ onChange }) => {
             var fileName = file.name as string
 
             if(fileName.endsWith('sdf')){
-                //TODO: dialog that lets the user input custom modifiers
-                new SDFLoader().resolveContent(file, onChange)
+                setEntry(file);
+                setOpen(true);
             }else{
 
                 var reader = new FileReader()
@@ -38,5 +48,6 @@ export var DatasetDrop = ({ onChange }) => {
         }}>
             <div style={{ height: 200 }}></div>
         </DragAndDrop>
+        <SDFModifierDialog openSDFDialog={openSDFDialog} handleClose={onModifierDialogClose}></SDFModifierDialog>
     </Grid>
 }

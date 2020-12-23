@@ -57,7 +57,7 @@ def upload_sdf():
 
         filename = "%i%s"%(time.time(), fileUpload.filename)
         fileUpload.save("./temp-files/%s"%filename, overwrite=True) # the save method can take a file-like object... https://www.kite.com/python/docs/bottle.FileUpload
-        
+        fileUpload.file.close()
         return {
             'filename': fileUpload.filename,
             'unique_filename': filename,
@@ -76,8 +76,14 @@ import pandas as pd
 from rdkit.Chem import PandasTools
 from rdkit.Chem import AllChem
 import numpy as np
-@app.route('/get_csv/<filename>', method=['GET'])
-def sdf_to_csv(filename):
+@app.route('/get_csv/<filename>/', method=['GET'])
+@app.route('/get_csv/<filename>/<modifiers>', method=['GET'])
+def sdf_to_csv(filename, modifiers=None):
+    if modifiers:
+        descriptor_names_no_lineup.extend([x.strip() for x in modifiers.split(";")]) # split and trim modifier string
+        
+    print(descriptor_names_no_lineup)
+
     frame = PandasTools.LoadSDF("./temp-files/%s"%filename, embedProps=True,smilesName=smiles_col,molColName='Molecule')
     frame = frame.drop(columns=[x for x in frame.columns if x.startswith('atom')])
     molecule_df = frame["Molecule"]
@@ -245,6 +251,7 @@ import json
 def segmentation():
     if request.method == 'POST':
         X = np.array(json.load(request.body))
+        print(X)
 
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=10,
@@ -255,6 +262,7 @@ def segmentation():
         
         clusterer.fit_predict(X)
 
+        print(clusterer.labels_)
         #clusterer.probabilities_ = np.array(len(X))
 
         return {
