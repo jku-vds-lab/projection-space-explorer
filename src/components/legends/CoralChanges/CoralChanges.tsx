@@ -18,7 +18,6 @@ import Boxplot from './VegaBoxplot.js';
 import { Dataset } from '../../Utility/Data/Dataset';
 import { Vect } from '../../Utility/Data/Vect';
 import { FeatureType } from '../../Utility/Data/FeatureType';
-import ThresholdSlider from './ThresholdSlider';
 
 const useStyles = makeStyles({
   table: {
@@ -404,22 +403,17 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
   return ret
 }
 
-function printSliderValue(val) {
-  console.log('val :>> ', val);
-  // var value1 = ( < HTMLInputElement > document.getElementById('thresholdSlider')).value;
-  // console.log('value1 :>> ', value1);
-}
 
 function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
   const classes = useStyles()
   const rows = genRows(vectorsA, vectorsB, projectionColumns, dataset)
-  console.log('rows :>> ', rows);
-  console.log('chain before change :>> ', rows?.[0]?.['char']?.['props']?.['children']?.[2]?.['props']?.['data']?.['values']?.[0]);
-  var exists = rows?.[0]?.['char']?.['props']?.['children']?.[2]?.['props']?.['data']?.['values']?.[0]?.['difference']
-  if (exists) {
-    rows[0]['char']['props']['children'][2]['props']['data']['values'][0]['difference'] = 0.9
-  }
-  console.log('chain after change :>> ', rows?.[0]?.['char']?.['props']?.['children']?.[2]?.['props']?.['data']?.['values']?.[0]);
+  // console.log('rows :>> ', rows);
+  // console.log('chain before change :>> ', rows?.[0]?.['char']?.['props']?.['children']?.[2]?.['props']?.['data']?.['values']?.[0]);
+  // var exists = rows?.[0]?.['char']?.['props']?.['children']?.[2]?.['props']?.['data']?.['values']?.[0]?.['difference']
+  // if (exists) {
+  //   rows[0]['char']['props']['children'][2]['props']['data']['values'][0]['difference'] = 0.9
+  // }
+  // console.log('chain after change :>> ', rows?.[0]?.['char']?.['props']?.['children']?.[2]?.['props']?.['data']?.['values']?.[0]);
 
   return (
     <div>
@@ -431,9 +425,7 @@ function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
         <Table className={classes.table} aria-label="simple table" size={'small'}>
           <TableHead>
             <TableRow>
-              <TableCell>Change<br/>
-              <ThresholdSlider/>
-              </TableCell>
+              <TableCell>Change</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -473,5 +465,5 @@ type Props = PropsFromRedux & {
 }
 
 export var CoralChanges = connector(({ width, height, vectorsA, vectorsB, dataset, projectionColumns, scale }: Props) => {
-  return getTable(vectorsA, vectorsB, projectionColumns, dataset)
+  return getTable(vectorsA, vectorsB, projectionColumns, dataset);
 })

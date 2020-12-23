@@ -33,6 +33,7 @@ import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
 import storyEditor from '../Ducks/StoryEditorDuck';
 import lineUpInput from '../Ducks/LineUpInputDuck';
+import differenceThreshold from '../Ducks/DIfferenceThresholdDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -68,7 +69,8 @@ const allReducers = {
   pointColorMapping: pointColorMapping,
   trailSettings: trailSettings,
   storyEditor: storyEditor,
-  lineUpInput: lineUpInput
+  lineUpInput: lineUpInput,
+  differenceThreshold: differenceThreshold
 }
 
 const appReducer = combineReducers(allReducers)

@@ -16,6 +16,11 @@ details {
     font-size: 0 !important;
 }
 
+#thresholdSlider {
+    margin: 0 auto;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+}
+
 .vega-bind input[type="range" i] {
     -webkit-appearance: none;
     width: 100px;
