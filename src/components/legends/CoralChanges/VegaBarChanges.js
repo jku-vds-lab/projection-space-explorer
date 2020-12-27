@@ -5,7 +5,6 @@ export default createClassFromLiteSpec('BarChanges', {
   "width": 100,
   "transform": [
     {"calculate": "abs(datum.difference)", "as": "abs"},
-    {"filter": "datum.abs > threshold.abs"},
     {
       "window": [{
         "op": "rank",
@@ -36,15 +35,6 @@ export default createClassFromLiteSpec('BarChanges', {
   
   "layer": [
     {
-      "selection": {
-        "threshold": {
-          "type": "single", "fields": ["abs"],
-          "init": {"abs": 0.25},
-          "bind": {
-            "abs": false
-          }
-        }
-      },
       "mark": {"type": "bar", "tooltip": true},
       "height": {"step": 10},
     }

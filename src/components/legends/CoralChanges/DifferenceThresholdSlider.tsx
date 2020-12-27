@@ -3,6 +3,12 @@ import { Typography, Slider } from "@material-ui/core";
 import { connect } from 'react-redux'
 import { setDifferenceThreshold } from "../../Ducks/DifferenceThresholdDuck";
 
+const [value, setValue] = React.useState([0.0, 1.0]);
+
+const handleChange = (event, newValue) => {
+  setValue(newValue);
+};
+
 const DifferenceThresholdSliderFull = ({ differenceThreshold, setDifferenceThreshold }) => {
   return <div style={{ margin: '0 16px', padding: '0 8px' }}>
         <Typography id="range-slider" gutterBottom>
@@ -13,7 +19,8 @@ const DifferenceThresholdSliderFull = ({ differenceThreshold, setDifferenceThres
             max={1}
             step={0.01}
             value={differenceThreshold}
-            onChange={(_, newValue) => {
+            onChange={handleChange}
+            onChangeCommitted={(_, newValue) => {
               setDifferenceThreshold(newValue)
             }}
             valueLabelDisplay="auto"

@@ -18,6 +18,8 @@ import Boxplot from './VegaBoxplot.js';
 import { Dataset } from '../../Utility/Data/Dataset';
 import { Vect } from '../../Utility/Data/Vect';
 import { FeatureType } from '../../Utility/Data/FeatureType';
+import { setDifferenceThreshold } from "../../Ducks/DifferenceThresholdDuck";
+import { cloneDeep } from "../../Utility/CloneDeep";
 
 const useStyles = makeStyles({
   table: {
@@ -367,28 +369,15 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
     var valuesA = dictOfArraysA[key]
     var valuesB = dictOfArraysB[key]
     // calc difference between A and B and
-    var [difScore, mostDifCat, difVal] = getDifference(valuesA, valuesB, type)
-  
-    var predicate
-    if (type === FeatureType.Categorical) {
-      predicate = (Math.abs(difVal) >= 0.25)
-    } else {
-      predicate = (difScore >= 0.1)
-    }
+    var [difScore, mostDifCat, difVal] = getDifference(valuesA, valuesB, type)    
+    
+    // append dif to rows
+    // create visualization for those features and append to rows
+    var vis = getVis(valuesA, valuesB, type, key)
 
-    // TODO test with boxplot
-    // filter do not append to rows if difference below threshold
-    // return in foreach equivalent to continue in for
-    if (predicate) {
-      
-      
-      // append dif to rows
-      // create visualization for those features and append to rows
-      var vis = getVis(valuesA, valuesB, type, key)
-
-      // append to rows: key, most differing category, dif score, vis, difVal
-      rows.push([key, mostDifCat, difScore, vis, difVal])
-    }
+    // append to rows: key, most differing category, dif score, vis, difVal
+    rows.push([key, mostDifCat, difScore, vis, difVal])
+    
   });
 
   // turn into array of dicts
@@ -441,16 +430,21 @@ function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
   );
 }
 
-const mapState = state => {
+const mapStateToProps = state => {
   return ({
     projectionColumns: state.projectionColumns,
-    dataset: state.dataset
+    dataset: state.dataset,
+    // TODO differenceThreshold
+    differenceThreshold: state.differenceThreshold
   })
 }
 
-const mapDispatch = dispatch => ({})
+const mapDispatch = dispatch => ({
+  // TODO setdifferencethreshold
+  // projectionColumns and dataset should not be changed from within this component
+})
 
-const connector = connect(mapState, mapDispatch);
+const connector = connect(mapStateToProps, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
@@ -464,6 +458,69 @@ type Props = PropsFromRedux & {
   scale: number
 }
 
-export var CoralChanges = connector(({ width, height, vectorsA, vectorsB, dataset, projectionColumns, scale }: Props) => {
-  return getTable(vectorsA, vectorsB, projectionColumns, dataset);
+
+// const classes = useStyles();
+function filterReactVega(rows, threshold) {
+  for(var i = 0; i < rows.length; i++) {
+    rows[i].char.props.children[2].props.data.values = rows[i].char.props.children[2].props.data.values.filter(v => {
+      return Math.abs(v.difference) >= threshold
+    })
+  }
+  return rows
+}
+
+
+export const CoralChanges = connector(class extends React.Component<Props> {
+  rows: any[]
+  rowsBackup: any[]
+
+  constructor(props) {
+    super(props)
+    this.rowsBackup = genRows(this.props.vectorsA, this.props.vectorsB, this.props.projectionColumns, this.props.dataset);
+  }
+  
+  render() {
+    // TODO clone?
+    // TODO implement for quantitative
+    // reset rows to backup
+    // filter rows
+    console.log('backup in render', this.rowsBackup)
+    // this.rows = JSON.parse(JSON.stringify(this.rowsBackup))
+    this.rows = cloneDeep(this.rowsBackup, null)
+    console.log('after depp copy', this.rows)
+    this.rows = this.rows.filter(r => {
+      return r.difference >= this.props.differenceThreshold
+    })
+
+    this.rows = filterReactVega(this.rows, this.props.differenceThreshold)
+
+    return (
+      <div>
+        <TableContainer component={Paper} style={{
+          height: "400px",
+          width: "100%",
+          overflow: "auto"
+        }}>
+          <Table aria-label="simple table" size={'small'}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Change</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {this.rows.map((row) => (
+                <TableRow key={row.feature}>
+                  <TableCell>{row.char}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+    );
+  }
 })
+
+// export var CoralChanges = connector(({ width, height, vectorsA, vectorsB, dataset, projectionColumns, scale }: Props) => {
+//   return getTable(vectorsA, vectorsB, projectionColumns, dataset);
+// })
