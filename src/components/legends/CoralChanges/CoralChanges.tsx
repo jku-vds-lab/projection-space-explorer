@@ -472,22 +472,15 @@ function filterReactVega(rows, threshold) {
 
 export const CoralChanges = connector(class extends React.Component<Props> {
   rows: any[]
-  rowsBackup: any[]
 
   constructor(props) {
     super(props)
-    this.rowsBackup = genRows(this.props.vectorsA, this.props.vectorsB, this.props.projectionColumns, this.props.dataset);
   }
   
   render() {
-    // TODO clone?
     // TODO implement for quantitative
-    // reset rows to backup
-    // filter rows
-    console.log('backup in render', this.rowsBackup)
-    // this.rows = JSON.parse(JSON.stringify(this.rowsBackup))
-    this.rows = cloneDeep(this.rowsBackup, null)
-    console.log('after depp copy', this.rows)
+    console.log('plz update bundle')
+    this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.projectionColumns, this.props.dataset);
     this.rows = this.rows.filter(r => {
       return r.difference >= this.props.differenceThreshold
     })
