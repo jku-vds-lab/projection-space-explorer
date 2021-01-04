@@ -101,7 +101,6 @@ function getMaxDif(a, b) {
   var maxDif = 0
   var maxDifIndex = 0
 
-  // TODO fix tot relative difference
   var x = a.map(function (item, index) {
     // In this case item corresponds to currentValue of array a, 
     // using index to get value from array b
@@ -398,44 +397,6 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
   return ret
 }
 
-
-function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
-  const classes = useStyles()
-  const rows = genRows(vectorsA, vectorsB, projectionColumns, dataset)
-  // console.log('rows :>> ', rows);
-  // console.log('chain before change :>> ', rows?.[0]?.['char']?.['props']?.['children']?.[2]?.['props']?.['data']?.['values']?.[0]);
-  // var exists = rows?.[0]?.['char']?.['props']?.['children']?.[2]?.['props']?.['data']?.['values']?.[0]?.['difference']
-  // if (exists) {
-  //   rows[0]['char']['props']['children'][2]['props']['data']['values'][0]['difference'] = 0.9
-  // }
-  // console.log('chain after change :>> ', rows?.[0]?.['char']?.['props']?.['children']?.[2]?.['props']?.['data']?.['values']?.[0]);
-
-  return (
-    <div>
-      <TableContainer component={Paper} style={{
-        height: "400px",
-        width: "100%",
-        overflow: "auto"
-      }}>
-        <Table className={classes.table} aria-label="simple table" size={'small'}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Change</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.feature}>
-                <TableCell>{row.char}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
-}
-
 const mapStateToProps = state => {
   return ({
     projectionColumns: state.projectionColumns,
@@ -463,16 +424,23 @@ type Props = PropsFromRedux & {
 }
 
 
-// const classes = useStyles();
+/**
+ * filter rows within vega specs according to threshold
+ * @param rows array of [{ feature, category, score, char, difference }, ...]
+ * @param threshold filter all r={...} with r.difference < threshold, except for quantitative data
+ * @param dataset dataset from props to lookup feature type
+ */
 function filterReactVega(rows, threshold, dataset) {
   for(var i = 0; i < rows.length; i++) {
-    // const type = dataset.columns[rows[i].key]?.featureType
-    // if (type === FeatureType.Categorical) {
-      
+
+    const type = dataset.columns[rows[i].feature]?.featureType
+
+    if (type === FeatureType.Categorical) {
       rows[i].char.props.children[2].props.data.values = rows[i].char.props.children[2].props.data.values.filter(v => {
         return Math.abs(v.difference) >= threshold
       })
-    // }
+      
+    }
   }
   return rows
 }
@@ -486,13 +454,13 @@ export const CoralChanges = connector(class extends React.Component<Props> {
   }
   
   render() {
-    // TODO implement for quantitative
-    console.log('plz update bundle')
+    // generate rows including vega specs for table div
     this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.projectionColumns, this.props.dataset);
+    // filter entire vega specs with threshold
     this.rows = this.rows.filter(r => {
       return r.difference >= this.props.differenceThreshold
     })
-
+    // filter individual categorical vega spec bars with threshold
     this.rows = filterReactVega(this.rows, this.props.differenceThreshold, this.props.dataset)
 
     return (
@@ -521,7 +489,3 @@ export const CoralChanges = connector(class extends React.Component<Props> {
     );
   }
 })
-
-// export var CoralChanges = connector(({ width, height, vectorsA, vectorsB, dataset, projectionColumns, scale }: Props) => {
-//   return getTable(vectorsA, vectorsB, projectionColumns, dataset);
-// })
