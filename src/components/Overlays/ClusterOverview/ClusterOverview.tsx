@@ -368,7 +368,7 @@ export const ClusterOverview = connector(function ({
                         minWidth: '100px'
                     }}>
                         <Typography align="center" variant="subtitle2">Change</Typography><br/>
-                        <DifferenceThresholdSlider/>
+                        {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider/>}
                         {
                             stories.trace?.mainEdges.map((edge, index) => {
                                 return <ToggleButton
