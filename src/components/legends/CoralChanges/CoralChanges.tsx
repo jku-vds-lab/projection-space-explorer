@@ -276,6 +276,12 @@ function getDifference(a, b, type): [number, string, number] {
   // calculate chi-sqaure score
   const test = new ChiSquareTest()
   const dif = test.calc(a, b)
+
+  // for quantitative data use score avlue as difference
+  if (type !== FeatureType.Categorical) {
+    maxDifVal = dif.scoreValue
+  }
+
   return [dif.scoreValue, maxDifFeature, maxDifVal]
 }
 
@@ -434,13 +440,11 @@ const mapStateToProps = state => {
   return ({
     projectionColumns: state.projectionColumns,
     dataset: state.dataset,
-    // TODO differenceThreshold
     differenceThreshold: state.differenceThreshold
   })
 }
 
 const mapDispatch = dispatch => ({
-  // TODO setdifferencethreshold
   // projectionColumns and dataset should not be changed from within this component
 })
 
@@ -460,11 +464,15 @@ type Props = PropsFromRedux & {
 
 
 // const classes = useStyles();
-function filterReactVega(rows, threshold) {
+function filterReactVega(rows, threshold, dataset) {
   for(var i = 0; i < rows.length; i++) {
-    rows[i].char.props.children[2].props.data.values = rows[i].char.props.children[2].props.data.values.filter(v => {
-      return Math.abs(v.difference) >= threshold
-    })
+    // const type = dataset.columns[rows[i].key]?.featureType
+    // if (type === FeatureType.Categorical) {
+      
+      rows[i].char.props.children[2].props.data.values = rows[i].char.props.children[2].props.data.values.filter(v => {
+        return Math.abs(v.difference) >= threshold
+      })
+    // }
   }
   return rows
 }
@@ -485,7 +493,7 @@ export const CoralChanges = connector(class extends React.Component<Props> {
       return r.difference >= this.props.differenceThreshold
     })
 
-    this.rows = filterReactVega(this.rows, this.props.differenceThreshold)
+    this.rows = filterReactVega(this.rows, this.props.differenceThreshold, this.props.dataset)
 
     return (
       <div>
