@@ -335,6 +335,12 @@ function getCategoricalVis(a, b, feature) {
 
 function mapContinuousChangesData(a, b, feature) {
   const data = []
+  if (a === undefined) {
+    console.log('feature :>> ', feature);
+    console.log('a :>> ', a);
+    console.log('b :>> ', b);
+  }
+
   a.forEach(e => {
     data.push({'val': e, 'selection': 'A'})
   });
@@ -365,7 +371,8 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
   const rows = []
   const dictOfArraysA = dictionary(vectorsA)
   const dictOfArraysB = dictionary(vectorsB)
-  const preselect = getProjectionColumns(projectionColumns)
+  // const preselect = getProjectionColumns(projectionColumns)
+  const preselect = ['true label','predicted label','word','certainty']
 
   // for each feature in preselect
   preselect.forEach(key => {
@@ -453,6 +460,7 @@ export const CoralChanges = connector(class extends React.Component<Props> {
   }
   
   render() {
+
     // generate rows including vega specs for table div
     this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.projectionColumns, this.props.dataset);
     // filter entire vega specs with threshold

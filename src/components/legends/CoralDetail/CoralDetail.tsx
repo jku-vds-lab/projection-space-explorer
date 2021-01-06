@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
 import VegaHist from './VegaHist.js';
+import VegaRatingHist from './VegaRatingHist.js';
 import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -156,12 +157,17 @@ function genRows(vectors, projectionColumns, dataset) {
   }
   const rows = []
   const dictOfArrays = dictionary(vectors)
-  const preselect = getProjectionColumns(projectionColumns)
+  // const preselect = getProjectionColumns(projectionColumns)
+  const preselect = ['true label','predicted label','word','certainty']
 
   // loop through dict
   for (var key in dictOfArrays) {
     // filter for preselect features
-    if (preselect.indexOf(key) > -1) {
+    if (['true label', 'predicted label'].indexOf(key) > -1) {
+      var histData = mapHistData(vectors, key)
+      rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaRatingHist data={histData} actions={false} tooltip={new Handler().call}/>])
+    }
+    else if (preselect.indexOf(key) > -1) {
       if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
         var histData = mapHistData(vectors, key)
@@ -192,9 +198,43 @@ function genRows(vectors, projectionColumns, dataset) {
   return ret
 }
 
+function getSentences(vectors, dataset) {
+  const lines = []
+  // for samples in vectors
+  vectors.forEach(v => {
+    if (!(v.line in lines)) {
+      lines[v.line] = {}
+      lines[v.line]['id'] = v.line
+      lines[v.line]['words'] = []
+      lines[v.line]['contained'] = {}
+    }
+    lines[v.line]['contained'][v.word] = ""
+  });
+
+  // for samples
+  dataset.vectors.forEach(v => {
+    if (v.line in lines) {
+      lines[v.line]['words'].push(v.word)
+    }
+  });
+  
+  return lines
+}
+
+function renderWord(sentence, word) {
+  if(word in sentence.contained) {
+    return <><b>{word} </b></>
+  } else {
+    return <>{word} </>
+  }
+}
+
 function getTable(vectors, aggregation, projectionColumns, dataset) {
   const classes = useStyles()
   const rows = genRows(vectors, projectionColumns, dataset)
+
+
+  const sentences = getSentences(vectors, dataset)
 
   return (
     <div>
@@ -217,6 +257,16 @@ function getTable(vectors, aggregation, projectionColumns, dataset) {
                 {row.feature}<br/><b>{row.category}</b>
                 </TableCell>
                 <TableCell>{row.char}</TableCell>
+              </TableRow>
+            ))}
+            {sentences.map((s) => (
+              <TableRow key={s.id}>
+                <TableCell>{s.id}</TableCell>
+                <TableCell component="th" scope="row">
+                  {s.words.map((w) =>(
+                    renderWord(s, w)
+                  ))}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
