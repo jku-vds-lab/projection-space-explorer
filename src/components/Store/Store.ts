@@ -33,7 +33,7 @@ import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
 import storyEditor from '../Ducks/StoryEditorDuck';
 import lineUpInput from '../Ducks/LineUpInputDuck';
-import differenceThreshold from '../Ducks/DIfferenceThresholdDuck';
+import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
 
 const allReducers = {
   currentTool: currentTool,
