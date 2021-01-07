@@ -20,6 +20,8 @@ import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
 import { getSyncNodes, getSyncNodesAlt, VectBase } from '../../NumTs/NumTs';
 let unweighted = require('graphology-shortest-path')
 
+import * as frontend_utils from "../../../utils/frontend-connect";
+
 
 export function rescalePoints(
     points: { x: number, y: number }[],
@@ -456,7 +458,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                 destination: nodes.find(node => node.meshIndex == edge.destination.label)
             }))
 
-            let worker = new Worker("dist/forceatlas2.js")
+            let worker = new Worker(frontend_utils.BASE_PATH + "forceatlas2.js") //dist/
 
             let self = this
             worker.onmessage = function (e) {

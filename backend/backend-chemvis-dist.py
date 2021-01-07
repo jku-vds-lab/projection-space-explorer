@@ -206,7 +206,7 @@ def smiles_list_to_imgs():
             return {"img_lst": [smiles_to_base64(smiles_list[0])]}
 
         mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
-        res=Chem.rdFMCS.FindMCS(mol_lst, ringMatchesRingOnly=True) # there are different settings possible here
+        res=Chem.rdFMCS.FindMCS(mol_lst, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True) # there are different settings possible here
         patt = res.queryMol
         TemplateAlign.rdDepictor.Compute2DCoords(patt)
 
@@ -232,7 +232,7 @@ def smiles_list_to_common_substructure_img():
             return smiles_to_base64(smiles_list[0])
 
         mol_list = [ Chem.MolFromSmiles(smiles) for smiles in smiles_list ]
-        res = rdFMCS.FindMCS(mol_list, matchValences=True, ringMatchesRingOnly=True)
+        res = rdFMCS.FindMCS(mol_list, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True)
         m = res.queryMol
         pil_img = Draw.MolToImage(m)
 

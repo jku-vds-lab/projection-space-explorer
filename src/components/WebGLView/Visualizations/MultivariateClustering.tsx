@@ -16,6 +16,8 @@ import { CameraTransformations } from "../CameraTransformations";
 import { Story } from "../../Utility/Data/Story";
 import * as nt from '../../NumTs/NumTs'
 
+import * as frontend_utils from "../../../utils/frontend-connect";
+
 const SELECTED_COLOR = 0x4d94ff
 const DEFAULT_COLOR = 0x000000
 const GRAYED = 0x3c3c3c
@@ -94,7 +96,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.trail.create(this.clusterObjects)
         this.scene.add(this.trail.mesh)
 
-        this.triangulationWorker = new Worker('dist/tessy.js')
+        this.triangulationWorker = new Worker(frontend_utils.BASE_PATH + 'tessy.js') //dist/
     }
 
 
