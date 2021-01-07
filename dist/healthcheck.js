@@ -176,9 +176,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.calculate_hdbscan_clusters = exports.upload_sdf_file = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.BASE_URL = void 0;
-exports.BASE_URL = 'http://127.0.0.1:8080'; // for local
-// export const BASE_URL = ''; // for AWS
-// export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
+exports.BASE_URL = 'http://127.0.0.1:8080'; // export const BASE_URL = '';
 // export const BASE_URL = 'http://127.0.0.1:5000';
 // export const BASE_URL = 'http://caleydoapp.org:32819';
 
