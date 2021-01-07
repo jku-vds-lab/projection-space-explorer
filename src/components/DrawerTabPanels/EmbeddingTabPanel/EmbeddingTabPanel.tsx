@@ -1,7 +1,7 @@
 import { connect, ConnectedProps } from 'react-redux'
 import React = require('react')
 import { FlexParent } from '../../Utility/FlexParent'
-import { Box, Button } from '@material-ui/core'
+import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core'
 import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
 import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
@@ -15,6 +15,10 @@ import { UMAPEmbeddingController } from './EmbeddingController/UMAPEmbeddingCont
 import { ClusterTrailSettings } from './ClusterTrailSettings/ClusterTrailSettings'
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck'
 import { ForceAtlas2EmbeddingController } from './EmbeddingController/ForceAtlas2EmbeddingController'
+import { Embedding } from '../../Utility/Data/Embedding'
+import FolderIcon from '@material-ui/icons/Folder';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionsDuck'
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -24,7 +28,8 @@ const mapStateToProps = (state: RootState) => ({
     projectionOpen: state.projectionOpen,
     dataset: state.dataset,
     webGLView: state.webGLView,
-    projectionParams: state.projectionParams
+    projectionParams: state.projectionParams,
+    projections: state.projections
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -32,7 +37,9 @@ const mapDispatchToProps = dispatch => ({
     setProjectionWorker: value => dispatch(setProjectionWorkerAction(value)),
     setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
     setProjectionColumns: value => dispatch(setProjectionColumns(value)),
-    setTrailVisibility: visibility => dispatch(setTrailVisibility(visibility))
+    setTrailVisibility: visibility => dispatch(setTrailVisibility(visibility)),
+    addProjection: embedding => dispatch(addProjectionAction(embedding)),
+    deleteProjection: projection => dispatch(deleteProjectionAction(projection))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -54,6 +61,21 @@ export const EmbeddingTabPanel = connector((props: Props) => {
     const [domainSettings, setDomainSettings] = React.useState('')
 
     const [controller, setController] = React.useState(null)
+
+
+
+    const onSaveProjectionClick = () => {
+        props.addProjection(new Embedding(props.dataset.vectors))
+    }
+
+    const onProjectionClick = (projection: Embedding) => {
+        props.webGLView.current.loadProjection(projection)
+    }
+
+    const onDeleteProjectionClick = (projection: Embedding) => {
+        props.deleteProjection(projection)
+    }
+
 
 
     return <FlexParent
@@ -192,5 +214,43 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
 
         <ClusterTrailSettings></ClusterTrailSettings>
+
+        <Box p={2}>
+            <Grid container direction="row" alignItems="center" justify="space-between">
+                <Grid item>
+                    <Button
+                        style={{
+                            marginTop: '16px'
+                        }}
+                        onClick={onSaveProjectionClick}
+                        variant="outlined"
+                        size="small"
+                    >{'Save Projection'}</Button>
+                </Grid>
+            </Grid>
+        </Box>
+
+        <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
+            <List dense={true}>
+                {props.projections.map(projection => {
+                    return <ListItem button onClick={() => onProjectionClick(projection)}>
+                        <ListItemAvatar>
+                            <Avatar>
+                                <FolderIcon />
+                            </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary="Projection"
+                            secondary={`${projection.positions.length} items`}
+                        />
+                        <ListItemSecondaryAction>
+                            <IconButton onClick={() => onDeleteProjectionClick(projection)}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                })}
+            </List>
+        </div>
     </FlexParent>
 })

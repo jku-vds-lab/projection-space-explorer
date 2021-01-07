@@ -2,14 +2,16 @@ import { Dataset } from "../../../Utility/Data/Dataset";
 import { makeStyles, Modal, Box, Grid, Card, Checkbox, Button, withStyles, Paper } from "@material-ui/core";
 import { connect, ConnectedProps } from 'react-redux'
 import React = require("react");
-import { AutoSizer, Column, Table } from 'react-virtualized';
+import { AutoSizer, Column, Table, defaultTableRowRenderer } from 'react-virtualized';
 import TableCell from '@material-ui/core/TableCell';
 import { setProjectionColumns } from "../../../Ducks/ProjectionColumnsDuck";
 import { setProjectionOpenAction } from "../../../Ducks/ProjectionOpenDuck";
 import { setProjectionParamsAction } from "../../../Ducks/ProjectionParamsDuck";
 import clsx from 'clsx';
-
-
+import clone = require('fast-clone')
+import { Check } from "@material-ui/icons";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 
 
@@ -46,9 +48,10 @@ const styles = (theme) => ({
 
 class MuiVirtualizedTable extends React.PureComponent<any> {
     static defaultProps = {
-        headerHeight: 48,
-        rowHeight: 48,
+        headerHeight: 48
     };
+
+
 
     getRowClassName = ({ index }) => {
         const { classes, onRowClick } = this.props;
@@ -60,7 +63,69 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
 
     cellRenderer = ({ cellData, columnIndex, rowIndex }) => {
 
-        const { columns, classes, rowHeight, onRowClick } = this.props;
+
+        const { columns, classes, onRowClick } = this.props;
+
+
+        const Col2 = ({ rowIndex }) => {
+            let rowData = this.props.items[rowIndex]
+
+            if ("groupLabel" in rowData) {
+                if (columnIndex == 0) {
+                    return <div>{cellData?.toString()}</div>
+                } else if (columnIndex == 1) {
+                    return <Checkbox
+                        disableRipple
+                        indeterminate={rowData.checkedCount != 0 && rowData.checkedCount != rowData.items.length}
+                        checked={rowData.checkedCount == rowData.items.length}
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            const target: any = event.target
+                            this.props.onCheckbox(columnIndex, rowIndex, event.shiftKey, target.checked)
+                        }}
+                    />
+                } else if (columnIndex == 2) {
+                    return <Checkbox
+                        disableRipple
+                        indeterminate={rowData.normalizedCount != 0 && rowData.normalizedCount != rowData.items.length}
+                        checked={rowData.normalizedCount == rowData.items.length}
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            const target: any = event.target
+                            this.props.onCheckbox(columnIndex, rowIndex, event.shiftKey, target.checked)
+                        }}
+                    />
+                } else {
+                    return <div>{cellData?.toString()}</div>
+                }
+
+            } else {
+                if (typeof cellData == "boolean") {
+                    return <Checkbox
+                        disableRipple
+                        checked={cellData}
+                        onClick={(event) => {
+
+                            const target: any = event.target
+                            this.props.onCheckbox(columnIndex, rowIndex, event.shiftKey, target.checked)
+                        }}
+                    />
+                } else {
+                    if (cellData) {
+                        if (columnIndex == 0) {
+                            return <div>{cellData?.toString()}</div>
+                        } else {
+                            return <div>{cellData.toString()}</div>
+                        }
+
+                    } else {
+                        return <div></div>
+                    }
+
+                }
+            }
+        }
+
         return (
             <TableCell
                 component="div"
@@ -68,20 +133,12 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
                     [classes.noClick]: onRowClick == null,
                 })}
                 variant="body"
-                style={{ height: rowHeight }}
+                
                 align={(columnIndex != null && columns[columnIndex].numeric) || false ? 'right' : 'left'}
             >
-
-                {typeof cellData == "boolean" ? <Checkbox
-                    checked={cellData}
-                    onClick={(event) => {
-                        const target: any = event.target
-                        this.props.onCheckbox(columnIndex, rowIndex, event.shiftKey, target.checked)
-                    }}
-                /> : <div>{cellData.toString()}</div>}
-
+                <Col2 rowIndex={rowIndex}></Col2>
             </TableCell>
-        );
+        )
     };
 
     headerRenderer = ({ label, columnIndex }) => {
@@ -98,18 +155,44 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
                 <span>{label}</span>
 
             </TableCell>
-        );
-    };
+        )
+    }
+
+    rowHeight = (rowIndex) => {
+        if (this.props.items && this.props.items[rowIndex.index].collapsed) {
+            return 0
+        } else {
+            return 48
+        }
+    }
+
+    rowRenderer = (props) => {
+        if (this.props.items && this.props.items[props.index].collapsed) {
+            return null
+        }
+
+        if ("groupLabel" in props.rowData) {
+            props.style.background = 'rgba(234, 234, 234, 1)'
+            props.style.borderLeft = '2px solid black'
+            return <div onClick={() => {
+                this.props.groupCollapse(props.index)
+            }}>{defaultTableRowRenderer(props)}</div>
+        } else {
+            return defaultTableRowRenderer(props);
+        }
+    }
 
     render() {
-        const { classes, columns, rowHeight, headerHeight, ...tableProps } = this.props;
+        const { classes, columns, headerHeight, ...tableProps } = this.props;
+
         return (
             <AutoSizer>
                 {({ height, width }) => (
                     <Table
+                        ref={this.props.tableRef}
                         height={height}
                         width={width}
-                        rowHeight={rowHeight}
+                        rowHeight={this.rowHeight}
                         gridStyle={{
                             direction: 'inherit',
                         }}
@@ -117,6 +200,7 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
                         className={classes.table}
                         {...tableProps}
                         rowClassName={this.getRowClassName}
+                        rowRenderer={this.rowRenderer}
                     >
                         {columns.map(({ dataKey, ...other }, index) => {
                             return (
@@ -146,8 +230,6 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
 const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
 
 
-
-
 const mapState = state => ({
     projectionColumns: state.projectionColumns,
     projectionOpen: state.projectionOpen,
@@ -163,6 +245,7 @@ const mapDispatch = dispatch => ({
 
 
 const connector = connect(mapState, mapDispatch)
+
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
@@ -171,9 +254,54 @@ type Props = PropsFromRedux & {
 }
 
 
+function filterGroups(selection) {
+    let label = 0
+    let groups = [{ groupLabel: label, name: "Default", items: [], checkedCount: 0, normalizedCount: 0 }]
+
+
+
+    selection.forEach((entry, i) => {
+        let group = groups.find(e => e.name == entry.featureLabel)
+        if (group) {
+            let copy = clone(entry)
+            copy.index = i
+            if (copy.checked) {
+                group.checkedCount = group.checkedCount + 1
+            }
+            if (copy.normalized) {
+                group.normalizedCount = group.normalizedCount + 1
+            }
+            group.items.push(copy)
+        } else {
+            label = label + 1
+            let copy = clone(entry)
+            copy.index = i
+            let group = { groupLabel: label, name: entry.featureLabel, items: [copy], checkedCount: 0, normalizedCount: 0 }
+            if (copy.checked) {
+                group.checkedCount = group.checkedCount + 1
+            }
+            if (copy.normalized) {
+                group.normalizedCount = group.normalizedCount + 1
+            }
+
+            groups.push(group)
+        }
+    })
+
+    let items = []
+    groups.forEach(group => {
+        items.push(group)
+        group.items.forEach(i => items.push(i))
+    })
+
+    return [groups, items]
+}
 
 const FeaturePicker = connector(({ selection, setSelection }: Props) => {
     const [last, setLast] = React.useState(0)
+    const ref = React.useRef()
+
+    let [groups, items] = filterGroups(selection)
 
     const setProjectionColumnsShift = (last, rowIndex) => {
         let copy = selection.slice(0)
@@ -195,59 +323,107 @@ const FeaturePicker = connector(({ selection, setSelection }: Props) => {
         let copy = selection.slice(0)
 
         if ("checked" in action)
-            copy[rowIndex].checked = action.checked
+            copy[items[rowIndex].index].checked = action.checked
         if ("normalized" in action)
-            copy[rowIndex].normalized = action.normalized
+            copy[items[rowIndex].index].normalized = action.normalized
 
         setSelection(copy)
     }
 
-    return <div style={{
+    const setProjectionColumnGroup = (group, action) => {
+        let copy = selection.slice(0)
+
+        if ("checked" in action) {
+            group.forEach(item => {
+                copy[item.index].checked = action.checked
+            })
+        }
+        if ("normalized" in action) {
+            group.forEach(item => {
+                copy[item.index].normalized = action.normalized
+            })
+        }
+
+        setSelection(copy)
+    }
+
+    const setCollapse = (group, collapsed) => {
+        let copy = selection.slice(0)
+
+        group.forEach(item => {
+            copy[item.index].collapsed = collapsed
+        })
+
+        ref.current.recomputeRowHeights()
+
+        setSelection(copy)
+    }
+
+    let comp = <div style={{
         width: 840,
         height: 400
     }}><VirtualizedTable
-        onCheckbox={(columnIndex, rowIndex, shiftKey, value) => {
-            if (columnIndex == 1) {
-                if (shiftKey) {
-                    setProjectionColumnsShift(last, rowIndex)
+            tableRef={ref}
+            onCheckbox={(columnIndex, rowIndex, shiftKey, value) => {
+                if ("groupLabel" in items[rowIndex]) {
+                    // Group item
+                    if (columnIndex == 1) {
+                        setProjectionColumnGroup(items[rowIndex].items, { checked: value })
+                    }
+                    if (columnIndex == 2) {
+                        setProjectionColumnGroup(items[rowIndex].items, { normalized: value })
+                    }
                 } else {
-                    setProjectionColumnsEntry(rowIndex, { checked: value })
-                    setLast(rowIndex)
+                    // Single item
+                    if (columnIndex == 1) {
+                        if (shiftKey) {
+                            setProjectionColumnsShift(last, rowIndex)
+                        } else {
+                            setProjectionColumnsEntry(rowIndex, { checked: value })
+                            setLast(rowIndex)
+                        }
+                    }
+                    if (columnIndex == 2) {
+                        setProjectionColumnsEntry(rowIndex, { normalized: value })
+                    }
                 }
-            }
-            if (columnIndex == 2) {
-                setProjectionColumnsEntry(rowIndex, { normalized: value })
-            }
-        }}
-        rowCount={selection.length}
-        rowGetter={({ index }) => selection[index]}
-        columns={[
-            {
-                width: 300,
-                label: "Name",
-                dataKey: "name"
-            },
-            {
-                width: 120,
-                label: "Project?",
-                dataKey: "checked",
-                numeric: false
-            },
-            {
-                width: 120,
-                label: "Normalize?",
-                dataKey: "normalized",
-                numeric: false
-            },
-            {
-                width: 300,
-                label: "Range",
-                dataKey: "range",
-                numeric: false
-            }
-        ]}
-    />
+            }}
+            rowCount={items.length}
+            rowGetter={({ index }) => items[index]}
+            items={items}
+            groups={groups}
+            groupCollapse={(rowIndex) => {
+                setCollapse(items[rowIndex].items, !selection[items[rowIndex].items[0].index].collapsed)
+            }}
+            columns={[
+                {
+                    width: 300,
+                    label: "Name",
+                    dataKey: "name"
+                },
+                {
+                    width: 120,
+                    label: "Project?",
+                    dataKey: "checked",
+                    numeric: false
+                },
+                {
+                    width: 120,
+                    label: "Normalize?",
+                    dataKey: "normalized",
+                    numeric: false
+                },
+                {
+                    width: 250,
+                    label: "Range",
+                    dataKey: "range",
+                    numeric: false
+                }
+            ]}
+        />
     </div>
+
+    return comp
 })
 
 

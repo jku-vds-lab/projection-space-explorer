@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from 'react-redux'
 import trailSettings from '../../../Ducks/TrailSettingsDuck';
 import { RootState } from '../../../Store/Store';
 import FeaturePicker from '../FeaturePicker/FeaturePicker';
+import clone = require('fast-clone')
 
 const mapState = (state: RootState) => ({
     projectionColumns: state.projectionColumns
@@ -82,12 +83,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
 
     const cloneColumns = (projectionColumns) => {
         return projectionColumns.map(val => {
-            return {
-                name: val.name,
-                normalized: val.normalized,
-                checked: val.checked,
-                range: val.range
-            }
+            return clone(val)
         })
     }
 

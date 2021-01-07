@@ -35,6 +35,7 @@ import { Edge } from '../Utility/graphs';
 import { getSyncNodesAlt } from '../NumTs/NumTs';
 import { ClusterDragTool } from './Tools/ClusterDragTool';
 import { TraceSelectTool } from './Tools/TraceSelectTool';
+import { Embedding } from '../Utility/Data/Embedding';
 
 
 type ViewState = {
@@ -1245,7 +1246,15 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
+    loadProjection(projection: Embedding) {
+        this.props.dataset.vectors.forEach(vector => {
+            let position = projection.positions[vector.view.meshIndex]
+            vector.x = position.x
+            vector.y = position.y
+        })
 
+        this.updateXY()
+    }
 
     onClusterZoom(cluster) {
         this.props.setCurrentAggregation(cluster.vectors)

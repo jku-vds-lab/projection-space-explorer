@@ -12,6 +12,16 @@ export enum PrebuiltFeatures {
 
 
 
+type ColumnType = {
+    distinct: any
+    isNumeric: boolean
+    meta_data: any
+    metaInformation: any
+    featureType: FeatureType
+    range: any
+    featureLabel: string
+}
+
 
 /**
  * Dataset class that holds all data, the ranges and additional stuff
@@ -23,7 +33,7 @@ export class Dataset {
     ranges: any;
     meta_data: any;
     info: { path: string; type: DatasetType; };
-    columns: any;
+    columns: { [name: string] : ColumnType }
 
     // The type of the dataset (or unknown if not possible to derive)
     type: DatasetType;
@@ -45,16 +55,22 @@ export class Dataset {
     // The edges between clusters.
     clusterEdges: Edge[];
 
-    constructor(vectors, ranges, preselection, info, featureTypes, meta_data={}) {
+    // Dictionary containing the key/value pairs for each column
+    metaInformation
+
+
+
+    constructor(vectors, ranges, preselection, info, featureTypes, meta_data={}, metaInformation={}) {
         this.vectors = vectors;
         this.ranges = ranges;
         this.meta_data = meta_data;
         this.info = info;
         this.columns = {};
         this.type = this.info.type;
+        this.metaInformation = metaInformation
 
         this.calculateBounds();
-        this.calculateColumnTypes(ranges, featureTypes, meta_data);
+        this.calculateColumnTypes(ranges, featureTypes, meta_data, metaInformation);
         this.checkLabels();
 
         // If the dataset is sequential, calculate the segments
@@ -139,13 +155,28 @@ export class Dataset {
     /**
      * Creates a map which shows the distinct types and data types of the columns.
      */
-    calculateColumnTypes(ranges, featureTypes, meta_data) {
+    calculateColumnTypes(ranges, featureTypes, meta_data, metaInformation) {
         var columnNames = Object.keys(this.vectors[0]);
         columnNames.forEach(columnName => {
-            this.columns[columnName] = {};
+            // @ts-ignore
+            this.columns[columnName] = { }
 
             this.columns[columnName].featureType = featureTypes[columnName];
             this.columns[columnName].meta_data = meta_data[columnName];
+
+
+            // Store dictionary with key/value pairs in column
+            let columnMetaInformation = metaInformation[columnName] ?? {}
+            this.columns[columnName].metaInformation = columnMetaInformation
+
+            // Extract featureLabel from dictionary
+            if ("featureLabel" in columnMetaInformation) {
+                this.columns[columnName].featureLabel = columnMetaInformation["featureLabel"]
+            } else {
+                this.columns[columnName].featureLabel = "Default"
+            }
+
+
 
             // Check data type
             if (columnName in ranges) {
@@ -160,6 +191,8 @@ export class Dataset {
                 }
             }
         });
+
+
         if ('algo' in this.columns)
             this.columns['algo'].featureType = FeatureType.Categorical;
         if ('clusterLabel' in this.columns)
