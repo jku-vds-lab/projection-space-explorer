@@ -4,7 +4,7 @@
 FROM continuumio/miniconda3:4.6.14
 
 # install rdkit and bottle
-RUN /opt/conda/bin/conda install --yes --freeze-installed -c conda-forge rdkit bottle && /opt/conda/bin/conda clean -afy
+RUN /opt/conda/bin/conda install --yes --freeze-installed -c conda-forge rdkit bottle hdbscan && /opt/conda/bin/conda clean -afy
 
 # define target folder
 WORKDIR /app

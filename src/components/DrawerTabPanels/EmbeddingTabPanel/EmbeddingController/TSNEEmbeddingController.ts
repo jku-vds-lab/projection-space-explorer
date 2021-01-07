@@ -1,9 +1,11 @@
 import { Dataset } from "../../../Utility/Data/Dataset";
 import { EmbeddingController } from "./EmbeddingController"
 
+import * as frontend_utils from "../../../../utils/frontend-connect";
+
 export class TSNEEmbeddingController extends EmbeddingController {    
     init(dataset: Dataset, selection: any, params: any) {
-        this.worker = new Worker('dist/tsne.js')
+        this.worker = new Worker(frontend_utils.BASE_PATH + 'tsne.js') //dist/
         this.worker.postMessage({
             messageType: 'init',
             input: dataset.asTensor(selection.filter(e => e.checked)),

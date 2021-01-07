@@ -2,11 +2,13 @@ import { Vect } from "../../../Utility/Data/Vect"
 import { Dataset } from "../../../Utility/Data/Dataset"
 import { EmbeddingController } from "./EmbeddingController"
 
+import * as frontend_utils from "../../../../utils/frontend-connect";
+
 export class UMAPEmbeddingController extends EmbeddingController {
     targetBounds: any
     
     init(dataset: Dataset, selection: any, params: any, samples?) {
-        this.worker = new Worker('dist/umap.js')
+        this.worker = new Worker(frontend_utils.BASE_PATH + 'umap.js') //dist/
         this.worker.postMessage({
             messageType: 'init',
             input: dataset.asTensor(selection.filter(e => e.checked), samples),

@@ -16,6 +16,14 @@
   top: 30px;
   height: auto !important;
 }
+
+.ChemClusterMultiple .MuiCardContent-root{
+  width: 170px;
+  padding: 8px;
+  overflow-y: scroll;
+  height: 340px;
+}
+
 .ChemClusterSingle{
   position: absolute;
   left:20px;

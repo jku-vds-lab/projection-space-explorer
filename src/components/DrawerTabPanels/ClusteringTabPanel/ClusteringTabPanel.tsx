@@ -14,7 +14,7 @@ import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { StoryPreview } from "./StoryPreview"
 import * as backend_utils from "../../../utils/backend-connect";
-
+import * as frontend_utils from "../../../utils/frontend-connect";
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -128,7 +128,7 @@ export const ClusteringTabPanel = connector(({
                     }
                 }
             } else {
-                let worker = new Worker('dist/cluster.js')
+                let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js') //dist/
 
                 worker.onmessage = (e) => {
                     // Point clusteruing

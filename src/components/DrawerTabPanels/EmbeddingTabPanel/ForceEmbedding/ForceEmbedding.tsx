@@ -9,6 +9,8 @@ import './ForceEmbedding.scss'
 import Alert from '@material-ui/lab/Alert';
 import { FlexParent } from '../../../Utility/FlexParent';
 
+import * as frontend_utils from "../../../../utils/frontend-connect";
+
 type ForceEmbeddingProps = {
     webGLView: any
     dataset: Dataset
@@ -102,7 +104,7 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
         })
 
 
-        let worker = new Worker("dist/forceatlas2.js")
+        let worker = new Worker(frontend_utils.BASE_PATH + "forceatlas2.js") //dist/
         this.setState({
             worker: worker
         })

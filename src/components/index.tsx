@@ -66,9 +66,7 @@ import { devToolsEnhancer } from 'redux-devtools-extension';
 import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
 import { SDFLoader } from "./Utility/Loaders/SDFLoader";
 
-
-
-
+import * as frontend_utils from "../utils/frontend-connect";
 
 
 
@@ -178,7 +176,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       backendRunning: false
     }
 
-    var worker = new Worker('dist/healthcheck.js')
+    var worker = new Worker(frontend_utils.BASE_PATH + 'healthcheck.js') //dist/
     worker.onmessage = (e) => {
       this.setState({
         backendRunning: e.data
