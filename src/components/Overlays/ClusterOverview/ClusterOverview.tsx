@@ -15,6 +15,7 @@ import { RootState } from "../../Store/Store";
 import { addClusterToTrace, selectSideBranch, setActiveTraceState } from "../../Ducks/StoriesDuck";
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import { DifferenceThresholdSlider } from '../../legends/CoralChanges/DifferenceThresholdSlider';
 
 
 const mapStateToProps = (state: RootState) => ({
@@ -366,7 +367,8 @@ export const ClusterOverview = connector(function ({
                         flexDirection: 'column',
                         minWidth: '100px'
                     }}>
-                        <Typography align="center" variant="subtitle2">Change</Typography>
+                        <Typography align="center" variant="subtitle2">Change</Typography><br/>
+                        {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider/>}
                         {
                             stories.trace?.mainEdges.map((edge, index) => {
                                 return <ToggleButton

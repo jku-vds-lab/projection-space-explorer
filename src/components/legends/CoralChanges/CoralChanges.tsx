@@ -13,11 +13,13 @@ import Paper from '@material-ui/core/Paper';
 import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { ChiSquareTest } from './ChiSquare'
-import TextScatter from './VegaTextScatter.js';
+import BarChanges from './VegaBarChanges.js';
 import Boxplot from './VegaBoxplot.js';
 import { Dataset } from '../../Utility/Data/Dataset';
 import { Vect } from '../../Utility/Data/Vect';
 import { FeatureType } from '../../Utility/Data/FeatureType';
+import { setDifferenceThreshold } from "../../Ducks/DifferenceThresholdDuck";
+import { cloneDeep } from "../../Utility/CloneDeep";
 
 const useStyles = makeStyles({
   table: {
@@ -80,8 +82,8 @@ function sortByScore(a, b) {
   }
 }
 
-function createData(feature, category, score, char) {
-  return { feature, category, score, char }
+function createData(feature, category, score, char, difference) {
+  return { feature, category, score, char, difference }
 }
 
 function getBins(a, n = 10) {
@@ -100,7 +102,7 @@ function getMaxDif(a, b) {
   var maxDifIndex = 0
 
   var x = a.map(function (item, index) {
-    // In this case item correspond to currentValue of array a, 
+    // In this case item corresponds to currentValue of array a, 
     // using index to get value from array b
     // const dif = Math.abs(item - b[index])
     const dif = Math.abs(item/aSum - b[index]/bSum)
@@ -207,21 +209,48 @@ function getFlattenedBins(a, b) {
 }
 
 
-function getMostDifferingCategory(a, b) {
+function getMostDifferingCategory(setA, setB): [number, string] {
+  const data = []
+
+  const setACategories = setA.filter((item, index, self) => self.indexOf(item) === index);
+  const setBCategories = setB.filter((item, index, self) => self.indexOf(item) === index);
+  const allCategories = setACategories.concat(setBCategories).filter((item, index, self) => self.indexOf(item) === index);
+
+  const setASize = setA.length;
+  const setBSize = setB.length;
+  const overallSize = setASize + setBSize;
+
+  for (const currCat of allCategories) {
+    const amountSetA = setA.filter((item) => (item === currCat)).length;
+    const amountSetB = setB.filter((item) => (item === currCat)).length;
+
+    // const relDif = (amountSetB - amountSetA) / amountSetA
+    const relDif = (amountSetB/setBSize - amountSetA/setASize)
+    data.push({'category': currCat, 'difference': relDif})
+  }
+
+  const sorted = data.sort(sortByAbsDifference)
+
+  return [sorted[0]['difference'], sorted[0]['category']]
+}
+
+function oldGetMostDifferingCategory(a, b): [number, string] {
+  // return max dif value, max dif index
   if (!a || !b) {
-    return ""
+    return [0, ""]
   }
   const featuresCounts = getFeaturesCounts(a, b)
   const features = featuresCounts[0]
   a = featuresCounts[1]
   b = featuresCounts[2]
-  const maxDifIndex = getMaxDif(a, b)[1]
-  return features[maxDifIndex]
+  const ret = getMaxDif(a, b)
+
+  return [ret[0], features[ret[1]]]
 }
 
-function getDifference(a, b, type) {
+function getDifference(a, b, type): [number, string, number] {
   if(!a || !b) {
-    return [0, ""]
+    return [0, "", 0]
   }
 
   // a, b are arrays of values of the same feature for both selections A and B
@@ -231,6 +260,7 @@ function getDifference(a, b, type) {
   // determine difference score
 
   var maxDifFeature = ""
+  var maxDifVal = 0
 
   if (type !== FeatureType.Categorical) {
     // bin continuous data and turn into categorical data using bin numbers
@@ -239,14 +269,19 @@ function getDifference(a, b, type) {
     b = flatBins[1]
   } else {
     // find most differing category
-    maxDifFeature = getMostDifferingCategory(a, b)
+    [maxDifVal, maxDifFeature] = getMostDifferingCategory(a, b)
   }
 
   // calculate chi-sqaure score
   const test = new ChiSquareTest()
   const dif = test.calc(a, b)
 
-  return [dif.scoreValue, maxDifFeature]
+  // for quantitative data use score avlue as difference
+  if (type !== FeatureType.Categorical) {
+    maxDifVal = dif.scoreValue
+  }
+
+  return [dif.scoreValue, maxDifFeature, maxDifVal]
 }
 
 function sortByAbsDifference(a, b) {
@@ -295,7 +330,7 @@ function mapCategoricalChangesData(setA, setB, feature) {
 
 function getCategoricalVis(a, b, feature) {
   const data = mapCategoricalChangesData(a, b, feature)
-  return <div><b>{feature}</b><br/><TextScatter data={data} actions={false} tooltip={new Handler().call}/></div>
+  return <div><b>{feature}</b><br/><BarChanges data={data} actions={false} tooltip={new Handler().call}/></div>
 }
 
 function mapContinuousChangesData(a, b, feature) {
@@ -337,22 +372,22 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
     var type = dataset.columns[key]?.featureType
     var valuesA = dictOfArraysA[key]
     var valuesB = dictOfArraysB[key]
-    // calc difference between A and B and 
-    var dif = getDifference(valuesA, valuesB, type)
-    var difScore = dif[0]
-    var mostDifCat = dif[1]
+    // calc difference between A and B and
+    var [difScore, mostDifCat, difVal] = getDifference(valuesA, valuesB, type)    
+    
     // append dif to rows
     // create visualization for those features and append to rows
     var vis = getVis(valuesA, valuesB, type, key)
 
-    // append to rows: key, most differing category, dif score, vis
-    rows.push([key, mostDifCat, difScore, vis])
+    // append to rows: key, most differing category, dif score, vis, difVal
+    rows.push([key, mostDifCat, difScore, vis, difVal])
+    
   });
 
   // turn into array of dicts
   const ret = []
   for (var i = 0; i < rows.length; i++) {
-    ret.push(createData(rows[i][0], rows[i][1], rows[i][2], rows[i][3]))
+    ret.push(createData(rows[i][0], rows[i][1], rows[i][2], rows[i][3], rows[i][4]))
   }
 
   // sort rows by score
@@ -361,47 +396,19 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
   return ret
 }
 
-function getTable(vectorsA, vectorsB, projectionColumns, dataset) {
-  const classes = useStyles()
-  const rows = genRows(vectorsA, vectorsB, projectionColumns, dataset)
-
-
-  return (
-    <div>
-      <TableContainer component={Paper} style={{
-        height: "400px",
-        width: "100%",
-        overflow: "auto"
-      }}>
-        <Table className={classes.table} aria-label="simple table" size={'small'}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Char</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.feature}>
-                <TableCell>{row.char}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
-}
-
-const mapState = state => {
+const mapStateToProps = state => {
   return ({
     projectionColumns: state.projectionColumns,
-    dataset: state.dataset
+    dataset: state.dataset,
+    differenceThreshold: state.differenceThreshold
   })
 }
 
-const mapDispatch = dispatch => ({})
+const mapDispatch = dispatch => ({
+  // projectionColumns and dataset should not be changed from within this component
+})
 
-const connector = connect(mapState, mapDispatch);
+const connector = connect(mapStateToProps, mapDispatch);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
@@ -415,6 +422,69 @@ type Props = PropsFromRedux & {
   scale: number
 }
 
-export var CoralChanges = connector(({ width, height, vectorsA, vectorsB, dataset, projectionColumns, scale }: Props) => {
-  return getTable(vectorsA, vectorsB, projectionColumns, dataset)
+
+/**
+ * filter rows within vega specs according to threshold
+ * @param rows array of [{ feature, category, score, char, difference }, ...]
+ * @param threshold filter all r={...} with r.difference < threshold, except for quantitative data
+ * @param dataset dataset from props to lookup feature type
+ */
+function filterReactVega(rows, threshold, dataset) {
+  for(var i = 0; i < rows.length; i++) {
+
+    const type = dataset.columns[rows[i].feature]?.featureType
+
+    if (type === FeatureType.Categorical) {
+      rows[i].char.props.children[2].props.data.values = rows[i].char.props.children[2].props.data.values.filter(v => {
+        return Math.abs(v.difference) >= threshold
+      })
+      
+    }
+  }
+  return rows
+}
+
+
+export const CoralChanges = connector(class extends React.Component<Props> {
+  rows: any[]
+
+  constructor(props) {
+    super(props)
+  }
+  
+  render() {
+    // generate rows including vega specs for table div
+    this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.projectionColumns, this.props.dataset);
+    // filter entire vega specs with threshold
+    this.rows = this.rows.filter(r => {
+      return r.difference >= this.props.differenceThreshold
+    })
+    // filter individual categorical vega spec bars with threshold
+    this.rows = filterReactVega(this.rows, this.props.differenceThreshold, this.props.dataset)
+
+    return (
+      <div>
+        <TableContainer component={Paper} style={{
+          height: "400px",
+          width: "100%",
+          overflow: "auto"
+        }}>
+          <Table aria-label="simple table" size={'small'}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Change</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {this.rows.map((row) => (
+                <TableRow key={row.feature}>
+                  <TableCell>{row.char}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+    );
+  }
 })
