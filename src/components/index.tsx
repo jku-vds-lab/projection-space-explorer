@@ -292,7 +292,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       name: column,
       checked: dataset.preselectedProjectionColumns ? dataset.preselectedProjectionColumns.includes(column) : true,
       normalized: true,
-      range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown"
+      range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
+      featureLabel: dataset.columns[column].featureLabel
     })))
 
     this.legend.current?.load(dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)

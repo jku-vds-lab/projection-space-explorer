@@ -34,6 +34,7 @@ import trailSettings from '../Ducks/TrailSettingsDuck';
 import storyEditor from '../Ducks/StoryEditorDuck';
 import lineUpInput from '../Ducks/LineUpInputDuck';
 import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
+import projections from '../Ducks/ProjectionsDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -70,7 +71,8 @@ const allReducers = {
   trailSettings: trailSettings,
   storyEditor: storyEditor,
   lineUpInput: lineUpInput,
-  differenceThreshold: differenceThreshold
+  differenceThreshold: differenceThreshold,
+  projections: projections
 }
 
 const appReducer = combineReducers(allReducers)

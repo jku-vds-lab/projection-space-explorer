@@ -68,4 +68,6 @@ export class RenderingContextEx {
     moveTo(x, y) {
         this.context.moveTo(x * this.pixelRatio, y * this.pixelRatio)
     }
+
+    
 }

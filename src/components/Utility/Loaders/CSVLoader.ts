@@ -37,7 +37,7 @@ export class CSVLoader implements Loader {
         return { min: range[0], max: range[1], inferred: true }
     }
 
-    parseMetaData(str){
+    parseMetaData(str) {
         var metadata = str.split(";");
         return metadata;
     }
@@ -50,9 +50,9 @@ export class CSVLoader implements Loader {
     }
 
     getFeatureType(x) {
-        if (typeof x  === "number" || !isNaN(Number(x))) {
+        if (typeof x === "number" || !isNaN(Number(x))) {
             return 'number'
-        } else if (""+new Date(x) !== "Invalid Date") {
+        } else if ("" + new Date(x) !== "Invalid Date") {
             return 'date'
         } else {
             return 'arbitrary'
@@ -63,8 +63,7 @@ export class CSVLoader implements Loader {
         var header = Object.keys(vectors[0])
 
         var ranges = header.reduce((map, value) => {
-            var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/) 
-
+            var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/)
             if (matches != null) {
                 var cutHeader = value.substring(0, value.length - matches[0].length)
                 vectors.forEach(vector => {
@@ -76,6 +75,24 @@ export class CSVLoader implements Loader {
             }
             return map
         }, {})
+
+        // Check for JSON header inside column, store it as key/value pair
+        var metaInformation = header.reduce((map, value) => {
+            let json = value.match(/[{].*[}]/)
+            if (json != null) {
+                let cutHeader = value.substring(0, value.length - json[0].length)
+
+                vectors.forEach(vector => {
+                    vector[cutHeader] = vector[value]
+                    delete vector[value]
+                })
+
+                map[cutHeader] = JSON.parse(json[0])
+            }
+            return map
+        }, {})
+
+
         
         var meta_data = header.reduce((map, value) => {
             var matches = value.match(/\[(.*)\]/) // round brackets to get the string within the square brackets
@@ -91,6 +108,7 @@ export class CSVLoader implements Loader {
             }
             return map
         }, {});
+
 
 
         // infer for each feature whether it contains numeric, date, or arbitrary values
@@ -138,7 +156,7 @@ export class CSVLoader implements Loader {
             }
         }
         // for all rows
-        for (var i=0; i < vectors.length; i++) {
+        for (var i = 0; i < vectors.length; i++) {
             // for all date features f
             dateFeatures.forEach(f => {
                 // overwrite sample with its timestamp
@@ -169,6 +187,6 @@ export class CSVLoader implements Loader {
         }
         ranges = new Preprocessor(vectors).preprocess(ranges)
 
-        finished(new Dataset(vectors, ranges, preselection, { type: datasetType, path: entry.path }, types, meta_data), new InferCategory(vectors).load(ranges))
+        finished(new Dataset(vectors, ranges, preselection, { type: datasetType, path: entry.path }, types, meta_data, metaInformation), new InferCategory(vectors).load(ranges))
     }
 }

@@ -35,6 +35,7 @@ import { Edge } from '../Utility/graphs';
 import { getSyncNodesAlt } from '../NumTs/NumTs';
 import { ClusterDragTool } from './Tools/ClusterDragTool';
 import { TraceSelectTool } from './Tools/TraceSelectTool';
+import { Embedding } from '../Utility/Data/Embedding';
 
 
 type ViewState = {
@@ -168,7 +169,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
 
-    lineupFilterUpdate(){
+    lineupFilterUpdate() {
         this.particles.update()
         this.requestRender()
     }
@@ -205,7 +206,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
         this.mouseController.onDragEnd = (event: MouseEvent, button: number) => {
-            // console.log("on drag end")
             switch (button) {
                 case 0:
                     switch (this.props.currentTool) {
@@ -252,7 +252,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.mouseController.onDragMove = (event: MouseEvent, button: number) => {
-            //console.log("on drag move")
 
             switch (button) {
                 case 0:
@@ -285,7 +284,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.mouseController.onContext = (event: MouseEvent, button: number) => {
-            //console.log("on context")
 
             if (this.props.currentTool == Tool.Default) {
                 switch (button) {
@@ -297,10 +295,42 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                             break;
                         }
 
-                        
 
 
-                        if (this.currentHover && this.currentHover instanceof Vect) {
+
+                        if (this.traceSelect) {
+                            let target = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
+
+                            if (target) {
+                                // We want to select a trace between 2 clusters
+                                let paths = Story.depthFirstSearch(this.props.stories.active.toGraph(), this.traceSelect.cluster.label, target.label)
+
+                                if (paths.length > 0) {
+                                    let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                                    let mainEdges = mainPath.slice(1).map((item, index) => {
+                                        return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
+                                    })
+                                    this.props.setActiveTrace({
+                                        mainPath: mainPath,
+                                        mainEdges: mainEdges,
+                                        sidePaths: paths.slice(1).map(ids => {
+                                            let path = ids.map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                                            let edges = path.slice(1).map((item, index) => {
+                                                return this.props.stories.active.edges.find(edge => edge.source == path[index] && edge.destination == item)
+                                            })
+                                            return {
+                                                nodes: path,
+                                                edges: edges,
+                                                syncNodes: getSyncNodesAlt(mainPath, path)
+                                            }
+                                        })
+                                    })
+                                }
+                            }
+
+                            this.traceSelect = null
+                        } else if (this.currentHover && this.currentHover instanceof Vect) {
+                            // We click on a hover target
                             if (event.shiftKey) {
                                 // There is a hover target ... select it
                                 this.props.toggleAggregation([this.currentHover])
@@ -349,7 +379,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.mouseController.onMouseUp = (event: MouseEvent) => {
-            //console.log("mouse up")
+
         }
 
 
@@ -842,7 +872,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         try {
             this.renderLoop()
-        } catch (e) { console.log(e) }
+        } catch (e) { 
+            
+         }
     }
 
 
@@ -895,6 +927,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         if (this.traceSelect) {
             this.traceSelect.viewTransform = this.createTransform()
+            this.traceSelect.mousePosition = this.mouseController.currentMousePosition
             this.traceSelect.renderToContext(extended)
         }
 
@@ -1213,7 +1246,15 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
+    loadProjection(projection: Embedding) {
+        this.props.dataset.vectors.forEach(vector => {
+            let position = projection.positions[vector.view.meshIndex]
+            vector.x = position.x
+            vector.y = position.y
+        })
 
+        this.updateXY()
+    }
 
     onClusterZoom(cluster) {
         this.props.setCurrentAggregation(cluster.vectors)
@@ -1338,6 +1379,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                 <MenuItem onClick={() => {
                     let paths = this.props.stories.active.getAllStoriesFromSource(this.state.menuTarget.label)
+
+                    
 
                     if (paths.length > 0) {
                         let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
