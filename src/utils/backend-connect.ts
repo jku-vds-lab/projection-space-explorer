@@ -1,6 +1,7 @@
 
-export const BASE_URL = 'http://127.0.0.1:8080';
-// export const BASE_URL = '';
+export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = ''; // for AWS
+// export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
 // export const BASE_URL = 'http://127.0.0.1:5000';
 // export const BASE_URL = 'http://caleydoapp.org:32819';
 

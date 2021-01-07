@@ -177,10 +177,10 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
 
     for (const i in cols) {
         let col = cols[i];
-        let show = typeof col.meta_data !== 'undefined' && col.meta_data.includes("lineup_show");
+        let show = typeof col.metaInformation.showLineUp !== 'undefined' && col.metaInformation.showLineUp;
 
-        if(!col.meta_data || !col.meta_data.includes("lineup_none")){ // only if there is a "lineup_none" modifier at this column, we don't do anything
-            if(col.meta_data && col.meta_data.includes("smiles_to_img")){
+        if(Object.keys(col.metaInformation).length <= 0 || !col.metaInformation.hideLineUp){ // only if there is a "hideLineUp" modifier at this column, we don't do anything
+            if(col.metaInformation.imgSmiles){
                 smiles_col = "Structure";
                 lineup_col_list.push(<LineUpStringColumnDesc key={smiles_col} column={i} label={smiles_col} visible={show} renderer="mySmilesRenderer" groupRenderer="mySmilesRenderer" width={80} />) 
             }

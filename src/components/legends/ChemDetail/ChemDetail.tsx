@@ -26,7 +26,7 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
 
             for (const col_name in this.props.columns) {
                 let col = this.props.columns[col_name];
-                if(col.meta_data && col.meta_data.includes("smiles_to_img"))
+                if(col.metaInformation.imgSmiles)
                     smiles_col = col_name;
             }
             if(smiles_col in this.props.columns){
