@@ -7,6 +7,7 @@ import { DatasetDrop } from "./DatasetDrop";
 import { DownloadJob } from "./DownloadJob";
 import { DownloadProgress } from "./DownloadProgress";
 import { PredefinedDatasets } from "./PredefinedDatasets";
+import { SDFModifierDialog } from "./SDFModifierDialog";
 var d3v5 = require('d3')
 
 function convertFromCSV(vectors) {
@@ -17,12 +18,25 @@ function convertFromCSV(vectors) {
 
 export function DatasetTabPanel({ onDataSelected }) {
     const [job, setJob] = React.useState(null)
+    const [entry, setEntry] = React.useState(null);
+    const [openSDFDialog, setOpen] = React.useState(false);
+
+    function onModifierDialogClose(modifiers){
+        setOpen(false); 
+        if(modifiers !== null)
+            new SDFLoader().resolvePath(entry, onDataSelected, modifiers);
+    }
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <DatasetDrop onChange={onDataSelected}></DatasetDrop>
 
         <PredefinedDatasets onChange={(entry) => {
-            setJob(new DownloadJob(entry))
+            if(entry.path.endsWith('sdf')){
+                setEntry(entry);
+                setOpen(true);
+            }else{
+                setJob(new DownloadJob(entry))
+            }
         }} ></PredefinedDatasets>
 
         <DownloadProgress job={job} onFinish={(result) => {
@@ -34,5 +48,8 @@ export function DatasetTabPanel({ onDataSelected }) {
 
             setJob(null)
         }} onCancel={() => { setJob(null) }}></DownloadProgress>
+
+        <SDFModifierDialog openSDFDialog={openSDFDialog} handleClose={onModifierDialogClose}></SDFModifierDialog>
     </div>
 }
+

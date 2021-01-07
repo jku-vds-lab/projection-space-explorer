@@ -19,7 +19,7 @@ export function euclideanDistanceVec(v1: VectorType, v2: VectorType) {
 
 
 
-export function getSyncNodesAlt(nodes1: [], nodes2: []) {
+export function getSyncNodesAlt(nodes1: any[], nodes2: any[]) {
     const convert = (nodes) => {
         let edges = []
         nodes.forEach((node, index) => {

@@ -59,11 +59,11 @@ function getSyncNodesAlt(nodes1: [], nodes2: []) {
 
 
 
-test('adds 1 + 2 to equal 3', () => {
-    let a = [ 4, 5, 6 ]
-    let b = [ 4, 2, 5, 6, 7 ]
+// test('adds 1 + 2 to equal 3', () => {
+//     let a = [ 4, 5, 6 ]
+//     let b = [ 4, 2, 5, 6, 7 ]
 
-    console.log(getSyncNodesAlt(a, b))
+//     console.log(getSyncNodesAlt(a, b))
 
-    expect(true)
-})
+//     expect(true)
+// })

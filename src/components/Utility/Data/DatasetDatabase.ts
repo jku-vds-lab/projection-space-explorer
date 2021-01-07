@@ -20,6 +20,11 @@ export class DatasetDatabase {
     constructor() {
         this.data = [
             {
+                display: "ChemVis: Test",
+                path: "datasets/chemvis/test.sdf",
+                type: DatasetType.Chem
+            },
+            {
                 display: "Coral sub-sampled",
                 path: "datasets/coral/coral_subsampled.json",
                 type: DatasetType.Coral

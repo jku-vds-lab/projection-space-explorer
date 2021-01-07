@@ -1,10 +1,11 @@
+import * as backend_utils from "../../utils/backend-connect";
+
 var backendRunning = false
 
 
 function check() {
-    fetch('http://localhost:8090/heart', {
-        method: 'POST',
-        body: JSON.stringify("")
+    fetch(backend_utils.BASE_URL+'/healthcheck', {
+        method: 'GET'
     }).then(() => {
         let context = self as any
 

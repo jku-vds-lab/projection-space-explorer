@@ -3,7 +3,7 @@ import { Vect } from "../Data/Vect"
 import { Loader } from "./Loader"
 import { CSVLoader } from "./CSVLoader"
 import * as backend_utils from "../../../utils/backend-connect";
-
+// import sdf from "../../../../datasets/chemvis/test.sdf";
 
 var d3v5 = require('d3')
 
@@ -19,15 +19,16 @@ export class SDFLoader implements Loader {
 
     constructor() {
     }
-    resolvePath(entry: any, finished: any) {
-        throw new Error("Method not implemented.")
+    resolvePath(entry: any, finished: any, modifiers?: string) {
+        fetch(entry.path).then(response => response.blob())
+        .then(result => this.resolveContent(result, finished, modifiers));
     }
 
     
-    resolveContent(file, finished) { //TODO: lineup not working with modifiers
+    resolveContent(file, finished, modifiers?: string) {
         backend_utils.upload_sdf_file(file).then(data => {
             // request the server to return a csv file using the unique filename
-            d3v5.csv(backend_utils.BASE_URL+'/get_csv/' + data["unique_filename"]).then(vectors => {
+            d3v5.csv(backend_utils.BASE_URL+'/get_csv/' + data["unique_filename"] + "/" + modifiers).then(vectors => {
                 this.vectors = convertFromCSV(vectors);
                 this.datasetType = DatasetType.Chem;
                 new CSVLoader().resolve(finished, this.vectors, this.datasetType, { display: "", type: this.datasetType, path: data["unique_filename"] });

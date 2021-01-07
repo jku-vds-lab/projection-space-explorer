@@ -13,6 +13,7 @@ import { RootState } from "../../Store/Store"
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { StoryPreview } from "./StoryPreview"
+import * as backend_utils from "../../../utils/backend-connect";
 
 
 const mapStateToProps = (state: RootState) => ({
@@ -183,6 +184,28 @@ export const ClusteringTabPanel = connector(({
         }
     }
 
+    function calc_hdbscan(){
+        const points = dataset.vectors.map(point => [point.x, point.y]);
+        backend_utils.calculate_hdbscan_clusters(points).then(data => {
+            const cluster_labels = data["result"];
+            const dist_cluster_labels = cluster_labels.filter((value, index, self) => {return self.indexOf(value) === index;}); //return distinct list of clusters
+            
+            let story = null;
+            dist_cluster_labels.forEach(cluster_label => {
+                const current_cluster_vects = dataset.vectors.filter((x, i) => cluster_labels[i] == cluster_label);
+                const cluster = Cluster.fromSamples(current_cluster_vects);
+                if(story){
+                    addClusterToStory(cluster);
+                }else{
+                    story = new Story([cluster], []);
+                    addStory(story)
+                    setActiveStory(story)
+                }
+            });
+            
+        });
+    }
+
 
     React.useEffect(() => toggleClusters(), [dataset])
 
@@ -198,6 +221,14 @@ export const ClusteringTabPanel = connector(({
 
         </Box>
 
+        <Box p={2}>
+            <Button
+                variant="outlined"
+                style={{
+                    width: '100%'
+                }}
+                onClick={calc_hdbscan}>Perform HDBSCAN</Button>
+        </Box>
 
         <Box p={2}>
             <Typography variant="h6">
