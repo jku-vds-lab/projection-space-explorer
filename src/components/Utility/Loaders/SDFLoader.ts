@@ -26,12 +26,21 @@ export class SDFLoader implements Loader {
 
     
     resolveContent(file, finished, modifiers?: string) {
-        backend_utils.upload_sdf_file(file).then(data => {
+
+        backend_utils.upload_sdf_file(file).then(() => {
             // request the server to return a csv file using the unique filename
-            d3v5.csv(backend_utils.BASE_URL+'/get_csv/' + data["unique_filename"] + "/" + modifiers).then(vectors => {
+            const filename = sessionStorage.getItem("unique_filename")
+            let path = backend_utils.BASE_URL+'/get_csv/'
+            if(filename){
+                path += filename;
+                path += "/";
+            }
+            path += modifiers;
+
+            d3v5.csv(path, {credentials: "include"}).then(vectors => {
                 this.vectors = convertFromCSV(vectors);
                 this.datasetType = DatasetType.Chem;
-                new CSVLoader().resolve(finished, this.vectors, this.datasetType, { display: "", type: this.datasetType, path: data["unique_filename"] });
+                new CSVLoader().resolve(finished, this.vectors, this.datasetType, { display: "", type: this.datasetType, path: "" });
             });
         })
         .catch(error => {

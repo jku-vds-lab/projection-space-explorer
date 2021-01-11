@@ -27,7 +27,7 @@ const SelectionClustersFull = function ({
             {hoverState && hoverState instanceof Vect && <Card style={{ pointerEvents: 'auto' }}>
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
-                    <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState]} columns={dataset.columns}></GenericLegend>
+                    <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState]} columns={dataset.columns} path={dataset.info.path}></GenericLegend>
 
                 </CardContent>
             </Card>}

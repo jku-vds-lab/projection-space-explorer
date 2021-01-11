@@ -7,9 +7,9 @@ import * as backend_utils from '../../../utils/backend-connect'
  */
 
 
-export class ChemLegend extends React.Component<{selection: any, columns: any, aggregate: boolean}, {comp: any, current_selection: any}>{
+export class ChemLegend extends React.Component<{selection: any, columns: any, aggregate: boolean, path:any}, {comp: any, current_selection: any}>{
 
-    constructor(props: { selection, aggregate, columns }){
+    constructor(props: { selection, aggregate, columns, path }){
         super(props);
         this.state = {
             comp: <div>no SMILES column found</div>,
@@ -44,8 +44,8 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
                         })
                     });
                 }else{
-                    let row = this.props.selection[0];
-                    backend_utils.get_structure_from_smiles(row[smiles_col]).then(x => this.setState({comp: <img className={"legend_single"} src={"data:image/gif;base64," + x}/>, current_selection:this.props.selection}));
+                    let row = this.props.selection[0]; 
+                    backend_utils.get_structure_from_smiles(row[smiles_col], true).then(x => this.setState({comp: <img className={"legend_single"} src={"data:image/gif;base64," + x}/>, current_selection:this.props.selection})); //, this.props.path
                 }
             }else{
                 this.setState({comp: <div>no SMILES column found</div>, current_selection:this.props.selection})
