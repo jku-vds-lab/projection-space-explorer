@@ -1,4 +1,5 @@
 import { None } from "vega";
+// CONSTANTS
 
 // export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 // export const BASE_URL = ''; // for AWS

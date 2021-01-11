@@ -3348,7 +3348,8 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.test = exports.calculate_hdbscan_clusters = exports.upload_sdf_file = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.BASE_URL = void 0; // export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+exports.test = exports.calculate_hdbscan_clusters = exports.upload_sdf_file = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.BASE_URL = void 0; // CONSTANTS
+// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 // export const BASE_URL = ''; // for AWS
 
 exports.BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify

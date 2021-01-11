@@ -24,6 +24,31 @@ app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 @hook('before_request')
 def setup_request():
     request.session = bottle.request.environ.get('beaker.session')
+<<<<<<< HEAD
+
+# load sdf file and turn it into a dataframe
+def sdf_to_df(filename = None, refresh = False):
+    
+    filename = request.session.get('unique_filename', filename)
+    
+    if "df" in request.session and not refresh:
+        return request.session["df"]
+
+    elif filename: 
+        print("---------load-------------")
+        
+        frame = PandasTools.LoadSDF("./temp-files/%s"%filename, embedProps=True,smilesName=smiles_col,molColName=mol_col)
+        frame = frame.drop(columns=[x for x in frame.columns if x.startswith('atom')])
+        
+        request.session['df'] = frame
+        
+        return frame
+    
+    return df.DataFrame()
+    
+# ------------------
+=======
+>>>>>>> develop
 
 # load sdf file and turn it into a dataframe
 def sdf_to_df(filename = None, refresh = False):
@@ -50,7 +75,10 @@ def sdf_to_df(filename = None, refresh = False):
 
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> develop
 # --------- load SDF ---------
 
 fingerprint_modifier = "fingerprint"
@@ -232,6 +260,7 @@ def mol_to_base64_highlight_substructure(mol, patt):
 
 @bottle.route('/get_mol_img', method=['OPTIONS', 'POST'])
 def smiles_to_img_post(highlight=False):
+<<<<<<< HEAD
     if request.method == 'POST':
         smiles = request.forms.get("smiles")
         return smiles_to_base64(smiles, False)
@@ -242,6 +271,18 @@ def smiles_to_img_post(highlight=False):
 def smiles_to_img_post_highlight():
     if request.method == 'POST':
         smiles = request.forms.get("smiles")
+=======
+    if request.method == 'POST':
+        smiles = request.forms.get("smiles")
+        return smiles_to_base64(smiles, False)
+    else:
+        return {}
+        
+@bottle.route('/get_mol_img/highlight', method=['OPTIONS', 'POST'])
+def smiles_to_img_post_highlight():
+    if request.method == 'POST':
+        smiles = request.forms.get("smiles")
+>>>>>>> develop
         return smiles_to_base64(smiles, True)
     else:
         return {}
@@ -297,9 +338,15 @@ def smiles_list_to_common_substructure_img():
   
 # ------------------
         
+<<<<<<< HEAD
         
         
         
+=======
+        
+        
+        
+>>>>>>> develop
 # --------- clustering ---------
 
 import json
@@ -373,7 +420,9 @@ class EnableCors(object):
             # response.headers['Access-Control-Allow-Origin'] = '*'
             # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
             response.headers['Access-Control-Allow-Credentials'] = "true"
-            response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
+            # CONSTANTS
+            # response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
+            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
 
@@ -386,11 +435,9 @@ class EnableCors(object):
 bottle.install(EnableCors())
 
 
-#app.run(port=8080) # not working for docker and apparently not needed
-
-
-run(app=app, host='localhost', port=8080, debug=True, reloader=True)
-# run(app=app, host='0.0.0.0', port=8080) # use for docker
+# CONSTANTS
+# run(app=app, host='localhost', port=8080, debug=True, reloader=True)
+run(app=app, host='0.0.0.0', port=8080) # use for docker
 
 
 # ------------------
