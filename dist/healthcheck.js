@@ -138,7 +138,7 @@ check();
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+ // CONSTANTS
 
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
   function adopt(value) {
@@ -175,41 +175,22 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.test = exports.calculate_hdbscan_clusters = exports.upload_sdf_file = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.BASE_URL = void 0; // CONSTANTS
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+exports.calculate_hdbscan_clusters = exports.upload_sdf_file = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.BASE_URL = void 0;
+exports.BASE_URL = 'http://127.0.0.1:8080'; // for local
 // export const BASE_URL = ''; // for AWS
-
-exports.BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
+// export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
 // export const BASE_URL = 'http://127.0.0.1:5000';
 // export const BASE_URL = 'http://caleydoapp.org:32819';
 
 var smiles_cache = {};
-var smiles_highlight_cache = {};
 
-function handleSmilesCache(smiles) {
-  var highlight = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-  //already downloaded this image -> saved in smiles cache
-  if (highlight) {
-    return smiles_highlight_cache[smiles];
-  } else {
-    return smiles_cache[smiles];
-  }
-}
-
-function setSmilesCache(smiles) {
-  var highlight = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  var data = arguments.length > 2 ? arguments[2] : undefined;
-  if (highlight) smiles_highlight_cache[smiles] = data;else smiles_cache[smiles] = data;
-}
-
-function async_cache(cached_data) {
+function get_smiles_cache(smiles) {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            return _context.abrupt("return", cached_data);
+            return _context.abrupt("return", smiles_cache[smiles]);
 
           case 1:
           case "end":
@@ -221,46 +202,35 @@ function async_cache(cached_data) {
 }
 
 function get_structure_from_smiles(smiles) {
-  var highlight = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-    var cached_data, formData, path;
+    var formData;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            cached_data = handleSmilesCache(smiles, highlight);
-
-            if (!cached_data) {
-              _context2.next = 3;
+            if (!smiles_cache[smiles]) {
+              _context2.next = 2;
               break;
             }
 
-            return _context2.abrupt("return", async_cache(cached_data));
+            return _context2.abrupt("return", get_smiles_cache(smiles));
 
-          case 3:
+          case 2:
             formData = new FormData();
             formData.append('smiles', smiles);
-            if (sessionStorage.getItem("unique_filename")) formData.append('filename', sessionStorage.getItem("unique_filename"));
-            path = exports.BASE_URL + '/get_mol_img';
-
-            if (highlight) {
-              path += "/highlight";
-            }
-
-            return _context2.abrupt("return", fetch(path, {
+            return _context2.abrupt("return", fetch(exports.BASE_URL + '/get_mol_img', {
               method: 'POST',
-              body: formData,
-              credentials: 'include'
+              body: formData
             }).then(function (response) {
               return response.text();
             }).then(function (data) {
-              setSmilesCache(smiles, highlight, data);
+              smiles_cache[smiles] = data;
               return data;
             }).catch(function (error) {
               console.error(error);
             }));
 
-          case 9:
+          case 5:
           case "end":
             return _context2.stop();
         }
@@ -277,18 +247,16 @@ function get_structures_from_smiles_list(formData) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            if (sessionStorage.getItem("unique_filename")) formData.append('filename', sessionStorage.getItem("unique_filename"));
             return _context3.abrupt("return", fetch(exports.BASE_URL + '/get_mol_imgs', {
               method: 'POST',
-              body: formData,
-              credentials: 'include'
+              body: formData
             }).then(function (response) {
               return response.json();
             }).catch(function (error) {
               console.error(error);
             }));
 
-          case 2:
+          case 1:
           case "end":
             return _context3.stop();
         }
@@ -338,12 +306,9 @@ function upload_sdf_file(file) {
             formData_file.append('myFile', file);
             return _context5.abrupt("return", fetch(exports.BASE_URL + '/upload_sdf', {
               method: 'POST',
-              body: formData_file,
-              credentials: 'include'
+              body: formData_file
             }).then(function (response) {
               return response.json();
-            }).then(function (data) {
-              sessionStorage.setItem("unique_filename", data["unique_filename"]);
             }).catch(function (error) {
               console.error(error);
             }));
@@ -382,30 +347,6 @@ function calculate_hdbscan_clusters(X) {
 }
 
 exports.calculate_hdbscan_clusters = calculate_hdbscan_clusters;
-
-function test() {
-  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
-    return regeneratorRuntime.wrap(function _callee7$(_context7) {
-      while (1) {
-        switch (_context7.prev = _context7.next) {
-          case 0:
-            return _context7.abrupt("return", fetch(exports.BASE_URL + '/test', {
-              method: 'GET',
-              credentials: 'include'
-            }).then(function (response) {
-              return response.text();
-            }));
-
-          case 1:
-          case "end":
-            return _context7.stop();
-        }
-      }
-    }, _callee7);
-  }));
-}
-
-exports.test = test;
 
 /***/ })
 
