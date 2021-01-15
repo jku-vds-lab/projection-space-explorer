@@ -175,11 +175,11 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.test = exports.calculate_hdbscan_clusters = exports.upload_sdf_file = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.BASE_URL = void 0; // CONSTANTS
+exports.test = exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.BASE_URL = void 0; // CONSTANTS
 // export const BASE_URL = 'http://127.0.0.1:8080'; // for local
-// export const BASE_URL = ''; // for AWS
 
-exports.BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
+exports.BASE_URL = ''; // for AWS/docker
+// export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
 // export const BASE_URL = 'http://127.0.0.1:5000';
 // export const BASE_URL = 'http://caleydoapp.org:32819';
 
@@ -240,7 +240,7 @@ function get_structure_from_smiles(smiles) {
           case 3:
             formData = new FormData();
             formData.append('smiles', smiles);
-            if (sessionStorage.getItem("unique_filename")) formData.append('filename', sessionStorage.getItem("unique_filename"));
+            if (localStorage.getItem("unique_filename")) formData.append('filename', localStorage.getItem("unique_filename"));
             path = exports.BASE_URL + '/get_mol_img';
 
             if (highlight) {
@@ -277,7 +277,7 @@ function get_structures_from_smiles_list(formData) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            if (sessionStorage.getItem("unique_filename")) formData.append('filename', sessionStorage.getItem("unique_filename"));
+            if (localStorage.getItem("unique_filename")) formData.append('filename', localStorage.getItem("unique_filename"));
             return _context3.abrupt("return", fetch(exports.BASE_URL + '/get_mol_imgs', {
               method: 'POST',
               body: formData,
@@ -343,7 +343,7 @@ function upload_sdf_file(file) {
             }).then(function (response) {
               return response.json();
             }).then(function (data) {
-              sessionStorage.setItem("unique_filename", data["unique_filename"]);
+              localStorage.setItem("unique_filename", data["unique_filename"]);
             }).catch(function (error) {
               console.error(error);
             }));
@@ -359,20 +359,25 @@ function upload_sdf_file(file) {
 
 exports.upload_sdf_file = upload_sdf_file;
 
-function calculate_hdbscan_clusters(X) {
+function get_representation_list() {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+    var path;
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            return _context6.abrupt("return", fetch(exports.BASE_URL + '/segmentation', {
-              method: 'POST',
-              body: JSON.stringify(X)
+            path = exports.BASE_URL + '/get_atom_rep_list';
+            if (localStorage.getItem("unique_filename")) path += "/" + localStorage.getItem("unique_filename");
+            return _context6.abrupt("return", fetch(path, {
+              method: 'GET',
+              credentials: 'include'
             }).then(function (response) {
               return response.json();
+            }).catch(function (error) {
+              console.error(error);
             }));
 
-          case 1:
+          case 3:
           case "end":
             return _context6.stop();
         }
@@ -381,19 +386,19 @@ function calculate_hdbscan_clusters(X) {
   }));
 }
 
-exports.calculate_hdbscan_clusters = calculate_hdbscan_clusters;
+exports.get_representation_list = get_representation_list;
 
-function test() {
+function calculate_hdbscan_clusters(X) {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
     return regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
         switch (_context7.prev = _context7.next) {
           case 0:
-            return _context7.abrupt("return", fetch(exports.BASE_URL + '/test', {
-              method: 'GET',
-              credentials: 'include'
+            return _context7.abrupt("return", fetch(exports.BASE_URL + '/segmentation', {
+              method: 'POST',
+              body: JSON.stringify(X)
             }).then(function (response) {
-              return response.text();
+              return response.json();
             }));
 
           case 1:
@@ -402,6 +407,30 @@ function test() {
         }
       }
     }, _callee7);
+  }));
+}
+
+exports.calculate_hdbscan_clusters = calculate_hdbscan_clusters;
+
+function test() {
+  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+    return regeneratorRuntime.wrap(function _callee8$(_context8) {
+      while (1) {
+        switch (_context8.prev = _context8.next) {
+          case 0:
+            return _context8.abrupt("return", fetch(exports.BASE_URL + '/test', {
+              method: 'GET',
+              credentials: 'include'
+            }).then(function (response) {
+              return response.text();
+            }));
+
+          case 1:
+          case "end":
+            return _context8.stop();
+        }
+      }
+    }, _callee8);
   }));
 }
 

@@ -24,7 +24,6 @@ app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 @hook('before_request')
 def setup_request():
     request.session = bottle.request.environ.get('beaker.session')
-<<<<<<< HEAD
 
 # load sdf file and turn it into a dataframe
 def sdf_to_df(filename = None, refresh = False):
@@ -44,41 +43,14 @@ def sdf_to_df(filename = None, refresh = False):
         
         return frame
     
-    return df.DataFrame()
-    
-# ------------------
-=======
->>>>>>> develop
-
-# load sdf file and turn it into a dataframe
-def sdf_to_df(filename = None, refresh = False):
-    
-    filename = request.session.get('unique_filename', filename)
-    
-    if "df" in request.session and not refresh:
-        return request.session["df"]
-
-    elif filename: 
-        print("---------load-------------")
-        
-        frame = PandasTools.LoadSDF("./temp-files/%s"%filename, embedProps=True,smilesName=smiles_col,molColName=mol_col)
-        frame = frame.drop(columns=[x for x in frame.columns if x.startswith('atom')])
-        
-        request.session['df'] = frame
-        
-        return frame
-    
-    return df.DataFrame()
+    return None
     
 # ------------------
 
 
 
 
-<<<<<<< HEAD
-=======
 
->>>>>>> develop
 # --------- load SDF ---------
 
 fingerprint_modifier = "fingerprint"
@@ -213,7 +185,7 @@ from rdkit.Chem import rdFMCS
 def smiles_to_base64(smiles, highlight=False):
     filename = request.session.get("unique_filename", None)
     if filename and highlight:
-        df = sdf_to_df()
+        df = sdf_to_df(filename)
         mol = df.set_index(smiles_col).loc[smiles][mol_col]
         weights = [mol.GetAtomWithIdx(i).GetDoubleProp("rep_1") for i in range(mol.GetNumAtoms())]
         fig = SimilarityMaps.GetSimilarityMapFromWeights(mol, weights)
@@ -254,13 +226,31 @@ def mol_to_base64_highlight_substructure(mol, patt):
     img_str = base64.b64encode(stream.getvalue())
     stream.close()
     return img_str.decode("utf-8")
+    
+def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
+    filename = request.session.get("unique_filename", None)
+    if filename:
+        df = sdf_to_df(filename)
+        if df is not None:
+            smiles = Chem.MolToSmiles(mol_aligned)
+            mol = df[df[smiles_col] == smiles].iloc[0][mol_col]
+            #mol = df.set_index(smiles_col).loc[smiles][mol_col]
+            weights = [mol.GetAtomWithIdx(i).GetDoubleProp(current_rep) for i in range(mol.GetNumAtoms())]
+            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights)
+            
+            buffered = BytesIO()
+            fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6, 6]]))
+            img_str = base64.b64encode(buffered.getvalue())
+            buffered.close()
+            return img_str.decode("utf-8")
+    
+    return mol_to_base64_highlight_substructure(mol_aligned, patt)
 
 
 # --- routing ---
 
 @bottle.route('/get_mol_img', method=['OPTIONS', 'POST'])
 def smiles_to_img_post(highlight=False):
-<<<<<<< HEAD
     if request.method == 'POST':
         smiles = request.forms.get("smiles")
         return smiles_to_base64(smiles, False)
@@ -271,18 +261,6 @@ def smiles_to_img_post(highlight=False):
 def smiles_to_img_post_highlight():
     if request.method == 'POST':
         smiles = request.forms.get("smiles")
-=======
-    if request.method == 'POST':
-        smiles = request.forms.get("smiles")
-        return smiles_to_base64(smiles, False)
-    else:
-        return {}
-        
-@bottle.route('/get_mol_img/highlight', method=['OPTIONS', 'POST'])
-def smiles_to_img_post_highlight():
-    if request.method == 'POST':
-        smiles = request.forms.get("smiles")
->>>>>>> develop
         return smiles_to_base64(smiles, True)
     else:
         return {}
@@ -291,7 +269,8 @@ def smiles_to_img_post_highlight():
 @bottle.route('/get_mol_imgs', method=['OPTIONS', 'POST'])
 def smiles_list_to_imgs():
     if request.method == 'POST':
-        smiles_list = request.forms.getall("smiles_list")
+        smiles_list = request.forms.getall("smiles_list") 
+        current_rep = request.forms.get("current_rep")
 
         if len(smiles_list) == 0:
             return {}
@@ -307,7 +286,10 @@ def smiles_list_to_imgs():
         for mol in mol_lst:
             TemplateAlign.rdDepictor.Compute2DCoords(mol)
             TemplateAlign.AlignMolToTemplate2D(mol,patt,clearConfs=True)
-            img_lst.append(mol_to_base64_highlight_substructure(mol, patt))
+            if current_rep == "Common Substructure":
+                img_lst.append(mol_to_base64_highlight_substructure(mol, patt))
+            else:
+                img_lst.append(mol_to_base64_highlight_importances(mol, patt, current_rep))
 
         return {"img_lst": img_lst}
     else:
@@ -335,18 +317,25 @@ def smiles_list_to_common_substructure_img():
     else:
         return {}
         
+        
+@bottle.route('/get_atom_rep_list', method=["GET"])
+@bottle.route('/get_atom_rep_list/<filename>', method=["GET"])
+def get_atom_rep_list(filename=None):
+    filename = request.session.get("unique_filename", filename)
+    if filename:
+        df = sdf_to_df(filename)
+        if df is not None:
+            rep_list = [rep for rep in df.Molecule[0].GetAtomWithIdx(0).GetPropsAsDict().keys() if not rep.startswith('_')]
+            return {"rep_list": rep_list}
+    
+    return {"rep_list":[]}
+    
   
 # ------------------
         
-<<<<<<< HEAD
         
         
         
-=======
-        
-        
-        
->>>>>>> develop
 # --------- clustering ---------
 
 import json
@@ -354,7 +343,6 @@ import json
 def segmentation():
     if request.method == 'POST':
         X = np.array(json.load(request.body))
-        print(X)
 
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=10,
@@ -365,7 +353,6 @@ def segmentation():
         
         clusterer.fit_predict(X)
 
-        print(clusterer.labels_)
         #clusterer.probabilities_ = np.array(len(X))
 
         return {
@@ -422,7 +409,7 @@ class EnableCors(object):
             response.headers['Access-Control-Allow-Credentials'] = "true"
             # CONSTANTS
             # response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
-            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080'
+            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080' # use this for Docker # TODO: does not work for netlify
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
 
@@ -434,6 +421,8 @@ class EnableCors(object):
 
 bottle.install(EnableCors())
 
+
+#app.run(port=8080) # not working for docker and apparently not needed
 
 # CONSTANTS
 # run(app=app, host='localhost', port=8080, debug=True, reloader=True)

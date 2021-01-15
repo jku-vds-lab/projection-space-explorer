@@ -2,8 +2,8 @@ import { None } from "vega";
 // CONSTANTS
 
 // export const BASE_URL = 'http://127.0.0.1:8080'; // for local
-// export const BASE_URL = ''; // for AWS
-export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
+export const BASE_URL = ''; // for AWS/docker
+// export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
 // export const BASE_URL = 'http://127.0.0.1:5000';
 // export const BASE_URL = 'http://caleydoapp.org:32819';
 
@@ -41,8 +41,8 @@ export async function get_structure_from_smiles(smiles:string, highlight=false) 
 
     const formData = new FormData();
     formData.append('smiles', smiles);
-    if(sessionStorage.getItem("unique_filename"))
-        formData.append('filename', sessionStorage.getItem("unique_filename"));
+    if(localStorage.getItem("unique_filename"))
+        formData.append('filename', localStorage.getItem("unique_filename"));
 
     let path = BASE_URL+'/get_mol_img';
     if(highlight){
@@ -65,8 +65,8 @@ export async function get_structure_from_smiles(smiles:string, highlight=false) 
 }
 
 export async function get_structures_from_smiles_list(formData:FormData){
-    if(sessionStorage.getItem("unique_filename"))
-        formData.append('filename', sessionStorage.getItem("unique_filename"));
+    if(localStorage.getItem("unique_filename"))
+        formData.append('filename', localStorage.getItem("unique_filename"));
 
     return fetch(BASE_URL+'/get_mol_imgs', {
         method: 'POST',
@@ -106,12 +106,33 @@ export async function upload_sdf_file(file){
     })
     .then(response => response.json())
     .then(data => {
-        sessionStorage.setItem("unique_filename", data["unique_filename"]);
+        localStorage.setItem("unique_filename", data["unique_filename"]);
     })
     .catch(error => {
         console.error(error);
     });
 }
+
+
+export async function get_representation_list(){
+
+    let path = BASE_URL+'/get_atom_rep_list';
+    if(localStorage.getItem("unique_filename"))
+        path += "/" + localStorage.getItem("unique_filename");
+
+
+    return fetch(path, {
+        method: 'GET',
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .catch(error => {
+        console.error(error)
+    });
+}
+
+
+
 
 
 export async function calculate_hdbscan_clusters(X){
@@ -121,6 +142,8 @@ export async function calculate_hdbscan_clusters(X){
 
     }).then(response => response.json());
 }
+
+
 
 
 export async function test() {

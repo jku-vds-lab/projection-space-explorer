@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Card, CardContent, Typography } from '@material-ui/core'
+import { Button, Card, CardContent, Typography } from '@material-ui/core'
 import { GenericLegend } from '../../Legends/Generic'
 import './SelectionClusters.scss'
 import { connect } from 'react-redux'
@@ -27,7 +27,7 @@ const SelectionClustersFull = function ({
             {hoverState && hoverState instanceof Vect && <Card style={{ pointerEvents: 'auto' }}>
                 <CardContent style={{ padding: '8px' }}>
                     <Typography align="center" gutterBottom variant="body1">Hover State</Typography>
-                    <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState]} columns={dataset.columns} path={dataset.info.path}></GenericLegend>
+                    <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState]} columns={dataset.columns}></GenericLegend>
 
                 </CardContent>
             </Card>}
