@@ -179,9 +179,9 @@ exports.test = exports.calculate_hdbscan_clusters = exports.get_representation_l
 // export const CREDENTIALS = 'include'; // for AWS/docker
 
 exports.CREDENTIALS = 'omit'; // for netlify/local
-// export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
 
-exports.BASE_URL = 'http://127.0.0.1:8080'; // for local
+exports.BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
+// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 // export const BASE_URL = ''; // for AWS/docker
 
 var smiles_cache = {};
@@ -285,9 +285,6 @@ function get_structures_from_smiles_list(formData) {
               credentials: exports.CREDENTIALS
             }).then(function (response) {
               return response.json();
-            }).then(function (data) {
-              console.log(data);
-              return data;
             }).catch(function (error) {
               console.error(error);
             }));

@@ -4,8 +4,8 @@ import { None } from "vega";
 // export const CREDENTIALS = 'include'; // for AWS/docker
 export const CREDENTIALS = 'omit'; // for netlify/local
 
-// export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
-export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
+// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 // export const BASE_URL = ''; // for AWS/docker
 
 
@@ -76,7 +76,6 @@ export async function get_structures_from_smiles_list(formData:FormData){
         credentials: CREDENTIALS
     })
     .then(response => response.json())
-    .then(data => {console.log(data); return data;})
     .catch(error => {
         console.error(error)
     });
