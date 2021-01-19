@@ -1,11 +1,13 @@
 import { None } from "vega";
 // CONSTANTS
 
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
-export const BASE_URL = ''; // for AWS/docker
+// export const CREDENTIALS = 'include'; // for AWS/docker
+export const CREDENTIALS = 'omit'; // for netlify/local
+
 // export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
-// export const BASE_URL = 'http://127.0.0.1:5000';
-// export const BASE_URL = 'http://caleydoapp.org:32819';
+export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = ''; // for AWS/docker
+
 
 
 var smiles_cache = {}
@@ -52,7 +54,7 @@ export async function get_structure_from_smiles(smiles:string, highlight=false) 
     return fetch(path, {
         method: 'POST',
         body: formData,
-        credentials: 'include'
+        credentials: CREDENTIALS
     })
     .then(response => response.text())
     .then(data => {
@@ -71,9 +73,10 @@ export async function get_structures_from_smiles_list(formData:FormData){
     return fetch(BASE_URL+'/get_mol_imgs', {
         method: 'POST',
         body: formData,
-        credentials: 'include'
+        credentials: CREDENTIALS
     })
     .then(response => response.json())
+    .then(data => {console.log(data); return data;})
     .catch(error => {
         console.error(error)
     });
@@ -102,7 +105,7 @@ export async function upload_sdf_file(file){
     return fetch(BASE_URL+'/upload_sdf', {
         method: 'POST',
         body: formData_file,
-        credentials: 'include'
+        credentials: CREDENTIALS
     })
     .then(response => response.json())
     .then(data => {
@@ -123,7 +126,7 @@ export async function get_representation_list(){
 
     return fetch(path, {
         method: 'GET',
-        credentials: 'include'
+        credentials: CREDENTIALS
     })
     .then(response => response.json())
     .catch(error => {
@@ -149,6 +152,6 @@ export async function calculate_hdbscan_clusters(X){
 export async function test() {
     return fetch(BASE_URL+'/test', {
         method: 'GET',
-        credentials: 'include'
+        credentials: CREDENTIALS
     }).then(response => response.text());//.text());
 }

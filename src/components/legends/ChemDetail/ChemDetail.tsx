@@ -52,9 +52,10 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
                     });
                     backend_utils.get_structures_from_smiles_list(formData).then(x => {
                         // @ts-ignore
-                        const img_lst = x["img_lst"].map((base64,i) => <img key={formData.getAll("smiles_list")[i]} className={"legend_multiple"} src={"data:image/gif;base64," + base64}/>)
+                        const img_lst = x["img_lst"].map((base64,i) => base64)//<img key={formData.getAll("smiles_list")[i]} className={"legend_multiple"} src={"data:image/jpeg;base64," + base64}/>)
+                        console.log(img_lst);
                         this.setState({
-                            comp: img_lst, 
+                            comp: <div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />, 
                             current_selection:this.props.selection, 
                             update:false
                         })
@@ -62,7 +63,7 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
                 }else{
                     let row = this.props.selection[0]; 
                     backend_utils.get_structure_from_smiles(row[smiles_col]).then(x => this.setState({
-                        comp: <img className={"legend_single"} src={"data:image/gif;base64," + x}/>, 
+                        comp: <img className={"legend_single"} src={"data:image/jpeg;base64," + x}/>, 
                         current_selection:this.props.selection, 
                         update:false}));
                 }

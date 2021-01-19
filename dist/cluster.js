@@ -3348,13 +3348,14 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.test = exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.BASE_URL = void 0; // CONSTANTS
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+exports.test = exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.BASE_URL = exports.CREDENTIALS = void 0; // CONSTANTS
+// export const CREDENTIALS = 'include'; // for AWS/docker
 
-exports.BASE_URL = ''; // for AWS/docker
+exports.CREDENTIALS = 'omit'; // for netlify/local
 // export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
-// export const BASE_URL = 'http://127.0.0.1:5000';
-// export const BASE_URL = 'http://caleydoapp.org:32819';
+
+exports.BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = ''; // for AWS/docker
 
 var smiles_cache = {};
 var smiles_highlight_cache = {};
@@ -3423,7 +3424,7 @@ function get_structure_from_smiles(smiles) {
             return _context2.abrupt("return", fetch(path, {
               method: 'POST',
               body: formData,
-              credentials: 'include'
+              credentials: exports.CREDENTIALS
             }).then(function (response) {
               return response.text();
             }).then(function (data) {
@@ -3454,9 +3455,12 @@ function get_structures_from_smiles_list(formData) {
             return _context3.abrupt("return", fetch(exports.BASE_URL + '/get_mol_imgs', {
               method: 'POST',
               body: formData,
-              credentials: 'include'
+              credentials: exports.CREDENTIALS
             }).then(function (response) {
               return response.json();
+            }).then(function (data) {
+              console.log(data);
+              return data;
             }).catch(function (error) {
               console.error(error);
             }));
@@ -3512,7 +3516,7 @@ function upload_sdf_file(file) {
             return _context5.abrupt("return", fetch(exports.BASE_URL + '/upload_sdf', {
               method: 'POST',
               body: formData_file,
-              credentials: 'include'
+              credentials: exports.CREDENTIALS
             }).then(function (response) {
               return response.json();
             }).then(function (data) {
@@ -3543,7 +3547,7 @@ function get_representation_list() {
             if (localStorage.getItem("unique_filename")) path += "/" + localStorage.getItem("unique_filename");
             return _context6.abrupt("return", fetch(path, {
               method: 'GET',
-              credentials: 'include'
+              credentials: exports.CREDENTIALS
             }).then(function (response) {
               return response.json();
             }).catch(function (error) {
@@ -3593,7 +3597,7 @@ function test() {
           case 0:
             return _context8.abrupt("return", fetch(exports.BASE_URL + '/test', {
               method: 'GET',
-              credentials: 'include'
+              credentials: exports.CREDENTIALS
             }).then(function (response) {
               return response.text();
             }));

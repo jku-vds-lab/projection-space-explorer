@@ -24,6 +24,13 @@ app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 @hook('before_request')
 def setup_request():
     request.session = bottle.request.environ.get('beaker.session')
+    
+@hook('after_request')
+def set_response_headers(): # enable session handling when origin is localhost
+    if request.headers["Origin"]==response_header_origin_localhost:
+        response.headers['Access-Control-Allow-Origin'] = response_header_origin_localhost
+        response.headers['Access-Control-Allow-Credentials'] = "true"
+    
 
 # load sdf file and turn it into a dataframe
 def sdf_to_df(filename = None, refresh = False):
@@ -209,7 +216,7 @@ def mol_to_base64(m):
     return img_str.decode("utf-8")
 
 def mol_to_base64_highlight_substructure(mol, patt):
-    d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(200, 200)
+    d = Chem.Draw.rdMolDraw2D.MolDraw2DSVG(200, 200)
     hit_ats = list(mol.GetSubstructMatch(patt))
     hit_bonds = []
     for bond in patt.GetBonds():
@@ -220,15 +227,16 @@ def mol_to_base64_highlight_substructure(mol, patt):
     Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds)
     d.FinishDrawing()
 
-    stream = BytesIO(d.GetDrawingText())
-    # image = Image.open(stream).convert("RGBA")
+    #stream = BytesIO(d.GetDrawingText())
+    ## image = Image.open(stream).convert("RGBA")
 
-    img_str = base64.b64encode(stream.getvalue())
-    stream.close()
-    return img_str.decode("utf-8")
+    #img_str = base64.b64encode(stream.getvalue())
+    #stream.close()
+    return d.GetDrawingText()#img_str.decode("utf-8")
     
 def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
-    filename = request.session.get("unique_filename", None)
+    filename = request.forms.get("filename")
+    filename = request.session.get("unique_filename", filename)
     if filename:
         df = sdf_to_df(filename)
         if df is not None:
@@ -236,13 +244,14 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
             mol = df[df[smiles_col] == smiles].iloc[0][mol_col]
             #mol = df.set_index(smiles_col).loc[smiles][mol_col]
             weights = [mol.GetAtomWithIdx(i).GetDoubleProp(current_rep) for i in range(mol.GetNumAtoms())]
-            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights)
+            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(150, 150))
             
             buffered = BytesIO()
-            fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6, 6]]))
-            img_str = base64.b64encode(buffered.getvalue())
+            fig.savefig(buffered, format="SVG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [3.6,3.6]]))
+            #img_str = base64.b64encode(buffered.getvalue())
+            img = buffered.getvalue().decode("utf-8")
             buffered.close()
-            return img_str.decode("utf-8")
+            return img #img_str.decode("utf-8")
     
     return mol_to_base64_highlight_substructure(mol_aligned, patt)
 
@@ -343,6 +352,7 @@ import json
 def segmentation():
     if request.method == 'POST':
         X = np.array(json.load(request.body))
+        print(X)
 
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=10,
@@ -353,6 +363,7 @@ def segmentation():
         
         clusterer.fit_predict(X)
 
+        print(clusterer.labels_)
         #clusterer.probabilities_ = np.array(len(X))
 
         return {
@@ -397,6 +408,12 @@ def test():
     return 'Test counter: %d' % s['test']
     
 # Filter that allows cors request, needed for javascript to work
+# CONSTANTS
+# https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
+response_header_origin_all = '*'
+# response_header_origin_localhost = '*'
+#response_header_origin_localhost = 'http://127.0.0.1:5500'
+response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
 class EnableCors(object):
     name = 'enable_cors'
     api = 2
@@ -404,12 +421,7 @@ class EnableCors(object):
     def apply(self, fn, context):
         def _enable_cors(*args, **kwargs):
             # set CORS headers
-            # response.headers['Access-Control-Allow-Origin'] = '*'
-            # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
-            response.headers['Access-Control-Allow-Credentials'] = "true"
-            # CONSTANTS
-            # response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:5500'
-            response.headers['Access-Control-Allow-Origin'] = 'http://localhost:8080' # use this for Docker # TODO: does not work for netlify
+            response.headers['Access-Control-Allow-Origin'] = response_header_origin_all
             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
             response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
 
@@ -425,8 +437,8 @@ bottle.install(EnableCors())
 #app.run(port=8080) # not working for docker and apparently not needed
 
 # CONSTANTS
-# run(app=app, host='localhost', port=8080, debug=True, reloader=True)
-run(app=app, host='0.0.0.0', port=8080) # use for docker
+run(app=app, host='localhost', port=8080, debug=True, reloader=True)
+# run(app=app, host='0.0.0.0', port=8080) # use for docker
 
 
 # ------------------
