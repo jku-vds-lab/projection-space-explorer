@@ -26,11 +26,10 @@ type GenericLegendProps = {
     vectors: Vect[]
     aggregate: boolean
     columns?: any
-    path?: string
 }
 
 //shows single and aggregated view
-export var GenericLegend = ({ type, vectors, aggregate, columns, path }: GenericLegendProps) => {
+export var GenericLegend = ({ type, vectors, aggregate, columns }: GenericLegendProps) => {
     switch (type) {
         case DatasetType.Story:
             return <StoryLegend selection={vectors}></StoryLegend>
@@ -45,7 +44,7 @@ export var GenericLegend = ({ type, vectors, aggregate, columns, path }: Generic
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
         case DatasetType.Chem:
-            return <ChemLegend selection={vectors} aggregate={aggregate} columns={columns} path={path}></ChemLegend>
+            return <ChemLegend selection={vectors} aggregate={aggregate} columns={columns}></ChemLegend>
         default:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
     }
