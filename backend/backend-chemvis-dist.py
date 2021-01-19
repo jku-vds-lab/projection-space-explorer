@@ -27,7 +27,6 @@ def setup_request():
     
 @hook('after_request')
 def set_response_headers(): # enable session handling when origin is localhost
-    print(request.headers.keys())
     if "Origin" in request.headers.keys() and request.headers["Origin"]==response_header_origin_localhost:
         response.headers['Access-Control-Allow-Origin'] = response_header_origin_localhost
         response.headers['Access-Control-Allow-Credentials'] = "true"
@@ -217,7 +216,7 @@ def mol_to_base64(m):
     return img_str.decode("utf-8")
 
 def mol_to_base64_highlight_substructure(mol, patt):
-    d = Chem.Draw.rdMolDraw2D.MolDraw2DSVG(200, 200)
+    d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(250, 250) # MolDraw2DSVG
     hit_ats = list(mol.GetSubstructMatch(patt))
     hit_bonds = []
     for bond in patt.GetBonds():
@@ -228,12 +227,12 @@ def mol_to_base64_highlight_substructure(mol, patt):
     Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds)
     d.FinishDrawing()
 
-    #stream = BytesIO(d.GetDrawingText())
-    ## image = Image.open(stream).convert("RGBA")
+    stream = BytesIO(d.GetDrawingText())
+    # image = Image.open(stream).convert("RGBA")
 
-    #img_str = base64.b64encode(stream.getvalue())
-    #stream.close()
-    return d.GetDrawingText()#img_str.decode("utf-8")
+    img_str = base64.b64encode(stream.getvalue())
+    stream.close()
+    return img_str.decode("utf-8") #d.GetDrawingText()
     
 def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
     filename = request.forms.get("filename")
@@ -245,14 +244,14 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
             mol = df[df[smiles_col] == smiles].iloc[0][mol_col]
             #mol = df.set_index(smiles_col).loc[smiles][mol_col]
             weights = [mol.GetAtomWithIdx(i).GetDoubleProp(current_rep) for i in range(mol.GetNumAtoms())]
-            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(150, 150))
+            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(250, 250))
             
             buffered = BytesIO()
-            fig.savefig(buffered, format="SVG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [3.6,3.6]]))
-            #img_str = base64.b64encode(buffered.getvalue())
-            img = buffered.getvalue().decode("utf-8")
+            fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6,6]])) # SVG
+            img_str = base64.b64encode(buffered.getvalue())
+            #img = buffered.getvalue().decode("utf-8")
             buffered.close()
-            return img #img_str.decode("utf-8")
+            return img_str.decode("utf-8") # img
     
     return mol_to_base64_highlight_substructure(mol_aligned, patt)
 
@@ -412,7 +411,8 @@ def test():
 # CONSTANTS
 # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
 response_header_origin_all = '*'
-#response_header_origin_localhost = 'http://127.0.0.1:5500' # use this for local
+# response_header_origin_localhost = '*'
+# response_header_origin_localhost = 'http://127.0.0.1:5500'
 response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
 class EnableCors(object):
     name = 'enable_cors'

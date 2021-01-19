@@ -52,9 +52,10 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
                     });
                     backend_utils.get_structures_from_smiles_list(formData).then(x => {
                         // @ts-ignore
-                        const img_lst = x["img_lst"].map((base64,i) => base64)//<img key={formData.getAll("smiles_list")[i]} className={"legend_multiple"} src={"data:image/jpeg;base64," + base64}/>)
+                        //const img_lst = x["img_lst"].map((base64,i) => base64)
+                        const img_lst = x["img_lst"].map((base64,i) => <img key={formData.getAll("smiles_list")[i]} className={"legend_multiple"} src={"data:image/jpeg;base64," + base64}/>)
                         this.setState({
-                            comp: <div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />, 
+                            comp: img_lst,//<div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />, 
                             current_selection:this.props.selection, 
                             update:false
                         })
