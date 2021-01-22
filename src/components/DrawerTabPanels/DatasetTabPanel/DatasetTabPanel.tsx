@@ -2,12 +2,14 @@ import React = require("react");
 import { Vect } from "../../Utility/Data/Vect";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
+import { LoadingIndicatorDialog, LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 import { SDFLoader } from "../../Utility/Loaders/SDFLoader";
 import { DatasetDrop } from "./DatasetDrop";
 import { DownloadJob } from "./DownloadJob";
 import { DownloadProgress } from "./DownloadProgress";
 import { PredefinedDatasets } from "./PredefinedDatasets";
 import { SDFModifierDialog } from "./SDFModifierDialog";
+import { UploadedFiles } from "./UploadedFiles";
 var d3v5 = require('d3')
 
 function convertFromCSV(vectors) {
@@ -20,6 +22,7 @@ export function DatasetTabPanel({ onDataSelected }) {
     const [job, setJob] = React.useState(null)
     const [entry, setEntry] = React.useState(null);
     const [openSDFDialog, setOpen] = React.useState(false);
+    const [refreshUploadedFiles, setRefreshUploadedFiles] = React.useState(0);
 
     function onModifierDialogClose(modifiers){
         setOpen(false); 
@@ -28,7 +31,15 @@ export function DatasetTabPanel({ onDataSelected }) {
     }
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <DatasetDrop onChange={onDataSelected}></DatasetDrop>
+        <DatasetDrop onChange={(var1, var2) => {
+                onDataSelected(var1, var2);
+                setRefreshUploadedFiles(refreshUploadedFiles + 1);
+            }}></DatasetDrop>
+
+        <UploadedFiles onChange={(entry)=>{
+            setEntry(entry);
+            setOpen(true);
+        }} refresh={refreshUploadedFiles} />
 
         <PredefinedDatasets onChange={(entry) => {
             if(entry.path.endsWith('sdf')){
@@ -49,6 +60,7 @@ export function DatasetTabPanel({ onDataSelected }) {
             setJob(null)
         }} onCancel={() => { setJob(null) }}></DownloadProgress>
 
+        <LoadingIndicatorDialog/>
         <SDFModifierDialog openSDFDialog={openSDFDialog} handleClose={onModifierDialogClose}></SDFModifierDialog>
     </div>
 }

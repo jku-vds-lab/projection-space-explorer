@@ -1,4 +1,4 @@
-import { LineUp, LineUpCategoricalColumnDesc, LineUpColumn, LineUpColumnDesc, LineUpImposeColumn, LineUpNumberColumnDesc, LineUpRanking, LineUpStringColumnDesc, LineUpSupportColumn } from "lineupjsx";
+import { LineUp, LineUpCategoricalColumnDesc, LineUpNumberColumnDesc, LineUpStringColumnDesc } from "lineupjsx";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../Store/Store";
@@ -182,16 +182,15 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         if(Object.keys(col.metaInformation).length <= 0 || !col.metaInformation.hideLineUp){ // only if there is a "hideLineUp" modifier at this column, we don't do anything
             if(col.metaInformation.imgSmiles){
                 smiles_col = "Structure";
-                lineup_col_list.push(<LineUpStringColumnDesc key={smiles_col} column={i} label={smiles_col} visible={show} renderer="mySmilesRenderer" groupRenderer="mySmilesRenderer" width={80} />) 
-            }
-
-            if(col.isNumeric)
+                lineup_col_list.push(<LineUpStringColumnDesc key={smiles_col} column={i} label={smiles_col} visible={show} renderer="mySmilesStructureRenderer" groupRenderer="mySmilesStructureRenderer" width={80} />) // summaryRenderer="mySmilesStructureRenderer"
+                lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />)
+            }else if(col.isNumeric)
                 lineup_col_list.push(<LineUpNumberColumnDesc key={i} column={i} domain={[col.range.min, col.range.max]} visible={show} />);
             else if(col.distinct)
                 if(col.distinct.length/lineUpInput.data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                     lineup_col_list.push(<LineUpCategoricalColumnDesc key={i} column={i} categories={col.distinct} visible={show} />)
                 else
-                    lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />) //width={100} 
+                    lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} width={50} />)
             else
                 lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />)
 
@@ -199,7 +198,8 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
     }
 
     return <div className="LineUpParent">
-        <LineUp ref={ref} data={lineUpInput.data} dynamicHeight={myDynamicHeight} renderers={{mySmilesRenderer: new MySmilesCellRenderer()}} defaultRanking={true} deriveColors> {/* deriveColumns deriveColors */}
+        {/* livePreviews={false}  */}
+        <LineUp sidePanelCollapsed={true} livePreviews={{'filter': false}} ref={ref} data={lineUpInput.data} dynamicHeight={myDynamicHeight} renderers={{mySmilesStructureRenderer: new MySmilesStructureRenderer()}} defaultRanking={true} deriveColors> {/* deriveColumns deriveColors */}
             {/* <LineUpRanking groupBy="Selection Checkboxes" sortBy="Rank:desc"> */}
                 {/* <LineUpSupportColumn type="selection" /> */}
                 {lineup_col_list}
@@ -230,7 +230,7 @@ function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight{
 }
 
 
-export class MySmilesCellRenderer implements ICellRendererFactory {
+export class MySmilesStructureRenderer implements ICellRendererFactory {
     readonly title: string = 'Image';
   
     canRender(col: Column, mode: ERenderMode): boolean {
@@ -270,6 +270,65 @@ export class MySmilesCellRenderer implements ICellRendererFactory {
     createSummary(col: LinkColumn): ISummaryRenderer {
         return null;
     }
+
+    // createSummary(col: LinkColumn, context: IRenderContext, interactive: boolean): ISummaryRenderer{
+    //     return {
+    //         template: `<div>test</div>`,
+    //         update: (n: HTMLElement) => {
+    //           return context.tasks.summaryCategoricalStats(col).then((r) => {
+    //             if (typeof r === 'symbol') {
+    //               return;
+    //             }
+    //             const isMissing = !r || r.summary == null || r.summary.count === 0 || r.summary.count === r.summary.missing;
+    //             n.classList.toggle(cssClass('missing'), isMissing);
+    //             if (isMissing) {
+    //               return;
+    //             }
+    //             update(n, r.summary);
+    //           });
+    //         }
+    //       };
+    // }
+
+    // createSummary(col: LinkColumn, _context: IRenderContext, interactive: boolean): ISummaryRenderer {
+    //     console.log(interactive);
+    //     if (!interactive) {
+    //       return {
+    //         template: `<div></div>`,
+    //         update: (node: HTMLElement) => {
+    //           const filter = col.getFilter();
+    //         //   node.textContent = toString(filter);
+    //           node.textContent = "asdf";
+    //         }
+    //       };
+    //     }
+    //     const f = col.getFilter() || {filter: null, filterMissing: false};
+    //     // const bak = f.filter || '';
+    //     const bak = '';
+    //     let update: (col: LinkColumn) => void;
+    //     return {
+    //       template: `<form><input type="text" placeholder="Filter ${col.desc.label}..." autofocus value="${bak}"></form>`,
+    //       update: (node: HTMLElement) => {
+    //         if (!update) {
+    //         //   update = StringCellRenderer.interactiveSummary(col, node);
+    //           update = MySmilesStructureRenderer.interactiveSummary(col, node);
+    //         }
+    //         update(col);
+    //       }
+    //     };
+    //   }
+
+    //   private static interactiveSummary(col: LinkColumn, node: HTMLElement){
+    //     return (actCol: LinkColumn) => {
+    //         col = actCol;
+    //         const f = col.getFilter() || {filter: null, filterMissing: false};
+    //         // const bak = f.filter;
+    //         const bak = '';
+    //         // filterMissing.checked = f.filterMissing;
+    //         // input.value = bak instanceof RegExp ? bak.source : bak || '';
+    //         // isRegex.checked = bak instanceof RegExp;
+    //       };
+    //   }
   }
 
   

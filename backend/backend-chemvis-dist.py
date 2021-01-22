@@ -27,7 +27,6 @@ def setup_request():
     
 @hook('after_request')
 def set_response_headers(): # enable session handling when origin is localhost
-    print(request.headers.keys())
     if "Origin" in request.headers.keys() and request.headers["Origin"]==response_header_origin_localhost:
         response.headers['Access-Control-Allow-Origin'] = response_header_origin_localhost
         response.headers['Access-Control-Allow-Credentials'] = "true"
@@ -57,7 +56,39 @@ def sdf_to_df(filename = None, refresh = False):
 
 
 
+# --------- file handling --------
+def cleanup_temp(): # TODO: cleanup temp-files, if they are older than one day? or only keep the 5 most recent files?
+    now = time.time()
+    folder = './temp-files'
+    if os.path.exists("./temp-files"):
+        files = [os.path.join(folder, filename) for filename in os.listdir(folder)]
+        for filename in files:
+            if (now - os.stat(filename).st_mtime) > 3600: #remove files that were last modified one hour ago
+                os.remove(filename)
+                
 
+@bottle.route('/get_uploaded_files_list', method=['GET'])
+def get_uploaded_files_list():
+    folder = './temp-files'
+    if os.path.exists("./temp-files"):
+        file_names = [filename for filename in os.listdir(folder)]
+        return {"file_list": file_names}
+
+    return {"file_list": []}
+
+
+@bottle.route('/delete_file/<filename>', method=['GET'])
+def get_uploaded_files_list(filename):
+    folder = './temp-files'
+    if os.path.exists("./temp-files"):
+        file = os.path.join(folder, filename)
+        if os.path.exists(file):
+            os.remove(file)
+            return {"deleted": "true"}
+
+    return {"deleted": "false"}
+
+# ------------------
 
 # --------- load SDF ---------
 
@@ -76,20 +107,12 @@ import os
 import time
 
 
-def cleanup_temp(): # TODO: cleanup temp-files, if they are older than one day? or only keep the 5 most recent files?
-    now = time.time()
-    folder = './temp-files'
-    if os.path.exists("./temp-files"):
-        files = [os.path.join(folder, filename) for filename in os.listdir(folder)]
-        for filename in files:
-            if (now - os.stat(filename).st_mtime) > 3600: #remove files that were last modified one hour ago
-                os.remove(filename)
 
-
+    
 @bottle.route('/upload_sdf', method=['OPTIONS', 'POST'])
 def upload_sdf():
     if request.method == 'POST':
-        cleanup_temp()
+        # cleanup_temp() # no need to do this anymore because user can delete them in the tool now
         fileUpload = request.files.get("myFile")
         # TODO: find a solution that does not need to save a temp file... or maybe not?
         # print(fileUpload.file.read().decode())
@@ -99,7 +122,10 @@ def upload_sdf():
         if not os.path.exists("./temp-files"):
             os.makedirs("./temp-files")
 
-        filename = "%i%s"%(time.time(), fileUpload.filename)
+        filename = fileUpload.filename
+        if os.path.exists(os.path.join("./temp-files", filename)):
+            filename = "%i%s"%(time.time(), fileUpload.filename)
+        
         fileUpload.save("./temp-files/%s"%filename, overwrite=True) # the save method can take a file-like object... https://www.kite.com/python/docs/bottle.FileUpload
         fileUpload.file.close()
         
@@ -112,13 +138,17 @@ def upload_sdf():
     else:
         return {}
 
+@bottle.route('/get_csv/', method=['GET'])
 @bottle.route('/get_csv/<filename>/', method=['GET'])
 @bottle.route('/get_csv/<filename>/<modifiers>', method=['GET'])
 #@bottle.route('/get_csv/', method=['GET'])
 #@bottle.route('/get_csv/<modifiers>', method=['GET'])
-def sdf_to_csv(filename, modifiers=None):
+def sdf_to_csv(filename=None, modifiers=None):
     if modifiers:
         descriptor_names_no_lineup.extend([x.strip() for x in modifiers.split(";")]) # split and trim modifier string
+        
+    if filename: # update filename in session, if it is provided (usecase: maybe user wants to use a dataset that is already uploaded)
+        request.session['unique_filename'] = filename
         
     frame = sdf_to_df(filename, refresh=True)
     
@@ -217,7 +247,7 @@ def mol_to_base64(m):
     return img_str.decode("utf-8")
 
 def mol_to_base64_highlight_substructure(mol, patt):
-    d = Chem.Draw.rdMolDraw2D.MolDraw2DSVG(200, 200)
+    d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(250, 250) # MolDraw2DSVG
     hit_ats = list(mol.GetSubstructMatch(patt))
     hit_bonds = []
     for bond in patt.GetBonds():
@@ -228,12 +258,12 @@ def mol_to_base64_highlight_substructure(mol, patt):
     Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds)
     d.FinishDrawing()
 
-    #stream = BytesIO(d.GetDrawingText())
-    ## image = Image.open(stream).convert("RGBA")
+    stream = BytesIO(d.GetDrawingText())
+    # image = Image.open(stream).convert("RGBA")
 
-    #img_str = base64.b64encode(stream.getvalue())
-    #stream.close()
-    return d.GetDrawingText()#img_str.decode("utf-8")
+    img_str = base64.b64encode(stream.getvalue())
+    stream.close()
+    return img_str.decode("utf-8") #d.GetDrawingText()
     
 def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
     filename = request.forms.get("filename")
@@ -245,14 +275,14 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
             mol = df[df[smiles_col] == smiles].iloc[0][mol_col]
             #mol = df.set_index(smiles_col).loc[smiles][mol_col]
             weights = [mol.GetAtomWithIdx(i).GetDoubleProp(current_rep) for i in range(mol.GetNumAtoms())]
-            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(150, 150))
+            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(250, 250))
             
             buffered = BytesIO()
-            fig.savefig(buffered, format="SVG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [3.6,3.6]]))
-            #img_str = base64.b64encode(buffered.getvalue())
-            img = buffered.getvalue().decode("utf-8")
+            fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6,6]])) # SVG
+            img_str = base64.b64encode(buffered.getvalue())
+            #img = buffered.getvalue().decode("utf-8")
             buffered.close()
-            return img #img_str.decode("utf-8")
+            return img_str.decode("utf-8") # img
     
     return mol_to_base64_highlight_substructure(mol_aligned, patt)
 
@@ -412,7 +442,7 @@ def test():
 # CONSTANTS
 # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
 response_header_origin_all = '*'
-#response_header_origin_localhost = 'http://127.0.0.1:5500' # use this for local
+# response_header_origin_localhost = 'http://127.0.0.1:5500'
 response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
 class EnableCors(object):
     name = 'enable_cors'
