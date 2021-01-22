@@ -56,7 +56,39 @@ def sdf_to_df(filename = None, refresh = False):
 
 
 
+# --------- file handling --------
+def cleanup_temp(): # TODO: cleanup temp-files, if they are older than one day? or only keep the 5 most recent files?
+    now = time.time()
+    folder = './temp-files'
+    if os.path.exists("./temp-files"):
+        files = [os.path.join(folder, filename) for filename in os.listdir(folder)]
+        for filename in files:
+            if (now - os.stat(filename).st_mtime) > 3600: #remove files that were last modified one hour ago
+                os.remove(filename)
+                
 
+@bottle.route('/get_uploaded_files_list', method=['GET'])
+def get_uploaded_files_list():
+    folder = './temp-files'
+    if os.path.exists("./temp-files"):
+        file_names = [filename for filename in os.listdir(folder)]
+        return {"file_list": file_names}
+
+    return {"file_list": []}
+
+
+@bottle.route('/delete_file/<filename>', method=['GET'])
+def get_uploaded_files_list(filename):
+    folder = './temp-files'
+    if os.path.exists("./temp-files"):
+        file = os.path.join(folder, filename)
+        if os.path.exists(file):
+            os.remove(file)
+            return {"deleted": "true"}
+
+    return {"deleted": "false"}
+
+# ------------------
 
 # --------- load SDF ---------
 
@@ -75,20 +107,12 @@ import os
 import time
 
 
-def cleanup_temp(): # TODO: cleanup temp-files, if they are older than one day? or only keep the 5 most recent files?
-    now = time.time()
-    folder = './temp-files'
-    if os.path.exists("./temp-files"):
-        files = [os.path.join(folder, filename) for filename in os.listdir(folder)]
-        for filename in files:
-            if (now - os.stat(filename).st_mtime) > 3600: #remove files that were last modified one hour ago
-                os.remove(filename)
 
-
+    
 @bottle.route('/upload_sdf', method=['OPTIONS', 'POST'])
 def upload_sdf():
     if request.method == 'POST':
-        cleanup_temp()
+        # cleanup_temp() # no need to do this anymore because user can delete them in the tool now
         fileUpload = request.files.get("myFile")
         # TODO: find a solution that does not need to save a temp file... or maybe not?
         # print(fileUpload.file.read().decode())
@@ -98,7 +122,10 @@ def upload_sdf():
         if not os.path.exists("./temp-files"):
             os.makedirs("./temp-files")
 
-        filename = "%i%s"%(time.time(), fileUpload.filename)
+        filename = fileUpload.filename
+        if os.path.exists(os.path.join("./temp-files", filename)):
+            filename = "%i%s"%(time.time(), fileUpload.filename)
+        
         fileUpload.save("./temp-files/%s"%filename, overwrite=True) # the save method can take a file-like object... https://www.kite.com/python/docs/bottle.FileUpload
         fileUpload.file.close()
         
@@ -111,13 +138,17 @@ def upload_sdf():
     else:
         return {}
 
+@bottle.route('/get_csv/', method=['GET'])
 @bottle.route('/get_csv/<filename>/', method=['GET'])
 @bottle.route('/get_csv/<filename>/<modifiers>', method=['GET'])
 #@bottle.route('/get_csv/', method=['GET'])
 #@bottle.route('/get_csv/<modifiers>', method=['GET'])
-def sdf_to_csv(filename, modifiers=None):
+def sdf_to_csv(filename=None, modifiers=None):
     if modifiers:
         descriptor_names_no_lineup.extend([x.strip() for x in modifiers.split(";")]) # split and trim modifier string
+        
+    if filename: # update filename in session, if it is provided (usecase: maybe user wants to use a dataset that is already uploaded)
+        request.session['unique_filename'] = filename
         
     frame = sdf_to_df(filename, refresh=True)
     
@@ -411,7 +442,6 @@ def test():
 # CONSTANTS
 # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
 response_header_origin_all = '*'
-# response_header_origin_localhost = '*'
 # response_header_origin_localhost = 'http://127.0.0.1:5500'
 response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
 class EnableCors(object):

@@ -180,9 +180,9 @@ exports.test = exports.calculate_hdbscan_clusters = exports.get_representation_l
 exports.CREDENTIALS = 'include'; // for AWS/docker
 // export const CREDENTIALS = 'omit'; // for netlify/local
 // export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
+// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 
-exports.BASE_URL = 'http://127.0.0.1:8080'; // for local
-// export const BASE_URL = ''; // for AWS/docker
+exports.BASE_URL = ''; // for AWS/docker
 
 var smiles_cache = {};
 var smiles_highlight_cache = {};
