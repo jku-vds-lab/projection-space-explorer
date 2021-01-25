@@ -11,9 +11,11 @@ type PositionType = {
  */
 export class Embedding {
     positions: PositionType[]
+    name: string
     
-    constructor(vectors: Vect[]) {
+    constructor(vectors: Vect[], name) {
         this.positions = new Array(vectors.length)
+        this.name = name
 
         vectors.forEach((vec, i) => {
             this.positions[i] = {

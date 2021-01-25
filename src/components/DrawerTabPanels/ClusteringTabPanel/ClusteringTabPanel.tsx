@@ -184,25 +184,25 @@ export const ClusteringTabPanel = connector(({
         }
     }
 
-    function calc_hdbscan(){
+    function calc_hdbscan() {
         const points = dataset.vectors.map(point => [point.x, point.y]);
         backend_utils.calculate_hdbscan_clusters(points).then(data => {
             const cluster_labels = data["result"];
-            const dist_cluster_labels = cluster_labels.filter((value, index, self) => {return self.indexOf(value) === index;}); //return distinct list of clusters
-            
+            const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
+
             let story = null;
             dist_cluster_labels.forEach(cluster_label => {
                 const current_cluster_vects = dataset.vectors.filter((x, i) => cluster_labels[i] == cluster_label);
                 const cluster = Cluster.fromSamples(current_cluster_vects);
-                if(story){
+                if (story) {
                     addClusterToStory(cluster);
-                }else{
+                } else {
                     story = new Story([cluster], []);
                     addStory(story)
                     setActiveStory(story)
                 }
             });
-            
+
         });
     }
 
@@ -210,15 +210,17 @@ export const ClusteringTabPanel = connector(({
     React.useEffect(() => toggleClusters(), [dataset])
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box p={2}>
+        <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>{'Group Settings'}</Typography>
+        </Box>
+
+        <Box paddingLeft={2}>
             <FormControlLabel
-                control={<Switch checked={displayMode == DisplayMode.OnlyClusters} onChange={(event) => {
-                    setDisplayMode(event.target.checked ? DisplayMode.OnlyClusters : DisplayMode.StatesAndClusters)
+                control={<Switch checked={displayMode != DisplayMode.OnlyClusters} onChange={(event) => {
+                    setDisplayMode(event.target.checked ? DisplayMode.StatesAndClusters : DisplayMode.OnlyClusters)
                 }} name="test" />}
-                label="Show Clusters Only"
+                label="Show Items"
             />
-
-
         </Box>
 
         <Box p={2}>
@@ -230,13 +232,11 @@ export const ClusteringTabPanel = connector(({
                 onClick={calc_hdbscan}>Perform HDBSCAN</Button>
         </Box>
 
-        <Box p={2}>
-            <Typography variant="h6">
-                Clusters
-            </Typography>
+        <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>{'Groups and Stories'}</Typography>
         </Box>
 
-        <Box padding={2}>
+        <Box paddingLeft={2} paddingRight={2} paddingBottom={2}>
             <StoryPreview></StoryPreview>
         </Box>
 
@@ -274,7 +274,7 @@ export const ClusteringTabPanel = connector(({
                             </Avatar>
                         </ListItemAvatar>
                         <ListItemText
-                            primary={`Cluster ${cluster.label}`}
+                            primary={`Group ${cluster.label}`}
                             secondary={`${cluster.vectors.length} Samples`}
                         />
                         <ListItemSecondaryAction>

@@ -3,7 +3,7 @@ import * as React from 'react'
 import Cluster from "../../Utility/Data/Cluster";
 import { Story } from "../../Utility/Data/Story";
 import { GenericFingerprint } from "../../Legends/Generic";
-import { Card, Grow, Typography, Tooltip, IconButton, Input } from "@material-ui/core";
+import { Card, Grow, Typography, Tooltip, IconButton, Input, CardHeader } from "@material-ui/core";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect, ConnectedProps } from 'react-redux'
@@ -12,10 +12,11 @@ import { Dataset } from "../../Utility/Data/Dataset";
 import { GenericChanges } from "../../Legends/GenericChanges/GenericChanges";
 import { StoryMode } from "../../Ducks/StoryModeDuck";
 import { RootState } from "../../Store/Store";
-import { addClusterToTrace, selectSideBranch, setActiveTraceState } from "../../Ducks/StoriesDuck";
+import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState } from "../../Ducks/StoriesDuck";
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import { DifferenceThresholdSlider } from '../../legends/CoralChanges/DifferenceThresholdSlider';
+import CloseIcon from '@material-ui/icons/Close';
 
 
 const mapStateToProps = (state: RootState) => ({
@@ -28,7 +29,8 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatch = dispatch => ({
     addClusterToTrace: cluster => dispatch(addClusterToTrace(cluster)),
     setActiveTraceState: cluster => dispatch(setActiveTraceState(cluster)),
-    selectSideBranch: index => dispatch(selectSideBranch(index))
+    selectSideBranch: index => dispatch(selectSideBranch(index)),
+    setActiveTrace: trace => dispatch(setActiveTrace(trace))
 })
 
 const connector = connect(mapStateToProps, mapDispatch);
@@ -103,176 +105,178 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
         let addClusterToTrace = this.props.addClusterToTrace
         let dataset = this.props.dataset
         let pageOffset = this.state.pageOffset
-        
+
 
         let numSidePaths = Math.min(2, stories.trace.sidePaths.length)
 
         return <div>
-            <Typography align="center" variant="subtitle2">Provenance</Typography>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <IconButton onClick={() => {
-                    this.setState({ pageOffset: pageOffset <= 1 ? numSidePaths : pageOffset - 2 })
+            <div>
+                <Typography align="center" variant="subtitle2">Provenance</Typography>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <IconButton onClick={() => {
+                        this.setState({ pageOffset: pageOffset <= 1 ? numSidePaths : pageOffset - 2 })
+                    }}>
+                        <NavigateBeforeIcon></NavigateBeforeIcon>
+                    </IconButton>
+
+                    <IconButton onClick={() => {
+                        this.setState({ pageOffset: pageOffset + 2 })
+                    }}>
+                        <NavigateNextIcon></NavigateNextIcon>
+                    </IconButton>
+                </div>
+                <svg style={{
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '120px',
+                    minHeight: position && position.length > 0 ? position[position.length - 1].y + 100 : 200,
+                    minWidth: '100px'
                 }}>
-                    <NavigateBeforeIcon></NavigateBeforeIcon>
-                </IconButton>
 
-                <IconButton onClick={() => {
-                    this.setState({ pageOffset: pageOffset + 2 })
-                }}>
-                    <NavigateNextIcon></NavigateNextIcon>
-                </IconButton>
-            </div>
-            <svg style={{
-                width: '100%',
-                height: '100%',
-                maxWidth: '120px',
-                minHeight: position && position.length > 0 ? position[position.length - 1].y + 100 : 200,
-                minWidth: '100px'
-            }}>
+                    {
+                        function () {
+                            let components = []
 
-                {
-                    function () {
-                        let components = []
+                            for (let si = 0; si < numSidePaths; si++) {
+                                let sidePathIndex = stories.trace.sidePaths.indexOf(stories.trace.sidePaths[(si + pageOffset) % stories.trace.sidePaths.length])
 
-                        for (let si = 0; si < numSidePaths; si++) {
-                            let sidePathIndex = stories.trace.sidePaths.indexOf(stories.trace.sidePaths[(si + pageOffset) % stories.trace.sidePaths.length])
+                                let sidePath = stories.trace.sidePaths[sidePathIndex]
 
-                            let sidePath = stories.trace.sidePaths[sidePathIndex]
+                                components.push(<g>
+                                    {
+                                        // Rectangles between outgoing and ingoing sync nodes
+                                        sidePath.syncNodes.map((node, i) => {
+                                            let x = midX - rectWidth * (si + 1) - margin * (si + 1) + rectWidth / 2
 
-                            components.push(<g>
-                                {
-                                    // Rectangles between outgoing and ingoing sync nodes
-                                    sidePath.syncNodes.map((node, i) => {
-                                        let x = midX - rectWidth * (si + 1) - margin * (si + 1) + rectWidth / 2
+                                            if (i == sidePath.syncNodes.length - 1 && node.out) {
+                                                // Case where its the last syncnode and its outgoing
+                                                let pos1 = position[node.index]
 
-                                        if (i == sidePath.syncNodes.length - 1 && node.out) {
-                                            // Case where its the last syncnode and its outgoing
-                                            let pos1 = position[node.index]
-                                            
-
-                                            return <g onClick={() => {
-                                                selectSideBranch(sidePathIndex)
-                                            }}>
-                                                <path d={`M ${midX - stateSize / 2} ${pos1.y} Q ${x} ${pos1.y} ${x} ${pos1.y + 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
-                                                
-                                                <SidePath
-                                                    dataset={dataset}
-                                                    syncPart={[]}
-                                                    x={x}
-                                                    width={rectWidth}
-                                                    stroke={strokeColors[si]}
-                                                    fill={fillColors[si]}
-                                                    y={pos1.y + 35}
-                                                    height={elementHeight - 70}
-                                                ></SidePath>
-
-                                                <line x1={x} y1={pos1.y + 35 + 70 - 6} x2={x} y2={pos1.y + elementHeight} stroke={strokeColors[si]}></line>
-                                                <rect x={x - 6} y={pos1.y + elementHeight - 6} width={stateSize} height={stateSize} fill={fillColors[si]} />
-                                            </g>
-                                        } else if (node.out && i != sidePath.syncNodes.length - 1 && sidePath.syncNodes[i + 1].in) {
-
-                                            let i1 = sidePath.syncNodes[i].index
-                                            let i2 = sidePath.syncNodes[i + 1].index
-
-
-                                            let sync1 = position[i1]
-                                            let sync2 = position[i2]
-
-                                            let syncLen = sidePath.nodes.indexOf(stories.trace.mainPath[i2]) - sidePath.nodes.indexOf(stories.trace.mainPath[i1]) - 1
-                                            let syncPart = sidePath.nodes.slice(sidePath.nodes.indexOf(stories.trace.mainPath[i1]) + 1, sidePath.nodes.indexOf(stories.trace.mainPath[i2]))
-
-                                            let lineY1 = sync1.y
-                                            let lineY2 = sync2.y
-
-                                            if (i2 - i1 == 1 || true) {
 
                                                 return <g onClick={() => {
                                                     selectSideBranch(sidePathIndex)
                                                 }}>
-                                                    <path d={`M ${midX} ${lineY1} Q ${x} ${lineY1} ${x} ${lineY1 + 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
-                                                    <path d={`M ${midX} ${lineY2} Q ${x} ${lineY2} ${x} ${lineY2 - 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
-
+                                                    <path d={`M ${midX - stateSize / 2} ${pos1.y} Q ${x} ${pos1.y} ${x} ${pos1.y + 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
 
                                                     <SidePath
                                                         dataset={dataset}
-                                                        syncPart={syncPart}
+                                                        syncPart={[]}
                                                         x={x}
                                                         width={rectWidth}
                                                         stroke={strokeColors[si]}
                                                         fill={fillColors[si]}
-                                                        y={sync1.y + 35}
-                                                        height={sync2.y - sync1.y - 70}
+                                                        y={pos1.y + 35}
+                                                        height={elementHeight - 70}
                                                     ></SidePath>
 
-                                                    <text x={x} y={sync1.y + (sync2.y - sync1.y) / 2} textAnchor="middle">{syncLen}</text>
+                                                    <line x1={x} y1={pos1.y + 35 + 70 - 6} x2={x} y2={pos1.y + elementHeight} stroke={strokeColors[si]}></line>
+                                                    <rect x={x - 6} y={pos1.y + elementHeight - 6} width={stateSize} height={stateSize} fill={fillColors[si]} />
                                                 </g>
+                                            } else if (node.out && i != sidePath.syncNodes.length - 1 && sidePath.syncNodes[i + 1].in) {
+
+                                                let i1 = sidePath.syncNodes[i].index
+                                                let i2 = sidePath.syncNodes[i + 1].index
+
+
+                                                let sync1 = position[i1]
+                                                let sync2 = position[i2]
+
+                                                let syncLen = sidePath.nodes.indexOf(stories.trace.mainPath[i2]) - sidePath.nodes.indexOf(stories.trace.mainPath[i1]) - 1
+                                                let syncPart = sidePath.nodes.slice(sidePath.nodes.indexOf(stories.trace.mainPath[i1]) + 1, sidePath.nodes.indexOf(stories.trace.mainPath[i2]))
+
+                                                let lineY1 = sync1.y
+                                                let lineY2 = sync2.y
+
+                                                if (i2 - i1 == 1 || true) {
+
+                                                    return <g onClick={() => {
+                                                        selectSideBranch(sidePathIndex)
+                                                    }}>
+                                                        <path d={`M ${midX} ${lineY1} Q ${x} ${lineY1} ${x} ${lineY1 + 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
+                                                        <path d={`M ${midX} ${lineY2} Q ${x} ${lineY2} ${x} ${lineY2 - 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
+
+
+                                                        <SidePath
+                                                            dataset={dataset}
+                                                            syncPart={syncPart}
+                                                            x={x}
+                                                            width={rectWidth}
+                                                            stroke={strokeColors[si]}
+                                                            fill={fillColors[si]}
+                                                            y={sync1.y + 35}
+                                                            height={sync2.y - sync1.y - 70}
+                                                        ></SidePath>
+
+                                                        <text x={x} y={sync1.y + (sync2.y - sync1.y) / 2} textAnchor="middle">{syncLen}</text>
+                                                    </g>
+                                                } else {
+                                                    return <g></g>
+                                                }
                                             } else {
                                                 return <g></g>
                                             }
-                                        } else {
-                                            return <g></g>
-                                        }
-                                    })
-                                }
-                            </g>)
+                                        })
+                                    }
+                                </g>)
 
-                        }
+                            }
 
-
-                        return <g>
-                            {components}
-                        </g>
-                    }()
-                }
-
-                {// <!--<circle cx={midX} cy={p.y} r="6" fill={mainColor} />-->
-                    position.map((p, index) => {
-                        return <g>
-                            <text x={midX + 10} y={p.y} fill="black" font-weight="bold" font-family="monospace">{index}</text>
-                            <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={mainColor} />
-
-                        </g>
-                    })
-                }
-
-                {
-                    position.map((p, i) => {
-                        if (i != position.length - 1) {
-                            let p1 = p
-                            let p2 = position[i + 1]
-
-                            return <line x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
-                        } else {
-                            let p1 = p
-                            let p2 = { x: p1.x, y: p1.y + 40 }
 
                             return <g>
-                                <line x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
-                                <Plus x={midX} y={p2.y} r={10} onClick={() => {
-                                    let cluster = Cluster.fromSamples(currentAggregation)
+                                {components}
+                            </g>
+                        }()
+                    }
+
+                    {// <!--<circle cx={midX} cy={p.y} r="6" fill={mainColor} />-->
+                        position.map((p, index) => {
+                            return <g>
+                                <text x={midX + 10} y={p.y} fill="black" font-weight="bold" font-family="monospace">{index}</text>
+                                <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={mainColor} />
+
+                            </g>
+                        })
+                    }
+
+                    {
+                        position.map((p, i) => {
+                            if (i != position.length - 1) {
+                                let p1 = p
+                                let p2 = position[i + 1]
+
+                                return <line x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
+                            } else {
+                                let p1 = p
+                                let p2 = { x: p1.x, y: p1.y + 40 }
+
+                                return <g>
+                                    <line x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
+                                    <Plus x={midX} y={p2.y} r={10} onClick={() => {
+                                        let cluster = Cluster.fromSamples(currentAggregation)
+
+                                        addClusterToTrace(cluster)
+
+                                    }} />
+                                </g>
+                            }
+                        })
+                    }
+
+                    {
+                        position.length == 0 && <g>
+                            <line x1={midX} y1={0} x2={midX} y2={100} stroke={mainColor} strokeWidth="2"></line>
+                            <Plus x={midX} y={50} r={10} onClick={() => {
+
+                                if (currentAggregation.length > 0) {
+                                    let cluster = Cluster.fromSamples(this.props.currentAggregation)
 
                                     addClusterToTrace(cluster)
-
-                                }} />
-                            </g>
-                        }
-                    })
-                }
-
-                {
-                    position.length == 0 && <g>
-                        <line x1={midX} y1={0} x2={midX} y2={100} stroke={mainColor} strokeWidth="2"></line>
-                        <Plus x={midX} y={50} r={10} onClick={() => {
-
-                            if (currentAggregation.length > 0) {
-                                let cluster = Cluster.fromSamples(this.props.currentAggregation)
-
-                                addClusterToTrace(cluster)
-                            }
-                        }} />
-                    </g>
-                }
-            </svg>
+                                }
+                            }} />
+                        </g>
+                    }
+                </svg>
+            </div>
         </div>
     }
 }
@@ -286,6 +290,7 @@ export const ClusterOverview = connector(function ({
     currentAggregation,
     addClusterToTrace,
     setActiveTraceState,
+    setActiveTrace,
     selectSideBranch }: Props) {
 
     if (stories.trace == null || stories.active == null) {
@@ -306,7 +311,7 @@ export const ClusterOverview = connector(function ({
         if (current) {
             const state = []
             let elementHeight = 0
-            
+
             for (var i = 1; i < current.children.length; i++) {
                 const child = current.children[i];
                 elementHeight = child.offsetHeight
@@ -317,17 +322,26 @@ export const ClusterOverview = connector(function ({
         }
     }, [stories])
 
-    console.log("true stories")
-    console.log(stories)
-
     React.useEffect(() => {
         setActiveTraceState(stories.trace.mainPath[0])
     }, [stories.trace])
 
     return <Grow in={stories.active != null}>
-        <Card className="ClusterOverviewParent">
+        <Card className="ClusterOverviewParent" variant="outlined">
 
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+                <CardHeader
+                    
+                    action={
+                        <IconButton onClick={() => {
+                            setActiveTrace(null)
+                        }}>
+                            <CloseIcon />
+                        </IconButton>
+                    }
+                    title="Story Telling"
+                />
+
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
 
                     <ProvenanceGraph
@@ -368,8 +382,8 @@ export const ClusterOverview = connector(function ({
                         flexDirection: 'column',
                         minWidth: '100px'
                     }}>
-                        <Typography align="center" variant="subtitle2">Change</Typography><br/>
-                        {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider/>}
+                        <Typography align="center" variant="subtitle2">Change</Typography><br />
+                        {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
                         {
                             stories.trace?.mainEdges.map((edge, index) => {
                                 return <ToggleButton

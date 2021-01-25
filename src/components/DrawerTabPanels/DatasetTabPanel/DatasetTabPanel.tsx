@@ -1,3 +1,4 @@
+import { Box, Typography } from "@material-ui/core";
 import React = require("react");
 import { Vect } from "../../Utility/Data/Vect";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
@@ -21,20 +22,29 @@ export function DatasetTabPanel({ onDataSelected }) {
     const [entry, setEntry] = React.useState(null);
     const [openSDFDialog, setOpen] = React.useState(false);
 
-    function onModifierDialogClose(modifiers){
-        setOpen(false); 
-        if(modifiers !== null)
+    function onModifierDialogClose(modifiers) {
+        setOpen(false);
+        if (modifiers !== null)
             new SDFLoader().resolvePath(entry, onDataSelected, modifiers);
     }
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>{'Custom Datasets (Drag and Drop)'}</Typography>
+        </Box>
+
         <DatasetDrop onChange={onDataSelected}></DatasetDrop>
 
+        <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>{'Predefined Datasets'}</Typography>
+        </Box>
+
+
         <PredefinedDatasets onChange={(entry) => {
-            if(entry.path.endsWith('sdf')){
+            if (entry.path.endsWith('sdf')) {
                 setEntry(entry);
                 setOpen(true);
-            }else{
+            } else {
                 setJob(new DownloadJob(entry))
             }
         }} ></PredefinedDatasets>

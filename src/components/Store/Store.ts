@@ -35,6 +35,7 @@ import storyEditor from '../Ducks/StoryEditorDuck';
 import lineUpInput from '../Ducks/LineUpInputDuck';
 import differenceThreshold from '../Ducks/DIfferenceThresholdDuck';
 import projections from '../Ducks/ProjectionsDuck';
+import hoverSettings from '../Ducks/HoverSettingsDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -72,7 +73,8 @@ const allReducers = {
   storyEditor: storyEditor,
   lineUpInput: lineUpInput,
   differenceThreshold: differenceThreshold,
-  projections: projections
+  projections: projections,
+  hoverSettings: hoverSettings
 }
 
 const appReducer = combineReducers(allReducers)

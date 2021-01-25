@@ -538,6 +538,11 @@ export class PointVisualization {
 
 
 
+  /**
+   * Applies the gray-out effect on the particles based on the given story model
+   * 
+   * @param stories The story model
+   */
   storyTelling(stories: StoriesType) {
     if (stories && stories.active) {
       this.grayedLayerSystem.setLayerActive(3, true)
