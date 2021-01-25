@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Card, CardContent, Typography } from '@material-ui/core'
+import { Button, Card, CardContent, Typography } from '@material-ui/core'
 import { GenericLegend } from '../../Legends/Generic'
 import './SelectionClusters.scss'
 import { connect } from 'react-redux'

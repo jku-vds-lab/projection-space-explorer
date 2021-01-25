@@ -5,6 +5,7 @@ export type DatasetEntry = {
     display: string
     path: string
     type: DatasetType
+    uploaded?: boolean
 }
 
 
@@ -21,8 +22,9 @@ export class DatasetDatabase {
         this.data = [
             {
                 display: "ChemVis: Test",
-                path: "datasets/chemvis/test.sdf",
-                type: DatasetType.Chem
+                path: "test.sdf",
+                type: DatasetType.Chem,
+                uploaded: true
             },
             {
                 display: "Coral sub-sampled",

@@ -215,8 +215,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         preselect = "datasets/rubik/cube10x2_different_origins.csv"
       } else if (set == "chess") {
         preselect = "datasets/chess/chess16k.csv"
-      } else if (set == "chemvis") {
-        new SDFLoader().resolvePath(new DatasetDatabase().getByPath("datasets/chemvis/test.sdf"), (dataset, json) => { this.onDataSelected(dataset, json) });
+      } else if (set == "chemvis"){
+        new SDFLoader().resolvePath(new DatasetDatabase().getByPath("test.sdf"), (dataset, json) => { this.onDataSelected(dataset, json) });
         return;
       }
 

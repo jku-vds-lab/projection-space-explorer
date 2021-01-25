@@ -354,6 +354,7 @@ const FeaturePicker = connector(({ selection, setSelection }: Props) => {
             copy[item.index].collapsed = collapsed
         })
 
+        // @ts-ignore
         ref.current.recomputeRowHeights()
 
         setSelection(copy)
