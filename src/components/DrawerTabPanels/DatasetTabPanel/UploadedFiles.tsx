@@ -30,8 +30,8 @@ export var UploadedFiles = ({ onChange, refresh }) => {
             }
         });
     }
-
-    return (files && <div>
+    // TODO: hide this when not for bayer...
+    return (files && <div> 
         <Grid item style={{ overflowY: 'auto', flex: '1 1 auto', width: '300px', maxHeight: '400px' }}>
 
         <List subheader={<li />} style={{ backgroundColor: 'white' }}>
