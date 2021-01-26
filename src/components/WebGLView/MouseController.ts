@@ -26,6 +26,7 @@ export class MouseController {
     onContext: (event: MouseEvent, button: number) => void
     onMouseUp: (event: MouseEvent) => void
     onMouseMove: (event: MouseEvent) => void
+    onMouseLeave: (event: MouseEvent) => void
 
     constructor() {
 
@@ -33,6 +34,12 @@ export class MouseController {
 
     get currentMousePosition() {
         return this.mousePosition
+    }
+
+    mouseLeave(event: MouseEvent) {
+        if (this.onMouseLeave) {
+            this.onMouseLeave(event)
+        }
     }
 
     mouseDown(event: MouseEvent) {

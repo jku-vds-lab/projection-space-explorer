@@ -838,8 +838,6 @@ export class PointVisualization {
           }
         } else {
           if (this.colorAttribute != null) {
-            //console.log(this.vectorColorScheme)
-            //console.log(vector[this.colorAttribute.key])
             var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
             rgb = m.rgb
             //vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
@@ -944,7 +942,7 @@ export class PointVisualization {
       selected[vector.view.meshIndex] = vector.view.selected ? 1.0 : 0.0
     })
 
-    this.updateColor()
+    //this.updateColor()
     this.updateSize()
     this.updatePosition()
 

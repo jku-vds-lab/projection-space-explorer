@@ -101,7 +101,6 @@ export const ClusteringTabPanel = connector(({
 
     function toggleClusters() {
         if (null == null) {
-            console.log("toggle")
             if (dataset.clusters && dataset.clusters.length > 0) {
                 let clusters = dataset.clusters
 
@@ -211,9 +210,6 @@ export const ClusteringTabPanel = connector(({
 
             addStory(story)
             setActiveStory(story)
-
-            // Correct labels on vectors based on clusters
-            Cluster.deriveVectorLabelsFromClusters(dataset.vectors, clusters)
 
             // Update UI, dont know how to right now
         });

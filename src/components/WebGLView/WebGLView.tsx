@@ -138,6 +138,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     lastTime: number;
     mouseMoveListener: any;
     mouseDownListener: any;
+    mouseLeaveListener: any;
     keyDownListener: any;
     wheelListener: any;
     mouseUpListener: any;
@@ -183,6 +184,25 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
      * Initializes the callbacks for the MouseController.
      */
     initMouseController() {
+        this.mouseController.onMouseLeave = (event: MouseEvent) => {
+            if (this.infoTimeout != null) {
+                clearTimeout(this.infoTimeout)
+            }
+
+            this.particles?.highlight(null)
+
+            if (this.props.dataset.isSequential) {
+                this.lines?.highlight([], this.getWidth(), this.getHeight(), this.scene)
+            }
+
+            if (this.currentHover) {
+                this.currentHover = null
+                this.props.setHoverState(null)
+                this.requestRender()
+            }
+        }
+
+
         this.mouseController.onDragStart = (event: MouseEvent, button: number, initial: nt.VectorType) => {
             switch (button) {
                 case 0:
@@ -560,7 +580,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     onKeyDown(event) {
     }
 
-
+    onMouseLeave(event) {
+        event.preventDefault()
+        this.mouseController.mouseLeave(event)
+    }
 
     onMouseDown(event) {
         event.preventDefault()
@@ -614,6 +637,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         })
 
         this.props.setCurrentAggregation([])
+
+        this.particles?.updateColor()
     }
 
 
@@ -876,9 +901,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         try {
             this.renderLoop()
-        } catch (e) { 
-            
-         }
+        } catch (e) {
+
+        }
     }
 
 
@@ -1019,6 +1044,19 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
     componentDidUpdate(prevProps, prevState) {
 
+
+
+        if (prevProps.pointColorScale != this.props.pointColorScale || prevProps.stories != this.props.stories) {
+            if (this.props.channelColor && this.props.pointColorScale) {
+                let mapping = mappingFromScale(this.props.pointColorScale, this.props.channelColor, this.props.dataset)
+                this.props.setPointColorMapping(mapping)
+                this.particles.colorCat(this.props.channelColor, mapping)
+            } else {
+                this.props.setPointColorMapping(null)
+                this.particles?.colorCat(null, null)
+            }
+        }
+
         if (prevProps.stories != this.props.stories) {
             if (this.props.stories.active) {
                 this.particles?.storyTelling(this.props.stories)
@@ -1027,6 +1065,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 this.lines?.update()
 
                 this.particles?.update()
+                this.particles?.updateColor()
             } else {
                 this.particles?.storyTelling(null)
 
@@ -1034,17 +1073,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 this.lines?.update()
 
                 this.particles?.update()
-            }
-        }
-
-        if (prevProps.pointColorScale != this.props.pointColorScale) {
-            if (this.props.channelColor && this.props.pointColorScale) {
-                let mapping = mappingFromScale(this.props.pointColorScale, this.props.channelColor, this.props.dataset)
-                this.props.setPointColorMapping(mapping)
-                this.particles.colorCat(this.props.channelColor, mapping)
-            } else {
-                this.props.setPointColorMapping(null)
-                this.particles.colorCat(null, null)
+                this.particles?.updateColor()
             }
         }
 
@@ -1150,6 +1179,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             } else {
                 this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene, true)
                 this.particles.update()
+                
             }
         }
 
@@ -1278,6 +1308,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             onContextMenu={
                 (event) => { event.preventDefault() }
             }
+            onMouseLeave={
+                (event) => { this.onMouseLeave(event) }
+            }
             style={{
                 //display: 'flex',
                 //flexGrow: 1,
@@ -1384,7 +1417,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 <MenuItem onClick={() => {
                     let paths = this.props.stories.active.getAllStoriesFromSource(this.state.menuTarget.label)
 
-                    
+
 
                     if (paths.length > 0) {
                         let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
