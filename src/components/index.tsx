@@ -70,6 +70,7 @@ import * as frontend_utils from "../utils/frontend-connect";
 import { HoverTabPanel } from "./DrawerTabPanels/HoverTabPanel/HoverTabPanel";
 import { addProjectionAction } from "./Ducks/ProjectionsDuck";
 import { Embedding } from "./Utility/Data/Embedding";
+import { setVectors } from "./Ducks/StoriesDuck";
 
 
 
@@ -147,7 +148,8 @@ const mapDispatchToProps = dispatch => ({
   setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
   setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
   setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
-  saveProjection: embedding => dispatch(addProjectionAction(embedding))
+  saveProjection: embedding => dispatch(addProjectionAction(embedding)),
+  setVectors: vectors => dispatch(setVectors(vectors))
 })
 
 
@@ -267,13 +269,18 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       lineColorScheme: lineScheme
     })
 
+    
+
     this.threeRef.current.createVisualization(dataset, lineScheme, null)
 
     this.finite(lineScheme, json, dataset)
 
+    this.props.setVectors(dataset.vectors)
+
     this.props.setLineUpInput_columns(dataset.columns);
     this.props.setLineUpInput_data(dataset.vectors);
 
+    setTimeout(() => this.threeRef.current.requestRender(), 500)
   }
 
 

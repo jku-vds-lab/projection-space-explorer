@@ -6,6 +6,7 @@ import { Preprocessor } from "../Data/Preprocessor"
 import { Dataset } from "../Data/Dataset"
 import { Loader } from "./Loader"
 import { DatasetEntry } from "../Data/DatasetDatabase"
+import Cluster from "../Data/Cluster"
 
 
 var d3v5 = require('d3')
@@ -54,6 +55,41 @@ export class CSVLoader implements Loader {
             return 'arbitrary'
         }
     }
+
+
+    getClusters(vectors: Vect[], callback) {
+        let worker = new Worker('dist/cluster.js')
+
+        worker.onmessage = (e) => {
+            // Point clusteruing
+            let clusters = []
+            Object.keys(e.data).forEach(k => {
+                let t = e.data[k]
+                let f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
+                f.label = k
+                clusters.push(f)
+            })
+
+
+            // Inject cluster attributes
+            clusters.forEach(cluster => {
+                let vecs = []
+                cluster.points.forEach(point => {
+                    vecs.push(vectors[point.meshIndex])
+                })
+                cluster.vectors = vecs
+                cluster.points = cluster.vectors
+            })
+
+            callback(clusters)
+        }
+
+        worker.postMessage({
+            type: 'extract',
+            message: vectors.map(vector => [vector.x, vector.y, vector.clusterLabel])
+        })
+    }
+
 
     async resolve(finished, vectors, datasetType, entry: DatasetEntry) {
         var header = Object.keys(vectors[0])
@@ -146,7 +182,18 @@ export class CSVLoader implements Loader {
         }
 
         ranges = new Preprocessor(vectors).preprocess(ranges)
-        finished(new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation), new InferCategory(vectors).load(ranges))
 
+        let dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation)
+        
+        this.getClusters(vectors, clusters => {
+            dataset.clusters = clusters
+
+            // Reset cluster label after extraction
+            dataset.vectors.forEach(vector => {
+                vector.clusterLabel = []
+            })
+
+            finished(dataset, new InferCategory(vectors).load(ranges))
+        })
     }
 }
