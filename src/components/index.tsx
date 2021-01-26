@@ -67,6 +67,9 @@ import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility 
 import { SDFLoader } from "./Utility/Loaders/SDFLoader";
 
 import * as frontend_utils from "../utils/frontend-connect";
+import { HoverTabPanel } from "./DrawerTabPanels/HoverTabPanel/HoverTabPanel";
+import { addProjectionAction } from "./Ducks/ProjectionsDuck";
+import { Embedding } from "./Utility/Data/Embedding";
 
 
 
@@ -144,6 +147,7 @@ const mapDispatchToProps = dispatch => ({
   setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
   setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
   setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
+  saveProjection: embedding => dispatch(addProjectionAction(embedding))
 })
 
 
@@ -279,6 +283,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.props.setCategoryOptions(new CategoryOptions(this.props.dataset.vectors, categories))
     this.props.setPathLengthMaximum(dataset.getMaxPathLength())
     this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
+    this.props.saveProjection(new Embedding(dataset.vectors, "Initial Projection"))
 
     const formatRange = range => {
       try {
@@ -407,6 +412,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           <Tooltip placement="right" title={<React.Fragment>
             <Typography variant="subtitle2">Embedding and Projection</Typography>
             <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
+          </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
+            <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
           </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
         </Tabs>
       </Drawer>
@@ -676,9 +686,13 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             </FixedHeightTabPanel>
 
 
-            <TabPanel value={this.props.openTab} index={3}>
+            <FixedHeightTabPanel value={this.props.openTab} index={3}>
               <EmbeddingTabPanel></EmbeddingTabPanel>
-            </TabPanel>
+            </FixedHeightTabPanel>
+
+            <FixedHeightTabPanel value={this.props.openTab} index={4}>
+              <HoverTabPanel></HoverTabPanel>
+            </FixedHeightTabPanel>
           </Grid>
 
         </div>
@@ -698,7 +712,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           />
         </div>
         <div style={{ flexGrow: 0 }}>
-          <LineUpContext onFilter={() => {this.threeRef.current.lineupFilterUpdate()}}></LineUpContext>
+          <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }}></LineUpContext>
         </div>
       </div>
 
@@ -712,13 +726,18 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           this.threeRef.current.onClusterClicked(cluster)
         }}></ClusterOverview>
 
-      
-
-      <SelectionClusters></SelectionClusters>
 
       <StoryEditor></StoryEditor>
 
       <ToolSelectionRedux />
+
+      <div id="HoverItemDiv" style={{
+        position: 'absolute',
+        left: '0px',
+        bottom: '0px',
+        zIndex: 10000,
+        padding: '72px'
+      }}></div>
     </div >
   }
 })

@@ -12,7 +12,8 @@
     position: absolute;
     right: 0px;
     top: 0px;
-    height: 100vh;
+    height: calc(100vh - 16px);
+    margin: 8px;
 }
 
 .ClusterItem {

@@ -36,6 +36,7 @@ import { getSyncNodesAlt } from '../NumTs/NumTs';
 import { ClusterDragTool } from './Tools/ClusterDragTool';
 import { TraceSelectTool } from './Tools/TraceSelectTool';
 import { Embedding } from '../Utility/Data/Embedding';
+import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 
 
 type ViewState = {
@@ -87,7 +88,8 @@ const mapDispatchToProps = dispatch => ({
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
     setActiveStory: story => dispatch(setActiveStory(story)),
     addEdgeToActive: edge => dispatch(addEdgeToActive(edge)),
-    setActiveTrace: trace => dispatch(setActiveTrace(trace))
+    setActiveTrace: trace => dispatch(setActiveTrace(trace)),
+    setOpenTab: tab => dispatch(setOpenTabAction(tab))
 })
 
 
@@ -238,6 +240,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                                     } else {
                                         this.props.setCurrentAggregation(selected)
                                     }
+
+                                    this.props.setOpenTab(4)
 
                                 } else if (wasDrawing) {
                                     this.clearSelection()

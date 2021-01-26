@@ -1,11 +1,21 @@
 # Projection Path Explorer
 
-This is the documentation for the demonstrator including the installation process.
+This is the documentation for the Projection Space Explorer.
 
 ## Controls
 
 - On the bottom right there is a tool list which let you select one of the predefined tools (select, move, etc). Hovering over them will show you a description of what they do.
 - Use the **mouse wheel** to **zoom** in and out
+- Hold the **right mouse button** pressed while moving the mouse (**dragging**) on the context view to move the projection around
+- **Right click** the **context** to open a context-agnostic menu (has different actions when pressing on a cluster for example)
+
+
+
+## UI Components
+
+This section describes the individual UI components of the main view.
+
+
 
 ## Data Format
 
@@ -33,8 +43,6 @@ An example file could looke like this
 |-1|1|
 
 which will be displayed like this
-
-![Sample](https://github.com/JKU-ICG/projection-path-explorer/blob/develop/readme/minimalcsv.PNG)
 
 ### Other Predefined Columns
 
@@ -83,11 +91,11 @@ The column 'changes' can be supplied with text values that will be displayed wit
 
 ### Multiplicity Column
 
-The column 'multiplicity' can be supplied to denote how often this state occurs in the dataset (with the exact same position). This is sometimes necessary if you want to project the data without any duplicates, but need it in the explorer to display the lines correctly (since only single edges are allowed). For example if the same state occurs in 3 lines, it would have a multiplicity of 3 in each row.
+The column 'multiplicity' can be supplied to denote how often this state occurs in the dataset (with the exact same position). This is sometimes necessary if you want to project the data without any duplicates, but need it in the explorer to display the lines correctly (since only single edges are allowed). For example if the same state occurs in 3 lines, it would have a multiplicity of 3 in each row occurence.
 
-### Test Datasets
+### Toy Datasets
 
-There are some test datasets available in this repository under **datasets/test** which are small examples of how the files should look like.
+There are some toy datasets available in this repository under **datasets/toy** which are small examples of how the files should look like. They also provide a playground for testing different projection methods.
 
 
 
@@ -124,13 +132,3 @@ Whenever a file is changed while this server is running, it will automatically b
 ## Starting the application
 
 To start the application you just need to start the index.html locally. The easiest way to this is by using the live server provided by either Atom or Visual Studio Code.
-
-## Starting the backend
-
-To start the backend you need to install python's "bottle" and "RDKit" frameworks. The requirements.txt contains a conda dump of the environment that I use for development. 
-The server can be started with "python backend-chemvis.py". If you are using VSC live server, make sure that the "/backend/temp-files" folder is not watched, since there will be files stored temporarilly, which should not prompt the server to reload.
-
-## Preselect a set using a link
-
-You can share a link that automatically preselects a set when opened. For this the 'set' parameter can be one (1) neural (2) chess (3) rubik. So for instance the URL localhost:8080?set=neural will automatically open the application with the neural network data set.
-

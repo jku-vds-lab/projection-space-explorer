@@ -1,7 +1,7 @@
 import { connect, ConnectedProps } from 'react-redux'
 import React = require('react')
 import { FlexParent } from '../../Utility/FlexParent'
-import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText } from '@material-ui/core'
+import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@material-ui/core'
 import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
 import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
@@ -64,8 +64,8 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
 
 
-    const onSaveProjectionClick = () => {
-        props.addProjection(new Embedding(props.dataset.vectors))
+    const onSaveProjectionClick = (name) => {
+        props.addProjection(new Embedding(props.dataset.vectors, "Created " + name))
     }
 
     const onProjectionClick = (projection: Embedding) => {
@@ -78,11 +78,51 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
 
 
-    return <FlexParent
-        alignItems='stretch'
-        flexDirection='column'
-        justifyContent=''
-    >
+    return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>{'Projection Methods'}</Typography>
+        </Box>
+
+        <Box paddingLeft={2} paddingRight={2}>
+            <Grid container direction="column" spacing={1}>
+                <Grid item>
+                    <Button
+                        style={{
+                            width: '100%'
+                        }}
+                        variant="outlined"
+                        onClick={() => {
+                            setDomainSettings('umap')
+                            setOpen(true)
+                        }}>{'UMAP'}</Button>
+                </Grid>
+
+                <Grid item>
+                    <Button
+                        style={{
+                            width: '100%'
+                        }}
+                        variant="outlined"
+                        onClick={() => {
+                            setDomainSettings('tsne')
+                            setOpen(true)
+                        }}>{'t-SNE'}</Button>
+                </Grid>
+
+                <Grid item>
+                    <Button
+                        style={{
+                            width: '100%'
+                        }}
+                        variant="outlined"
+                        onClick={() => {
+                            setDomainSettings('forceatlas2')
+                            setOpen(true)
+                        }}>{'ForceAtlas2'}</Button>
+                </Grid>
+            </Grid>
+        </Box>
+
         <Box p={1}>
             <ProjectionControlCard
                 controller={controller}
@@ -95,43 +135,6 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                 }}
                 onComputingChanged={(e, newVal) => {
                 }} />
-        </Box>
-
-        <Box p={1}>
-            <Button
-                style={{
-                    width: '100%'
-                }}
-                variant="outlined"
-                onClick={() => {
-                    setDomainSettings('umap')
-                    setOpen(true)
-                }}>{'UMAP'}</Button>
-        </Box>
-
-
-        <Box p={1}>
-            <Button
-                style={{
-                    width: '100%'
-                }}
-                variant="outlined"
-                onClick={() => {
-                    setDomainSettings('tsne')
-                    setOpen(true)
-                }}>{'t-SNE'}</Button>
-        </Box>
-
-        <Box p={1}>
-            <Button
-                style={{
-                    width: '100%'
-                }}
-                variant="outlined"
-                onClick={() => {
-                    setDomainSettings('forceatlas2')
-                    setOpen(true)
-                }}>{'ForceAtlas2'}</Button>
         </Box>
 
 
@@ -212,22 +215,24 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             }}
         ></GenericSettings>
 
+        <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>{'Projection Settings'}</Typography>
+        </Box>
 
-        <ClusterTrailSettings></ClusterTrailSettings>
+        <Box paddingLeft={2} paddingRight={2}>
+            <ClusterTrailSettings></ClusterTrailSettings>
+        </Box>
 
-        <Box p={2}>
-            <Grid container direction="row" alignItems="center" justify="space-between">
-                <Grid item>
-                    <Button
-                        style={{
-                            marginTop: '16px'
-                        }}
-                        onClick={onSaveProjectionClick}
-                        variant="outlined"
-                        size="small"
-                    >{'Save Projection'}</Button>
-                </Grid>
-            </Grid>
+        <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>{'Stored Projections'}</Typography>
+        </Box>
+
+        <Box paddingLeft={2} paddingRight={2}>
+            <Button
+                onClick={(name) => onSaveProjectionClick(new Date().getHours() + ":" + new Date().getMinutes())}
+                variant="outlined"
+                size="small"
+            >{'Store Projection'}</Button>
         </Box>
 
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
@@ -240,7 +245,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                             </Avatar>
                         </ListItemAvatar>
                         <ListItemText
-                            primary="Projection"
+                            primary={`${projection.name}`}
                             secondary={`${projection.positions.length} items`}
                         />
                         <ListItemSecondaryAction>
@@ -252,5 +257,5 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                 })}
             </List>
         </div>
-    </FlexParent>
+    </div>
 })
