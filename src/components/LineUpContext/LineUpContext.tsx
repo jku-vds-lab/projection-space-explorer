@@ -1,4 +1,4 @@
-import { LineUp, LineUpCategoricalColumnDesc, LineUpNumberColumnDesc, LineUpStringColumnDesc } from "lineupjsx";
+import { LineUp, LineUpCategoricalColumnDesc, LineUpDateColumnDesc, LineUpNumberColumnDesc, LineUpStringColumnDesc } from "lineupjsx";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../Store/Store";
@@ -8,6 +8,7 @@ import { setAggregationAction } from "../Ducks/AggregationDuck";
 import { createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn } from "lineupjs";
 
 import * as backend_utils from "../../utils/backend-connect";
+import { FeatureType } from "../Utility/Data/FeatureType";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -66,6 +67,8 @@ function arrayEquals(a, b) {
       a.every((val, index) => val === b[index]);
   }
 
+
+const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "clusterProbability"];
 
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
@@ -177,34 +180,53 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
 
     for (const i in cols) {
         let col = cols[i];
-        let show = typeof col.metaInformation.showLineUp !== 'undefined' && col.metaInformation.showLineUp;
+        let show = true; //!!not working yet for lineup react!! //!(typeof col.metaInformation.hideLineUp !== 'undefined' && col.metaInformation.hideLineUp); // hide column if "noLineUp" is specified
 
-        if(Object.keys(col.metaInformation).length <= 0 || !col.metaInformation.hideLineUp){ // only if there is a "hideLineUp" modifier at this column, we don't do anything
+        if(!EXCLUDED_COLUMNS.includes(i) && (Object.keys(col.metaInformation).length <= 0 || !col.metaInformation.noLineUp)){ // only if there is a "noLineUp" modifier at this column or thix column is excluded, we don't do anything
+            // lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} width={50} />)    
             if(col.metaInformation.imgSmiles){
                 smiles_col = "Structure";
-                lineup_col_list.push(<LineUpStringColumnDesc key={smiles_col} column={i} label={smiles_col} visible={show} renderer="mySmilesStructureRenderer" groupRenderer="mySmilesStructureRenderer" width={80} />) // summaryRenderer="mySmilesStructureRenderer"
-                lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />)
-            }else if(col.isNumeric)
-                lineup_col_list.push(<LineUpNumberColumnDesc key={i} column={i} domain={[col.range.min, col.range.max]} visible={show} />);
-            else if(col.distinct)
-                if(col.distinct.length/lineUpInput.data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
-                    lineup_col_list.push(<LineUpCategoricalColumnDesc key={i} column={i} categories={col.distinct} visible={show} />)
+                lineup_col_list.push(<LineUpStringColumnDesc key={smiles_col} column={i} label={smiles_col} visible={true} renderer="mySmilesStructureRenderer" groupRenderer="mySmilesStructureRenderer" width={80} />) // summaryRenderer="mySmilesStructureRenderer"
+                // lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />)
+            }
+            if(col.featureType){
+                switch(col.featureType){
+                    case FeatureType.Categorical:
+                        lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} width={50} />);
+                        break;
+                    case FeatureType.Quantitative:
+                        lineup_col_list.push(<LineUpNumberColumnDesc key={i} column={i} visible={show} />);
+                        break;
+                    case FeatureType.Date:
+                        lineup_col_list.push(<LineUpDateColumnDesc key={i} column={i} visible={show} />);
+                        break;
+                    default:
+                        break;
+
+                }
+            }else{
+                if(col.isNumeric)
+                    // lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />);
+                    lineup_col_list.push(<LineUpNumberColumnDesc key={i} column={i} domain={[col.range.min, col.range.max]} visible={show} />);
+                else if(col.distinct)
+                    if(col.distinct.length/lineUpInput.data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
+                        lineup_col_list.push(<LineUpCategoricalColumnDesc key={i} column={i} categories={col.distinct} visible={show} />)
+                    else
+                        lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} width={50} />)
                 else
-                    lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} width={50} />)
-            else
-                lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />)
+                    lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />)
+            }
+            
 
         }
     }
-
+    console.log(lineup_col_list);
     return <div className="LineUpParent">
-        {/* livePreviews={false}  */}
-        <LineUp sidePanelCollapsed={true} livePreviews={{'filter': false}} ref={ref} data={lineUpInput.data} dynamicHeight={myDynamicHeight} renderers={{mySmilesStructureRenderer: new MySmilesStructureRenderer()}} defaultRanking={true} deriveColors> {/* deriveColumns deriveColors */}
-            {/* <LineUpRanking groupBy="Selection Checkboxes" sortBy="Rank:desc"> */}
-                {/* <LineUpSupportColumn type="selection" /> */}
-                {lineup_col_list}
-            {/* </LineUpRanking> */}
+        {/* livePreviews={false} deriveColumns deriveColors  */}
+        <LineUp sidePanelCollapsed={true} livePreviews={{'filter': false}} ref={ref} data={lineUpInput.data} dynamicHeight={myDynamicHeight} renderers={{mySmilesStructureRenderer: new MySmilesStructureRenderer()}} defaultRanking={true} deriveColors> 
+            {lineup_col_list}
         </LineUp>
+        {/* <LineUp ref={ref} data={lineUpInput.data}></LineUp> */}
     </div>
 })
 
