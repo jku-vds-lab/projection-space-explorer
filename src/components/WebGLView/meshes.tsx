@@ -653,6 +653,7 @@ export class PointVisualization {
   }
 
   colorCat(category, scale) {
+
     this.colorAttribute = category
 
     if (category == null) {
@@ -837,6 +838,8 @@ export class PointVisualization {
           }
         } else {
           if (this.colorAttribute != null) {
+            //console.log(this.vectorColorScheme)
+            //console.log(vector[this.colorAttribute.key])
             var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
             rgb = m.rgb
             //vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)

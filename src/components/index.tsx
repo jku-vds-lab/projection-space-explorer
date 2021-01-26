@@ -199,8 +199,15 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   }
 
 
-
   componentDidMount() {
+
+    const mangleURL = (url: string) => {
+      if (url.endsWith('csv') || url.endsWith('json') || url.endsWith('sdf')) {
+        return `datasets/${url}`
+      }
+
+      return `datasets/${url}.csv`
+    }
 
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
@@ -215,9 +222,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         preselect = "datasets/rubik/cube10x2_different_origins.csv"
       } else if (set == "chess") {
         preselect = "datasets/chess/chess16k.csv"
-      } else if (set == "chemvis"){
+      } else if (set == "chemvis") {
         new SDFLoader().resolvePath(new DatasetDatabase().getByPath("test.sdf"), (dataset, json) => { this.onDataSelected(dataset, json) });
         return;
+      } else {
+        preselect = mangleURL(set)
       }
 
       new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
@@ -295,7 +304,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setProjectionColumns(dataset.getColumns(true).map(column => ({
       name: column,
-      checked: dataset.preselectedProjectionColumns ? dataset.preselectedProjectionColumns.includes(column) : true,
+      checked: dataset.columns[column].project,
       normalized: true,
       range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
       featureLabel: dataset.columns[column].featureLabel
@@ -637,7 +646,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                               attribute = this.props.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
                             }
 
-                            this.props.setAdvancedColoringSelection(new Array(100).fill(true))
+                            this.props.setAdvancedColoringSelection(new Array(10000).fill(true))
                             this.props.setChannelColor(attribute)
                           }}
                         >
@@ -736,7 +745,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         left: '0px',
         bottom: '0px',
         zIndex: 10000,
-        padding: '72px'
+        padding: 8
       }}></div>
     </div >
   }

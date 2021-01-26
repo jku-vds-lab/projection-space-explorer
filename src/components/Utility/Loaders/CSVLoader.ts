@@ -145,25 +145,8 @@ export class CSVLoader implements Loader {
             });
         }
 
-        var preselection = Object.keys(header.reduce((map, value) => {
-            if (value.startsWith('*')) {
-                var cutHeader = value.substring(1)
-                vectors.forEach(vector => {
-                    vector[cutHeader] = vector[value]
-                    delete vector[value]
-                })
-                header[header.indexOf(value)] = cutHeader
-                map[cutHeader] = 0
-            }
-
-            return map
-        }, {}))
-
-        if (preselection == null || preselection.length == 0) {
-            preselection = null
-        }
         ranges = new Preprocessor(vectors).preprocess(ranges)
-        finished(new Dataset(vectors, ranges, preselection, { type: datasetType, path: entry.path }, types, metaInformation), new InferCategory(vectors).load(ranges))
+        finished(new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation), new InferCategory(vectors).load(ranges))
 
     }
 }

@@ -7,7 +7,8 @@ import { Vect } from "./Vect";
 
 
 export enum PrebuiltFeatures {
-    Line = 'line'
+    Line = 'line',
+    ClusterLabel = 'clusterLabel'
 }
 
 
@@ -19,6 +20,7 @@ type ColumnType = {
     featureType: FeatureType
     range: any
     featureLabel: string
+    project: boolean
 }
 
 
@@ -45,9 +47,6 @@ export class Dataset {
     // True if the dataset has sequential information (line attribute)
     isSequential: boolean;
 
-    // Preselected projection columns.
-    preselectedProjectionColumns: string[];
-
     clusters: Cluster[];
 
     // The edges between clusters.
@@ -58,7 +57,7 @@ export class Dataset {
 
 
 
-    constructor(vectors, ranges, preselection, info, featureTypes, metaInformation={}) {
+    constructor(vectors, ranges, info, featureTypes, metaInformation={}) {
         this.vectors = vectors;
         this.ranges = ranges;
         this.info = info;
@@ -75,8 +74,6 @@ export class Dataset {
         if (this.isSequential) {
             this.segments = this.getSegs()
         }
-
-        this.preselectedProjectionColumns = preselection;
     }
 
     getSegs() {
@@ -170,6 +167,14 @@ export class Dataset {
                 this.columns[columnName].featureLabel = columnMetaInformation["featureLabel"]
             } else {
                 this.columns[columnName].featureLabel = "Default"
+            }
+
+
+            // Extract included
+            if ("project" in columnMetaInformation) {
+                this.columns[columnName].project = columnMetaInformation["project"]
+            } else {
+                this.columns[columnName].project = true
             }
 
 

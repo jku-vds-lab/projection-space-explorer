@@ -4,34 +4,12 @@ import { DiscreteMapping } from "./DiscreteMapping";
 import { ContinuousMapping } from "./ContinuousMapping";
 import { NamedScales } from "./NamedScales";
 import { NamedCategoricalScales } from "./NamedCategoricalScales";
-
-var d3 = require('d3')
-
-
-
-
-
-
-
-/**
- * Breaks an integer down into its r,g,b components.
- */
-export function hexToRGB(color) {
-  return {
-    r: (color & 0xff0000) >> 16,
-    g: (color & 0x00ff00) >> 8,
-    b: (color & 0x0000ff)
-  }
-}
-
-
-
-
+import { ShallowSet } from "../ShallowSet";
 
 export const mappingFromScale = (scale, attribute, dataset) => {
   if (scale instanceof DiscreteScale) {
     // Generate scale
-    return new DiscreteMapping(scale, [... new Set(dataset.vectors.map(vector => vector[attribute.key]))])
+    return new DiscreteMapping(scale, new ShallowSet(dataset.vectors.map(vector => vector[attribute.key])))
   }
   if (scale instanceof ContinuosScale) {
     var min = null, max = null

@@ -726,7 +726,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             this.lines.meshes.forEach(line => this.scene.add(line.line))
         }
 
-        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 12, this.lines?.grayedLayerSystem)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 8, this.lines?.grayedLayerSystem)
         this.particles.createMesh(this.props.dataset.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
