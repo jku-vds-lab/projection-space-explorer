@@ -87,7 +87,7 @@ const SelectionClustersFull = function ({
         return null
     }
 
-    return <div className={dataset.type == DatasetType.Chem ? "Parent ChemParent" : "Parent"}>
+    return <div className={"Parent"}>
 
         {hoverState && hoverState instanceof Vect && <HoverItemPortal>
             <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState]} columns={dataset.columns}></GenericLegend>
@@ -100,7 +100,7 @@ const SelectionClustersFull = function ({
                     <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns}></GenericLegend>
                 </MyWindowPortal>
                 :
-                <div className={dataset.type == DatasetType.Chem ? "Cluster ChemClusterMultiple" : "Cluster"}>
+                <div className={"Cluster"}>
                     {currentAggregation && currentAggregation.length > 0 && <div>
                         
                         <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns}></GenericLegend>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './chem.scss';
 import * as backend_utils from '../../../utils/backend-connect';
-import { MenuItem, Select } from '@material-ui/core';
+import { Grid, MenuItem, Select } from '@material-ui/core';
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 
@@ -38,7 +38,7 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
     render(){
 
         if (this.props.aggregate) {
-            return <div>
+            return <div className={"ParentChem"}>
                 <RepresentationList 
                     value={this.state.current_rep} 
                     onChange={(event) => {
@@ -77,7 +77,7 @@ function loadImage(props, setComp){
                 backend_utils.get_structures_from_smiles_list(formData).then(x => {
                     // @ts-ignore
                     //const img_lst = x["img_lst"].map((svg,i) => svg)
-                    const img_lst = x["img_lst"].map((base64,i) => <img key={i} className={"legend_multiple"} src={"data:image/jpeg;base64," + base64}/>) //key={props.selection[i][smiles_col]} --> gives error because sometimes smiles ocure twice
+                    const img_lst = x["img_lst"].map((base64,i) => <Grid key={i} item><img className={"legend_multiple"} src={"data:image/jpeg;base64," + base64}/></Grid>) //key={props.selection[i][smiles_col]} --> gives error because sometimes smiles ocure twice
                     setComp(img_lst);//<div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />
                 })
             );
@@ -100,7 +100,7 @@ const ImageView = props => {
     }, [props.selection, props.current_rep]);
     
 
-    return comp;
+    return <Grid className={"chem-grid"} container>{comp}</Grid>;
 }
 
 const RepresentationList = props => {
