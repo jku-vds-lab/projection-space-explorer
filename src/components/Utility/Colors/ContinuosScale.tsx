@@ -15,7 +15,6 @@ export class ContinuosScale extends LinearColorScale {
   }
 
   map(value) {
-    console.log(value);
     var d3color = d3v5.color(this.interpolator(value));
     return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
   }

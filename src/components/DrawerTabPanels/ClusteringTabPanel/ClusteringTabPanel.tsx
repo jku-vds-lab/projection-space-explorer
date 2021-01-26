@@ -15,6 +15,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { StoryPreview } from "./StoryPreview"
 import * as backend_utils from "../../../utils/backend-connect";
 import * as frontend_utils from "../../../utils/frontend-connect";
+import { Vect } from "../../Utility/Data/Vect"
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -184,28 +185,39 @@ export const ClusteringTabPanel = connector(({
         }
     }
 
+
     function calc_hdbscan() {
         const points = dataset.vectors.map(point => [point.x, point.y]);
         backend_utils.calculate_hdbscan_clusters(points).then(data => {
             const cluster_labels = data["result"];
             const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
-            let story = null;
+            let story = new Story([], []);
+            let clusters = []
+
+
             dist_cluster_labels.forEach(cluster_label => {
-                const current_cluster_vects = dataset.vectors.filter((x, i) => cluster_labels[i] == cluster_label);
-                const cluster = Cluster.fromSamples(current_cluster_vects);
-                if (story) {
-                    addClusterToStory(cluster);
-                } else {
-                    story = new Story([cluster], []);
-                    addStory(story)
-                    setActiveStory(story)
+                if (cluster_label >= 0) {
+                    const current_cluster_vects = dataset.vectors.filter((x, i) => cluster_labels[i] == cluster_label);
+                    const cluster = Cluster.fromSamples(current_cluster_vects);
+
+                    // Set correct label for cluster
+                    cluster.label = cluster_label
+                    clusters.push(cluster)
+
+                    story.clusters.push(cluster)
                 }
             });
 
+            addStory(story)
+            setActiveStory(story)
+
+            // Correct labels on vectors based on clusters
+            Cluster.deriveVectorLabelsFromClusters(dataset.vectors, clusters)
+
+            // Update UI, dont know how to right now
         });
     }
-
 
     React.useEffect(() => toggleClusters(), [dataset])
 

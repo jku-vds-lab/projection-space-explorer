@@ -1,5 +1,6 @@
 import { requiredChessColumns } from "../../Legends/ChessFingerprint/ChessFingerprint";
 import { requiredRubikColumns } from "../../Legends/RubikFingerprint/RubikFingerprint";
+import { PrebuiltFeatures } from "./Dataset";
 import { DatasetType } from "./DatasetType";
 import { Vect } from "./Vect";
 
@@ -56,7 +57,7 @@ export class InferCategory {
             return DatasetType.Go;
         }
 
-        if (header.toString().toLowerCase().includes('smiles')){
+        if (header.toString().toLowerCase().includes('smiles')) {
             return DatasetType.Chem;
         }
 
@@ -97,83 +98,91 @@ export class InferCategory {
         var header = Object.keys(this.vectors[0]).filter(a => a != "line");
 
         header.forEach(key => {
-            // Check for given header key if its categorical, sequential or diverging
-            var distinct = [...new Set(this.vectors.map(vector => vector[key]))];
-
-            if (distinct.length > 8 || key in ranges || key == 'multiplicity') {
-                // Check if values are numeric
-                if (!distinct.find(value => isNaN(value))) {
-                    // If we have a lot of different values, the values or probably sequential data
-                    var category = options.find(e => e.category == "color");
-
-                    var min = null, max = null;
-
-                    if (key in ranges) {
-                        min = ranges[key].min;
-                        max = ranges[key].max;
-                    } else {
-                        min = Math.min(...distinct);
-                        max = Math.max(...distinct);
-                    }
-
-                    category.attributes.push({
-                        "key": key,
-                        "name": key,
-                        "type": "sequential",
-                        "range": {
-                            "min": min,
-                            "max": max
-                        }
-                    });
-
-                    options.find(e => e.category == "transparency").attributes.push({
-                        "key": key,
-                        "name": key,
-                        "type": "sequential",
-                        "range": {
-                            "min": min,
-                            "max": max
-                        },
-                        "values": {
-                            range: [0.3, 1.0]
-                        }
-                    });
-
-                    options.find(e => e.category == "size").attributes.push({
-                        "key": key,
-                        "name": key,
-                        "type": "sequential",
-                        "range": {
-                            "min": min,
-                            "max": max
-                        },
-                        "values": {
-                            range: [1, 2]
-                        }
-                    });
-                }
+            if (key == PrebuiltFeatures.ClusterLabel) {
+                options.find(e => e.category == "color").attributes.push({
+                    "key": key,
+                    "name": key,
+                    "type": "categorical"
+                })
             } else {
-                if (distinct.find(value => isNaN(value)) || key == 'algo') {
+                // Check for given header key if its categorical, sequential or diverging
+                var distinct = [...new Set(this.vectors.map(vector => vector[key]))];
 
-                    options.find(e => e.category == 'color').attributes.push({
-                        "key": key,
-                        "name": key,
-                        "type": "categorical"
-                    });
+                if (distinct.length > 8 || key in ranges || key == 'multiplicity') {
+                    // Check if values are numeric
+                    if (!distinct.find(value => isNaN(value))) {
+                        // If we have a lot of different values, the values or probably sequential data
+                        var category = options.find(e => e.category == "color");
 
-                    if (distinct.length <= 4) {
-                        var shapes = ["star", "cross", "circle", "square"];
-                        options.find(e => e.category == 'shape').attributes.push({
+                        var min = null, max = null;
+
+                        if (key in ranges) {
+                            min = ranges[key].min;
+                            max = ranges[key].max;
+                        } else {
+                            min = Math.min(...distinct);
+                            max = Math.max(...distinct);
+                        }
+
+                        category.attributes.push({
                             "key": key,
                             "name": key,
-                            "type": "categorical",
-                            "values": distinct.map((value, index) => {
-                                return {
-                                    from: value,
-                                    to: shapes[index]
-                                };
-                            })
+                            "type": "sequential",
+                            "range": {
+                                "min": min,
+                                "max": max
+                            }
                         });
+
+                        options.find(e => e.category == "transparency").attributes.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential",
+                            "range": {
+                                "min": min,
+                                "max": max
+                            },
+                            "values": {
+                                range: [0.3, 1.0]
+                            }
+                        });
+
+                        options.find(e => e.category == "size").attributes.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential",
+                            "range": {
+                                "min": min,
+                                "max": max
+                            },
+                            "values": {
+                                range: [1, 2]
+                            }
+                        });
+                    }
+                } else {
+                    if (distinct.find(value => isNaN(value)) || key == 'algo') {
+
+                        options.find(e => e.category == 'color').attributes.push({
+                            "key": key,
+                            "name": key,
+                            "type": "categorical"
+                        });
+
+                        if (distinct.length <= 4) {
+                            var shapes = ["star", "cross", "circle", "square"];
+                            options.find(e => e.category == 'shape').attributes.push({
+                                "key": key,
+                                "name": key,
+                                "type": "categorical",
+                                "values": distinct.map((value, index) => {
+                                    return {
+                                        from: value,
+                                        to: shapes[index]
+                                    };
+                                })
+                            });
+                        }
                     }
                 }
             }

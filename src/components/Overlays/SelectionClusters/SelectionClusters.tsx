@@ -10,17 +10,22 @@ import ReactDOM = require('react-dom')
 import { WindowMode } from '../../Ducks/HoverSettingsDuck'
 
 function copyStyles(sourceDoc, targetDoc) {
+
     Array.from(sourceDoc.styleSheets).forEach(styleSheet => {
+        // @ts-ignore
         if (styleSheet.href) {
             const newLinkEl = sourceDoc.createElement('link');
 
             newLinkEl.rel = 'stylesheet';
+            // @ts-ignore
             newLinkEl.href = styleSheet.href;
             targetDoc.head.appendChild(newLinkEl);
+            // @ts-ignore
         } else if (styleSheet.cssRules && styleSheet.cssRules.length > 0) {
             const newStyleEl = sourceDoc.createElement('style');
-
+            // @ts-ignore
             Array.from(styleSheet.cssRules).forEach(cssRule => {
+                // @ts-ignore
                 newStyleEl.appendChild(sourceDoc.createTextNode(cssRule.cssText));
             });
 
@@ -90,7 +95,16 @@ const SelectionClustersFull = function ({
     return <div className={dataset.type == DatasetType.Chem ? "Parent ChemParent" : "Parent"}>
 
         {hoverState && hoverState instanceof Vect && <HoverItemPortal>
-            <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState]} columns={dataset.columns}></GenericLegend>
+            <Card variant="outlined" style={{
+                width: 360,
+                maxHeight: '50vh',
+                minHeight: 360,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState]} columns={dataset.columns}></GenericLegend>
+            </Card>
         </HoverItemPortal>}
 
 
@@ -102,7 +116,7 @@ const SelectionClustersFull = function ({
                 :
                 <div className={dataset.type == DatasetType.Chem ? "Cluster ChemClusterMultiple" : "Cluster"}>
                     {currentAggregation && currentAggregation.length > 0 && <div>
-                        
+
                         <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns}></GenericLegend>
                     </div>
                     }

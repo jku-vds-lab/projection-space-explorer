@@ -17,7 +17,6 @@ export class ContinuousMapping extends Mapping {
   }
 
   map(value) {
-    console.log(value);
     if (this.range.max == this.range.min) {
       return this.scale.map(0);
     }

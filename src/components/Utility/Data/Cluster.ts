@@ -54,6 +54,29 @@ export default class Cluster {
         return cluster
     }
 
+
+
+        /**
+     * Resets the labeling for given vectors based on given clusters
+     * 
+     * @param vectors The vectors to relabel
+     * @param clusters The clusters to take the label from
+     */
+    static deriveVectorLabelsFromClusters(vectors: Vect[], clusters: Cluster[]) {
+        // Clear all cluster labels from vectors
+        vectors.forEach(vector => {
+            vector.clusterLabel = []
+        })
+
+        // Create new labels from clusters
+        clusters.forEach(cluster => {
+            cluster.vectors.forEach(vector => {
+                vector.clusterLabel.push(cluster.label)
+            })
+        })
+    }
+
+
     containsPoint(coords) {
         var x = coords.x
         var y = coords.y

@@ -174,15 +174,25 @@ export class JSONLoader implements Loader {
             edges.push(edge)
         })
 
-        let preselection = null
+        let preselection = null as any[]
+        let metaInformation = undefined
         if ('preselection' in content) {
             preselection = content.preselection[0].data.flat()
+
+            metaInformation = {}
+            
+            header.forEach(column => {
+                metaInformation[column] = {
+                    project: preselection.includes(column)
+                }
+            })
         }
 
 
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
 
-        let dataset = new Dataset(this.vectors, ranges, preselection, { type: this.datasetType, path: entry.path }, types)
+    
+        let dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation)
         dataset.clusters = clusters
         dataset.clusterEdges = edges
 
