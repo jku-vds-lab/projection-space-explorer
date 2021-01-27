@@ -27,7 +27,7 @@ export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode }: P
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
 
-    return <div>
+    return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
             <FormControlLabel
                 control={<Switch checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}

@@ -326,7 +326,7 @@ export const ClusterOverview = connector(function ({
         setActiveTraceState(stories.trace.mainPath[0])
     }, [stories.trace])
 
-    return <Grow in={stories.active != null}>
+    return <Grow in={stories.active != null && stories.trace != null}>
         <Card className="ClusterOverviewParent" variant="outlined">
 
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>

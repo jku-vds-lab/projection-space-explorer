@@ -11,7 +11,7 @@ import { NamedCategoricalScales } from "./Utility/Colors/NamedCategoricalScales"
 import { ContinuousMapping } from "./Utility/Colors/ContinuousMapping";
 import { DiscreteMapping } from "./Utility/Colors/DiscreteMapping";
 import { ContinuosScale, DiscreteScale } from "./Utility/Colors/ContinuosScale";
-import { createMuiTheme, Divider, Drawer, MuiThemeProvider, Paper, Tooltip } from "@material-ui/core";
+import { AppBar, createMuiTheme, Divider, Drawer, MuiThemeProvider, Paper, Toolbar, Tooltip } from "@material-ui/core";
 import { DatasetDatabase } from "./Utility/Data/DatasetDatabase";
 import { Dataset } from "./Utility/Data/Dataset";
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
@@ -65,13 +65,11 @@ import { LineUpContext } from "./LineUpContext/LineUpContext";
 import { devToolsEnhancer } from 'redux-devtools-extension';
 import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
 import { SDFLoader } from "./Utility/Loaders/SDFLoader";
-
 import * as frontend_utils from "../utils/frontend-connect";
 import { HoverTabPanel } from "./DrawerTabPanels/HoverTabPanel/HoverTabPanel";
 import { addProjectionAction } from "./Ducks/ProjectionsDuck";
 import { Embedding } from "./Utility/Data/Embedding";
 import { setVectors } from "./Ducks/StoriesDuck";
-
 
 
 
@@ -269,7 +267,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       lineColorScheme: lineScheme
     })
 
-    
+
 
     this.threeRef.current.createVisualization(dataset, lineScheme, null)
 
@@ -390,371 +388,388 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
   render() {
-    return <div
-      style={{
-        display: 'flex',
-        alignItems: 'stretch',
-        width: "100vw",
-        height: "100vh"
-      }}>
+    return <div>
 
-      <Drawer
-        variant="permanent"
+      <div
         style={{
-          width: 72
-        }}
-      >
-        <Divider />
-        <Tabs
-          value={this.props.openTab}
-          orientation="vertical"
-          indicatorColor="primary"
-          textColor="primary"
-          onChange={(e, newVal) => { this.props.setOpenTab(newVal) }}
-          aria-label="disabled tabs example"
-        >
-          <Tooltip placement="right" title={<React.Fragment>
-            <Typography variant="subtitle2">Load Dataset</Typography>
-            <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
-          </React.Fragment>}><Tab icon={<UploadIcon></UploadIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-          <Tooltip placement="right" title={<React.Fragment>
-            <Typography variant="subtitle2">Point and Line Channels</Typography>
-            <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
-          </React.Fragment>}><Tab icon={<VisualChannelIcon></VisualChannelIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-          <Tooltip placement="right" title={<React.Fragment>
-            <Typography variant="subtitle2">Clustering</Typography>
-            <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
-          </React.Fragment>}><Tab icon={<ClusterIcon></ClusterIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-          <Tooltip placement="right" title={<React.Fragment>
-            <Typography variant="subtitle2">Embedding and Projection</Typography>
-            <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
-          </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-
-          <Tooltip placement="right" title={<React.Fragment>
-            <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
-            <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
-          </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-        </Tabs>
-      </Drawer>
-
-      <Box
-        style={{
-          flexShrink: 0,
-          width: "18rem",
-          height: '100vh',
-          overflowX: 'hidden',
-          overflowY: 'hidden',
           display: 'flex',
-          flexDirection: 'column',
-          border: '1px solid rgba(0, 0, 0, 0.12)'
-        }}>
-        <div style={{
-          flexGrow: 1,
-          overflowY: 'hidden'
+          alignItems: 'stretch',
+          width: "100vw",
+          height: "100vh"
         }}>
 
+        <Drawer
+          variant="permanent"
+          style={{
+            width: 72
+          }}
+        >
+          <Divider />
+          <Tabs
+            value={this.props.openTab}
+            orientation="vertical"
+            indicatorColor="primary"
+            textColor="primary"
+            onChange={(e, newVal) => { this.props.setOpenTab(newVal) }}
+            aria-label="disabled tabs example"
+          >
+            <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Load Dataset</Typography>
+              <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
+            </React.Fragment>}><Tab icon={<UploadIcon></UploadIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Point and Line Channels</Typography>
+              <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
+            </React.Fragment>}><Tab icon={<VisualChannelIcon></VisualChannelIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Clustering</Typography>
+              <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
+            </React.Fragment>}><Tab icon={<ClusterIcon></ClusterIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Embedding and Projection</Typography>
+              <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
+            </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
 
-          <Grid
-            container
-            justify="center"
-            alignItems="stretch"
-            direction="column">
+            <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
+              <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
+            </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+          </Tabs>
+        </Drawer>
 
-
-
-            <FixedHeightTabPanel value={this.props.openTab} index={0} >
-              <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
-            </FixedHeightTabPanel>
-
-            <TabPanel value={this.props.openTab} index={1}>
-
-              {this.props.dataset && this.props.dataset.isSequential && <div>
-                <div>
-                  <Typography
-                    style={{ margin: '0px 0 0px 16px' }}
-                    variant="body1"
-                    display="block"
-                  >
-                    Lines
-                </Typography>
-                </div>
-
-                <Grid
-                  container
-                  justify="center"
-                  alignItems="stretch"
-                  direction="column"
-                  style={{ padding: '0 16px' }}>
-                  <Legend
-                    ref={this.legend}
-                    onLineSelect={this.onLineSelect}></Legend>
-
-                  <Box p={1}></Box>
-
-                  <LineTreePopover
-                    onSelectAll={(algo, checked) => {
-                      var ch = this.state.selectedLines
-                      Object.keys(ch).forEach(key => {
-                        var e = this.state.selectedLineAlgos.find(e => e.algo == algo)
-                        if (e.lines.find(e => e.line == key)) {
-                          ch[key] = checked
-                        }
-
-                      })
-
-                      this.setState({
-                        selectedLines: ch
-                      })
-
-                      this.threeRef.current.setLineFilter(ch)
-                      this.threeRef.current.requestRender()
-                    }}
-                    onChange={(id, checked) => {
-                      var ch = this.state.selectedLines
-                      ch[id] = checked
-
-                      this.setState({
-                        selectedLines: ch
-                      })
-
-                      this.threeRef.current.setLineFilter(ch)
-                      this.threeRef.current.requestRender()
-                    }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme} />
-                </Grid>
+        <Box
+          style={{
+            flexShrink: 0,
+            width: "18rem",
+            height: '100vh',
+            overflowX: 'hidden',
+            overflowY: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            border: '1px solid rgba(0, 0, 0, 0.12)'
+          }}>
+          <div style={{
+            flexGrow: 1,
+            overflowY: 'hidden'
+          }}>
 
 
-                <div style={{ margin: '8px 0px' }}></div>
-
-                <PathLengthFilter></PathLengthFilter>
-                <PathBrightnessSlider></PathBrightnessSlider>
-              </div>
-              }
-
-              <Divider style={{ margin: '8px 0px' }} />
-
-              <div>
-                <Typography
-                  style={{ margin: '0px 0 0px 16px' }}
-                  color="textPrimary"
-                  variant="body1"
-                  display="block"
-                >
-                  Points
-                </Typography>
-              </div>
+            <Grid
+              container
+              justify="center"
+              alignItems="stretch"
+              direction="column">
 
 
 
-              <StatesTabPanel></StatesTabPanel>
+              <FixedHeightTabPanel value={this.props.openTab} index={0} >
+                <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
+              </FixedHeightTabPanel>
 
+              <FixedHeightTabPanel value={this.props.openTab} index={1}>
 
-
-              {
-                this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("transparency") ?
-                  <Grid
-                    container
-                    justify="center"
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}>
-                    <FormControl style={{ margin: '4px 0px' }}>
-                      <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
-                      <Select labelId="vectorByTransparencySelectLabel"
-                        id="vectorByTransparencySelect"
-                        displayEmpty
-                        value={this.state.selectedVectorByTransparency}
-                        onChange={(event) => {
-                          var attribute = this.props.categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
-
-                          this.setState({
-                            selectedVectorByTransparency: event.target.value,
-                            vectorByTransparency: attribute
-                          })
-
-                          this.threeRef.current.particles.transparencyCat(attribute)
-                          this.threeRef.current.requestRender()
-                        }}
+                <div style={{
+                  overflowY: 'auto',
+                  overflowX: 'hidden',
+                  height: '100%'
+                }}>
+                  {this.props.dataset && this.props.dataset.isSequential && <div>
+                    <div>
+                      <Typography
+                        style={{ margin: '0px 0 0px 16px' }}
+                        variant="body1"
+                        display="block"
                       >
-                        <MenuItem value="">None</MenuItem>
-                        {this.props.categoryOptions.getCategory("transparency").attributes.map(attribute => {
-                          return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                        })}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  :
-                  <div></div>
-              }
+                        Lines
+                </Typography>
+                    </div>
 
-              {
-                this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("size") ?
-                  <Grid
-                    container
-                    justify="center"
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}>
-                    <FormControl style={{ margin: '4px 0px' }}>
-                      <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                      <Select labelId="vectorBySizeSelectLabel"
-                        id="vectorBySizeSelect"
-                        displayEmpty
-                        value={this.props.channelSize ? this.props.channelSize.key : ''}
-                        onChange={(event) => {
-                          var attribute = this.props.categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
-                          if (attribute == undefined) {
-                            attribute = null
-                          }
+                    <Grid
+                      container
+                      justify="center"
+                      alignItems="stretch"
+                      direction="column"
+                      style={{ padding: '0 16px' }}>
+                      <Legend
+                        ref={this.legend}
+                        onLineSelect={this.onLineSelect}></Legend>
 
-                          let pointSize = attribute ? [1, 2] : [1]
+                      <Box p={1}></Box>
 
-                          this.props.setGlobalPointSize(pointSize)
-
-                          this.props.setChannelSize(attribute)
-
-                          this.threeRef.current.particles.sizeCat(attribute, pointSize)
-                        }}
-                      >
-                        <MenuItem value="">None</MenuItem>
-                        {this.props.categoryOptions.getCategory("size").attributes.map(attribute => {
-                          return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                        })}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  :
-                  <div></div>
-              }
-
-
-              <SizeSlider></SizeSlider>
-
-
-              {
-                this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("color") ?
-                  <Grid
-                    container
-                    item
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}
-                  >
-
-                    <Grid container item alignItems="stretch" direction="column">
-                      <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
-                        <Select labelId="vectorByColorSelectLabel"
-                          id="vectorByColorSelect"
-                          displayEmpty
-                          value={this.props.channelColor ? this.props.channelColor.key : ""}
-                          onChange={(event) => {
-                            var attribute = null
-                            if (event.target.value != "") {
-                              attribute = this.props.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+                      <LineTreePopover
+                        onSelectAll={(algo, checked) => {
+                          var ch = this.state.selectedLines
+                          Object.keys(ch).forEach(key => {
+                            var e = this.state.selectedLineAlgos.find(e => e.algo == algo)
+                            if (e.lines.find(e => e.line == key)) {
+                              ch[key] = checked
                             }
 
-                            this.props.setAdvancedColoringSelection(new Array(10000).fill(true))
-                            this.props.setChannelColor(attribute)
-                          }}
-                        >
-                          <MenuItem value="">None</MenuItem>
-                          {this.props.categoryOptions.getCategory("color").attributes.map(attribute => {
-                            return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                          })}
-                        </Select>
-                      </FormControl>
+                          })
+
+                          this.setState({
+                            selectedLines: ch
+                          })
+
+                          this.threeRef.current.setLineFilter(ch)
+                          this.threeRef.current.requestRender()
+                        }}
+                        onChange={(id, checked) => {
+                          var ch = this.state.selectedLines
+                          ch[id] = checked
+
+                          this.setState({
+                            selectedLines: ch
+                          })
+
+                          this.threeRef.current.setLineFilter(ch)
+                          this.threeRef.current.requestRender()
+                        }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme} />
                     </Grid>
+
+
+                    <div style={{ margin: '8px 0px' }}></div>
+
+                    <PathLengthFilter></PathLengthFilter>
+                    <PathBrightnessSlider></PathBrightnessSlider>
+                  </div>
+                  }
+
+                  <Divider style={{ margin: '8px 0px' }} />
+
+                  <div>
+                    <Typography
+                      style={{ margin: '0px 0 0px 16px' }}
+                      color="textPrimary"
+                      variant="body1"
+                      display="block"
+                    >
+                      Points
+                </Typography>
+                  </div>
+
+
+
+                  <StatesTabPanel></StatesTabPanel>
+
+
+
+                  {
+                    this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("transparency") ?
+                      <Grid
+                        container
+                        justify="center"
+                        alignItems="stretch"
+                        direction="column"
+                        style={{ padding: '0 16px' }}>
+                        <FormControl style={{ margin: '4px 0px' }}>
+                          <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
+                          <Select labelId="vectorByTransparencySelectLabel"
+                            id="vectorByTransparencySelect"
+                            displayEmpty
+                            value={this.state.selectedVectorByTransparency}
+                            onChange={(event) => {
+                              var attribute = this.props.categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
+
+                              this.setState({
+                                selectedVectorByTransparency: event.target.value,
+                                vectorByTransparency: attribute
+                              })
+
+                              this.threeRef.current.particles.transparencyCat(attribute)
+                              this.threeRef.current.requestRender()
+                            }}
+                          >
+                            <MenuItem value="">None</MenuItem>
+                            {this.props.categoryOptions.getCategory("transparency").attributes.map(attribute => {
+                              return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                            })}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      :
+                      <div></div>
+                  }
+
+                  {
+                    this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("size") ?
+                      <Grid
+                        container
+                        justify="center"
+                        alignItems="stretch"
+                        direction="column"
+                        style={{ padding: '0 16px' }}>
+                        <FormControl style={{ margin: '4px 0px' }}>
+                          <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
+                          <Select labelId="vectorBySizeSelectLabel"
+                            id="vectorBySizeSelect"
+                            displayEmpty
+                            value={this.props.channelSize ? this.props.channelSize.key : ''}
+                            onChange={(event) => {
+                              var attribute = this.props.categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+                              if (attribute == undefined) {
+                                attribute = null
+                              }
+
+                              let pointSize = attribute ? [1, 2] : [1]
+
+                              this.props.setGlobalPointSize(pointSize)
+
+                              this.props.setChannelSize(attribute)
+
+                              this.threeRef.current.particles.sizeCat(attribute, pointSize)
+                            }}
+                          >
+                            <MenuItem value="">None</MenuItem>
+                            {this.props.categoryOptions.getCategory("size").attributes.map(attribute => {
+                              return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                            })}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      :
+                      <div></div>
+                  }
+
+
+                  <SizeSlider></SizeSlider>
+
+
+                  {
+                    this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("color") ?
+                      <Grid
+                        container
+                        item
+                        alignItems="stretch"
+                        direction="column"
+                        style={{ padding: '0 16px' }}
+                      >
+
+                        <Grid container item alignItems="stretch" direction="column">
+                          <FormControl style={{ margin: '4px 0px' }}>
+                            <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
+                            <Select labelId="vectorByColorSelectLabel"
+                              id="vectorByColorSelect"
+                              displayEmpty
+                              value={this.props.channelColor ? this.props.channelColor.key : ""}
+                              onChange={(event) => {
+                                var attribute = null
+                                if (event.target.value != "") {
+                                  attribute = this.props.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+                                }
+
+                                this.props.setAdvancedColoringSelection(new Array(10000).fill(true))
+                                this.props.setChannelColor(attribute)
+                              }}
+                            >
+                              <MenuItem value="">None</MenuItem>
+                              {this.props.categoryOptions.getCategory("color").attributes.map(attribute => {
+                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                              })}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+                      :
+                      <div></div>
+                  }
+
+                  <Grid item>
+
+                    <ColorScaleSelect></ColorScaleSelect>
                   </Grid>
-                  :
-                  <div></div>
-              }
-
-              <Grid item>
-
-                <ColorScaleSelect></ColorScaleSelect>
-              </Grid>
 
 
-              <Grid item>
-                {
-                  this.props.channelColor != null && this.props.channelColor.type == 'categorical' ?
+                  <Grid item>
+                    {
+                      this.props.channelColor != null && this.props.channelColor.type == 'categorical' ?
 
-                    <AdvancedColoringPopover></AdvancedColoringPopover>
-                    :
-                    <div></div>
+                        <AdvancedColoringPopover></AdvancedColoringPopover>
+                        :
+                        <div></div>
+                    }
+
+
+                  </Grid>
+                </div>
+              </FixedHeightTabPanel>
+
+
+              <FixedHeightTabPanel value={this.props.openTab} index={2}>
+
+                {this.props.dataset != null ?
+                  <ClusteringTabPanel
+                    open={this.props.openTab == 2}
+                    backendRunning={this.state.backendRunning}
+                    clusteringWorker={this.state.clusteringWorker}
+                  ></ClusteringTabPanel> : <div></div>
                 }
+              </FixedHeightTabPanel>
 
 
-              </Grid>
+              <FixedHeightTabPanel value={this.props.openTab} index={3}>
+                <EmbeddingTabPanel></EmbeddingTabPanel>
+              </FixedHeightTabPanel>
 
-            </TabPanel>
+              <FixedHeightTabPanel value={this.props.openTab} index={4}>
+                <HoverTabPanel></HoverTabPanel>
+              </FixedHeightTabPanel>
+            </Grid>
 
+          </div>
 
-            <FixedHeightTabPanel value={this.props.openTab} index={2}>
-
-              {this.props.dataset != null ?
-                <ClusteringTabPanel
-                  open={this.props.openTab == 2}
-                  backendRunning={this.state.backendRunning}
-                  clusteringWorker={this.state.clusteringWorker}
-                ></ClusteringTabPanel> : <div></div>
-              }
-            </FixedHeightTabPanel>
+        </Box>
 
 
-            <FixedHeightTabPanel value={this.props.openTab} index={3}>
-              <EmbeddingTabPanel></EmbeddingTabPanel>
-            </FixedHeightTabPanel>
-
-            <FixedHeightTabPanel value={this.props.openTab} index={4}>
-              <HoverTabPanel></HoverTabPanel>
-            </FixedHeightTabPanel>
-          </Grid>
-
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          height: '100%'
+        }}>
+          <AppBar variant="outlined" position="relative" color="transparent">
+            <Toolbar>
+              <img style={{ height: 48 }} src={"textures/vis-logo.png"} alt="Kitty Katty!" />
+              <Typography variant="h6" style={{ marginLeft: 48 }}>
+                Projection Space Explorer
+              </Typography>
+              <ToolSelectionRedux />
+            </Toolbar>
+          </AppBar>
+          <div style={{ flexGrow: 1 }}>
+            <WebGLView
+              ref={this.threeRef}
+            />
+          </div>
+          <div style={{ flexGrow: 0 }}>
+            <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }}></LineUpContext>
+          </div>
         </div>
 
-      </Box>
 
 
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%',
-        height: '100%'
-      }}>
-        <div style={{ flexGrow: 1 }}>
-          <WebGLView
-            ref={this.threeRef}
-          />
-        </div>
-        <div style={{ flexGrow: 0 }}>
-          <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }}></LineUpContext>
-        </div>
+        <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
+
+        <ClusterOverview
+          itemClicked={(cluster) => {
+            //this.threeRef.current.setZoomTarget(cluster.vectors, 1)
+            this.threeRef.current.onClusterClicked(cluster)
+          }}></ClusterOverview>
+
+
+        <StoryEditor></StoryEditor>
+
+
+
+        <div id="HoverItemDiv" style={{
+          position: 'absolute',
+          left: '0px',
+          bottom: '0px',
+          zIndex: 10000,
+          padding: 8
+        }}></div>
       </div>
-
-
-
-      <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
-
-      <ClusterOverview
-        itemClicked={(cluster) => {
-          //this.threeRef.current.setZoomTarget(cluster.vectors, 1)
-          this.threeRef.current.onClusterClicked(cluster)
-        }}></ClusterOverview>
-
-
-      <StoryEditor></StoryEditor>
-
-      <ToolSelectionRedux />
-
-      <div id="HoverItemDiv" style={{
-        position: 'absolute',
-        left: '0px',
-        bottom: '0px',
-        zIndex: 10000,
-        padding: 8
-      }}></div>
-    </div >
+    </div>
   }
 })
 

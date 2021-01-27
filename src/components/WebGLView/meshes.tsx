@@ -5,7 +5,6 @@ import { DataLine } from "../Utility/Data/DataLine"
 import { Vect } from "../Utility/Data/Vect"
 import { Dataset } from "../Utility/Data/Dataset"
 import { LayeringSystem } from './LayeringSystem/LayeringSystem'
-import { Story } from '../Utility/Data/Story'
 import { StoriesType } from '../Ducks/StoriesDuck'
 
 /**
@@ -66,42 +65,6 @@ function shapeToInt(value) {
     case Shapes.Star:
       return 3
   }
-}
-
-function shapeToString(value) {
-  switch (value) {
-    case Shapes.Cross:
-      return 'cross'
-    case Shapes.Square:
-      return 'square'
-    case Shapes.Circle:
-      return 'circle'
-    case Shapes.Star:
-      return 'star'
-  }
-}
-
-/**
- * Returns the line opacity for a given line count.
- */
-function getLineOpacity(count) {
-  if (count >= 0 && count <= 9) {
-    return 1.0
-  }
-  if (count >= 10 && count <= 30) {
-    return 0.5
-  }
-  if (count >= 30 && count <= 70) {
-    return 0.3
-  }
-  if (count >= 70 && count <= 130) {
-    return 0.25
-  }
-  if (count >= 130) {
-    return 0.17
-  }
-
-  return 0.3 + 0.7 / count
 }
 
 
@@ -373,7 +336,6 @@ export class LineVisualization {
    */
   update() {
     this.segments.forEach((segment, si) => {
-
       segment.view.lineMesh.material.color.setStyle(this.grayedLayerSystem.getValue(si) ? '#C0C0C0' : segment.view.intrinsicColor.hex)
 
       segment.view.lineMesh.visible = segment.view.detailVisible
