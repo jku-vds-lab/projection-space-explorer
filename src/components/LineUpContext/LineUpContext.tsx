@@ -4,10 +4,13 @@ import { RootState } from "../Store/Store";
 import * as LineUpJS from 'lineupjs'
 import './LineUpContext.scss';
 import { setAggregationAction } from "../Ducks/AggregationDuck";
-import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM } from "lineupjs";
+import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM, ICategoricalColumn, isCategoricalColumn, isCategoricalLikeColumn } from "lineupjs";
 
 import * as backend_utils from "../../utils/backend-connect";
 import { FeatureType } from "../Utility/Data/FeatureType";
+import ImageCellRenderer from "lineupjs/build/src/renderer/ImageCellRenderer";
+import { PrebuiltFeatures } from "../Utility/Data/Dataset";
+import stories from "../Ducks/StoriesDuck";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -16,7 +19,8 @@ import { FeatureType } from "../Utility/Data/FeatureType";
  */
 const mapStateToProps = (state: RootState) => ({
     lineUpInput: state.lineUpInput,
-    currentAggregation: state.currentAggregation
+    currentAggregation: state.currentAggregation,
+    activeStory: state.stories.active
 })
 
 
@@ -51,7 +55,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 // }
 
 type Props = {
-    lineUpInput, currentAggregation, setCurrentAggregation, onFilter
+    lineUpInput, currentAggregation, setCurrentAggregation, onFilter, activeStory
 }
 
 function arrayEquals(a, b) {
@@ -68,14 +72,15 @@ let lineup = null;
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, onFilter }: Props) {
+export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, onFilter, activeStory }: Props) {
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
         return null;
     }
+
     lineUpInput.data.forEach(element => {
-        if(element["clusterLabel"].length <= 0){
-            element["clusterLabel"] = [-1];
+        if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
+            element[PrebuiltFeatures.ClusterLabel] = [-1];
         }
     });
     
@@ -86,6 +91,16 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         lineup = builder.build(lineup_ref.current);
 
         const ranking = lineup.data.getFirstRanking();
+
+        // add selection checkbox column
+        let selection_col = ranking.children.find(x => x.label == "Selection Checkboxes");
+        if(!selection_col){
+            selection_col = lineup.data.create(createSelectionDesc());
+            if(selection_col){
+                ranking.insert(selection_col, 1);
+            }
+        }
+
         // make lineup filter interact with the scatter plot view
         ranking.on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
             
@@ -152,39 +167,36 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             }
         }
 
-    }, [lineUpInput.data]);
+    }, [lineUpInput]);
+
+    React.useEffect(() => {
+        // update lineup, if current storybook (current cluster) changed
+        lineup?.update();
+    }, [activeStory, activeStory?.clusters?.length]); // TODO: does not update when "add from selection" -> only if story book changes
 
 
     // this effect is allways executed after the component is rendered when currentAggregation changed
     React.useEffect(() => {
 
         if(lineup != null){
-            const ranking = lineup.data.getFirstRanking();
 
             // select those instances that are also selected in the scatter plot view
             if(currentAggregation && currentAggregation.length > 0){
                 const currentSelection_scatter = lineUpInput.data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
                 lineup.setSelection(currentSelection_scatter);
 
-                // add selection checkbox column
-                let selection_col = ranking.children.find(x => x.label == "Selection Checkboxes");
-                if(!selection_col){
-                    selection_col = lineup.data.create(createSelectionDesc());
-                    if(selection_col){
-                        ranking.insert(selection_col, 1);
-                    }
-                }
-                // set the grouping to selection checkboxes
-                ranking.groupBy(selection_col, -1) // remove grouping first
-                ranking.groupBy(selection_col);
+                // set the grouping to selection checkboxes -> uncomment if this should be automatically if something changes
+                // const ranking = lineup.data.getFirstRanking();
+                // let selection_col = ranking.children.find(x => x.label == "Selection Checkboxes");
+                // ranking.groupBy(selection_col, -1) // remove grouping first
+                // ranking.groupBy(selection_col);
             }
         }
         
     }, [currentAggregation])
 
 
-
-    return <div ref={lineup_ref} className="LineUpParent" id="lineup_view"></div>
+    return <div className="LineUpParent"><div ref={lineup_ref} id="lineup_view"></div></div>
 })
 
 
@@ -208,12 +220,13 @@ function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight{
     return null;
 }
 
+
 function buildLineup(cols, data){
     const builder = LineUpJS.builder(data);
 
     for (const i in cols) {
         let col = cols[i];
-        let show = !(typeof col.metaInformation.hideLineUp !== 'undefined' && col.metaInformation.hideLineUp); // hide column if "hideLineUp" is specified
+        let show = true; //!(typeof col.metaInformation.hideLineUp !== 'undefined' && col.metaInformation.hideLineUp); // hide column if "hideLineUp" is specified -> there is a lineup bug with that option
 
         if(!EXCLUDED_COLUMNS.includes(i) && (Object.keys(col.metaInformation).length <= 0 || !col.metaInformation.noLineUp)){ // only if there is a "noLineUp" modifier at this column or thix column is excluded, we don't do anything
             if(col.metaInformation.imgSmiles){
@@ -221,31 +234,35 @@ function buildLineup(cols, data){
                 builder.column(LineUpJS.buildColumn("mySmilesStructureColumn", i).label(smiles_col).renderer("mySmilesStructureRenderer", "mySmilesStructureRenderer").width(80).build([]));
                 
             }
-            if(typeof col.featureType !== 'undefined'){
+            if(i == PrebuiltFeatures.ClusterLabel){
+                builder.column(LineUpJS.buildStringColumn(i).html().custom("visible", show).width(70)); // shows avg of cluster labels if there is more than one label
+            }
+            else if(typeof col.featureType !== 'undefined'){
                 switch(col.featureType){
                     case FeatureType.Categorical:
-                        builder.column(LineUpJS.buildCategoricalColumn(i).categories(col.distinct).width(50));
+                        builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));//.categories(col.distinct).width(70));
                         break;
                     case FeatureType.Quantitative:
-                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f"));
+                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".3f").custom("visible", show));
                         break;
                     case FeatureType.Date:
-                        builder.column(LineUpJS.buildDateColumn(i));
+                        builder.column(LineUpJS.buildDateColumn(i).custom("visible", show));
                         break;
                     default:
                         break;
 
                 }
-            }else{
+            }
+            else{
                 if(col.isNumeric)
-                    builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f"));
+                    builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));
                 else if(col.distinct)
                     if(col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
-                        builder.column(LineUpJS.buildCategoricalColumn(i).categories(col.distinct));    
+                        builder.column(LineUpJS.buildCategoricalColumn(i).categories(col.distinct).custom("visible", show));
                     else
-                        builder.column(LineUpJS.buildStringColumn(i).width(50));   
+                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));   
                 else
-                    builder.column(LineUpJS.buildStringColumn(i).width(50));   
+                    builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));   
             }
         }
     }
@@ -256,7 +273,7 @@ function buildLineup(cols, data){
     builder.deriveColors();
     builder.registerRenderer("mySmilesStructureRenderer", new MySmilesStructureRenderer());
     builder.registerColumnType("mySmilesStructureColumn", StructureImageColumn);
-    builder.sidePanel(true, false); //TODO: side view is not shown if too many columns
+    builder.sidePanel(true, true); // collapse side panel by default
     builder.livePreviews({
         filter: false
     });
@@ -293,8 +310,11 @@ export class StructureImageColumn extends StringColumn {
 }
 
 
+
 export class MySmilesStructureRenderer implements ICellRendererFactory {
     readonly title: string = 'Compound Structure';
+    // better with background image, because with img tag the user might drag the img when they actually want to select several rows
+    readonly template = '<div style="background-size: contain; background-position: center; background-repeat: no-repeat;"></div>';
     
     canRender(col: StructureImageColumn, mode: ERenderMode): boolean {
         return col instanceof StructureImageColumn && (mode === ERenderMode.CELL || mode === ERenderMode.GROUP);
@@ -302,17 +322,22 @@ export class MySmilesStructureRenderer implements ICellRendererFactory {
   
     create(col: StructureImageColumn): ICellRenderer {
         return {
-            template: `<img/>`,
+            template: this.template,
             update: (n: HTMLImageElement, d: IDataRow) => {
                 // @ts-ignore
-                backend_utils.get_structure_from_smiles(d.v[col.desc.column]).then(x => n.src = "data:image/gif;base64," + x);
+                let smiles = d.v[col.desc.column];
+                backend_utils.get_structure_from_smiles(smiles)
+                .then(x => {
+                    n.style.backgroundImage = `url('data:image/jpg;base64,${x}')`;
+                    n.alt = smiles;
+                });
             }
         };
     }
   
     createGroup(col: StructureImageColumn, context: IRenderContext): IGroupCellRenderer {
         return {
-            template: `<img/>`,
+            template: this.template,
             update: (n: HTMLImageElement, group: IOrderedGroup) => {
                 const formData = new FormData();
                 return context.tasks.groupRows(col, group, 'string', (rows) => {
@@ -324,7 +349,10 @@ export class MySmilesStructureRenderer implements ICellRendererFactory {
                     })
                     .then(() => {
                         backend_utils.get_mcs_from_smiles_list(formData)
-                        .then(data => n.src = "data:image/gif;base64," + data);
+                        .then(x => {
+                            n.style.backgroundImage = `url('data:image/jpg;base64,${x}')`;
+                            n.alt = formData.getAll("smiles_list").toString();
+                        });
                     });
             }
           };

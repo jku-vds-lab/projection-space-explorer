@@ -3,7 +3,7 @@ import React = require("react");
 import { Vect } from "../../Utility/Data/Vect";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
-import { LoadingIndicatorDialog, LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
+import { LoadingIndicatorDialog } from "../../Utility/Loaders/LoadingIndicator";
 import { SDFLoader } from "../../Utility/Loaders/SDFLoader";
 import { DatasetDrop } from "./DatasetDrop";
 import { DownloadJob } from "./DownloadJob";
@@ -11,6 +11,8 @@ import { DownloadProgress } from "./DownloadProgress";
 import { PredefinedDatasets } from "./PredefinedDatasets";
 import { SDFModifierDialog } from "./SDFModifierDialog";
 import { UploadedFiles } from "./UploadedFiles";
+import * as frontend_utils from "../../../utils/frontend-connect";
+
 var d3v5 = require('d3')
 
 function convertFromCSV(vectors) {
@@ -31,6 +33,24 @@ export function DatasetTabPanel({ onDataSelected }) {
             new SDFLoader().resolvePath(entry, onDataSelected, modifiers);
     }
 
+    let predefined = null;
+    if(frontend_utils.CHEM_PROJECT){
+        predefined = <UploadedFiles onChange={(entry)=>{
+            setEntry(entry);
+            setOpen(true);
+        }} refresh={refreshUploadedFiles} />;
+    }else{
+        predefined = <PredefinedDatasets onChange={(entry) => {
+            if (entry.path.endsWith('sdf')) {
+                setEntry(entry);
+                setOpen(true);
+            } else {
+                setJob(new DownloadJob(entry))
+            }
+        }} ></PredefinedDatasets>
+    }
+
+
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Custom Datasets (Drag and Drop)'}</Typography>
@@ -41,7 +61,12 @@ export function DatasetTabPanel({ onDataSelected }) {
                 setRefreshUploadedFiles(refreshUploadedFiles + 1);
             }}></DatasetDrop>
 
-        <UploadedFiles onChange={(entry)=>{
+        <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>{'Predefined Datasets'}</Typography>
+        </Box>
+        {predefined}
+
+        {/* <UploadedFiles onChange={(entry)=>{
             setEntry(entry);
             setOpen(true);
         }} refresh={refreshUploadedFiles} />
@@ -50,7 +75,6 @@ export function DatasetTabPanel({ onDataSelected }) {
             <Typography variant="subtitle2" gutterBottom>{'Predefined Datasets'}</Typography>
         </Box>
 
-
         <PredefinedDatasets onChange={(entry) => {
             if (entry.path.endsWith('sdf')) {
                 setEntry(entry);
@@ -58,7 +82,7 @@ export function DatasetTabPanel({ onDataSelected }) {
             } else {
                 setJob(new DownloadJob(entry))
             }
-        }} ></PredefinedDatasets>
+        }} ></PredefinedDatasets> */}
 
         <DownloadProgress job={job} onFinish={(result) => {
             if (job.entry.path.endsWith('json')) {

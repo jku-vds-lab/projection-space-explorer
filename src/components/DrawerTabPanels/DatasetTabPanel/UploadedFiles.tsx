@@ -5,6 +5,8 @@ import React = require("react")
 
 import * as backend_utils from '../../../utils/backend-connect';
 import { DatasetType } from "../../Utility/Data/DatasetType";
+import { trackPromise } from "react-promise-tracker";
+import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 
 
 export var UploadedFiles = ({ onChange, refresh }) => {
@@ -57,13 +59,16 @@ export var UploadedFiles = ({ onChange, refresh }) => {
             ))
             }
         </List>
-    </Grid><Divider/></div>)
+        <LoadingIndicatorView/>
+    </Grid></div>) //<Divider/>
 }
 
 
 function update_files(setFiles){
-    backend_utils.get_uploaded_files().then(data => {
+    trackPromise(
+        backend_utils.get_uploaded_files().then(data => {
         if(data && Object.keys(data).includes("file_list"))
             setFiles(data["file_list"])
     })
+    );
 }

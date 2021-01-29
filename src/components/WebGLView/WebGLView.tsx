@@ -1352,7 +1352,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             >
                 <MenuItem onClick={() => {
                     // when lineup is shown, hide fingerprint
-                    this.props.setLineUpInput_data(this.props.dataset.vectors); // can be removed, if the input data would always be the whole dataset
+                    this.props.setLineUpInput_data(this.props.dataset.vectors);
                     this.props.setLineUpInput_visibility(true);
 
                     handleClose()
@@ -1361,7 +1361,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 <MenuItem onClick={() => {
                     // Only load LineUp if the current selection is not empty
                     if (this.props.currentAggregation.length > 0) {
-                        this.props.setLineUpInput_data(this.props.currentAggregation); // can be removed, if the input data would always be the whole dataset
+                        this.props.setLineUpInput_data(this.props.currentAggregation);
                         this.props.setLineUpInput_visibility(true);
 
                         handleClose()
