@@ -901,9 +901,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         try {
             this.renderLoop()
-        } catch (e) {
-
-        }
+        } catch { }
     }
 
 
@@ -1004,8 +1002,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             camera.position.y = this.camera.position.y * this.camera.zoom
             camera.updateProjectionMatrix();
 
-
-
             this.renderer.clear()
             this.renderer.render(this.scene, this.camera)
 
@@ -1022,20 +1018,15 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             }
 
-
             if (this.pointScene) {
                 this.renderer.render(this.pointScene, this.camera)
             }
-
-
-
 
             if (this.multivariateClusterView.current) {
                 if (this.multivariateClusterView.current.clusterScene) {
                     this.renderer.render(this.multivariateClusterView.current.clusterScene, camera)
                 }
             }
-
         } catch (e) {
         }
     }
@@ -1043,9 +1034,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
     componentDidUpdate(prevProps, prevState) {
-
-
-
         if (prevProps.pointColorScale != this.props.pointColorScale || prevProps.stories != this.props.stories) {
             if (this.props.channelColor && this.props.pointColorScale) {
                 let mapping = mappingFromScale(this.props.pointColorScale, this.props.channelColor, this.props.dataset)
@@ -1128,6 +1116,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             })
 
             this.particles.update()
+            this.particles.updateColor()
         }
 
         // If 
@@ -1159,6 +1148,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
             this.lines.update()
             this.particles.update()
+            this.particles.updateColor()
         }
 
         if (prevProps.vectorByShape != this.props.vectorByShape && this.particles) {
@@ -1179,7 +1169,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             } else {
                 this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene, true)
                 this.particles.update()
-                
+                this.particles.updateColor()
             }
         }
 

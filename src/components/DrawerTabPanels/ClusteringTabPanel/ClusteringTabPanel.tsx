@@ -248,28 +248,6 @@ export const ClusteringTabPanel = connector(({
             <StoryPreview></StoryPreview>
         </Box>
 
-
-        <Box paddingLeft={2} paddingRight={2}>
-            <Button
-                variant="outlined"
-                style={{
-                    width: '100%'
-                }}
-                onClick={() => {
-                    if (currentAggregation.length > 0) {
-                        let cluster = Cluster.fromSamples(currentAggregation)
-
-                        if (!stories.active) {
-                            let story = new Story([cluster], [])
-                            addStory(story)
-                            setActiveStory(story)
-                        } else {
-                            addClusterToStory(cluster)
-                        }
-                    }
-                }}>Add From Selection</Button>
-        </Box>
-
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
             <List>
                 {stories.active?.clusters.map((cluster, key) => {
