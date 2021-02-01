@@ -7,6 +7,7 @@ import { Dataset } from "../Data/Dataset"
 import { Loader } from "./Loader"
 import { DatasetEntry } from "../Data/DatasetDatabase"
 import Cluster from "../Data/Cluster"
+import * as frontend_utils from "../../../utils/frontend-connect"
 
 
 var d3v5 = require('d3')
@@ -58,7 +59,7 @@ export class CSVLoader implements Loader {
 
 
     getClusters(vectors: Vect[], callback) {
-        let worker = new Worker('dist/cluster.js')
+        let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js')
 
         worker.onmessage = (e) => {
             // Point clusteruing
