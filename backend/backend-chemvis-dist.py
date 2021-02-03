@@ -45,6 +45,8 @@ def sdf_to_df(filename = None, refresh = False):
         
         frame = PandasTools.LoadSDF("./temp-files/%s"%filename, embedProps=True,smilesName=smiles_col,molColName=mol_col)
         frame = frame.drop(columns=[x for x in frame.columns if x.startswith('atom')])
+        frame = frame.fillna(0)
+        frame = frame.replace("nan", 0)
         
         request.session['df'] = frame
         
@@ -171,18 +173,22 @@ def sdf_to_csv(filename=None, modifiers=None):
             has_fingerprint = True
 
         if col.startswith(tuple(descriptor_names_no_lineup)):
-            modifier = '%s"hideLineUp":true,'%modifier # this modifier tells lineup that the column should not be viewed at all (remove this modifier, if you want to be able to add the column with the sideview of lineup)
+            modifier = '%s"noLineUp":true,'%modifier # this modifier tells lineup that the column should not be viewed at all (remove this modifier, if you want to be able to add the column with the sideview of lineup)
             modifier = '%s"featureLabel":"%s",'%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
             #col = col.split("_")[1]
         elif col.startswith(tuple(descriptor_names_show_lineup)):
-            modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
+            #modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
             modifier = '%s"featureLabel":"%s",'%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
             #col = col.split("_")[1]
-        else:
-            modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
+        #else:
+            #modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
             
-        if col == smiles_col:
-            modifier = '%s"imgSmiles":true,'%modifier # this modifier tells lineup that a structure image of this smiles string should be loaded
+        elif col == smiles_col:
+            modifier = '%s"project":false,"hideLineUp":true,"imgSmiles":true,'%modifier # this modifier tells lineup that a structure image of this smiles string should be loaded
+
+        if col == "ID":
+            modifier = '%s"project":false,'%modifier # TODO: json crashed....
+        
 
         new_cols.append("%s{%s}"%(col,modifier[0:-1])) # remove the last comma
         
@@ -190,7 +196,7 @@ def sdf_to_csv(filename=None, modifiers=None):
 
     if not has_fingerprint: # when there are no morgan fingerprints included in the dataset, calculate them now
         fps = pd.DataFrame([list(AllChem.GetMorganFingerprintAsBitVect(mol,5,nBits=256)) for mol in mols])
-        fps.columns = ['fingerprint_%s{"hideLineUp":true,"featureLabel": "fingerprint"}'%fp for fp in fps] 
+        fps.columns = ['fingerprint_%s{"noLineUp":true,"featureLabel": "fingerprint"}'%fp for fp in fps] 
         frame = frame.join(fps)
     
     csv_buffer = StringIO()
@@ -246,8 +252,9 @@ def mol_to_base64(m):
     buffered.close()
     return img_str.decode("utf-8")
 
-def mol_to_base64_highlight_substructure(mol, patt):
-    d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(250, 250) # MolDraw2DSVG
+def mol_to_base64_highlight_substructure(mol, patt, d = None):
+    if d is None:
+        d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(250, 250) # MolDraw2DSVG
     hit_ats = list(mol.GetSubstructMatch(patt))
     hit_bonds = []
     for bond in patt.GetBonds():
@@ -255,7 +262,15 @@ def mol_to_base64_highlight_substructure(mol, patt):
         aid2 = hit_ats[bond.GetEndAtomIdx()]
         hit_bonds.append(mol.GetBondBetweenAtoms(aid1,aid2).GetIdx())
     
-    Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds)
+    col = (0,0,0, 0.1) # specify black color for each atom and bond index
+    atom_cols = {}
+    for i, at in enumerate(hit_ats):
+        atom_cols[at] = col
+    bond_cols = {}
+    for i, bd in enumerate(hit_bonds):
+        bond_cols[bd] = col
+    
+    Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds, highlightAtomColors=atom_cols, highlightBondColors=bond_cols)
     d.FinishDrawing()
 
     stream = BytesIO(d.GetDrawingText())
@@ -271,18 +286,20 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
     if filename:
         df = sdf_to_df(filename)
         if df is not None:
+            d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(250, 250) # MolDraw2DSVG
             smiles = Chem.MolToSmiles(mol_aligned)
             mol = df[df[smiles_col] == smiles].iloc[0][mol_col]
             #mol = df.set_index(smiles_col).loc[smiles][mol_col]
             weights = [mol.GetAtomWithIdx(i).GetDoubleProp(current_rep) for i in range(mol.GetNumAtoms())]
-            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(250, 250))
+            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(250, 250), draw2d=d)
             
-            buffered = BytesIO()
-            fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6,6]])) # SVG
-            img_str = base64.b64encode(buffered.getvalue())
+            #buffered = BytesIO()
+            #fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6,6]])) # SVG
+            #img_str = base64.b64encode(buffered.getvalue())
             #img = buffered.getvalue().decode("utf-8")
-            buffered.close()
-            return img_str.decode("utf-8") # img
+            #buffered.close()
+            #return img_str.decode("utf-8") # img
+            return mol_to_base64_highlight_substructure(mol_aligned, patt, d=fig)
     
     return mol_to_base64_highlight_substructure(mol_aligned, patt)
 
@@ -374,6 +391,25 @@ def get_atom_rep_list(filename=None):
 # ------------------
         
         
+# --------- search & filter ---------
+@bottle.route('/get_substructure_count', method=['OPTIONS', 'POST'])
+def smiles_list_to_substructure_count():
+    if request.method == 'POST':
+        smiles_list = request.forms.get("smiles_list").split(",")
+        filter_smiles = request.forms.get("filter_smiles")
+        
+        if len(smiles_list) == 0:
+            return {"error": "empty SMILES list"}
+        
+        patt = Chem.MolFromSmiles(filter_smiles)
+        if patt:
+            substructure_counts = [(smiles, len(Chem.MolFromSmiles(smiles).GetSubstructMatch(patt))) for smiles in smiles_list if Chem.MolFromSmiles(smiles) is not None]
+            return {"substructure_counts": substructure_counts}
+        return {"error": "invalid SMILES filter"}
+    else:
+        return {}
+        
+# ------------------
         
         
 # --------- clustering ---------
@@ -386,10 +422,10 @@ def segmentation():
         print(X)
 
         clusterer = hdbscan.HDBSCAN(
-            min_cluster_size=10,
-            min_samples=4,
-            prediction_data=True#,
-            #metric=segmentDistance
+            min_cluster_size=5,
+            min_samples=1,
+            #prediction_data=True, # needed for soft clustering, or if we want to add points to the clustering afterwards
+            allow_single_cluster=True # maybe disable again
             )
         
         clusterer.fit_predict(X)
@@ -442,8 +478,8 @@ def test():
 # CONSTANTS
 # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
 response_header_origin_all = '*'
-# response_header_origin_localhost = 'http://127.0.0.1:5500'
-response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
+response_header_origin_localhost = 'http://127.0.0.1:5500'
+#response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
 class EnableCors(object):
     name = 'enable_cors'
     api = 2
@@ -467,8 +503,8 @@ bottle.install(EnableCors())
 #app.run(port=8080) # not working for docker and apparently not needed
 
 # CONSTANTS
-# run(app=app, host='localhost', port=8080, debug=True, reloader=True)
-run(app=app, host='0.0.0.0', port=8080) # use for docker
+run(app=app, host='localhost', port=8080, debug=True, reloader=True)
+# run(app=app, host='0.0.0.0', port=8080) # use for docker
 
 
 # ------------------

@@ -219,27 +219,29 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
-    var preselect = "datasets/rubik/cube10x2_different_origins.csv"
-    // var preselect = "datasets/chemvis/test.sdf"
+    var preselect = frontend_utils.CHEM_PROJECT ? "test.sdf" : "datasets/rubik/cube10x2_different_origins.csv"
+    var loader = frontend_utils.CHEM_PROJECT ? new SDFLoader() : new CSVLoader();
+
     if (set != null) {
 
-      var preselect = "datasets/rubik/cube10x2_different_origins.csv"
       if (set == "neural") {
         preselect = "datasets/neural/learning_confmat.csv"
+        loader = new CSVLoader();
       } else if (set == "rubik") {
         preselect = "datasets/rubik/cube10x2_different_origins.csv"
+        loader = new CSVLoader();
       } else if (set == "chess") {
         preselect = "datasets/chess/chess16k.csv"
+        loader = new CSVLoader();
       } else if (set == "chemvis") {
-        new SDFLoader().resolvePath(new DatasetDatabase().getByPath("test.sdf"), (dataset, json) => { this.onDataSelected(dataset, json) });
-        return;
+        preselect = "test.sdf";
+        loader = new SDFLoader();
       } else {
         preselect = mangleURL(set)
       }
-
-      new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
+      loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     } else {
-      new CSVLoader().resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
+      loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     }
   }
 

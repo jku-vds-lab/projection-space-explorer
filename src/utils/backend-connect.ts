@@ -134,6 +134,28 @@ export async function get_mcs_from_smiles_list(formData:FormData) {
     
 }
 
+export async function get_substructure_count(smiles_list, filter) {
+    const formData = new FormData();
+    formData.append('smiles_list', smiles_list);
+    formData.append('filter_smiles', filter);
+    return fetch(BASE_URL+'/get_substructure_count', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(handle_errors)
+    .then(response => response.json())
+    .then(data => {
+        if(Object.keys(data).includes("substructure_counts"))
+            return data["substructure_counts"];
+        else 
+            throw Error("Backend responded with error: " + data["error"]);
+    })
+    .catch(error => {
+        console.error(error)
+    });
+    
+}
+
 
 export async function upload_sdf_file(file){
     // upload the sdf file to the server

@@ -7,7 +7,9 @@
 .Cluster {
     display: flex;
     flex-shrink: 0;
-    align-items: center;
+    // align-items: center;
     justify-content: center;
-    height: 50%;
+    // height: 50%;
+    height: 100%;
+    margin-top: 40px;
 }
