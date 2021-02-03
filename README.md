@@ -15,6 +15,21 @@ This is the documentation for the Projection Space Explorer.
 
 This section describes the individual UI components of the main view.
 
+### Center Contxt
+Shows the current projection and allows the user to do selections, and show contextual menus and information by clicking the items shown.
+
+### Left Menu Drawer
+Shows different groups of actions that can be set.
+
+### Top App Bar
+Shows the Toolbar selection and the logo of the application.
+
+
+
+
+
+
+
 
 
 ## Data Format

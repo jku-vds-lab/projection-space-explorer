@@ -7,7 +7,7 @@ import AdjustIcon from '@material-ui/icons/Adjust';
 import { Vect } from '../../Utility/Data/Vect'
 import { DatasetType } from '../../Utility/Data/DatasetType'
 import ReactDOM = require('react-dom')
-import { WindowMode } from '../../Ducks/HoverSettingsDuck'
+import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck'
 
 function copyStyles(sourceDoc, targetDoc) {
 
@@ -40,7 +40,7 @@ function HoverItemPortal(props) {
 }
 
 
-class MyWindowPortal extends React.PureComponent {
+class MyWindowPortal extends React.PureComponent<any> {
     externalWindow: any
     containerEl: any
 
@@ -66,6 +66,12 @@ class MyWindowPortal extends React.PureComponent {
         // STEP 3: open a new browser window and store a reference to it
         this.externalWindow = window.open('', '', 'width=300,height=600,left=0,top=0');
 
+        copyStyles(document, this.externalWindow.document);
+
+        this.externalWindow.addEventListener("beforeunload", () => {
+            this.props.onClose()
+        })
+
         // STEP 4: append the container <div> (that has props.children appended to it) to the body of the new window
         this.externalWindow.document.body.appendChild(this.containerEl);
 
@@ -84,7 +90,8 @@ const SelectionClustersFull = function ({
     dataset,
     currentAggregation,
     hoverState,
-    hoverSettings
+    hoverSettings,
+    setHoverWindowMode
 }) {
     if (!dataset) {
         return null
@@ -108,7 +115,9 @@ const SelectionClustersFull = function ({
 
         {
             hoverSettings.windowMode == WindowMode.Extern ?
-                <MyWindowPortal>
+                <MyWindowPortal onClose={() => {
+                    setHoverWindowMode(WindowMode.Embedded)
+                }}>
                     <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns}></GenericLegend>
                 </MyWindowPortal>
                 :
@@ -132,5 +141,8 @@ const mapStateToProps = state => ({
     hoverSettings: state.hoverSettings
 })
 
+const mapDispatchToProps = dispatch => ({
+    setHoverWindowMode: value => dispatch(setHoverWindowMode(value)),
+})
 
-export const SelectionClusters = connect(mapStateToProps)(SelectionClustersFull)
+export const SelectionClusters = connect(mapStateToProps, mapDispatchToProps)(SelectionClustersFull)

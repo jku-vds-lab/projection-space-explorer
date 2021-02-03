@@ -11,7 +11,7 @@ import { NamedCategoricalScales } from "./Utility/Colors/NamedCategoricalScales"
 import { ContinuousMapping } from "./Utility/Colors/ContinuousMapping";
 import { DiscreteMapping } from "./Utility/Colors/DiscreteMapping";
 import { ContinuosScale, DiscreteScale } from "./Utility/Colors/ContinuosScale";
-import { AppBar, createMuiTheme, Divider, Drawer, MuiThemeProvider, Paper, Toolbar, Tooltip } from "@material-ui/core";
+import { AppBar, createMuiTheme, Divider, Drawer, MuiThemeProvider, Paper, SvgIcon, Toolbar, Tooltip } from "@material-ui/core";
 import { DatasetDatabase } from "./Utility/Data/DatasetDatabase";
 import { Dataset } from "./Utility/Data/Dataset";
 import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
@@ -59,7 +59,7 @@ import { UploadIcon } from "./Icons/UploadIcon";
 import { VisualChannelIcon } from "./Icons/VisualChannelIcon";
 import { StoryIcon } from "./Icons/StoryIcon";
 import { EmbeddingIcon } from "./Icons/EmbeddingIcon";
-import { rootReducer } from "./Store/Store";
+import { rootReducer, RootState } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { LineUpContext } from "./LineUpContext/LineUpContext";
 import { devToolsEnhancer } from 'redux-devtools-extension';
@@ -70,8 +70,16 @@ import { HoverTabPanel } from "./DrawerTabPanels/HoverTabPanel/HoverTabPanel";
 import { addProjectionAction } from "./Ducks/ProjectionsDuck";
 import { Embedding } from "./Utility/Data/Embedding";
 import { setVectors } from "./Ducks/StoriesDuck";
-
-
+// @ts-ignore
+import PseDataset from './Icons/pse-icon-dataset-opt.svg'
+// @ts-ignore
+import PseClusters from './Icons/pse-icon-clusters-opt.svg'
+// @ts-ignore
+import PseDetails from './Icons/pse-icon-details-opt.svg'
+// @ts-ignore
+import PseEncoding from './Icons/pse-icon-encoding-opt.svg'
+// @ts-ignore
+import PseProject from './Icons/pse-icon-project-opt.svg'
 
 /**
  * A TabPanel with automatic scrolling which should be used for fixed size content.
@@ -116,7 +124,7 @@ function FixedHeightTabPanel(props) {
 
 
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   openTab: state.openTab,
   dataset: state.dataset,
   categoryOptions: state.categoryOptions,
@@ -386,6 +394,15 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.threeRef.current.requestRender()
   }
 
+  onChangeTab(newTab) {
+    if (newTab === this.props.openTab) {
+      this.props.setOpenTab(false)
+    } else {
+      this.props.setOpenTab(newTab)
+    }
+
+  }
+
 
   render() {
     return <div>
@@ -401,7 +418,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         <Drawer
           variant="permanent"
           style={{
-            width: 72
+            width: 88
           }}
         >
           <Divider />
@@ -410,37 +427,38 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             orientation="vertical"
             indicatorColor="primary"
             textColor="primary"
-            onChange={(e, newVal) => { this.props.setOpenTab(newVal) }}
+
+            onChange={(e, newTab) => this.onChangeTab(newTab)}
             aria-label="disabled tabs example"
           >
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Load Dataset</Typography>
               <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
-            </React.Fragment>}><Tab icon={<UploadIcon></UploadIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Point and Line Channels</Typography>
               <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
-            </React.Fragment>}><Tab icon={<VisualChannelIcon></VisualChannelIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Clustering</Typography>
               <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
-            </React.Fragment>}><Tab icon={<ClusterIcon></ClusterIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Embedding and Projection</Typography>
               <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
-            </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
-            </React.Fragment>}><Tab icon={<EmbeddingIcon></EmbeddingIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
           </Tabs>
         </Drawer>
 
         <Box
           style={{
             flexShrink: 0,
-            width: "18rem",
+            width: this.props.openTab === false ? '0rem' : "18rem",
             height: '100vh',
             overflowX: 'hidden',
             overflowY: 'hidden',
@@ -467,7 +485,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               </FixedHeightTabPanel>
 
               <FixedHeightTabPanel value={this.props.openTab} index={1}>
-
                 <div style={{
                   overflowY: 'auto',
                   overflowX: 'hidden',
