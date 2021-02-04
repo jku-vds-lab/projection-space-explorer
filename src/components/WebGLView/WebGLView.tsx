@@ -19,12 +19,10 @@ import { LineVisualization, PointVisualization } from './meshes';
 import { MultivariateClustering } from './Visualizations/MultivariateClustering';
 import { DisplayMode } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
-import { ClusterMode } from '../Ducks/ClusterModeDuck';
-import { setHoverState } from '../Ducks/HoverStateDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
-import { Backdrop, Dialog, DialogContent, Divider, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Divider, Menu, MenuItem } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
 import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, setActiveStory, setActiveTrace } from '../Ducks/StoriesDuck';
@@ -37,6 +35,7 @@ import { ClusterDragTool } from './Tools/ClusterDragTool';
 import { TraceSelectTool } from './Tools/TraceSelectTool';
 import { Embedding } from '../Utility/Data/Embedding';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
+import { setHoverState } from '../Ducks/HoverStateDuck';
 
 
 type ViewState = {
@@ -66,7 +65,7 @@ const mapStateToProps = (state: RootState) => ({
     channelColor: state.channelColor,
     pointColorScale: state.pointColorScale,
     stories: state.stories,
-    trailSettings: state.trailSettings
+    trailSettings: state.trailSettings,
 })
 
 
@@ -77,7 +76,7 @@ const mapDispatchToProps = dispatch => ({
     setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
     toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedCluster(selectedCluster)),
     toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation)),
-    setHoverState: hoverState => dispatch(setHoverState(hoverState)),
+    setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
     setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping)),
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
     setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
@@ -101,6 +100,7 @@ type Props = PropsFromRedux
 
 
 
+const UPDATER = "scatter";
 
 
 export const WebGLView = connector(class extends React.Component<Props, ViewState> {
@@ -169,6 +169,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             menuY: null,
             menuTarget: null
         }
+        
     }
 
 
@@ -177,9 +178,35 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.requestRender()
     }
 
+    hoverUpdate(hover_item, updater){
+        let idx = -1;
+        if(hover_item && hover_item["__meta__"]){
+            idx = hover_item["__meta__"]["view"]["meshIndex"];
+        }
+        this.particles.highlight(idx);
+        if (this.props.dataset.isSequential) {
+            if (idx >= 0) {
+                this.lines.highlight([this.props.dataset.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
+            } else {
+                this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+            }
+        }
+        if (idx >= 0) {
+            if (this.currentHover != this.props.dataset.vectors[idx]) {
+                this.currentHover = this.props.dataset.vectors[idx]
+                this.props.setHoverState(this.props.dataset.vectors[idx], updater)
+                this.requestRender()
+            }
+        } else {
+            if (this.currentHover) {
+                this.currentHover = null
+                this.props.setHoverState(null, updater)
+                this.requestRender()
+            }
+        }
+    }
 
-
-
+    
     /**
      * Initializes the callbacks for the MouseController.
      */
@@ -197,7 +224,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
             if (this.currentHover) {
                 this.currentHover = null
-                this.props.setHoverState(null)
+                this.props.setHoverState(null, UPDATER)
                 this.requestRender()
             }
         }
@@ -430,7 +457,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         if (cluster) {
                             if (this.currentHover != cluster) {
                                 this.currentHover = cluster
-                                this.props.setHoverState(cluster)
+                                this.props.setHoverState(cluster, UPDATER)
 
                                 if (this.props.dataset.isSequential) {
                                     this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
@@ -460,13 +487,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                                 if (this.currentHover != this.props.dataset.vectors[idx]) {
                                     this.currentHover = this.props.dataset.vectors[idx]
 
-                                    this.props.setHoverState(this.props.dataset.vectors[idx])
+                                    this.props.setHoverState(this.props.dataset.vectors[idx], UPDATER)
                                     this.requestRender()
                                 }
                             } else {
                                 if (this.currentHover) {
                                     this.currentHover = null
-                                    this.props.setHoverState(null)
+                                    this.props.setHoverState(null, UPDATER)
                                     this.requestRender()
                                 }
                             }
@@ -1341,11 +1368,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             >
                 <MenuItem onClick={() => {
-                    // when lineup is shown, hide fingerprint
                     this.props.setLineUpInput_data(this.props.dataset.vectors);
                     this.props.setLineUpInput_visibility(true);
 
-                    handleClose()
+                    handleClose();
                 }}>Load LineUp</MenuItem>
 
                 <MenuItem onClick={() => {
@@ -1354,7 +1380,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         this.props.setLineUpInput_data(this.props.currentAggregation);
                         this.props.setLineUpInput_visibility(true);
 
-                        handleClose()
+                        handleClose();
                     }
                 }}>Load LineUp (selection only)</MenuItem>
 

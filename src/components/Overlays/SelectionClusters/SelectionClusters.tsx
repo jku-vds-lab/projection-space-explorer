@@ -1,11 +1,9 @@
 import * as React from 'react'
-import { Button, Card, CardContent, Typography } from '@material-ui/core'
+import { Card } from '@material-ui/core'
 import { GenericLegend } from '../../Legends/Generic'
 import './SelectionClusters.scss'
 import { connect } from 'react-redux'
-import AdjustIcon from '@material-ui/icons/Adjust';
 import { Vect } from '../../Utility/Data/Vect'
-import { DatasetType } from '../../Utility/Data/DatasetType'
 import ReactDOM = require('react-dom')
 import { WindowMode } from '../../Ducks/HoverSettingsDuck'
 
@@ -84,24 +82,24 @@ const SelectionClustersFull = function ({
     dataset,
     currentAggregation,
     hoverState,
-    hoverSettings
+    hoverSettings,
+    hoverUpdate
 }) {
     if (!dataset) {
         return null
     }
-
     return <div className={"Parent"}>
 
-        {hoverState && hoverState instanceof Vect && <HoverItemPortal>
+        {hoverState && hoverState.data && hoverState.data instanceof Vect && <HoverItemPortal>
             <Card elevation={24} style={{
-                width: 360,
+                width: 350,
                 maxHeight: '50vh',
-                minHeight: 360,
+                minHeight: 350,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>
-                <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState]} columns={dataset.columns}></GenericLegend>
+                <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState.data]} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
             </Card>
         </HoverItemPortal>}
 
@@ -109,13 +107,13 @@ const SelectionClustersFull = function ({
         {
             hoverSettings.windowMode == WindowMode.Extern ?
                 <MyWindowPortal>
-                    <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns}></GenericLegend>
+                    <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
                 </MyWindowPortal>
                 :
                 <div className={"Cluster"}>
                     {currentAggregation && currentAggregation.length > 0 && <div>
 
-                        <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns}></GenericLegend>
+                        <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
                     </div>
                     }
                 </div>
@@ -128,9 +126,9 @@ const mapStateToProps = state => ({
     currentAggregation: state.currentAggregation,
     hoverState: state.hoverState,
     dataset: state.dataset,
-    show: !state.lineUpInput.show, // TODO: probably we need an extra property that specifies, if the legends should be shown,
-    hoverSettings: state.hoverSettings
+    hoverSettings: state.hoverSettings,
 })
 
+const connector = connect(mapStateToProps);
 
-export const SelectionClusters = connect(mapStateToProps)(SelectionClustersFull)
+export const SelectionClusters = connector(SelectionClustersFull)

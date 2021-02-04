@@ -714,7 +714,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               </FixedHeightTabPanel>
 
               <FixedHeightTabPanel value={this.props.openTab} index={4}>
-                <HoverTabPanel></HoverTabPanel>
+                <HoverTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></HoverTabPanel>
               </FixedHeightTabPanel>
             </Grid>
 
@@ -744,7 +744,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             />
           </div>
           <div style={{ flexGrow: 0 }}>
-            <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }}></LineUpContext>
+            <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
           </div>
         </div>
 

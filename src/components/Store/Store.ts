@@ -27,7 +27,6 @@ import categoryOptions from '../Ducks/CategoryOptionsDuck';
 import channelSize from '../Ducks/ChannelSize';
 import channelColor from '../Ducks/ChannelColorDuck';
 import globalPointSize from '../Ducks/GlobalPointSizeDuck';
-import hoverState from '../Ducks/HoverStateDuck';
 import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
@@ -36,6 +35,7 @@ import lineUpInput from '../Ducks/LineUpInputDuck';
 import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
 import projections from '../Ducks/ProjectionsDuck';
 import hoverSettings from '../Ducks/HoverSettingsDuck';
+import hoverState from '../Ducks/HoverStateDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -74,7 +74,7 @@ const allReducers = {
   lineUpInput: lineUpInput,
   differenceThreshold: differenceThreshold,
   projections: projections,
-  hoverSettings: hoverSettings
+  hoverSettings: hoverSettings,
 }
 
 const appReducer = combineReducers(allReducers)

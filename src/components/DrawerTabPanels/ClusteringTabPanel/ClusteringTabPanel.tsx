@@ -16,6 +16,8 @@ import { StoryPreview } from "./StoryPreview"
 import * as backend_utils from "../../../utils/backend-connect";
 import * as frontend_utils from "../../../utils/frontend-connect";
 import { Vect } from "../../Utility/Data/Vect"
+import Slider from '@material-ui/core/Slider';
+import { trackPromise } from "react-promise-tracker";
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -185,36 +187,52 @@ export const ClusteringTabPanel = connector(({
     }
 
 
-    function calc_hdbscan() {
+    function calc_hdbscan(clusterSliderValue) {
         const points = dataset.vectors.map(point => [point.x, point.y]);
-        backend_utils.calculate_hdbscan_clusters(points).then(data => {
-            const cluster_labels = data["result"];
-            const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
+        trackPromise(
+            backend_utils.calculate_hdbscan_clusters(points, clusterSliderValue).then(data => {
+                const cluster_labels = data["result"];
+                const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
-            let story = new Story([], []);
-            let clusters = []
+                let story = new Story([], []);
+                let clusters = []
 
 
-            dist_cluster_labels.forEach(cluster_label => {
-                if (cluster_label >= 0) {
-                    const current_cluster_vects = dataset.vectors.filter((x, i) => cluster_labels[i] == cluster_label);
-                    const cluster = Cluster.fromSamples(current_cluster_vects);
+                dist_cluster_labels.forEach(cluster_label => {
+                    if (cluster_label >= 0) {
+                        const current_cluster_vects = dataset.vectors.filter((x, i) => cluster_labels[i] == cluster_label);
+                        const cluster = Cluster.fromSamples(current_cluster_vects);
 
-                    // Set correct label for cluster
-                    cluster.label = cluster_label
-                    clusters.push(cluster)
+                        // Set correct label for cluster
+                        cluster.label = cluster_label
+                        clusters.push(cluster)
 
-                    story.clusters.push(cluster)
-                }
-            });
+                        story.clusters.push(cluster)
+                    }
+                });
 
-            addStory(story)
-            setActiveStory(story)
+                addStory(story)
+                setActiveStory(story)
 
-            // Update UI, dont know how to right now
-        });
+                // Update UI, dont know how to right now
+            })
+        );
     }
 
+    const [clusterSliderValue, setClusterSliderValue] = React.useState(2);
+    const handleClusterSliderChange = (event, newValue) => {
+        setClusterSliderValue(newValue);
+    };
+    const marks = [
+        {
+          value: 0,
+          label: 'few Clusters',
+        },
+        {
+          value: 2,
+          label: 'many Clusters',
+        }
+      ];
     React.useEffect(() => toggleClusters(), [dataset])
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -231,13 +249,28 @@ export const ClusteringTabPanel = connector(({
             />
         </Box>
 
+        <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>{'Cluster Settings'}</Typography>
+        </Box>
+        <Box paddingLeft={7} paddingRight={7}>
+            <Slider
+                defaultValue={2}
+                aria-labelledby="discrete-slider-custom"
+                step={1}
+                marks={marks}
+                min={0}
+                max={2}
+                value={clusterSliderValue}
+                onChange={handleClusterSliderChange}
+            />
+        </Box>
         <Box p={2}>
             <Button
                 variant="outlined"
                 style={{
                     width: '100%'
                 }}
-                onClick={calc_hdbscan}>Perform HDBSCAN</Button>
+                onClick={() => {calc_hdbscan(clusterSliderValue)}}>Perform HDBSCAN</Button>
         </Box>
 
         <Box paddingLeft={2} paddingTop={2}>

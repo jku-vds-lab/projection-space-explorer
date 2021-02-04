@@ -5,8 +5,8 @@ export const CREDENTIALS = 'include'; // for AWS/docker
 // export const CREDENTIALS = 'omit'; // for netlify/local
 
 // export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
-export const BASE_URL = ''; // for AWS/docker
+export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = ''; // for AWS/docker
 
 
 
@@ -34,9 +34,22 @@ async function async_cache(cached_data){
     return cached_data;
 }
 
+var cache = {}
+function handleCache(key){
+    return cache[key];
+}
+
+function setCache(key, value){
+    cache[key] = value;
+}
+
+
 function handle_errors(response){
     if (!response.ok) {
         throw Error(response.statusText);
+    }
+    if(Object.keys(response).includes("error")){
+        alert(response["error"]);
     }
     return response;
 }
@@ -162,6 +175,7 @@ export async function upload_sdf_file(file){
     // the response is a unique filename that can be used to make further requests
     const formData_file = new FormData();
     formData_file.append('myFile', file);
+    formData_file.append('file_size', file.size);
     
     return fetch(BASE_URL+'/upload_sdf', {
         method: 'POST',
@@ -171,7 +185,11 @@ export async function upload_sdf_file(file){
     .then(handle_errors)
     .then(response => response.json())
     .then(data => {
-        localStorage.setItem("unique_filename", data["unique_filename"]);
+        if(Object.keys(data).includes("error")){
+            alert(data["error"]);
+        }else{
+            localStorage.setItem("unique_filename", data["unique_filename"]);
+        }
     })
     .catch(error => {
         console.error(error);
@@ -180,7 +198,10 @@ export async function upload_sdf_file(file){
 
 
 export async function get_representation_list(){
-
+    const cached_data = handleCache("representation_list")
+    if(cached_data){
+        return async_cache(cached_data);
+    }
     let path = BASE_URL+'/get_atom_rep_list';
     if(localStorage.getItem("unique_filename"))
         path += "/" + localStorage.getItem("unique_filename");
@@ -192,6 +213,10 @@ export async function get_representation_list(){
     })
     .then(handle_errors)
     .then(response => response.json())
+    .then(data => {
+        setCache("representation_list", data);
+        return data;
+    })
     .catch(error => {
         console.error(error)
     });
@@ -201,11 +226,14 @@ export async function get_representation_list(){
 
 
 
-export async function calculate_hdbscan_clusters(X){
+export async function calculate_hdbscan_clusters(X, clusterVal){
+    
+    const formData = new FormData();
+    formData.append('clusterVal', clusterVal);
+    formData.append('X', X);
     return fetch(BASE_URL+'/segmentation', {
         method: 'POST',
-        body: JSON.stringify(X)
-
+        body: formData
     })
     .then(handle_errors)
     .then(response => response.json());

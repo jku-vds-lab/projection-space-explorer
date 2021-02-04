@@ -180,9 +180,9 @@ exports.test = exports.calculate_hdbscan_clusters = exports.get_representation_l
 exports.CREDENTIALS = 'include'; // for AWS/docker
 // export const CREDENTIALS = 'omit'; // for netlify/local
 // export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 
-exports.BASE_URL = ''; // for AWS/docker
+exports.BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = ''; // for AWS/docker
 
 var smiles_cache = {};
 var smiles_highlight_cache = {};
@@ -221,9 +221,23 @@ function async_cache(cached_data) {
   }));
 }
 
+var cache = {};
+
+function handleCache(key) {
+  return cache[key];
+}
+
+function setCache(key, value) {
+  cache[key] = value;
+}
+
 function handle_errors(response) {
   if (!response.ok) {
     throw Error(response.statusText);
+  }
+
+  if (Object.keys(response).includes("error")) {
+    alert(response["error"]);
   }
 
   return response;
@@ -433,6 +447,7 @@ function upload_sdf_file(file) {
             // the response is a unique filename that can be used to make further requests
             formData_file = new FormData();
             formData_file.append('myFile', file);
+            formData_file.append('file_size', file.size);
             return _context8.abrupt("return", fetch(exports.BASE_URL + '/upload_sdf', {
               method: 'POST',
               body: formData_file,
@@ -440,12 +455,16 @@ function upload_sdf_file(file) {
             }).then(handle_errors).then(function (response) {
               return response.json();
             }).then(function (data) {
-              localStorage.setItem("unique_filename", data["unique_filename"]);
+              if (Object.keys(data).includes("error")) {
+                alert(data["error"]);
+              } else {
+                localStorage.setItem("unique_filename", data["unique_filename"]);
+              }
             }).catch(function (error) {
               console.error(error);
             }));
 
-          case 3:
+          case 4:
           case "end":
             return _context8.stop();
         }
@@ -458,11 +477,21 @@ exports.upload_sdf_file = upload_sdf_file;
 
 function get_representation_list() {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
-    var path;
+    var cached_data, path;
     return regeneratorRuntime.wrap(function _callee9$(_context9) {
       while (1) {
         switch (_context9.prev = _context9.next) {
           case 0:
+            cached_data = handleCache("representation_list");
+
+            if (!cached_data) {
+              _context9.next = 3;
+              break;
+            }
+
+            return _context9.abrupt("return", async_cache(cached_data));
+
+          case 3:
             path = exports.BASE_URL + '/get_atom_rep_list';
             if (localStorage.getItem("unique_filename")) path += "/" + localStorage.getItem("unique_filename");
             return _context9.abrupt("return", fetch(path, {
@@ -470,11 +499,14 @@ function get_representation_list() {
               credentials: exports.CREDENTIALS
             }).then(handle_errors).then(function (response) {
               return response.json();
+            }).then(function (data) {
+              setCache("representation_list", data);
+              return data;
             }).catch(function (error) {
               console.error(error);
             }));
 
-          case 3:
+          case 6:
           case "end":
             return _context9.stop();
         }
@@ -485,20 +517,24 @@ function get_representation_list() {
 
 exports.get_representation_list = get_representation_list;
 
-function calculate_hdbscan_clusters(X) {
+function calculate_hdbscan_clusters(X, clusterVal) {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
+    var formData;
     return regeneratorRuntime.wrap(function _callee10$(_context10) {
       while (1) {
         switch (_context10.prev = _context10.next) {
           case 0:
+            formData = new FormData();
+            formData.append('clusterVal', clusterVal);
+            formData.append('X', X);
             return _context10.abrupt("return", fetch(exports.BASE_URL + '/segmentation', {
               method: 'POST',
-              body: JSON.stringify(X)
+              body: formData
             }).then(handle_errors).then(function (response) {
               return response.json();
             }));
 
-          case 1:
+          case 4:
           case "end":
             return _context10.stop();
         }
