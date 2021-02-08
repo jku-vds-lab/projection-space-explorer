@@ -144,7 +144,7 @@ export class LineVisualization {
     if (indices != null && indices.length > 0) {
       this.grayedLayerSystem.setLayerActive(5, true)
       this.grayedLayerSystem.clearLayer(5, true)
-      
+
       indices.forEach(index => {
         this.grayedLayerSystem.setValue(this.segments.findIndex(e => e.lineKey == index), 5, false)
       })
@@ -169,7 +169,7 @@ export class LineVisualization {
           lineIndices.add(sample.view.lineIndex)
         })
       })
-  
+
       lineIndices.forEach(lineIndex => {
         this.grayedLayerSystem.setValue(lineIndex, 3, false)
       })
@@ -190,7 +190,7 @@ export class LineVisualization {
           lineIndices.add(sample.view.lineIndex)
         })
       })
-  
+
       lineIndices.forEach(lineIndex => {
         this.grayedLayerSystem.setValue(lineIndex, 4, false)
       })
@@ -198,7 +198,7 @@ export class LineVisualization {
       this.grayedLayerSystem.clearLayer(4, false)
       this.grayedLayerSystem.setLayerActive(4, false)
     }
-    
+
   }
 
 
@@ -298,7 +298,7 @@ export class LineVisualization {
 
       // Store line data in segment...
       segment.view.lineMesh = line
-      
+
 
       lines.push(new LineVis(line))
     })
@@ -384,7 +384,7 @@ export class PointVisualization {
 
     // story layer
     this.grayedLayerSystem.registerLayer(3, true)
-    
+
 
     this.lineLayerSystem = lineLayerSystem
   }
@@ -470,6 +470,33 @@ export class PointVisualization {
     pointGeometry.setAttribute('type', new THREE.BufferAttribute(types, 1));
     pointGeometry.setAttribute('show', new THREE.BufferAttribute(show, 1))
     pointGeometry.setAttribute('selected', new THREE.BufferAttribute(selected, 1))
+
+
+
+    function loadFromSvg() {
+      var svg = document.getElementById("svgContainer").querySelector("svg")
+      var svgData = (new XMLSerializer()).serializeToString(svg)
+
+      var canvas = document.createElement("canvas")
+      var svgSize = svg.getBoundingClientRect()
+      canvas.width = svgSize.width
+      canvas.height = svgSize.height
+      var ctx = canvas.getContext("2d")
+
+      var img = document.createElement("img")
+      img.setAttribute("src", "data:image/svg+xml;base64," + window.btoa(unescape(encodeURIComponent(svgData))))
+
+      img.onload = function () {
+        ctx.drawImage(img, 0, 0)
+
+        var texture = new THREE.Texture(canvas)
+        texture.needsUpdate = true
+
+        
+      }
+    }
+
+
 
     //
     var pointMaterial = new THREE.ShaderMaterial({

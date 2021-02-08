@@ -311,7 +311,6 @@ function buildLineup(cols, data){
             }
             else{
                 if(col.isNumeric){
-                    console.log(i, col.range);
                     builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));
                 }else if(col.distinct)
                     if(col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string

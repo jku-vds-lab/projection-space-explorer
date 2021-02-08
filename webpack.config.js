@@ -32,6 +32,10 @@ module.exports = {
       {
         test: /\.(glsl|vs|fs)$/,
         loader: 'shader-loader'
+      },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
       }
     ]
   },
