@@ -9,6 +9,8 @@ import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERende
 import * as backend_utils from "../../utils/backend-connect";
 import { FeatureType } from "../Utility/Data/FeatureType";
 import { PrebuiltFeatures } from "../Utility/Data/Dataset";
+import * as lodash from 'lodash';
+import { debounce } from "@material-ui/core";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -198,6 +200,9 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             if(currentAggregation && currentAggregation.length > 0){
                 const currentSelection_scatter = lineUpInput.data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
                 lineup.setSelection(currentSelection_scatter);
+                
+                const lineup_idx = lineup.renderer?.rankings[0]?.findNearest(currentSelection_scatter);
+                lineup.renderer?.rankings[0]?.scrollIntoView(lineup_idx);
 
                 // set the grouping to selection checkboxes -> uncomment if this should be automatically if something changes
                 // const ranking = lineup.data.getFirstRanking();
@@ -209,25 +214,38 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         
     }, [currentAggregation])
 
+
+    // const debouncedHighlight = React.useCallback(debounce<any>(lineup_idx => lineup?.setHighlight(lineup_idx, true), 1000), []);
+
     React.useEffect(() => {
         // hover the instance that is hovered in the scatter plot view
-        if(lineup && lineUpInput.data && false){
+        if(lineup && lineUpInput.data){ // TODO: sometimes there is a lineup bug when too many rows are highlighted??
             if(hoverState && hoverState.data){
                 if(hoverState.updater != UPDATER){
                     const lineup_idx = lineUpInput.data.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"]);
-                    try{
-                        lineup.setHighlight(lineup_idx);
-                    }catch(ex){
-                        console.log("exception when changing highliged row in lineup:", ex);
+                    
+                    if(lineup_idx >= 0){
+                        // const lineup_idx_valid = lineup.renderer?.rankings[0]?.findNearest([lineup_idx]);
+                        // console.log(lineup_idx, lineup_idx_valid);
+                        // debouncedHighlight(lineup_idx);
+                        // lineup.renderer?.rankings[0]?.setHighlight(lineup_idx);
+                        lineup.setHighlight(lineup_idx, false); // flag that tells, if we want to scoll to that row
+                        // try{ // there is a lineup bug when trying to scroll to a certain index
+                        //     // lineup.setHighlight(lineup_idx_valid, true); // flag that tells, if we want to scoll to that row
+                        //     // lineup.renderer.rankings[0].scrollIntoView(lineup_idx);
+                        // }catch(ex){
+                        //     console.log("exception when changing highliged row in lineup:", ex);
+                        // }
                     }
                 }
-            }else{
-                try{
-                    lineup.setHighlight(-1);
-                }catch(ex){
-                    console.log("exception when changing highliged row in lineup:", ex);
-                }
             }
+            // else{
+            //     try{
+            //         lineup.setHighlight(-1, false);
+            //     }catch(ex){
+            //         console.log("exception when changing highliged row in lineup:", ex);
+            //     }
+            // }
             
         }
         
@@ -292,9 +310,10 @@ function buildLineup(cols, data){
                 }
             }
             else{
-                if(col.isNumeric)
+                if(col.isNumeric){
+                    console.log(i, col.range);
                     builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));
-                else if(col.distinct)
+                }else if(col.distinct)
                     if(col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                         builder.column(LineUpJS.buildCategoricalColumn(i).categories(col.distinct).custom("visible", show));
                     else

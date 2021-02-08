@@ -270,7 +270,7 @@ export const ClusteringTabPanel = connector(({
                 style={{
                     width: '100%'
                 }}
-                onClick={() => {calc_hdbscan(clusterSliderValue)}}>Perform HDBSCAN</Button>
+                onClick={() => {calc_hdbscan(clusterSliderValue)}}>Projection-based Clustering</Button>
         </Box>
 
         <Box paddingLeft={2} paddingTop={2}>

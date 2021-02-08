@@ -171,7 +171,7 @@ const ImageView = connector(function ({ hoverState, selection, columns, aggregat
                     addHighlight(imgList[idx]);
                     
                     if(hoverState.updater != UPDATER){
-                        if(imgContainer)
+                        if(imgContainer && imgList[idx])
                             //@ts-ignore
                             imgContainer.scrollTop = imgList[idx].offsetTop - imgContainer.offsetTop;
                             // imgList[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })

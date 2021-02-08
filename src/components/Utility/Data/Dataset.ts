@@ -104,18 +104,20 @@ export class Dataset {
         let max = Number.MIN_SAFE_INTEGER;
 
         values.forEach(value => {
+            value = parseFloat(value);
             if (isNaN(value)) {
                 numeric = false;
             } else if (numeric) {
                 if (value < min) {
                     min = value;
-                } else if (value > max) {
+                } 
+                if (value > max) {
                     max = value;
                 }
             }
         });
 
-        return numeric ? { min: min, max: max, inferred: false } : null;
+        return numeric ? { min: min, max: max, inferred: true } : null; // false
     }
 
     reloadRanges() {
