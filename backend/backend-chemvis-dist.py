@@ -4,6 +4,7 @@ from bottle.ext import beaker
 from bottle import route, run, template, response, request, hook
 import rdkit
 import hdbscan
+import pickle
 
 
 #app = bottle.app()
@@ -11,11 +12,12 @@ import hdbscan
 # --------- session management ---------
 
 session_opts = {
-#    'session.type': 'file',
-    'session.type': 'memory',
-    'session.cookie_expires': 900,
-    'session.auto': True
-#    'session.data_dir': './data'
+    'session.timeout': 1800, # timeout after 30 min if no interaction with the session occurs
+#    'session.cookie_expires': 20,
+    'session.auto': True,
+#    'session.type': 'memory',
+    'session.type': 'file',
+    'session.data_dir': './session_data',
 }
 
 app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
@@ -31,24 +33,67 @@ def set_response_headers(): # enable session handling when origin is localhost
         response.headers['Access-Control-Allow-Origin'] = response_header_origin_localhost
         response.headers['Access-Control-Allow-Credentials'] = "true"
     
+def tryParseFloat(value):
+  try:
+    return float(value)
+  except ValueError:
+    return value
+    
+from rdkit import Chem
+from rdkit.Chem.PropertyMol import PropertyMol
+# adapt LoadSDF method from rdkit. this version creates a pandas dataframe excluding atom specific properties and does not give every property the object type
+def my_load_sdf(filename, idName='ID', smilesName="SMILES", molColName='Molecule'):
+    
+    records = []
+    with open(filename, 'rb') as file:
+        suppl = Chem.ForwardSDMolSupplier(file)
+        for mol in suppl:
+            if mol is None:
+                continue
+            row = dict((k, tryParseFloat(mol.GetProp(k))) for k in mol.GetPropNames() if not k.startswith("atom"))
+            if mol.HasProp('_Name'):
+                row[idName] = mol.GetProp('_Name')
+            if smilesName is not None:
+                try:
+                    row[smilesName] = Chem.MolToSmiles(mol)
+                except:
+                    row[smilesName] = None
+            if molColName is not None:
+                row[molColName] = pickle.dumps(PropertyMol(mol))
 
+            records.append(row)
+    conv_time = time.time()
+    frame = pd.DataFrame(records)
+    return frame
+        
 # load sdf file and turn it into a dataframe
 def sdf_to_df(filename = None, refresh = False):
     
     filename = request.session.get('unique_filename', filename)
     
     if "df" in request.session and not refresh:
+        #print(request.session["df"].memory_usage(index=True, deep=True).sum()/1000000)
         return request.session["df"]
 
     elif filename: 
+        if request.session.get("loading", False):
+            return None
+        request.session["loading"] = True
         print("---------load-------------")
-        
-        frame = PandasTools.LoadSDF("./temp-files/%s"%filename, embedProps=True,smilesName=smiles_col,molColName=mol_col)
-        frame = frame.drop(columns=[x for x in frame.columns if x.startswith('atom')])
-        frame = frame.fillna(0)
-        frame = frame.replace("nan", 0)
+        if os.path.exists("./temp-files/%s.pkl"%filename.split('.')[0]):
+            print("load_pickle")
+            frame = pd.read_pickle("./temp-files/%s.pkl"%filename.split('.')[0])
+            #frame = pickle.load(open("./temp-files/%s.pkl"%filename.split('.')[0], "rb"))
+        else:
+            print("load_sdf")
+            frame = my_load_sdf("./temp-files/%s"%filename,smilesName=smiles_col,molColName=mol_col)
+            frame = frame.fillna(0)
+            frame = frame.replace("nan", 0)
+            frame.to_pickle("./temp-files/%s.pkl"%filename.split('.')[0])
+            #pickle.dump(frame, open("./temp-files/%s.pkl"%filename.split('.')[0], "wb"))
         
         request.session['df'] = frame
+        request.session["loading"] = False
         
         return frame
     
@@ -59,21 +104,21 @@ def sdf_to_df(filename = None, refresh = False):
 
 
 # --------- file handling --------
-def cleanup_temp(): # TODO: cleanup temp-files, if they are older than one day? or only keep the 5 most recent files?
-    now = time.time()
-    folder = './temp-files'
-    if os.path.exists("./temp-files"):
-        files = [os.path.join(folder, filename) for filename in os.listdir(folder)]
-        for filename in files:
-            if (now - os.stat(filename).st_mtime) > 3600: #remove files that were last modified one hour ago
-                os.remove(filename)
+#def cleanup_temp(): # TODO: cleanup temp-files, if they are older than one day? or only keep the 5 most recent files?
+#    now = time.time()
+#    folder = './temp-files'
+#    if os.path.exists("./temp-files"):
+#        files = [os.path.join(folder, filename) for filename in os.listdir(folder)]
+#        for filename in files:
+#            if (now - os.stat(filename).st_mtime) > 3600: #remove files that were last modified one hour ago
+#                os.remove(filename)
                 
 
 @bottle.route('/get_uploaded_files_list', method=['GET'])
 def get_uploaded_files_list():
     folder = './temp-files'
     if os.path.exists("./temp-files"):
-        file_names = [filename for filename in os.listdir(folder)]
+        file_names = [filename for filename in os.listdir(folder) if filename.endswith('.sdf')]
         return {"file_list": file_names}
 
     return {"file_list": []}
@@ -84,8 +129,11 @@ def get_uploaded_files_list(filename):
     folder = './temp-files'
     if os.path.exists("./temp-files"):
         file = os.path.join(folder, filename)
+        file_pkl = os.path.join(folder, '%s.pkl'%filename.split('.')[0])
         if os.path.exists(file):
             os.remove(file)
+            if os.path.exists(file_pkl):
+                os.remove(file_pkl)
             return {"deleted": "true"}
 
     return {"deleted": "false"}
@@ -110,12 +158,13 @@ import time
 
 
 
-    
+ 
 @bottle.route('/upload_sdf', method=['OPTIONS', 'POST'])
 def upload_sdf():
     if request.method == 'POST':
         # cleanup_temp() # no need to do this anymore because user can delete them in the tool now
         fileUpload = request.files.get("myFile")
+        supposed_file_size = int(request.forms.get("file_size"))
         # TODO: find a solution that does not need to save a temp file... or maybe not?
         # print(fileUpload.file.read().decode())
         # print(fileUpload.file.read())
@@ -130,13 +179,17 @@ def upload_sdf():
         
         fileUpload.save("./temp-files/%s"%filename, overwrite=True) # the save method can take a file-like object... https://www.kite.com/python/docs/bottle.FileUpload
         fileUpload.file.close()
-        
-        request.session['unique_filename'] = filename
-        
-        return {
-            'filename': fileUpload.filename,
-            'unique_filename': filename,
-        }
+        uploaded_file_size = os.stat("./temp-files/%s"%filename).st_size
+        if uploaded_file_size == supposed_file_size: # if the filesizes match, the upload was successful
+            request.session['unique_filename'] = filename
+            return {
+                'filename': fileUpload.filename,
+                'unique_filename': filename,
+            }
+        else: # if not, the uploaded file does not correspond to the original file and we need to delete it
+            if os.path.exists("./temp-files/%s"%filename):
+                os.remove("./temp-files/%s"%filename)
+            return {"error": "there was a problem with the file upload. please try again"}
     else:
         return {}
 
@@ -195,7 +248,7 @@ def sdf_to_csv(filename=None, modifiers=None):
     frame.columns = new_cols
 
     if not has_fingerprint: # when there are no morgan fingerprints included in the dataset, calculate them now
-        fps = pd.DataFrame([list(AllChem.GetMorganFingerprintAsBitVect(mol,5,nBits=256)) for mol in mols])
+        fps = pd.DataFrame([list(AllChem.GetMorganFingerprintAsBitVect(pickle.loads(mol),5,nBits=256)) for mol in mols])
         fps.columns = ['fingerprint_%s{"noLineUp":true,"featureLabel": "fingerprint"}'%fp for fp in fps] 
         frame = frame.join(fps)
     
@@ -227,21 +280,25 @@ from rdkit.Chem import rdFMCS
 # --- helper functions ---
 
 def smiles_to_base64(smiles, highlight=False):
-    filename = request.session.get("unique_filename", None)
-    if filename and highlight:
-        df = sdf_to_df(filename)
-        mol = df.set_index(smiles_col).loc[smiles][mol_col]
-        weights = [mol.GetAtomWithIdx(i).GetDoubleProp("rep_1") for i in range(mol.GetNumAtoms())]
-        fig = SimilarityMaps.GetSimilarityMapFromWeights(mol, weights)
-        
-        buffered = BytesIO()
-        fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6, 6]]))
-        img_str = base64.b64encode(buffered.getvalue())
-        buffered.close()
-        return img_str.decode("utf-8")
-    else:
-        m = Chem.MolFromSmiles(smiles)
+#    filename = request.session.get("unique_filename", None)
+#    if filename and highlight:
+#        df = sdf_to_df(filename)
+#        mol = pickle.loads(df.set_index(smiles_col).loc[smiles][mol_col])
+#        weights = [mol.GetAtomWithIdx(i).GetDoubleProp("rep_1") for i in range(mol.GetNumAtoms())]
+#        
+#        fig = SimilarityMaps.GetSimilarityMapFromWeights(mol, weights)
+#        
+#        buffered = BytesIO()
+#        fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6, 6]]))
+#        img_str = base64.b64encode(buffered.getvalue())
+#        buffered.close()
+#        return img_str.decode("utf-8")
+#    else:
+    m = Chem.MolFromSmiles(smiles)
+    if m:
         return mol_to_base64(m)
+    else:
+        return "invalid smiles"
 
 def mol_to_base64(m):
     pil_img = Draw.MolToImage(m)
@@ -279,7 +336,8 @@ def mol_to_base64_highlight_substructure(mol, patt, d = None):
     img_str = base64.b64encode(stream.getvalue())
     stream.close()
     return img_str.decode("utf-8") #d.GetDrawingText()
-    
+
+import re
 def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
     filename = request.forms.get("filename")
     filename = request.session.get("unique_filename", filename)
@@ -288,9 +346,10 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
         if df is not None:
             d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(250, 250) # MolDraw2DSVG
             smiles = Chem.MolToSmiles(mol_aligned)
-            mol = df[df[smiles_col] == smiles].iloc[0][mol_col]
+            mol = pickle.loads(df[df[smiles_col] == smiles].iloc[0][mol_col])
             #mol = df.set_index(smiles_col).loc[smiles][mol_col]
-            weights = [mol.GetAtomWithIdx(i).GetDoubleProp(current_rep) for i in range(mol.GetNumAtoms())]
+            #weights = [mol.GetAtomWithIdx(i).GetDoubleProp(current_rep) for i in range(mol.GetNumAtoms())]
+            weights = [float(prop) for prop in re.split(' |\n',mol.GetProp(current_rep))]
             fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(250, 250), draw2d=d)
             
             #buffered = BytesIO()
@@ -330,19 +389,32 @@ def smiles_list_to_imgs():
         current_rep = request.forms.get("current_rep")
 
         if len(smiles_list) == 0:
-            return {}
+            return {"error": "empty SMILES list"}
         if len(smiles_list) == 1:
             return {"img_lst": [smiles_to_base64(smiles_list[0])]}
 
-        mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
-        res=Chem.rdFMCS.FindMCS(mol_lst, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True) # there are different settings possible here
-        patt = res.queryMol
+        mol_lst = []
+        error_smiles = []
+        for smiles in smiles_list:
+            mol = Chem.MolFromSmiles(smiles)
+            if mol:
+                mol_lst.append(mol)
+            else:
+                error_smiles.append(smiles)
+        #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
+        res=Chem.rdFMCS.FindMCS(mol_lst, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True) # there are different settings possible here
+        if(res.canceled):
+            patt = Chem.MolFromSmiles("*")
+            #return {"error": "the MCS search had a timeout. please try to select fewer compounds."}
+        else:
+            patt = res.queryMol
         TemplateAlign.rdDepictor.Compute2DCoords(patt)
 
         img_lst = []
         for mol in mol_lst:
             TemplateAlign.rdDepictor.Compute2DCoords(mol)
-            TemplateAlign.AlignMolToTemplate2D(mol,patt,clearConfs=True)
+            if(patt and Chem.MolToSmiles(patt) != "*"): # if no common substructure was found, skip the alignment
+                TemplateAlign.AlignMolToTemplate2D(mol,patt,clearConfs=True)
             if current_rep == "Common Substructure":
                 img_lst.append(mol_to_base64_highlight_substructure(mol, patt))
             else:
@@ -358,12 +430,20 @@ def smiles_list_to_common_substructure_img():
     if request.method == 'POST':
         smiles_list = request.forms.getall("smiles_list")
         if len(smiles_list) == 0:
-            return {}
+            return {"error": "empty SMILES list"}
         if len(smiles_list) == 1:
             return smiles_to_base64(smiles_list[0])
 
-        mol_list = [ Chem.MolFromSmiles(smiles) for smiles in smiles_list ]
-        res = rdFMCS.FindMCS(mol_list, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True)
+        mol_lst = []
+        error_smiles = []
+        for smiles in smiles_list:
+            mol = Chem.MolFromSmiles(smiles)
+            if mol:
+                mol_lst.append(mol)
+            else:
+                error_smiles.append(smiles)
+        #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
+        res = rdFMCS.FindMCS(mol_lst, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True)
         m = res.queryMol
         pil_img = Draw.MolToImage(m)
 
@@ -382,10 +462,10 @@ def get_atom_rep_list(filename=None):
     if filename:
         df = sdf_to_df(filename)
         if df is not None:
-            rep_list = [rep for rep in df.Molecule[0].GetAtomWithIdx(0).GetPropsAsDict().keys() if not rep.startswith('_')]
+            rep_list = [rep for rep in pickle.loads(df[mol_col][0]).GetPropsAsDict().keys() if rep.startswith('atom')]
             return {"rep_list": rep_list}
     
-    return {"rep_list":[]}
+    return {"rep_list":[], "error": "no filename specified"}
     
   
 # ------------------
@@ -418,19 +498,30 @@ import json
 @bottle.route('/segmentation', method=['OPTIONS', 'POST'])
 def segmentation():
     if request.method == 'POST':
-        X = np.array(json.load(request.body))
-        print(X)
+        clusterVal = int(request.forms.get("clusterVal"))
+        X = np.array(request.forms.get("X").split(","), dtype=np.float64)[:,np.newaxis].reshape((-1,2))
+        
+        # many small clusters
+        min_cluster_size = 5
+        min_cluster_samples = 1
+        
+        if clusterVal == 0: # few large clusters
+            min_cluster_size = max(int(len(X)/10), 20)
+            min_cluster_samples = min_cluster_size
+        elif clusterVal == 1: # in between
+            min_cluster_size = max(int(len(X)/100), 10)
+            min_cluster_samples = min_cluster_size
 
         clusterer = hdbscan.HDBSCAN(
-            min_cluster_size=5,
-            min_samples=1,
+            min_cluster_size=min_cluster_size,
+            min_samples=min_cluster_samples,
             #prediction_data=True, # needed for soft clustering, or if we want to add points to the clustering afterwards
             allow_single_cluster=True # maybe disable again
             )
         
         clusterer.fit_predict(X)
 
-        print(clusterer.labels_)
+        #print(clusterer.labels_)
         #clusterer.probabilities_ = np.array(len(X))
 
         return {
@@ -478,8 +569,8 @@ def test():
 # CONSTANTS
 # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
 response_header_origin_all = '*'
-response_header_origin_localhost = 'http://127.0.0.1:5500'
-#response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
+# response_header_origin_localhost = 'http://127.0.0.1:5500'
+response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
 class EnableCors(object):
     name = 'enable_cors'
     api = 2
@@ -503,8 +594,8 @@ bottle.install(EnableCors())
 #app.run(port=8080) # not working for docker and apparently not needed
 
 # CONSTANTS
-run(app=app, host='localhost', port=8080, debug=True, reloader=True)
-# run(app=app, host='0.0.0.0', port=8080) # use for docker
+# run(app=app, host='localhost', port=8080, debug=True, reloader=True)
+run(app=app, host='0.0.0.0', port=8080) # use for docker
 
 
 # ------------------

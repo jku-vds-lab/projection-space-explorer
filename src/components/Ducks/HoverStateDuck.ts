@@ -3,20 +3,30 @@ import { Vect } from "../Utility/Data/Vect";
 
 const SET = "ducks/hoverState/SET"
 
-export const setHoverState = hoverState => ({
+export const setHoverState = (hoverState, updater) => ({
     type: SET,
-    hoverState: hoverState
+    input: {data: hoverState, updater: updater}
 });
 
-type HoverStateType = Vect | Cluster
 
-const hoverState = (state = [], action) => {
+const initialState: HoverStateType = {
+    data: null,
+    updater: ""
+}
+export type HoverStateType = {
+    data: Vect | Cluster,
+    updater: String
+}
+
+
+const hoverState = (state = initialState, action): HoverStateType => {
     switch (action.type) {
         case SET:
-            return action.hoverState
+            return {...state, data: action.input?.data, updater: action.input?.updater}
         default:
             return state
     }
 }
 
 export default hoverState
+

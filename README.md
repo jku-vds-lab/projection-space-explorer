@@ -1,4 +1,4 @@
-# Projection Path Explorer
+# Projection Space Explorer
 
 This is the documentation for the Projection Space Explorer.
 

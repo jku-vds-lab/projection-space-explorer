@@ -8,9 +8,9 @@ import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERende
 
 import * as backend_utils from "../../utils/backend-connect";
 import { FeatureType } from "../Utility/Data/FeatureType";
-import ImageCellRenderer from "lineupjs/build/src/renderer/ImageCellRenderer";
 import { PrebuiltFeatures } from "../Utility/Data/Dataset";
-import stories from "../Ducks/StoriesDuck";
+import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
+import { setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -20,7 +20,8 @@ import stories from "../Ducks/StoriesDuck";
 const mapStateToProps = (state: RootState) => ({
     lineUpInput: state.lineUpInput,
     currentAggregation: state.currentAggregation,
-    activeStory: state.stories.active
+    activeStory: state.stories.active,
+    hoverState: state.hoverState
 })
 
 
@@ -30,7 +31,8 @@ const mapStateToProps = (state: RootState) => ({
  * @param dispatch The generic dispatch function declared in redux
  */
 const mapDispatchToProps = dispatch => ({
-    setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
+    setCurrentAggregation: samples => dispatch(setAggregationAction(samples)),
+    setLineUpInput_visibility: visibility => dispatch(setLineUpInput_visibility(visibility))
 })
 
 
@@ -54,8 +56,8 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 //     // My own property 2
 // }
 
-type Props = {
-    lineUpInput, currentAggregation, setCurrentAggregation, onFilter, activeStory
+type Props = PropsFromRedux & {
+    onFilter, hoverUpdate
 }
 
 function arrayEquals(a, b) {
@@ -68,27 +70,34 @@ function arrayEquals(a, b) {
 
 const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "clusterProbability"];
 let lineup = null;
+const UPDATER = "lineup";
 
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, onFilter, activeStory }: Props) {
+export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, setLineUpInput_visibility, onFilter, activeStory, hoverUpdate, hoverState }: Props) {
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
         return null;
     }
 
+    let lineup_data = [];
     lineUpInput.data.forEach(element => {
         if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
             element[PrebuiltFeatures.ClusterLabel] = [-1];
         }
+        let row = Object.assign({}, element)
+        row[PrebuiltFeatures.ClusterLabel] = element[PrebuiltFeatures.ClusterLabel].toString();
+        lineup_data.push(row);
     });
-    
-    let lineup_ref = React.useRef()
+    // console.log(lineup_data);
+    let lineup_ref = React.useRef();
 
     React.useEffect(() => {
-        const builder = buildLineup(lineUpInput.columns, lineUpInput.data);
+        const builder = buildLineup(lineUpInput.columns, lineup_data); //lineUpInput.data
+        lineup?.destroy();
         lineup = builder.build(lineup_ref.current);
+
 
         const ranking = lineup.data.getFirstRanking();
 
@@ -137,6 +146,14 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             }
         });
 
+        lineup.on('highlightChanged', idx => {
+            let hover_item = null;
+            if(idx >= 0){
+                hover_item = lineUpInput.data[idx];
+            }
+            hoverUpdate(hover_item, UPDATER);
+        });
+
         // update lineup when smiles_column width changes
         if(smiles_col){
             const lineup_smiles_col = ranking.children.find(x => x.label == smiles_col);
@@ -167,12 +184,12 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             }
         }
 
-    }, [lineUpInput]);
+    }, [lineUpInput, activeStory, activeStory?.clusters?.length]);
 
-    React.useEffect(() => {
-        // update lineup, if current storybook (current cluster) changed
-        lineup?.update();
-    }, [activeStory, activeStory?.clusters?.length]); // TODO: does not update when "add from selection" -> only if story book changes
+    // React.useEffect(() => {
+    //     // update lineup, if current storybook (current cluster) changed
+    //     lineup?.update();
+    // }, [activeStory, activeStory?.clusters?.length]); // TODO: does not update when "add from selection" -> only if story book changes
 
 
     // this effect is allways executed after the component is rendered when currentAggregation changed
@@ -184,6 +201,9 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             if(currentAggregation && currentAggregation.length > 0){
                 const currentSelection_scatter = lineUpInput.data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
                 lineup.setSelection(currentSelection_scatter);
+                
+                const lineup_idx = lineup.renderer?.rankings[0]?.findNearest(currentSelection_scatter);
+                // lineup.renderer?.rankings[0]?.scrollIntoView(lineup_idx);
 
                 // set the grouping to selection checkboxes -> uncomment if this should be automatically if something changes
                 // const ranking = lineup.data.getFirstRanking();
@@ -196,7 +216,48 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
     }, [currentAggregation])
 
 
-    return <div className="LineUpParent"><div ref={lineup_ref} id="lineup_view"></div></div>
+    // const debouncedHighlight = React.useCallback(debounce<any>(lineup_idx => lineup?.setHighlight(lineup_idx, true), 1000), []);
+
+    React.useEffect(() => {
+        // hover the instance that is hovered in the scatter plot view
+        if(lineup && lineUpInput.data){ // TODO: sometimes there is a lineup bug when too many rows are highlighted??
+            if(hoverState && hoverState.data){
+                if(hoverState.updater != UPDATER){
+                    const lineup_idx = lineUpInput.data.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"]);
+                    
+                    if(lineup_idx >= 0){
+                        // const lineup_idx_valid = lineup.renderer?.rankings[0]?.findNearest([lineup_idx]);
+                        // console.log(lineup_idx, lineup_idx_valid);
+                        // debouncedHighlight(lineup_idx);
+                        // lineup.renderer?.rankings[0]?.setHighlight(lineup_idx);
+                        lineup.setHighlight(lineup_idx, false); // flag that tells, if we want to scoll to that row
+                        // try{ // there is a lineup bug when trying to scroll to a certain index
+                        //     // lineup.setHighlight(lineup_idx_valid, true); // flag that tells, if we want to scoll to that row
+                        //     // lineup.renderer.rankings[0].scrollIntoView(lineup_idx);
+                        // }catch(ex){
+                        //     console.log("exception when changing highliged row in lineup:", ex);
+                        // }
+                    }
+                }
+            }
+            // else{
+            //     try{
+            //         lineup.setHighlight(-1, false);
+            //     }catch(ex){
+            //         console.log("exception when changing highliged row in lineup:", ex);
+            //     }
+            // }
+            
+        }
+        
+    }, [hoverState]);
+
+
+    return true ? 
+        <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>
+            <div ref={lineup_ref} id="lineup_view"></div>
+        </MyWindowPortal> : 
+        <div className="LineUpParent"><div ref={lineup_ref} id="lineup_view"></div></div>;
 })
 
 
@@ -231,11 +292,11 @@ function buildLineup(cols, data){
         if(!EXCLUDED_COLUMNS.includes(i) && (Object.keys(col.metaInformation).length <= 0 || !col.metaInformation.noLineUp)){ // only if there is a "noLineUp" modifier at this column or thix column is excluded, we don't do anything
             if(col.metaInformation.imgSmiles){
                 smiles_col = "Structure";
-                builder.column(LineUpJS.buildColumn("mySmilesStructureColumn", i).label(smiles_col).renderer("mySmilesStructureRenderer", "mySmilesStructureRenderer").width(80).build([]));
+                builder.column(LineUpJS.buildColumn("mySmilesStructureColumn", i).label(smiles_col).renderer("mySmilesStructureRenderer", "mySmilesStructureRenderer").width(50).build([]));
                 
             }
             if(i == PrebuiltFeatures.ClusterLabel){
-                builder.column(LineUpJS.buildStringColumn(i).html().custom("visible", show).width(70)); // shows avg of cluster labels if there is more than one label
+                builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show).width(70)); // shows avg of cluster labels if there is more than one label
             }
             else if(typeof col.featureType !== 'undefined'){
                 switch(col.featureType){
@@ -243,7 +304,7 @@ function buildLineup(cols, data){
                         builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));//.categories(col.distinct).width(70));
                         break;
                     case FeatureType.Quantitative:
-                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".3f").custom("visible", show));
+                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show));
                         break;
                     case FeatureType.Date:
                         builder.column(LineUpJS.buildDateColumn(i).custom("visible", show));
@@ -254,9 +315,9 @@ function buildLineup(cols, data){
                 }
             }
             else{
-                if(col.isNumeric)
+                if(col.isNumeric){
                     builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));
-                else if(col.distinct)
+                }else if(col.distinct)
                     if(col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                         builder.column(LineUpJS.buildCategoricalColumn(i).categories(col.distinct).custom("visible", show));
                     else

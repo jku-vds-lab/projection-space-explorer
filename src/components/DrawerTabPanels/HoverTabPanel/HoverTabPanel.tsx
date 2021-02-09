@@ -18,11 +18,11 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-
+    hoverUpdate
 }
 
 
-export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode }: Props) => {
+export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
@@ -35,6 +35,6 @@ export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode }: P
             />
         </Box>
 
-        <SelectionClusters></SelectionClusters>
+        <SelectionClusters hoverUpdate={hoverUpdate}></SelectionClusters>
     </div>
 })

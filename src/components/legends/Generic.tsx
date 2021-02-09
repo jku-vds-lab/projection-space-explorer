@@ -26,10 +26,11 @@ type GenericLegendProps = {
     vectors: Vect[]
     aggregate: boolean
     columns?: any
+    hoverUpdate?
 }
 
 //shows single and aggregated view
-export var GenericLegend = ({ type, vectors, aggregate, columns }: GenericLegendProps) => {
+export var GenericLegend = ({ type, vectors, aggregate, columns, hoverUpdate }: GenericLegendProps) => {
     switch (type) {
         case DatasetType.Story:
             return <StoryLegend selection={vectors}></StoryLegend>
@@ -44,7 +45,7 @@ export var GenericLegend = ({ type, vectors, aggregate, columns }: GenericLegend
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
         case DatasetType.Chem:
-            return <ChemLegend selection={vectors} aggregate={aggregate} columns={columns}></ChemLegend>
+            return <ChemLegend selection={vectors} aggregate={aggregate} columns={columns} hoverUpdate={hoverUpdate}></ChemLegend>
         default:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
     }

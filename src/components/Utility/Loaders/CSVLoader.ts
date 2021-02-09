@@ -7,6 +7,7 @@ import { Dataset } from "../Data/Dataset"
 import { Loader } from "./Loader"
 import { DatasetEntry } from "../Data/DatasetDatabase"
 import Cluster from "../Data/Cluster"
+import * as frontend_utils from "../../../utils/frontend-connect"
 
 
 var d3v5 = require('d3')
@@ -58,7 +59,7 @@ export class CSVLoader implements Loader {
 
 
     getClusters(vectors: Vect[], callback) {
-        let worker = new Worker('dist/cluster.js')
+        let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js')
 
         worker.onmessage = (e) => {
             // Point clusteruing
@@ -124,37 +125,56 @@ export class CSVLoader implements Loader {
         }, {})
 
         
-        // infer for each feature whether it contains numeric, date, or arbitrary values
-        var contains_number = {}
-        var contains_date = {}
-        var contains_arbitrary = {}
-        vectors.forEach((r) => {
-            header.forEach(f => {
-                const type = this.getFeatureType(r[f])
-                if (type === 'number') {
-                    contains_number[f] = true
-                } else if (type === 'date') {
-                    contains_date[f] = true
-                } else {
-                    contains_arbitrary[f] = true
-                }
-            })
-
-        })
+        let index = 0;
         var types = {}
         // decide the type of each feature - categorical/quantitative/date
         header.forEach((f) => {
-            if (contains_number[f] && !contains_date[f] && !contains_arbitrary[f]) {
-                // only numbers -> quantitative type
-                types[f] = FeatureType.Quantitative
-            } else if (!contains_number[f] && contains_date[f] && !contains_arbitrary[f]) {
-                // only date -> date type
-                types[f] = FeatureType.Date
-            } else {
-                // otherwise categorical
-                types[f] = FeatureType.Categorical
+            const col_meta = metaInformation[Object.keys(metaInformation)[i]];
+            if(col_meta?.dtype){
+                switch(col_meta.dtype){
+                    case "numerical":
+                        types[f] = FeatureType.Quantitative;
+                        break;
+                    case "date":
+                        types[f] = FeatureType.Date;
+                        break;
+                    case "categorical":
+                        types[f] = FeatureType.Categorical;
+                        break;
+                    default:
+                        types[f] = FeatureType.Categorical;
+                        break;
+                }
+            }else{
+                // infer for each feature whether it contains numeric, date, or arbitrary values
+                var contains_number = {}
+                var contains_date = {}
+                var contains_arbitrary = {}
+                vectors.forEach((r) => {
+                    const type = this.getFeatureType(r[f])
+                    if (type === 'number') {
+                        contains_number[f] = true
+                    } else if (type === 'date') {
+                        contains_date[f] = true
+                    } else {
+                        contains_arbitrary[f] = true
+                    }
+                })
+                
+                if (contains_number[f] && !contains_date[f] && !contains_arbitrary[f]) {
+                    // only numbers -> quantitative type
+                    types[f] = FeatureType.Quantitative
+                } else if (!contains_number[f] && contains_date[f] && !contains_arbitrary[f]) {
+                    // only date -> date type
+                    types[f] = FeatureType.Date
+                } else {
+                    // otherwise categorical
+                    types[f] = FeatureType.Categorical
+                }
             }
+            index++;
         })
+        
 
         // replace date features by their numeric timestamp equivalent
         // and fix all quantitative features to be numbers

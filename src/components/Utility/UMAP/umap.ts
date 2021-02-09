@@ -1095,6 +1095,12 @@ export class UMAP {
   }
 }
 
+// https://github.com/ecto/jaccard TODO: also for tsne and other projection methods
+export function jaccard(x: Vector, y: Vector){
+  var jaccard_dist = require('jaccard');
+  return jaccard_dist.index(x, y);
+}
+
 export function euclidean(x: Vector, y: Vector) {
   let result = 0;
   for (let i = 0; i < x.length; i++) {
