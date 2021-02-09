@@ -5,10 +5,11 @@ import ControlCameraIcon from '@material-ui/icons/ControlCamera';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
 import BlurOffIcon from '@material-ui/icons/BlurOff';
 import './ToolSelection.scss'
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import { Tooltip, Typography } from "@material-ui/core";
 import { setCurrentTool } from "../../Ducks/CurrentToolDuck";
+import { RootState } from "../../Store/Store";
 
 const ENTER_DELAY = 500
 
@@ -32,7 +33,25 @@ export function getToolCursor(tool: Tool) {
     }
 }
 
-function ToolSelection({ currentTool, setCurrentTool }) {
+
+const mapStateToProps = (state: RootState) => ({
+    currentTool: state.currentTool,
+    dataset: state.dataset
+})
+
+const mapDispatchToProps = dispatch => ({
+    setCurrentTool: id => dispatch(setCurrentTool(id))
+})
+
+const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux
+
+
+
+function ToolSelection({ currentTool, setCurrentTool, dataset }: Props) {
     return <div className="ToolSelectionParent">
         <ToggleButtonGroup
             style={{ pointerEvents: 'auto' }}
@@ -80,8 +99,8 @@ function ToolSelection({ currentTool, setCurrentTool }) {
                 </Tooltip>
             </ToggleButton>
 
-
-            <ToggleButton value={Tool.Crosshair}>
+            
+            { dataset?.isSequential && <ToggleButton value={Tool.Crosshair}>
                 <Tooltip enterDelay={ENTER_DELAY} title={
                     <React.Fragment>
                         <Typography variant="subtitle2">Line Inspection Tool</Typography>
@@ -90,18 +109,10 @@ function ToolSelection({ currentTool, setCurrentTool }) {
                 }>
                     <LinearScaleIcon />
                 </Tooltip>
-            </ToggleButton>
+            </ToggleButton> }
 
         </ToggleButtonGroup>
     </div>
 }
 
-const mapStateToProps = state => ({
-    currentTool: state.currentTool
-})
-
-const mapDispatchToProps = dispatch => ({
-    setCurrentTool: id => dispatch(setCurrentTool(id))
-})
-
-export const ToolSelectionRedux = connect(mapStateToProps, mapDispatchToProps)(ToolSelection)
+export const ToolSelectionRedux = connector(ToolSelection)
