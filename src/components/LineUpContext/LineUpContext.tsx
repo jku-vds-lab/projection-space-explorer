@@ -9,8 +9,8 @@ import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERende
 import * as backend_utils from "../../utils/backend-connect";
 import { FeatureType } from "../Utility/Data/FeatureType";
 import { PrebuiltFeatures } from "../Utility/Data/Dataset";
-import * as lodash from 'lodash';
-import { debounce } from "@material-ui/core";
+import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
+import { setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -31,7 +31,8 @@ const mapStateToProps = (state: RootState) => ({
  * @param dispatch The generic dispatch function declared in redux
  */
 const mapDispatchToProps = dispatch => ({
-    setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
+    setCurrentAggregation: samples => dispatch(setAggregationAction(samples)),
+    setLineUpInput_visibility: visibility => dispatch(setLineUpInput_visibility(visibility))
 })
 
 
@@ -74,7 +75,7 @@ const UPDATER = "lineup";
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, onFilter, activeStory, hoverUpdate, hoverState }: Props) {
+export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, setLineUpInput_visibility, onFilter, activeStory, hoverUpdate, hoverState }: Props) {
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
         return null;
@@ -202,7 +203,7 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
                 lineup.setSelection(currentSelection_scatter);
                 
                 const lineup_idx = lineup.renderer?.rankings[0]?.findNearest(currentSelection_scatter);
-                lineup.renderer?.rankings[0]?.scrollIntoView(lineup_idx);
+                // lineup.renderer?.rankings[0]?.scrollIntoView(lineup_idx);
 
                 // set the grouping to selection checkboxes -> uncomment if this should be automatically if something changes
                 // const ranking = lineup.data.getFirstRanking();
@@ -252,7 +253,11 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
     }, [hoverState]);
 
 
-    return <div className="LineUpParent"><div ref={lineup_ref} id="lineup_view"></div></div>
+    return true ? 
+        <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>
+            <div ref={lineup_ref} id="lineup_view"></div>
+        </MyWindowPortal> : 
+        <div className="LineUpParent"><div ref={lineup_ref} id="lineup_view"></div></div>;
 })
 
 

@@ -62,6 +62,13 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
     const [controller, setController] = React.useState(null)
 
+    React.useEffect(()=>{
+        if (controller) {
+            controller.terminate()
+        }
+        setController(null)
+        props.setTrailVisibility(false)
+    }, [props.dataset]);
 
 
     const onSaveProjectionClick = (name) => {

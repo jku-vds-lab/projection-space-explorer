@@ -1372,7 +1372,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     this.props.setLineUpInput_visibility(true);
 
                     handleClose();
-                }}>Load LineUp</MenuItem>
+                }}>Load Table</MenuItem>
 
                 <MenuItem onClick={() => {
                     // Only load LineUp if the current selection is not empty
@@ -1382,13 +1382,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                         handleClose();
                     }
-                }}>Load LineUp (selection only)</MenuItem>
+                }}>Load Table (selection only)</MenuItem>
 
                 <MenuItem onClick={() => {
                     this.props.setLineUpInput_visibility(false);
 
                     handleClose()
-                }}>{'Close LineUp'}</MenuItem>
+                }}>{'Close Table'}</MenuItem>
 
                 <Divider orientation="horizontal"></Divider>
 

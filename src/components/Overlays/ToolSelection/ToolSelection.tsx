@@ -10,6 +10,8 @@ import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import { Tooltip, Typography } from "@material-ui/core";
 import { setCurrentTool } from "../../Ducks/CurrentToolDuck";
 
+import * as frontend_utils from "../../../utils/frontend-connect";
+
 const ENTER_DELAY = 500
 
 export enum Tool {
@@ -68,29 +70,32 @@ function ToolSelection({ currentTool, setCurrentTool }) {
                 </Tooltip>
             </ToggleButton>
 
+            {frontend_utils.CHEM_PROJECT ? <div></div> : 
+                <ToggleButton value={Tool.Grab}>
+                    <Tooltip enterDelay={ENTER_DELAY} title={
+                        <React.Fragment>
+                            <Typography variant="subtitle2">Cluster Tool</Typography>
+                            <Typography variant="body2">This tool can select or deselect clusters and show information on hover.</Typography>
+                        </React.Fragment>
+                    }>
+                        <BlurOffIcon />
+                    </Tooltip>
+                </ToggleButton>
+            }
+            
+            {frontend_utils.CHEM_PROJECT ? <div></div> : 
+                <ToggleButton value={Tool.Crosshair}>
+                    <Tooltip enterDelay={ENTER_DELAY} title={
+                        <React.Fragment>
+                            <Typography variant="subtitle2">Line Inspection Tool</Typography>
+                            <Typography variant="body2">When clicking on a state of a line while this tool is active, the line will become selected and you can inspect it state by state.</Typography>
+                        </React.Fragment>
+                    }>
+                        <LinearScaleIcon />
+                    </Tooltip>
+                </ToggleButton>
+            }
 
-            <ToggleButton value={Tool.Grab}>
-                <Tooltip enterDelay={ENTER_DELAY} title={
-                    <React.Fragment>
-                        <Typography variant="subtitle2">Cluster Tool</Typography>
-                        <Typography variant="body2">This tool can select or deselect clusters and show information on hover.</Typography>
-                    </React.Fragment>
-                }>
-                    <BlurOffIcon />
-                </Tooltip>
-            </ToggleButton>
-
-
-            <ToggleButton value={Tool.Crosshair}>
-                <Tooltip enterDelay={ENTER_DELAY} title={
-                    <React.Fragment>
-                        <Typography variant="subtitle2">Line Inspection Tool</Typography>
-                        <Typography variant="body2">When clicking on a state of a line while this tool is active, the line will become selected and you can inspect it state by state.</Typography>
-                    </React.Fragment>
-                }>
-                    <LinearScaleIcon />
-                </Tooltip>
-            </ToggleButton>
 
         </ToggleButtonGroup>
     </div>

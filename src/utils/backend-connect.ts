@@ -1,4 +1,3 @@
-import { None } from "vega";
 // CONSTANTS
 
 // export const CREDENTIALS = 'include'; // for AWS/docker
@@ -48,10 +47,13 @@ function handle_errors(response){
     if (!response.ok) {
         throw Error(response.statusText);
     }
-    if(Object.keys(response).includes("error")){
-        alert(response["error"]);
-    }
     return response;
+}
+function handle_errors_json(data){
+    if(Object.keys(data).includes("error")){
+        alert(data["error"]);
+    }
+    return data;
 }
 
 
@@ -64,8 +66,10 @@ export async function delete_file(filename){
     })
     .then(handle_errors)
     .then(response => response.json())
+    .then(handle_errors_json)
     .catch(error => {
-        console.error(error)
+        alert("file could not be deleted. please, try again");
+        console.error(error);
     });
 }
 
@@ -79,8 +83,10 @@ export async function get_uploaded_files(){
     })
     .then(handle_errors)
     .then(response => response.json())
+    .then(handle_errors_json)
     .catch(error => {
-        console.error(error)
+        // alert("could not load uploaded filenames.")
+        console.error(error);
     });
 }
 
@@ -107,12 +113,14 @@ export async function get_structure_from_smiles(smiles:string, highlight=false) 
         credentials: CREDENTIALS
     })
     .then(handle_errors)
-    .then(response => response.text())
+    .then(response => response.json())
+    .then(handle_errors_json)
     .then(data => {
-        setSmilesCache(smiles, highlight, data);
-        return data;
+        setSmilesCache(smiles, highlight, data["data"]);
+        return data["data"];
     })
     .catch(error => {
+        // alert("could not load structure");
         console.error(error)
     });
 }
@@ -128,7 +136,9 @@ export async function get_structures_from_smiles_list(formData:FormData){
     })
     .then(handle_errors)
     .then(response => response.json())
+    .then(handle_errors_json)
     .catch(error => {
+        alert("could not load structures");
         console.error(error)
     });
 }
@@ -140,8 +150,11 @@ export async function get_mcs_from_smiles_list(formData:FormData) {
         body: formData,
     })
     .then(handle_errors)
-    .then(response => response.text())
+    .then(response => response.json())
+    .then(handle_errors_json)
+    .then(response => response["data"])
     .catch(error => {
+        // alert("could not get maximum common substructure")
         console.error(error)
     });
     
@@ -157,6 +170,7 @@ export async function get_substructure_count(smiles_list, filter) {
     })
     .then(handle_errors)
     .then(response => response.json())
+    .then(handle_errors_json)
     .then(data => {
         if(Object.keys(data).includes("substructure_counts"))
             return data["substructure_counts"];
@@ -164,6 +178,7 @@ export async function get_substructure_count(smiles_list, filter) {
             throw Error("Backend responded with error: " + data["error"]);
     })
     .catch(error => {
+        alert("could not find substructure match")
         console.error(error)
     });
     
@@ -184,14 +199,12 @@ export async function upload_sdf_file(file){
     })
     .then(handle_errors)
     .then(response => response.json())
+    .then(handle_errors_json)
     .then(data => {
-        if(Object.keys(data).includes("error")){
-            alert(data["error"]);
-        }else{
-            localStorage.setItem("unique_filename", data["unique_filename"]);
-        }
+        localStorage.setItem("unique_filename", data["unique_filename"]);
     })
     .catch(error => {
+        alert("error when uploading file. it might be too big");
         console.error(error);
     });
 }
@@ -213,11 +226,13 @@ export async function get_representation_list(){
     })
     .then(handle_errors)
     .then(response => response.json())
+    .then(handle_errors_json)
     .then(data => {
         setCache("representation_list", data);
         return data;
     })
     .catch(error => {
+        // alert("error when loading representation list")
         console.error(error)
     });
 }
@@ -226,27 +241,25 @@ export async function get_representation_list(){
 
 
 
-export async function calculate_hdbscan_clusters(X, clusterVal){
-    
+export async function calculate_hdbscan_clusters(X, min_cluster_size, min_cluster_samples, allow_single_cluster){
+
     const formData = new FormData();
-    formData.append('clusterVal', clusterVal);
+    formData.append('min_cluster_size', min_cluster_size);
+    formData.append('min_cluster_samples', min_cluster_samples);
+    formData.append('allow_single_cluster', allow_single_cluster);
     formData.append('X', X);
     return fetch(BASE_URL+'/segmentation', {
         method: 'POST',
         body: formData
     })
     .then(handle_errors)
-    .then(response => response.json());
+    .then(response => response.json())
+    .then(handle_errors_json)
+    .catch(error => {
+        alert("error when calculating clusters")
+        console.error(error)
+    });
 }
 
 
 
-
-export async function test() {
-    return fetch(BASE_URL+'/test', {
-        method: 'GET',
-        credentials: CREDENTIALS
-    })
-    .then(handle_errors)
-    .then(response => response.text());//.text());
-}

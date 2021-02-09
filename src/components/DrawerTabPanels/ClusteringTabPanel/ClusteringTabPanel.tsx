@@ -1,5 +1,5 @@
 import React = require("react")
-import { Avatar, Box, Button, FormControlLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Switch, Typography } from "@material-ui/core"
+import { Avatar, Box, Button, Checkbox, FormControlLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Switch, TextField, Typography } from "@material-ui/core"
 import { connect, ConnectedProps } from 'react-redux'
 import Cluster from "../../Utility/Data/Cluster"
 import { Story } from "../../Utility/Data/Story"
@@ -187,10 +187,10 @@ export const ClusteringTabPanel = connector(({
     }
 
 
-    function calc_hdbscan(clusterSliderValue) {
+    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster) {
         const points = dataset.vectors.map(point => [point.x, point.y]);
         trackPromise(
-            backend_utils.calculate_hdbscan_clusters(points, clusterSliderValue).then(data => {
+            backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster).then(data => {
                 const cluster_labels = data["result"];
                 const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
@@ -219,8 +219,29 @@ export const ClusteringTabPanel = connector(({
         );
     }
 
+    const [clusterAdvancedMode, setClusterAdvancedMode] = React.useState(false);
     const [clusterSliderValue, setClusterSliderValue] = React.useState(2);
+    const [min_cluster_size, set_min_cluster_size] = React.useState(5);
+    const [min_cluster_samples, set_min_cluster_samples] = React.useState(1);
+    const [allow_single_cluster, set_allow_single_cluster] = React.useState(false);
+    
     const handleClusterSliderChange = (event, newValue) => {
+        switch(newValue){
+            case 0:
+                set_min_cluster_size(Math.max(dataset.vectors.length/100, 20));
+                set_min_cluster_samples(Math.round(min_cluster_size/2))
+                set_allow_single_cluster(true);
+                break;
+            case 1:
+                set_min_cluster_size(Math.max(dataset.vectors.length/100, 9));
+                set_min_cluster_samples(Math.round(min_cluster_size/2))
+                set_allow_single_cluster(false);
+                break;
+            case 2:
+                set_min_cluster_size(5);
+                set_allow_single_cluster(false);
+                break;
+        }
         setClusterSliderValue(newValue);
     };
     const marks = [
@@ -252,6 +273,44 @@ export const ClusteringTabPanel = connector(({
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Cluster Settings'}</Typography>
         </Box>
+        <Box paddingLeft={2}>
+            <FormControlLabel
+                control={
+                <Switch
+                    checked={clusterAdvancedMode}
+                    onChange={(event, newValue) => { setClusterAdvancedMode(newValue) }}
+                    name="advancedClustering"
+                />
+                }
+                label="Advanced"
+            />
+        </Box>
+        {clusterAdvancedMode ? 
+        <Box paddingLeft={2}>
+            <TextField
+                label="min Cluster Size"
+                type="number"
+                InputLabelProps={{
+                    shrink: true,
+                    
+                }}
+                value={min_cluster_size}
+                onChange={(event) => { set_min_cluster_size(Math.max(parseInt(event.target.value), 2)) }}
+            />
+            <TextField
+                label="min Cluster Samples"
+                type="number"
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                value={min_cluster_samples}
+                onChange={(event) => { set_min_cluster_samples(Math.max(parseInt(event.target.value), 1)) }}
+            />
+            <FormControlLabel
+            control={<Checkbox checked={allow_single_cluster} onChange={(event) => {set_allow_single_cluster(event.target.checked)}}/>}
+            label="Allow Single Cluster"
+          />
+        </Box> :
         <Box paddingLeft={7} paddingRight={7}>
             <Slider
                 defaultValue={2}
@@ -264,13 +323,14 @@ export const ClusteringTabPanel = connector(({
                 onChange={handleClusterSliderChange}
             />
         </Box>
+        }
         <Box p={2}>
             <Button
                 variant="outlined"
                 style={{
                     width: '100%'
                 }}
-                onClick={() => {calc_hdbscan(clusterSliderValue)}}>Projection-based Clustering</Button>
+                onClick={() => {calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster)}}>Projection-based Clustering</Button>
         </Box>
 
         <Box paddingLeft={2} paddingTop={2}>

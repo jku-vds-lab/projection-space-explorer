@@ -3311,7 +3311,7 @@ self.addEventListener('message', function (e) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+ // CONSTANTS
 
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
   function adopt(value) {
@@ -3348,8 +3348,7 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.test = exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_substructure_count = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.get_uploaded_files = exports.delete_file = exports.BASE_URL = exports.CREDENTIALS = void 0; // CONSTANTS
-// export const CREDENTIALS = 'include'; // for AWS/docker
+exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_substructure_count = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.get_uploaded_files = exports.delete_file = exports.BASE_URL = exports.CREDENTIALS = void 0; // export const CREDENTIALS = 'include'; // for AWS/docker
 
 exports.CREDENTIALS = 'omit'; // for netlify/local
 
@@ -3409,11 +3408,15 @@ function handle_errors(response) {
     throw Error(response.statusText);
   }
 
-  if (Object.keys(response).includes("error")) {
-    alert(response["error"]);
+  return response;
+}
+
+function handle_errors_json(data) {
+  if (Object.keys(data).includes("error")) {
+    alert(data["error"]);
   }
 
-  return response;
+  return data;
 }
 
 function delete_file(filename) {
@@ -3429,7 +3432,8 @@ function delete_file(filename) {
               credentials: exports.CREDENTIALS
             }).then(handle_errors).then(function (response) {
               return response.json();
-            }).catch(function (error) {
+            }).then(handle_errors_json).catch(function (error) {
+              alert("file could not be deleted. please, try again");
               console.error(error);
             }));
 
@@ -3457,7 +3461,8 @@ function get_uploaded_files() {
               credentials: exports.CREDENTIALS
             }).then(handle_errors).then(function (response) {
               return response.json();
-            }).catch(function (error) {
+            }).then(handle_errors_json).catch(function (error) {
+              // alert("could not load uploaded filenames.")
               console.error(error);
             }));
 
@@ -3504,11 +3509,12 @@ function get_structure_from_smiles(smiles) {
               body: formData,
               credentials: exports.CREDENTIALS
             }).then(handle_errors).then(function (response) {
-              return response.text();
-            }).then(function (data) {
-              setSmilesCache(smiles, highlight, data);
-              return data;
+              return response.json();
+            }).then(handle_errors_json).then(function (data) {
+              setSmilesCache(smiles, highlight, data["data"]);
+              return data["data"];
             }).catch(function (error) {
+              // alert("could not load structure");
               console.error(error);
             }));
 
@@ -3536,7 +3542,8 @@ function get_structures_from_smiles_list(formData) {
               credentials: exports.CREDENTIALS
             }).then(handle_errors).then(function (response) {
               return response.json();
-            }).catch(function (error) {
+            }).then(handle_errors_json).catch(function (error) {
+              alert("could not load structures");
               console.error(error);
             }));
 
@@ -3561,8 +3568,11 @@ function get_mcs_from_smiles_list(formData) {
               method: 'POST',
               body: formData
             }).then(handle_errors).then(function (response) {
-              return response.text();
+              return response.json();
+            }).then(handle_errors_json).then(function (response) {
+              return response["data"];
             }).catch(function (error) {
+              // alert("could not get maximum common substructure")
               console.error(error);
             }));
 
@@ -3592,9 +3602,10 @@ function get_substructure_count(smiles_list, filter) {
               body: formData
             }).then(handle_errors).then(function (response) {
               return response.json();
-            }).then(function (data) {
+            }).then(handle_errors_json).then(function (data) {
               if (Object.keys(data).includes("substructure_counts")) return data["substructure_counts"];else throw Error("Backend responded with error: " + data["error"]);
             }).catch(function (error) {
+              alert("could not find substructure match");
               console.error(error);
             }));
 
@@ -3627,13 +3638,10 @@ function upload_sdf_file(file) {
               credentials: exports.CREDENTIALS
             }).then(handle_errors).then(function (response) {
               return response.json();
-            }).then(function (data) {
-              if (Object.keys(data).includes("error")) {
-                alert(data["error"]);
-              } else {
-                localStorage.setItem("unique_filename", data["unique_filename"]);
-              }
+            }).then(handle_errors_json).then(function (data) {
+              localStorage.setItem("unique_filename", data["unique_filename"]);
             }).catch(function (error) {
+              alert("error when uploading file. it might be too big");
               console.error(error);
             }));
 
@@ -3672,10 +3680,11 @@ function get_representation_list() {
               credentials: exports.CREDENTIALS
             }).then(handle_errors).then(function (response) {
               return response.json();
-            }).then(function (data) {
+            }).then(handle_errors_json).then(function (data) {
               setCache("representation_list", data);
               return data;
             }).catch(function (error) {
+              // alert("error when loading representation list")
               console.error(error);
             }));
 
@@ -3690,7 +3699,7 @@ function get_representation_list() {
 
 exports.get_representation_list = get_representation_list;
 
-function calculate_hdbscan_clusters(X, clusterVal) {
+function calculate_hdbscan_clusters(X, min_cluster_size, min_cluster_samples, allow_single_cluster) {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
     var formData;
     return regeneratorRuntime.wrap(function _callee10$(_context10) {
@@ -3698,16 +3707,21 @@ function calculate_hdbscan_clusters(X, clusterVal) {
         switch (_context10.prev = _context10.next) {
           case 0:
             formData = new FormData();
-            formData.append('clusterVal', clusterVal);
+            formData.append('min_cluster_size', min_cluster_size);
+            formData.append('min_cluster_samples', min_cluster_samples);
+            formData.append('allow_single_cluster', allow_single_cluster);
             formData.append('X', X);
             return _context10.abrupt("return", fetch(exports.BASE_URL + '/segmentation', {
               method: 'POST',
               body: formData
             }).then(handle_errors).then(function (response) {
               return response.json();
+            }).then(handle_errors_json).catch(function (error) {
+              alert("error when calculating clusters");
+              console.error(error);
             }));
 
-          case 4:
+          case 6:
           case "end":
             return _context10.stop();
         }
@@ -3717,30 +3731,6 @@ function calculate_hdbscan_clusters(X, clusterVal) {
 }
 
 exports.calculate_hdbscan_clusters = calculate_hdbscan_clusters;
-
-function test() {
-  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee11() {
-    return regeneratorRuntime.wrap(function _callee11$(_context11) {
-      while (1) {
-        switch (_context11.prev = _context11.next) {
-          case 0:
-            return _context11.abrupt("return", fetch(exports.BASE_URL + '/test', {
-              method: 'GET',
-              credentials: exports.CREDENTIALS
-            }).then(handle_errors).then(function (response) {
-              return response.text();
-            }));
-
-          case 1:
-          case "end":
-            return _context11.stop();
-        }
-      }
-    }, _callee11);
-  }));
-}
-
-exports.test = test;
 
 /***/ })
 
