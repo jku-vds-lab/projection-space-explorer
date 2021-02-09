@@ -1,4 +1,4 @@
-# Projection Path Explorer
+# Projection Space Explorer
 
 This is the documentation for the demonstrator including the installation process.
 
@@ -96,13 +96,13 @@ There are some test datasets available in this repository under **datasets/test*
 Use a git tool to clone this repository to your computer.
 
 ```bash
-git clone https://github.com/JKU-ICG/projection-path-explorer
+git clone https://github.com/JKU-ICG/projection-space-explorer
 ```
 
 Then navigate to this folder in a terminal using
 
 ```bash
-cd projection-path-explorer
+cd projection-space-explorer
 ```
 
 and run the command to install the required packages
