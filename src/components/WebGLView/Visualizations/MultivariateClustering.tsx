@@ -19,8 +19,11 @@ import * as nt from '../../NumTs/NumTs'
 import * as frontend_utils from "../../../utils/frontend-connect";
 
 const SELECTED_COLOR = 0x4d94ff
-const DEFAULT_COLOR = 0x000000
-const GRAYED = 0x3c3c3c
+const DEFAULT_COLOR = 0xA9A9A9
+const GRAYED = 0xDCDCDC
+
+const WING_SIZE = 2.2
+const LINE_WIDTH = 1.5
 
 type ClusterObjectType = {
     cluster: Cluster,
@@ -150,7 +153,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         let index = 0
         this.props.stories.active?.edges.forEach(edge => {
-            let color = new THREE.Color(0x000000)
+            let color = new THREE.Color(DEFAULT_COLOR)
             if (this.props.stories.trace && this.props.stories.trace.mainEdges.includes(edge)) {
                 color = new THREE.Color(SELECTED_COLOR)
             }
@@ -161,8 +164,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             let dir = end.clone().sub(start).normalize()
             let markerOffset = start.clone().sub(end).normalize().multiplyScalar(24)
-            let left = new Vector2(-dir.y, dir.x).multiplyScalar(2)
-            let right = new Vector2(dir.y, -dir.x).multiplyScalar(2)
+            let left = new Vector2(-dir.y, dir.x).multiplyScalar(LINE_WIDTH)
+            let right = new Vector2(dir.y, -dir.x).multiplyScalar(LINE_WIDTH)
             let offset = dir.clone().multiplyScalar(this.devicePixelRatio * 12)
 
             // line without arrow
@@ -174,12 +177,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             // left wing
             arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x - offset.x, middle.y * zoom + left.y - offset.y, 0))
             arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x + offset.x, middle.y * zoom + left.y + offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x * 3 - offset.x, middle.y * zoom + left.y * 3 - offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x * WING_SIZE - offset.x, middle.y * zoom + left.y * WING_SIZE - offset.y, 0))
 
             // Right wing
             arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x - offset.x, middle.y * zoom + right.y - offset.y, 0))
             arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x + offset.x, middle.y * zoom + right.y + offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x * 3 - offset.x, middle.y * zoom + right.y * 3 - offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x * WING_SIZE - offset.x, middle.y * zoom + right.y * WING_SIZE - offset.y, 0))
 
             let i = index * 10
             // line without arrow
@@ -310,8 +313,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.props.stories.active.clusters.forEach((cluster, ci) => {
 
             // Add circle to scene
-            var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * 16, this.devicePixelRatio * 16);
-            var material = new THREE.MeshBasicMaterial({ color: new THREE.Color() });
+            var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * 12, this.devicePixelRatio * 12);
+            geometry.rotateZ(Math.PI / 4)
+            geometry.scale(0.85, 1.0, 1.0)
+            
+
+            var material = new THREE.MeshBasicMaterial({ color: new THREE.Color(DEFAULT_COLOR) });
             var circle = new THREE.Mesh(geometry, material);
 
 
@@ -629,7 +636,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                         left: screen.x,
                         top: screen.y,
                         background: 'transparent',
-                        color: 'white',
+                        color: 'black',
                         fontWeight: "bold",
                         transform: 'translate(-50%, -50%)',
                         pointerEvents: 'none'
