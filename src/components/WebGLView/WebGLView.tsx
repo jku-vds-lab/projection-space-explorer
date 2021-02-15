@@ -218,7 +218,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
             this.particles?.highlight(null)
 
-            if (this.props.dataset.isSequential) {
+            if (this.props.dataset?.isSequential) {
                 this.lines?.highlight([], this.getWidth(), this.getHeight(), this.scene)
             }
 

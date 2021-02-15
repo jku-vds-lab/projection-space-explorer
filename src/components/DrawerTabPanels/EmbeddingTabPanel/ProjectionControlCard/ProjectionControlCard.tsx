@@ -98,6 +98,11 @@ export var ProjectionControlCard = connector(({
         tsne: 't-SNE'
     }
 
+    const genlabel = (step) => {
+        const percent = Math.min((step / projectionParams.iterations) * 100, 100).toFixed(1)
+        return <div><div>{`${Math.min(step, projectionParams.iterations)}/${projectionParams.iterations}`}</div><div>{`${percent}%`}</div></div>
+    }
+
     return (
         <Card className={classes.root}>
             <div className={classes.details}>
@@ -112,7 +117,7 @@ export var ProjectionControlCard = connector(({
                         </IconButton>
                     }
                     title={titles[projectionParams.method]}
-                    subheader={`${step}/${projectionParams.iterations}`}
+                    subheader={genlabel(step)}
                 />
                 <div className={classes.controls}>
 

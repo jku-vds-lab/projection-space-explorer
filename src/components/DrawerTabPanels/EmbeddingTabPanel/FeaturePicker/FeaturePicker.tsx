@@ -170,14 +170,14 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
         if (this.props.items && this.props.items[props.index].collapsed) {
             return null
         }
-
         if ("groupLabel" in props.rowData) {
             props.style.background = 'rgba(234, 234, 234, 1)'
             props.style.borderLeft = '2px solid black'
-            return <div onClick={() => {
+            return <div style={{position: 'static'}} key={this.props.items[props.index]} onClick={() => {
                 this.props.groupCollapse(props.index)
             }}>{defaultTableRowRenderer(props)}</div>
         } else {
+            
             return defaultTableRowRenderer(props);
         }
     }

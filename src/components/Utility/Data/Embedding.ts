@@ -12,10 +12,12 @@ type PositionType = {
 export class Embedding {
     positions: PositionType[]
     name: string
+    hash: string
     
     constructor(vectors: Vect[], name) {
         this.positions = new Array(vectors.length)
         this.name = name
+        this.hash = Math.random().toString(36).substring(7)
 
         vectors.forEach((vec, i) => {
             this.positions[i] = {

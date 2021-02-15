@@ -245,7 +245,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
             <List dense={true}>
                 {props.projections.map(projection => {
-                    return <ListItem button onClick={() => onProjectionClick(projection)}>
+                    return <ListItem key={projection.hash} button onClick={() => onProjectionClick(projection)}>
                         <ListItemAvatar>
                             <Avatar>
                                 <FolderIcon />
