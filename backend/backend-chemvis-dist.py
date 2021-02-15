@@ -26,6 +26,7 @@ app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 
 import os
 import time
+import shutil
 def cleanup_session_files(): # TODO: try if it works as expected
     path = session_path
     old = time.time() - 86400 # older than 24h
@@ -35,7 +36,8 @@ def cleanup_session_files(): # TODO: try if it works as expected
             cur_path = root + "\\" + _dir
             if os.path.getmtime(cur_path) < old:
                 os.remove(cur_path)
-                os.remove(root)
+                #os.remove(root)
+                shutil.rmtree(root)
 
 @hook('before_request')
 def setup_request():
@@ -123,16 +125,6 @@ def sdf_to_df(filename = None, refresh = False):
 
 
 # --------- file handling --------
-#def cleanup_temp(): # TODO: cleanup temp-files, if they are older than one day? or only keep the 5 most recent files?
-#    now = time.time()
-#    folder = './temp-files'
-#    if os.path.exists("./temp-files"):
-#        files = [os.path.join(folder, filename) for filename in os.listdir(folder)]
-#        for filename in files:
-#            if (now - os.stat(filename).st_mtime) > 3600: #remove files that were last modified one hour ago
-#                os.remove(filename)
-
-
 
 @bottle.route('/get_uploaded_files_list', method=['GET'])
 def get_uploaded_files_list():
@@ -167,6 +159,7 @@ def get_uploaded_files_list(filename):
 fingerprint_modifier = "fingerprint"
 descriptor_names_no_lineup = [fingerprint_modifier, "rep"]
 descriptor_names_show_lineup = ["pred", "predicted", "measured"]
+smiles_prefix = "smiles"
 smiles_col = 'SMILES'
 mol_col = "Molecule"
 
@@ -184,14 +177,8 @@ import time
 @bottle.route('/upload_sdf', method=['OPTIONS', 'POST'])
 def upload_sdf():
     if request.method == 'POST':
-        # cleanup_temp() # no need to do this anymore because user can delete them in the tool now
         fileUpload = request.files.get("myFile")
         supposed_file_size = int(request.forms.get("file_size"))
-        # TODO: find a solution that does not need to save a temp file... or maybe not?
-        # print(fileUpload.file.read().decode())
-        # print(fileUpload.file.read())
-        # print(fileUpload.file) # temporaryFileWrapper
-
         if not os.path.exists("./temp-files"):
             os.makedirs("./temp-files")
 
@@ -218,8 +205,6 @@ def upload_sdf():
 @bottle.route('/get_csv/', method=['GET'])
 @bottle.route('/get_csv/<filename>/', method=['GET'])
 @bottle.route('/get_csv/<filename>/<modifiers>', method=['GET'])
-#@bottle.route('/get_csv/', method=['GET'])
-#@bottle.route('/get_csv/<modifiers>', method=['GET'])
 def sdf_to_csv(filename=None, modifiers=None):
     if modifiers:
         descriptor_names_no_lineup.extend([x.strip() for x in modifiers.split(";")]) # split and trim modifier string
@@ -258,7 +243,7 @@ def sdf_to_csv(filename=None, modifiers=None):
         #else:
             #modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
             
-        elif col == smiles_col:
+        elif col == smiles_col or col.startswith(smiles_prefix):
             modifier = '%s"project":false,"hideLineUp":true,"imgSmiles":true,'%modifier # this modifier tells lineup that a structure image of this smiles string should be loaded
 
         if col == "ID":
@@ -412,8 +397,8 @@ def smiles_list_to_imgs():
 
         if len(smiles_list) == 0:
             return {"error": "empty SMILES list"}
-        if len(smiles_list) == 1:
-            return {"img_lst": [smiles_to_base64(smiles_list[0])]}
+        #if len(smiles_list) == 1:
+        #    return {"img_lst": [smiles_to_base64(smiles_list[0])]}
 
         mol_lst = []
         error_smiles = []
@@ -423,14 +408,18 @@ def smiles_list_to_imgs():
                 mol_lst.append(mol)
             else:
                 error_smiles.append(smiles)
-        #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
-        res=Chem.rdFMCS.FindMCS(mol_lst, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True) # there are different settings possible here
-        if(res.canceled):
-            patt = Chem.MolFromSmiles("*")
-            #return {"error": "the MCS search had a timeout. please try to select fewer compounds."}
+                
+        if len(mol_lst) > 1:
+            #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
+            res=Chem.rdFMCS.FindMCS(mol_lst, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True) # there are different settings possible here
+            if(res.canceled):
+                patt = Chem.MolFromSmiles("*")
+                #return {"error": "the MCS search had a timeout. please try to select fewer compounds."}
+            else:
+                patt = res.queryMol
+            TemplateAlign.rdDepictor.Compute2DCoords(patt)
         else:
-            patt = res.queryMol
-        TemplateAlign.rdDepictor.Compute2DCoords(patt)
+            patt = Chem.MolFromSmiles("*")
 
         img_lst = []
         for mol in mol_lst:
