@@ -11,21 +11,40 @@ import pickle
 
 # --------- session management ---------
 
+session_path = './session_data'
 session_opts = {
     'session.timeout': 1800, # timeout after 30 min if no interaction with the session occurs
 #    'session.cookie_expires': 20,
     'session.auto': True,
 #    'session.type': 'memory',
     'session.type': 'file',
-    'session.data_dir': './session_data',
+    'session.data_dir': session_path,
 }
 
 app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 
 
+import os
+import time
+def cleanup_session_files(): # TODO: try if it works as expected
+    path = session_path
+    old = time.time() - 86400 # older than 24h
+    
+    for root, dirs, files in os.walk(path, topdown=True):
+        for _dir in files:
+            cur_path = root + "\\" + _dir
+            if os.path.getmtime(cur_path) < old:
+                os.remove(cur_path)
+                os.remove(root)
+
 @hook('before_request')
 def setup_request():
     request.session = bottle.request.environ.get('beaker.session')
+    try:
+        cleanup_session_files()
+    except FileNotFoundError:
+        print("FileNotFoundError during session file deleting.")
+    
     
 @hook('after_request')
 def set_response_headers(): # enable session handling when origin is localhost
@@ -112,7 +131,8 @@ def sdf_to_df(filename = None, refresh = False):
 #        for filename in files:
 #            if (now - os.stat(filename).st_mtime) > 3600: #remove files that were last modified one hour ago
 #                os.remove(filename)
-                
+
+
 
 @bottle.route('/get_uploaded_files_list', method=['GET'])
 def get_uploaded_files_list():
@@ -126,6 +146,8 @@ def get_uploaded_files_list():
 
 @bottle.route('/delete_file/<filename>', method=['GET'])
 def get_uploaded_files_list(filename):
+    if filename == "test.sdf":
+        return {"deleted": "false", "error": "can't delete default file"}
     folder = './temp-files'
     if os.path.exists("./temp-files"):
         file = os.path.join(folder, filename)
@@ -136,7 +158,7 @@ def get_uploaded_files_list(filename):
                 os.remove(file_pkl)
             return {"deleted": "true"}
 
-    return {"deleted": "false"}
+    return {"deleted": "false", "error": "could not delete file. try again later"}
 
 # ------------------
 
@@ -240,7 +262,7 @@ def sdf_to_csv(filename=None, modifiers=None):
             modifier = '%s"project":false,"hideLineUp":true,"imgSmiles":true,'%modifier # this modifier tells lineup that a structure image of this smiles string should be loaded
 
         if col == "ID":
-            modifier = '%s"project":false,'%modifier # TODO: json crashed....
+            modifier = '%s"dtype":"categorical","project":false,'%modifier # TODO: json crashed....
         
 
         new_cols.append("%s{%s}"%(col,modifier[0:-1])) # remove the last comma
@@ -369,7 +391,7 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
 def smiles_to_img_post(highlight=False):
     if request.method == 'POST':
         smiles = request.forms.get("smiles")
-        return smiles_to_base64(smiles, False)
+        return {"data": smiles_to_base64(smiles, False)}
     else:
         return {}
         
@@ -450,7 +472,7 @@ def smiles_list_to_common_substructure_img():
         buffered = BytesIO()
         pil_img.save(buffered, format="JPEG")
         img_str = base64.b64encode(buffered.getvalue())
-        return img_str.decode("utf-8")
+        return {"data": img_str.decode("utf-8")}
     else:
         return {}
         
@@ -498,25 +520,30 @@ import json
 @bottle.route('/segmentation', method=['OPTIONS', 'POST'])
 def segmentation():
     if request.method == 'POST':
-        clusterVal = int(request.forms.get("clusterVal"))
+        #clusterVal = request.forms.get("clusterVal")
+        min_cluster_size_arg = request.forms.get("min_cluster_size")
+        min_cluster_samples_arg = request.forms.get("min_cluster_samples")
+        allow_single_cluster_arg = request.forms.get("allow_single_cluster")
         X = np.array(request.forms.get("X").split(","), dtype=np.float64)[:,np.newaxis].reshape((-1,2))
         
         # many small clusters
         min_cluster_size = 5
         min_cluster_samples = 1
+        allow_single_cluster = False
         
-        if clusterVal == 0: # few large clusters
-            min_cluster_size = max(int(len(X)/10), 20)
-            min_cluster_samples = min_cluster_size
-        elif clusterVal == 1: # in between
-            min_cluster_size = max(int(len(X)/100), 10)
-            min_cluster_samples = min_cluster_size
+        if min_cluster_size_arg:
+            min_cluster_size = int(min_cluster_size_arg)
+        if min_cluster_samples_arg:
+            min_cluster_samples = int(min_cluster_samples_arg)
+        if allow_single_cluster_arg == "true":
+            allow_single_cluster = bool(allow_single_cluster_arg)
+
 
         clusterer = hdbscan.HDBSCAN(
             min_cluster_size=min_cluster_size,
             min_samples=min_cluster_samples,
             #prediction_data=True, # needed for soft clustering, or if we want to add points to the clustering afterwards
-            allow_single_cluster=True # maybe disable again
+            allow_single_cluster=allow_single_cluster # maybe disable again
             )
         
         clusterer.fit_predict(X)

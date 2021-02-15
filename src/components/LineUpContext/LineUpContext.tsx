@@ -9,8 +9,8 @@ import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERende
 import * as backend_utils from "../../utils/backend-connect";
 import { FeatureType } from "../Utility/Data/FeatureType";
 import { PrebuiltFeatures } from "../Utility/Data/Dataset";
-import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 import { setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
+import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -155,9 +155,10 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         });
 
         // update lineup when smiles_column width changes
-        if(smiles_col){
-            const lineup_smiles_col = ranking.children.find(x => x.label == smiles_col);
-            if(lineup_smiles_col){
+        if(smiles_structure_columns && smiles_structure_columns.length > 0){
+            const lineup_smiles_cols = ranking.children.filter(x => smiles_structure_columns.includes(x.label));
+            for (const i in lineup_smiles_cols){
+                let lineup_smiles_col = lineup_smiles_cols[i];
                 lineup_smiles_col.on("widthChanged", (prev, current) => {
                     lineup.update()
                 });
@@ -253,7 +254,7 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
     }, [hoverState]);
 
 
-    return true ? 
+    return false ? 
         <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>
             <div ref={lineup_ref} id="lineup_view"></div>
         </MyWindowPortal> : 
@@ -261,14 +262,15 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
 })
 
 
-let smiles_col = null;
+let smiles_structure_columns = [];
 function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight{
-    if(smiles_col){
-        const col = ranking.children.find(x => x.label == smiles_col);
-        if(!col)
+    if(smiles_structure_columns.length > 0){
+        const cols = ranking.children.filter(x => smiles_structure_columns.includes(x.label));
+        if(!cols || cols.length == 0)
             return null;
 
-        const col_width = col.getWidth();
+        const col_widths = cols.map(x => x.getWidth());
+        const col_width = Math.max(...col_widths);//col.getWidth();
 
         let height = function(item: IGroupItem | Readonly<IOrderedGroup>): number{
             return col_width;
@@ -291,7 +293,8 @@ function buildLineup(cols, data){
 
         if(!EXCLUDED_COLUMNS.includes(i) && (Object.keys(col.metaInformation).length <= 0 || !col.metaInformation.noLineUp)){ // only if there is a "noLineUp" modifier at this column or thix column is excluded, we don't do anything
             if(col.metaInformation.imgSmiles){
-                smiles_col = "Structure";
+                const smiles_col = "Structure: " + i;
+                smiles_structure_columns.push(smiles_col);
                 builder.column(LineUpJS.buildColumn("mySmilesStructureColumn", i).label(smiles_col).renderer("mySmilesStructureRenderer", "mySmilesStructureRenderer").width(50).build([]));
                 
             }

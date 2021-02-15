@@ -247,11 +247,11 @@ export const ClusteringTabPanel = connector(({
     const marks = [
         {
           value: 0,
-          label: 'few Clusters',
+          label: 'Few Clusters',
         },
         {
           value: 2,
-          label: 'many Clusters',
+          label: 'Many Clusters',
         }
       ];
     React.useEffect(() => toggleClusters(), [dataset])

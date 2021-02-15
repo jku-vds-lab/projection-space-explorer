@@ -78,11 +78,12 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
 function loadImage(props, setComp, handleMouseEnter, handleMouseOut){
     let smiles_col = "SMILES";
 
-    for (const col_name in props.columns) {
-        let col = props.columns[col_name];
-        if(col.metaInformation.imgSmiles)
-            smiles_col = col_name;
-    }
+    // TODO: find by meta_data -> how to handle multiple smiles columns?
+    // for (const col_name in props.columns) {
+    //     let col = props.columns[col_name];
+    //     if(col.metaInformation.imgSmiles)
+    //         smiles_col = col_name;
+    // }
     if(smiles_col in props.columns){
         setComp(<div></div>);
         if (props.aggregate) {
@@ -96,7 +97,7 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut){
                     // @ts-ignore
                     //const img_lst = x["img_lst"].map((svg,i) => svg)
                     const img_lst = x["img_lst"].map((base64,i) => {
-                        return <Grid className={"legend_multiple"} key={i} item><img src={"data:image/jpeg;base64," + base64} onMouseEnter={() => {handleMouseEnter(i);}} onMouseLeave={() => {handleMouseOut();}}/></Grid>
+                        return <Grid className={"legend_multiple"} key={i} item><img src={"data:image/jpeg;base64," + base64} onMouseEnter={() => {handleMouseEnter(i);}} onMouseOver={() => {handleMouseEnter(i);}} onMouseLeave={() => {handleMouseOut();}}/></Grid>
                     }) //key={props.selection[i][smiles_col]} --> gives error because sometimes smiles ocure twice
                     setComp(img_lst);//<div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />
                 })
@@ -136,13 +137,13 @@ type Props = PropsFromRedux & {
 
 function addHighlight(element){
     if(element && element.style){
-        element.style["border"] = "solid black";
+        element.style["border"] = "solid black 1px";
     }
 }
 
 function removeHighlight(element){
     if(element && element.style){
-        element.style["border"] = "solid white";
+        element.style["border"] = "solid white 1px";
     }
 }
 
