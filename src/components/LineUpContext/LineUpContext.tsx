@@ -11,6 +11,9 @@ import { FeatureType } from "../Utility/Data/FeatureType";
 import { PrebuiltFeatures } from "../Utility/Data/Dataset";
 import { setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
+// import { debounce } from "@material-ui/core";
+// import debounce from 'lodash.debounce';
+import * as _ from 'lodash';
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -75,7 +78,7 @@ const UPDATER = "lineup";
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, setLineUpInput_visibility, onFilter, activeStory, hoverUpdate, hoverState }: Props) {
+export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, setLineUpInput_visibility, onFilter, activeStory, hoverUpdate, hoverState }: Props) { // hoverState -> makes everything slow....
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
         return null;
@@ -90,7 +93,12 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         row[PrebuiltFeatures.ClusterLabel] = element[PrebuiltFeatures.ClusterLabel].toString();
         lineup_data.push(row);
     });
-    // console.log(lineup_data);
+
+
+
+    
+    const debouncedHighlight = React.useCallback(_.debounce(hover_item => hoverUpdate(hover_item, UPDATER), 200), []);
+
     let lineup_ref = React.useRef();
 
     React.useEffect(() => {
@@ -151,7 +159,7 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             if(idx >= 0){
                 hover_item = lineUpInput.data[idx];
             }
-            hoverUpdate(hover_item, UPDATER);
+            debouncedHighlight(hover_item);
         });
 
         // update lineup when smiles_column width changes
@@ -203,7 +211,7 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
                 const currentSelection_scatter = lineUpInput.data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
                 lineup.setSelection(currentSelection_scatter);
                 
-                const lineup_idx = lineup.renderer?.rankings[0]?.findNearest(currentSelection_scatter);
+                // const lineup_idx = lineup.renderer?.rankings[0]?.findNearest(currentSelection_scatter);
                 // lineup.renderer?.rankings[0]?.scrollIntoView(lineup_idx);
 
                 // set the grouping to selection checkboxes -> uncomment if this should be automatically if something changes
@@ -219,25 +227,18 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
 
     // const debouncedHighlight = React.useCallback(debounce<any>(lineup_idx => lineup?.setHighlight(lineup_idx, true), 1000), []);
 
+    // --> not sure if this makes sense without scrolling
+    // --> hoverstate updates make lineup slow
     React.useEffect(() => {
         // hover the instance that is hovered in the scatter plot view
         if(lineup && lineUpInput.data){ // TODO: sometimes there is a lineup bug when too many rows are highlighted??
             if(hoverState && hoverState.data){
                 if(hoverState.updater != UPDATER){
-                    const lineup_idx = lineUpInput.data.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"]);
-                    
+                    // const lineup_idx = lineUpInput.data.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"]);
+                    const lineup_idx = 1
                     if(lineup_idx >= 0){
-                        // const lineup_idx_valid = lineup.renderer?.rankings[0]?.findNearest([lineup_idx]);
-                        // console.log(lineup_idx, lineup_idx_valid);
-                        // debouncedHighlight(lineup_idx);
-                        // lineup.renderer?.rankings[0]?.setHighlight(lineup_idx);
                         lineup.setHighlight(lineup_idx, false); // flag that tells, if we want to scoll to that row
-                        // try{ // there is a lineup bug when trying to scroll to a certain index
-                        //     // lineup.setHighlight(lineup_idx_valid, true); // flag that tells, if we want to scoll to that row
-                        //     // lineup.renderer.rankings[0].scrollIntoView(lineup_idx);
-                        // }catch(ex){
-                        //     console.log("exception when changing highliged row in lineup:", ex);
-                        // }
+                        
                     }
                 }
             }
@@ -254,12 +255,19 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
     }, [hoverState]);
 
 
-    return false ? 
-        <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>
-            <div ref={lineup_ref} id="lineup_view"></div>
-        </MyWindowPortal> : 
-        <div className="LineUpParent"><div ref={lineup_ref} id="lineup_view"></div></div>;
+    return <div>{false ? 
+            <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>
+                <div ref={lineup_ref} id="lineup_view"></div>
+            </MyWindowPortal> : 
+            <div className="LineUpParent"><div ref={lineup_ref} id="lineup_view"></div></div>}
+            <LineupHelper></LineupHelper>
+        </div>;
 })
+
+const LineupHelper = props => {
+    console.log("render LineupHelper")
+    return <div></div>
+}
 
 
 let smiles_structure_columns = [];
@@ -304,7 +312,10 @@ function buildLineup(cols, data){
             else if(typeof col.featureType !== 'undefined'){
                 switch(col.featureType){
                     case FeatureType.Categorical:
-                        builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));//.categories(col.distinct).width(70));
+                        if(col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
+                            builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
+                        else
+                            builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
                         break;
                     case FeatureType.Quantitative:
                         builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show));
@@ -312,17 +323,20 @@ function buildLineup(cols, data){
                     case FeatureType.Date:
                         builder.column(LineUpJS.buildDateColumn(i).custom("visible", show));
                         break;
+                    case FeatureType.String:
+                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
+                        break;
                     default:
+                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
                         break;
 
                 }
-            }
-            else{
+            }else{
                 if(col.isNumeric){
                     builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));
                 }else if(col.distinct)
                     if(col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
-                        builder.column(LineUpJS.buildCategoricalColumn(i).categories(col.distinct).custom("visible", show));
+                        builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
                     else
                         builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));   
                 else

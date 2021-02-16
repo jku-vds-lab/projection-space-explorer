@@ -156,7 +156,7 @@ export class Dataset {
         columnNames.forEach(columnName => {
             // @ts-ignore
             this.columns[columnName] = { }
-
+            
             this.columns[columnName].featureType = featureTypes[columnName];
 
 

@@ -1,10 +1,13 @@
 
 # define our environment
-#FROM jcrist/alpine-conda:4.6.8
+# FROM jcrist/alpine-conda:4.6.8
 FROM continuumio/miniconda3:4.6.14
 
 # install rdkit and bottle
 RUN /opt/conda/bin/conda install --yes --freeze-installed -c conda-forge rdkit bottle hdbscan && /opt/conda/bin/conda clean -afy
+
+# can probably be removed in a future version: https://github.com/scikit-learn-contrib/hdbscan/issues/436
+RUN /opt/conda/bin/conda install joblib==0.17.0
 RUN pip install bottle-beaker
 
 # define target folder

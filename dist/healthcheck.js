@@ -369,7 +369,13 @@ function get_structures_from_smiles_list(formData) {
               credentials: exports.CREDENTIALS
             }).then(handle_errors).then(function (response) {
               return response.json();
-            }).then(handle_errors_json).catch(function (error) {
+            }).then(handle_errors_json).then(function (data) {
+              if (data["error_smiles"].length > 0) {
+                alert("following smiles couldn not be parsed: " + data["error_smiles"]);
+              }
+
+              return data;
+            }).catch(function (error) {
               alert("could not load structures");
               console.error(error);
             }));
@@ -484,22 +490,28 @@ function upload_sdf_file(file) {
 exports.upload_sdf_file = upload_sdf_file;
 
 function get_representation_list() {
+  var refresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
     var cached_data, path;
     return regeneratorRuntime.wrap(function _callee9$(_context9) {
       while (1) {
         switch (_context9.prev = _context9.next) {
           case 0:
+            if (refresh) {
+              _context9.next = 4;
+              break;
+            }
+
             cached_data = handleCache("representation_list");
 
             if (!cached_data) {
-              _context9.next = 3;
+              _context9.next = 4;
               break;
             }
 
             return _context9.abrupt("return", async_cache(cached_data));
 
-          case 3:
+          case 4:
             path = exports.BASE_URL + '/get_atom_rep_list';
             if (localStorage.getItem("unique_filename")) path += "/" + localStorage.getItem("unique_filename");
             return _context9.abrupt("return", fetch(path, {
@@ -515,7 +527,7 @@ function get_representation_list() {
               console.error(error);
             }));
 
-          case 6:
+          case 7:
           case "end":
             return _context9.stop();
         }

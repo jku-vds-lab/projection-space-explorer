@@ -137,6 +137,12 @@ export async function get_structures_from_smiles_list(formData:FormData){
     .then(handle_errors)
     .then(response => response.json())
     .then(handle_errors_json)
+    .then(data => {
+        if(data["error_smiles"].length > 0){
+            alert("following smiles couldn not be parsed: " + data["error_smiles"]);
+        }
+        return data;
+    })
     .catch(error => {
         alert("could not load structures");
         console.error(error)
@@ -210,10 +216,12 @@ export async function upload_sdf_file(file){
 }
 
 
-export async function get_representation_list(){
-    const cached_data = handleCache("representation_list")
-    if(cached_data){
-        return async_cache(cached_data);
+export async function get_representation_list(refresh=false){
+    if(!refresh){
+        const cached_data = handleCache("representation_list")
+        if(cached_data){
+            return async_cache(cached_data);
+        }
     }
     let path = BASE_URL+'/get_atom_rep_list';
     if(localStorage.getItem("unique_filename"))

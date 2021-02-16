@@ -47,7 +47,7 @@ const SelectionClustersFull = function ({
                 <MyWindowPortal onClose={() => {
                     setHoverWindowMode(WindowMode.Embedded)
                 }}>
-                    <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
+                    <div className={"portalSummary"}><GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend></div>
                 </MyWindowPortal>
                 :
                 <div className={"Cluster"}>

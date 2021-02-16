@@ -178,7 +178,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.requestRender()
     }
 
-    hoverUpdate(hover_item, updater){
+    async hoverUpdate(hover_item, updater){
         let idx = -1;
         if(hover_item && hover_item["__meta__"]){
             idx = hover_item["__meta__"]["view"]["meshIndex"];

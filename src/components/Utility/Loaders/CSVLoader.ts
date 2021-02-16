@@ -124,25 +124,28 @@ export class CSVLoader implements Loader {
             return map
         }, {})
 
-        
         let index = 0;
         var types = {}
         // decide the type of each feature - categorical/quantitative/date
         header.forEach((f) => {
-            const col_meta = metaInformation[Object.keys(metaInformation)[i]];
+            const current_key = Object.keys(metaInformation)[index]
+            const col_meta = metaInformation[current_key];
             if(col_meta?.dtype){
                 switch(col_meta.dtype){
                     case "numerical":
-                        types[f] = FeatureType.Quantitative;
+                        types[current_key] = FeatureType.Quantitative;
                         break;
                     case "date":
-                        types[f] = FeatureType.Date;
+                        types[current_key] = FeatureType.Date;
                         break;
                     case "categorical":
-                        types[f] = FeatureType.Categorical;
+                        types[current_key] = FeatureType.Categorical;
+                        break;
+                    case "string":
+                        types[current_key] = FeatureType.String;
                         break;
                     default:
-                        types[f] = FeatureType.Categorical;
+                        types[current_key] = FeatureType.String;
                         break;
                 }
             }else{
@@ -151,25 +154,25 @@ export class CSVLoader implements Loader {
                 var contains_date = {}
                 var contains_arbitrary = {}
                 vectors.forEach((r) => {
-                    const type = this.getFeatureType(r[f])
+                    const type = this.getFeatureType(r[current_key])
                     if (type === 'number') {
-                        contains_number[f] = true
+                        contains_number[current_key] = true
                     } else if (type === 'date') {
-                        contains_date[f] = true
+                        contains_date[current_key] = true
                     } else {
-                        contains_arbitrary[f] = true
+                        contains_arbitrary[current_key] = true
                     }
                 })
                 
-                if (contains_number[f] && !contains_date[f] && !contains_arbitrary[f]) {
+                if (contains_number[current_key] && !contains_date[current_key] && !contains_arbitrary[current_key]) {
                     // only numbers -> quantitative type
-                    types[f] = FeatureType.Quantitative
-                } else if (!contains_number[f] && contains_date[f] && !contains_arbitrary[f]) {
+                    types[current_key] = FeatureType.Quantitative
+                } else if (!contains_number[current_key] && contains_date[current_key] && !contains_arbitrary[current_key]) {
                     // only date -> date type
-                    types[f] = FeatureType.Date
+                    types[current_key] = FeatureType.Date
                 } else {
                     // otherwise categorical
-                    types[f] = FeatureType.Categorical
+                    types[current_key] = FeatureType.Categorical
                 }
             }
             index++;
