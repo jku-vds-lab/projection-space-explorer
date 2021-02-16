@@ -748,7 +748,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         }}>
           <AppBar variant="outlined" position="relative" color="transparent">
             <Toolbar>
-              <img style={{ height: 48 }} src={"textures/vis-logo.png"} alt="Kitty Katty!" />
+              <img style={{ height: 48 }} src={"textures/vis-logo-svg.svg"} alt="Kitty Katty!" />
               <Typography variant="h6" style={{ marginLeft: 48 }}>
                 Projection Space Explorer
               </Typography>
@@ -804,10 +804,14 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
 
-// Create theme for the application.
 const theme = createMuiTheme({
   palette: {
-    type: 'light'
+    primary: {
+      // light: will be calculated from palette.primary.main,
+      main: '#007dad',
+      // dark: will be calculated from palette.primary.main,
+      // contrastText: will be calculated to contrast with palette.primary.main
+    }
   }
 })
 

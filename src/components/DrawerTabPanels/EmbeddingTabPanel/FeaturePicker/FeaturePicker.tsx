@@ -62,10 +62,7 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
     };
 
     cellRenderer = ({ cellData, columnIndex, rowIndex }) => {
-
-
         const { columns, classes, onRowClick } = this.props;
-
 
         const Col2 = ({ rowIndex }) => {
             let rowData = this.props.items[rowIndex]
@@ -103,9 +100,9 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
                 if (typeof cellData == "boolean") {
                     return <Checkbox
                         disableRipple
+                        disabled={!rowData.checked && columnIndex == 2}
                         checked={cellData}
                         onClick={(event) => {
-
                             const target: any = event.target
                             this.props.onCheckbox(columnIndex, rowIndex, event.shiftKey, target.checked)
                         }}

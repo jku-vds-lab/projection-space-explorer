@@ -116,6 +116,8 @@ There are some toy datasets available in this repository under **datasets/toy** 
 
 ## Installation
 
+### Install npm packages
+
 Use a git tool to clone this repository to your computer.
 
 ```bash
@@ -134,7 +136,7 @@ and run the command to install the required packages
 npm install
 ```
 
-## Building the application
+### Build the application
 
 There is always a valid build in the repository, but in case you want to make changes, you can use the local build server. Start it with the command
 
@@ -144,6 +146,26 @@ npm run webpack:dev
 
 Whenever a file is changed while this server is running, it will automatically build a new version and deploy it in the /dist folder.
 
-## Starting the application
+### Starting the application
 
 To start the application you just need to start the index.html locally. The easiest way to this is by using the live server provided by either Atom or Visual Studio Code.
+
+
+
+
+
+## Credits
+
+For the projection algorithms, we use the following libraries:
+
+### t-SNE
+
+https://github.com/karpathy/tsnejs
+
+### UMAP
+
+https://github.com/PAIR-code/umap-js
+
+### ForceAtlas2
+
+https://www.npmjs.com/package/graphology-layout-forceatlas2

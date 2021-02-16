@@ -47,9 +47,9 @@ const Plus = ({ onClick, x, y, r }) => {
     return <g onClick={() => {
         onClick()
     }}>
-        <circle cx={x} cy={y} r={r} fill="#F0F0F0" stroke-width="2" stroke="red" ></circle>
-        <line x1={x - r + 3} y1={y} x2={x + r - 3} y2={y} stroke-width="2" stroke="red"></line>
-        <line x1={x} y1={y - r + 3} x2={x} y2={y + r - 3} stroke-width="2" stroke="red"></line>
+        <circle cx={x} cy={y} r={r} fill="#F0F0F0" strokeWidth="2" stroke="red" ></circle>
+        <line x1={x - r + 3} y1={y} x2={x + r - 3} y2={y} strokeWidth="2" stroke="red"></line>
+        <line x1={x} y1={y - r + 3} x2={x} y2={y + r - 3} strokeWidth="2" stroke="red"></line>
     </g>
 }
 
@@ -142,7 +142,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
                                 let sidePath = stories.trace.sidePaths[sidePathIndex]
 
-                                components.push(<g>
+                                components.push(<g key={sidePathIndex}>
                                     {
                                         // Rectangles between outgoing and ingoing sync nodes
                                         sidePath.syncNodes.map((node, i) => {
@@ -230,8 +230,8 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
                     {// <!--<circle cx={midX} cy={p.y} r="6" fill={mainColor} />-->
                         position.map((p, index) => {
-                            return <g>
-                                <text x={midX + 10} y={p.y} fill="black" font-weight="bold" font-family="monospace">{index}</text>
+                            return <g key={`${p.x}${p.y}`}>
+                                <text x={midX + 10} y={p.y} fill="black" fontWeight="bold" fontFamily="monospace">{index}</text>
                                 <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={mainColor} />
 
                             </g>
@@ -244,12 +244,12 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                 let p1 = p
                                 let p2 = position[i + 1]
 
-                                return <line x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
+                                return <line key={`${p.x}${p.y}`} x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
                             } else {
                                 let p1 = p
                                 let p2 = { x: p1.x, y: p1.y + 40 }
 
-                                return <g>
+                                return <g key={`${p.x}${p.y}`}>
                                     <line x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
                                     <Plus x={midX} y={p2.y} r={10} onClick={() => {
                                         let cluster = Cluster.fromSamples(currentAggregation)
@@ -263,7 +263,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                     }
 
                     {
-                        position.length == 0 && <g>
+                        position.length == 0 && <g key={"plusmarker"}>
                             <line x1={midX} y1={0} x2={midX} y2={100} stroke={mainColor} strokeWidth="2"></line>
                             <Plus x={midX} y={50} r={10} onClick={() => {
 
@@ -326,10 +326,12 @@ export const ClusterOverview = connector(function ({
         setActiveTraceState(stories.trace.mainPath[0])
     }, [stories.trace])
 
+
+
     return <Grow in={stories.active != null && stories.trace != null}>
         <Card className="ClusterOverviewParent" variant="outlined">
 
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
                 <CardHeader
                     
                     action={

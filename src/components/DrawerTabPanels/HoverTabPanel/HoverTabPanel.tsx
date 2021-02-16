@@ -1,6 +1,7 @@
-import { Box, FormControlLabel, Switch } from "@material-ui/core";
+import { Box, Button, FormControlLabel, Switch } from "@material-ui/core";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
+import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import { setHoverWindowMode, WindowMode } from "../../Ducks/HoverSettingsDuck";
 import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClusters";
 import { RootState } from "../../Store/Store";
@@ -11,6 +12,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = dispatch => ({
     setHoverWindowMode: value => dispatch(setHoverWindowMode(value)),
+    setAggregation: value => dispatch(setAggregationAction(value))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -22,7 +24,7 @@ type Props = PropsFromRedux & {
 }
 
 
-export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate }: Props) => {
+export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
@@ -33,6 +35,8 @@ export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hov
                 control={<Switch checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
                 label="External Selection Summary"
             />
+
+            <Button variant="outlined" onClick={() => { setAggregation([]) }}>Clear Selection</Button>
         </Box>
 
         <SelectionClusters hoverUpdate={hoverUpdate}></SelectionClusters>

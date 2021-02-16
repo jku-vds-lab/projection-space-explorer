@@ -19,7 +19,7 @@ import * as nt from '../../NumTs/NumTs'
 import * as frontend_utils from "../../../utils/frontend-connect";
 
 const SELECTED_COLOR = 0x4d94ff
-const DEFAULT_COLOR = 0xA9A9A9
+const DEFAULT_COLOR = 0x808080
 const GRAYED = 0xDCDCDC
 
 const WING_SIZE = 2.2

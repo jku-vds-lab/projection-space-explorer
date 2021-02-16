@@ -1,10 +1,10 @@
 import React = require("react")
-import { Avatar, Box, Button, Checkbox, FormControlLabel, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Switch, TextField, Typography } from "@material-ui/core"
+import { Avatar, Box, Button, Checkbox, FormGroup, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Paper, Popover, Switch, TextField, Typography } from "@material-ui/core"
 import { connect, ConnectedProps } from 'react-redux'
 import Cluster from "../../Utility/Data/Cluster"
 import { Story } from "../../Utility/Data/Story"
 import { graphLayout, Edge } from "../../Utility/graphs"
-
+import SettingsIcon from '@material-ui/icons/Settings';
 import { setSelectedClusters } from "../../Ducks/SelectedClustersDuck"
 import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
@@ -18,6 +18,9 @@ import * as frontend_utils from "../../../utils/frontend-connect";
 import { Vect } from "../../Utility/Data/Vect"
 import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
+import { setChannelColor } from "../../Ducks/ChannelColorDuck"
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { setLineUpInput_data, setLineUpInput_visibility } from "../../Ducks/LineUpInputDuck"
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -25,7 +28,8 @@ const mapStateToProps = (state: RootState) => ({
     displayMode: state.displayMode,
     dataset: state.dataset,
     webGLView: state.webGLView,
-    selectedClusters: state.selectedClusters
+    selectedClusters: state.selectedClusters,
+    categoryOptions: state.categoryOptions
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -36,7 +40,10 @@ const mapDispatchToProps = dispatch => ({
     setSelectedClusters: value => dispatch(setSelectedClusters(value)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
     addStory: story => dispatch(addStory(story)),
-    removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster))
+    removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
+    setChannelColor: col => dispatch(setChannelColor(col)),
+    setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
+    setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -48,7 +55,16 @@ type Props = PropsFromRedux & {
     clusteringWorker
 }
 
+
+
+
+
+
+
+
 export const ClusteringTabPanel = connector(({
+    categoryOptions,
+    setChannelColor,
     setStories,
     setActiveStory,
     currentAggregation,
@@ -63,7 +79,9 @@ export const ClusteringTabPanel = connector(({
     addClusterToStory,
     removeClusterFromStories,
     webGLView,
-    selectedClusters }: Props) => {
+    selectedClusters,
+    setLineUpInput_data,
+    setLineUpInput_visibility }: Props) => {
 
 
     function storyLayout(edges: Edge[]) {
@@ -215,6 +233,10 @@ export const ClusteringTabPanel = connector(({
                 setActiveStory(story)
 
                 // Update UI, dont know how to right now
+                var clusterAttribute = categoryOptions.getAttribute("color", "clusterLabel", "categorical")
+                if (clusterAttribute) {
+                    this.props.setChannelColor(clusterAttribute)
+                }
             })
         );
     }
@@ -224,17 +246,17 @@ export const ClusteringTabPanel = connector(({
     const [min_cluster_size, set_min_cluster_size] = React.useState(5);
     const [min_cluster_samples, set_min_cluster_samples] = React.useState(1);
     const [allow_single_cluster, set_allow_single_cluster] = React.useState(false);
-    
+
     const handleClusterSliderChange = (event, newValue) => {
-        switch(newValue){
+        switch (newValue) {
             case 0:
-                set_min_cluster_size(Math.max(dataset.vectors.length/100, 20));
-                set_min_cluster_samples(Math.round(min_cluster_size/2))
+                set_min_cluster_size(Math.max(dataset.vectors.length / 100, 20));
+                set_min_cluster_samples(Math.round(min_cluster_size / 2))
                 set_allow_single_cluster(true);
                 break;
             case 1:
-                set_min_cluster_size(Math.max(dataset.vectors.length/100, 9));
-                set_min_cluster_samples(Math.round(min_cluster_size/2))
+                set_min_cluster_size(Math.max(dataset.vectors.length / 100, 9));
+                set_min_cluster_samples(Math.round(min_cluster_size / 2))
                 set_allow_single_cluster(false);
                 break;
             case 2:
@@ -246,14 +268,14 @@ export const ClusteringTabPanel = connector(({
     };
     const marks = [
         {
-          value: 0,
-          label: 'few Clusters',
+            value: 0,
+            label: 'few Clusters',
         },
         {
-          value: 2,
-          label: 'many Clusters',
+            value: 2,
+            label: 'many Clusters',
         }
-      ];
+    ];
     React.useEffect(() => toggleClusters(), [dataset])
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -276,53 +298,53 @@ export const ClusteringTabPanel = connector(({
         <Box paddingLeft={2}>
             <FormControlLabel
                 control={
-                <Switch
-                    checked={clusterAdvancedMode}
-                    onChange={(event, newValue) => { setClusterAdvancedMode(newValue) }}
-                    name="advancedClustering"
-                />
+                    <Switch
+                        checked={clusterAdvancedMode}
+                        onChange={(event, newValue) => { setClusterAdvancedMode(newValue) }}
+                        name="advancedClustering"
+                    />
                 }
                 label="Advanced"
             />
         </Box>
-        {clusterAdvancedMode ? 
-        <Box paddingLeft={2}>
-            <TextField
-                label="min Cluster Size"
-                type="number"
-                InputLabelProps={{
-                    shrink: true,
-                    
-                }}
-                value={min_cluster_size}
-                onChange={(event) => { set_min_cluster_size(Math.max(parseInt(event.target.value), 2)) }}
-            />
-            <TextField
-                label="min Cluster Samples"
-                type="number"
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                value={min_cluster_samples}
-                onChange={(event) => { set_min_cluster_samples(Math.max(parseInt(event.target.value), 1)) }}
-            />
-            <FormControlLabel
-            control={<Checkbox checked={allow_single_cluster} onChange={(event) => {set_allow_single_cluster(event.target.checked)}}/>}
-            label="Allow Single Cluster"
-          />
-        </Box> :
-        <Box paddingLeft={7} paddingRight={7}>
-            <Slider
-                defaultValue={2}
-                aria-labelledby="discrete-slider-custom"
-                step={1}
-                marks={marks}
-                min={0}
-                max={2}
-                value={clusterSliderValue}
-                onChange={handleClusterSliderChange}
-            />
-        </Box>
+        {clusterAdvancedMode ?
+            <Box paddingLeft={2}>
+                <TextField
+                    label="min Cluster Size"
+                    type="number"
+                    InputLabelProps={{
+                        shrink: true,
+
+                    }}
+                    value={min_cluster_size}
+                    onChange={(event) => { set_min_cluster_size(Math.max(parseInt(event.target.value), 2)) }}
+                />
+                <TextField
+                    label="min Cluster Samples"
+                    type="number"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    value={min_cluster_samples}
+                    onChange={(event) => { set_min_cluster_samples(Math.max(parseInt(event.target.value), 1)) }}
+                />
+                <FormControlLabel
+                    control={<Checkbox checked={allow_single_cluster} onChange={(event) => { set_allow_single_cluster(event.target.checked) }} />}
+                    label="Allow Single Cluster"
+                />
+            </Box> :
+            <Box paddingLeft={7} paddingRight={7}>
+                <Slider
+                    defaultValue={2}
+                    aria-labelledby="discrete-slider-custom"
+                    step={1}
+                    marks={marks}
+                    min={0}
+                    max={2}
+                    value={clusterSliderValue}
+                    onChange={handleClusterSliderChange}
+                />
+            </Box>
         }
         <Box p={2}>
             <Button
@@ -330,7 +352,7 @@ export const ClusteringTabPanel = connector(({
                 style={{
                     width: '100%'
                 }}
-                onClick={() => {calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster)}}>Projection-based Clustering</Button>
+                onClick={() => { calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster) }}>Projection-based Clustering</Button>
         </Box>
 
         <Box paddingLeft={2} paddingTop={2}>
@@ -342,31 +364,181 @@ export const ClusteringTabPanel = connector(({
         </Box>
 
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
-            <List>
-                {stories.active?.clusters.map((cluster, key) => {
-                    return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={() => {
-                        webGLView.current.onClusterClicked(cluster)
-                    }}>
-                        <ListItemAvatar>
-                            <Avatar>
-                                <FolderIcon />
-                            </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={`Group ${cluster.label}`}
-                            secondary={`${cluster.vectors.length} Samples`}
-                        />
-                        <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="delete" onClick={() => {
-                                removeClusterFromStories(cluster)
-                            }}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                })
-                }
-            </List>
+            <ClusterList
+                removeClusterFromStories={removeClusterFromStories}
+                selectedClusters={selectedClusters}
+                webGLView={webGLView}
+                stories={stories}
+                setLineUpInput_data={setLineUpInput_data}
+                setLineUpInput_visibility={setLineUpInput_visibility}
+            ></ClusterList>
         </div>
     </div>
 })
+
+type ClusterPopoverProps = {
+    anchorEl: any
+    setAnchorEl: any
+    cluster: Cluster
+    removeClusterFromStories: any
+    setLineUpInput_data: any
+    setLineUpInput_visibility: any
+}
+
+function ClusterPopover({
+    anchorEl,
+    setAnchorEl,
+    cluster,
+    removeClusterFromStories,
+    setLineUpInput_data,
+    setLineUpInput_visibility
+}: ClusterPopoverProps) {
+
+    if (!cluster) return null;
+
+    const [name, setName] = React.useState(cluster.name)
+
+    const useStyles = makeStyles(theme => ({
+        button: {
+            margin: theme.spacing(1)
+        },
+        root: {
+            padding: theme.spacing(3, 2)
+        }
+    }))
+
+    const classes = useStyles()
+
+    React.useEffect(() => {
+        if (cluster && anchorEl) {
+            setName(cluster.getTextRepresentation())
+
+        }
+    }, [anchorEl, cluster])
+
+    const onSave = () => {
+        cluster.name = name
+        setAnchorEl(null)
+    }
+
+    const onDelete = () => {
+        setAnchorEl(null)
+        removeClusterFromStories(cluster)
+    }
+
+    const onLineup = () => {
+        setAnchorEl(null)
+        setLineUpInput_data(cluster.vectors)
+        setLineUpInput_visibility(true)
+    }
+
+    return <Popover
+        id={"dialog to open"}
+        open={anchorEl !== null}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+        }}
+        transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+        }}
+    >
+        <div>
+            <Paper className={classes.root}>
+                <FormGroup>
+                    <Button
+                        className={classes.button}
+                        variant="contained"
+                        color="secondary"
+                        onClick={onDelete}
+                        startIcon={<DeleteIcon />}
+                    >
+                        Delete
+                    </Button>
+
+                    <TextField
+                        className={classes.button}
+                        id="option3"
+                        label="Group Name"
+                        value={name}
+                        onChange={(event) => { setName(event.target.value) }}
+                        margin="normal"
+                    />
+
+                    <Button
+                        className={classes.button}
+                        onClick={onLineup}
+                        variant="outlined"
+                    >LineUp</Button>
+
+                    <Button
+                        className={classes.button}
+                        onClick={onSave}
+                        variant="outlined"
+                    >Save</Button>
+                </FormGroup>
+            </Paper>
+        </div>
+
+    </Popover>
+}
+
+function ClusterList({
+    selectedClusters,
+    webGLView,
+    stories,
+    removeClusterFromStories,
+    setLineUpInput_data,
+    setLineUpInput_visibility
+}) {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [popoverCluster, setPopoverCluster] = React.useState(null)
+
+    const handleClick = event => {
+        setAnchorEl(event.currentTarget);
+    };
+
+
+
+    return <div>
+        <ClusterPopover
+            anchorEl={anchorEl}
+            setAnchorEl={setAnchorEl}
+            cluster={popoverCluster}
+            removeClusterFromStories={removeClusterFromStories}
+            setLineUpInput_visibility={setLineUpInput_visibility}
+            setLineUpInput_data={setLineUpInput_data}
+        ></ClusterPopover>
+
+        <List>
+            {stories.active?.clusters.map((cluster, key) => {
+                return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={() => {
+                    webGLView.current.onClusterClicked(cluster)
+                }}>
+                    <ListItemAvatar>
+                        <Avatar>
+                            <FolderIcon />
+                        </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                        primary={cluster.getTextRepresentation()}
+                        secondary={`${cluster.vectors.length} Samples`}
+                    />
+                    <ListItemSecondaryAction>
+                        <IconButton edge="end" aria-label="delete" onClick={(event) => {
+                            //removeClusterFromStories(cluster)
+                            setPopoverCluster(cluster)
+                            setAnchorEl(event.target)
+                        }}>
+                            <SettingsIcon />
+                        </IconButton>
+                    </ListItemSecondaryAction>
+                </ListItem>
+            })
+            }
+        </List>
+    </div>
+}
