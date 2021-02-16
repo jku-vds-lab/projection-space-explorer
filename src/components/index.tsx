@@ -748,7 +748,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         }}>
           <AppBar variant="outlined" position="relative" color="transparent">
             <Toolbar>
-              <img style={{ height: 48 }} src={"textures/vis-logo-svg.svg"} alt="Kitty Katty!" />
+              <a href={"https://jku-vds-lab.at"} target={"_blank"}><img style={{ height: 48 }} src={"textures/vis-logo-svg.svg"} alt="Kitty Katty!" /></a>
+              {frontend_utils.CHEM_PROJECT && <a href={"https://www.bayer.com"} target={"_blank"}><img style={{ height: 48, marginLeft: 48 }} src={"textures/bayer-logo.svg"} alt="Powered By Bayer" /></a>}
               <Typography variant="h6" style={{ marginLeft: 48 }}>
                 Projection Space Explorer
               </Typography>
