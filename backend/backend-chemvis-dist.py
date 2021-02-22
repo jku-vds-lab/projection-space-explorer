@@ -104,14 +104,12 @@ def sdf_to_df(filename = None, refresh = False):
         if os.path.exists("./temp-files/%s.pkl"%filename.split('.')[0]):
             print("load_pickle")
             frame = pd.read_pickle("./temp-files/%s.pkl"%filename.split('.')[0])
-            #frame = pickle.load(open("./temp-files/%s.pkl"%filename.split('.')[0], "rb"))
         else:
             print("load_sdf")
             frame = my_load_sdf("./temp-files/%s"%filename,smilesName=smiles_col,molColName=mol_col)
             frame = frame.fillna(0)
             frame = frame.replace("nan", 0)
             frame.to_pickle("./temp-files/%s.pkl"%filename.split('.')[0])
-            #pickle.dump(frame, open("./temp-files/%s.pkl"%filename.split('.')[0], "wb"))
         
         request.session['df'] = frame
         request.session["loading"] = False
@@ -247,7 +245,7 @@ def sdf_to_csv(filename=None, modifiers=None):
             modifier = '%s"project":false,"hideLineUp":true,"imgSmiles":true,'%modifier # this modifier tells lineup that a structure image of this smiles string should be loaded
 
         if col == "ID":
-            modifier = '%s"dtype":"categorical","project":false,'%modifier # TODO: json crashed....
+            modifier = '%s"dtype":"string","project":false,'%modifier # TODO: json crashed....
         
 
         new_cols.append("%s{%s}"%(col,modifier[0:-1])) # remove the last comma
@@ -431,7 +429,7 @@ def smiles_list_to_imgs():
             else:
                 img_lst.append(mol_to_base64_highlight_importances(mol, patt, current_rep))
 
-        return {"img_lst": img_lst}
+        return {"img_lst": img_lst, "error_smiles": error_smiles}
     else:
         return {}
 

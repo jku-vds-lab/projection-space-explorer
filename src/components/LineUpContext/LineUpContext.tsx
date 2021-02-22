@@ -14,6 +14,8 @@ import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 // import { debounce } from "@material-ui/core";
 // import debounce from 'lodash.debounce';
 import * as _ from 'lodash';
+import { Button } from "@material-ui/core";
+import { exportDump, fromDumpFile } from "./loader_dump";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -73,6 +75,7 @@ function arrayEquals(a, b) {
 
 const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "clusterProbability"];
 let lineup = null;
+let lineup_data = [];
 const UPDATER = "lineup";
 
 /**
@@ -84,24 +87,40 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         return null;
     }
 
-    let lineup_data = [];
-    lineUpInput.data.forEach(element => {
-        if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
-            element[PrebuiltFeatures.ClusterLabel] = [-1];
-        }
-        let row = Object.assign({}, element)
-        row[PrebuiltFeatures.ClusterLabel] = element[PrebuiltFeatures.ClusterLabel].toString();
-        lineup_data.push(row);
-    });
-
-
-
+    let lineup_ref = React.useRef();
     
     const debouncedHighlight = React.useCallback(_.debounce(hover_item => hoverUpdate(hover_item, UPDATER), 200), []);
 
-    let lineup_ref = React.useRef();
 
     React.useEffect(() => {
+
+        // if(lineUpInput.dump){
+        //     try {
+        //         const json_parsed = JSON.parse(lineUpInput.dump)
+        //         const restored = fromDumpFile(json_parsed)
+        //         console.log(restored);
+        //         const builder = buildLineup(lineUpInput.columns, restored.dat).restore(restored.dump);
+        //         // const builder = LineUpJS.builder(restored.data).restore(restored.dump);
+        //         lineup?.destroy();
+        //         lineup = builder.build(lineup_ref.current);
+        //         return;
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // }
+
+
+        lineup_data = [];
+        lineUpInput.data.forEach(element => {
+            if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
+                element[PrebuiltFeatures.ClusterLabel] = [-1];
+            }
+            let row = Object.assign({}, element)
+            row[PrebuiltFeatures.ClusterLabel] = element[PrebuiltFeatures.ClusterLabel].toString();
+            lineup_data.push(row);
+        });
+
+
         const builder = buildLineup(lineUpInput.columns, lineup_data); //lineUpInput.data
         lineup?.destroy();
         lineup = builder.build(lineup_ref.current);
@@ -234,40 +253,42 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         if(lineup && lineUpInput.data){ // TODO: sometimes there is a lineup bug when too many rows are highlighted??
             if(hoverState && hoverState.data){
                 if(hoverState.updater != UPDATER){
-                    // const lineup_idx = lineUpInput.data.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"]);
-                    const lineup_idx = 1
-                    if(lineup_idx >= 0){
-                        lineup.setHighlight(lineup_idx, false); // flag that tells, if we want to scoll to that row
-                        
-                    }
+                    const lineup_idx = lineUpInput.data.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"]);
+                    
+                    lineup.setHighlight(lineup_idx, false); // flag that tells, if we want to scoll to that row
                 }
             }
-            // else{
-            //     try{
-            //         lineup.setHighlight(-1, false);
-            //     }catch(ex){
-            //         console.log("exception when changing highliged row in lineup:", ex);
-            //     }
-            // }
+            else{
+                lineup.setHighlight(-1, false);
+            }
             
         }
         
     }, [hoverState]);
 
+    // https://stackoverflow.com/questions/31214677/download-a-reactjs-object-as-a-file
+    const downloadImpl = (data: string, name: string, mimetype: string) => {
+        var b = new Blob([data], {type: mimetype});
+        var csvURL = window.URL.createObjectURL(b);
+        let tempLink = document.createElement('a');
+        tempLink.href = csvURL;
+        tempLink.setAttribute('download', name);
+        tempLink.click();
+    };
 
-    return <div>{false ? 
-            <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>
-                <div ref={lineup_ref} id="lineup_view"></div>
-            </MyWindowPortal> : 
-            <div className="LineUpParent"><div ref={lineup_ref} id="lineup_view"></div></div>}
-            <LineupHelper></LineupHelper>
-        </div>;
+    const exportCSV = () => {
+        // exports all data that is currently shown in the table -> filters and sorts are applied! also annotations are included
+        lineup!.data.exportTable(lineup!.data.getRankings()[0], {separator: ","}).then(x => downloadImpl(x, `lineup-export.csv`, 'application/csv'))
+    }
+
+    //https://github.com/lineupjs/lineup_app/blob/master/src/export.ts
+    return false ? 
+        <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>
+            <div ref={lineup_ref} id="lineup_view"></div>
+        </MyWindowPortal> : 
+        <div className="LineUpParent"><Button onClick={() => { exportCSV() }}>Export CSV</Button><div><div ref={lineup_ref} id="lineup_view"></div></div></div>//<Button onClick={() => {downloadImpl(JSON.stringify(lineup?.dump, null, ' '), `lineup-export.json`, 'application/json');}}>Export Lineup</Button>
 })
 
-const LineupHelper = props => {
-    console.log("render LineupHelper")
-    return <div></div>
-}
 
 
 let smiles_structure_columns = [];
@@ -312,13 +333,13 @@ function buildLineup(cols, data){
             else if(typeof col.featureType !== 'undefined'){
                 switch(col.featureType){
                     case FeatureType.Categorical:
-                        if(col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
+                        if(data && col.distinct && col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                             builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
                         else
                             builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
                         break;
                     case FeatureType.Quantitative:
-                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show));
+                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show)); //.renderer("numberWithValues")
                         break;
                     case FeatureType.Date:
                         builder.column(LineUpJS.buildDateColumn(i).custom("visible", show));
@@ -333,9 +354,11 @@ function buildLineup(cols, data){
                 }
             }else{
                 if(col.isNumeric){
+                    console.log(i)
+                    console.log(col.range)
                     builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));
                 }else if(col.distinct)
-                    if(col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
+                    if(data && col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                         builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
                     else
                         builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));   

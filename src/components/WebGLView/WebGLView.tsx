@@ -26,7 +26,7 @@ import { Divider, Menu, MenuItem } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
 import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, setActiveStory, setActiveTrace } from '../Ducks/StoriesDuck';
-import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from '../Ducks/LineUpInputDuck';
+import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility, setLineUpInput_dump } from '../Ducks/LineUpInputDuck';
 import { Story } from '../Utility/Data/Story';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
 import { Edge } from '../Utility/graphs';
@@ -36,6 +36,7 @@ import { TraceSelectTool } from './Tools/TraceSelectTool';
 import { Embedding } from '../Utility/Data/Embedding';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
+import { LineUpDumpDialog } from '../LineUpContext/LineUpDumpDialog';
 
 
 type ViewState = {
@@ -83,6 +84,7 @@ const mapDispatchToProps = dispatch => ({
     setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
     setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
+    setLineUpInput_dump: input => dispatch(setLineUpInput_dump(input)),
     addStory: story => dispatch(addStory(story)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
     setActiveStory: story => dispatch(setActiveStory(story)),
@@ -1390,6 +1392,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     handleClose()
                 }}>{'Close Table'}</MenuItem>
 
+                {/* <LinupDumpMenuItem handleClose={handleClose}></LinupDumpMenuItem> */}
+
                 <Divider orientation="horizontal"></Divider>
 
 
@@ -1473,3 +1477,15 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         </div>
     }
 })
+
+
+const LinupDumpMenuItem = props => {
+    const [openDumpDialog, setOpenDumpDialog] = React.useState(false);
+
+    return <div><MenuItem onClick={() => {
+        props.handleClose();
+        setOpenDumpDialog(() => true);
+    }}>{'Load Table from dump'}</MenuItem> 
+    <LineUpDumpDialog openDialog={openDumpDialog} setOpenDumpDialog={setOpenDumpDialog}></LineUpDumpDialog>
+    </div>
+}

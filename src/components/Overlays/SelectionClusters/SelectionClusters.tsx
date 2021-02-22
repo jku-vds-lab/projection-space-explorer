@@ -30,9 +30,9 @@ const SelectionClustersFull = function ({
 
         {hoverState && hoverState.data && hoverState.data instanceof Vect && <HoverItemPortal>
             <Card elevation={24} style={{
-                width: 350,
+                width: 300,
                 maxHeight: '50vh',
-                minHeight: 350, //360 interferes with lineup
+                minHeight: 300, //360 interferes with lineup
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'

@@ -5,7 +5,7 @@ import { Dialog, DialogContent } from '@material-ui/core';
 
 
 export const LoadingIndicatorView = props => {
-    const { promiseInProgress } = usePromiseTracker();
+    const { promiseInProgress } = usePromiseTracker({area: props.area});
     return (
         promiseInProgress && 
             <div
@@ -23,11 +23,11 @@ export const LoadingIndicatorView = props => {
 }
 
 export const LoadingIndicatorDialog = props => {
-    const { promiseInProgress } = usePromiseTracker();
+    const { promiseInProgress } = usePromiseTracker({area: props.area});
     
-    return <Dialog maxWidth='lg' open={promiseInProgress}>
+    return <Dialog onClose={props.handleClose} maxWidth='lg' open={promiseInProgress}>
         <DialogContent>
-            <LoadingIndicatorView/>
+            <LoadingIndicatorView area={props.area}/>
         </DialogContent>
     </Dialog>
 }

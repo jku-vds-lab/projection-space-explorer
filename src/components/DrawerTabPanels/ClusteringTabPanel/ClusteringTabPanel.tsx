@@ -18,6 +18,7 @@ import * as frontend_utils from "../../../utils/frontend-connect";
 import { Vect } from "../../Utility/Data/Vect"
 import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
+import useCancellablePromise from "../../../utils/promise-helpers"
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -187,10 +188,11 @@ export const ClusteringTabPanel = connector(({
     }
 
 
-    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster) {
+    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise) {
+        const loading_area = "global_loading_indicator";
         const points = dataset.vectors.map(point => [point.x, point.y]);
         trackPromise(
-            backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster).then(data => {
+            cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster)).then(data => {
                 const cluster_labels = data["result"];
                 const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
@@ -216,8 +218,11 @@ export const ClusteringTabPanel = connector(({
 
                 // Update UI, dont know how to right now
             })
-        );
+            .catch(error => console.log(error))
+        , loading_area);
     }
+    
+    const { cancellablePromise } = useCancellablePromise();
 
     const [clusterAdvancedMode, setClusterAdvancedMode] = React.useState(false);
     const [clusterSliderValue, setClusterSliderValue] = React.useState(2);
@@ -330,7 +335,7 @@ export const ClusteringTabPanel = connector(({
                 style={{
                     width: '100%'
                 }}
-                onClick={() => {calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster)}}>Projection-based Clustering</Button>
+                onClick={() => {calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise)}}>Projection-based Clustering</Button>
         </Box>
 
         <Box paddingLeft={2} paddingTop={2}>

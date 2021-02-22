@@ -1,19 +1,23 @@
 import { Grid } from "@material-ui/core";
 import React = require("react");
+import useCancellablePromise from "../../../utils/promise-helpers";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
 import { SDFLoader } from "../../Utility/Loaders/SDFLoader";
 import DragAndDrop from "./DragAndDrop";
 import { SDFModifierDialog } from "./SDFModifierDialog";
 
-export var DatasetDrop = ({ onChange }) => {
+export var DatasetDrop = ({ onChange, cancellablePromise, abort_controller }) => {
     const [entry, setEntry] = React.useState(null);
     const [openSDFDialog, setOpen] = React.useState(false);
+    
 
     function onModifierDialogClose(modifiers){
         setOpen(false); 
-        if(modifiers !== null)
-            new SDFLoader().resolveContent(entry, onChange, modifiers);
+        if(modifiers !== null){
+            abort_controller = new AbortController();
+            new SDFLoader().resolveContent(entry, onChange, cancellablePromise, modifiers, abort_controller);
+        }
     }
 
     return <Grid container item alignItems="stretch" justify="center" direction="column" style={{ padding: '16px' }}>

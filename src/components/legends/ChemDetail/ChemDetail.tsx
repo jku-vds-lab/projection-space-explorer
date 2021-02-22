@@ -1,12 +1,15 @@
 import * as React from 'react';
 import './chem.scss';
 import * as backend_utils from '../../../utils/backend-connect';
-import { Box, Button, Grid, MenuItem, Select } from '@material-ui/core';
+import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, Select } from '@material-ui/core';
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 import { RootState } from '../../Store/Store';
 import { connect, ConnectedProps } from 'react-redux';
 import { BiRefresh } from 'react-icons/bi';
+import useCancellablePromise, { makeCancelable } from '../../../utils/promise-helpers';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import { setAggregationAction } from '../../Ducks/AggregationDuck';
 
 /**
  * Chem Legend, implemented
@@ -14,33 +17,36 @@ import { BiRefresh } from 'react-icons/bi';
 
 
 
+const loading_area = "chemlegend_loading_area";
 const UPDATER = "chemdetail";
-export class ChemLegend extends React.Component<{selection: any, columns: any, aggregate: boolean, hoverUpdate}, {rep_list: string[], current_rep: any}>{
-    _isMounted = false;
+export class ChemLegend extends React.Component<{selection: any, columns: any, aggregate: boolean, hoverUpdate}, {rep_list: string[], current_rep: any, cancelables: any[]}>{
 
     constructor(props: { selection, aggregate, columns, hoverUpdate }){
         super(props);
         this.state = {
             rep_list: [],
             current_rep: "Common Substructure",
+            cancelables: []
         };
         this.loadRepList = this.loadRepList.bind(this);
 
     }
 
     componentDidMount(){
-        this._isMounted = true;
         this.loadRepList();
     }
 
     componentWillUnmount(){
-        this._isMounted = false;
+        this.state.cancelables.forEach(p => p.cancel());
+        this.setState({...this.state, cancelables: []});
     }
 
     loadRepList(refresh=false){
         if(refresh || this.state.rep_list.length <= 0){
-            backend_utils.get_representation_list(refresh).then(x => {
-                if(this._isMounted && x["rep_list"].length > 0)
+            const cancelable = makeCancelable(backend_utils.get_representation_list(refresh));
+            this.setState({...this.state, cancelables: this.state.cancelables.concat(cancelable)});
+            cancelable.promise.then(x => {
+                if(x["rep_list"].length > 0)
                     this.setState({...this.state, rep_list: x["rep_list"]});
             })
         }
@@ -68,13 +74,12 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
                 <RepresentationList 
                     value={this.state.current_rep} 
                     onChange={(event) => {
-                        if(this._isMounted)
-                            this.setState({...this.state, current_rep: event.target.value});
+                        this.setState({...this.state, current_rep: event.target.value});
                     }}
                     rep_list={this.state.rep_list}
                     refreshRepList={this.loadRepList}
                 />
-                <LoadingIndicatorView/>
+                <LoadingIndicatorView area={loading_area}/>
                 <ImageView selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.state.current_rep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} />
                 </div>;
         }
@@ -84,8 +89,21 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
 }
 
 
-function loadImage(props, setComp, handleMouseEnter, handleMouseOut, img_mounted){
+function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, checkedList, setCheckedList){ 
     let smiles_col = "SMILES";
+
+    const onUpdateItem = (i, val) => {
+        setCheckedList((checkedList) => {
+            const list = checkedList.map((item, j) => {
+                if (j === i) {
+                  return val;
+                } else {
+                  return item;
+                }
+            });
+            return list;
+        });
+    };
 
     // TODO: find by meta_data -> how to handle multiple smiles columns?
     // for (const col_name in props.columns) {
@@ -94,8 +112,7 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, img_mounted
     //         smiles_col = col_name;
     // }
     if(smiles_col in props.columns){
-        if(img_mounted.current)
-            setComp(<div></div>);
+        setComp(<div></div>);
         if(props.selection.length > 0){
             
             if (props.aggregate) {
@@ -104,31 +121,42 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, img_mounted
                 props.selection.forEach(row => {
                     formData.append('smiles_list', row[smiles_col]);
                 });
+                const controller = new AbortController();
                 trackPromise(
-                    backend_utils.get_structures_from_smiles_list(formData).then(x => {
+                    cancellablePromise(backend_utils.get_structures_from_smiles_list(formData, controller), controller).then(x => {
                         // @ts-ignore
                         //const img_lst = x["img_lst"].map((svg,i) => svg)
                         const img_lst = x["img_lst"].map((base64,i) => {
-                            return <Grid className={"legend_multiple"} key={i} item><img src={"data:image/jpeg;base64," + base64} onMouseEnter={() => {handleMouseEnter(i);}} onMouseOver={() => {handleMouseEnter(i);}} onMouseLeave={() => {handleMouseOut();}}/></Grid>
+                            setCheckedList((checkedList) => [...checkedList, false]);
+                            return <Grid className={"legend_multiple"} key={i} item>
+                                <FormControlLabel
+                                    labelPlacement="bottom"
+                                    control={<Checkbox checked={checkedList[i]} onChange={(event) => { onUpdateItem(i, event.target.checked); }} />}
+                                    label={<img 
+                                        src={"data:image/jpeg;base64," + base64} 
+                                        onMouseEnter={() => {handleMouseEnter(i);}} 
+                                        onMouseOver={() => {handleMouseEnter(i);}} 
+                                        onMouseLeave={() => {handleMouseOut();}}
+                                        />}
+                                    />
+                                
+                            </Grid>
                         }) //key={props.selection[i][smiles_col]} --> gives error because sometimes smiles ocure twice
-                        if(img_mounted.current)
-                            setComp(img_lst);//<div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />
+                        //<div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />
+                        setComp(img_lst);
                     })
-                );
+                , loading_area);
             }else{
                 let row = props.selection[0]; 
-                backend_utils.get_structure_from_smiles(row[smiles_col]).then(x => {
-                    if(img_mounted.current)
-                        setComp(<img className={"legend_single"} src={"data:image/jpeg;base64," + x}/>)
-                });
+                cancellablePromise(backend_utils.get_structure_from_smiles(row[smiles_col])).then(x => {
+                    setComp(<img className={"legend_single"} src={"data:image/jpeg;base64," + x}/>)
+                }).catch(error => console.log(error));
             }
         }else{
-            if(img_mounted.current)
-                setComp(<div>No Selection</div>);
+            setComp(<div>No Selection</div>);
         }
     }else{
-        if(img_mounted.current)
-            setComp(<div>No SMILES column found</div>);
+        setComp(<div>No SMILES column found</div>);
     }
 }
 
@@ -137,7 +165,10 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, img_mounted
 const mapStateToProps = (state: RootState) => ({
     hoverState: state.hoverState
 })
-const connector = connect(mapStateToProps);
+const mapDispatchToProps = dispatch => ({
+    setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
+})
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 
 /**
@@ -166,18 +197,17 @@ function removeHighlight(element){
     }
 }
 
-const ImageView = connector(function ({ hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep }: Props) {
+const ImageView = connector(function ({ hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep, setCurrentAggregation }: Props) {
     const [comp, setComp] = React.useState(<div></div>);
+    const [checkedList, setCheckedList] = React.useState([]);
+
     const ref = React.useRef()
-    const img_mounted = React.useRef(null);
+    const { cancellablePromise, cancelPromises } = useCancellablePromise();
 
     React.useEffect(() => {
-        img_mounted.current = true;
-        return () => img_mounted.current = false;
-    }, []);
-
-    React.useEffect(() => {
-        loadImage({columns: columns, aggregate: aggregate, current_rep: current_rep, selection: selection}, setComp, handleMouseEnter, handleMouseOut, img_mounted);
+        setCheckedList([]);
+        cancelPromises(); // cancel all unresolved promises
+        loadImage({columns: columns, aggregate: aggregate, current_rep: current_rep, selection: selection}, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, checkedList, setCheckedList); 
     }, [selection, current_rep]);
     
     React.useEffect(() => {
@@ -211,7 +241,22 @@ const ImageView = connector(function ({ hoverState, selection, columns, aggregat
         }
     }, [hoverState]);
 
-    return <Grid ref={ref} className={"chem-grid"} container>{comp}</Grid>;
+
+    const handle_filter = () => {
+        const filter_instances = selection.filter((x, i) => checkedList[i]);
+        setCheckedList([]);
+        setCurrentAggregation(filter_instances);
+    }
+
+    return <div className={"chemContainer"}>
+            <Grid ref={ref} className={"chem-grid"} container>{comp}</Grid>
+            {aggregate && <Box paddingLeft={2} paddingTop={2}>
+                <Button 
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {handle_filter()}}><FilterListIcon fontSize={"small"}/>&nbsp;Confirm Selection</Button>
+                </Box>}
+        </div>;
 });
 
 const RepresentationList = props => {

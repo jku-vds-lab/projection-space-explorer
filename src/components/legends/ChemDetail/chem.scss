@@ -4,15 +4,16 @@
   height: 50vh;
 }
 .portalSummary .ParentChem{
-  height: 95vh;
+  height: 90vh;
   margin-top: 0px;
 }
 
-.ParentChem .chem-grid{
-  // height: 85vh !important;
-  height:100%;
+.ParentChem .chemContainer {
+  height: 100%;
+}
+.ParentChem .chem-grid {
+  height: 90%;
   overflow-y: auto;
-
 }
 
 .ParentChem .legend_single{
