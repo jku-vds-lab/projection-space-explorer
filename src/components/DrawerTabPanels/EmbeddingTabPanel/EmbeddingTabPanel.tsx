@@ -20,6 +20,8 @@ import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionsDuck'
 
+import * as frontend_utils from '../../../utils/frontend-connect';
+
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
     stories: state.stories,
@@ -103,7 +105,8 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                             setOpen(true)
                         }}>{'UMAP'}</Button>
                 </Grid>
-
+                {
+                !frontend_utils.CHEM_PROJECT &&
                 <Grid item>
                     <Button
                         style={{
@@ -115,6 +118,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                             setOpen(true)
                         }}>{'t-SNE'}</Button>
                 </Grid>
+                }
 
                 <Grid item>
                     <Button

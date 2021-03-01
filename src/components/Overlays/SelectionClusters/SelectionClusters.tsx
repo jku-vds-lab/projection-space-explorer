@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Card } from '@material-ui/core'
+import { Box, Card, Typography } from '@material-ui/core'
 import { GenericLegend } from '../../Legends/Generic'
 import './SelectionClusters.scss'
 import { connect } from 'react-redux'
@@ -26,6 +26,15 @@ const SelectionClustersFull = function ({
     if (!dataset) {
         return null
     }
+
+    const genericAggregateLegend = currentAggregation && currentAggregation.length > 0 ? 
+                <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend> : 
+                <Box paddingLeft={2}>
+                    <Typography color={"textSecondary"}>
+                        Select Points in the Embedding Space to show a Summary Visualization.
+                    </Typography>
+                </Box>
+
     return <div className={"Parent"}>
 
         {hoverState && hoverState.data && hoverState.data instanceof Vect && <HoverItemPortal>
@@ -47,20 +56,15 @@ const SelectionClustersFull = function ({
                 <MyWindowPortal onClose={() => {
                     setHoverWindowMode(WindowMode.Embedded)
                 }}>
-                    <div className={"portalSummary"}><GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend></div>
+                    <div className={"portalSummary"}>{genericAggregateLegend}</div>
                 </MyWindowPortal>
                 :
                 <div className={"Cluster"}>
-                    {currentAggregation && currentAggregation.length > 0 && <div>
-
-                        <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
-                    </div>
-                    }
+                    <div>{genericAggregateLegend}</div>
                 </div>
         }
     </div>
 }
-
 
 const mapStateToProps = state => ({
     currentAggregation: state.currentAggregation,

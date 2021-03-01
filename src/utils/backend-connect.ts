@@ -4,8 +4,8 @@ export const CREDENTIALS = 'include'; // for AWS/docker
 // export const CREDENTIALS = 'omit'; // for netlify/local
 
 // export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
-export const BASE_URL = ''; // for AWS/docker
+export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = ''; // for AWS/docker
 
 
 
@@ -35,7 +35,9 @@ async function async_cache(cached_data){
 
 var cache = {}
 function handleCache(key){
-    return cache[key];
+    if(cache[key])
+        return Object.assign(cache[key]); // return copy of cached object
+    return null;
 }
 
 function setCache(key, value){
@@ -91,7 +93,7 @@ export async function get_uploaded_files(){
 }
 
 
-export async function get_structure_from_smiles(smiles:string, highlight=false) {
+export async function get_structure_from_smiles(smiles:string, highlight=false, controller=null) {
     const cached_data = handleSmilesCache(smiles, highlight)
     if(cached_data){
         return async_cache(cached_data);
@@ -107,11 +109,23 @@ export async function get_structure_from_smiles(smiles:string, highlight=false) 
         path += "/highlight";
     }
 
-    return fetch(path, {
-        method: 'POST',
-        body: formData,
-        credentials: CREDENTIALS
-    })
+    let my_fetch = null;
+    if(controller){
+        my_fetch = fetch(path, {
+            method: 'POST',
+            body: formData,
+            credentials: CREDENTIALS,
+            signal: controller.signal
+        })
+    }else{
+        my_fetch = fetch(path, {
+            method: 'POST',
+            body: formData,
+            credentials: CREDENTIALS,
+        })
+    }
+
+    return my_fetch
     .then(handle_errors)
     .then(response => response.json())
     .then(handle_errors_json)
@@ -230,7 +244,7 @@ export async function upload_sdf_file(file, controller?){
 export async function get_representation_list(refresh=false){
     if(!refresh){
         const cached_data = handleCache("representation_list")
-        if(cached_data){
+        if(cached_data && cached_data["rep_list"].length > 0){
             return async_cache(cached_data);
         }
     }

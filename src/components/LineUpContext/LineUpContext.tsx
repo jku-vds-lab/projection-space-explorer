@@ -15,7 +15,7 @@ import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 // import debounce from 'lodash.debounce';
 import * as _ from 'lodash';
 import { Button } from "@material-ui/core";
-import { exportDump, fromDumpFile } from "./loader_dump";
+import BarCellRenderer from "./BarCellRenderer";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -339,7 +339,7 @@ function buildLineup(cols, data){
                             builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
                         break;
                     case FeatureType.Quantitative:
-                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show)); //.renderer("numberWithValues")
+                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show).renderer("myBarCellRenderer")); //.renderer("numberWithValues")
                         break;
                     case FeatureType.Date:
                         builder.column(LineUpJS.buildDateColumn(i).custom("visible", show));
@@ -356,7 +356,7 @@ function buildLineup(cols, data){
                 if(col.isNumeric){
                     console.log(i)
                     console.log(col.range)
-                    builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));
+                    builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show).renderer("myBarCellRenderer"));
                 }else if(col.distinct)
                     if(data && col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                         builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
@@ -373,6 +373,7 @@ function buildLineup(cols, data){
     builder.defaultRanking(true);
     builder.deriveColors();
     builder.registerRenderer("mySmilesStructureRenderer", new MySmilesStructureRenderer());
+    builder.registerRenderer("myBarCellRenderer", new BarCellRenderer(true));
     builder.registerColumnType("mySmilesStructureColumn", StructureImageColumn);
     builder.sidePanel(true, true); // collapse side panel by default
     builder.livePreviews({

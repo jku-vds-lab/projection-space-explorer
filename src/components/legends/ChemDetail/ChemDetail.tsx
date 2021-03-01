@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './chem.scss';
 import * as backend_utils from '../../../utils/backend-connect';
-import { Box, Button, Checkbox, FormControlLabel, Grid, MenuItem, Select } from '@material-ui/core';
+import { Box, Button, Checkbox, FormControlLabel, Grid, InputAdornment, MenuItem, Select, TextField } from '@material-ui/core';
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 import { RootState } from '../../Store/Store';
@@ -10,6 +10,7 @@ import { BiRefresh } from 'react-icons/bi';
 import useCancellablePromise, { makeCancelable } from '../../../utils/promise-helpers';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { setAggregationAction } from '../../Ducks/AggregationDuck';
+import { Autocomplete } from '@material-ui/lab';
 
 /**
  * Chem Legend, implemented
@@ -24,7 +25,7 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
     constructor(props: { selection, aggregate, columns, hoverUpdate }){
         super(props);
         this.state = {
-            rep_list: [],
+            rep_list: ["Common Substructure"],
             current_rep: "Common Substructure",
             cancelables: []
         };
@@ -42,12 +43,15 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
     }
 
     loadRepList(refresh=false){
-        if(refresh || this.state.rep_list.length <= 0){
+        if(refresh || this.state.rep_list.length <= 1){
             const cancelable = makeCancelable(backend_utils.get_representation_list(refresh));
             this.setState({...this.state, cancelables: this.state.cancelables.concat(cancelable)});
             cancelable.promise.then(x => {
-                if(x["rep_list"].length > 0)
-                    this.setState({...this.state, rep_list: x["rep_list"]});
+                if(x["rep_list"].length > 0){
+                    let rep_list = [...x["rep_list"]];
+                    rep_list.splice(0, 0, "Common Substructure");
+                    this.setState({...this.state, rep_list: rep_list});
+                }
             })
         }
     }
@@ -74,7 +78,10 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
                 <RepresentationList 
                     value={this.state.current_rep} 
                     onChange={(event) => {
-                        this.setState({...this.state, current_rep: event.target.value});
+                        let selected = event.target.value;
+                        if(this.state.rep_list.includes(selected)){
+                            this.setState({...this.state, current_rep: selected});
+                        }
                     }}
                     rep_list={this.state.rep_list}
                     refreshRepList={this.loadRepList}
@@ -127,7 +134,14 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                         // @ts-ignore
                         //const img_lst = x["img_lst"].map((svg,i) => svg)
                         const img_lst = x["img_lst"].map((base64,i) => {
-                            setCheckedList((checkedList) => [...checkedList, false]);
+                            
+                            setCheckedList((checkedList) => {
+                                let cpy_checked_list = [...checkedList];
+                                if(cpy_checked_list.length <= i){
+                                    cpy_checked_list.push(false);
+                                }
+                                return cpy_checked_list;
+                            });
                             return <Grid className={"legend_multiple"} key={i} item>
                                 <FormControlLabel
                                     labelPlacement="bottom"
@@ -148,7 +162,8 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                 , loading_area);
             }else{
                 let row = props.selection[0]; 
-                cancellablePromise(backend_utils.get_structure_from_smiles(row[smiles_col])).then(x => {
+                const controller = new AbortController();
+                cancellablePromise(backend_utils.get_structure_from_smiles(row[smiles_col], false, controller), controller).then(x => {
                     setComp(<img className={"legend_single"} src={"data:image/jpeg;base64," + x}/>)
                 }).catch(error => console.log(error));
             }
@@ -160,7 +175,31 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
     }
 }
 
+function updateImage(props, cancellablePromise){ 
+    let smiles_col = "SMILES";
+    // TODO: find by meta_data -> how to handle multiple smiles columns?
 
+    if(smiles_col in props.columns){
+        let imgList = props.imgContainer.childNodes;
+        if(props.selection.length == imgList.length){
+            const formData = new FormData();
+            formData.append('current_rep', props.current_rep);
+            props.selection.forEach(row => {
+                formData.append('smiles_list', row[smiles_col]);
+            });
+            const controller = new AbortController();
+            trackPromise(
+                cancellablePromise(backend_utils.get_structures_from_smiles_list(formData, controller), controller).then(x => {
+                    x["img_lst"].map((base64,i) => {
+                        const cur_img = imgList[i].getElementsByTagName("img")[0];
+                        cur_img.src = "data:image/jpeg;base64," + base64;
+                    });
+                })
+            , loading_area);
+            
+        }
+    }
+}
 
 const mapStateToProps = (state: RootState) => ({
     hoverState: state.hoverState
@@ -205,10 +244,18 @@ const ImageView = connector(function ({ hoverState, selection, columns, aggregat
     const { cancellablePromise, cancelPromises } = useCancellablePromise();
 
     React.useEffect(() => {
-        setCheckedList([]);
         cancelPromises(); // cancel all unresolved promises
+    }, [selection, current_rep])
+
+    React.useEffect(() => {
+        setCheckedList([]);
         loadImage({columns: columns, aggregate: aggregate, current_rep: current_rep, selection: selection}, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, checkedList, setCheckedList); 
-    }, [selection, current_rep]);
+    }, [selection])
+
+    React.useEffect(() => {
+        if(aggregate)
+            updateImage({columns: columns, current_rep: current_rep, selection: selection, imgContainer: ref?.current}, cancellablePromise); 
+    }, [current_rep]);
     
     React.useEffect(() => {
         if(aggregate){
@@ -260,20 +307,32 @@ const ImageView = connector(function ({ hoverState, selection, columns, aggregat
 });
 
 const RepresentationList = props => {
+    const options = props.rep_list.map((rep) => {
+        let split = rep.split('.');
+        split.pop();
+        const group = split.join('.');
+        return {
+            group: group,
+            value: rep,
+        };
+      });
 
-    return <Box paddingLeft={2}>
-        <Select label="select representation"
+    return <Box paddingLeft={1}>
+        <div>
+        <Autocomplete
+            disablePortal={true}
             id="vectorRep"
-            // fullWidth={true}
-            displayEmpty
-            value={props.value}
-            onChange={props.onChange}
-        >
-            <MenuItem value="Common Substructure">Common Substructure</MenuItem>
-            {props.rep_list.map(attribute => {
-                return <MenuItem key={attribute} value={attribute}>{attribute}</MenuItem>
-            })}
-        </Select>
-        <Button onClick={() => props.refreshRepList(true)}><BiRefresh/></Button>
+            onSelect={props.onChange}
+            options={options}
+            groupBy={(option:any) => option.group}
+            getOptionLabel={(option:any) => option.value}
+            getOptionSelected={(option:any, value) => {return option.value == value.value;}}
+            style={{ width: 215, float:'left' }}
+            
+            renderInput={(params) => <TextField {...params} label="Choose Representation" variant="outlined" />}
+        />
+        <Button style={{marginTop: 12, paddingLeft: 0, paddingRight: 0 }} onClick={() => props.refreshRepList(true)}><BiRefresh/></Button>
+        </div>
+        
     </Box>
 };

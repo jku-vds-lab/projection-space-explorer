@@ -17,11 +17,16 @@
 }
 
 .ParentChem .legend_single{
-  width:360px;
-  height:360px;
+  width: 360px;
+  height: 360px;
 }
 
 .ParentChem .legend_multiple{
-  padding:1px;
-  height:fit-content;
+  border: solid white 1px;
+  height: fit-content;
+  margin-left: 5px;
+}
+
+.ParentChem label{
+  margin: 0px;
 }

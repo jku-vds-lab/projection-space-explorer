@@ -80,6 +80,7 @@ import PseDetails from './Icons/pse-icon-details-opt.svg'
 import PseEncoding from './Icons/pse-icon-encoding-opt.svg'
 // @ts-ignore
 import PseProject from './Icons/pse-icon-project-opt.svg'
+import { ChemTabPanel } from "./DrawerTabPanels/ChemTabPanel/ChemTabPanel";
 
 /**
  * A TabPanel with automatic scrolling which should be used for fixed size content.
@@ -454,6 +455,12 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
             </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+
+            {frontend_utils.CHEM_PROJECT && <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Backend Settings</Typography>
+              <Typography variant="body2">Adjust Settings used in the backend.</Typography>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            }
           </Tabs>
         </Drawer>
 
@@ -733,6 +740,12 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <FixedHeightTabPanel value={this.props.openTab} index={4}>
                 <HoverTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></HoverTabPanel>
               </FixedHeightTabPanel>
+
+              {frontend_utils.CHEM_PROJECT && 
+              <FixedHeightTabPanel value={this.props.openTab} index={5}>
+                <ChemTabPanel></ChemTabPanel>
+              </FixedHeightTabPanel>}
+              
             </Grid>
 
           </div>

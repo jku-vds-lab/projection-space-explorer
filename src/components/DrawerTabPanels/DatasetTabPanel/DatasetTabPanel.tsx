@@ -100,7 +100,7 @@ export function DatasetTabPanel({ onDataSelected }) {
             setJob(null)
         }} onCancel={() => { setJob(null) }}></DownloadProgress>
 
-        <LoadingIndicatorDialog handleClose={() => {cancelPromises();}} area={"global_loading_indicator"}/> {/* //TODO: stop upload when dialog is closed */}
+        <LoadingIndicatorDialog handleClose={() => {cancelPromises();}} area={"global_loading_indicator"}/>
         <SDFModifierDialog openSDFDialog={openSDFDialog} handleClose={onModifierDialogClose}></SDFModifierDialog>
     </div>
 }

@@ -3352,9 +3352,9 @@ exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.u
 exports.CREDENTIALS = 'include'; // for AWS/docker
 // export const CREDENTIALS = 'omit'; // for netlify/local
 // export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 
-exports.BASE_URL = ''; // for AWS/docker
+exports.BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = ''; // for AWS/docker
 
 var smiles_cache = {};
 var smiles_highlight_cache = {};
@@ -3396,7 +3396,9 @@ function async_cache(cached_data) {
 var cache = {};
 
 function handleCache(key) {
-  return cache[key];
+  if (cache[key]) return Object.assign(cache[key]); // return copy of cached object
+
+  return null;
 }
 
 function setCache(key, value) {
@@ -3479,8 +3481,9 @@ exports.get_uploaded_files = get_uploaded_files;
 
 function get_structure_from_smiles(smiles) {
   var highlight = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var controller = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-    var cached_data, formData, path;
+    var cached_data, formData, path, my_fetch;
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
@@ -3504,11 +3507,24 @@ function get_structure_from_smiles(smiles) {
               path += "/highlight";
             }
 
-            return _context4.abrupt("return", fetch(path, {
-              method: 'POST',
-              body: formData,
-              credentials: exports.CREDENTIALS
-            }).then(handle_errors).then(function (response) {
+            my_fetch = null;
+
+            if (controller) {
+              my_fetch = fetch(path, {
+                method: 'POST',
+                body: formData,
+                credentials: exports.CREDENTIALS,
+                signal: controller.signal
+              });
+            } else {
+              my_fetch = fetch(path, {
+                method: 'POST',
+                body: formData,
+                credentials: exports.CREDENTIALS
+              });
+            }
+
+            return _context4.abrupt("return", my_fetch.then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (data) {
               setSmilesCache(smiles, highlight, data["data"]);
@@ -3518,7 +3534,7 @@ function get_structure_from_smiles(smiles) {
               console.log(error);
             }));
 
-          case 9:
+          case 11:
           case "end":
             return _context4.stop();
         }
@@ -3688,7 +3704,7 @@ function get_representation_list() {
 
             cached_data = handleCache("representation_list");
 
-            if (!cached_data) {
+            if (!(cached_data && cached_data["rep_list"].length > 0)) {
               _context9.next = 4;
               break;
             }
