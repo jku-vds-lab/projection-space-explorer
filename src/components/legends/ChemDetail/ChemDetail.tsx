@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './chem.scss';
 import * as backend_utils from '../../../utils/backend-connect';
-import { Box, Button, Checkbox, FormControlLabel, Grid, InputAdornment, MenuItem, Select, TextField } from '@material-ui/core';
+import { Box, Button, Checkbox, FormControlLabel, Grid, InputAdornment, MenuItem, Select, TextField, Tooltip } from '@material-ui/core';
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 import { RootState } from '../../Store/Store';
@@ -10,19 +10,39 @@ import { BiRefresh } from 'react-icons/bi';
 import useCancellablePromise, { makeCancelable } from '../../../utils/promise-helpers';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { setAggregationAction } from '../../Ducks/AggregationDuck';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 
 /**
  * Chem Legend, implemented
  */
 
+const mapStateToProps_Chem = (state: RootState) => ({
+    dataset: state.dataset
+})
+const mapDispatchToProps_Chem = dispatch => ({
+
+})
+const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
+
+
+/**
+ * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
+ */
+type PropsFromRedux_Chem = ConnectedProps<typeof connector_Chem>
+
+type Props_Chem = PropsFromRedux_Chem & {
+    selection: any, 
+    columns: any, 
+    aggregate: boolean, 
+    hoverUpdate
+}
 
 
 const loading_area = "chemlegend_loading_area";
 const UPDATER = "chemdetail";
-export class ChemLegend extends React.Component<{selection: any, columns: any, aggregate: boolean, hoverUpdate}, {rep_list: string[], current_rep: any, cancelables: any[]}>{
+export const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {rep_list: string[], current_rep: any, cancelables: any[]}>{
 
-    constructor(props: { selection, aggregate, columns, hoverUpdate }){
+    constructor(props){
         super(props);
         this.state = {
             rep_list: ["Common Substructure"],
@@ -37,6 +57,7 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
         this.loadRepList();
     }
 
+    
     componentWillUnmount(){
         this.state.cancelables.forEach(p => p.cancel());
         this.setState({...this.state, cancelables: []});
@@ -44,7 +65,7 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
 
     loadRepList(refresh=false){
         if(refresh || this.state.rep_list.length <= 1){
-            const cancelable = makeCancelable(backend_utils.get_representation_list(refresh));
+            const cancelable = makeCancelable(backend_utils.get_representation_list(refresh, this.props.dataset.info.path));
             this.setState({...this.state, cancelables: this.state.cancelables.concat(cancelable)});
             cancelable.promise.then(x => {
                 if(x["rep_list"].length > 0){
@@ -77,23 +98,23 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
             return <div className={"ParentChem"}>
                 <RepresentationList 
                     value={this.state.current_rep} 
-                    onChange={(event) => {
-                        let selected = event.target.value;
-                        if(this.state.rep_list.includes(selected)){
-                            this.setState({...this.state, current_rep: selected});
+                    onChange={(value) => {
+                        // let selected = event.target.value;
+                        if(this.state.rep_list.includes(value)){
+                            this.setState({...this.state, current_rep: value});
                         }
                     }}
                     rep_list={this.state.rep_list}
-                    refreshRepList={this.loadRepList}
                 />
                 <LoadingIndicatorView area={loading_area}/>
-                <ImageView selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.state.current_rep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} />
+                <ImageView selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.state.current_rep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} refreshRepList={this.loadRepList} />
+                
                 </div>;
         }
 
         return <div><ImageView selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate}/></div>;
     }
-}
+});
 
 
 function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, checkedList, setCheckedList){ 
@@ -201,27 +222,28 @@ function updateImage(props, cancellablePromise){
     }
 }
 
-const mapStateToProps = (state: RootState) => ({
+const mapStateToProps_Img = (state: RootState) => ({
     hoverState: state.hoverState
 })
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps_Img = dispatch => ({
     setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
 })
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector_Img = connect(mapStateToProps_Img, mapDispatchToProps_Img);
 
 
 /**
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
  */
-type PropsFromRedux = ConnectedProps<typeof connector>
+type PropsFromRedux_Img = ConnectedProps<typeof connector_Img>
 
-type Props = PropsFromRedux & {
+type Props_Img = PropsFromRedux_Img & {
     selection,
     columns,
     aggregate,
     handleMouseEnter?,
     handleMouseOut?,
-    current_rep?
+    current_rep?,
+    refreshRepList?
 }
 
 function addHighlight(element){
@@ -236,7 +258,7 @@ function removeHighlight(element){
     }
 }
 
-const ImageView = connector(function ({ hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep, setCurrentAggregation }: Props) {
+const ImageView = connector_Img(function ({ hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep, setCurrentAggregation, refreshRepList }: Props_Img) {
     const [comp, setComp] = React.useState(<div></div>);
     const [checkedList, setCheckedList] = React.useState([]);
 
@@ -302,37 +324,50 @@ const ImageView = connector(function ({ hoverState, selection, columns, aggregat
                     size="small"
                     variant="outlined"
                     onClick={() => {handle_filter()}}><FilterListIcon fontSize={"small"}/>&nbsp;Confirm Selection</Button>
-                </Box>}
+
+                <Tooltip title="Refresh Representation List">
+                    <Button aria-label={"Refresh Representation List"} onClick={() => refreshRepList(true)}><BiRefresh/></Button>
+                </Tooltip>
+            </Box>}
         </div>;
 });
 
 const RepresentationList = props => {
+
     const options = props.rep_list.map((rep) => {
         let split = rep.split('.');
-        split.pop();
+        const inputVal = split.pop();
         const group = split.join('.');
         return {
             group: group,
             value: rep,
+            inputValue: inputVal
         };
-      });
+    });
+
+    const filterOptions = createFilterOptions({
+        stringify: (option:any) => { return option.value; },
+    });
 
     return <Box paddingLeft={1}>
-        <div>
         <Autocomplete
+            filterOptions={filterOptions}
+            onChange={(event, newValue) => {
+                if(newValue)
+                    props.onChange(newValue.value);
+            }}
             disablePortal={true}
             id="vectorRep"
-            onSelect={props.onChange}
             options={options}
             groupBy={(option:any) => option.group}
-            getOptionLabel={(option:any) => option.value}
+            getOptionLabel={(option:any) => option.inputValue}
             getOptionSelected={(option:any, value) => {return option.value == value.value;}}
-            style={{ width: 215, float:'left' }}
+            // style={{ width: 215, float:'left' }}
+            // defaultValue={options[0]}
             
             renderInput={(params) => <TextField {...params} label="Choose Representation" variant="outlined" />}
         />
-        <Button style={{marginTop: 12, paddingLeft: 0, paddingRight: 0 }} onClick={() => props.refreshRepList(true)}><BiRefresh/></Button>
-        </div>
+        
         
     </Box>
 };

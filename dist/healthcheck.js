@@ -518,6 +518,7 @@ exports.upload_sdf_file = upload_sdf_file;
 
 function get_representation_list() {
   var refresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  var dataset_name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
     var cached_data, path;
     return regeneratorRuntime.wrap(function _callee9$(_context9) {
@@ -529,7 +530,7 @@ function get_representation_list() {
               break;
             }
 
-            cached_data = handleCache("representation_list");
+            cached_data = handleCache("representation_list_" + dataset_name);
 
             if (!(cached_data && cached_data["rep_list"].length > 0)) {
               _context9.next = 4;
@@ -547,7 +548,7 @@ function get_representation_list() {
             }).then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (data) {
-              setCache("representation_list", data);
+              setCache("representation_list_" + dataset_name, data);
               return data;
             }).catch(function (error) {
               // alert("error when loading representation list")

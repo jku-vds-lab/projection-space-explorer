@@ -25,7 +25,7 @@ export class SDFLoader implements Loader {
     resolvePath(entry: any, finished: any, cancellablePromise?, modifiers?: string, abort_controller?) {
         if(entry.uploaded){ // use file that is already uploaded to backend
             localStorage.setItem("unique_filename", entry.path);
-            this.loadCSV(finished, cancellablePromise, modifiers, abort_controller);
+            this.loadCSV(finished, entry, cancellablePromise, modifiers, abort_controller);
         }else{
             trackPromise(
                 fetch(entry.path, {signal: abort_controller?.signal}).then(response => response.blob())
@@ -40,7 +40,7 @@ export class SDFLoader implements Loader {
         const promise = cancellablePromise ? cancellablePromise(backend_utils.upload_sdf_file(file, controller), controller) : backend_utils.upload_sdf_file(file, controller)
         trackPromise(
             promise.then(() => {
-                this.loadCSV(finished, cancellablePromise, modifiers, controller);
+                this.loadCSV(finished, { display: "", type: this.datasetType, path: file.name }, cancellablePromise, modifiers, controller);
             })
             .catch(error => {
                 console.log(error);
@@ -49,7 +49,7 @@ export class SDFLoader implements Loader {
 
     }
 
-    loadCSV(finished, cancellablePromise?, modifiers?:string, controller?){
+    loadCSV(finished, entry, cancellablePromise?, modifiers?:string, controller?){
         // request the server to return a csv file using the unique filename
         let path = backend_utils.BASE_URL+'/get_csv/'
         const filename = localStorage.getItem("unique_filename")
@@ -63,7 +63,7 @@ export class SDFLoader implements Loader {
             promise.then(vectors => {
                 this.vectors = convertFromCSV(vectors);
                 this.datasetType = DatasetType.Chem;
-                new CSVLoader().resolve(finished, this.vectors, this.datasetType, { display: "", type: this.datasetType, path: "" });
+                new CSVLoader().resolve(finished, this.vectors, this.datasetType, entry);
             })
             .catch(error => {console.log(error)})
         , this.loading_area);

@@ -241,9 +241,9 @@ export async function upload_sdf_file(file, controller?){
 }
 
 
-export async function get_representation_list(refresh=false){
+export async function get_representation_list(refresh=false, dataset_name=""){
     if(!refresh){
-        const cached_data = handleCache("representation_list")
+        const cached_data = handleCache("representation_list_" + dataset_name)
         if(cached_data && cached_data["rep_list"].length > 0){
             return async_cache(cached_data);
         }
@@ -261,7 +261,7 @@ export async function get_representation_list(refresh=false){
     .then(response => response.json())
     .then(handle_errors_json)
     .then(data => {
-        setCache("representation_list", data);
+        setCache("representation_list_" + dataset_name, data);
         return data;
     })
     .catch(error => {
