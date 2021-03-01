@@ -56,7 +56,9 @@ const SelectionClustersFull = function ({
                 <MyWindowPortal onClose={() => {
                     setHoverWindowMode(WindowMode.Embedded)
                 }}>
-                    <div className={"portalSummary"}>{genericAggregateLegend}</div>
+                    <div className={"portalSummary"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+                        {genericAggregateLegend}
+                    </div>
                 </MyWindowPortal>
                 :
                 <div className={"Cluster"}>
