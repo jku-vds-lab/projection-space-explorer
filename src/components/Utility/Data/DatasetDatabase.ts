@@ -145,6 +145,11 @@ export class DatasetDatabase {
                 display: "Toy: Iris",
                 path: "datasets/toy/iris.csv",
                 type: DatasetType.None
+            },
+            {
+                display: "Toy: Story",
+                path: "datasets/toy/toy.csv",
+                type: DatasetType.None
             }
         ];
     }

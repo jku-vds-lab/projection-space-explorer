@@ -47,7 +47,6 @@ import { EmbeddingTabPanel } from "./DrawerTabPanels/EmbeddingTabPanel/Embedding
 import { CSVLoader } from "./Utility/Loaders/CSVLoader";
 import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
 import { PathBrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/PathTransparencySlider/PathBrightnessSlider";
-import { ClusterIcon } from "./Icons/ClusterIcon";
 import { setActiveLine } from "./Ducks/ActiveLineDuck";
 import { setPathLengthMaximum, setPathLengthRange } from "./Ducks/PathLengthRange";
 import { setCategoryOptions } from "./Ducks/CategoryOptionsDuck";
@@ -55,10 +54,6 @@ import { setChannelSize } from "./Ducks/ChannelSize";
 import { setGlobalPointSize } from "./Ducks/GlobalPointSizeDuck";
 import { setSelectedClusters } from "./Ducks/SelectedClustersDuck";
 import { setChannelColor } from "./Ducks/ChannelColorDuck";
-import { UploadIcon } from "./Icons/UploadIcon";
-import { VisualChannelIcon } from "./Icons/VisualChannelIcon";
-import { StoryIcon } from "./Icons/StoryIcon";
-import { EmbeddingIcon } from "./Icons/EmbeddingIcon";
 import { rootReducer, RootState } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { LineUpContext } from "./LineUpContext/LineUpContext";
@@ -80,6 +75,9 @@ import PseDetails from './Icons/pse-icon-details-opt.svg'
 import PseEncoding from './Icons/pse-icon-encoding-opt.svg'
 // @ts-ignore
 import PseProject from './Icons/pse-icon-project-opt.svg'
+import Split from 'react-split'
+import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
+import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
 
 /**
  * A TabPanel with automatic scrolling which should be used for fixed size content.
@@ -155,7 +153,8 @@ const mapDispatchToProps = dispatch => ({
   setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
   setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
   saveProjection: embedding => dispatch(addProjectionAction(embedding)),
-  setVectors: vectors => dispatch(setVectors(vectors))
+  setVectors: vectors => dispatch(setVectors(vectors)),
+  setLineByOptions: options => dispatch(setLineByOptions(options))
 })
 
 
@@ -196,9 +195,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     }
 
 
-
-
-
     this.threeRef = React.createRef()
     this.props.setWebGLView(this.threeRef)
     this.legend = React.createRef()
@@ -208,7 +204,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
   componentDidMount() {
-
     const mangleURL = (url: string) => {
       if (url.endsWith('csv') || url.endsWith('json') || url.endsWith('sdf')) {
         return `datasets/${url}`
@@ -223,7 +218,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     var loader = frontend_utils.CHEM_PROJECT ? new SDFLoader() : new CSVLoader();
 
     if (set != null) {
-
       if (set == "neural") {
         preselect = "datasets/neural/learning_confmat.csv"
         loader = new CSVLoader();
@@ -258,7 +252,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
    * @param dataset 
    * @param json 
    */
-  onDataSelected(dataset, json) {
+  onDataSelected(dataset: Dataset, json) {
     // Wipe old state
     this.props.wipeState()
 
@@ -287,6 +281,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setLineUpInput_columns(dataset.columns);
     this.props.setLineUpInput_data(dataset.vectors);
+
+    this.props.setLineByOptions(dataset.getColumns())
 
     setTimeout(() => this.threeRef.current.requestRender(), 500)
   }
@@ -454,6 +450,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
             </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+
+            <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">LineUp Integration</Typography>
+              <Typography variant="body2">Settings for LineUp Integration</Typography>
+            </React.Fragment>}><Tab icon={<img src={'textures/lineup.png'} style={{ width: 64, height: 64 }}></img>} style={{ minWidth: 0, flexGrow: 1, marginTop: '128px' }} /></Tooltip>
           </Tabs>
         </Drawer>
 
@@ -567,6 +568,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                 </Typography>
                   </div>
 
+
+                  
 
 
                   <StatesTabPanel></StatesTabPanel>
@@ -733,6 +736,10 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <FixedHeightTabPanel value={this.props.openTab} index={4}>
                 <HoverTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></HoverTabPanel>
               </FixedHeightTabPanel>
+
+              <FixedHeightTabPanel value={this.props.openTab} index={5}>
+                <LineUpTabPanel></LineUpTabPanel>
+              </FixedHeightTabPanel>
             </Grid>
 
           </div>
@@ -756,14 +763,33 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <ToolSelectionRedux />
             </Toolbar>
           </AppBar>
-          <div style={{ flexGrow: 1 }}>
-            <WebGLView
-              ref={this.threeRef}
-            />
-          </div>
-          <div style={{ flexGrow: 0 }}>
-            <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
-          </div>
+
+          <Split
+          style={{display: 'flex', flexDirection: 'column', height: '100%'}}
+            sizes={[100, 0]}
+            minSize={0}
+            expandToMin={false}
+            gutterSize={10}
+            gutterAlign="center"
+            snapOffset={30}
+            dragInterval={1}
+            direction="vertical"
+            cursor="ns-resize"
+          >
+            <div style={{ flexGrow: 1 }}>
+              <WebGLView
+                ref={this.threeRef}
+              />
+            </div>
+            <div style={{ flexGrow: 0 }}>
+              <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
+            </div>
+
+
+          </Split>
+
+
+
         </div>
 
 

@@ -471,33 +471,6 @@ export class PointVisualization {
     pointGeometry.setAttribute('show', new THREE.BufferAttribute(show, 1))
     pointGeometry.setAttribute('selected', new THREE.BufferAttribute(selected, 1))
 
-
-
-    function loadFromSvg() {
-      var svg = document.getElementById("svgContainer").querySelector("svg")
-      var svgData = (new XMLSerializer()).serializeToString(svg)
-
-      var canvas = document.createElement("canvas")
-      var svgSize = svg.getBoundingClientRect()
-      canvas.width = svgSize.width
-      canvas.height = svgSize.height
-      var ctx = canvas.getContext("2d")
-
-      var img = document.createElement("img")
-      img.setAttribute("src", "data:image/svg+xml;base64," + window.btoa(unescape(encodeURIComponent(svgData))))
-
-      img.onload = function () {
-        ctx.drawImage(img, 0, 0)
-
-        var texture = new THREE.Texture(canvas)
-        texture.needsUpdate = true
-
-        
-      }
-    }
-
-
-
     //
     var pointMaterial = new THREE.ShaderMaterial({
       uniforms: {
@@ -517,12 +490,6 @@ export class PointVisualization {
     this.mesh = new THREE.Points(pointGeometry, pointMaterial);
 
     this.sizeAttribute = this.mesh.geometry.attributes.size
-  }
-
-
-
-  hide() {
-
   }
 
 

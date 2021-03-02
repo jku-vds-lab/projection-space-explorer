@@ -1,11 +1,12 @@
 import * as React from 'react';
 import './chem.scss';
 import * as backend_utils from '../../../utils/backend-connect';
-import { Grid, MenuItem, Select } from '@material-ui/core';
+import { Box, Button, Grid, MenuItem, Select } from '@material-ui/core';
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 import { RootState } from '../../Store/Store';
 import { connect, ConnectedProps } from 'react-redux';
+import { BiRefresh } from 'react-icons/bi';
 
 /**
  * Chem Legend, implemented
@@ -15,7 +16,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 const UPDATER = "chemdetail";
 export class ChemLegend extends React.Component<{selection: any, columns: any, aggregate: boolean, hoverUpdate}, {rep_list: string[], current_rep: any}>{
-
+    _isMounted = false;
 
     constructor(props: { selection, aggregate, columns, hoverUpdate }){
         super(props);
@@ -23,17 +24,23 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
             rep_list: [],
             current_rep: "Common Substructure",
         };
+        this.loadRepList = this.loadRepList.bind(this);
 
     }
 
     componentDidMount(){
+        this._isMounted = true;
         this.loadRepList();
     }
 
-    loadRepList(){
-        if(this.state.rep_list.length <= 0){
-            backend_utils.get_representation_list().then(x => {
-                if(x["rep_list"].length > 0)
+    componentWillUnmount(){
+        this._isMounted = false;
+    }
+
+    loadRepList(refresh=false){
+        if(refresh || this.state.rep_list.length <= 0){
+            backend_utils.get_representation_list(refresh).then(x => {
+                if(this._isMounted && x["rep_list"].length > 0)
                     this.setState({...this.state, rep_list: x["rep_list"]});
             })
         }
@@ -61,9 +68,11 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
                 <RepresentationList 
                     value={this.state.current_rep} 
                     onChange={(event) => {
-                        this.setState({...this.state, current_rep: event.target.value});
+                        if(this._isMounted)
+                            this.setState({...this.state, current_rep: event.target.value});
                     }}
                     rep_list={this.state.rep_list}
+                    refreshRepList={this.loadRepList}
                 />
                 <LoadingIndicatorView/>
                 <ImageView selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.state.current_rep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} />
@@ -75,7 +84,7 @@ export class ChemLegend extends React.Component<{selection: any, columns: any, a
 }
 
 
-function loadImage(props, setComp, handleMouseEnter, handleMouseOut){
+function loadImage(props, setComp, handleMouseEnter, handleMouseOut, img_mounted){
     let smiles_col = "SMILES";
 
     // TODO: find by meta_data -> how to handle multiple smiles columns?
@@ -85,7 +94,8 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut){
     //         smiles_col = col_name;
     // }
     if(smiles_col in props.columns){
-        setComp(<div></div>);
+        if(img_mounted.current)
+            setComp(<div></div>);
         if(props.selection.length > 0){
             
             if (props.aggregate) {
@@ -101,20 +111,24 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut){
                         const img_lst = x["img_lst"].map((base64,i) => {
                             return <Grid className={"legend_multiple"} key={i} item><img src={"data:image/jpeg;base64," + base64} onMouseEnter={() => {handleMouseEnter(i);}} onMouseOver={() => {handleMouseEnter(i);}} onMouseLeave={() => {handleMouseOut();}}/></Grid>
                         }) //key={props.selection[i][smiles_col]} --> gives error because sometimes smiles ocure twice
-                        setComp(img_lst);//<div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />
+                        if(img_mounted.current)
+                            setComp(img_lst);//<div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />
                     })
                 );
             }else{
                 let row = props.selection[0]; 
-                backend_utils.get_structure_from_smiles(row[smiles_col]).then(x => 
-                    setComp(<img className={"legend_single"} src={"data:image/jpeg;base64," + x}/>)
-                );
+                backend_utils.get_structure_from_smiles(row[smiles_col]).then(x => {
+                    if(img_mounted.current)
+                        setComp(<img className={"legend_single"} src={"data:image/jpeg;base64," + x}/>)
+                });
             }
         }else{
-            setComp(<div>No Selection</div>);
+            if(img_mounted.current)
+                setComp(<div>No Selection</div>);
         }
     }else{
-        setComp(<div>No SMILES column found</div>);
+        if(img_mounted.current)
+            setComp(<div>No SMILES column found</div>);
     }
 }
 
@@ -152,13 +166,18 @@ function removeHighlight(element){
     }
 }
 
-
 const ImageView = connector(function ({ hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep }: Props) {
     const [comp, setComp] = React.useState(<div></div>);
     const ref = React.useRef()
+    const img_mounted = React.useRef(null);
 
     React.useEffect(() => {
-        loadImage({columns: columns, aggregate: aggregate, current_rep: current_rep, selection: selection}, setComp, handleMouseEnter, handleMouseOut);
+        img_mounted.current = true;
+        return () => img_mounted.current = false;
+    }, []);
+
+    React.useEffect(() => {
+        loadImage({columns: columns, aggregate: aggregate, current_rep: current_rep, selection: selection}, setComp, handleMouseEnter, handleMouseOut, img_mounted);
     }, [selection, current_rep]);
     
     React.useEffect(() => {
@@ -197,16 +216,19 @@ const ImageView = connector(function ({ hoverState, selection, columns, aggregat
 
 const RepresentationList = props => {
 
-    return <Select label="select representation"
-        id="vectorRep"
-        fullWidth={true}
-        displayEmpty
-        value={props.value}
-        onChange={props.onChange}
-    >
-        <MenuItem value="Common Substructure">Common Substructure</MenuItem>
-        {props.rep_list.map(attribute => {
-            return <MenuItem key={attribute} value={attribute}>{attribute}</MenuItem>
-        })}
-    </Select>
+    return <Box paddingLeft={2}>
+        <Select label="select representation"
+            id="vectorRep"
+            // fullWidth={true}
+            displayEmpty
+            value={props.value}
+            onChange={props.onChange}
+        >
+            <MenuItem value="Common Substructure">Common Substructure</MenuItem>
+            {props.rep_list.map(attribute => {
+                return <MenuItem key={attribute} value={attribute}>{attribute}</MenuItem>
+            })}
+        </Select>
+        <Button onClick={() => props.refreshRepList(true)}><BiRefresh/></Button>
+    </Box>
 };

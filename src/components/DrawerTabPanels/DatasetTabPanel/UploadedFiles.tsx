@@ -20,7 +20,6 @@ export var UploadedFiles = ({ onChange, refresh }) => {
     }
     
     var handleDelete = (file_name) => {
-        console.log("delete")
         backend_utils.delete_file(file_name).then(x => {
             if(x && x['deleted'] == "true"){
                 const new_files = [...files];
