@@ -4,7 +4,6 @@ import { Loader } from "./Loader"
 import { CSVLoader } from "./CSVLoader"
 import * as backend_utils from "../../../utils/backend-connect";
 import { trackPromise } from "react-promise-tracker";
-// import sdf from "../../../../datasets/chemvis/test.sdf";
 
 var d3v5 = require('d3')
 

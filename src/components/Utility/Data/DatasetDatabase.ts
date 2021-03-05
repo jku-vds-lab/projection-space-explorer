@@ -141,7 +141,7 @@ export class DatasetDatabase {
                 type: DatasetType.None
             },
             {
-                display: "ChemVis: Test",
+                display: "CIME: Test",
                 path: "test.sdf",
                 type: DatasetType.Chem,
                 uploaded: true

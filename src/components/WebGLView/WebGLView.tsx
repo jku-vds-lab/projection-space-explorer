@@ -26,7 +26,7 @@ import { Divider, Menu, MenuItem } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
 import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, setActiveStory, setActiveTrace } from '../Ducks/StoriesDuck';
-import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility, setLineUpInput_dump } from '../Ducks/LineUpInputDuck';
+import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility, setLineUpInput_dump, setLineUpInput_filter } from '../Ducks/LineUpInputDuck';
 import { Story } from '../Utility/Data/Story';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
 import { Edge } from '../Utility/graphs';
@@ -85,6 +85,7 @@ const mapDispatchToProps = dispatch => ({
     setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
     setLineUpInput_dump: input => dispatch(setLineUpInput_dump(input)),
+    setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
     addStory: story => dispatch(addStory(story)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
     setActiveStory: story => dispatch(setActiveStory(story)),
@@ -1370,8 +1371,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             >
                 <MenuItem onClick={() => {
-                    this.props.setLineUpInput_data(this.props.dataset.vectors);
+                    // this.props.setLineUpInput_data(this.props.dataset.vectors);
                     this.props.setLineUpInput_visibility(true);
+                    this.props.setLineUpInput_filter(null);
 
                     handleClose();
                 }}>Load Table</MenuItem>
@@ -1379,8 +1381,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 <MenuItem onClick={() => {
                     // Only load LineUp if the current selection is not empty
                     if (this.props.currentAggregation.length > 0) {
-                        this.props.setLineUpInput_data(this.props.currentAggregation);
+                        // this.props.setLineUpInput_data(this.props.currentAggregation);
+                        // this.props.setLineUpInput_data(this.props.dataset.vectors);
                         this.props.setLineUpInput_visibility(true);
+                        this.props.setLineUpInput_filter({'selection': true});
 
                         handleClose();
                     }

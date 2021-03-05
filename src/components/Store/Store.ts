@@ -32,6 +32,7 @@ import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
 import storyEditor from '../Ducks/StoryEditorDuck';
 import lineUpInput from '../Ducks/LineUpInputDuck';
+import rdkitSettings from '../Ducks/RDKitSettingsDuck';
 import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
 import projections from '../Ducks/ProjectionsDuck';
 import hoverSettings from '../Ducks/HoverSettingsDuck';
@@ -72,6 +73,7 @@ const allReducers = {
   trailSettings: trailSettings,
   storyEditor: storyEditor,
   lineUpInput: lineUpInput,
+  rdkitSettings: rdkitSettings,
   differenceThreshold: differenceThreshold,
   projections: projections,
   hoverSettings: hoverSettings,

@@ -23,8 +23,8 @@ COPY dist/ /app/dist/
 EXPOSE 8080
 
 # run server
-CMD ["python", "-u", "backend-chemvis-dist.py"] # "-u" is needed such that there will be console output provided by docker
+CMD ["python", "-u", "backend-cime-dist.py"] # "-u" is needed such that there will be console output provided by docker
 
 # Running
-# docker build -f Dockerfile -t chem-vis .
-# docker run -d -p 8080:8080 --detach chem-vis
+# docker build -f Dockerfile -t cime .
+# docker run -d -p 8080:8080 --detach cime

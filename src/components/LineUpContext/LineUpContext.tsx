@@ -14,7 +14,7 @@ import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 // import { debounce } from "@material-ui/core";
 // import debounce from 'lodash.debounce';
 import * as _ from 'lodash';
-import { Button } from "@material-ui/core";
+import { Button, FormControlLabel, Switch } from "@material-ui/core";
 import BarCellRenderer from "./BarCellRenderer";
 
 /**
@@ -77,6 +77,7 @@ const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "clusterProbability"];
 let lineup = null;
 let lineup_data = [];
 const UPDATER = "lineup";
+const UNIQUE_ID = "unique_ID";
 
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
@@ -88,9 +89,9 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
     }
 
     let lineup_ref = React.useRef();
+    let [cell_value_vis, set_cell_value_vis] = React.useState(false);
     
     const debouncedHighlight = React.useCallback(_.debounce(hover_item => hoverUpdate(hover_item, UPDATER), 200), []);
-
 
     React.useEffect(() => {
 
@@ -112,11 +113,12 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
 
         lineup_data = [];
         lineUpInput.data.forEach(element => {
-            if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
-                element[PrebuiltFeatures.ClusterLabel] = [-1];
-            }
+            // if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
+            //     element[PrebuiltFeatures.ClusterLabel] = [-1];
+            // }
             let row = Object.assign({}, element)
             row[PrebuiltFeatures.ClusterLabel] = element[PrebuiltFeatures.ClusterLabel].toString();
+            row[UNIQUE_ID] = element["__meta__"]["view"]["meshIndex"];
             lineup_data.push(row);
         });
 
@@ -137,24 +139,24 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             }
         }
 
-        // make lineup filter interact with the scatter plot view
-        ranking.on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
+        // // make lineup filter interact with the scatter plot view
+        // ranking.on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
             
-            if (dirtyReason.indexOf('filter') === -1) {
-                return;
-            }
+        //     if (dirtyReason.indexOf('filter') === -1) {
+        //         return;
+        //     }
 
-            const onRankingChanged = (current) => {
-                for (let i=0; i < lineUpInput.data.length; i++) {
-                    lineUpInput.data[i].view.lineUpFiltered = !current.includes(i);
-                }
+        //     const onRankingChanged = (current) => {
+        //         for (let i=0; i < lineUpInput.data.length; i++) {
+        //             lineUpInput.data[i].view.lineUpFiltered = !current.includes(i);
+        //         }
 
-                onFilter()
+        //         onFilter()
 
-            }
+        //     }
 
-            onRankingChanged(current)
-        });
+        //     onRankingChanged(current)
+        // });
         
         // make lineup selection interact with the scatter plot view
         lineup.on('selectionChanged', e => {
@@ -243,6 +245,41 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         
     }, [currentAggregation])
 
+    React.useEffect(() => {
+        if(lineup && lineup.data && lineUpInput.filter){
+            const ranking = lineup.data.getFirstRanking();
+            for (const key in lineUpInput.filter) {
+                const cur_filter = lineUpInput.filter[key];
+
+                if(key === 'selection'){
+                    const filter_col = ranking.children.find(x => {return x.desc.column==UNIQUE_ID;});
+                    
+                    let regex_str = "";
+                    currentAggregation.forEach(element => {
+                        regex_str += "|"
+                        regex_str += element["__meta__"]["view"]["meshIndex"]
+                    });
+                    regex_str = regex_str.substr(1); // remove the leading "|"
+                    console.log(regex_str)
+                    const my_regex = new RegExp(`^(${regex_str})$`, "i"); // i modifier says that it's not case sensitive; ^ means start of string; $ means end of string
+                    filter_col?.setFilter({
+                        filter: my_regex,
+                        filterMissing: true
+                    });
+                }else{
+                    const filter_col = ranking.children.find(x => {return x.desc.column==key;});
+                    const my_regex = new RegExp(`^(.+,)?${cur_filter}(,.+)?$`, "i"); // i modifier says that it's not case sensitive; ^ means start of string; $ means end of string
+                    filter_col?.setFilter({
+                        filter: my_regex,
+                        filterMissing: true
+                    });
+                }
+                
+            }
+
+        }
+    }, [lineUpInput.filter])
+
 
     // const debouncedHighlight = React.useCallback(debounce<any>(lineup_idx => lineup?.setHighlight(lineup_idx, true), 1000), []);
 
@@ -266,6 +303,29 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         
     }, [hoverState]);
 
+    React.useEffect(() => {
+        let style = document.getElementById('cell_value_vis')
+        if(!style){
+            style = document.createElement('style');
+            style.setAttribute("id", "cell_value_vis");
+            style.setAttribute("type", "text/css");
+            const head = document.head || document.getElementsByTagName('head')[0];
+            head.appendChild(style);
+        }
+
+        const css = cell_value_vis ? '.lu-hover-only { visibility: visible; }' : '.lu-hover-only { visibility: hidden; }';
+        // @ts-ignore
+        if (style.styleSheet){
+        // This is required for IE8 and below.
+            // @ts-ignore
+            style.styleSheet.cssText = css;
+        } else {
+            style.innerHTML = "";
+            style.appendChild(document.createTextNode(css));
+        }
+
+    }, [cell_value_vis])
+
     // https://stackoverflow.com/questions/31214677/download-a-reactjs-object-as-a-file
     const downloadImpl = (data: string, name: string, mimetype: string) => {
         var b = new Blob([data], {type: mimetype});
@@ -281,12 +341,26 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         lineup!.data.exportTable(lineup!.data.getRankings()[0], {separator: ","}).then(x => downloadImpl(x, `lineup-export.csv`, 'application/csv'))
     }
 
+    const toggleVis = () => {
+        set_cell_value_vis(() => { return !cell_value_vis })
+    }
+
     //https://github.com/lineupjs/lineup_app/blob/master/src/export.ts
     return false ? 
         <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>
             <div ref={lineup_ref} id="lineup_view"></div>
         </MyWindowPortal> : 
-        <div className="LineUpParent"><Button onClick={() => { exportCSV() }}>Export CSV</Button><div><div ref={lineup_ref} id="lineup_view"></div></div></div>//<Button onClick={() => {downloadImpl(JSON.stringify(lineup?.dump, null, ' '), `lineup-export.json`, 'application/json');}}>Export Lineup</Button>
+        <div className="LineUpParent">
+            <Button onClick={() => { exportCSV() }}>Export CSV</Button> 
+            {/* <Button onClick={() => { toggleVis() }}>Show Cell Value</Button> */}
+            <FormControlLabel
+                control={<Switch onChange={(event) => { //value={cell_value_vis} 
+                    toggleVis()
+                }} />}
+                label="Show Cell Value"
+            />
+            <div><div ref={lineup_ref} id="lineup_view"></div></div>
+        </div>//<Button onClick={() => {downloadImpl(JSON.stringify(lineup?.dump, null, ' '), `lineup-export.json`, 'application/json');}}>Export Lineup</Button>
 })
 
 
@@ -339,7 +413,7 @@ function buildLineup(cols, data){
                             builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
                         break;
                     case FeatureType.Quantitative:
-                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show).renderer("myBarCellRenderer")); //.renderer("numberWithValues")
+                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show));//.renderer("myBarCellRenderer")); //.renderer("numberWithValues")
                         break;
                     case FeatureType.Date:
                         builder.column(LineUpJS.buildDateColumn(i).custom("visible", show));
@@ -356,7 +430,7 @@ function buildLineup(cols, data){
                 if(col.isNumeric){
                     console.log(i)
                     console.log(col.range)
-                    builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show).renderer("myBarCellRenderer"));
+                    builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));//.renderer("myBarCellRenderer"));
                 }else if(col.distinct)
                     if(data && col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                         builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
@@ -369,6 +443,7 @@ function buildLineup(cols, data){
     }
     
     builder.column(LineUpJS.buildStringColumn("Annotations").editable())
+    builder.column(LineUpJS.buildStringColumn(UNIQUE_ID).width(50)); // we need this to be able to filter by all indices; this ID corresponds to the mesh index
 
     builder.defaultRanking(true);
     builder.deriveColors();
@@ -430,7 +505,11 @@ export class MySmilesStructureRenderer implements ICellRendererFactory {
                 let smiles = d.v[col.desc.column];
                 backend_utils.get_structure_from_smiles(smiles)
                 .then(x => {
-                    n.style.backgroundImage = `url('data:image/jpg;base64,${x}')`;
+                    if(x.length > 100){ // check if it is actually long enogh to be an img
+                        n.style.backgroundImage = `url('data:image/jpg;base64,${x}')`;
+                    }else{
+                        n.innerHTML = x;
+                    }
                     n.alt = smiles;
                 });
             }

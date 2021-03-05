@@ -1,16 +1,20 @@
 import * as React from 'react';
 import './chem.scss';
 import * as backend_utils from '../../../utils/backend-connect';
-import { Box, Button, Checkbox, FormControlLabel, Grid, InputAdornment, MenuItem, Select, TextField, Tooltip } from '@material-ui/core';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, Input, InputAdornment, InputLabel, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Tooltip, Typography } from '@material-ui/core';
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 import { RootState } from '../../Store/Store';
 import { connect, ConnectedProps } from 'react-redux';
-import { BiRefresh } from 'react-icons/bi';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import SettingsIcon from '@material-ui/icons/Settings';
+import InfoIcon from '@material-ui/icons/Info';
 import useCancellablePromise, { makeCancelable } from '../../../utils/promise-helpers';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { setAggregationAction } from '../../Ducks/AggregationDuck';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
+import { isFunction } from 'lodash';
+import { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma } from '../../Ducks/RDKitSettingsDuck';
 
 /**
  * Chem Legend, implemented
@@ -20,7 +24,7 @@ const mapStateToProps_Chem = (state: RootState) => ({
     dataset: state.dataset
 })
 const mapDispatchToProps_Chem = dispatch => ({
-
+    setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
 })
 const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
 
@@ -40,17 +44,20 @@ type Props_Chem = PropsFromRedux_Chem & {
 
 const loading_area = "chemlegend_loading_area";
 const UPDATER = "chemdetail";
-export const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {rep_list: string[], current_rep: any, cancelables: any[]}>{
+export const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {rep_list: string[], current_rep: any, cancelables: any[], checkedList: boolean[], settingsOpen: boolean}>{
+    anchorRef: any;
 
     constructor(props){
         super(props);
         this.state = {
             rep_list: ["Common Substructure"],
             current_rep: "Common Substructure",
-            cancelables: []
+            cancelables: [],
+            checkedList: [],
+            settingsOpen: false
         };
         this.loadRepList = this.loadRepList.bind(this);
-
+        this.anchorRef = React.createRef();
     }
 
     componentDidMount(){
@@ -94,22 +101,50 @@ export const ChemLegend = connector_Chem(class extends React.Component<Props_Che
             this.props.hoverUpdate(hover_item, UPDATER);
         };
 
+        const setCheckedList = (value) => {
+            const set_val = isFunction(value) ? value(this.state.checkedList) : value;
+            this.setState({...this.state, checkedList: set_val});
+        }
+        
+        const handle_filter = () => {
+            const filter_instances = this.props.selection.filter((x, i) => this.state.checkedList[i]);
+            setCheckedList([]);
+            this.props.setCurrentAggregation(filter_instances);
+        }
+
+        const setSettingsOpen = (value) => {
+            const set_val = isFunction(value) ? value() : value;
+            this.setState({...this.state, settingsOpen: set_val});
+        }
+        const setCurrentRep = (value) => {
+            if(this.state.rep_list.includes(value)){
+                this.setState({...this.state, current_rep: value});
+            }
+        }
+
         if (this.props.aggregate) {
             return <div className={"ParentChem"}>
-                <RepresentationList 
-                    value={this.state.current_rep} 
-                    onChange={(value) => {
-                        // let selected = event.target.value;
-                        if(this.state.rep_list.includes(value)){
-                            this.setState({...this.state, current_rep: value});
-                        }
-                    }}
-                    rep_list={this.state.rep_list}
-                />
+                        
+                <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
+                    <RepresentationList 
+                            value={this.state.current_rep}
+                            onChange={setCurrentRep}
+                            rep_list={this.state.rep_list}
+                    />
+                    <Button 
+                        size="small"
+                        variant="outlined"
+                        onClick={() => {handle_filter()}}><FilterListIcon fontSize={"small"}/>&nbsp;Confirm Selection</Button>
+
+                    <Tooltip title="Summary Settings">
+                        <IconButton ref={this.anchorRef} onClick={() => setSettingsOpen(true)}><SettingsIcon></SettingsIcon></IconButton>
+                    </Tooltip>
+                    <SettingsPopover repList={this.state.rep_list} currentRep={this.state.current_rep} setCurrentRep={setCurrentRep} open={this.state.settingsOpen} setOpen={setSettingsOpen} anchorEl={this.anchorRef.current} refreshRepList={() => {this.loadRepList(true);}}></SettingsPopover>
+                </Box>
                 <LoadingIndicatorView area={loading_area}/>
-                <ImageView selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.state.current_rep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} refreshRepList={this.loadRepList} />
+                <ImageView setCheckedList={setCheckedList} selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.state.current_rep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} />
                 
-                </div>;
+            </div>;
         }
 
         return <div><ImageView selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate}/></div>;
@@ -117,7 +152,7 @@ export const ChemLegend = connector_Chem(class extends React.Component<Props_Che
 });
 
 
-function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, checkedList, setCheckedList){ 
+function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, setCheckedList){ 
     let smiles_col = "SMILES";
 
     const onUpdateItem = (i, val) => {
@@ -149,6 +184,11 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                 props.selection.forEach(row => {
                     formData.append('smiles_list', row[smiles_col]);
                 });
+                formData.append('contourLines', props.rdkitSettings.contourLines);
+                formData.append('scale', props.rdkitSettings.scale);
+                formData.append('sigma', props.rdkitSettings.sigma);
+                formData.append('showMCS', props.rdkitSettings.showMCS);
+
                 const controller = new AbortController();
                 trackPromise(
                     cancellablePromise(backend_utils.get_structures_from_smiles_list(formData, controller), controller).then(x => {
@@ -166,7 +206,7 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                             return <Grid className={"legend_multiple"} key={i} item>
                                 <FormControlLabel
                                     labelPlacement="bottom"
-                                    control={<Checkbox checked={checkedList[i]} onChange={(event) => { onUpdateItem(i, event.target.checked); }} />}
+                                    control={<Checkbox onChange={(event) => { onUpdateItem(i, event.target.checked); }} />}
                                     label={<img 
                                         src={"data:image/jpeg;base64," + base64} 
                                         onMouseEnter={() => {handleMouseEnter(i);}} 
@@ -208,6 +248,11 @@ function updateImage(props, cancellablePromise){
             props.selection.forEach(row => {
                 formData.append('smiles_list', row[smiles_col]);
             });
+            formData.append('contourLines', props.rdkitSettings.contourLines);
+            formData.append('scale', props.rdkitSettings.scale);
+            formData.append('sigma', props.rdkitSettings.sigma);
+            formData.append('showMCS', props.rdkitSettings.showMCS);
+
             const controller = new AbortController();
             trackPromise(
                 cancellablePromise(backend_utils.get_structures_from_smiles_list(formData, controller), controller).then(x => {
@@ -223,10 +268,11 @@ function updateImage(props, cancellablePromise){
 }
 
 const mapStateToProps_Img = (state: RootState) => ({
-    hoverState: state.hoverState
+    hoverState: state.hoverState,
+    rdkitSettings: state.rdkitSettings
 })
 const mapDispatchToProps_Img = dispatch => ({
-    setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
+    setRDKitSettingsRefresh: input => dispatch(setRDKit_refresh(input)),
 })
 const connector_Img = connect(mapStateToProps_Img, mapDispatchToProps_Img);
 
@@ -243,7 +289,8 @@ type Props_Img = PropsFromRedux_Img & {
     handleMouseEnter?,
     handleMouseOut?,
     current_rep?,
-    refreshRepList?
+    setCheckedList?,
+    setRDKitSettingsRefresh
 }
 
 function addHighlight(element){
@@ -258,25 +305,34 @@ function removeHighlight(element){
     }
 }
 
-const ImageView = connector_Img(function ({ hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep, setCurrentAggregation, refreshRepList }: Props_Img) {
+const ImageView = connector_Img(function ({ hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep, setCheckedList, setRDKitSettingsRefresh, rdkitSettings }: Props_Img) {
     const [comp, setComp] = React.useState(<div></div>);
-    const [checkedList, setCheckedList] = React.useState([]);
-
+    
     const ref = React.useRef()
     const { cancellablePromise, cancelPromises } = useCancellablePromise();
 
+
+    React.useEffect(() => {
+        if(aggregate){
+            setRDKitSettingsRefresh(()=>{
+                updateImage({columns: columns, current_rep: current_rep, selection: selection, imgContainer: ref?.current, rdkitSettings: rdkitSettings}, cancellablePromise); 
+            });
+        }
+    }, [columns, current_rep, selection, ref?.current, rdkitSettings.contourLines, rdkitSettings.scale, rdkitSettings.sigma, rdkitSettings.showMCS]);
+    
     React.useEffect(() => {
         cancelPromises(); // cancel all unresolved promises
     }, [selection, current_rep])
 
     React.useEffect(() => {
-        setCheckedList([]);
-        loadImage({columns: columns, aggregate: aggregate, current_rep: current_rep, selection: selection}, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, checkedList, setCheckedList); 
+        if(setCheckedList)
+            setCheckedList([]);
+        loadImage({columns: columns, aggregate: aggregate, current_rep: current_rep, selection: selection, rdkitSettings: rdkitSettings}, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, setCheckedList); 
     }, [selection])
 
     React.useEffect(() => {
         if(aggregate)
-            updateImage({columns: columns, current_rep: current_rep, selection: selection, imgContainer: ref?.current}, cancellablePromise); 
+            updateImage({columns: columns, current_rep: current_rep, selection: selection, imgContainer: ref?.current, rdkitSettings: rdkitSettings}, cancellablePromise); 
     }, [current_rep]);
     
     React.useEffect(() => {
@@ -311,33 +367,181 @@ const ImageView = connector_Img(function ({ hoverState, selection, columns, aggr
     }, [hoverState]);
 
 
-    const handle_filter = () => {
-        const filter_instances = selection.filter((x, i) => checkedList[i]);
-        setCheckedList([]);
-        setCurrentAggregation(filter_instances);
-    }
 
     return <div className={"chemContainer"}>
             <Grid ref={ref} className={"chem-grid"} container>{comp}</Grid>
-            {aggregate && <Box paddingLeft={2} paddingTop={2}>
-                <Button 
-                    size="small"
-                    variant="outlined"
-                    onClick={() => {handle_filter()}}><FilterListIcon fontSize={"small"}/>&nbsp;Confirm Selection</Button>
-
-                <Tooltip title="Refresh Representation List">
-                    <Button aria-label={"Refresh Representation List"} onClick={() => refreshRepList(true)}><BiRefresh/></Button>
-                </Tooltip>
-            </Box>}
         </div>;
 });
+
+
+
+const mapStateToProps_settings = (state: RootState) => ({
+    rdkitSettings: state.rdkitSettings,
+})
+const mapDispatchToProps_settings = dispatch => ({
+    setContourLines: input => dispatch(setRDKit_contourLines(input)),
+    setScale: input => dispatch(setRDKit_scale(input)),
+    setSigma: input => dispatch(setRDKit_sigma(input)),
+    setShowMCS: input => dispatch(setRDKit_showMCS(input)),
+})
+const connector_settings = connect(mapStateToProps_settings, mapDispatchToProps_settings);
+
+type PropsFromRedux_Settings = ConnectedProps<typeof connector_settings>
+
+
+type SettingsPopoverProps = PropsFromRedux_Settings & {
+    open: boolean
+    setOpen: any
+    anchorEl: any
+    refreshRepList: any
+    currentRep: string
+    setCurrentRep: any
+    repList: string[]
+}
+
+const SettingsPopover = connector_settings(function ({
+    open,
+    setOpen,
+    anchorEl,
+    refreshRepList,
+    rdkitSettings,
+    setContourLines,
+    setScale,
+    setSigma,
+    setShowMCS
+}: SettingsPopoverProps) {
+
+    const useStyles = makeStyles(theme => ({
+        refreshButton: {
+            margin: theme.spacing(2),
+        },
+        applyButton: {
+            marginTop: theme.spacing(1),
+            marginLeft: theme.spacing(3),
+            marginRight: theme.spacing(3),
+            marginBottom: theme.spacing(3),
+            maxWidth: 150
+        },
+        input: {
+            marginLeft: theme.spacing(3),
+            marginRight: theme.spacing(3),
+        },
+        root: {
+            // padding: theme.spacing(3, 2),
+            minWidth: 350,
+            minHeight: 500,
+        }
+    }))
+    const classes = useStyles()
+    
+    return <Popover
+        disablePortal={true}
+        id={"dialog to open"}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={() => setOpen(() => false)}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+        }}
+        transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+        }}
+    >
+        <div>
+            <Paper>
+                <FormGroup>
+                    <Button 
+                        size="small"
+                        variant="outlined" 
+                        className={classes.refreshButton} 
+                        aria-label={"Refresh Representation List"} onClick={() => refreshRepList(true)}>
+                            <RefreshIcon/>Refresh Representation List
+                    </Button>
+                    <Typography variant="subtitle2" gutterBottom>RDKit Settings</Typography>
+
+                    {/* https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/Draw/SimilarityMaps.py */}
+                    {/* how many contour lines should be drawn [0;inf] */}
+                    <FormControl className={classes.input} >
+                        <InputLabel shrink htmlFor="contourLinesInput">Contour Lines <Tooltip title="Number of Contour Lines [0; &infin;] &isin; &#8469;"><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
+                        <Input id="contourLinesInput" type="number" 
+                            value={rdkitSettings.contourLines}
+                            onChange={(event) => { 
+                                let val = parseInt(event.target.value);
+                                if(isNaN(val))
+                                    setContourLines(event.target.value);
+                                else
+                                    setContourLines(Math.max(val, 0));
+                                }} />
+                    </FormControl>
+
+                    {/* scale tells the programm about how to scale the weights [-1;inf]; default is -1 which means that it is inherted by the algorithm*/}
+                    <FormControl className={classes.input}>
+                        <InputLabel shrink htmlFor="ScaleInput">Scale <Tooltip title="Weight Scale [-1; &infin;] &isin; &#8477;"><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
+                        <Input id="ScaleInput" type="number" 
+                            value={rdkitSettings.scale}
+                            onChange={(event) => { 
+                                let val = parseFloat(event.target.value);
+                                if(isNaN(val))
+                                    setScale(event.target.value);
+                                else
+                                    setScale(Math.max(val, -1)); 
+                            }} />
+                    </FormControl>
+
+                    {/* sigma is for gaussian ]0;~0.2?]; default 0 means that the algorithm infers the value from the weights */}
+                    {/* <FormControl>
+                        <InputLabel shrink htmlFor="SigmaInput">Sigma <Tooltip title="Sigma for Gaussian ]0; &infin;] &isin; &#8477;. Makes sense to ~0.2. Default of 0 signals the algorithm to infer the value."><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
+                        <Input id="SigmaInput" type="number" 
+                            value={sigma}
+                            onChange={(event) => { setSigma(Math.max(parseFloat(event.target.value), 0)); }} />
+                    </FormControl> */}
+                    <FormControl className={classes.input}>
+                        <InputLabel shrink htmlFor="SigmaInput">Sigma <Tooltip title="Sigma for Gaussian ]0; &infin;] &isin; &#8477;. Default of 0 signals the algorithm to infer the value."><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
+                        <div className="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl">
+                            <input aria-invalid="false" id="SigmaInput" type="number" className="MuiInputBase-input MuiInput-input" 
+                                step={0.01} // step size can only be defined in this input tag... not in the react Input tag
+                                value={rdkitSettings.sigma}
+                                onChange={(event) => { 
+                                    let val = parseFloat(event.target.value);
+                                    if(isNaN(val))
+                                        setSigma(event.target.value);
+                                    else
+                                        setSigma(Math.max(val, 0)); 
+                                }}
+                            />
+                        </div>
+                    </FormControl>
+
+                    <FormControlLabel
+                        control={<Switch checked={rdkitSettings.showMCS} onChange={(_, value) => {setShowMCS(value);}} />}
+                        label="Show MCS"
+                    />
+
+                    <Button 
+                        size="small"
+                        variant="outlined" 
+                        className={classes.applyButton} 
+                         onClick={() => {rdkitSettings.refresh()}}>
+                            Apply Settings
+                        </Button>
+                </FormGroup>
+            </Paper>
+        </div>
+
+    </Popover>
+});
+
 
 const RepresentationList = props => {
 
     const options = props.rep_list.map((rep) => {
-        let split = rep.split('.');
+        let split = rep.split('_');
         const inputVal = split.pop();
-        const group = split.join('.');
+        let group = split.join('_');
+        group = group.replace('atom.dprop.','');
+        group = group.replace('atom.dprop','');
         return {
             group: group,
             value: rep,
@@ -349,8 +553,9 @@ const RepresentationList = props => {
         stringify: (option:any) => { return option.value; },
     });
 
-    return <Box paddingLeft={1}>
-        <Autocomplete
+    return <Autocomplete
+            size={"small"}
+            className={props.className}
             filterOptions={filterOptions}
             onChange={(event, newValue) => {
                 if(newValue)
@@ -358,16 +563,13 @@ const RepresentationList = props => {
             }}
             disablePortal={true}
             id="vectorRep"
-            options={options}
+            options={options.sort((a, b) => -b.group.localeCompare(a.group))}
             groupBy={(option:any) => option.group}
             getOptionLabel={(option:any) => option.inputValue}
             getOptionSelected={(option:any, value) => {return option.value == value.value;}}
-            // style={{ width: 215, float:'left' }}
+            style={{ maxWidth: 300 }}
             // defaultValue={options[0]}
             
             renderInput={(params) => <TextField {...params} label="Choose Representation" variant="outlined" />}
         />
-        
-        
-    </Box>
 };

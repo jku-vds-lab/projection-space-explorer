@@ -234,7 +234,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       } else if (set == "chess") {
         preselect = "datasets/chess/chess16k.csv"
         loader = new CSVLoader();
-      } else if (set == "chemvis") {
+      } else if (set == "cime") {
         preselect = "test.sdf";
         loader = new SDFLoader();
       } else {

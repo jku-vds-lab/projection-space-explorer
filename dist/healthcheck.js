@@ -178,10 +178,10 @@ Object.defineProperty(exports, "__esModule", {
 exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_substructure_count = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.get_uploaded_files = exports.delete_file = exports.BASE_URL = exports.CREDENTIALS = void 0;
 exports.CREDENTIALS = 'include'; // for AWS/docker
 // export const CREDENTIALS = 'omit'; // for netlify/local
-// export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = 'https://cime.caleydoapp.org'; // for netlify
 
-exports.BASE_URL = ''; // for AWS/docker
+exports.BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = ''; // for AWS/docker
 
 var smiles_cache = {};
 var smiles_highlight_cache = {};

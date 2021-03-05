@@ -1,7 +1,8 @@
-import { Box } from "@material-ui/core";
+import { Box, FormControl, FormControlLabel, FormHelperText, Input, InputAdornment, InputLabel, Switch, TextField, Tooltip, Typography } from "@material-ui/core";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../Store/Store";
+import InfoIcon from '@material-ui/icons/Info';
 
 const mapStateToProps = (state: RootState) => ({
 })
@@ -19,11 +20,9 @@ type Props = PropsFromRedux & {
 
 
 export const ChemTabPanel = connector(({  }: Props) => {
-    
+
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box paddingLeft={2} paddingTop={2}>
-            TODO
-        </Box>
+        TODO
 
     </div>
 })

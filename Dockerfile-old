@@ -39,8 +39,8 @@ COPY dist/ /app/dist/
 
 EXPOSE 8080
 
-CMD ["python", "backend-chemvis-dist.py"]
+CMD ["python", "backend-cime-dist.py"]
 
 # Running
-# docker build -f Dockerfile -t chem-vis .
-# docker run -d -p 8080:8080 --detach chem-vis
+# docker build -f Dockerfile -t cime .
+# docker run -d -p 8080:8080 --detach cime
