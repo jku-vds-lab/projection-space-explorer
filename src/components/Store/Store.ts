@@ -37,6 +37,7 @@ import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
 import projections from '../Ducks/ProjectionsDuck';
 import hoverSettings from '../Ducks/HoverSettingsDuck';
 import hoverState from '../Ducks/HoverStateDuck';
+import selectedLineBy from '../Ducks/SelectedLineByDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -77,6 +78,7 @@ const allReducers = {
   differenceThreshold: differenceThreshold,
   projections: projections,
   hoverSettings: hoverSettings,
+  selectedLineBy: selectedLineBy
 }
 
 const appReducer = combineReducers(allReducers)

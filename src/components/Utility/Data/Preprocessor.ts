@@ -80,7 +80,12 @@ export class Preprocessor {
             let pool = {};
             this.vectors.forEach(sample => {
                 if (sample.x in pool) {
-                    pool[sample.x][sample.y] = pool[sample.x][sample.y] + 1;
+                    if (sample.y in pool[sample.x]) {
+                        pool[sample.x][sample.y] = pool[sample.x][sample.y] + 1;
+                    } else {
+                        pool[sample.x][sample.y] = 1;
+                    }
+                    
                 } else {
                     let o = {};
                     pool[sample.x] = o;

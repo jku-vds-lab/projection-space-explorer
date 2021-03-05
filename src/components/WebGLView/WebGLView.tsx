@@ -17,7 +17,7 @@ import { CameraTransformations } from './CameraTransformations'
 import { Camera } from 'three';
 import { LineVisualization, PointVisualization } from './meshes';
 import { MultivariateClustering } from './Visualizations/MultivariateClustering';
-import { DisplayMode } from '../Ducks/DisplayModeDuck';
+import { DisplayMode, displayModeSupportsStates } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
@@ -172,7 +172,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             menuY: null,
             menuTarget: null
         }
-        
+
     }
 
 
@@ -181,9 +181,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.requestRender()
     }
 
-    async hoverUpdate(hover_item, updater){
+    async hoverUpdate(hover_item, updater) {
         let idx = -1;
-        if(hover_item && hover_item["__meta__"]){
+        if (hover_item && hover_item["__meta__"]) {
             idx = hover_item["__meta__"]["view"]["meshIndex"];
         }
         this.particles.highlight(idx);
@@ -209,7 +209,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
-    
+
     /**
      * Initializes the callbacks for the MouseController.
      */
@@ -282,7 +282,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                                 this.lasso.mouseUp(coords.x, coords.y)
 
                                 var indices = this.lasso.selection(this.props.dataset.vectors, (vector) => this.particles.isPointVisible(vector))
-                                if (indices.length > 0 && wasDrawing) {
+                                if (indices.length > 0 && wasDrawing && displayModeSupportsStates(this.props.displayMode)) {
                                     var selected = indices.map(index => this.props.dataset.vectors[index])
 
                                     if (event.shiftKey) {
@@ -342,9 +342,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             if (this.props.currentTool == Tool.Default) {
                 switch (button) {
                     case 0:
-                        if (this.props.displayMode == DisplayMode.OnlyClusters) {
-                            break;
-                        }
                         if (this.props.activeLine) {
                             break;
                         }
@@ -391,6 +388,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                             } else {
                                 this.props.setCurrentAggregation([this.currentHover])
                             }
+                        } else if (this.currentHover && this.currentHover instanceof Cluster) {
+                            this.onClusterClicked(this.currentHover, event.shiftKey)
                         }
 
 
@@ -426,7 +425,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                     // Toggle
                     if (selected) {
-                        this.onClusterClicked(selected)
+                        this.onClusterClicked(selected, event.shiftKey)
                     }
                 }
             }
@@ -508,6 +507,51 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         }
     }
+
+
+
+
+    /**
+     * Creates the line visualization for given attribute key, e. g. line or algo
+     * 
+     * @param attribute The attribute key
+     */
+    recreateLines(attribute: string) {
+        const dataset = this.props.dataset
+        const segments = dataset.getSegs(attribute)
+
+        dataset.segments = segments
+
+
+        this.lines?.dispose(this.scene)
+        this.lines = null
+        
+        this.lines = new LineVisualization(segments, this.lineColorScheme)
+        this.lines.createMesh(this.props.lineBrightness)
+        this.lines.setZoom(this.camera.zoom)
+
+        // First add lines, then particles
+        this.lines.meshes.forEach(line => this.scene.add(line.line))
+
+        this.pointScene.remove(this.particles?.mesh)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 8, this.lines?.grayedLayerSystem)
+        this.particles.createMesh(this.props.dataset.vectors, segments)
+        this.particles.zoom(this.camera.zoom)
+        this.particles.updateColor()
+        this.particles.update()
+
+
+        //this.scene.add(this.particles.mesh);
+        this.pointScene.add(this.particles.mesh)
+
+        this.requestRender()
+    }
+
+
+
+
+
+
 
 
 
@@ -868,6 +912,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.camera.position.y = 0.0
         this.camera.updateProjectionMatrix();
 
+        
+
         this.requestRender()
     }
 
@@ -993,22 +1039,19 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
-    onClusterClicked(cluster: Cluster) {
+    onClusterClicked(cluster: Cluster, shiftKey: boolean = false) {
         function deriveFromClusters(clusters: Cluster[]) {
             let agg = clusters.map(cluster => cluster.vectors).flat()
             return [...new Set(agg)]
         }
 
-        switch (this.props.currentTool) {
-            case Tool.Default:
-                this.props.toggleSelectedCluster(cluster)
-                this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
-                break;
-            case Tool.Grab:
-                this.props.toggleSelectedCluster(cluster)
-                this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
-                break;
-
+                            
+        if (shiftKey) {
+            this.props.toggleSelectedCluster(cluster)
+            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
+        } else {
+            this.props.setSelectedClusters([cluster])
+            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
         }
     }
 
@@ -1108,6 +1151,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         if (prevProps.displayMode != this.props.displayMode) {
             switch (this.props.displayMode) {
                 case DisplayMode.StatesAndClusters:
+                case DisplayMode.OnlyStates:
                     if (this.props.dataset.isSequential) {
                         this.lines.meshes.forEach(line => {
                             this.scene.remove(line.line)
@@ -1119,6 +1163,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     this.pointScene.add(this.particles.mesh)
                     break;
                 case DisplayMode.OnlyClusters:
+                case DisplayMode.None:
                     if (this.props.dataset.isSequential) {
                         this.lines.meshes.forEach(line => {
                             this.scene.remove(line.line)

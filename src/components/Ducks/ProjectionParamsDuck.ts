@@ -12,7 +12,8 @@ const initialState = {
     iterations: 1000,
     seeded: false,
     useSelection: false,
-    method: ''
+    method: '',
+    distanceMetric: 'euclidean'
 }
 
 type ProjectionParamsState = typeof initialState

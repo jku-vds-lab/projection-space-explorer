@@ -11,8 +11,6 @@ import { FeatureType } from "../Utility/Data/FeatureType";
 import { PrebuiltFeatures } from "../Utility/Data/Dataset";
 import { setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
-// import { debounce } from "@material-ui/core";
-// import debounce from 'lodash.debounce';
 import * as _ from 'lodash';
 import { Button, FormControlLabel, Switch } from "@material-ui/core";
 import BarCellRenderer from "./BarCellRenderer";
@@ -26,7 +24,6 @@ const mapStateToProps = (state: RootState) => ({
     lineUpInput: state.lineUpInput,
     currentAggregation: state.currentAggregation,
     activeStory: state.stories.active,
-    hoverState: state.hoverState
 })
 
 
@@ -82,12 +79,12 @@ const UNIQUE_ID = "unique_ID";
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, setLineUpInput_visibility, onFilter, activeStory, hoverUpdate, hoverState }: Props) { // hoverState -> makes everything slow....
+export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, setLineUpInput_visibility, onFilter, activeStory, hoverUpdate }: Props) { // hoverState -> makes everything slow....
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
         return null;
     }
-
+    console.log("ok")
     let lineup_ref = React.useRef();
     let [cell_value_vis, set_cell_value_vis] = React.useState(false);
     
@@ -285,23 +282,30 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
 
     // --> not sure if this makes sense without scrolling
     // --> hoverstate updates make lineup slow
-    React.useEffect(() => {
+    //React.useEffect(() => {
         // hover the instance that is hovered in the scatter plot view
-        if(lineup && lineUpInput.data){ // TODO: sometimes there is a lineup bug when too many rows are highlighted??
-            if(hoverState && hoverState.data){
-                if(hoverState.updater != UPDATER){
-                    const lineup_idx = lineUpInput.data.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"]);
-                    
-                    lineup.setHighlight(lineup_idx, false); // flag that tells, if we want to scoll to that row
-                }
-            }
-            else{
-                lineup.setHighlight(-1, false);
-            }
+    //    if(lineup && lineUpInput.data){ // TODO: sometimes there is a lineup bug when too many rows are highlighted??
+    //        if(hoverState && hoverState.data){
+    //            if(hoverState.updater != UPDATER){
+                    // const lineup_idx = lineUpInput.data.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"]);
+    //                const lineup_idx = 1
+    //                if(lineup_idx >= 0){
+    //                    lineup.setHighlight(lineup_idx, false); // flag that tells, if we want to scoll to that row
+                        
+    //                 }
+    //             }
+    //         }
+    //         // else{
+    //         //     try{
+    //         //         lineup.setHighlight(-1, false);
+    //         //     }catch(ex){
+    //         //         console.log("exception when changing highliged row in lineup:", ex);
+    //         //     }
+    //         // }
             
-        }
+    //     }
         
-    }, [hoverState]);
+    // }, [hoverState]);
 
     React.useEffect(() => {
         let style = document.getElementById('cell_value_vis')
@@ -361,6 +365,13 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             />
             <div><div ref={lineup_ref} id="lineup_view"></div></div>
         </div>//<Button onClick={() => {downloadImpl(JSON.stringify(lineup?.dump, null, ' '), `lineup-export.json`, 'application/json');}}>Export Lineup</Button>
+        
+    // return <div style={{ height: '100%' }}>{false ? 
+    //         <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>
+    //             <div ref={lineup_ref} id="lineup_view"></div>
+    //         </MyWindowPortal> : 
+    //         <div className="LineUpParent"><div ref={lineup_ref} id="lineup_view"></div></div>}
+    //     </div>;
 })
 
 

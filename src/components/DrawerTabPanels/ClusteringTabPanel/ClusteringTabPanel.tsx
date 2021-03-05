@@ -16,13 +16,13 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { StoryPreview } from "./StoryPreview"
 import * as backend_utils from "../../../utils/backend-connect";
 import * as frontend_utils from "../../../utils/frontend-connect";
-import { Vect } from "../../Utility/Data/Vect"
 import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
 import useCancellablePromise from "../../../utils/promise-helpers"
-import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { setLineUpInput_data, setLineUpInput_visibility, setLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
+import { setChannelColor } from "../../Ducks/ChannelColorDuck"
+const d3 = require("d3")
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -239,9 +239,20 @@ export const ClusteringTabPanel = connector(({
 
                 // Update UI, dont know how to right now
                 var clusterAttribute = categoryOptions.getAttribute("color", "clusterLabel", "categorical")
+
                 if (clusterAttribute) {
-                    this.props.setChannelColor(clusterAttribute)
+                    setChannelColor(clusterAttribute)
                 }
+
+                let c = d3.contourDensity()
+                    .x(d => d.x)
+                    .y(d => d.y)
+                    .size([500, 500])
+                    .bandwidth(30)
+                    .thresholds(30)
+                    (dataset.vectors.map(vect => ({x: vect.x, y: vect.y})))
+
+                console.log(c)
             })
             .catch(error => console.log(error))
         , loading_area);
@@ -286,15 +297,47 @@ export const ClusteringTabPanel = connector(({
     };
     const marks = [
         {
-          value: 0,
-          label: 'Few Clusters',
+            value: 0,
+            label: 'Few Clusters',
         },
         {
-          value: 2,
-          label: 'Many Clusters',
+            value: 2,
+            label: 'Many Clusters',
         }
     ];
     React.useEffect(() => toggleClusters(), [dataset])
+
+    const onCheckItems = (event) => {
+        if (event.target.checked) {
+            if (displayMode == DisplayMode.OnlyClusters) {
+                setDisplayMode(DisplayMode.StatesAndClusters)
+            } else {
+                setDisplayMode(DisplayMode.OnlyStates)
+            }
+        } else {
+            if (displayMode == DisplayMode.StatesAndClusters) {
+                setDisplayMode(DisplayMode.OnlyClusters)
+            } else {
+                setDisplayMode(DisplayMode.None)
+            }
+        }
+    }
+
+    const onCheckClusters = (event) => {
+        if (event.target.checked) {
+            if (displayMode == DisplayMode.OnlyStates) {
+                setDisplayMode(DisplayMode.StatesAndClusters)
+            } else {
+                setDisplayMode(DisplayMode.OnlyClusters)
+            }
+        } else {
+            if (displayMode == DisplayMode.StatesAndClusters) {
+                setDisplayMode(DisplayMode.OnlyStates)
+            } else {
+                setDisplayMode(DisplayMode.None)
+            }
+        }
+    }
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
@@ -303,10 +346,12 @@ export const ClusteringTabPanel = connector(({
 
         <Box paddingLeft={2}>
             <FormControlLabel
-                control={<Switch checked={displayMode != DisplayMode.OnlyClusters} onChange={(event) => {
-                    setDisplayMode(event.target.checked ? DisplayMode.StatesAndClusters : DisplayMode.OnlyClusters)
-                }} name="test" />}
+                control={<Switch checked={displayMode != DisplayMode.OnlyClusters && displayMode != DisplayMode.None} onChange={onCheckItems} />}
                 label="Show Items"
+            />
+            <FormControlLabel
+                control={<Switch checked={displayMode != DisplayMode.OnlyStates && displayMode != DisplayMode.None} onChange={onCheckClusters} />}
+                label="Show Clusters"
             />
         </Box>
 
@@ -473,17 +518,9 @@ function ClusterPopover({
     >
         <div>
             <Paper className={classes.root}>
-                <FormGroup>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="secondary"
-                        onClick={onDelete}
-                        startIcon={<DeleteIcon />}
-                    >
-                        Delete
-                    </Button>
+                <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography>
 
+                <FormGroup>
                     <TextField
                         className={classes.button}
                         id="option3"
@@ -502,11 +539,24 @@ function ClusterPopover({
                         }}
                     />
 
-                    <Button
-                        className={classes.button}
-                        onClick={onLineup}
-                        variant="outlined"
-                    >Show Cluster in Table</Button>
+                    <div style={{ display: 'flex' }}>
+                        <Button
+                            className={classes.button}
+                            onClick={onLineup}
+                            variant="outlined"
+                        >Show Cluster in Table</Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="secondary"
+                            onClick={onDelete}
+                            startIcon={<DeleteIcon />}
+                        >
+                            Delete
+                    </Button>
+                    </div>
+
+
 
                     
                 </FormGroup>
@@ -551,8 +601,8 @@ function ClusterList({
 
         <List>
             {stories.active?.clusters.map((cluster, key) => {
-                return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={() => {
-                    handleClusterClick(cluster)
+                return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={(event) => {
+                    webGLView.current.onClusterClicked(cluster, event.shiftKey)
                 }}>
                     <ListItemAvatar>
                         <Avatar>

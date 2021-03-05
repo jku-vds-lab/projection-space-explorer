@@ -1,4 +1,4 @@
-import { connect } from 'react-redux'
+import { connect, ConnectedProps } from 'react-redux'
 import { FunctionComponent } from 'react'
 import * as React from 'react'
 import { Grid, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core'
@@ -6,40 +6,78 @@ import { ShapeLegend } from './ShapeLegend/ShapeLegend'
 import { setSelectedVectorByShapeAction } from "../../Ducks/SelectedVectorByShapeDuck"
 import { setVectorByShapeAction } from "../../Ducks/VectorByShapeDuck"
 import { setCheckedShapesAction } from "../../Ducks/CheckedShapesDuck"
+import { RootState } from '../../Store/Store'
+import { setSelectedLineBy } from '../../Ducks/SelectedLineByDuck'
 
-type StatesTabPanelProps = {
-    categoryOptions: any
-    dataset: any
-    selectedVectorByShape: any
-    vectorByShape: any
-    setSelectedVectorByShape: any
-    setCheckedShapes: any
-    setVectorByShape: any
-}
-
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
     selectedVectorByShape: state.selectedVectorByShape,
+    selectedLineBy: state.selectedLineBy,
     vectorByShape: state.vectorByShape,
     dataset: state.dataset,
-    categoryOptions: state.categoryOptions
+    categoryOptions: state.categoryOptions,
+    webGlView: state.webGLView
 })
 
 const mapDispatchToProps = dispatch => ({
     setSelectedVectorByShape: selectedVectorByShape => dispatch(setSelectedVectorByShapeAction(selectedVectorByShape)),
     setVectorByShape: vectorByShape => dispatch(setVectorByShapeAction(vectorByShape)),
-    setCheckedShapes: checkedShapes => dispatch(setCheckedShapesAction(checkedShapes))
+    setCheckedShapes: checkedShapes => dispatch(setCheckedShapesAction(checkedShapes)),
+    setSelectedLineBy: lineBy => dispatch(setSelectedLineBy(lineBy))
 })
 
-export const StatesTabPanelFull: FunctionComponent<StatesTabPanelProps> = ({
+
+
+
+const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux
+
+
+
+export const StatesTabPanelFull = ({
     selectedVectorByShape,
     vectorByShape,
     dataset,
     setSelectedVectorByShape,
     setVectorByShape,
     setCheckedShapes,
-    categoryOptions
-}) => {
+    categoryOptions,
+    selectedLineBy,
+    setSelectedLineBy,
+    webGlView
+}: Props) => {
     return <div>
+        {
+            <FormControl style={{ margin: '4px 0px' }}>
+                <InputLabel shrink id="lineByLabel">{"line by"}</InputLabel>
+                <Select labelId="lineByLabel"
+                    id="lineBySelect"
+                    displayEmpty
+                    value={selectedLineBy.value}
+                    onChange={(event) => {
+                        setSelectedLineBy(event.target.value)
+
+                        webGlView.current.recreateLines(event.target.value)
+                        /**if (event.target.value != null && event.target.value != "") {
+                            var attribute = categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
+                            setVectorByShape(attribute)
+                        } else {
+                            setVectorByShape(null)
+                        }**/
+                    }}
+                >
+                    <MenuItem value="">None</MenuItem>
+                    {
+                        selectedLineBy.options.map(option => {
+                            return <MenuItem value={option}>{option}</MenuItem>
+                        })
+                    }
+                </Select>
+            </FormControl>
+        }
+
         {
             categoryOptions != null && categoryOptions.hasCategory("shape") ?
                 <Grid
@@ -89,4 +127,4 @@ export const StatesTabPanelFull: FunctionComponent<StatesTabPanelProps> = ({
 }
 
 
-export const StatesTabPanel = connect(mapStateToProps, mapDispatchToProps)(StatesTabPanelFull)
+export const StatesTabPanel = connector(StatesTabPanelFull)
