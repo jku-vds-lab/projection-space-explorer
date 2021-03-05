@@ -17,9 +17,10 @@ import { Story } from "../../Utility/Data/Story";
 import * as nt from '../../NumTs/NumTs'
 
 import * as frontend_utils from "../../../utils/frontend-connect";
+import { toPlainObject } from "lodash";
 
 const SELECTED_COLOR = 0x4d94ff
-const DEFAULT_COLOR = 0xA9A9A9
+const DEFAULT_COLOR = 0x808080
 const GRAYED = 0xDCDCDC
 
 const WING_SIZE = 2.2
@@ -128,13 +129,26 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             switch (this.props.displayMode) {
                 case DisplayMode.StatesAndClusters:
                     this.highlightCluster(this.props.selectedClusters)
+                    this.clusterScene.visible = true
+                    this.scalingScene.visible = true
+                    this.scene.visible = true
                     break;
                 case DisplayMode.OnlyClusters:
+                    this.clusterScene.visible = true
+                    this.scalingScene.visible = true
+                    this.scene.visible = true
                     this.clusterObjects.forEach(clusterObject => {
                         clusterObject.children.forEach(child => {
                             child.visible = false
                         })
                     })
+                    break;
+                case DisplayMode.OnlyStates:
+                case DisplayMode.None:
+                    this.clusterScene.visible = false
+                    this.scalingScene.visible = false
+                    this.scene.visible = false
+                    
                     break;
             }
         }

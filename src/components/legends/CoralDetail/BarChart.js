@@ -7,7 +7,7 @@ export default createClassFromLiteSpec('BarChart', {
   "transform": [
     {
       "window": [{
-        "op": "rank",
+        "op": "row_number",
         "as": "rank"
       }],
       "sort": [{ "field": "count", "order": "descending" }]

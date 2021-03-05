@@ -15701,6 +15701,8 @@ Object.defineProperty(exports, "__esModule", {
 var UMAP_1 = __webpack_require__(/*! ../../Utility/UMAP */ "./src/components/Utility/UMAP/index.ts");
 
 __webpack_require__(/*! regenerator-runtime/runtime */ "./node_modules/regenerator-runtime/runtime.js");
+
+var umap_1 = __webpack_require__(/*! ../../Utility/UMAP/umap */ "./src/components/Utility/UMAP/umap.ts");
 /**
  * Worker thread that computes a stepwise projection
  */
@@ -15712,7 +15714,8 @@ self.addEventListener('message', function (e) {
   if (e.data.messageType == 'init') {
     context.raw = e.data;
     context.umap = new UMAP_1.UMAP({
-      nNeighbors: e.data.params.nNeighbors
+      nNeighbors: e.data.params.nNeighbors,
+      distanceFn: e.data.params.distanceMetric == 'euclidean' ? umap_1.euclidean : umap_1.jaccard
     });
     context.umap.initializeFit(e.data.input, e.data.params.seeded ? e.data.seed : undefined);
     context.umap.step();

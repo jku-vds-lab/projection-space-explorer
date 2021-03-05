@@ -76,15 +76,15 @@ export class Dataset {
         }
     }
 
-    getSegs() {
+    getSegs(key = 'line') {
         let vectors = this.vectors
 
         // Get a list of lines that are in the set
-        var lineKeys = [... new Set(vectors.map(vector => vector.line))]
+        var lineKeys = [... new Set(vectors.map(vector => vector[key]))]
 
 
         var segments = lineKeys.map(lineKey => {
-            var l = new DataLine(lineKey, vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age))
+            var l = new DataLine(lineKey, vectors.filter(vector => vector[key] == lineKey).sort((a, b) => a.age - b.age))
             // Set segment of vectors
             l.vectors.forEach((v, vi) => {
                 v.view.segment = l
