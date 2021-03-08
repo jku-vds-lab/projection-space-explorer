@@ -241,11 +241,11 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             }
         }
         
-    }, [currentAggregation])
+    }, [lineUpInput.lineup, currentAggregation])
 
     React.useEffect(() => {
         if(lineUpInput.lineup && lineUpInput.lineup.data){
-
+            console.log(lineUpInput.filter)
             if(lineUpInput.filter){
                 const ranking = lineUpInput.lineup.data.getFirstRanking();
                 for (const key in lineUpInput.filter) {
@@ -281,7 +281,7 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             }
 
         }
-    }, [lineUpInput.filter]);
+    }, [lineUpInput.lineup, lineUpInput.filter]);
 
 
     // const debouncedHighlight = React.useCallback(debounce<any>(lineup_idx => lineup?.setHighlight(lineup_idx, true), 1000), []);
