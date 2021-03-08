@@ -776,7 +776,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           </AppBar>
 
           <Split
-          style={{display: 'flex', flexDirection: 'column', height: '100%'}}
+            style={{display: 'flex', flexDirection: 'column', height: '100%'}}
             sizes={[100, 0]}
             minSize={0}
             expandToMin={false}
@@ -787,12 +787,12 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             direction="vertical"
             cursor="ns-resize"
           >
-            <div style={{ flexGrow: 1 }}>
+            <div style={{ flexGrow: 0.9 }}>
               <WebGLView
                 ref={this.threeRef}
               />
             </div>
-            <div style={{ flexGrow: 0 }}>
+            <div style={{ flexGrow: 0.1 }}>
               <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
             </div>
 

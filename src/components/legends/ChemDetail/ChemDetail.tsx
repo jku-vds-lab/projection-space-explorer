@@ -411,29 +411,6 @@ const SettingsPopover = connector_settings(function ({
     setShowMCS
 }: SettingsPopoverProps) {
 
-    const useStyles = makeStyles(theme => ({
-        refreshButton: {
-            margin: theme.spacing(2),
-        },
-        applyButton: {
-            marginTop: theme.spacing(1),
-            marginLeft: theme.spacing(3),
-            marginRight: theme.spacing(3),
-            marginBottom: theme.spacing(3),
-            maxWidth: 150
-        },
-        input: {
-            marginLeft: theme.spacing(3),
-            marginRight: theme.spacing(3),
-        },
-        root: {
-            // padding: theme.spacing(3, 2),
-            minWidth: 350,
-            minHeight: 500,
-        }
-    }))
-    const classes = useStyles()
-    
     return <Popover
         disablePortal={true}
         id={"dialog to open"}
@@ -450,12 +427,11 @@ const SettingsPopover = connector_settings(function ({
         }}
     >
         <div>
-            <Paper>
+            <Paper style={{padding: 10, minWidth: 300}}>
                 <FormGroup>
                     <Button 
                         size="small"
                         variant="outlined" 
-                        className={classes.refreshButton} 
                         aria-label={"Refresh Representation List"} onClick={() => refreshRepList(true)}>
                             <RefreshIcon/>Refresh Representation List
                     </Button>
@@ -463,7 +439,7 @@ const SettingsPopover = connector_settings(function ({
 
                     {/* https://github.com/rdkit/rdkit/blob/master/rdkit/Chem/Draw/SimilarityMaps.py */}
                     {/* how many contour lines should be drawn [0;inf] */}
-                    <FormControl className={classes.input} >
+                    <FormControl>
                         <InputLabel shrink htmlFor="contourLinesInput">Contour Lines <Tooltip title="Number of Contour Lines [0; &infin;] &isin; &#8469;"><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
                         <Input id="contourLinesInput" type="number" 
                             value={rdkitSettings.contourLines}
@@ -477,7 +453,7 @@ const SettingsPopover = connector_settings(function ({
                     </FormControl>
 
                     {/* scale tells the programm about how to scale the weights [-1;inf]; default is -1 which means that it is inherted by the algorithm*/}
-                    <FormControl className={classes.input}>
+                    <FormControl>
                         <InputLabel shrink htmlFor="ScaleInput">Scale <Tooltip title="Weight Scale [-1; &infin;] &isin; &#8477;"><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
                         <Input id="ScaleInput" type="number" 
                             value={rdkitSettings.scale}
@@ -497,10 +473,10 @@ const SettingsPopover = connector_settings(function ({
                             value={sigma}
                             onChange={(event) => { setSigma(Math.max(parseFloat(event.target.value), 0)); }} />
                     </FormControl> */}
-                    <FormControl className={classes.input}>
+                    <FormControl>
                         <InputLabel shrink htmlFor="SigmaInput">Sigma <Tooltip title="Sigma for Gaussian ]0; &infin;] &isin; &#8477;. Default of 0 signals the algorithm to infer the value."><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
                         <div className="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl">
-                            <input aria-invalid="false" id="SigmaInput" type="number" className="MuiInputBase-input MuiInput-input" 
+                            <input aria-invalid="false" id="SigmaInput" type="number" className="MuiInputBase-input MuiInput-input"
                                 step={0.01} // step size can only be defined in this input tag... not in the react Input tag
                                 value={rdkitSettings.sigma}
                                 onChange={(event) => { 
@@ -520,9 +496,9 @@ const SettingsPopover = connector_settings(function ({
                     />
 
                     <Button 
+                        style={{marginTop: 3, maxWidth: 150}}
                         size="small"
                         variant="outlined" 
-                        className={classes.applyButton} 
                          onClick={() => {rdkitSettings.refresh()}}>
                             Apply Settings
                         </Button>

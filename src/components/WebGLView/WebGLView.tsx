@@ -1415,7 +1415,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         : undefined
                 }
             >
-                <MenuItem onClick={() => {
+                {/* <MenuItem onClick={() => {
                     // this.props.setLineUpInput_data(this.props.dataset.vectors);
                     this.props.setLineUpInput_visibility(true);
                     this.props.setLineUpInput_filter(null);
@@ -1439,11 +1439,11 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     this.props.setLineUpInput_visibility(false);
 
                     handleClose()
-                }}>{'Close Table'}</MenuItem>
+                }}>{'Close Table'}</MenuItem> */}
 
                 {/* <LinupDumpMenuItem handleClose={handleClose}></LinupDumpMenuItem> */}
 
-                <Divider orientation="horizontal"></Divider>
+                {/* <Divider orientation="horizontal"></Divider> */}
 
 
                 <MenuItem onClick={() => {
