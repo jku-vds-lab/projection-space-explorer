@@ -23,7 +23,7 @@ type Props = PropsFromRedux & {
 }
 
 
-export const LineUpTabPanel = connector(({ setLineUpInput_visibility, lineUpInput, dataset, currentAggregation }: Props) => {
+export const LineUpTabPanel = connector(({ setLineUpInput_visibility, setLineUpInput_filter, lineUpInput, dataset, currentAggregation }: Props) => {
     const handleChange = (_, value) => {
         
     }

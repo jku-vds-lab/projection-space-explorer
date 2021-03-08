@@ -314,25 +314,28 @@ def mol_to_base64(m):
     buffered.close()
     return img_str.decode("utf-8")
 
-def mol_to_base64_highlight_substructure(mol, patt, d = None):
+def mol_to_base64_highlight_substructure(mol, patt, d = None, showMCS=True):
     if d is None:
         d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(250, 250) # MolDraw2DSVG
-    hit_ats = list(mol.GetSubstructMatch(patt))
-    hit_bonds = []
-    for bond in patt.GetBonds():
-        aid1 = hit_ats[bond.GetBeginAtomIdx()]
-        aid2 = hit_ats[bond.GetEndAtomIdx()]
-        hit_bonds.append(mol.GetBondBetweenAtoms(aid1,aid2).GetIdx())
     
-    col = (0,0,0, 0.1) # specify black color for each atom and bond index
-    atom_cols = {}
-    for i, at in enumerate(hit_ats):
-        atom_cols[at] = col
-    bond_cols = {}
-    for i, bd in enumerate(hit_bonds):
-        bond_cols[bd] = col
+    if showMCS:
+        hit_ats = list(mol.GetSubstructMatch(patt))
+        hit_bonds = []
+        for bond in patt.GetBonds():
+            aid1 = hit_ats[bond.GetBeginAtomIdx()]
+            aid2 = hit_ats[bond.GetEndAtomIdx()]
+            hit_bonds.append(mol.GetBondBetweenAtoms(aid1,aid2).GetIdx())
+        
+        col = (0,0,0, 0.1) # specify black color for each atom and bond index
+        atom_cols = {}
+        for i, at in enumerate(hit_ats):
+            atom_cols[at] = col
+        bond_cols = {}
+        for i, bd in enumerate(hit_bonds):
+            bond_cols[bd] = col
+        
+        Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds, highlightAtomColors=atom_cols, highlightBondColors=bond_cols)
     
-    Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=hit_ats, highlightBonds=hit_bonds, highlightAtomColors=atom_cols, highlightBondColors=bond_cols)
     d.FinishDrawing()
 
     stream = BytesIO(d.GetDrawingText())
@@ -343,7 +346,15 @@ def mol_to_base64_highlight_substructure(mol, patt, d = None):
     return img_str.decode("utf-8") #d.GetDrawingText()
 
 import re
-def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
+def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourLines, scale, sigma, showMCS):
+    contourLines = int(contourLines)
+    scale = float(scale)
+    sigma = float(sigma)
+    showMCS = showMCS == "true"
+    
+    if sigma <= 0:
+        sigma = None
+    
     filename = request.forms.get("filename")
     filename = request.session.get("unique_filename", filename)
     if filename:
@@ -355,7 +366,7 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
             #mol = df.set_index(smiles_col).loc[smiles][mol_col]
             #weights = [mol.GetAtomWithIdx(i).GetDoubleProp(current_rep) for i in range(mol.GetNumAtoms())]
             weights = [float(prop) for prop in re.split(' |\n',mol.GetProp(current_rep))]
-            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(250, 250), draw2d=d)
+            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(250, 250), draw2d=d, contourLines=contourLines, scale=scale, sigma=sigma)
             
             #buffered = BytesIO()
             #fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6,6]])) # SVG
@@ -363,7 +374,7 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep):
             #img = buffered.getvalue().decode("utf-8")
             #buffered.close()
             #return img_str.decode("utf-8") # img
-            return mol_to_base64_highlight_substructure(mol_aligned, patt, d=fig)
+            return mol_to_base64_highlight_substructure(mol_aligned, patt, d=fig, showMCS=showMCS)
     
     return mol_to_base64_highlight_substructure(mol_aligned, patt)
 
@@ -393,6 +404,10 @@ def smiles_list_to_imgs():
     if request.method == 'POST':
         smiles_list = request.forms.getall("smiles_list") 
         current_rep = request.forms.get("current_rep")
+        contourLines = request.forms.get("contourLines")
+        scale = request.forms.get("scale")
+        sigma = request.forms.get("sigma")
+        showMCS = request.forms.get("showMCS")
 
         if len(smiles_list) == 0:
             return {"error": "empty SMILES list"}
@@ -428,7 +443,7 @@ def smiles_list_to_imgs():
             if current_rep == "Common Substructure":
                 img_lst.append(mol_to_base64_highlight_substructure(mol, patt))
             else:
-                img_lst.append(mol_to_base64_highlight_importances(mol, patt, current_rep))
+                img_lst.append(mol_to_base64_highlight_importances(mol, patt, current_rep, contourLines, scale, sigma, showMCS))
 
         return {"img_lst": img_lst, "error_smiles": error_smiles}
     else:
