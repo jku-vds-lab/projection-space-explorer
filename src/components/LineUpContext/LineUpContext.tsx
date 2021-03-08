@@ -245,7 +245,6 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
 
     React.useEffect(() => {
         if(lineUpInput.lineup && lineUpInput.lineup.data){
-            console.log(lineUpInput.filter)
             if(lineUpInput.filter){
                 const ranking = lineUpInput.lineup.data.getFirstRanking();
                 for (const key in lineUpInput.filter) {
