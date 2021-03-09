@@ -11,7 +11,7 @@ const ShapeSymbol = ({ symbol, text, checked, onCheck }) => {
         "cross": "./textures/sprites/cross.png"
     }
 
-    return <div>
+    return <div key={symbol}>
         <Checkbox
             className="ShapeLegendCheckbox"
             checked={checked}

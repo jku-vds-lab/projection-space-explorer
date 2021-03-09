@@ -173,7 +173,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
                     case 'umap': {
                         let controller = new UMAPEmbeddingController()
-                        let samples = params.useSelection ? props.currentAggregation : props.dataset.vectors
+                        let samples = params.useSelection ? props.currentAggregation.aggregation : props.dataset.vectors
 
                         controller.init(props.dataset, selection, params, params.useSelection ? samples : undefined)
                         controller.stepper = (Y) => {

@@ -52,7 +52,6 @@ import { setPathLengthMaximum, setPathLengthRange } from "./Ducks/PathLengthRang
 import { setCategoryOptions } from "./Ducks/CategoryOptionsDuck";
 import { setChannelSize } from "./Ducks/ChannelSize";
 import { setGlobalPointSize } from "./Ducks/GlobalPointSizeDuck";
-import { setSelectedClusters } from "./Ducks/SelectedClustersDuck";
 import { setChannelColor } from "./Ducks/ChannelColorDuck";
 import { rootReducer, RootState } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
@@ -78,28 +77,8 @@ import PseProject from './Icons/pse-icon-project-opt.svg'
 import Split from 'react-split'
 import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
-
-/**
- * A TabPanel with automatic scrolling which should be used for fixed size content.
- */
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {<Box style={{ overflow: 'auto' }}>{children}</Box>}
-    </Typography>
-  );
-}
-
-
+import { setSplitRef } from "./Ducks/SplitRefDuck";
+const d3 = require("d3")
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
  */
@@ -146,7 +125,6 @@ const mapDispatchToProps = dispatch => ({
   setCategoryOptions: categoryOptions => dispatch(setCategoryOptions(categoryOptions)),
   setChannelSize: channelSize => dispatch(setChannelSize(channelSize)),
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
-  setSelectedClusters: value => dispatch(setSelectedClusters(value)),
   wipeState: () => dispatch({ type: 'RESET_APP' }),
   setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
   setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
@@ -154,14 +132,41 @@ const mapDispatchToProps = dispatch => ({
   setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
   saveProjection: embedding => dispatch(addProjectionAction(embedding)),
   setVectors: vectors => dispatch(setVectors(vectors)),
-  setLineByOptions: options => dispatch(setLineByOptions(options))
+  setLineByOptions: options => dispatch(setLineByOptions(options)),
+  setSplitRef: splitRef => dispatch(setSplitRef(splitRef))
 })
 
 
 
 
 
+function testContours() {
+  let cluster = []
+  for (let i = 0; i < 100; i++) {
+    let x = Math.random() * 100
+    let y = Math.random() * 100
 
+    cluster.push({ x: x, y: y })
+  }
+
+
+  const width = 600
+  const height = 500
+
+  let contours = d3.contourDensity()
+    .x(d => d.x)
+    .y(d => d.y)
+    //.size([100, 100])
+    .bandwidth(30)
+    .thresholds(30)
+    (cluster.map(vect => ({ x: vect.x, y: vect.y })))
+
+  console.log(contours)
+
+
+  //var c = new Conrec;
+  //c.contour(data, 0, 2, 0, 2, [1, 2, 3], [1, 2, 3], 3, [0, 1, 2]);
+}
 
 
 /**
@@ -171,6 +176,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
   legend: React.RefObject<Legend>;
   dataset: Dataset;
   threeRef: any;
+  splitRef: any;
 
 
   constructor(props) {
@@ -185,8 +191,10 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       selectedLines: {},
 
       backendRunning: false
-    }
 
+
+    }
+    testContours()
     var worker = new Worker(frontend_utils.BASE_PATH + 'healthcheck.js') //dist/
     worker.onmessage = (e) => {
       this.setState({
@@ -196,7 +204,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
     this.threeRef = React.createRef()
+    this.splitRef = React.createRef()
     this.props.setWebGLView(this.threeRef)
+    this.props.setSplitRef(this.splitRef)
     this.legend = React.createRef()
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
@@ -501,7 +511,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                         display="block"
                       >
                         Lines
-                </Typography>
+                      </Typography>
                     </div>
 
                     <Grid
@@ -565,11 +575,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                       display="block"
                     >
                       Points
-                </Typography>
+                    </Typography>
                   </div>
 
 
-                  
+
 
 
                   <StatesTabPanel></StatesTabPanel>
@@ -765,7 +775,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           </AppBar>
 
           <Split
-          style={{display: 'flex', flexDirection: 'column', height: '100%'}}
+            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+            ref={this.splitRef}
             sizes={[100, 0]}
             minSize={0}
             expandToMin={false}

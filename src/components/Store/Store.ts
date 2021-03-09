@@ -14,7 +14,6 @@ import activeLine from "../Ducks/ActiveLineDuck";
 import stories from "../Ducks/StoriesDuck";
 import storyMode from "../Ducks/StoryModeDuck";
 import currentAggregation from "../Ducks/AggregationDuck";
-import selectedClusters from "../Ducks/SelectedClustersDuck";
 import { viewTransform } from "../Ducks/ViewTransformDuck";
 import projectionParams from "../Ducks/ProjectionParamsDuck";
 import checkedShapes from "../Ducks/CheckedShapesDuck";
@@ -37,6 +36,7 @@ import projections from '../Ducks/ProjectionsDuck';
 import hoverSettings from '../Ducks/HoverSettingsDuck';
 import hoverState from '../Ducks/HoverStateDuck';
 import selectedLineBy from '../Ducks/SelectedLineByDuck';
+import splitRef from '../Ducks/SplitRefDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -59,7 +59,6 @@ const allReducers = {
   projectionWorker: projectionWorker,
   webGLView: webGLView,
   clusterMode: clusterMode,
-  selectedClusters: selectedClusters,
   displayMode: displayMode,
   lineBrightness: lineBrightness,
   pathLengthRange: pathLengthRange,
@@ -76,7 +75,8 @@ const allReducers = {
   differenceThreshold: differenceThreshold,
   projections: projections,
   hoverSettings: hoverSettings,
-  selectedLineBy: selectedLineBy
+  selectedLineBy: selectedLineBy,
+  splitRef: splitRef
 }
 
 const appReducer = combineReducers(allReducers)

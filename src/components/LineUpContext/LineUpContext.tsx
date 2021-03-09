@@ -24,6 +24,7 @@ const mapStateToProps = (state: RootState) => ({
     lineUpInput: state.lineUpInput,
     currentAggregation: state.currentAggregation,
     activeStory: state.stories.active,
+    splitRef: state.splitRef
     //hoverState: state.hoverState
 })
 
@@ -78,11 +79,14 @@ const UPDATER = "lineup";
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, setLineUpInput_visibility, onFilter, activeStory, hoverUpdate, hoverState }: Props) { // hoverState -> makes everything slow....
+export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, setLineUpInput_visibility, onFilter, activeStory, hoverUpdate, splitRef }: Props) { // hoverState -> makes everything slow....
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
+        //splitRef?.current?.setSizes([100, 0])
         return null;
     }
+
+    //splitRef?.current?.setSizes([50, 50])
 
     let lineup_data = [];
     lineUpInput.data.forEach(element => {
@@ -195,65 +199,19 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
 
     }, [lineUpInput, activeStory, activeStory?.clusters?.length]);
 
-    // React.useEffect(() => {
-    //     // update lineup, if current storybook (current cluster) changed
-    //     lineup?.update();
-    // }, [activeStory, activeStory?.clusters?.length]); // TODO: does not update when "add from selection" -> only if story book changes
-
-
     // this effect is allways executed after the component is rendered when currentAggregation changed
     React.useEffect(() => {
 
         if(lineup != null){
 
             // select those instances that are also selected in the scatter plot view
-            if(currentAggregation && currentAggregation.length > 0){
+            if(currentAggregation.aggregation && currentAggregation.aggregation.length > 0){
                 const currentSelection_scatter = lineUpInput.data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
                 lineup.setSelection(currentSelection_scatter);
-                
-                // const lineup_idx = lineup.renderer?.rankings[0]?.findNearest(currentSelection_scatter);
-                // lineup.renderer?.rankings[0]?.scrollIntoView(lineup_idx);
-
-                // set the grouping to selection checkboxes -> uncomment if this should be automatically if something changes
-                // const ranking = lineup.data.getFirstRanking();
-                // let selection_col = ranking.children.find(x => x.label == "Selection Checkboxes");
-                // ranking.groupBy(selection_col, -1) // remove grouping first
-                // ranking.groupBy(selection_col);
             }
         }
         
     }, [currentAggregation])
-
-
-    // const debouncedHighlight = React.useCallback(debounce<any>(lineup_idx => lineup?.setHighlight(lineup_idx, true), 1000), []);
-
-    // --> not sure if this makes sense without scrolling
-    // --> hoverstate updates make lineup slow
-    //React.useEffect(() => {
-        // hover the instance that is hovered in the scatter plot view
-    //    if(lineup && lineUpInput.data){ // TODO: sometimes there is a lineup bug when too many rows are highlighted??
-    //        if(hoverState && hoverState.data){
-    //            if(hoverState.updater != UPDATER){
-                    // const lineup_idx = lineUpInput.data.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"]);
-    //                const lineup_idx = 1
-    //                if(lineup_idx >= 0){
-    //                    lineup.setHighlight(lineup_idx, false); // flag that tells, if we want to scoll to that row
-                        
-    //                 }
-    //             }
-    //         }
-    //         // else{
-    //         //     try{
-    //         //         lineup.setHighlight(-1, false);
-    //         //     }catch(ex){
-    //         //         console.log("exception when changing highliged row in lineup:", ex);
-    //         //     }
-    //         // }
-            
-    //     }
-        
-    // }, [hoverState]);
-
 
     return <div style={{ height: '100%' }}>{false ? 
             <MyWindowPortal onClose={() => {lineup?.destroy(); setLineUpInput_visibility(false);}}>

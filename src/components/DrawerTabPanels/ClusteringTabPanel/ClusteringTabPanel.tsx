@@ -5,7 +5,6 @@ import Cluster from "../../Utility/Data/Cluster"
 import { Story } from "../../Utility/Data/Story"
 import { graphLayout, Edge } from "../../Utility/graphs"
 import SettingsIcon from '@material-ui/icons/Settings';
-import { setSelectedClusters } from "../../Ducks/SelectedClustersDuck"
 import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories } from "../../Ducks/StoriesDuck"
@@ -20,16 +19,16 @@ import { trackPromise } from "react-promise-tracker";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { setLineUpInput_data, setLineUpInput_visibility } from "../../Ducks/LineUpInputDuck"
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"
+import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
 const d3 = require("d3")
 
 const mapStateToProps = (state: RootState) => ({
-    currentAggregation: state.currentAggregation,
     stories: state.stories,
     displayMode: state.displayMode,
     dataset: state.dataset,
     webGLView: state.webGLView,
-    selectedClusters: state.selectedClusters,
-    categoryOptions: state.categoryOptions
+    categoryOptions: state.categoryOptions,
+    currentAggregation: state.currentAggregation
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -37,7 +36,6 @@ const mapDispatchToProps = dispatch => ({
     setActiveStory: (activeStory: Story) => dispatch(setActiveStory(activeStory)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode)),
-    setSelectedClusters: value => dispatch(setSelectedClusters(value)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
     addStory: story => dispatch(addStory(story)),
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
@@ -67,21 +65,19 @@ export const ClusteringTabPanel = connector(({
     setChannelColor,
     setStories,
     setActiveStory,
-    currentAggregation,
     clusteringWorker,
     dataset,
     stories,
     setClusterEdges,
     setDisplayMode,
     displayMode,
-    setSelectedClusters,
     addStory,
     addClusterToStory,
     removeClusterFromStories,
     webGLView,
-    selectedClusters,
     setLineUpInput_data,
-    setLineUpInput_visibility }: Props) => {
+    setLineUpInput_visibility,
+    currentAggregation }: Props) => {
 
 
     function storyLayout(edges: Edge[]) {
@@ -240,13 +236,13 @@ export const ClusteringTabPanel = connector(({
                 }
 
                 let c =
-                d3.contourDensity()
-                    .x(d => d.x)
-                    .y(d => d.y)
-                    .size([500, 500])
-                    .bandwidth(30)
-                    .thresholds(30)
-                    (dataset.vectors.map(vect => ({x: vect.x, y: vect.y})))
+                    d3.contourDensity()
+                        .x(d => d.x)
+                        .y(d => d.y)
+                        .size([500, 500])
+                        .bandwidth(30)
+                        .thresholds(30)
+                        (dataset.vectors.map(vect => ({ x: vect.x, y: vect.y })))
 
                 console.log(c)
             })
@@ -412,7 +408,7 @@ export const ClusteringTabPanel = connector(({
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
             <ClusterList
                 removeClusterFromStories={removeClusterFromStories}
-                selectedClusters={selectedClusters}
+                selectedClusters={currentAggregation.selectedClusters}
                 webGLView={webGLView}
                 stories={stories}
                 setLineUpInput_data={setLineUpInput_data}
@@ -464,6 +460,9 @@ function ClusterPopover({
 
     const onSave = () => {
         cluster.name = name
+        cluster.label = name
+        // Rename cluster labels in dataset
+        replaceClusterLabels(cluster.vectors, cluster.label, name)
         setAnchorEl(null)
     }
 

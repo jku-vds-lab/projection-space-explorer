@@ -1,4 +1,5 @@
 import "regenerator-runtime/runtime";
+import { euclidean, jaccard } from '../../Utility/UMAP/umap';
 
 // create main global object
 var tsnejs = tsnejs || { REVISION: 'ALPHA' };
@@ -86,12 +87,12 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
     }
 
     // compute pairwise distance in all vectors in X
-    var xtod = function (X) {
+    var xtod = function (X, distanceFn) {
         var N = X.length;
         var dist = zeros(N * N); // allocate contiguous array
         for (var i = 0; i < N; i++) {
             for (var j = i + 1; j < N; j++) {
-                var d = L2(X[i], X[j]);
+                var d = distanceFn(X[i], X[j]);
                 dist[i * N + j] = d;
                 dist[j * N + i] = d;
             }
@@ -188,6 +189,7 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
         this.perplexity = getopt(opt, "perplexity", 30); // effective number of nearest neighbors
         this.dim = getopt(opt, "dim", 2); // by default 2-D tSNE
         this.epsilon = getopt(opt, "epsilon", 10); // learning rate
+        this.distanceFn = getopt(opt, "distanceFn", euclidean)
 
         this.iter = 0;
     }
@@ -201,7 +203,7 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
             var D = X[0].length;
             assert(N > 0, " X is empty? You must have some data!");
             assert(D > 0, " X[0] is empty? Where is the data?");
-            var dists = xtod(X); // convert X to distances using gaussian kernel
+            var dists = xtod(X, this.distanceFn); // convert X to distances using gaussian kernel
             this.P = d2p(dists, this.perplexity, 1e-4); // attach to object
             this.N = N; // back up the size of the dataset
             this.initSolution(); // refresh this
@@ -212,7 +214,7 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
             var D = X[0].length;
             assert(N > 0, " X is empty? You must have some data!");
             assert(D > 0, " X[0] is empty? Where is the data?");
-            var dists = xtod(X); // convert X to distances using gaussian kernel
+            var dists = xtod(X, this.distanceFn); // convert X to distances using gaussian kernel
             this.P = d2p(dists, this.perplexity, 1e-4); // attach to object
             this.N = N; // back up the size of the dataset
 
@@ -408,7 +410,8 @@ self.addEventListener('message', function (e) {
         context.tsne = new tsnejs.tSNE({
             epsilon: e.data.params.learningRate,
             perplexity: e.data.params.perplexity,
-            dim: 2
+            dim: 2,
+            distanceFn: e.data.params.distanceMetric == 'euclidean' ? euclidean : jaccard
         });
         context.tsne.initDataSeeded(e.data.input, e.data.params.seeded ? e.data.seed : undefined)
         context.tsne.step()

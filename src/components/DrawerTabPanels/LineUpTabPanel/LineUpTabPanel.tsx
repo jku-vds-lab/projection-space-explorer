@@ -24,7 +24,7 @@ type Props = PropsFromRedux & {
 
 export const LineUpTabPanel = connector(({ setLineUpInput_data, setLineUpInput_visibility, dataset, currentAggregation }: Props) => {
     const handleChange = (_, value) => {
-        
+
     }
 
     const onLoadAll = () => {
@@ -33,7 +33,7 @@ export const LineUpTabPanel = connector(({ setLineUpInput_data, setLineUpInput_v
     }
 
     const onLoadSelection = () => {
-        setLineUpInput_data(currentAggregation)
+        setLineUpInput_data(currentAggregation.aggregation)
         setLineUpInput_visibility(true)
     }
 
@@ -43,9 +43,9 @@ export const LineUpTabPanel = connector(({ setLineUpInput_data, setLineUpInput_v
                 control={<Switch checked={true} onChange={handleChange} name="checkedA" />}
                 label="External Selection Summary"
             />
-
-            <Button variant="outlined" onClick={onLoadAll}>Load All</Button>
-            <Button variant="outlined" onClick={onLoadSelection}>Load Selection</Button>
         </Box>
+
+        <Box p={1}><Button variant="outlined" onClick={onLoadAll}>Load All</Button></Box>
+        <Box p={1}><Button variant="outlined" onClick={onLoadSelection}>Load Selection</Button></Box>
     </div>
 })

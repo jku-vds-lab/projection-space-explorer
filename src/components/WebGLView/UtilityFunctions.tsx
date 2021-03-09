@@ -1,3 +1,5 @@
+import { Vect } from "../Utility/Data/Vect";
+
 /**
  * Calculates the default zoom factor by examining the bounds of the data set
  * and then dividing it by the height of the viewport.
@@ -178,3 +180,12 @@ export function valueInRange(value, range) {
 
 
 
+export function replaceClusterLabels(vectors: Vect[], from: any, to: any) {
+  vectors.forEach(vector => {
+    let i = vector.clusterLabel.findIndex((e) => e === from)
+    if (i >= 0) {
+      vector.clusterLabel.splice(i, 1)
+      vector.clusterLabel.push(to)
+    }
+  })
+}

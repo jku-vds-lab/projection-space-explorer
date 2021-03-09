@@ -138,7 +138,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                     control={<Checkbox checked={useSelection} onChange={(_, checked) => setUseSelection(checked)} />}
                                     label="Project Selection Only"
                                 />
-                                <FormControl>
+                                {(domainSettings == 'tsne' || domainSettings == 'umap') && <FormControl>
                                     <InputLabel id="demo-controlled-open-select-label">Distance Metric</InputLabel>
                                     <Select
                                         labelId="demo-controlled-open-select-label"
@@ -149,7 +149,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                         <MenuItem value={'euclidean'}>Euclidean</MenuItem>
                                         <MenuItem value={'jaccard'}>Jaccard</MenuItem>
                                     </Select>
-                                </FormControl>
+                                </FormControl>}
                             </FormGroup>
                         </FormControl>
                     </Grid>

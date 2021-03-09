@@ -58,20 +58,13 @@ export const StatesTabPanelFull = ({
                     value={selectedLineBy.value}
                     onChange={(event) => {
                         setSelectedLineBy(event.target.value)
-
                         webGlView.current.recreateLines(event.target.value)
-                        /**if (event.target.value != null && event.target.value != "") {
-                            var attribute = categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
-                            setVectorByShape(attribute)
-                        } else {
-                            setVectorByShape(null)
-                        }**/
                     }}
                 >
                     <MenuItem value="">None</MenuItem>
                     {
                         selectedLineBy.options.map(option => {
-                            return <MenuItem value={option}>{option}</MenuItem>
+                            return <MenuItem key={option} value={option}>{option}</MenuItem>
                         })
                     }
                 </Select>

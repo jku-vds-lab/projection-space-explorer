@@ -12,7 +12,7 @@ export class Vect {
     y: number;
 
     // cluster label and probability
-    clusterLabel: any;
+    clusterLabel: any[];
     clusterProbability: number;
 
     // assigned line

@@ -48,14 +48,14 @@ const SelectionClustersFull = function ({
                     setHoverWindowMode(WindowMode.Embedded)
                 }}>
                     <div className={"portalSummary"} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-                        <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
+                        <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation.aggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
                     </div>
                 </MyWindowPortal>
                 :
                 <div className={"Cluster"}>
-                    {currentAggregation && currentAggregation.length > 0 && <div>
+                    {currentAggregation.aggregation && currentAggregation.aggregation.length > 0 && <div>
 
-                        <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
+                        <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation.aggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
                     </div>
                     }
                 </div>
