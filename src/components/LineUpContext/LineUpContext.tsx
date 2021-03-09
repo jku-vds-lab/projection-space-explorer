@@ -238,6 +238,8 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
                 // let selection_col = ranking.children.find(x => x.label == "Selection Checkboxes");
                 // ranking.groupBy(selection_col, -1) // remove grouping first
                 // ranking.groupBy(selection_col);
+            }else{
+                lineUpInput.lineup.setSelection([]);
             }
         }
         
@@ -245,7 +247,6 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
 
     React.useEffect(() => {
         if(lineUpInput.lineup && lineUpInput.lineup.data){
-            console.log(lineUpInput.filter)
             if(lineUpInput.filter){
                 const ranking = lineUpInput.lineup.data.getFirstRanking();
                 for (const key in lineUpInput.filter) {
