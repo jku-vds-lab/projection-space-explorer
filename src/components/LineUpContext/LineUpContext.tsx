@@ -121,7 +121,12 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         const builder = buildLineup(lineUpInput.columns, lineup_data); //lineUpInput.data
         lineUpInput.lineup?.destroy();
         let lineup = null;
+        // try{
         lineup = builder.build(lineup_ref.current);
+        // }catch(e){
+        //     console.log("error");
+        // }
+        
 
 
         const ranking = lineup.data.getFirstRanking();
@@ -378,9 +383,9 @@ function buildLineup(cols, data){
             else if(typeof col.featureType !== 'undefined'){
                 switch(col.featureType){
                     case FeatureType.Categorical:
-                        if(data && col.distinct && col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
+                        if(data && col.distinct && col.distinct.length/data.length <= 0.5){ // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                             builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
-                        else
+                        } else
                             builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
                         break;
                     case FeatureType.Quantitative:
@@ -401,9 +406,9 @@ function buildLineup(cols, data){
                 if(col.isNumeric){
                     builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));//.renderer("myBarCellRenderer"));
                 }else if(col.distinct)
-                    if(data && col.distinct.length/data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
+                    if(data && col.distinct.length/data.length <= 0.5){ // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                         builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
-                    else
+                    }else
                         builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));   
                 else
                     builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));   
