@@ -146,11 +146,6 @@ export class DatasetDatabase {
                 type: DatasetType.None
             },
             {
-                display: "Toy: Story",
-                path: "datasets/toy/toy.csv",
-                type: DatasetType.None
-            },
-            {
                 display: "CIME: Test",
                 path: "test.sdf",
                 type: DatasetType.Chem,
