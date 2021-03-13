@@ -21,6 +21,16 @@ export class DatasetDatabase {
     constructor() {
         this.data = [
             {
+                display: "Penguins",
+                path: "datasets/penguins/penguins_with_nan.csv",
+                type: DatasetType.None
+            },
+            {
+                display: "Penguins without NaN values",
+                path: "datasets/penguins/penguins_without_nan.csv",
+                type: DatasetType.None
+            },
+            {
                 display: "Coral sub-sampled",
                 path: "datasets/coral/coral_subsampled.json",
                 type: DatasetType.Coral
