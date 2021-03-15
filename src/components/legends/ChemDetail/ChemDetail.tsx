@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './chem.scss';
 import * as backend_utils from '../../../utils/backend-connect';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, Input, InputAdornment, InputLabel, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Tooltip, Typography } from '@material-ui/core';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, Input, InputAdornment, InputLabel, makeStyles, MenuItem, Paper, Popover, Select, Slider, Switch, TextField, Tooltip, Typography } from '@material-ui/core';
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 import { RootState } from '../../Store/Store';
@@ -14,7 +14,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import { setAggregationAction } from '../../Ducks/AggregationDuck';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { isFunction } from 'lodash';
-import { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma } from '../../Ducks/RDKitSettingsDuck';
+import { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma, setRDKit_width } from '../../Ducks/RDKitSettingsDuck';
 
 /**
  * Chem Legend, implemented
@@ -188,6 +188,7 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                 formData.append('scale', props.rdkitSettings.scale);
                 formData.append('sigma', props.rdkitSettings.sigma);
                 formData.append('showMCS', props.rdkitSettings.showMCS);
+                formData.append('width', props.rdkitSettings.width);
 
                 const controller = new AbortController();
                 trackPromise(
@@ -211,7 +212,7 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                                         src={"data:image/jpeg;base64," + base64} 
                                         onMouseEnter={() => {handleMouseEnter(i);}} 
                                         onMouseOver={() => {handleMouseEnter(i);}} 
-                                        onMouseLeave={() => {handleMouseOut();}}
+                                        onMouseLeave={() => {handleMouseOut();}} 
                                         />}
                                     />
                                 
@@ -252,6 +253,7 @@ function updateImage(props, cancellablePromise){
             formData.append('scale', props.rdkitSettings.scale);
             formData.append('sigma', props.rdkitSettings.sigma);
             formData.append('showMCS', props.rdkitSettings.showMCS);
+            formData.append('width', props.rdkitSettings.width);
 
             const controller = new AbortController();
             trackPromise(
@@ -318,7 +320,7 @@ const ImageView = connector_Img(function ({ hoverState, selection, columns, aggr
                 updateImage({columns: columns, current_rep: current_rep, selection: selection, imgContainer: ref?.current, rdkitSettings: rdkitSettings}, cancellablePromise); 
             });
         }
-    }, [columns, current_rep, selection, ref?.current, rdkitSettings.contourLines, rdkitSettings.scale, rdkitSettings.sigma, rdkitSettings.showMCS]);
+    }, [columns, current_rep, selection, ref?.current, rdkitSettings.contourLines, rdkitSettings.scale, rdkitSettings.sigma, rdkitSettings.showMCS, rdkitSettings.width]);
     
     React.useEffect(() => {
         cancelPromises(); // cancel all unresolved promises
@@ -375,6 +377,23 @@ const ImageView = connector_Img(function ({ hoverState, selection, columns, aggr
 
 
 
+interface ValLabelProps {
+    children: React.ReactElement;
+    open: boolean;
+    value: number;
+}
+function ValueLabelComponent(props: ValLabelProps) {
+    const { children, open, value } = props;
+  
+    return (
+      <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
+        {children}
+      </Tooltip>
+    );
+  }
+
+
+
 const mapStateToProps_settings = (state: RootState) => ({
     rdkitSettings: state.rdkitSettings,
 })
@@ -383,6 +402,7 @@ const mapDispatchToProps_settings = dispatch => ({
     setScale: input => dispatch(setRDKit_scale(input)),
     setSigma: input => dispatch(setRDKit_sigma(input)),
     setShowMCS: input => dispatch(setRDKit_showMCS(input)),
+    setWidth: input => dispatch(setRDKit_width(input)),
 })
 const connector_settings = connect(mapStateToProps_settings, mapDispatchToProps_settings);
 
@@ -408,7 +428,8 @@ const SettingsPopover = connector_settings(function ({
     setContourLines,
     setScale,
     setSigma,
-    setShowMCS
+    setShowMCS,
+    setWidth
 }: SettingsPopoverProps) {
 
     return <Popover
@@ -467,32 +488,37 @@ const SettingsPopover = connector_settings(function ({
                     </FormControl>
 
                     {/* sigma is for gaussian ]0;~0.2?]; default 0 means that the algorithm infers the value from the weights */}
-                    {/* <FormControl>
-                        <InputLabel shrink htmlFor="SigmaInput">Sigma <Tooltip title="Sigma for Gaussian ]0; &infin;] &isin; &#8477;. Makes sense to ~0.2. Default of 0 signals the algorithm to infer the value."><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
-                        <Input id="SigmaInput" type="number" 
-                            value={sigma}
-                            onChange={(event) => { setSigma(Math.max(parseFloat(event.target.value), 0)); }} />
-                    </FormControl> */}
                     <FormControl>
                         <InputLabel shrink htmlFor="SigmaInput">Sigma <Tooltip title="Sigma for Gaussian ]0; &infin;] &isin; &#8477;. Default of 0 signals the algorithm to infer the value."><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
-                        <div className="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl">
-                            <input aria-invalid="false" id="SigmaInput" type="number" className="MuiInputBase-input MuiInput-input"
-                                step={0.01} // step size can only be defined in this input tag... not in the react Input tag
-                                value={rdkitSettings.sigma}
+                        <Input id="SigmaInput" type="number" 
+                            inputProps={{step: 0.01}}
+                            value={rdkitSettings.sigma}
                                 onChange={(event) => { 
                                     let val = parseFloat(event.target.value);
                                     if(isNaN(val))
                                         setSigma(event.target.value);
                                     else
                                         setSigma(Math.max(val, 0)); 
-                                }}
-                            />
-                        </div>
+                        }} />
                     </FormControl>
+
 
                     <FormControlLabel
                         control={<Switch checked={rdkitSettings.showMCS} onChange={(_, value) => {setShowMCS(value);}} />}
                         label="Show MCS"
+                    />
+
+                    <Typography style={{paddingTop: 10}} gutterBottom>Image Width</Typography>
+                    <Slider
+                        ValueLabelComponent={ValueLabelComponent}
+                        aria-label="Set Image Width"
+                        value={rdkitSettings.width}
+                        onChange={(event, new_val) => {
+                            setWidth(new_val); 
+                        }}
+                        min={50}
+                        max={500}
+                        step={10}
                     />
 
                     <Button 

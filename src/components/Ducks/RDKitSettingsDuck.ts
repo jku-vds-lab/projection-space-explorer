@@ -8,6 +8,7 @@ const SET_SCALE = "ducks/rdkitsettings/SET_SCALE"
 const SET_SIGMA = "ducks/rdkitsettings/SET_SIGMA"
 const SET_REFRESH = "ducks/rdkitsettings/SET_REFRESH"
 const SET_SHOW_MCS = "ducks/rdkitsettings/SET_SHOW_MCS"
+const SET_WIDTH = "ducks/rdkitsettings/SET_WIDTH"
 
 export const setRDKit_contourLines = input => ({
     type: SET_CONTOURLINES,
@@ -34,13 +35,19 @@ export const setRDKit_showMCS = input => ({
     input: input
 });
 
+export const setRDKit_width = input => ({
+    type: SET_WIDTH,
+    input: input
+});
+
 
 const initialState: RDKitSettingsType = {
     contourLines: 10,
     scale: -1,
     sigma: 0,
     refresh: ()=>{},
-    showMCS: true
+    showMCS: true,
+    width: 250
 }
 export type RDKitSettingsType = {
     contourLines: number
@@ -48,6 +55,7 @@ export type RDKitSettingsType = {
     sigma: number
     refresh: any
     showMCS: boolean
+    width: number
 }
 
 const rdkitSettings = (state = initialState, action): RDKitSettingsType => {
@@ -62,6 +70,8 @@ const rdkitSettings = (state = initialState, action): RDKitSettingsType => {
             return {...state, refresh: action.input}
         case SET_SHOW_MCS:
             return {...state, showMCS: action.input}
+        case SET_WIDTH:
+            return {...state, width: action.input}
         default:
             return state
     }

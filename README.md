@@ -270,7 +270,8 @@ CCC(C)
 
 ## Project
 TODO...
-umap, forceatlas reference...
+umap default parameters like suggested in https://umap-learn.readthedocs.io/en/latest/api.html 
+umap reference...
 normalization
 distance metric
 grouping

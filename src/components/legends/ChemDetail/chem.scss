@@ -2,10 +2,12 @@
 .ParentChem{
   margin-top: -30px;
   height: 50vh;
+  max-width: 290px;
 }
 .portalSummary .ParentChem{
   height: 100%;
   margin-top: 10px;
+  max-width: fit-content;
 }
 
 .ParentChem .chemContainer {
