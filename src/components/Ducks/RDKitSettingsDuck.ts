@@ -45,7 +45,7 @@ const initialState: RDKitSettingsType = {
     contourLines: 10,
     scale: -1,
     sigma: 0,
-    refresh: ()=>{},
+    refresh: 0,
     showMCS: true,
     width: 250
 }
@@ -53,7 +53,7 @@ export type RDKitSettingsType = {
     contourLines: number
     scale: number
     sigma: number
-    refresh: any
+    refresh: number
     showMCS: boolean
     width: number
 }

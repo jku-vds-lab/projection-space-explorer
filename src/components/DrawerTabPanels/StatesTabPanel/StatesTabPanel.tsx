@@ -70,8 +70,8 @@ export const StatesTabPanelFull = ({
                 >
                     <MenuItem value="">None</MenuItem>
                     {
-                        selectedLineBy.options.map(option => {
-                            return <MenuItem value={option}>{option}</MenuItem>
+                        selectedLineBy.options.map((option, i) => {
+                            return <MenuItem key={option} value={option}>{option}</MenuItem>
                         })
                     }
                 </Select>

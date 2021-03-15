@@ -14,14 +14,20 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import { setAggregationAction } from '../../Ducks/AggregationDuck';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { isFunction } from 'lodash';
-import { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma, setRDKit_width } from '../../Ducks/RDKitSettingsDuck';
+import rdkitSettings, { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma, setRDKit_width } from '../../Ducks/RDKitSettingsDuck';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { WindowMode } from '../../Ducks/HoverSettingsDuck';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 
 /**
  * Chem Legend, implemented
  */
 
-const mapStateToProps_Chem = (state: RootState) => ({
-    dataset: state.dataset
+ const mapStateToProps_Chem = (state: RootState) => ({
+    dataset: state.dataset,
+    hoverSettings: state.hoverSettings,
+    rdkitSettings: state.rdkitSettings,
 })
 const mapDispatchToProps_Chem = dispatch => ({
     setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
@@ -32,62 +38,143 @@ const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
 /**
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
  */
-type PropsFromRedux_Chem = ConnectedProps<typeof connector_Chem>
+ type PropsFromRedux_Chem = ConnectedProps<typeof connector_Chem>
+
+ type Props_Chem_Parent = PropsFromRedux_Chem & {
+     selection: any, 
+     columns: any, 
+     aggregate: boolean, 
+     hoverUpdate
+ }
+ 
+
+
+export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Parent) {
+    const [settingsOpen, setSettingsOpen] = React.useState(false);
+    const [repList, setRepList] = React.useState(["Common Substructure"]);
+    const [cancelables, setCancelables] = React.useState([]);
+    const [chemComponents, setChemComponents] = React.useState([0]);
+    const [chemComponentsCurrentRep, setChemComponentsCurrentRep] = React.useState(["Common Substructure"]);
+
+    const loadRepList = function(refresh=false){
+        if(refresh || repList.length <= 1){
+            const cancelable = makeCancelable(backend_utils.get_representation_list(refresh, props.dataset.info.path));
+            setCancelables(cancelables.concat(cancelable));
+            cancelable.promise.then(x => {
+                if(x["rep_list"].length > 0){
+                    let rep_list = [...x["rep_list"]];
+                    rep_list.splice(0, 0, "Common Substructure");
+                    setRepList(rep_list);
+                }
+            })
+        }
+    }
+
+    const addComp = function(){
+        let comps = [...chemComponents];
+        comps.push(Math.max(...comps)+1);
+        setChemComponents(comps);
+        
+        let compsCR = [...chemComponentsCurrentRep];
+        compsCR.push("Common Substructure");
+        setChemComponentsCurrentRep(compsCR);
+    }
+
+    React.useEffect(() => {
+        loadRepList();
+
+        return () => {
+            cancelables.forEach(p => p.cancel());
+            setCancelables([]);
+        }
+    }, []);
+
+    const removeComponent = (id) => {
+        let comps = [...chemComponents];
+        let compsCR = [...chemComponentsCurrentRep];
+        const index = comps.indexOf(id);
+        if (index > -1) {
+            comps.splice(index, 1);
+            compsCR.splice(index, 1);
+        }
+        setChemComponents(comps);
+        setChemComponentsCurrentRep(compsCR);
+    };
+    
+    const setCurrentRep = (value, id) => {
+        if(repList.includes(value)){
+            let compsCR = [...chemComponentsCurrentRep];
+            const index = chemComponents.indexOf(id);
+            compsCR[index] = value;
+            setChemComponentsCurrentRep(compsCR);
+        }
+    }
+
+    const anchorRef = React.useRef();
+
+    if(props.aggregate){
+
+        return <Box className={"ParentChem"}>
+            {props.aggregate && <Box paddingLeft={2} paddingRight={2}>
+                <Tooltip title="Summary Settings">
+                    <Button style={{color:"gray"}} ref={anchorRef} onClick={() => setSettingsOpen(true)}><SettingsIcon></SettingsIcon>&nbsp; Settings</Button>
+                </Tooltip>
+                <SettingsPopover open={settingsOpen} setOpen={setSettingsOpen} anchorEl={anchorRef.current} refreshRepList={() => {loadRepList(true);}}></SettingsPopover>
+                <Tooltip title="Add Component">
+                    <Button style={{color:"gray"}} onClick={() => addComp()}><AddCircleOutlineIcon></AddCircleOutlineIcon>&nbsp; Add View</Button>
+                </Tooltip>
+            </Box>}
+            <div className={"chemComponents"} >
+                {chemComponents.length > 1 &&
+                    <div style={{width:(props.rdkitSettings.width+20)*chemComponents.length}}>
+                        {chemComponents.map((x, i) => {
+                            return <div key={x} style={{width: (props.rdkitSettings.width+20), float:'left'}}>
+                                <ChemLegend setCurrentRep={(value)=>setCurrentRep(value, x)} currentRep={chemComponentsCurrentRep[i]} removeComponent={() => removeComponent(x)} id={x} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                            </div>
+                        })}
+                    </div>
+                }
+                {chemComponents.length <= 1 &&
+                    <div>
+                        <div style={{minWidth: props.rdkitSettings.width}} key={chemComponents[0]}>
+                            <ChemLegend setCurrentRep={(value)=>setCurrentRep(value, chemComponents[0])} currentRep={chemComponentsCurrentRep[0]} id={chemComponents[0]} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+        </Box>;
+    }else{
+        return <ChemLegend id={-1} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+    }
+
+});
 
 type Props_Chem = PropsFromRedux_Chem & {
     selection: any, 
     columns: any, 
     aggregate: boolean, 
-    hoverUpdate
+    hoverUpdate,
+    rep_list: string[],
+    id: any,
+    removeComponent?: any,
+    currentRep?: string,
+    setCurrentRep?: any
 }
-
 
 const loading_area = "chemlegend_loading_area";
 const UPDATER = "chemdetail";
-export const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {rep_list: string[], current_rep: any, cancelables: any[], checkedList: boolean[], settingsOpen: boolean}>{
+const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {checkedList: boolean[]}>{
     anchorRef: any;
 
     constructor(props){
         super(props);
         this.state = {
-            rep_list: ["Common Substructure"],
-            current_rep: "Common Substructure",
-            cancelables: [],
             checkedList: [],
-            settingsOpen: false
         };
-        this.loadRepList = this.loadRepList.bind(this);
-        this.anchorRef = React.createRef();
     }
-
-    componentDidMount(){
-        this.loadRepList();
-    }
-
-    
-    componentWillUnmount(){
-        this.state.cancelables.forEach(p => p.cancel());
-        this.setState({...this.state, cancelables: []});
-    }
-
-    loadRepList(refresh=false){
-        if(refresh || this.state.rep_list.length <= 1){
-            const cancelable = makeCancelable(backend_utils.get_representation_list(refresh, this.props.dataset.info.path));
-            this.setState({...this.state, cancelables: this.state.cancelables.concat(cancelable)});
-            cancelable.promise.then(x => {
-                if(x["rep_list"].length > 0){
-                    let rep_list = [...x["rep_list"]];
-                    rep_list.splice(0, 0, "Common Substructure");
-                    this.setState({...this.state, rep_list: rep_list});
-                }
-            })
-        }
-    }
-    
-    
 
     render(){
-
         const handleMouseEnter = (i) => {
             let hover_item = null;
             if(i >= 0){
@@ -108,46 +195,41 @@ export const ChemLegend = connector_Chem(class extends React.Component<Props_Che
         
         const handle_filter = () => {
             const filter_instances = this.props.selection.filter((x, i) => this.state.checkedList[i]);
-            setCheckedList([]);
-            this.props.setCurrentAggregation(filter_instances);
-        }
-
-        const setSettingsOpen = (value) => {
-            const set_val = isFunction(value) ? value() : value;
-            this.setState({...this.state, settingsOpen: set_val});
-        }
-        const setCurrentRep = (value) => {
-            if(this.state.rep_list.includes(value)){
-                this.setState({...this.state, current_rep: value});
+            if(filter_instances.length > 0){
+                setCheckedList([]);
+                this.props.setCurrentAggregation(filter_instances);
+            }else{
+                alert("Please, select at least one Compound in the Summary View to filter.")
             }
         }
 
+
         if (this.props.aggregate) {
-            return <div className={"ParentChem"}>
+            return <div className={"ParentImg"}>
                         
                 <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
                     <RepresentationList 
-                            value={this.state.current_rep}
-                            onChange={setCurrentRep}
-                            rep_list={this.state.rep_list}
+                            value={this.props.currentRep}
+                            onChange={this.props.setCurrentRep}
+                            rep_list={this.props.rep_list}
+                            hoverSettings={this.props.hoverSettings}
                     />
+                </Box>
+                    
+                <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
                     <Button 
                         size="small"
                         variant="outlined"
                         onClick={() => {handle_filter()}}><FilterListIcon fontSize={"small"}/>&nbsp;Confirm Selection</Button>
-
-                    <Tooltip title="Summary Settings">
-                        <IconButton ref={this.anchorRef} onClick={() => setSettingsOpen(true)}><SettingsIcon></SettingsIcon></IconButton>
-                    </Tooltip>
-                    <SettingsPopover repList={this.state.rep_list} currentRep={this.state.current_rep} setCurrentRep={setCurrentRep} open={this.state.settingsOpen} setOpen={setSettingsOpen} anchorEl={this.anchorRef.current} refreshRepList={() => {this.loadRepList(true);}}></SettingsPopover>
+                    {this.props.removeComponent && <IconButton onClick={this.props.removeComponent}><DeleteIcon></DeleteIcon></IconButton>}
                 </Box>
-                <LoadingIndicatorView area={loading_area}/>
-                <ImageView setCheckedList={setCheckedList} selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.state.current_rep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} />
+                <LoadingIndicatorView area={loading_area + this.props.id}/>
+                <ImageView id={this.props.id} setCheckedList={setCheckedList} selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.props.currentRep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} />
                 
             </div>;
         }
 
-        return <div><ImageView selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate}/></div>;
+        return <div><ImageView id={this.props.id} selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate}/></div>;
     }
 });
 
@@ -208,25 +290,29 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                                 <FormControlLabel
                                     labelPlacement="bottom"
                                     control={<Checkbox onChange={(event) => { onUpdateItem(i, event.target.checked); }} />}
-                                    label={<img 
+                                    label={<img
                                         src={"data:image/jpeg;base64," + base64} 
                                         onMouseEnter={() => {handleMouseEnter(i);}} 
                                         onMouseOver={() => {handleMouseEnter(i);}} 
                                         onMouseLeave={() => {handleMouseOut();}} 
                                         />}
                                     />
-                                
+                                <Typography style={{paddingLeft:5}} variant="subtitle2">ID: {props.selection[i]["ID"]}</Typography>
                             </Grid>
                         }) //key={props.selection[i][smiles_col]} --> gives error because sometimes smiles ocure twice
                         //<div dangerouslySetInnerHTML={{ __html: img_lst.join("") }} />
                         setComp(img_lst);
                     })
-                , loading_area);
+                , loading_area + props.id);
             }else{
                 let row = props.selection[0]; 
                 const controller = new AbortController();
                 cancellablePromise(backend_utils.get_structure_from_smiles(row[smiles_col], false, controller), controller).then(x => {
-                    setComp(<img className={"legend_single"} src={"data:image/jpeg;base64," + x}/>)
+                    setComp(
+                        <div>
+                            <img className={"legend_single"} src={"data:image/jpeg;base64," + x}/>
+                            <Typography style={{paddingLeft:5}} variant="subtitle2">ID: {row["ID"]}</Typography>
+                        </div>)
                 }).catch(error => console.log(error));
             }
         }else{
@@ -261,9 +347,12 @@ function updateImage(props, cancellablePromise){
                     x["img_lst"].map((base64,i) => {
                         const cur_img = imgList[i].getElementsByTagName("img")[0];
                         cur_img.src = "data:image/jpeg;base64," + base64;
+                        // cur_img.width = props.rdkitSettings.width;
+                        // cur_img.height = props.rdkitSettings.width;
+                        // console.log(cur_img)
                     });
                 })
-            , loading_area);
+            , loading_area + props.id);
             
         }
     }
@@ -274,7 +363,7 @@ const mapStateToProps_Img = (state: RootState) => ({
     rdkitSettings: state.rdkitSettings
 })
 const mapDispatchToProps_Img = dispatch => ({
-    setRDKitSettingsRefresh: input => dispatch(setRDKit_refresh(input)),
+    
 })
 const connector_Img = connect(mapStateToProps_Img, mapDispatchToProps_Img);
 
@@ -292,7 +381,7 @@ type Props_Img = PropsFromRedux_Img & {
     handleMouseOut?,
     current_rep?,
     setCheckedList?,
-    setRDKitSettingsRefresh
+    id
 }
 
 function addHighlight(element){
@@ -307,21 +396,12 @@ function removeHighlight(element){
     }
 }
 
-const ImageView = connector_Img(function ({ hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep, setCheckedList, setRDKitSettingsRefresh, rdkitSettings }: Props_Img) {
+const ImageView = connector_Img(function ({id, hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep, setCheckedList, rdkitSettings }: Props_Img) {
     const [comp, setComp] = React.useState(<div></div>);
     
     const ref = React.useRef()
     const { cancellablePromise, cancelPromises } = useCancellablePromise();
 
-
-    React.useEffect(() => {
-        if(aggregate){
-            setRDKitSettingsRefresh(()=>{
-                updateImage({columns: columns, current_rep: current_rep, selection: selection, imgContainer: ref?.current, rdkitSettings: rdkitSettings}, cancellablePromise); 
-            });
-        }
-    }, [columns, current_rep, selection, ref?.current, rdkitSettings.contourLines, rdkitSettings.scale, rdkitSettings.sigma, rdkitSettings.showMCS, rdkitSettings.width]);
-    
     React.useEffect(() => {
         cancelPromises(); // cancel all unresolved promises
     }, [selection, current_rep])
@@ -329,13 +409,13 @@ const ImageView = connector_Img(function ({ hoverState, selection, columns, aggr
     React.useEffect(() => {
         if(setCheckedList)
             setCheckedList([]);
-        loadImage({columns: columns, aggregate: aggregate, current_rep: current_rep, selection: selection, rdkitSettings: rdkitSettings}, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, setCheckedList); 
+        loadImage({id: id, columns: columns, aggregate: aggregate, current_rep: current_rep, selection: selection, rdkitSettings: rdkitSettings}, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, setCheckedList); 
     }, [selection])
 
     React.useEffect(() => {
         if(aggregate)
-            updateImage({columns: columns, current_rep: current_rep, selection: selection, imgContainer: ref?.current, rdkitSettings: rdkitSettings}, cancellablePromise); 
-    }, [current_rep]);
+            updateImage({id: id, columns: columns, current_rep: current_rep, selection: selection, imgContainer: ref?.current, rdkitSettings: rdkitSettings}, cancellablePromise); 
+    }, [current_rep, rdkitSettings.refresh]);
     
     React.useEffect(() => {
         if(aggregate){
@@ -403,6 +483,7 @@ const mapDispatchToProps_settings = dispatch => ({
     setSigma: input => dispatch(setRDKit_sigma(input)),
     setShowMCS: input => dispatch(setRDKit_showMCS(input)),
     setWidth: input => dispatch(setRDKit_width(input)),
+    setRefresh: input => dispatch(setRDKit_refresh(input)),
 })
 const connector_settings = connect(mapStateToProps_settings, mapDispatchToProps_settings);
 
@@ -414,9 +495,6 @@ type SettingsPopoverProps = PropsFromRedux_Settings & {
     setOpen: any
     anchorEl: any
     refreshRepList: any
-    currentRep: string
-    setCurrentRep: any
-    repList: string[]
 }
 
 const SettingsPopover = connector_settings(function ({
@@ -429,7 +507,8 @@ const SettingsPopover = connector_settings(function ({
     setScale,
     setSigma,
     setShowMCS,
-    setWidth
+    setWidth,
+    setRefresh
 }: SettingsPopoverProps) {
 
     return <Popover
@@ -491,7 +570,7 @@ const SettingsPopover = connector_settings(function ({
                     <FormControl>
                         <InputLabel shrink htmlFor="SigmaInput">Sigma <Tooltip title="Sigma for Gaussian ]0; &infin;] &isin; &#8477;. Default of 0 signals the algorithm to infer the value."><InfoIcon fontSize="small"></InfoIcon></Tooltip></InputLabel>
                         <Input id="SigmaInput" type="number" 
-                            inputProps={{step: 0.01}}
+                            inputProps={{step: 0.1}}
                             value={rdkitSettings.sigma}
                                 onChange={(event) => { 
                                     let val = parseFloat(event.target.value);
@@ -525,7 +604,7 @@ const SettingsPopover = connector_settings(function ({
                         style={{marginTop: 3, maxWidth: 150}}
                         size="small"
                         variant="outlined" 
-                         onClick={() => {rdkitSettings.refresh()}}>
+                         onClick={() => {setRefresh(rdkitSettings.refresh+=1)}}>
                             Apply Settings
                         </Button>
                 </FormGroup>
@@ -563,14 +642,13 @@ const RepresentationList = props => {
                 if(newValue)
                     props.onChange(newValue.value);
             }}
-            disablePortal={true}
-            id="vectorRep"
+            disablePortal={props.hoverSettings.windowMode == WindowMode.Extern}
             options={options.sort((a, b) => -b.group.localeCompare(a.group))}
             groupBy={(option:any) => option.group}
             getOptionLabel={(option:any) => option.inputValue}
             getOptionSelected={(option:any, value) => {return option.value == value.value;}}
             style={{ maxWidth: 300 }}
-            // defaultValue={options[0]}
+            defaultValue={options[0]}
             
             renderInput={(params) => <TextField {...params} label="Choose Representation" variant="outlined" />}
         />

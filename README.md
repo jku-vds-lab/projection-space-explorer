@@ -186,7 +186,7 @@ The list can also be manually refreshed with the refresh button next to "Uploade
 If a user wants to upload a custom file they have to use the file format that is described in the next subsection.
 
 ### Data Format
-TODO: make whole sentences....
+TODO: make whole sentences.... TODO RDKit Ref
 Data is handed to the system using a Structure-Data File (SDF) https://en.wikipedia.org/wiki/Chemical_table_file#SDF that contains a collection of chemical compounds and additional properties that can be customized.
 
 

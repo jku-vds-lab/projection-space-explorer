@@ -226,29 +226,36 @@ def sdf_to_csv(filename=None, modifiers=None):
     new_cols = []
     for col in frame.columns:
         modifier = ""
-
+        col_name = col
+        
         if col.startswith(fingerprint_modifier):
             has_fingerprint = True
 
         if col.startswith(tuple(descriptor_names_no_lineup)):
             modifier = '%s"noLineUp":true,'%modifier # this modifier tells lineup that the column should not be viewed at all (remove this modifier, if you want to be able to add the column with the sideview of lineup)
             modifier = '%s"featureLabel":"%s",'%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
-            #col = col.split("_")[1]
+            split_col = col.split("_")
+            col_name = split_col[1] + " (" + split_col[0] + ")"
         elif col.startswith(tuple(descriptor_names_show_lineup)):
             #modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
             modifier = '%s"featureLabel":"%s",'%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
-            #col = col.split("_")[1]
+            split_col = col.split("_")
+            col_name = split_col[1] + " (" + split_col[0] + ")"
         #else:
             #modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
             
         elif col == smiles_col or col.startswith(smiles_prefix):
             modifier = '%s"project":false,"hideLineUp":true,"imgSmiles":true,'%modifier # this modifier tells lineup that a structure image of this smiles string should be loaded
-
+            
+            split_col = col.split("_")
+            if len(split_col) >= 2:
+                col_name = split_col[1] + " (" + split_col[0] + ")"
+            
         if col == "ID":
             modifier = '%s"dtype":"string","project":false,'%modifier # TODO: json crashed....
         
 
-        new_cols.append("%s{%s}"%(col,modifier[0:-1])) # remove the last comma
+        new_cols.append("%s{%s}"%(col_name,modifier[0:-1])) # remove the last comma
         
     frame.columns = new_cols
 
@@ -314,9 +321,11 @@ def mol_to_base64(m):
     buffered.close()
     return img_str.decode("utf-8")
 
-def mol_to_base64_highlight_substructure(mol, patt, d = None, showMCS=True):
+def mol_to_base64_highlight_substructure(mol, patt, width=250, d = None, showMCS=True):
+    width = int(width)
+    
     if d is None:
-        d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(250, 250) # MolDraw2DSVG
+        d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(width, width) # MolDraw2DSVG
     
     if showMCS:
         hit_ats = list(mol.GetSubstructMatch(patt))
@@ -345,12 +354,13 @@ def mol_to_base64_highlight_substructure(mol, patt, d = None, showMCS=True):
     stream.close()
     return img_str.decode("utf-8") #d.GetDrawingText()
 
-import re
-def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourLines, scale, sigma, showMCS):
+
+def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourLines, scale, sigma, showMCS, width=250):
     contourLines = int(contourLines)
     scale = float(scale)
     sigma = float(sigma)
     showMCS = showMCS == "true"
+    width = int(width)
     
     if sigma <= 0:
         sigma = None
@@ -360,13 +370,13 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourL
     if filename:
         df = sdf_to_df(filename)
         if df is not None:
-            d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(250, 250) # MolDraw2DSVG
+            d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(width, width) # MolDraw2DSVG
             smiles = Chem.MolToSmiles(mol_aligned)
             mol = pickle.loads(df[df[smiles_col] == smiles].iloc[0][mol_col])
             #mol = df.set_index(smiles_col).loc[smiles][mol_col]
             #weights = [mol.GetAtomWithIdx(i).GetDoubleProp(current_rep) for i in range(mol.GetNumAtoms())]
             weights = [float(prop) for prop in re.split(' |\n',mol.GetProp(current_rep))]
-            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(250, 250), draw2d=d, contourLines=contourLines, scale=scale, sigma=sigma)
+            fig = SimilarityMaps.GetSimilarityMapFromWeights(mol_aligned, weights, size=(width, width), draw2d=d, contourLines=contourLines, scale=scale, sigma=sigma)
             
             #buffered = BytesIO()
             #fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6,6]])) # SVG
@@ -374,9 +384,9 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourL
             #img = buffered.getvalue().decode("utf-8")
             #buffered.close()
             #return img_str.decode("utf-8") # img
-            return mol_to_base64_highlight_substructure(mol_aligned, patt, d=fig, showMCS=showMCS)
+            return mol_to_base64_highlight_substructure(mol_aligned, patt, d=fig, showMCS=showMCS, width=width)
     
-    return mol_to_base64_highlight_substructure(mol_aligned, patt)
+    return mol_to_base64_highlight_substructure(mol_aligned, patt, width=width)
 
 
 # --- routing ---
@@ -408,6 +418,7 @@ def smiles_list_to_imgs():
         scale = request.forms.get("scale")
         sigma = request.forms.get("sigma")
         showMCS = request.forms.get("showMCS")
+        width = request.forms.get("width")
 
         if len(smiles_list) == 0:
             return {"error": "empty SMILES list"}
@@ -441,9 +452,9 @@ def smiles_list_to_imgs():
             if(patt and Chem.MolToSmiles(patt) != "*"): # if no common substructure was found, skip the alignment
                 TemplateAlign.AlignMolToTemplate2D(mol,patt,clearConfs=True)
             if current_rep == "Common Substructure":
-                img_lst.append(mol_to_base64_highlight_substructure(mol, patt))
+                img_lst.append(mol_to_base64_highlight_substructure(mol, patt, width=width))
             else:
-                img_lst.append(mol_to_base64_highlight_importances(mol, patt, current_rep, contourLines, scale, sigma, showMCS))
+                img_lst.append(mol_to_base64_highlight_importances(mol, patt, current_rep, contourLines, scale, sigma, showMCS, width))
 
         return {"img_lst": img_lst, "error_smiles": error_smiles}
     else:
