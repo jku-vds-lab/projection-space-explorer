@@ -19,7 +19,7 @@ import { ChessFingerprint } from "./ChessFingerprint/ChessFingerprint";
 import { DatasetType } from "../Utility/Data/DatasetType";
 import { Vect } from "../Utility/Data/Vect";
 import { Dataset } from "../Utility/Data/Dataset";
-import { ChemLegend } from "./ChemDetail/ChemDetail";
+import { ChemLegendParent } from "./ChemDetail/ChemDetail";
 
 type GenericLegendProps = {
     type: DatasetType
@@ -45,7 +45,7 @@ export var GenericLegend = ({ type, vectors, aggregate, columns, hoverUpdate }: 
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
         case DatasetType.Chem:
-            return <ChemLegend selection={vectors} aggregate={aggregate} columns={columns} hoverUpdate={hoverUpdate}></ChemLegend>
+            return <ChemLegendParent selection={vectors} aggregate={aggregate} columns={columns} hoverUpdate={hoverUpdate}></ChemLegendParent>
         default:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
     }

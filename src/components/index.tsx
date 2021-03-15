@@ -435,6 +435,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
             </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
             <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Embedding and Projection</Typography>
+              <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+
+            <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Point and Line Channels</Typography>
               <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
             </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
@@ -442,11 +447,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <Typography variant="subtitle2">Clustering</Typography>
               <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
             </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-            <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Embedding and Projection</Typography>
-              <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-
+            
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
@@ -492,8 +493,13 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <FixedHeightTabPanel value={this.props.openTab} index={0} >
                 <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
               </FixedHeightTabPanel>
+              
 
               <FixedHeightTabPanel value={this.props.openTab} index={1}>
+                <EmbeddingTabPanel></EmbeddingTabPanel>
+              </FixedHeightTabPanel>
+
+              <FixedHeightTabPanel value={this.props.openTab} index={2}>
                 <div style={{
                   overflowY: 'auto',
                   overflowX: 'hidden',
@@ -723,7 +729,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               </FixedHeightTabPanel>
 
 
-              <FixedHeightTabPanel value={this.props.openTab} index={2}>
+              <FixedHeightTabPanel value={this.props.openTab} index={3}>
 
                 {this.props.dataset != null ?
                   <ClusteringTabPanel
@@ -734,10 +740,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                 }
               </FixedHeightTabPanel>
 
-
-              <FixedHeightTabPanel value={this.props.openTab} index={3}>
-                <EmbeddingTabPanel></EmbeddingTabPanel>
-              </FixedHeightTabPanel>
 
               <FixedHeightTabPanel value={this.props.openTab} index={4}>
                 <HoverTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></HoverTabPanel>
