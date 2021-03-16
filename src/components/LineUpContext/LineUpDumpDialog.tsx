@@ -43,7 +43,7 @@ export const LineUpDumpDialog =  connector(function ({openDialog, setOpenDumpDia
                 label="Modifiers"
                 value={dump}
                 onChange={handleChange}
-                fullWidth />
+                fullWidth={true} />
         </DialogContent>
         <DialogActions>
             <Button onClick={handleClose}>

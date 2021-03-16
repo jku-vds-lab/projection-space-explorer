@@ -3,7 +3,9 @@ import { EmbeddingController } from "./EmbeddingController"
 
 import * as frontend_utils from "../../../../utils/frontend-connect";
 
-export class TSNEEmbeddingController extends EmbeddingController {    
+export class TSNEEmbeddingController extends EmbeddingController { 
+    
+    
     init(dataset: Dataset, selection: any, params: any) {
         this.worker = new Worker(frontend_utils.BASE_PATH + 'tsne.js') //dist/
         this.worker.postMessage({
