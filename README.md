@@ -322,15 +322,30 @@ Next to each cluster label there is a settings button where users can adjust clu
 
 
 ## Details
+In this tab panel summary visualizations of selected points are shown. The user can choose to show this in an external window by clicking the toggle.
+When points are selected users can see the 2D compound structure of the selected items, aligned to each other according to their maximum common substructure.
+Users can select compounds from this view if they check the corresponding checkboxes and then click on "Confirm Selection".
 
+There is a user input that allows to choose among all provided representations. 
+The available representations are specified in the dataset and contain atom-level attribution scores for each compound.
+To choose a representation users can either scroll through the list, or they can filter the list by typing in the auto-complete textfield. 
+Representations are organized by groups that can be specified manually as described in the "Data Format" chapter.
+
+The "Settings" button allows users to manually refresh the representation list. Furthermore, users can adjust settings that are used in the backend.
+
+Clicking on "Add View" places an additional view of the selected compounds next to the existing view and enables the user to choose and compare several representations at once.
+Additional views can be removed again using the "Delete"-symbol button.
+It is recommended to use this feature in the external window only because there is more space.
 
 
 ## Lineup
 https://lineup.js.org/ 
 
+smiles columns: additional structure column (can filter by substructure in these columns; changing the width of these columns also adapts row height -> better view of compound structure)
+everything else: normal lineup features
 
 
-
+## General
 
 TODO: buttons on right top corner?
 TODO: main view description: hover,...

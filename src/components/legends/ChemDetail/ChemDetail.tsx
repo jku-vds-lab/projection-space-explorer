@@ -14,7 +14,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import { setAggregationAction } from '../../Ducks/AggregationDuck';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { isFunction } from 'lodash';
-import rdkitSettings, { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma, setRDKit_width } from '../../Ducks/RDKitSettingsDuck';
+import rdkitSettings, { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma, setRDKit_width, setRDKit_doAlignment } from '../../Ducks/RDKitSettingsDuck';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { WindowMode } from '../../Ducks/HoverSettingsDuck';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -111,6 +111,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
     }
 
     const anchorRef = React.useRef();
+    const chemRef = React.useRef();
 
     if(props.aggregate){
 
@@ -124,12 +125,12 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                     <Button style={{color:"gray"}} onClick={() => addComp()}><AddCircleOutlineIcon></AddCircleOutlineIcon>&nbsp; Add View</Button>
                 </Tooltip>
             </Box>}
-            <div className={"chemComponents"} >
+            <div ref={chemRef} className={"chemComponents"} >
                 {chemComponents.length > 1 &&
                     <div style={{width:(props.rdkitSettings.width+20)*chemComponents.length}}>
                         {chemComponents.map((x, i) => {
                             return <div key={x} style={{width: (props.rdkitSettings.width+20), float:'left'}}>
-                                <ChemLegend setCurrentRep={(value)=>setCurrentRep(value, x)} currentRep={chemComponentsCurrentRep[i]} removeComponent={() => removeComponent(x)} id={x} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                                <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, x)} currentRep={chemComponentsCurrentRep[i]} removeComponent={() => removeComponent(x)} id={x} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
                             </div>
                         })}
                     </div>
@@ -137,7 +138,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                 {chemComponents.length <= 1 &&
                     <div>
                         <div style={{minWidth: props.rdkitSettings.width}} key={chemComponents[0]}>
-                            <ChemLegend setCurrentRep={(value)=>setCurrentRep(value, chemComponents[0])} currentRep={chemComponentsCurrentRep[0]} id={chemComponents[0]} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                            <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, chemComponents[0])} currentRep={chemComponentsCurrentRep[0]} id={chemComponents[0]} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
                         </div>
                     </div>
                 }
@@ -159,7 +160,8 @@ type Props_Chem = PropsFromRedux_Chem & {
     id: any,
     removeComponent?: any,
     currentRep?: string,
-    setCurrentRep?: any
+    setCurrentRep?: any,
+    chemRef?
 }
 
 const loading_area = "chemlegend_loading_area";
@@ -224,7 +226,7 @@ const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {che
                     {this.props.removeComponent && <IconButton onClick={this.props.removeComponent}><DeleteIcon></DeleteIcon></IconButton>}
                 </Box>
                 <LoadingIndicatorView area={loading_area + this.props.id}/>
-                <ImageView id={this.props.id} setCheckedList={setCheckedList} selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.props.currentRep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} />
+                <ImageView chemRef={this.props.chemRef} id={this.props.id} setCheckedList={setCheckedList} selection={this.props.selection} columns={this.props.columns} aggregate={this.props.aggregate} current_rep={this.props.currentRep} handleMouseEnter={handleMouseEnter} handleMouseOut={handleMouseOut} />
                 
             </div>;
         }
@@ -271,6 +273,7 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                 formData.append('sigma', props.rdkitSettings.sigma);
                 formData.append('showMCS', props.rdkitSettings.showMCS);
                 formData.append('width', props.rdkitSettings.width);
+                formData.append('doAlignment', props.rdkitSettings.doAlignment);
 
                 const controller = new AbortController();
                 trackPromise(
@@ -340,6 +343,7 @@ function updateImage(props, cancellablePromise){
             formData.append('sigma', props.rdkitSettings.sigma);
             formData.append('showMCS', props.rdkitSettings.showMCS);
             formData.append('width', props.rdkitSettings.width);
+            formData.append('doAlignment', props.rdkitSettings.doAlignment);
 
             const controller = new AbortController();
             trackPromise(
@@ -381,7 +385,8 @@ type Props_Img = PropsFromRedux_Img & {
     handleMouseOut?,
     current_rep?,
     setCheckedList?,
-    id
+    id,
+    chemRef?
 }
 
 function addHighlight(element){
@@ -396,7 +401,7 @@ function removeHighlight(element){
     }
 }
 
-const ImageView = connector_Img(function ({id, hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep, setCheckedList, rdkitSettings }: Props_Img) {
+const ImageView = connector_Img(function ({chemRef, id, hoverState, selection, columns, aggregate, handleMouseEnter, handleMouseOut, current_rep, setCheckedList, rdkitSettings }: Props_Img) {
     const [comp, setComp] = React.useState(<div></div>);
     
     const ref = React.useRef()
@@ -420,7 +425,8 @@ const ImageView = connector_Img(function ({id, hoverState, selection, columns, a
     React.useEffect(() => {
         if(aggregate){
             //@ts-ignore
-            let imgContainer = ref?.current;
+            let container = chemRef?.current;
+            let imgContainer = container.getElementsByClassName('chem-grid')[0];
             //@ts-ignore
             let imgList = imgContainer.childNodes;
             if(hoverState && hoverState.data){
@@ -433,10 +439,12 @@ const ImageView = connector_Img(function ({id, hoverState, selection, columns, a
                     addHighlight(imgList[idx]);
                     
                     if(hoverState.updater != UPDATER){
-                        if(imgContainer && imgList[idx])
+                        if(container && imgList[idx]){
+                            console.log("ok")
                             //@ts-ignore
-                            imgContainer.scrollTop = imgList[idx].offsetTop - imgContainer.offsetTop;
+                            container.scrollTop = imgList[idx].offsetTop - container.offsetTop;
                             // imgList[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+                        }
                     }
                 }
             }else{
@@ -484,6 +492,7 @@ const mapDispatchToProps_settings = dispatch => ({
     setShowMCS: input => dispatch(setRDKit_showMCS(input)),
     setWidth: input => dispatch(setRDKit_width(input)),
     setRefresh: input => dispatch(setRDKit_refresh(input)),
+    setDoAlignment: input => dispatch(setRDKit_doAlignment(input)),
 })
 const connector_settings = connect(mapStateToProps_settings, mapDispatchToProps_settings);
 
@@ -508,7 +517,8 @@ const SettingsPopover = connector_settings(function ({
     setSigma,
     setShowMCS,
     setWidth,
-    setRefresh
+    setRefresh,
+    setDoAlignment
 }: SettingsPopoverProps) {
 
     return <Popover
@@ -585,6 +595,11 @@ const SettingsPopover = connector_settings(function ({
                     <FormControlLabel
                         control={<Switch checked={rdkitSettings.showMCS} onChange={(_, value) => {setShowMCS(value);}} />}
                         label="Show MCS"
+                    />
+
+                    <FormControlLabel
+                        control={<Switch checked={rdkitSettings.doAlignment} onChange={(_, value) => {setDoAlignment(value);}} />}
+                        label="Align Structure"
                     />
 
                     <Typography style={{paddingTop: 10}} gutterBottom>Image Width</Typography>

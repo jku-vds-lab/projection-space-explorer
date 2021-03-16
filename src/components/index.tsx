@@ -58,7 +58,7 @@ import { rootReducer, RootState } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { LineUpContext } from "./LineUpContext/LineUpContext";
 import { devToolsEnhancer } from 'redux-devtools-extension';
-import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
+import { setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
 import { SDFLoader } from "./Utility/Loaders/SDFLoader";
 import * as frontend_utils from "../utils/frontend-connect";
 import { HoverTabPanel } from "./DrawerTabPanels/HoverTabPanel/HoverTabPanel";
@@ -150,8 +150,8 @@ const mapDispatchToProps = dispatch => ({
   setSelectedClusters: value => dispatch(setSelectedClusters(value)),
   wipeState: () => dispatch({ type: 'RESET_APP' }),
   setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
-  setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
-  setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
+  // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
+  // setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
   setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
   saveProjection: embedding => dispatch(addProjectionAction(embedding)),
   setVectors: vectors => dispatch(setVectors(vectors)),
@@ -280,8 +280,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setVectors(dataset.vectors)
 
-    this.props.setLineUpInput_columns(dataset.columns);
-    this.props.setLineUpInput_data(dataset.vectors);
+    // this.props.setLineUpInput_columns(dataset.columns);
+    // this.props.setLineUpInput_data(dataset.vectors);
 
     this.props.setLineByOptions(dataset.getColumns())
 

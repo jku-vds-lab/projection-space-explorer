@@ -1,10 +1,10 @@
 // CONSTANTS
 
-// export const CREDENTIALS = 'include'; // for AWS/docker
-export const CREDENTIALS = 'omit'; // for netlify/local
+export const CREDENTIALS = 'include'; // for AWS/docker
+// export const CREDENTIALS = 'omit'; // for netlify/local
 
-export const BASE_URL = 'https://cime.caleydoapp.org'; // for netlify
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+// export const BASE_URL = 'https://cime.caleydoapp.org'; // for netlify
+export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 // export const BASE_URL = ''; // for AWS/docker
 
 

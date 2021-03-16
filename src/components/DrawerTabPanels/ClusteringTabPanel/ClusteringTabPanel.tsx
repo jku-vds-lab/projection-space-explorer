@@ -20,7 +20,7 @@ import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
 import useCancellablePromise from "../../../utils/promise-helpers"
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { setLineUpInput_data, setLineUpInput_visibility, setLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
+import { setLineUpInput_visibility, setLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 const d3 = require("d3")
 
@@ -44,7 +44,7 @@ const mapDispatchToProps = dispatch => ({
     addStory: story => dispatch(addStory(story)),
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
     setChannelColor: col => dispatch(setChannelColor(col)),
-    setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
+    // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
     setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
 })
@@ -83,7 +83,7 @@ export const ClusteringTabPanel = connector(({
     removeClusterFromStories,
     webGLView,
     selectedClusters,
-    setLineUpInput_data,
+    // setLineUpInput_data,
     setLineUpInput_visibility,
     setLineUpInput_filter }: Props) => {
 
@@ -432,7 +432,7 @@ export const ClusteringTabPanel = connector(({
                 selectedClusters={selectedClusters}
                 webGLView={webGLView}
                 stories={stories}
-                setLineUpInput_data={setLineUpInput_data}
+                // setLineUpInput_data={setLineUpInput_data}
                 setLineUpInput_visibility={setLineUpInput_visibility}
                 setLineUpInput_filter={setLineUpInput_filter}
             ></ClusterList>
@@ -445,7 +445,7 @@ type ClusterPopoverProps = {
     setAnchorEl: any
     cluster: Cluster
     removeClusterFromStories: any
-    setLineUpInput_data: any
+    // setLineUpInput_data: any
     setLineUpInput_visibility: any
     setLineUpInput_filter: any
     handleClusterClick: any
@@ -456,7 +456,7 @@ function ClusterPopover({
     setAnchorEl,
     cluster,
     removeClusterFromStories,
-    setLineUpInput_data,
+    // setLineUpInput_data,
     setLineUpInput_visibility,
     setLineUpInput_filter,
     handleClusterClick
@@ -571,7 +571,7 @@ function ClusterList({
     webGLView,
     stories,
     removeClusterFromStories,
-    setLineUpInput_data,
+    // setLineUpInput_data,
     setLineUpInput_visibility,
     setLineUpInput_filter
 }) {
@@ -595,7 +595,7 @@ function ClusterList({
             removeClusterFromStories={removeClusterFromStories}
             setLineUpInput_visibility={setLineUpInput_visibility}
             setLineUpInput_filter={setLineUpInput_filter}
-            setLineUpInput_data={setLineUpInput_data}
+            // setLineUpInput_data={setLineUpInput_data}
             handleClusterClick={handleClusterClick}
         ></ClusterPopover>
 

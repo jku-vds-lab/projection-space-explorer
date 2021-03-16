@@ -26,7 +26,7 @@ import { Divider, Menu, MenuItem } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
 import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, setActiveStory, setActiveTrace } from '../Ducks/StoriesDuck';
-import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility, setLineUpInput_dump, setLineUpInput_filter } from '../Ducks/LineUpInputDuck';
+import { setLineUpInput_visibility, setLineUpInput_dump, setLineUpInput_filter } from '../Ducks/LineUpInputDuck';
 import { Story } from '../Utility/Data/Story';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
 import { Edge } from '../Utility/graphs';
@@ -81,8 +81,8 @@ const mapDispatchToProps = dispatch => ({
     setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping)),
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
     setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
-    setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
-    setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
+    // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
+    // setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
     setLineUpInput_dump: input => dispatch(setLineUpInput_dump(input)),
     setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
