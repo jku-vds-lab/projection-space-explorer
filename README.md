@@ -169,3 +169,158 @@ https://github.com/PAIR-code/umap-js
 ### ForceAtlas2
 
 https://www.npmjs.com/package/graphology-layout-forceatlas2
+
+
+
+
+
+# Documentation CIME
+The documentation is mainly organized according to the tabs that can be opened on the left side of the website.
+
+## Dataset
+When loading the website there is a default dataset loaded, which is called "test.sdf".
+Additionally, users can load datasets that were already uploaded previously or they can upload their own custom dataset.
+The list of uploaded files includes all SDF files that are available in the backend (from any user!) and can be deleted with the delete button next to the filename.
+The list can also be manually refreshed with the refresh button next to "Uploaded Files" (this is only necessary, if another user uploads a file during a simultaneous session and the current user needs this exact file).
+
+If a user wants to upload a custom file they have to use the file format that is described in the next subsection.
+
+### Data Format
+TODO: make whole sentences.... TODO RDKit Ref
+Data is handed to the system using a Structure-Data File (SDF) https://en.wikipedia.org/wiki/Chemical_table_file#SDF that contains a collection of chemical compounds and additional properties that can be customized.
+
+
+properties: 
+    - compound specific properties 
+        -> can be used for projection and can be shown in lineup (like solubility, atom weight or any other property that is important to the user; can also include fingerprints or embedding space of compound, which can then be used for projection)
+        -> can contain arbitrary values (the naming should be consistent for all compounds)
+        -> including properties "x" and "y" tells the system to use these for the projection
+        -> user can specify a "modifier"-term that specifies a certain group that properties belong to. if there are properties that semantically belong together. e.g. an embedding consists of 10 values -> properties can be named embedding_val0, embedding_val1 ... embedding_val9, which tells the system that all of them belong to the group "embedding". this grouping is for usability purposes and allows the user to collapse, expand and select group properties together for the projection
+        -> by default the system recognizes the following modifiers: ["fingerprint", "rep", "pred", "predicted", "measured", "smiles"]
+        -> if there is no "fingerprint" modifier in the properties of a dataset, the system will create them automatically https://rdkit.readthedocs.io/en/latest/GettingStartedInPython.html#morgan-fingerprints-circular-fingerprints
+        -> custom modifiers can be added in a dialog input that shows when uploading a dataset
+        -> the pre-defined "smiles" modifier has a special function: if a property is decorated with "smiles_*" the system will recognize the property as SMILES string and thus show the compound structure in the lineup table
+        
+    - atom specific properties 
+        -> only atom.dprops are handled which are interpreted as attribution scores and shown on the compound structure with heatmap and contour lines
+        -> must contain one value for each atom of the compound
+        -> generate with RDKit: https://www.rdkit.org/docs/RDKit_Book.html#atom-properties-and-sdf-files
+        -> the frontend has an autocomplete userinput that groups atom properties
+            -> values for the autocomplete are extracted as follows (e.g. example property "atom.dprop.rep_0"):
+            -> group name: substring that includes everything before the last underscore (e.g. "rep")
+            -> value: substring after the last underscore (e.g. "0")
+
+
+
+--> here is a snippet of an example compound:
+
+1
+     RDKit          2D
+
+ 26 28  0  0  0  0  0  0  0  0999 V2000
+   -3.8971  -10.3573    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.8971   -8.8573    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.5981   -8.1073    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   (...)
+  1  2  1  0
+  2  3  1  0
+  3  4  1  0
+   (...)
+M  END
+>  <x>  (1) 
+1
+
+>  <y>  (1) 
+-1
+
+>  <fingerprint_0>  (1) 
+1
+
+>  <fingerprint_1>  (1) 
+-1
+
+>  <fingerprint_2>  (1) 
+-0.93295186758041382
+
+(...)
+
+>  <smiles_test1>  (1) 
+CCC(C)
+
+>  <predicted_LOD>  (1) 
+7.2908949851989746
+
+>  <predicted_LOA>  (1) 
+6.8278293609619141
+
+>  <predicted_LOM>  (1) 
+6.9404010772705078
+
+(...)
+
+>  <atom.dprop.rep_0>  (1) 
+0.27710943999999998 0.27710943999999998 2.0140631 2.0140631 1.2363203999999999 (...)
+
+>  <atom.dprop.rep_1>  (1) 
+2.3923867000000003 1.2477521999999999 0.14004986999999999 0.14004986999999999 (...)
+
+>  <atom.dprop.rep_2>  (1) 
+-0.51998469999999997 -0.19284870000000001 -0.51998469999999997 -0.51998469999999997 (...)
+
+
+## Project
+TODO...
+umap default parameters like suggested in https://umap-learn.readthedocs.io/en/latest/api.html 
+umap reference...
+normalization
+distance metric
+grouping
+
+
+
+## Encoding
+In the "Encoding" tab panel users can change the marks and channels of the displayed data.
+TODO: line by??
+TODO: shape by??
+TODO: need explanation??
+
+
+## Clusters --> Groups
+TODO: groups vs clusters?
+In the "Clusters" tab panel users can adjust cluster settings, automatically calculate clusters and selecting different cluster stories.
+
+### Group Settings TODO: rename?
+One toggles allows users to show or hide items (points). The other one allows users to show or hide cluster centers (grey diamonds).
+
+### Cluster Settings TODO: rename?
+Automatic Clustering of the projected features can be clicking "Projection-Based Clustering". The algorithm used for clustering is HDBSCAN https://hdbscan.readthedocs.io/en/latest/index.html.
+Parameters can be changed either by adjusting the slider (few clusters...many clusters), or by enabling the "Advanced"-Mode. Chosen parameters are always synchronized with the values in the "Advanced" user inputs. Any other possible parameters that could be used for HDBSCAN are set to the default paramters that can be retrieved from the HDBSCAN docs.
+
+### Groups and Stories TODO: rename?
+A story book is a set of clusters that were either created automatically (e.g. by "Projection-Base Clustering") or manually composed. 
+A new story book can be created by clicking "Add Empty". 
+Users can manually add clusters to a new or existing story book by selecting points in the scatter plot and choosing "Create Cluster from Selection" from the context menu that opens by a right click on the scatter plot.
+TODO: open story editor?!
+TODO: create from selection also in cluster tab?
+
+The clusters in a story book are listed below. Each item in the list represents one cluster. If a user clicks on a cluster, the corresponding points are highlighted in the scatter plot.
+Holding CTRL adds a cluster to the selection.
+Next to each cluster label there is a settings button where users can adjust cluster names, delete a cluster or filter the lineup table by this cluster.
+
+
+
+## Details
+
+
+
+## Lineup
+https://lineup.js.org/ 
+
+
+
+
+
+TODO: buttons on right top corner?
+TODO: main view description: hover,...
+TODO: general controls (left-click + drag = new selection; left-click + shift + drag = toggle selection; right-click + drag = pan; mousewheel = zoom; right-click: context-menu; right-click on cluster: cluster context menu;)
+

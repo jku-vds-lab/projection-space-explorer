@@ -28,7 +28,7 @@ import { Legend } from "./DrawerTabPanels/StatesTabPanel/LineSelection/LineSelec
 import * as ReactDOM from 'react-dom';
 import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
 import { createStore } from 'redux'
-import { Provider } from 'react-redux'
+import { ConnectedProps, Provider } from 'react-redux'
 import { connect } from 'react-redux'
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
@@ -109,7 +109,8 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   categoryOptions: state.categoryOptions,
   channelSize: state.channelSize,
-  channelColor: state.channelColor
+  channelColor: state.channelColor,
+  splitRef: state.splitRef
 })
 
 
@@ -172,10 +173,39 @@ function testContours() {
 }
 
 
+
+
+/**
+ * Factory method which is declared here so we can get a static type in 'ConnectedProps'
+ */
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+
+/**
+ * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
+ */
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+/**
+ * Type that holds every property that is relevant to our component, that is the props declared above + our OWN component props
+ */
+// type Props = PropsFromRedux & {
+//     onFilter: any
+//     // My own property 1
+//     // My own property 2
+// }
+
+type Props = PropsFromRedux & {
+}
+
+
+
+
+
 /**
  * Main application that contains all other components.
  */
-var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component<any, any> {
+var Application = connector(class extends React.Component<Props, any> {
   legend: React.RefObject<Legend>;
   dataset: Dataset;
   threeRef: any;
@@ -209,7 +239,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
     this.threeRef = React.createRef()
     this.splitRef = React.createRef()
     this.props.setWebGLView(this.threeRef)
-    this.props.setSplitRef(this.splitRef)
+    
     this.legend = React.createRef()
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
@@ -294,6 +324,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     this.props.setLineUpInput_columns(dataset.columns);
     this.props.setLineUpInput_data(dataset.vectors);
+    this.props.setSplitRef(this.splitRef)
 
     this.props.setLineByOptions(dataset.getColumns())
 
@@ -445,24 +476,37 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Load Dataset</Typography>
               <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-            <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Point and Line Channels</Typography>
-              <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-            <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Clustering</Typography>
-              <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+            
+            <Divider orientation="horizontal"></Divider>
+
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Embedding and Projection</Typography>
               <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+
+            <Divider orientation="horizontal"></Divider>
+
+            <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Point and Line Channels</Typography>
+              <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+            
+            <Divider orientation="horizontal"></Divider>
+            
+            <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Clustering</Typography>
+              <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+            
+            <Divider orientation="horizontal"></Divider>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+
+            <Divider orientation="horizontal"></Divider>
 
             {/* {frontend_utils.CHEM_PROJECT && <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Backend Settings</Typography>
@@ -472,7 +516,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">LineUp Integration</Typography>
               <Typography variant="body2">Settings for LineUp Integration</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon> style={{ minWidth: 0, flexGrow: 1, marginTop: '128px' }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
           </Tabs>
         </Drawer>
 
@@ -504,8 +548,13 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <FixedHeightTabPanel value={this.props.openTab} index={0} >
                 <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
               </FixedHeightTabPanel>
+              
 
               <FixedHeightTabPanel value={this.props.openTab} index={1}>
+                <EmbeddingTabPanel></EmbeddingTabPanel>
+              </FixedHeightTabPanel>
+
+              <FixedHeightTabPanel value={this.props.openTab} index={2}>
                 <div style={{
                   overflowY: 'auto',
                   overflowX: 'hidden',
@@ -735,7 +784,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               </FixedHeightTabPanel>
 
 
-              <FixedHeightTabPanel value={this.props.openTab} index={2}>
+              <FixedHeightTabPanel value={this.props.openTab} index={3}>
 
                 {this.props.dataset != null ?
                   <ClusteringTabPanel
@@ -746,10 +795,6 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                 }
               </FixedHeightTabPanel>
 
-
-              <FixedHeightTabPanel value={this.props.openTab} index={3}>
-                <EmbeddingTabPanel></EmbeddingTabPanel>
-              </FixedHeightTabPanel>
 
               <FixedHeightTabPanel value={this.props.openTab} index={4}>
                 <HoverTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></HoverTabPanel>
@@ -778,9 +823,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         }}>
           <AppBar variant="outlined" position="relative" color="transparent">
             <Toolbar>
-              <a href={"https://jku-vds-lab.at"} target={"_blank"}><img style={{ height: 48 }} src={"textures/vis-logo-svg.svg"} alt="Kitty Katty!" /></a>
+              <a href={"https://jku-vds-lab.at"} target={"_blank"}><img style={{ height: 48 }} src={"textures/vds-lab-logo-notext.svg"} /></a>
               {frontend_utils.CHEM_PROJECT && <a href={"https://www.bayer.com"} target={"_blank"}><img style={{ height: 48, marginLeft: 48 }} src={"textures/bayer-logo.svg"} alt="Powered By Bayer" /></a>}
-              <Typography variant="h6" style={{ marginLeft: 48 }}>
+              <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
                 Projection Space Explorer
               </Typography>
               <ToolSelectionRedux />
@@ -799,6 +844,16 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             dragInterval={1}
             direction="vertical"
             cursor="ns-resize"
+            onDragStart={() => {
+              this.props.setLineUpInput_visibility(false)
+            }}
+            onDragEnd={(sizes) => {
+              if (sizes[0] > 90) {
+                this.props.setLineUpInput_visibility(false)
+              } else {
+                this.props.setLineUpInput_visibility(true)
+              }
+            }}
           >
             <div style={{ flexGrow: 0.9 }}>
               <WebGLView

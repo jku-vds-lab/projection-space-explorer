@@ -51,7 +51,7 @@ type Props = PropsFromRedux
                 >
                     <MenuItem value="">None</MenuItem>
                     {
-                        selectedLineBy.options.map(option => {
+                        selectedLineBy.options.map((option, i) => {
                             return <MenuItem key={option} value={option}>{option}</MenuItem>
                         })
                     }

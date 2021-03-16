@@ -7,7 +7,7 @@ import BlurOffIcon from '@material-ui/icons/BlurOff';
 import './ToolSelection.scss'
 import { connect, ConnectedProps } from 'react-redux'
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
-import { Tooltip, Typography } from "@material-ui/core";
+import { Box, Tooltip, Typography } from "@material-ui/core";
 import { setCurrentTool } from "../../Ducks/CurrentToolDuck";
 import { RootState } from "../../Store/Store";
 

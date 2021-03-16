@@ -158,6 +158,9 @@ function genRows(vectors, projectionColumns, dataset) {
   const dictOfArrays = dictionary(vectors)
   const preselect = getProjectionColumns(projectionColumns)
 
+  console.log(preselect)
+  console.log(dataset.columns)
+
   // loop through dict
   for (var key in dictOfArrays) {
     // filter for preselect features
@@ -196,8 +199,10 @@ function getTable(vectors, aggregation, projectionColumns, dataset) {
   const classes = useStyles()
   const rows = genRows(vectors, projectionColumns, dataset)
 
+  
+
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       <TableContainer component={Paper} style={{
         height: "400px",
         width: "100%",

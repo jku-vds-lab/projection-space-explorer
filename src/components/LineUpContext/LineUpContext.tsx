@@ -81,7 +81,16 @@ const UNIQUE_ID = "unique_ID";
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, setLineUpInput_lineup, setLineUpInput_visibility, onFilter, activeStory, hoverUpdate, splitRef }: Props) { // hoverState -> makes everything slow....
+export const LineUpContext = connector(function ({
+    lineUpInput,
+    currentAggregation,
+    setCurrentAggregation,
+    setLineUpInput_lineup,
+    setLineUpInput_visibility,
+    onFilter,
+    activeStory,
+    hoverUpdate,
+    splitRef }: Props) { // hoverState -> makes everything slow....
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
         //splitRef?.current?.setSizes([100, 0])
@@ -114,7 +123,7 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
             // if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
             //     element[PrebuiltFeatures.ClusterLabel] = [-1];
             // }
-            let row = Object.assign({}, element)
+            let row = Object.assign({}, element) as any
             row[PrebuiltFeatures.ClusterLabel] = element[PrebuiltFeatures.ClusterLabel].toString();
             row[UNIQUE_ID] = element["__meta__"]["view"]["meshIndex"];
             lineup_data.push(row);
@@ -124,7 +133,12 @@ export const LineUpContext = connector(function ({ lineUpInput, currentAggregati
         const builder = buildLineup(lineUpInput.columns, lineup_data); //lineUpInput.data
         lineUpInput.lineup?.destroy();
         let lineup = null;
+        // try{
         lineup = builder.build(lineup_ref.current);
+        // }catch(e){
+        //     console.log("error");
+        // }
+        
 
 
         const ranking = lineup.data.getFirstRanking();
@@ -336,10 +350,11 @@ function buildLineup(cols, data) {
             else if (typeof col.featureType !== 'undefined') {
                 switch (col.featureType) {
                     case FeatureType.Categorical:
-                        if (data && col.distinct && col.distinct.length / data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
+                        if (data && col.distinct && col.distinct.length / data.length <= 0.5) {
                             builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
-                        else
+                        } else {
                             builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
+                        }
                         break;
                     case FeatureType.Quantitative:
                         builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show));//.renderer("myBarCellRenderer")); //.renderer("numberWithValues")

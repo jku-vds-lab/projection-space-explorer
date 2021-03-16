@@ -1,4 +1,20 @@
 .gutter.gutter-vertical {
     cursor: ns-resize;
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.12);
+    height: 16px;
+}
+
+.gutter.gutter-vertical:hover {
+    background-color: #1976d2;
+    height: 16px;
+}
+
+
+.gutterstest.gutter-vertical::after {
+    cursor: ns-resize;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f062";
+    background: transparent;
+    font-size: 30px;
 }

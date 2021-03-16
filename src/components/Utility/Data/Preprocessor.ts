@@ -1,3 +1,4 @@
+import { isNumber } from "lodash";
 import { Vect } from "./Vect";
 
 /**

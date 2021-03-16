@@ -6,7 +6,6 @@ import { Story } from "../../Utility/Data/Story"
 import { graphLayout, Edge } from "../../Utility/graphs"
 import SettingsIcon from '@material-ui/icons/Settings';
 import SaveIcon from '@material-ui/icons/Save';
-import { setSelectedClusters } from "../../Ducks/SelectedClustersDuck"
 import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories } from "../../Ducks/StoriesDuck"
@@ -31,7 +30,8 @@ const mapStateToProps = (state: RootState) => ({
     dataset: state.dataset,
     webGLView: state.webGLView,
     categoryOptions: state.categoryOptions,
-    currentAggregation: state.currentAggregation
+    currentAggregation: state.currentAggregation,
+    splitRef: state.splitRef
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -54,7 +54,8 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & {
     open,
     backendRunning,
-    clusteringWorker
+    clusteringWorker,
+    splitRef
 }
 
 
@@ -82,7 +83,8 @@ export const ClusteringTabPanel = connector(({
     setLineUpInput_data,
     setLineUpInput_visibility,
     currentAggregation,
-    setLineUpInput_filter }: Props) => {
+    setLineUpInput_filter,
+    splitRef }: Props) => {
 
 
     function storyLayout(edges: Edge[]) {
@@ -432,6 +434,7 @@ export const ClusteringTabPanel = connector(({
                 setLineUpInput_data={setLineUpInput_data}
                 setLineUpInput_visibility={setLineUpInput_visibility}
                 setLineUpInput_filter={setLineUpInput_filter}
+                splitRef={splitRef}
             ></ClusterList>
         </div>
     </div>
@@ -446,6 +449,7 @@ type ClusterPopoverProps = {
     setLineUpInput_visibility: any
     setLineUpInput_filter: any
     handleClusterClick: any
+    splitRef: any
 }
 
 function ClusterPopover({
@@ -456,7 +460,8 @@ function ClusterPopover({
     setLineUpInput_data,
     setLineUpInput_visibility,
     setLineUpInput_filter,
-    handleClusterClick
+    handleClusterClick,
+    splitRef
 }: ClusterPopoverProps) {
 
     if (!cluster) return null;
@@ -500,6 +505,7 @@ function ClusterPopover({
         setLineUpInput_visibility(true)
         setLineUpInput_filter({'clusterLabel': cluster.getTextRepresentation()});
         handleClusterClick(cluster); // select items in cluster when opening lineup
+        splitRef.current.split.setSizes([50, 50])
     }
 
     return <Popover
@@ -573,7 +579,8 @@ function ClusterList({
     removeClusterFromStories,
     setLineUpInput_data,
     setLineUpInput_visibility,
-    setLineUpInput_filter
+    setLineUpInput_filter,
+    splitRef
 }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [popoverCluster, setPopoverCluster] = React.useState(null)
@@ -597,6 +604,7 @@ function ClusterList({
             setLineUpInput_filter={setLineUpInput_filter}
             setLineUpInput_data={setLineUpInput_data}
             handleClusterClick={handleClusterClick}
+            splitRef={splitRef}
         ></ClusterPopover>
 
         <List>

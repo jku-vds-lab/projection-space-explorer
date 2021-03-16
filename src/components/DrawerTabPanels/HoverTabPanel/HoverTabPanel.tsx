@@ -1,4 +1,4 @@
-import { Box, Button, FormControlLabel, Switch } from "@material-ui/core";
+import { Box, Button, FormControlLabel, Switch, Typography } from "@material-ui/core";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { setAggregationAction } from "../../Ducks/AggregationDuck";
@@ -7,7 +7,9 @@ import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClu
 import { RootState } from "../../Store/Store";
 
 const mapStateToProps = (state: RootState) => ({
-    hoverSettings: state.hoverSettings
+    hoverSettings: state.hoverSettings,
+    currentAggregation: state.currentAggregation,
+    dataset: state.dataset
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -24,13 +26,16 @@ type Props = PropsFromRedux & {
 }
 
 
-export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation }: Props) => {
+export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
+            {/* TODO: Cluster count not working */}
+            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset && dataset.vectors.length}</b> items in <b>{currentAggregation.selectedClusters.length}</b> Clusters</Typography>
+
             <FormControlLabel
                 control={<Switch checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
                 label="External Selection Summary"

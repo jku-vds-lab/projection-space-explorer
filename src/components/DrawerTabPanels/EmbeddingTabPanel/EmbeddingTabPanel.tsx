@@ -120,6 +120,8 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                 </Grid>
                 }
 
+                {
+                !frontend_utils.CHEM_PROJECT && 
                 <Grid item>
                     <Button
                         style={{
@@ -131,6 +133,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                             setOpen(true)
                         }}>{'ForceAtlas2'}</Button>
                 </Grid>
+                }
             </Grid>
         </Box>
 

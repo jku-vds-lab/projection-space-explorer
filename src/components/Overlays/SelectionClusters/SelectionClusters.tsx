@@ -62,7 +62,7 @@ const SelectionClustersFull = function ({
                 </MyWindowPortal>
                 :
                 <div className={"Cluster"}>
-                    <div>{genericAggregateLegend}</div>
+                    {genericAggregateLegend}
                 </div>
         }
     </div>
