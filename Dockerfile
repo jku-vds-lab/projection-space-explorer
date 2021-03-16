@@ -20,6 +20,9 @@ COPY backend /app/
 #TODO the docker could build and copy
 COPY dist/ /app/dist/ 
 
+# Create temp-files folder and copy all .sdf into it
+COPY backend/*.sdf /app/temp-files/
+
 EXPOSE 8080
 
 # run server
