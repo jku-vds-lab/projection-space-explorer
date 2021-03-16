@@ -1,4 +1,4 @@
-species,island,bill_length_mm,bill_depth_mm,flipper_length_mm,body_mass_g,sex
+species{"featureLabel": "Features"},island{"featureLabel": "Features"},bill_length_mm{"featureLabel": "Features"},bill_depth_mm{"featureLabel": "Features"},flipper_length_mm{"featureLabel": "Features"},body_mass_g{"featureLabel": "Features"},sex{"featureLabel": "Features"}
 Adelie,Torgersen,39.1,18.7,181,3750,MALE
 Adelie,Torgersen,39.5,17.4,186,3800,FEMALE
 Adelie,Torgersen,40.3,18,195,3250,FEMALE
