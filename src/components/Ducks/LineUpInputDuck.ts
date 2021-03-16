@@ -7,6 +7,9 @@ import { Vect } from "../Utility/Data/Vect";
 const SET_DATA = "ducks/lineUpInput/SET_DATA"
 const SET_COLUMNS = "ducks/lineUpInput/SET_COLUMNS"
 const SET_VISIBILITY = "ducks/lineUpInput/SET_VISIBILITY"
+const SET_DUMP = "ducks/lineUpInput/SET_DUMP"
+const SET_FILTER = "ducks/lineUpInput/SET_FILTER"
+const SET_LINEUP = "ducks/lineUpInput/SET_LINEUP"
 
 export const setLineUpInput_data = input => ({
     type: SET_DATA,
@@ -23,15 +26,36 @@ export const setLineUpInput_visibility = input => ({
     input: input
 });
 
+export const setLineUpInput_dump = input => ({
+    type: SET_DUMP,
+    input: input
+});
+
+export const setLineUpInput_filter = input => ({
+    type: SET_FILTER,
+    input: input
+});
+
+export const setLineUpInput_lineup = input => ({
+    type: SET_LINEUP,
+    input: input
+});
+
 const initialState: LineUpType = {
     data: null,
     columns: null,
     show: false,
+    dump: "",
+    filter: null,
+    lineup: null
 }
 export type LineUpType = {
     data: Vect[],
     columns: [],
-    show: boolean
+    show: boolean,
+    dump: string,
+    filter: object,
+    lineup: any
 }
 
 const lineUpInput = (state = initialState, action): LineUpType => {
@@ -42,6 +66,12 @@ const lineUpInput = (state = initialState, action): LineUpType => {
             return {...state, columns: action.input}
         case SET_VISIBILITY:
             return {...state, show: action.input}
+        case SET_DUMP:
+            return {...state, dump: action.input}
+        case SET_FILTER:
+            return {...state, filter: action.input}
+        case SET_LINEUP:
+            return {...state, lineup: action.input}
         default:
             return state
     }

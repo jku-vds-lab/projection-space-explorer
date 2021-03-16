@@ -1,10 +1,12 @@
 import React = require("react")
-import { Avatar, Box, Button, Checkbox, FormGroup, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Paper, Popover, Switch, TextField, Typography } from "@material-ui/core"
+import { Avatar, Box, Button, Checkbox, FormGroup, IconButton, InputAdornment, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Paper, Popover, Switch, TextField, Typography } from "@material-ui/core"
 import { connect, ConnectedProps } from 'react-redux'
 import Cluster from "../../Utility/Data/Cluster"
 import { Story } from "../../Utility/Data/Story"
 import { graphLayout, Edge } from "../../Utility/graphs"
 import SettingsIcon from '@material-ui/icons/Settings';
+import SaveIcon from '@material-ui/icons/Save';
+import { setSelectedClusters } from "../../Ducks/SelectedClustersDuck"
 import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories } from "../../Ducks/StoriesDuck"
@@ -16,8 +18,9 @@ import * as backend_utils from "../../../utils/backend-connect";
 import * as frontend_utils from "../../../utils/frontend-connect";
 import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
+import useCancellablePromise from "../../../utils/promise-helpers"
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { setLineUpInput_data, setLineUpInput_visibility } from "../../Ducks/LineUpInputDuck"
+import { setLineUpInput_data, setLineUpInput_visibility, setLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
 const d3 = require("d3")
@@ -42,6 +45,7 @@ const mapDispatchToProps = dispatch => ({
     setChannelColor: col => dispatch(setChannelColor(col)),
     setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
+    setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -77,7 +81,8 @@ export const ClusteringTabPanel = connector(({
     webGLView,
     setLineUpInput_data,
     setLineUpInput_visibility,
-    currentAggregation }: Props) => {
+    currentAggregation,
+    setLineUpInput_filter }: Props) => {
 
 
     function storyLayout(edges: Edge[]) {
@@ -201,10 +206,11 @@ export const ClusteringTabPanel = connector(({
     }
 
 
-    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster) {
+    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise) {
+        const loading_area = "global_loading_indicator";
         const points = dataset.vectors.map(point => [point.x, point.y]);
         trackPromise(
-            backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster).then(data => {
+            cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster)).then(data => {
                 const cluster_labels = data["result"];
                 const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
@@ -235,40 +241,52 @@ export const ClusteringTabPanel = connector(({
                     setChannelColor(clusterAttribute)
                 }
 
-                let c =
-                    d3.contourDensity()
-                        .x(d => d.x)
-                        .y(d => d.y)
-                        .size([500, 500])
-                        .bandwidth(30)
-                        .thresholds(30)
-                        (dataset.vectors.map(vect => ({ x: vect.x, y: vect.y })))
+                let c = d3.contourDensity()
+                    .x(d => d.x)
+                    .y(d => d.y)
+                    .size([500, 500])
+                    .bandwidth(30)
+                    .thresholds(30)
+                    (dataset.vectors.map(vect => ({x: vect.x, y: vect.y})))
 
                 console.log(c)
             })
-        );
+            .catch(error => console.log(error))
+        , loading_area);
     }
+    
+    const { cancellablePromise } = useCancellablePromise();
 
     const [clusterAdvancedMode, setClusterAdvancedMode] = React.useState(false);
     const [clusterSliderValue, setClusterSliderValue] = React.useState(2);
+
     const [min_cluster_size, set_min_cluster_size] = React.useState(5);
     const [min_cluster_samples, set_min_cluster_samples] = React.useState(1);
     const [allow_single_cluster, set_allow_single_cluster] = React.useState(false);
 
+    React.useEffect(() => {
+        handleClusterSliderChange(null, clusterSliderValue);
+    }, [dataset.info.path]);
+
     const handleClusterSliderChange = (event, newValue) => {
+        let min_clust = 0;
         switch (newValue) {
             case 0:
-                set_min_cluster_size(Math.max(dataset.vectors.length / 100, 20));
-                set_min_cluster_samples(Math.round(min_cluster_size / 2))
+                min_clust = Math.max(dataset.vectors.length / 200, 20);
+                set_min_cluster_size(Math.round(min_clust));
+                set_min_cluster_samples(Math.round(min_clust / 2))
                 set_allow_single_cluster(true);
                 break;
             case 1:
-                set_min_cluster_size(Math.max(dataset.vectors.length / 100, 9));
-                set_min_cluster_samples(Math.round(min_cluster_size / 2))
+                min_clust = Math.max(dataset.vectors.length / 500, 9);
+                set_min_cluster_size(Math.round(min_clust));
+                set_min_cluster_samples(Math.round(min_clust / 2))
                 set_allow_single_cluster(false);
                 break;
             case 2:
-                set_min_cluster_size(5);
+                min_clust = Math.max(dataset.vectors.length / 700, 5);
+                set_min_cluster_size(Math.round(min_clust));
+                set_min_cluster_samples(Math.round(min_clust/5));
                 set_allow_single_cluster(false);
                 break;
         }
@@ -352,7 +370,7 @@ export const ClusteringTabPanel = connector(({
         {clusterAdvancedMode ?
             <Box paddingLeft={2}>
                 <TextField
-                    label="min Cluster Size"
+                    label="Min Cluster Size"
                     type="number"
                     InputLabelProps={{
                         shrink: true,
@@ -362,7 +380,7 @@ export const ClusteringTabPanel = connector(({
                     onChange={(event) => { set_min_cluster_size(Math.max(parseInt(event.target.value), 2)) }}
                 />
                 <TextField
-                    label="min Cluster Samples"
+                    label="Min Cluster Samples"
                     type="number"
                     InputLabelProps={{
                         shrink: true,
@@ -394,7 +412,7 @@ export const ClusteringTabPanel = connector(({
                 style={{
                     width: '100%'
                 }}
-                onClick={() => { calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster) }}>Projection-based Clustering</Button>
+                onClick={() => {calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise)}}>Projection-based Clustering</Button>
         </Box>
 
         <Box paddingLeft={2} paddingTop={2}>
@@ -413,6 +431,7 @@ export const ClusteringTabPanel = connector(({
                 stories={stories}
                 setLineUpInput_data={setLineUpInput_data}
                 setLineUpInput_visibility={setLineUpInput_visibility}
+                setLineUpInput_filter={setLineUpInput_filter}
             ></ClusterList>
         </div>
     </div>
@@ -425,6 +444,8 @@ type ClusterPopoverProps = {
     removeClusterFromStories: any
     setLineUpInput_data: any
     setLineUpInput_visibility: any
+    setLineUpInput_filter: any
+    handleClusterClick: any
 }
 
 function ClusterPopover({
@@ -433,7 +454,9 @@ function ClusterPopover({
     cluster,
     removeClusterFromStories,
     setLineUpInput_data,
-    setLineUpInput_visibility
+    setLineUpInput_visibility,
+    setLineUpInput_filter,
+    handleClusterClick
 }: ClusterPopoverProps) {
 
     if (!cluster) return null;
@@ -454,7 +477,7 @@ function ClusterPopover({
     React.useEffect(() => {
         if (cluster && anchorEl) {
             setName(cluster.getTextRepresentation())
-
+            console.log(cluster)
         }
     }, [anchorEl, cluster])
 
@@ -473,8 +496,10 @@ function ClusterPopover({
 
     const onLineup = () => {
         setAnchorEl(null)
-        setLineUpInput_data(cluster.vectors)
+        // setLineUpInput_data(cluster.vectors)
         setLineUpInput_visibility(true)
+        setLineUpInput_filter({'clusterLabel': cluster.getTextRepresentation()});
+        handleClusterClick(cluster); // select items in cluster when opening lineup
     }
 
     return <Popover
@@ -503,6 +528,15 @@ function ClusterPopover({
                         value={name}
                         onChange={(event) => { setName(event.target.value) }}
                         margin="normal"
+                        InputProps={{
+                            endAdornment: <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="Save"
+                                    className={classes.button}
+                                    onClick={onSave}
+                                ><SaveIcon /></IconButton>
+                            </InputAdornment>
+                        }}
                     />
 
                     <div style={{ display: 'flex' }}>
@@ -510,7 +544,7 @@ function ClusterPopover({
                             className={classes.button}
                             onClick={onLineup}
                             variant="outlined"
-                        >LineUp</Button>
+                        >Show Cluster in Table</Button>
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -524,11 +558,7 @@ function ClusterPopover({
 
 
 
-                    <Button
-                        className={classes.button}
-                        onClick={onSave}
-                        variant="outlined"
-                    >Save</Button>
+                    
                 </FormGroup>
             </Paper>
         </div>
@@ -542,7 +572,8 @@ function ClusterList({
     stories,
     removeClusterFromStories,
     setLineUpInput_data,
-    setLineUpInput_visibility
+    setLineUpInput_visibility,
+    setLineUpInput_filter
 }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [popoverCluster, setPopoverCluster] = React.useState(null)
@@ -551,6 +582,9 @@ function ClusterList({
         setAnchorEl(event.currentTarget);
     };
 
+    const handleClusterClick = cluster => {
+        webGLView.current.onClusterClicked(cluster)
+    };
 
 
     return <div>
@@ -560,7 +594,9 @@ function ClusterList({
             cluster={popoverCluster}
             removeClusterFromStories={removeClusterFromStories}
             setLineUpInput_visibility={setLineUpInput_visibility}
+            setLineUpInput_filter={setLineUpInput_filter}
             setLineUpInput_data={setLineUpInput_data}
+            handleClusterClick={handleClusterClick}
         ></ClusterPopover>
 
         <List>

@@ -3,7 +3,7 @@
 // export const CREDENTIALS = 'include'; // for AWS/docker
 export const CREDENTIALS = 'omit'; // for netlify/local
 
-export const BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
+export const BASE_URL = 'https://cime.caleydoapp.org'; // for netlify
 // export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 // export const BASE_URL = ''; // for AWS/docker
 
@@ -35,7 +35,9 @@ async function async_cache(cached_data){
 
 var cache = {}
 function handleCache(key){
-    return cache[key];
+    if(cache[key])
+        return Object.assign(cache[key]); // return copy of cached object
+    return null;
 }
 
 function setCache(key, value){
@@ -69,7 +71,7 @@ export async function delete_file(filename){
     .then(handle_errors_json)
     .catch(error => {
         alert("file could not be deleted. please, try again");
-        console.error(error);
+        console.log(error);
     });
 }
 
@@ -86,12 +88,12 @@ export async function get_uploaded_files(){
     .then(handle_errors_json)
     .catch(error => {
         // alert("could not load uploaded filenames.")
-        console.error(error);
+        console.log(error);
     });
 }
 
 
-export async function get_structure_from_smiles(smiles:string, highlight=false) {
+export async function get_structure_from_smiles(smiles:string, highlight=false, controller=null) {
     const cached_data = handleSmilesCache(smiles, highlight)
     if(cached_data){
         return async_cache(cached_data);
@@ -107,11 +109,23 @@ export async function get_structure_from_smiles(smiles:string, highlight=false) 
         path += "/highlight";
     }
 
-    return fetch(path, {
-        method: 'POST',
-        body: formData,
-        credentials: CREDENTIALS
-    })
+    let my_fetch = null;
+    if(controller){
+        my_fetch = fetch(path, {
+            method: 'POST',
+            body: formData,
+            credentials: CREDENTIALS,
+            signal: controller.signal
+        })
+    }else{
+        my_fetch = fetch(path, {
+            method: 'POST',
+            body: formData,
+            credentials: CREDENTIALS,
+        })
+    }
+
+    return my_fetch
     .then(handle_errors)
     .then(response => response.json())
     .then(handle_errors_json)
@@ -121,18 +135,19 @@ export async function get_structure_from_smiles(smiles:string, highlight=false) 
     })
     .catch(error => {
         // alert("could not load structure");
-        console.error(error)
+        console.log(error)
     });
 }
 
-export async function get_structures_from_smiles_list(formData:FormData){
+export async function get_structures_from_smiles_list(formData:FormData, controller?){
     if(localStorage.getItem("unique_filename"))
         formData.append('filename', localStorage.getItem("unique_filename"));
 
     return fetch(BASE_URL+'/get_mol_imgs', {
         method: 'POST',
         body: formData,
-        credentials: CREDENTIALS
+        credentials: CREDENTIALS,
+        signal: controller?.signal
     })
     .then(handle_errors)
     .then(response => response.json())
@@ -144,8 +159,12 @@ export async function get_structures_from_smiles_list(formData:FormData){
         return data;
     })
     .catch(error => {
-        alert("could not load structures");
-        console.error(error)
+        if (error.name === 'AbortError') {
+            console.log('Fetch aborted');
+        } else {
+            alert("could not load structures");
+            console.log(error)
+        }
     });
 }
 
@@ -161,7 +180,7 @@ export async function get_mcs_from_smiles_list(formData:FormData) {
     .then(response => response["data"])
     .catch(error => {
         // alert("could not get maximum common substructure")
-        console.error(error)
+        console.log(error)
     });
     
 }
@@ -185,23 +204,24 @@ export async function get_substructure_count(smiles_list, filter) {
     })
     .catch(error => {
         alert("could not find substructure match")
-        console.error(error)
+        console.log(error)
     });
     
 }
 
 
-export async function upload_sdf_file(file){
+export async function upload_sdf_file(file, controller?){
     // upload the sdf file to the server
     // the response is a unique filename that can be used to make further requests
     const formData_file = new FormData();
     formData_file.append('myFile', file);
     formData_file.append('file_size', file.size);
     
-    return fetch(BASE_URL+'/upload_sdf', {
+    const promise = fetch(BASE_URL+'/upload_sdf', {
         method: 'POST',
         body: formData_file,
-        credentials: CREDENTIALS
+        credentials: CREDENTIALS,
+        signal: controller?.signal
     })
     .then(handle_errors)
     .then(response => response.json())
@@ -210,16 +230,21 @@ export async function upload_sdf_file(file){
         localStorage.setItem("unique_filename", data["unique_filename"]);
     })
     .catch(error => {
-        alert("error when uploading file. it might be too big");
-        console.error(error);
+        if (error.name === 'AbortError') {
+            console.log('Fetch aborted');
+        } else {
+            alert("error when uploading file. it might be too big");
+            console.log(error);
+        }
     });
+    return promise;
 }
 
 
-export async function get_representation_list(refresh=false){
+export async function get_representation_list(refresh=false, dataset_name=""){
     if(!refresh){
-        const cached_data = handleCache("representation_list")
-        if(cached_data){
+        const cached_data = handleCache("representation_list_" + dataset_name)
+        if(cached_data && cached_data["rep_list"].length > 0){
             return async_cache(cached_data);
         }
     }
@@ -236,12 +261,12 @@ export async function get_representation_list(refresh=false){
     .then(response => response.json())
     .then(handle_errors_json)
     .then(data => {
-        setCache("representation_list", data);
+        setCache("representation_list_" + dataset_name, data);
         return data;
     })
     .catch(error => {
         // alert("error when loading representation list")
-        console.error(error)
+        console.log(error)
     });
 }
 
@@ -265,9 +290,8 @@ export async function calculate_hdbscan_clusters(X, min_cluster_size, min_cluste
     .then(handle_errors_json)
     .catch(error => {
         alert("error when calculating clusters")
-        console.error(error)
+        console.log(error)
     });
 }
-
 
 

@@ -1,6 +1,5 @@
 import React = require("react");
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@material-ui/core";
-import { SDFLoader } from "../../Utility/Loaders/SDFLoader";
 
 
 export function SDFModifierDialog({openSDFDialog, handleClose}) {

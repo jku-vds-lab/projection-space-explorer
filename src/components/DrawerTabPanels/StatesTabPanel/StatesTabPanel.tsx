@@ -34,21 +34,9 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux
 
+/**
+ 
 
-
-export const StatesTabPanelFull = ({
-    selectedVectorByShape,
-    vectorByShape,
-    dataset,
-    setSelectedVectorByShape,
-    setVectorByShape,
-    setCheckedShapes,
-    categoryOptions,
-    selectedLineBy,
-    setSelectedLineBy,
-    webGlView
-}: Props) => {
-    return <div>
         {
             <FormControl style={{ margin: '4px 0px' }}>
                 <InputLabel shrink id="lineByLabel">{"line by"}</InputLabel>
@@ -70,6 +58,23 @@ export const StatesTabPanelFull = ({
                 </Select>
             </FormControl>
         }
+
+ */
+
+export const StatesTabPanelFull = ({
+    selectedVectorByShape,
+    vectorByShape,
+    dataset,
+    setSelectedVectorByShape,
+    setVectorByShape,
+    setCheckedShapes,
+    categoryOptions,
+    selectedLineBy,
+    setSelectedLineBy,
+    webGlView
+}: Props) => {
+    return <div>
+
 
         {
             categoryOptions != null && categoryOptions.hasCategory("shape") ?

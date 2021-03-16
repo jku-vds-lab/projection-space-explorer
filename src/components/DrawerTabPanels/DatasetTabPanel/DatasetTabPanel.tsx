@@ -12,6 +12,7 @@ import { PredefinedDatasets } from "./PredefinedDatasets";
 import { SDFModifierDialog } from "./SDFModifierDialog";
 import { UploadedFiles } from "./UploadedFiles";
 import * as frontend_utils from "../../../utils/frontend-connect";
+import useCancellablePromise from "../../../utils/promise-helpers";
 
 var d3v5 = require('d3')
 
@@ -27,10 +28,15 @@ export function DatasetTabPanel({ onDataSelected }) {
     const [openSDFDialog, setOpen] = React.useState(false);
     const [refreshUploadedFiles, setRefreshUploadedFiles] = React.useState(0);
 
+    const { cancellablePromise, cancelPromises } = useCancellablePromise();
+    let abort_controller = new AbortController();
+
     function onModifierDialogClose(modifiers) {
         setOpen(false);
-        if (modifiers !== null)
-            new SDFLoader().resolvePath(entry, onDataSelected, modifiers);
+        if (modifiers !== null){
+            abort_controller = new AbortController();
+            new SDFLoader().resolvePath(entry, onDataSelected, cancellablePromise, modifiers, abort_controller);
+        }
     }
 
     let predefined = null;
@@ -59,7 +65,7 @@ export function DatasetTabPanel({ onDataSelected }) {
         <DatasetDrop onChange={(var1, var2) => {
                 onDataSelected(var1, var2);
                 setRefreshUploadedFiles(refreshUploadedFiles + 1);
-            }}></DatasetDrop>
+            }} cancellablePromise={cancellablePromise} abort_controller={abort_controller}></DatasetDrop>
 
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Predefined Datasets'}</Typography>
@@ -94,7 +100,7 @@ export function DatasetTabPanel({ onDataSelected }) {
             setJob(null)
         }} onCancel={() => { setJob(null) }}></DownloadProgress>
 
-        <LoadingIndicatorDialog/>
+        <LoadingIndicatorDialog handleClose={() => {cancelPromises();}} area={"global_loading_indicator"}/>
         <SDFModifierDialog openSDFDialog={openSDFDialog} handleClose={onModifierDialogClose}></SDFModifierDialog>
     </div>
 }

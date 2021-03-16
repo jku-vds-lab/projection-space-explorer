@@ -65,15 +65,18 @@ import { addProjectionAction } from "./Ducks/ProjectionsDuck";
 import { Embedding } from "./Utility/Data/Embedding";
 import { setVectors } from "./Ducks/StoriesDuck";
 // @ts-ignore
-import PseDataset from './Icons/pse-icon-dataset-opt.svg'
+import PseDataset from './Icons/pse-icon-dataset.svg'
 // @ts-ignore
-import PseClusters from './Icons/pse-icon-clusters-opt.svg'
+import PseClusters from './Icons/pse-icon-clusters.svg'
 // @ts-ignore
-import PseDetails from './Icons/pse-icon-details-opt.svg'
+import PseDetails from './Icons/pse-icon-details.svg'
 // @ts-ignore
-import PseEncoding from './Icons/pse-icon-encoding-opt.svg'
+import PseEncoding from './Icons/pse-icon-encoding.svg'
 // @ts-ignore
-import PseProject from './Icons/pse-icon-project-opt.svg'
+import PseProject from './Icons/pse-icon-project.svg'
+// @ts-ignore
+import PseLineup from './Icons/pse-icon-lineup.svg'
+import { ChemTabPanel } from "./DrawerTabPanels/ChemTabPanel/ChemTabPanel";
 import Split from 'react-split'
 import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
@@ -237,7 +240,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       } else if (set == "chess") {
         preselect = "datasets/chess/chess16k.csv"
         loader = new CSVLoader();
-      } else if (set == "chemvis") {
+      } else if (set == "cime") {
         preselect = "test.sdf";
         loader = new SDFLoader();
       } else {
@@ -461,10 +464,15 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
             </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
 
+            {/* {frontend_utils.CHEM_PROJECT && <Tooltip placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">Backend Settings</Typography>
+              <Typography variant="body2">Adjust Settings used in the backend.</Typography>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            } */}
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">LineUp Integration</Typography>
               <Typography variant="body2">Settings for LineUp Integration</Typography>
-            </React.Fragment>}><Tab icon={<img src={'textures/lineup.png'} style={{ width: 64, height: 64 }}></img>} style={{ minWidth: 0, flexGrow: 1, marginTop: '128px' }} /></Tooltip>
+            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon> style={{ minWidth: 0, flexGrow: 1, marginTop: '128px' }} /></Tooltip>
           </Tabs>
         </Drawer>
 
@@ -747,6 +755,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                 <HoverTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></HoverTabPanel>
               </FixedHeightTabPanel>
 
+              {/* {frontend_utils.CHEM_PROJECT && 
+              <FixedHeightTabPanel value={this.props.openTab} index={5}>
+                <ChemTabPanel></ChemTabPanel>
+              </FixedHeightTabPanel>} */}
+              
               <FixedHeightTabPanel value={this.props.openTab} index={5}>
                 <LineUpTabPanel></LineUpTabPanel>
               </FixedHeightTabPanel>
@@ -787,12 +800,12 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             direction="vertical"
             cursor="ns-resize"
           >
-            <div style={{ flexGrow: 1 }}>
+            <div style={{ flexGrow: 0.9 }}>
               <WebGLView
                 ref={this.threeRef}
               />
             </div>
-            <div style={{ flexGrow: 0 }}>
+            <div style={{ flexGrow: 0.1 }}>
               <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
             </div>
 

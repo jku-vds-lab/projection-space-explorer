@@ -179,7 +179,7 @@ exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.u
 
 exports.CREDENTIALS = 'omit'; // for netlify/local
 
-exports.BASE_URL = 'https://chemvis.caleydoapp.org'; // for netlify
+exports.BASE_URL = 'https://cime.caleydoapp.org'; // for netlify
 // export const BASE_URL = 'http://127.0.0.1:8080'; // for local
 // export const BASE_URL = ''; // for AWS/docker
 
@@ -223,7 +223,9 @@ function async_cache(cached_data) {
 var cache = {};
 
 function handleCache(key) {
-  return cache[key];
+  if (cache[key]) return Object.assign(cache[key]); // return copy of cached object
+
+  return null;
 }
 
 function setCache(key, value) {
@@ -261,7 +263,7 @@ function delete_file(filename) {
               return response.json();
             }).then(handle_errors_json).catch(function (error) {
               alert("file could not be deleted. please, try again");
-              console.error(error);
+              console.log(error);
             }));
 
           case 2:
@@ -290,7 +292,7 @@ function get_uploaded_files() {
               return response.json();
             }).then(handle_errors_json).catch(function (error) {
               // alert("could not load uploaded filenames.")
-              console.error(error);
+              console.log(error);
             }));
 
           case 2:
@@ -306,8 +308,9 @@ exports.get_uploaded_files = get_uploaded_files;
 
 function get_structure_from_smiles(smiles) {
   var highlight = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var controller = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-    var cached_data, formData, path;
+    var cached_data, formData, path, my_fetch;
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
@@ -331,21 +334,34 @@ function get_structure_from_smiles(smiles) {
               path += "/highlight";
             }
 
-            return _context4.abrupt("return", fetch(path, {
-              method: 'POST',
-              body: formData,
-              credentials: exports.CREDENTIALS
-            }).then(handle_errors).then(function (response) {
+            my_fetch = null;
+
+            if (controller) {
+              my_fetch = fetch(path, {
+                method: 'POST',
+                body: formData,
+                credentials: exports.CREDENTIALS,
+                signal: controller.signal
+              });
+            } else {
+              my_fetch = fetch(path, {
+                method: 'POST',
+                body: formData,
+                credentials: exports.CREDENTIALS
+              });
+            }
+
+            return _context4.abrupt("return", my_fetch.then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (data) {
               setSmilesCache(smiles, highlight, data["data"]);
               return data["data"];
             }).catch(function (error) {
               // alert("could not load structure");
-              console.error(error);
+              console.log(error);
             }));
 
-          case 9:
+          case 11:
           case "end":
             return _context4.stop();
         }
@@ -356,7 +372,7 @@ function get_structure_from_smiles(smiles) {
 
 exports.get_structure_from_smiles = get_structure_from_smiles;
 
-function get_structures_from_smiles_list(formData) {
+function get_structures_from_smiles_list(formData, controller) {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
     return regeneratorRuntime.wrap(function _callee5$(_context5) {
       while (1) {
@@ -366,7 +382,8 @@ function get_structures_from_smiles_list(formData) {
             return _context5.abrupt("return", fetch(exports.BASE_URL + '/get_mol_imgs', {
               method: 'POST',
               body: formData,
-              credentials: exports.CREDENTIALS
+              credentials: exports.CREDENTIALS,
+              signal: controller === null || controller === void 0 ? void 0 : controller.signal
             }).then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (data) {
@@ -376,8 +393,12 @@ function get_structures_from_smiles_list(formData) {
 
               return data;
             }).catch(function (error) {
-              alert("could not load structures");
-              console.error(error);
+              if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+              } else {
+                alert("could not load structures");
+                console.log(error);
+              }
             }));
 
           case 2:
@@ -406,7 +427,7 @@ function get_mcs_from_smiles_list(formData) {
               return response["data"];
             }).catch(function (error) {
               // alert("could not get maximum common substructure")
-              console.error(error);
+              console.log(error);
             }));
 
           case 1:
@@ -439,7 +460,7 @@ function get_substructure_count(smiles_list, filter) {
               if (Object.keys(data).includes("substructure_counts")) return data["substructure_counts"];else throw Error("Backend responded with error: " + data["error"]);
             }).catch(function (error) {
               alert("could not find substructure match");
-              console.error(error);
+              console.log(error);
             }));
 
           case 4:
@@ -453,9 +474,9 @@ function get_substructure_count(smiles_list, filter) {
 
 exports.get_substructure_count = get_substructure_count;
 
-function upload_sdf_file(file) {
+function upload_sdf_file(file, controller) {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
-    var formData_file;
+    var formData_file, promise;
     return regeneratorRuntime.wrap(function _callee8$(_context8) {
       while (1) {
         switch (_context8.prev = _context8.next) {
@@ -465,20 +486,26 @@ function upload_sdf_file(file) {
             formData_file = new FormData();
             formData_file.append('myFile', file);
             formData_file.append('file_size', file.size);
-            return _context8.abrupt("return", fetch(exports.BASE_URL + '/upload_sdf', {
+            promise = fetch(exports.BASE_URL + '/upload_sdf', {
               method: 'POST',
               body: formData_file,
-              credentials: exports.CREDENTIALS
+              credentials: exports.CREDENTIALS,
+              signal: controller === null || controller === void 0 ? void 0 : controller.signal
             }).then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (data) {
               localStorage.setItem("unique_filename", data["unique_filename"]);
             }).catch(function (error) {
-              alert("error when uploading file. it might be too big");
-              console.error(error);
-            }));
+              if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+              } else {
+                alert("error when uploading file. it might be too big");
+                console.log(error);
+              }
+            });
+            return _context8.abrupt("return", promise);
 
-          case 4:
+          case 5:
           case "end":
             return _context8.stop();
         }
@@ -491,6 +518,7 @@ exports.upload_sdf_file = upload_sdf_file;
 
 function get_representation_list() {
   var refresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  var dataset_name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
     var cached_data, path;
     return regeneratorRuntime.wrap(function _callee9$(_context9) {
@@ -502,9 +530,9 @@ function get_representation_list() {
               break;
             }
 
-            cached_data = handleCache("representation_list");
+            cached_data = handleCache("representation_list_" + dataset_name);
 
-            if (!cached_data) {
+            if (!(cached_data && cached_data["rep_list"].length > 0)) {
               _context9.next = 4;
               break;
             }
@@ -520,11 +548,11 @@ function get_representation_list() {
             }).then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (data) {
-              setCache("representation_list", data);
+              setCache("representation_list_" + dataset_name, data);
               return data;
             }).catch(function (error) {
               // alert("error when loading representation list")
-              console.error(error);
+              console.log(error);
             }));
 
           case 7:
@@ -557,7 +585,7 @@ function calculate_hdbscan_clusters(X, min_cluster_size, min_cluster_samples, al
               return response.json();
             }).then(handle_errors_json).catch(function (error) {
               alert("error when calculating clusters");
-              console.error(error);
+              console.log(error);
             }));
 
           case 6:

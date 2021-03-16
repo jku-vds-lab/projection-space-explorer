@@ -4,23 +4,29 @@
   height: 50vh;
 }
 .portalSummary .ParentChem{
-  height: 95vh;
-  margin-top: 0px;
+  height: 100%;
+  margin-top: 10px;
 }
 
-.ParentChem .chem-grid{
-  // height: 85vh !important;
-  height:100%;
+.ParentChem .chemContainer {
+  height: 100%;
+}
+.ParentChem .chem-grid {
+  height: 85%;
   overflow-y: auto;
-
 }
 
 .ParentChem .legend_single{
-  width:360px;
-  height:360px;
+  width: 360px;
+  height: 360px;
 }
 
 .ParentChem .legend_multiple{
-  padding:1px;
-  height:fit-content;
+  border: solid white 1px;
+  height: fit-content;
+  margin-left: 5px;
+}
+
+.ParentChem label{
+  margin: 0px;
 }

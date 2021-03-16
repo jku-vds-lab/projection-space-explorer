@@ -21,12 +21,6 @@ export class DatasetDatabase {
     constructor() {
         this.data = [
             {
-                display: "ChemVis: Test",
-                path: "test.sdf",
-                type: DatasetType.Chem,
-                uploaded: true
-            },
-            {
                 display: "Coral sub-sampled",
                 path: "datasets/coral/coral_subsampled.json",
                 type: DatasetType.Coral
@@ -150,7 +144,13 @@ export class DatasetDatabase {
                 display: "Toy: Story",
                 path: "datasets/toy/toy.csv",
                 type: DatasetType.None
-            }
+            },
+            {
+                display: "CIME: Test",
+                path: "test.sdf",
+                type: DatasetType.Chem,
+                uploaded: true
+            },
         ];
     }
 

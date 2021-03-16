@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { usePromiseTracker } from "react-promise-tracker";
 import Loader from 'react-loader-spinner';
-import { Dialog, DialogContent } from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent } from '@material-ui/core';
 
 
 export const LoadingIndicatorView = props => {
-    const { promiseInProgress } = usePromiseTracker();
+    const { promiseInProgress } = usePromiseTracker({area: props.area});
     return (
         promiseInProgress && 
             <div
@@ -23,11 +23,16 @@ export const LoadingIndicatorView = props => {
 }
 
 export const LoadingIndicatorDialog = props => {
-    const { promiseInProgress } = usePromiseTracker();
+    const { promiseInProgress } = usePromiseTracker({area: props.area});
     
-    return <Dialog maxWidth='lg' open={promiseInProgress}>
+    return <Dialog maxWidth='lg' open={promiseInProgress}> {/*onClose={props.handleClose} */}
         <DialogContent>
-            <LoadingIndicatorView/>
+            <LoadingIndicatorView area={props.area}/>
         </DialogContent>
+        <DialogActions>
+            <Button onClick={props.handleClose}>
+                Cancel
+            </Button>
+        </DialogActions>
     </Dialog>
 }
