@@ -9,6 +9,7 @@ import { RootState } from "../../Store/Store";
 const mapStateToProps = (state: RootState) => ({
     hoverSettings: state.hoverSettings,
     currentAggregation: state.currentAggregation,
+    vectors: state.dataset?.vectors,
     dataset: state.dataset
 })
 
@@ -26,7 +27,7 @@ type Props = PropsFromRedux & {
 }
 
 
-export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset }: Props) => {
+export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, vectors, dataset }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
