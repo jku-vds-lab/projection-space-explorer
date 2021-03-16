@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 Id{"featureLabel": "Features"},species{"featureLabel": "Features"},island{"featureLabel": "Features"},bill_length_mm{"featureLabel": "Features"},bill_depth_mm{"featureLabel": "Features"},flipper_length_mm{"featureLabel": "Features"},body_mass_g{"featureLabel": "Features"},sex{"featureLabel": "Features"}
-=======
-id,species{"featureType": "Test"},island,bill_length_mm,bill_depth_mm,flipper_length_mm,body_mass_g,sex
->>>>>>> 3c8fbc4f5bde880cd29d9dafb09a3ee9711dcf63
 0,Adelie,Torgersen,39.1,18.7,181.0,3750.0,MALE
 1,Adelie,Torgersen,39.5,17.4,186.0,3800.0,FEMALE
 2,Adelie,Torgersen,40.3,18.0,195.0,3250.0,FEMALE
