@@ -175,6 +175,13 @@ https://www.npmjs.com/package/graphology-layout-forceatlas2
 
 
 # Documentation CIME
+The ChemInformatics Model Explorer (short CIME) extension of the Projection Space Explorer allows users to interactively explore a fixed subspace of chemical compounds.
+Users are able to aply a 2D projection to the provided data, and additionally show the high-dimensional data in a LineUp table.
+Furthermore, users can select datapoints and show the 2D structures of all selected items, aligned to each other, in a side-view.
+If provided in the data, users can change the representation in the side-view to show atom-level attributions in the 2D structure. 
+This could be used for comparing point neighbors for example to check, if machine learning model explanations generated for those datapoints make sense.
+Using the clustering tool allows for easier interaction with point neighborhoods.
+
 The documentation is mainly organized according to the tabs that can be opened on the left side of the website.
 
 ## Dataset
@@ -269,12 +276,17 @@ CCC(C)
 
 
 ## Project
+Currently only UMAP projection is available for CIME. To implement the projection we use this library: https://github.com/PAIR-code/umap-js. 
+The JavaScript library code is a reimplementation of this python library https://github.com/lmcinnes/umap, with the difference that the JS library uses random seedpoints as initialization. 
+
 TODO...
 umap default parameters like suggested in https://umap-learn.readthedocs.io/en/latest/api.html 
-umap reference...
 normalization
 distance metric
 grouping
+seed projection
+projection settings
+saved projections
 
 
 
@@ -290,7 +302,7 @@ TODO: groups vs clusters?
 In the "Clusters" tab panel users can adjust cluster settings, automatically calculate clusters and selecting different cluster stories.
 
 ### Group Settings TODO: rename?
-One toggles allows users to show or hide items (points). The other one allows users to show or hide cluster centers (grey diamonds).
+One toggle allows users to show or hide items (points). The other one allows users to show or hide cluster centers (grey diamonds).
 
 ### Cluster Settings TODO: rename?
 Automatic Clustering of the projected features can be clicking "Projection-Based Clustering". The algorithm used for clustering is HDBSCAN https://hdbscan.readthedocs.io/en/latest/index.html.
