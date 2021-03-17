@@ -3,7 +3,7 @@ import { DatasetType } from "../Data/DatasetType"
 import { Vect } from "../Data/Vect"
 import { InferCategory } from "../Data/InferCategory"
 import { Preprocessor } from "../Data/Preprocessor"
-import { Dataset } from "../Data/Dataset"
+import { Dataset, DefaultFeatureLabel } from "../Data/Dataset"
 import { Loader } from "./Loader"
 import { DatasetEntry } from "../Data/DatasetDatabase"
 import Cluster from "../Data/Cluster"
@@ -120,6 +120,8 @@ export class CSVLoader implements Loader {
                     delete vector[value]
                 })
                 map[cutHeader] = JSON.parse(json[0])
+            } else {
+                map[value] = {"featureLabel": DefaultFeatureLabel}
             }
             return map
         }, {})
@@ -205,7 +207,7 @@ export class CSVLoader implements Loader {
         }
 
         ranges = new Preprocessor(vectors).preprocess(ranges)
-
+        
         let dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation)
         
         this.getClusters(vectors, clusters => {

@@ -191,7 +191,7 @@ export class JSONLoader implements Loader {
 
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
 
-    
+        
         let dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation)
         dataset.clusters = clusters
         dataset.clusterEdges = edges

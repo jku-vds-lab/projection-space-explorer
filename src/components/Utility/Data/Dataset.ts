@@ -11,7 +11,7 @@ export enum PrebuiltFeatures {
     ClusterLabel = 'clusterLabel'
 }
 
-
+export const DefaultFeatureLabel = "Default"
 
 type ColumnType = {
     distinct: any
@@ -60,6 +60,7 @@ export class Dataset {
     constructor(vectors, ranges, info, featureTypes, metaInformation={}) {
         this.vectors = vectors;
         this.ranges = ranges;
+        this.featureTypes = featureTypes;
         this.info = info;
         this.columns = {};
         this.type = this.info.type;
@@ -168,7 +169,7 @@ export class Dataset {
             if ("featureLabel" in columnMetaInformation) {
                 this.columns[columnName].featureLabel = columnMetaInformation["featureLabel"]
             } else {
-                this.columns[columnName].featureLabel = "Default"
+                this.columns[columnName].featureLabel = DefaultFeatureLabel
             }
 
 

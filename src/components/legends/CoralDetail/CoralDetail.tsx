@@ -158,8 +158,6 @@ function genRows(vectors, projectionColumns, dataset) {
   const dictOfArrays = dictionary(vectors)
   const preselect = getProjectionColumns(projectionColumns)
 
-  console.log(preselect)
-  console.log(dataset.columns)
 
   // loop through dict
   for (var key in dictOfArrays) {
