@@ -471,9 +471,6 @@ export const CoralChanges = connector(class extends React.Component<Props> {
         }}>
           <Table aria-label="simple table" size={'small'}>
             <TableHead>
-              <TableRow>
-                <TableCell>Change</TableCell>
-              </TableRow>
             </TableHead>
             <TableBody>
               {this.rows.map((row) => (

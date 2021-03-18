@@ -12,7 +12,7 @@ export enum PrebuiltFeatures {
     ClusterLabel = 'clusterLabel'
 }
 
-
+export const DefaultFeatureLabel = "Default"
 
 type ColumnType = {
     distinct: any
@@ -37,9 +37,6 @@ export class Dataset {
 
     // The type of the dataset (or unknown if not possible to derive)
     type: DatasetType;
-
-    // dict of 'featureName': featureType
-    featureTypes: any;
 
     // True if the dataset has multiple labels per sample
     multivariateLabels: boolean;
@@ -167,7 +164,7 @@ export class Dataset {
             if ("featureLabel" in columnMetaInformation) {
                 this.columns[columnName].featureLabel = columnMetaInformation["featureLabel"]
             } else {
-                this.columns[columnName].featureLabel = "Default"
+                this.columns[columnName].featureLabel = DefaultFeatureLabel
             }
 
 

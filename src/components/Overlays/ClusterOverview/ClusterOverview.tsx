@@ -359,7 +359,7 @@ export const ClusterOverview = connector(function ({
                         flexDirection: 'column',
                         minWidth: '100px'
                     }}>
-                        <Typography align="center" variant="subtitle2">Cluster</Typography>
+                        <Typography align="center" variant="subtitle2">Group Summary</Typography>
                         {
                             stories.trace?.mainPath.map((cluster, index) => {
                                 return <ToggleButton
@@ -384,7 +384,7 @@ export const ClusterOverview = connector(function ({
                         flexDirection: 'column',
                         minWidth: '100px'
                     }}>
-                        <Typography align="center" variant="subtitle2">Change</Typography><br />
+                        <Typography align="center" variant="subtitle2">Difference Summary</Typography><br />
                         {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
                         {
                             stories.trace?.mainEdges.map((edge, index) => {
