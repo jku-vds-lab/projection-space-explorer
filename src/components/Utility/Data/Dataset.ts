@@ -4,6 +4,7 @@ import { FeatureType } from "./FeatureType";
 import { DatasetType } from "./DatasetType";
 import { DataLine } from "./DataLine";
 import { Vect } from "./Vect";
+import { mean, std } from "../../NumTs/NumTs";
 
 
 export enum PrebuiltFeatures {
@@ -31,7 +32,6 @@ export class Dataset {
     vectors: Vect[];
     segments: DataLine[];
     bounds: { x; y; scaleBase; scaleFactor; };
-    ranges: any;
     info: { path: string; type: DatasetType; };
     columns: { [name: string] : ColumnType }
 
@@ -59,7 +59,6 @@ export class Dataset {
 
     constructor(vectors, ranges, info, featureTypes, metaInformation={}) {
         this.vectors = vectors;
-        this.ranges = ranges;
         this.info = info;
         this.columns = {};
         this.type = this.info.type;
@@ -241,7 +240,7 @@ export class Dataset {
      * Returns the vectors in this dataset as a 2d array, which
      * can be used as input for tsne for example.
      */
-    asTensor(columns, samples?) {
+    asTensor(projectionColumns, samples?) {
         var tensor = [];
 
         function oneHot(n, length) {
@@ -250,20 +249,35 @@ export class Dataset {
             return arr;
         }
 
+        let lookup = {
 
-        (samples ?? this.vectors).forEach(vector => {
+        }
+
+        ;(samples ?? this.vectors).forEach(vector => {
             var data = [];
-            columns.forEach(entry => {
+            projectionColumns.forEach(entry => {
                 let column = entry.name;
                 if (this.columns[column].isNumeric) {
-                    // Numeric data can just be appended to the array
-                    if (column in this.ranges) {
-                        let abs = Math.max(Math.abs(this.ranges[column].min), Math.abs(this.ranges[column].max));
-                        data.push(+vector[column] / abs);
+                    if (this.columns[column].range && entry.normalized) {
+                        let m, s;
+                        
+                        if (column in lookup) {
+                            m = lookup[column].mean
+                            s = lookup[column].std
+                        } else {
+                            m = mean(this.vectors.map(v => +v[column]))
+                            s = std(this.vectors.map(v => +v[column]))
+
+                            lookup[column] = {
+                                mean: m,
+                                std: s
+                            }
+                        }
+
+                        data.push((+vector[column] - m) / s);
                     } else {
                         data.push(+vector[column]);
                     }
-
                 } else {
                     // Not numeric data can be converted using one-hot encoding
                     data = data.concat(oneHot(this.columns[column].distinct.indexOf(vector[column]), this.columns[column].distinct.length));

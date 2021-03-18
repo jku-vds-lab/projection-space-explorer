@@ -10,6 +10,7 @@ export const mappingFromScale = (scale, attribute, dataset) => {
   if (scale instanceof DiscreteScale) {
     // Generate scale
     return new DiscreteMapping(scale, new ShallowSet(dataset.vectors.map(vector => vector[attribute.key])))
+
   }
   if (scale instanceof ContinuosScale) {
     var min = null, max = null

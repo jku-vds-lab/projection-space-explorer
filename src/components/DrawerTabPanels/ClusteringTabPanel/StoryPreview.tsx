@@ -99,7 +99,7 @@ export const StoryPreview = connector(({
             >Add Empty</Button>
 
 
-            {stories.active && stories.active.clusters.length > 0 && <Grid item>
+            {stories.active && stories.active.clusters.length > 0 && false && <Grid item>
                 <Button style={{
                     marginTop: '16px'
                 }}

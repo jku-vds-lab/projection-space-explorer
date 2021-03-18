@@ -80,7 +80,16 @@ import Split from 'react-split'
 import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
 import { setSplitRef } from "./Ducks/SplitRefDuck";
+import { BrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/BrightnessSlider/BrightnessSlider";
+import { setGlobalPointBrightness } from "./Ducks/GlobalPointBrightnessDuck";
+import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
 const d3 = require("d3")
+import Accordion from "@material-ui/core/Accordion";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
+import { Conrec } from 'ml-conrec'
+
+
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
  */
@@ -109,6 +118,7 @@ const mapStateToProps = (state: RootState) => ({
   categoryOptions: state.categoryOptions,
   channelSize: state.channelSize,
   channelColor: state.channelColor,
+  channelBrightness: state.channelBrightness,
   splitRef: state.splitRef
 })
 
@@ -130,46 +140,20 @@ const mapDispatchToProps = dispatch => ({
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
   wipeState: () => dispatch({ type: 'RESET_APP' }),
   setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
+  setChannelBrightness: channelBrightness => dispatch(setChannelBrightnessSelection(channelBrightness)),
   setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
   setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
   setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
   saveProjection: embedding => dispatch(addProjectionAction(embedding)),
   setVectors: vectors => dispatch(setVectors(vectors)),
   setLineByOptions: options => dispatch(setLineByOptions(options)),
-  setSplitRef: splitRef => dispatch(setSplitRef(splitRef))
+  setSplitRef: splitRef => dispatch(setSplitRef(splitRef)),
+  setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value))
 })
 
 
 
 
-
-function testContours() {
-  let cluster = []
-  for (let i = 0; i < 100; i++) {
-    let x = Math.random() * 100
-    let y = Math.random() * 100
-
-    cluster.push({ x: x, y: y })
-  }
-
-
-  const width = 600
-  const height = 500
-
-  let contours = d3.contourDensity()
-    .x(d => d.x)
-    .y(d => d.y)
-    //.size([100, 100])
-    .bandwidth(30)
-    .thresholds(30)
-    (cluster.map(vect => ({ x: vect.x, y: vect.y })))
-
-  console.log(contours)
-
-
-  //var c = new Conrec;
-  //c.contour(data, 0, 2, 0, 2, [1, 2, 3], [1, 2, 3], 3, [0, 1, 2]);
-}
 
 
 
@@ -217,16 +201,13 @@ var Application = connector(class extends React.Component<Props, any> {
     this.state = {
       fileDialogOpen: true,
 
-      vectorByTransparency: null,
-      selectedVectorByTransparency: "",
-
       selectedLines: {},
 
       backendRunning: false
 
 
     }
-    testContours()
+    
     var worker = new Worker(frontend_utils.BASE_PATH + 'healthcheck.js') //dist/
     worker.onmessage = (e) => {
       this.setState({
@@ -337,8 +318,6 @@ var Application = connector(class extends React.Component<Props, any> {
 
     // Update shape legend
     this.setState({
-      vectorByTransparency: null,
-      selectedVectorByTransparency: "",
       selectedLines: selLines,
       selectedLineAlgos: algos
     })
@@ -419,15 +398,18 @@ var Application = connector(class extends React.Component<Props, any> {
     }
 
     var defaultBrightnessAttribute = this.props.categoryOptions.getAttribute("transparency", "age", "sequential")
+  
     if (defaultBrightnessAttribute) {
-
-      state.selectedVectorByTransparency = defaultBrightnessAttribute.key
-      state.vectorByTransparency = defaultBrightnessAttribute
+      this.props.setGlobalPointBrightness([0.25, 1])
+      this.props.setChannelBrightness(defaultBrightnessAttribute)
+      this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute, [0.25, 1])
+    } else {
+      this.props.setGlobalPointBrightness([1])
+      this.props.setChannelBrightness(null)
+      this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute, [1])
     }
-
+    
     this.setState(state)
-
-    this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute)
   }
 
   onLineSelect(algo, show) {
@@ -549,6 +531,10 @@ var Application = connector(class extends React.Component<Props, any> {
                   overflowX: 'hidden',
                   height: '100%'
                 }}>
+
+
+
+
                   {this.props.dataset && this.props.dataset.isSequential && <div>
                     <div>
                       <Typography
@@ -645,16 +631,19 @@ var Application = connector(class extends React.Component<Props, any> {
                           <Select labelId="vectorByTransparencySelectLabel"
                             id="vectorByTransparencySelect"
                             displayEmpty
-                            value={this.state.selectedVectorByTransparency}
+                            value={this.props.channelBrightness ? this.props.channelBrightness.key : ''}
                             onChange={(event) => {
                               var attribute = this.props.categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
 
-                              this.setState({
-                                selectedVectorByTransparency: event.target.value,
-                                vectorByTransparency: attribute
-                              })
+                              if (attribute == undefined) {
+                                attribute = null
+                              }
 
-                              this.threeRef.current.particles.transparencyCat(attribute)
+                              let pointBrightness = attribute ? [0.25, 1] : [1]
+
+                              this.props.setGlobalPointBrightness(pointBrightness)
+                              this.props.setChannelBrightness(attribute)
+                              this.threeRef.current.particles.transparencyCat(attribute, pointBrightness)
                               this.threeRef.current.requestRender()
                             }}
                           >
@@ -668,6 +657,8 @@ var Application = connector(class extends React.Component<Props, any> {
                       :
                       <div></div>
                   }
+
+                  <BrightnessSlider></BrightnessSlider>
 
                   {
                     this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("size") ?
