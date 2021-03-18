@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
 import VegaHist from './VegaHist.js';
+import VegaDensity from './VegaDensity.js';
 import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -34,6 +35,23 @@ function mapHistData(data, feature) {
       feature: +d[feature]
     }
   })
+  return {"values": mapped}
+}
+
+function mapDensityData(allData, selectedData, feature) {
+  const mappedData = allData.map((d) => {
+    return {
+      feature: +d[feature],
+      selection: "all"
+    }
+  })
+  const mappedSelection = selectedData.map((d) => {
+    return {
+      feature: +d[feature],
+      selection: "selection"
+    }
+  })
+  const mapped = [...mappedSelection, ...mappedData]
   return {"values": mapped}
 }
 
@@ -165,8 +183,8 @@ function genRows(vectors, projectionColumns, dataset) {
     if (preselect.indexOf(key) > -1) {
       if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
-        var histData = mapHistData(vectors, key)
-        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
+        var densityData = mapDensityData(dataset.vectors, vectors, key)
+        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDensity data={densityData} actions={false} tooltip={new Handler().call}/>])
 
       } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
         // categorical feature
