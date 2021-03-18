@@ -208,10 +208,6 @@ function getTable(vectors, aggregation, projectionColumns, dataset) {
       }}>
         <Table className={classes.table} aria-label="simple table" size={'small'}>
           <TableHead>
-            <TableRow>
-              <TableCell>Feature</TableCell>
-              <TableCell>Char</TableCell>
-            </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row) => (
