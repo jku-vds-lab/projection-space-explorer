@@ -15,7 +15,7 @@ import { Typography } from "@material-ui/core";
 import { CameraTransformations } from "../CameraTransformations";
 import { Story } from "../../Utility/Data/Story";
 import * as nt from '../../NumTs/NumTs'
-
+const d3 = require("d3")
 import * as frontend_utils from "../../../utils/frontend-connect";
 import { toPlainObject } from "lodash";
 
@@ -42,12 +42,12 @@ const mapState = (state: RootState) => ({
     dataset: state.dataset,
     displayMode: state.displayMode,
     webGLView: state.webGLView,
-    selectedClusters: state.selectedClusters,
     clusterMode: state.clusterMode,
     trailSettings: state.trailSettings,
     stories: state.stories,
     globalPointSize: state.globalPointSize,
-    viewTransform: state.viewTransform
+    viewTransform: state.viewTransform,
+    currentAggregation: state.currentAggregation
 })
 
 
@@ -128,7 +128,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         if (prevProps.displayMode != this.props.displayMode) {
             switch (this.props.displayMode) {
                 case DisplayMode.StatesAndClusters:
-                    this.highlightCluster(this.props.selectedClusters)
+                    this.highlightCluster(this.props.currentAggregation.selectedClusters)
                     this.clusterScene.visible = true
                     this.scalingScene.visible = true
                     this.scene.visible = true
@@ -148,7 +148,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     this.clusterScene.visible = false
                     this.scalingScene.visible = false
                     this.scene.visible = false
-                    
+
                     break;
             }
         }
@@ -294,7 +294,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     }
 
     getColorForClusterObject(clusterObject) {
-        if (this.props.selectedClusters.includes(clusterObject.cluster) || clusterObject.sampleConnection) {
+        if (this.props.currentAggregation.selectedClusters.includes(clusterObject.cluster) || clusterObject.sampleConnection) {
             return new THREE.Color(SELECTED_COLOR)
         }
 
@@ -330,7 +330,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * 12, this.devicePixelRatio * 12);
             geometry.rotateZ(Math.PI / 4)
             geometry.scale(0.85, 1.0, 1.0)
-            
+
 
             var material = new THREE.MeshBasicMaterial({ color: new THREE.Color(DEFAULT_COLOR) });
             var circle = new THREE.Mesh(geometry, material);
@@ -416,7 +416,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             this.clusterVis.lineMeshes.forEach(mesh => {
                 mesh.visible = false
             })
-            this.clusterVis.clusterMeshes.forEach(mesh => {
+            this.clusterVis.clusterMeshes?.forEach(mesh => {
                 mesh.visible = false
             })
         }
@@ -437,12 +437,9 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             })
 
             if (this.clusterVis) {
-                let triangulatedMesh = this.clusterVis.clusterMeshes[index]
-                let triangulatedHull = this.clusterVis.lineMeshes[index]
-                triangulatedHull.visible = visible
-                triangulatedMesh.visible = visible
+                this.clusterVis.clusterMeshes[index].visible = visible
+                this.clusterVis.lineMeshes[index].visible = visible
             }
-
         })
     }
 
@@ -470,7 +467,59 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
 
+    /**
+     * Creates the triangulated mesh that visualizes the clustering.
+     * @param clusters an array of clusters
+     */
+    createTriangulatedMesh() {
+        this.disposeTriangulatedMesh()
 
+        if (this.props.dataset.multivariateLabels) {
+            return;
+        }
+
+        var clusterMeshes = []
+        var lineMeshes = []
+
+        if (this.props.stories.active) {
+            this.props.stories.active.clusters.map(cluster => {
+                let contours = d3.contourDensity()
+                    .x(d => d.x)
+                    .y(d => d.y)
+                    .bandwidth(30)
+                    .thresholds(30)
+                    (cluster.vectors.map(vect => ({ x: vect.x, y: vect.y })))
+
+                let material = new THREE.LineBasicMaterial({ color: 0x909090 })
+
+                console.log(contours)
+
+                
+                const points = []
+                contours.forEach(contour => {
+                    const coordinates = contour.coordinates[0][0]
+                    
+
+                    for (let i = 0; i < coordinates.length - 1; i++) {
+                        let cur = coordinates[i]
+                        let next = coordinates[i + 1]
+
+                        points.push(new THREE.Vector3(cur[0], cur[1], -5))
+                        points.push(new THREE.Vector3(next[0], next[1], -5))
+                    }
+                })
+                let line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points), material)
+
+                line.visible = false
+                this.scalingScene.add(line)
+
+                lineMeshes.push(line)
+                clusterMeshes.push(line)
+            })
+        }
+
+        this.clusterVis = { clusterMeshes: clusterMeshes, lineMeshes: lineMeshes }
+    }
 
 
 
@@ -480,7 +529,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
      * Creates the triangulated mesh that visualizes the clustering.
      * @param clusters an array of clusters
      */
-    createTriangulatedMesh() {
+    createTriangulatedMesh4() {
         this.disposeTriangulatedMesh()
 
         if (this.props.dataset.multivariateLabels) {
@@ -547,7 +596,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 this.scalingScene.add(mesh);
 
                 mesh.visible = false
-                line.visible = false
+                line.visible = true
             }
         }
 
@@ -563,12 +612,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     disposeTriangulatedMesh() {
         if (this.clusterVis != null) {
             const { clusterMeshes, lineMeshes } = this.clusterVis
-            clusterMeshes.forEach(mesh => {
+            clusterMeshes?.forEach(mesh => {
                 mesh.geometry.dispose()
                 mesh.material.dispose()
                 this.scalingScene.remove(mesh)
             })
-            lineMeshes.forEach(mesh => {
+            lineMeshes?.forEach(mesh => {
                 mesh.geometry.dispose()
                 mesh.material.dispose()
                 this.scalingScene.remove(mesh)
@@ -584,7 +633,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
      * @param cluster A cluster
      */
     textColor(cluster: Cluster) {
-        if (this.props.selectedClusters.includes(cluster)) {
+        if (this.props.currentAggregation.selectedClusters.includes(cluster)) {
             return 'black'
         } else {
             return 'white'

@@ -1,3 +1,5 @@
+import * as frontend_utils from '../../utils/frontend-connect';
+
 const SET = "reducers/DISPLAY_MODE"
 
 export enum DisplayMode {
@@ -15,7 +17,7 @@ export function displayModeSuportsClusters(displayMode: DisplayMode) {
     return displayMode == DisplayMode.OnlyClusters || displayMode == DisplayMode.StatesAndClusters
 }
 
-export default function displayMode (state = DisplayMode.StatesAndClusters, action): DisplayMode  {
+export default function displayMode (state = DisplayMode.StatesAndClusters, action): DisplayMode  { // TODO: hide clusters by default for CHEM; frontend_utils.CHEM_PROJECT ? DisplayMode.OnlyStates: DisplayMode.StatesAndClusters
     switch (action.type) {
         case SET:
             return action.displayMode

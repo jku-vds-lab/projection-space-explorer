@@ -34,7 +34,32 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux
 
+/**
+ 
 
+        {
+            <FormControl style={{ margin: '4px 0px' }}>
+                <InputLabel shrink id="lineByLabel">{"line by"}</InputLabel>
+                <Select labelId="lineByLabel"
+                    id="lineBySelect"
+                    displayEmpty
+                    value={selectedLineBy.value}
+                    onChange={(event) => {
+                        setSelectedLineBy(event.target.value)
+                        webGlView.current.recreateLines(event.target.value)
+                    }}
+                >
+                    <MenuItem value="">None</MenuItem>
+                    {
+                        selectedLineBy.options.map((option, i) => {
+                            return <MenuItem key={option} value={option}>{option}</MenuItem>
+                        })
+                    }
+                </Select>
+            </FormControl>
+        }
+
+ */
 
 export const StatesTabPanelFull = ({
     selectedVectorByShape,
@@ -49,34 +74,7 @@ export const StatesTabPanelFull = ({
     webGlView
 }: Props) => {
     return <div>
-        {
-            <FormControl style={{ margin: '4px 0px' }}>
-                <InputLabel shrink id="lineByLabel">{"line by"}</InputLabel>
-                <Select labelId="lineByLabel"
-                    id="lineBySelect"
-                    displayEmpty
-                    value={selectedLineBy.value}
-                    onChange={(event) => {
-                        setSelectedLineBy(event.target.value)
 
-                        webGlView.current.recreateLines(event.target.value)
-                        /**if (event.target.value != null && event.target.value != "") {
-                            var attribute = categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
-                            setVectorByShape(attribute)
-                        } else {
-                            setVectorByShape(null)
-                        }**/
-                    }}
-                >
-                    <MenuItem value="">None</MenuItem>
-                    {
-                        selectedLineBy.options.map((option, i) => {
-                            return <MenuItem key={option} value={option}>{option}</MenuItem>
-                        })
-                    }
-                </Select>
-            </FormControl>
-        }
 
         {
             categoryOptions != null && categoryOptions.hasCategory("shape") ?

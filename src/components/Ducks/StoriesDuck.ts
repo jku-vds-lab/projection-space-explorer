@@ -280,7 +280,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             } else {
                 Cluster.deriveVectorLabelsFromClusters(state.vectors, [])
             }
-
+            
             return {
                 vectors: state.vectors,
                 stories: state.stories,

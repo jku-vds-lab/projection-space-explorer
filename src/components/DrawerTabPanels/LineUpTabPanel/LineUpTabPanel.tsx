@@ -7,7 +7,7 @@ import { RootState } from "../../Store/Store";
 const mapStateToProps = (state: RootState) => ({
     dataset: state.dataset,
     currentAggregation: state.currentAggregation,
-    lineUpInput: state.lineUpInput,
+    lineUpInput: state.lineUpInput
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -25,7 +25,7 @@ type Props = PropsFromRedux & {
 
 export const LineUpTabPanel = connector(({ setLineUpInput_visibility, setLineUpInput_filter, lineUpInput, dataset, currentAggregation }: Props) => {
     const handleChange = (_, value) => {
-        
+
     }
 
     const onLoadAll = () => {

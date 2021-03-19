@@ -9,8 +9,7 @@ import { RootState } from "../../Store/Store";
 const mapStateToProps = (state: RootState) => ({
     hoverSettings: state.hoverSettings,
     currentAggregation: state.currentAggregation,
-    vectors: state.dataset?.vectors,
-    clusters: state.dataset?.clusters
+    dataset: state.dataset
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -27,16 +26,15 @@ type Props = PropsFromRedux & {
 }
 
 
-export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, vectors, clusters }: Props) => {
+export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
 
-    console.log(clusters?.length)
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
             {/* TODO: Cluster count not working */}
-            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation?.aggregation?.length}</b> out of <b>{vectors?.length}</b> items with <b>{currentAggregation?.selectedClusters?.length}</b> Clusters</Typography>
+            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset && dataset.vectors.length}</b> items in <b>{currentAggregation.selectedClusters.length}</b> Groups</Typography>
 
             <FormControlLabel
                 control={<Switch checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}

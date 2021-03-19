@@ -11,8 +11,7 @@ import { Tool, getToolCursor, ToolSelectionRedux } from '../Overlays/ToolSelecti
 import { Vect } from "../Utility/Data/Vect";
 import { setClusterEdgesAction } from "../Ducks/ClusterEdgesDuck";
 import { setViewTransform } from "../Ducks/ViewTransformDuck";
-import { setSelectedClusters, toggleSelectedCluster } from "../Ducks/SelectedClustersDuck";
-import { setAggregationAction, toggleAggregationAction } from "../Ducks/AggregationDuck";
+import { aggSelectCluster, setAggregationAction, toggleAggregationAction } from "../Ducks/AggregationDuck";
 import { CameraTransformations } from './CameraTransformations'
 import { Camera } from 'three';
 import { LineVisualization, PointVisualization } from './meshes';
@@ -36,8 +35,8 @@ import { TraceSelectTool } from './Tools/TraceSelectTool';
 import { Embedding } from '../Utility/Data/Embedding';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
+import './WebGl.scss'
 import { LineUpDumpDialog } from '../LineUpContext/LineUpDumpDialog';
-
 
 type ViewState = {
     displayClusters: any
@@ -57,7 +56,6 @@ const mapStateToProps = (state: RootState) => ({
     activeLine: state.activeLine,
     advancedColoringSelection: state.advancedColoringSelection,
     clusterMode: state.clusterMode,
-    selectedClusters: state.selectedClusters,
     displayMode: state.displayMode,
     lineBrightness: state.lineBrightness,
     pathLengthRange: state.pathLengthRange,
@@ -75,12 +73,11 @@ const mapDispatchToProps = dispatch => ({
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setActiveLine: activeLine => dispatch(setActiveLine(activeLine)),
     setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
-    toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedCluster(selectedCluster)),
     toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation)),
     setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
     setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping)),
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
-    setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
+    // setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
     // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
     // setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
@@ -91,7 +88,8 @@ const mapDispatchToProps = dispatch => ({
     setActiveStory: story => dispatch(setActiveStory(story)),
     addEdgeToActive: edge => dispatch(addEdgeToActive(edge)),
     setActiveTrace: trace => dispatch(setActiveTrace(trace)),
-    setOpenTab: tab => dispatch(setOpenTabAction(tab))
+    setOpenTab: tab => dispatch(setOpenTabAction(tab)),
+    setSelectedCluster: (cluster, shiftKey) => dispatch(aggSelectCluster(cluster, shiftKey))
 })
 
 
@@ -412,21 +410,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         }
 
                         break;
-                }
-            } else if (this.props.currentTool == Tool.Grab) {
-                // In case we have a line in the sequence UI
-                if (this.props.activeLine) {
-                    return;
-                }
-
-
-                if (event.button == 0) {
-                    let selected = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
-
-                    // Toggle
-                    if (selected) {
-                        this.onClusterClicked(selected, event.shiftKey)
-                    }
                 }
             }
         }
@@ -1040,19 +1023,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
     onClusterClicked(cluster: Cluster, shiftKey: boolean = false) {
-        function deriveFromClusters(clusters: Cluster[]) {
-            let agg = clusters.map(cluster => cluster.vectors).flat()
-            return [...new Set(agg)]
-        }
-
-                            
-        if (shiftKey) {
-            this.props.toggleSelectedCluster(cluster)
-            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
-        } else {
-            this.props.setSelectedClusters([cluster])
-            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
-        }
+        this.props.setSelectedCluster(cluster, shiftKey)         
     }
 
 
@@ -1104,7 +1075,32 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
+    private updateItemClusterDisplay(){
+        switch (this.props.displayMode) {
+            case DisplayMode.StatesAndClusters:
+            case DisplayMode.OnlyStates:
+                if (this.props.dataset.isSequential) {
+                    this.lines.meshes.forEach(line => {
+                        this.scene.remove(line.line)
+                        this.scene.add(line.line)
+                    })
+                }
 
+                this.pointScene.remove(this.particles.mesh)
+                this.pointScene.add(this.particles.mesh)
+                break;
+            case DisplayMode.OnlyClusters:
+            case DisplayMode.None:
+                if (this.props.dataset.isSequential) {
+                    this.lines.meshes.forEach(line => {
+                        this.scene.remove(line.line)
+                    })
+                }
+
+                this.pointScene.remove(this.particles.mesh)
+                break;
+        }
+    }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.pointColorScale != this.props.pointColorScale || prevProps.stories != this.props.stories) {
@@ -1149,44 +1145,21 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         if (prevProps.displayMode != this.props.displayMode) {
-            switch (this.props.displayMode) {
-                case DisplayMode.StatesAndClusters:
-                case DisplayMode.OnlyStates:
-                    if (this.props.dataset.isSequential) {
-                        this.lines.meshes.forEach(line => {
-                            this.scene.remove(line.line)
-                            this.scene.add(line.line)
-                        })
-                    }
-
-                    this.pointScene.remove(this.particles.mesh)
-                    this.pointScene.add(this.particles.mesh)
-                    break;
-                case DisplayMode.OnlyClusters:
-                case DisplayMode.None:
-                    if (this.props.dataset.isSequential) {
-                        this.lines.meshes.forEach(line => {
-                            this.scene.remove(line.line)
-                        })
-                    }
-
-                    this.pointScene.remove(this.particles.mesh)
-                    break;
-            }
+            this.updateItemClusterDisplay();
         }
 
 
-        if (!arraysEqual(prevProps.currentAggregation, this.props.currentAggregation)) {
+        if (!arraysEqual(prevProps.currentAggregation.aggregation, this.props.currentAggregation.aggregation)) {
             if (this.props.dataset.isSequential) {
-                var uniqueIndices = [...new Set(this.props.currentAggregation.map(vector => vector.view.segment.lineKey))]
+                var uniqueIndices = [...new Set(this.props.currentAggregation.aggregation.map(vector => vector.view.segment.lineKey))]
 
                 this.lines.groupHighlight(uniqueIndices)
             } else {
-                this.particles.groupHighlight(this.props.currentAggregation)
+                this.particles.groupHighlight(this.props.currentAggregation.aggregation)
             }
 
             this.props.dataset.vectors.forEach(sample => sample.view.selected = false)
-            this.props.currentAggregation.forEach(sample => {
+            this.props.currentAggregation.aggregation.forEach(sample => {
                 sample.view.selected = true
             })
 
@@ -1195,23 +1168,14 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         // If 
-        if ((this.props.currentTool == Tool.Default && !arraysEqual(prevProps.currentAggregation, this.props.currentAggregation))
+        if ((this.props.currentTool == Tool.Default && !arraysEqual(prevProps.currentAggregation.aggregation, this.props.currentAggregation.aggregation))
             || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Default)) {
-            this.multivariateClusterView?.current.highlightSamples(this.props.currentAggregation)
+            this.multivariateClusterView?.current.highlightSamples(this.props.currentAggregation.aggregation)
         }
 
         // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
-        if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)
-            || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Grab)) {
-
-            this.multivariateClusterView?.current.highlightCluster(this.props.selectedClusters)
-
-            function deriveFromClusters(clusters: Cluster[]) {
-                let agg = clusters.map(cluster => cluster.vectors).flat()
-                return [...new Set(agg)]
-            }
-
-            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
+        if (!arraysEqual(prevProps.currentAggregation.selectedClusters, this.props.currentAggregation.selectedClusters)) {
+            this.multivariateClusterView?.current.highlightCluster(this.props.currentAggregation.selectedClusters)
         }
 
         // Path length range has changed, update view accordingly
@@ -1356,8 +1320,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
     onClusterZoom(cluster) {
-        this.props.setCurrentAggregation(cluster.vectors)
-        this.props.setSelectedClusters([cluster])
+        this.props.setSelectedCluster(cluster, false)
+        //this.props.setCurrentAggregation(cluster.vectors)
+        //this.props.setSelectedClusters([cluster])
     }
 
 
@@ -1415,40 +1380,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         : undefined
                 }
             >
-                {/* <MenuItem onClick={() => {
-                    // this.props.setLineUpInput_data(this.props.dataset.vectors);
-                    this.props.setLineUpInput_visibility(true);
-                    this.props.setLineUpInput_filter(null);
-
-                    handleClose();
-                }}>Load Table</MenuItem>
-
                 <MenuItem onClick={() => {
-                    // Only load LineUp if the current selection is not empty
-                    if (this.props.currentAggregation.length > 0) {
-                        // this.props.setLineUpInput_data(this.props.currentAggregation);
-                        // this.props.setLineUpInput_data(this.props.dataset.vectors);
-                        this.props.setLineUpInput_visibility(true);
-                        this.props.setLineUpInput_filter({'selection': true});
-
-                        handleClose();
-                    }
-                }}>Load Table (selection only)</MenuItem>
-
-                <MenuItem onClick={() => {
-                    this.props.setLineUpInput_visibility(false);
-
-                    handleClose()
-                }}>{'Close Table'}</MenuItem> */}
-
-                {/* <LinupDumpMenuItem handleClose={handleClose}></LinupDumpMenuItem> */}
-
-                {/* <Divider orientation="horizontal"></Divider> */}
-
-
-                <MenuItem onClick={() => {
-                    if (this.props.currentAggregation.length > 0) {
-                        let cluster = Cluster.fromSamples(this.props.currentAggregation)
+                    if (this.props.currentAggregation.aggregation.length > 0) {
+                        let cluster = Cluster.fromSamples(this.props.currentAggregation.aggregation)
 
                         if (!this.props.stories.active) {
                             let story = new Story([cluster], [])
@@ -1528,7 +1462,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 })
 
 
-const LinupDumpMenuItem = props => {
+/**const LinupDumpMenuItem = props => {
     const [openDumpDialog, setOpenDumpDialog] = React.useState(false);
 
     return <div><MenuItem onClick={() => {
@@ -1537,4 +1471,4 @@ const LinupDumpMenuItem = props => {
     }}>{'Load Table from dump'}</MenuItem> 
     <LineUpDumpDialog openDialog={openDumpDialog} setOpenDumpDialog={setOpenDumpDialog}></LineUpDumpDialog>
     </div>
-}
+}**/

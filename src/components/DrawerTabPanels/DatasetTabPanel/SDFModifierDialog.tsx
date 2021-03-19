@@ -23,7 +23,7 @@ export function SDFModifierDialog({openSDFDialog, handleClose}) {
                 label="Modifiers"
                 value={modifiers}
                 onChange={handleModifierChange}
-                fullWidth />
+                fullWidth={true} />
         </DialogContent>
         <DialogActions>
             <Button onClick={() => handleClose(null) }>

@@ -19,7 +19,6 @@ import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import * as React from "react";
-import { SelectionClusters } from "./Overlays/SelectionClusters/SelectionClusters";
 import { ToolSelectionRedux } from "./Overlays/ToolSelection/ToolSelection";
 import { PathLengthFilter } from "./DrawerTabPanels/StatesTabPanel/PathLengthFilter/PathLengthFilter";
 import { SizeSlider } from "./DrawerTabPanels/StatesTabPanel/SizeSlider/SizeSlider";
@@ -28,7 +27,7 @@ import { Legend } from "./DrawerTabPanels/StatesTabPanel/LineSelection/LineSelec
 import * as ReactDOM from 'react-dom';
 import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
 import { createStore } from 'redux'
-import { Provider } from 'react-redux'
+import { ConnectedProps, Provider } from 'react-redux'
 import { connect } from 'react-redux'
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
@@ -52,7 +51,6 @@ import { setPathLengthMaximum, setPathLengthRange } from "./Ducks/PathLengthRang
 import { setCategoryOptions } from "./Ducks/CategoryOptionsDuck";
 import { setChannelSize } from "./Ducks/ChannelSize";
 import { setGlobalPointSize } from "./Ducks/GlobalPointSizeDuck";
-import { setSelectedClusters } from "./Ducks/SelectedClustersDuck";
 import { setChannelColor } from "./Ducks/ChannelColorDuck";
 import { rootReducer, RootState } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
@@ -64,43 +62,26 @@ import * as frontend_utils from "../utils/frontend-connect";
 import { HoverTabPanel } from "./DrawerTabPanels/HoverTabPanel/HoverTabPanel";
 import { addProjectionAction } from "./Ducks/ProjectionsDuck";
 import { Embedding } from "./Utility/Data/Embedding";
-import { setVectors } from "./Ducks/StoriesDuck";
+import { setActiveStory, setVectors, addStory } from "./Ducks/StoriesDuck";
 // @ts-ignore
-import PseDataset from './Icons/pse-icon-dataset-opt.svg'
+import PseDataset from './Icons/pse-icon-dataset.svg'
 // @ts-ignore
-import PseClusters from './Icons/pse-icon-clusters-opt.svg'
+import PseClusters from './Icons/pse-icon-clusters.svg'
 // @ts-ignore
-import PseDetails from './Icons/pse-icon-details-opt.svg'
+import PseDetails from './Icons/pse-icon-details.svg'
 // @ts-ignore
-import PseEncoding from './Icons/pse-icon-encoding-opt.svg'
+import PseEncoding from './Icons/pse-icon-encoding.svg'
 // @ts-ignore
-import PseProject from './Icons/pse-icon-project-opt.svg'
-import { ChemTabPanel } from "./DrawerTabPanels/ChemTabPanel/ChemTabPanel";
+import PseProject from './Icons/pse-icon-project.svg'
+// @ts-ignore
+import PseLineup from './Icons/pse-icon-lineup.svg'
+import './index.scss'
 import Split from 'react-split'
 import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
-
-/**
- * A TabPanel with automatic scrolling which should be used for fixed size content.
- */
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {<Box style={{ overflow: 'auto' }}>{children}</Box>}
-    </Typography>
-  );
-}
-
-
+import { setSplitRef } from "./Ducks/SplitRefDuck";
+import { Story } from "./Utility/Data/Story";
+const d3 = require("d3")
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
  */
@@ -128,11 +109,14 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   categoryOptions: state.categoryOptions,
   channelSize: state.channelSize,
-  channelColor: state.channelColor
+  channelColor: state.channelColor,
+  splitRef: state.splitRef,
 })
 
 
 const mapDispatchToProps = dispatch => ({
+  addStory: story => dispatch(addStory(story)),
+  setActiveStory: (activeStory: Story) => dispatch(setActiveStory(activeStory)),
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
@@ -147,7 +131,6 @@ const mapDispatchToProps = dispatch => ({
   setCategoryOptions: categoryOptions => dispatch(setCategoryOptions(categoryOptions)),
   setChannelSize: channelSize => dispatch(setChannelSize(channelSize)),
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
-  setSelectedClusters: value => dispatch(setSelectedClusters(value)),
   wipeState: () => dispatch({ type: 'RESET_APP' }),
   setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
   // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
@@ -155,11 +138,67 @@ const mapDispatchToProps = dispatch => ({
   setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
   saveProjection: embedding => dispatch(addProjectionAction(embedding)),
   setVectors: vectors => dispatch(setVectors(vectors)),
-  setLineByOptions: options => dispatch(setLineByOptions(options))
+  setLineByOptions: options => dispatch(setLineByOptions(options)),
+  setSplitRef: splitRef => dispatch(setSplitRef(splitRef))
 })
 
 
 
+
+
+function testContours() {
+  let cluster = []
+  for (let i = 0; i < 100; i++) {
+    let x = Math.random() * 100
+    let y = Math.random() * 100
+
+    cluster.push({ x: x, y: y })
+  }
+
+
+  const width = 600
+  const height = 500
+
+  let contours = d3.contourDensity()
+    .x(d => d.x)
+    .y(d => d.y)
+    //.size([100, 100])
+    .bandwidth(30)
+    .thresholds(30)
+    (cluster.map(vect => ({ x: vect.x, y: vect.y })))
+
+  console.log(contours)
+
+
+  //var c = new Conrec;
+  //c.contour(data, 0, 2, 0, 2, [1, 2, 3], [1, 2, 3], 3, [0, 1, 2]);
+}
+
+
+
+
+/**
+ * Factory method which is declared here so we can get a static type in 'ConnectedProps'
+ */
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+
+/**
+ * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
+ */
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+/**
+ * Type that holds every property that is relevant to our component, that is the props declared above + our OWN component props
+ */
+// type Props = PropsFromRedux & {
+//     onFilter: any
+//     // My own property 1
+//     // My own property 2
+// }
+
+type Props = PropsFromRedux & {
+}
 
 
 
@@ -168,10 +207,11 @@ const mapDispatchToProps = dispatch => ({
 /**
  * Main application that contains all other components.
  */
-var Application = connect(mapStateToProps, mapDispatchToProps)(class extends React.Component<any, any> {
+var Application = connector(class extends React.Component<Props, any> {
   legend: React.RefObject<Legend>;
   dataset: Dataset;
   threeRef: any;
+  splitRef: any;
 
 
   constructor(props) {
@@ -186,8 +226,10 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
       selectedLines: {},
 
       backendRunning: false
-    }
 
+
+    }
+    testContours()
     var worker = new Worker(frontend_utils.BASE_PATH + 'healthcheck.js') //dist/
     worker.onmessage = (e) => {
       this.setState({
@@ -197,7 +239,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
 
     this.threeRef = React.createRef()
+    this.splitRef = React.createRef()
     this.props.setWebGLView(this.threeRef)
+    
     this.legend = React.createRef()
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
@@ -282,10 +326,20 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
 
     // this.props.setLineUpInput_columns(dataset.columns);
     // this.props.setLineUpInput_data(dataset.vectors);
+    this.props.setSplitRef(this.splitRef)
 
     this.props.setLineByOptions(dataset.getColumns())
 
     setTimeout(() => this.threeRef.current.requestRender(), 500)
+
+
+    // set default storybook that contains all clusters and no arrows
+    if(dataset.clusters.length > 0){
+      let story = new Story(dataset.clusters, []);
+      this.props.addStory(story)
+      this.props.setActiveStory(null)
+      // this.props.setActiveStory(story) // TODO: should we set the new story active?
+    }
   }
 
 
@@ -433,25 +487,27 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Load Dataset</Typography>
               <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab value={0} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Embedding and Projection</Typography>
               <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab className="pse-tab" value={1} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Point and Line Channels</Typography>
               <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab className="pse-tab" value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Clustering</Typography>
               <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab className="pse-tab" value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
             
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
+            </React.Fragment>}><Tab className="pse-tab" value={4} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             {/* {frontend_utils.CHEM_PROJECT && <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Backend Settings</Typography>
@@ -461,7 +517,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">LineUp Integration</Typography>
               <Typography variant="body2">Settings for LineUp Integration</Typography>
-            </React.Fragment>}><Tab icon={<img src={'textures/lineup.png'} style={{ width: 64, height: 64 }}></img>} style={{ minWidth: 0, flexGrow: 1, marginTop: '128px' }} /></Tooltip>
+            </React.Fragment>}><Tab className="pse-tab" value={5} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
           </Tabs>
         </Drawer>
 
@@ -513,7 +569,7 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                         display="block"
                       >
                         Lines
-                </Typography>
+                      </Typography>
                     </div>
 
                     <Grid
@@ -577,11 +633,11 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
                       display="block"
                     >
                       Points
-                </Typography>
+                    </Typography>
                   </div>
 
 
-                  
+
 
 
                   <StatesTabPanel></StatesTabPanel>
@@ -768,9 +824,9 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
         }}>
           <AppBar variant="outlined" position="relative" color="transparent">
             <Toolbar>
-              <a href={"https://jku-vds-lab.at"} target={"_blank"}><img style={{ height: 48 }} src={"textures/vis-logo-svg.svg"} alt="Kitty Katty!" /></a>
+              <a href={"https://jku-vds-lab.at"} target={"_blank"}><img style={{ height: 48 }} src={"textures/vds-lab-logo-notext.svg"} /></a>
               {frontend_utils.CHEM_PROJECT && <a href={"https://www.bayer.com"} target={"_blank"}><img style={{ height: 48, marginLeft: 48 }} src={"textures/bayer-logo.svg"} alt="Powered By Bayer" /></a>}
-              <Typography variant="h6" style={{ marginLeft: 48 }}>
+              <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
                 Projection Space Explorer
               </Typography>
               <ToolSelectionRedux />
@@ -778,7 +834,8 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
           </AppBar>
 
           <Split
-            style={{display: 'flex', flexDirection: 'column', height: '100%'}}
+            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+            ref={this.splitRef}
             sizes={[100, 0]}
             minSize={0}
             expandToMin={false}
@@ -788,6 +845,16 @@ var Application = connect(mapStateToProps, mapDispatchToProps)(class extends Rea
             dragInterval={1}
             direction="vertical"
             cursor="ns-resize"
+            onDragStart={() => {
+              this.props.setLineUpInput_visibility(false)
+            }}
+            onDragEnd={(sizes) => {
+              if (sizes[0] > 90) {
+                this.props.setLineUpInput_visibility(false)
+              } else {
+                this.props.setLineUpInput_visibility(true)
+              }
+            }}
           >
             <div style={{ flexGrow: 0.9 }}>
               <WebGLView

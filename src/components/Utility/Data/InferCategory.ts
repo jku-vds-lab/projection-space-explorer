@@ -170,7 +170,7 @@ export class InferCategory {
                         });
 
                         if (distinct.length <= 4) {
-                            var shapes = ["star", "cross", "circle", "square"];
+                            var shapes = ["circle",  "star", "square", "cross"];
                             options.find(e => e.category == 'shape').attributes.push({
                                 "key": key,
                                 "name": key,

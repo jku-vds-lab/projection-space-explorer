@@ -62,7 +62,7 @@ export class CSVLoader implements Loader {
         let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js')
 
         worker.onmessage = (e) => {
-            // Point clusteruing
+            // Point clustering
             let clusters = []
             Object.keys(e.data).forEach(k => {
                 let t = e.data[k]
@@ -81,7 +81,6 @@ export class CSVLoader implements Loader {
                 cluster.vectors = vecs
                 cluster.points = cluster.vectors
             })
-
             callback(clusters)
         }
 
@@ -205,6 +204,7 @@ export class CSVLoader implements Loader {
         }
 
         ranges = new Preprocessor(vectors).preprocess(ranges)
+        console.log(Object.keys(ranges))
 
         let dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation)
         

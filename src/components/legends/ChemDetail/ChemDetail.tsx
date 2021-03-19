@@ -353,7 +353,6 @@ function updateImage(props, cancellablePromise){
                         cur_img.src = "data:image/jpeg;base64," + base64;
                         // cur_img.width = props.rdkitSettings.width;
                         // cur_img.height = props.rdkitSettings.width;
-                        // console.log(cur_img)
                     });
                 })
             , loading_area + props.id);
@@ -440,7 +439,6 @@ const ImageView = connector_Img(function ({chemRef, id, hoverState, selection, c
                     
                     if(hoverState.updater != UPDATER){
                         if(container && imgList[idx]){
-                            console.log("ok")
                             //@ts-ignore
                             container.scrollTop = imgList[idx].offsetTop - container.offsetTop;
                             // imgList[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })

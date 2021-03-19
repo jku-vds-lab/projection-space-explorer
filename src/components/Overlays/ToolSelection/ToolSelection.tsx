@@ -18,7 +18,6 @@ const ENTER_DELAY = 500
 export enum Tool {
     Default,
     Move,
-    Grab,
     Crosshair
 }
 
@@ -28,8 +27,6 @@ export function getToolCursor(tool: Tool) {
             return 'default'
         case Tool.Move:
             return 'move'
-        case Tool.Grab:
-            return 'grab'
         case Tool.Crosshair:
             return 'crosshair'
     }
@@ -88,19 +85,6 @@ function ToolSelection({ currentTool, setCurrentTool, dataset }: Props) {
                     <ControlCameraIcon />
                 </Tooltip>
             </ToggleButton>
-
-            {!frontend_utils.CHEM_PROJECT &&
-                <ToggleButton value={Tool.Grab}>
-                    <Tooltip enterDelay={ENTER_DELAY} title={
-                        <React.Fragment>
-                            <Typography variant="subtitle2">Cluster Tool</Typography>
-                            <Typography variant="body2">This tool can select or deselect clusters and show information on hover.</Typography>
-                        </React.Fragment>
-                    }>
-                        <BlurOffIcon />
-                    </Tooltip>
-                </ToggleButton>
-            }
 
             {dataset?.isSequential && !frontend_utils.CHEM_PROJECT &&
                 <ToggleButton value={Tool.Crosshair}>

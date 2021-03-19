@@ -100,7 +100,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
         let { position, stories, elementHeight } = this.props.input
 
-        let currentAggregation = this.props.currentAggregation
+        let currentAggregation = this.props.currentAggregation.aggregation
         let selectSideBranch = this.props.selectSideBranch
         let addClusterToTrace = this.props.addClusterToTrace
         let dataset = this.props.dataset
@@ -267,8 +267,8 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                             <line x1={midX} y1={0} x2={midX} y2={100} stroke={mainColor} strokeWidth="2"></line>
                             <Plus x={midX} y={50} r={10} onClick={() => {
 
-                                if (currentAggregation.length > 0) {
-                                    let cluster = Cluster.fromSamples(this.props.currentAggregation)
+                                if (currentAggregation.aggregation.length > 0) {
+                                    let cluster = Cluster.fromSamples(this.props.currentAggregation.aggregation)
 
                                     addClusterToTrace(cluster)
                                 }

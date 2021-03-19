@@ -1,3 +1,4 @@
+import { isNumber } from "lodash";
 import { Vect } from "./Vect";
 
 /**
@@ -164,10 +165,13 @@ export class Preprocessor {
             // Support multivariate points ... eg each clusterLabel is actually an array
             vectors.forEach(vector => {
                 try {
+                    //@ts-ignore
                     if (isNaN(vector.clusterLabel)) {
                         // convert string to array
+                        //@ts-ignore
                         vector.clusterLabel = JSON.parse(vector.clusterLabel);
                     } else {
+                        //@ts-ignore
                         if (vector.clusterLabel < 0) {
                             vector.clusterLabel = [];
                         } else {
