@@ -283,6 +283,8 @@ export class Dataset {
             tensor.push(data);
         });
 
+        console.log(this.columns)
+
         return tensor;
     }
 

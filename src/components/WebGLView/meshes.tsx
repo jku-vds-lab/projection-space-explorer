@@ -371,7 +371,7 @@ export class PointVisualization {
     this.dataset = dataset
 
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
-    this.colorsChecked = [true, true, true, true, true, true, true, true, true]
+    this.colorsChecked = null
 
     this.grayedLayerSystem = new LayeringSystem(dataset.vectors.length)
 

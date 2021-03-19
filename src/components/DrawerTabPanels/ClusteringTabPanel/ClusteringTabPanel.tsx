@@ -23,7 +23,6 @@ import { setLineUpInput_data, setLineUpInput_visibility, setLineUpInput_filter }
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
 import groupVisualizationMode, { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
-const d3 = require("d3")
 
 const mapStateToProps = (state: RootState) => ({
     stories: state.stories,

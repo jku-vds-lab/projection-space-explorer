@@ -493,26 +493,26 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         var clusterMeshes = []
         var lineMeshes = []
 
-        if (this.props.stories.active && false) {
+        if (this.props.stories.active) {
             this.props.stories.active.clusters.map(cluster => {
 
-                const width = cluster.bounds.maxX - cluster.bounds.minX
-                const height = cluster.bounds.maxY - cluster.bounds.minY
+                const bounds = Cluster.calcBounds(cluster.vectors)
 
                 let xAxis = d3.scaleLinear()
                     .range([0, 100])
                     .domain([cluster.bounds.minX, cluster.bounds.maxX])
 
                 let yAxis = d3.scaleLinear()
-                    .range([0, 100 * (height / width)])
+                    .range([0, 100 * (bounds.height / bounds.width)])
                     .domain([cluster.bounds.minY, cluster.bounds.maxY])
+
 
                 let contours = d3.contourDensity()
                     .x(d => xAxis(d.x))
                     .y(d => yAxis(d.y))
                     .bandwidth(10)
                     .thresholds(10)
-                    .size([100, Math.floor(100 * (height / width))])
+                    .size([100, bounds.width == 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])
                     (cluster.vectors.map(vect => ({ x: vect.x, y: vect.y })))
 
                 
