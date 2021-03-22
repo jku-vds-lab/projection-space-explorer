@@ -62,7 +62,7 @@ export class CSVLoader implements Loader {
         let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js')
 
         worker.onmessage = (e) => {
-            // Point clusteruing
+            // Point clustering
             let clusters = []
             Object.keys(e.data).forEach(k => {
                 let t = e.data[k]
@@ -81,13 +81,12 @@ export class CSVLoader implements Loader {
                 cluster.vectors = vecs
                 cluster.points = cluster.vectors
             })
-
             callback(clusters)
         }
 
         worker.postMessage({
             type: 'extract',
-            message: vectors.map(vector => [vector.x, vector.y, vector.clusterLabel])
+            message: vectors.map(vector => [vector.x, vector.y, vector.groupLabel])
         })
     }
 
@@ -215,7 +214,7 @@ export class CSVLoader implements Loader {
 
             // Reset cluster label after extraction
             dataset.vectors.forEach(vector => {
-                vector.clusterLabel = []
+                vector.groupLabel = []
             })
 
             finished(dataset, new InferCategory(vectors).load(ranges))

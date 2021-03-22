@@ -397,7 +397,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         })
 
         samples.forEach(sample => {
-            sample.clusterLabel.forEach(label => {
+            sample.groupLabel.forEach(label => {
                 let clusterObject = this.clusterObjects.find(e => e.cluster.label == label)
 
                 if (clusterObject && this.props.groupVisualizationMode == GroupVisualizationMode.StarVisualization) {

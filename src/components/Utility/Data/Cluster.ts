@@ -65,13 +65,13 @@ export default class Cluster {
     static deriveVectorLabelsFromClusters(vectors: Vect[], clusters: Cluster[]) {
         // Clear all cluster labels from vectors
         vectors.forEach(vector => {
-            vector.clusterLabel = []
+            vector.groupLabel = []
         })
 
         // Create new labels from clusters
         clusters.forEach(cluster => {
             cluster.vectors.forEach(vector => {
-                vector.clusterLabel.push(cluster.label)
+                vector.groupLabel.push(cluster.label)
             })
         })
     }

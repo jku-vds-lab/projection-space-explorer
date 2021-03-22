@@ -217,7 +217,7 @@ export var ForceEmbedding = connect(mapStateToProps)(class extends React.Compone
                                         color="primary"
                                     />
                                 }
-                                label="Initialize with sample positions"
+                                label="Initialize with item positions"
                             />
                         </Tooltip>
 

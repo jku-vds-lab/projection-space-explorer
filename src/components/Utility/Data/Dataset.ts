@@ -9,7 +9,7 @@ import { mean, std } from "../../NumTs/NumTs";
 
 export enum PrebuiltFeatures {
     Line = 'line',
-    ClusterLabel = 'clusterLabel'
+    ClusterLabel = 'groupLabel'
 }
 
 export const DefaultFeatureLabel = "Default"
@@ -137,7 +137,7 @@ export class Dataset {
     checkLabels() {
         this.multivariateLabels = false;
         this.vectors.forEach(vector => {
-            if (vector.clusterLabel.length > 1) {
+            if (vector.groupLabel.length > 1) {
                 this.multivariateLabels = true;
                 return;
             }
@@ -194,8 +194,8 @@ export class Dataset {
 
         if ('algo' in this.columns)
             this.columns['algo'].featureType = FeatureType.Categorical;
-        if ('clusterLabel' in this.columns)
-            this.columns['clusterLabel'].featureType = FeatureType.Categorical;
+        if ('groupLabel' in this.columns)
+            this.columns['groupLabel'].featureType = FeatureType.Categorical;
         if ('clusterProbability' in this.columns)
             this.columns['clusterProbability'].featureType = FeatureType.Quantitative;
         if ('x' in this.columns)
@@ -218,7 +218,7 @@ export class Dataset {
         var vector = this.vectors[0];
 
         if (excludeGenerated) {
-            const blackList = ["x", "y", "algo", "age", "clusterProbability", "multiplicity", "clusterLabel"];
+            const blackList = ["x", "y", "algo", "age", "clusterProbability", "multiplicity", "groupLabel"];
             return Object.keys(vector).filter(e => e != '__meta__' && !blackList.includes(e));
         } else {
             return Object.keys(vector).filter(e => e != '__meta__');

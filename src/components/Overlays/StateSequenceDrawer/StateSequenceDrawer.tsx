@@ -246,7 +246,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence)),
     setActiveLine: activeLine => dispatch(setActiveLine(activeLine)),
-    setCurrentAggregation: (currentAggregation, clusters) => dispatch(setAggregationAction(currentAggregation, clusters))
+    // setCurrentAggregation: (currentAggregation, clusters) => dispatch(setAggregationAction(currentAggregation, clusters))
+    setCurrentAggregation: (currentAggregation) => dispatch(setAggregationAction(currentAggregation))
 })
 
 

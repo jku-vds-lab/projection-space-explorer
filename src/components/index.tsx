@@ -56,13 +56,13 @@ import { rootReducer, RootState } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { LineUpContext } from "./LineUpContext/LineUpContext";
 import { devToolsEnhancer } from 'redux-devtools-extension';
-import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
+import { setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
 import { SDFLoader } from "./Utility/Loaders/SDFLoader";
 import * as frontend_utils from "../utils/frontend-connect";
 import { HoverTabPanel } from "./DrawerTabPanels/HoverTabPanel/HoverTabPanel";
 import { addProjectionAction } from "./Ducks/ProjectionsDuck";
 import { Embedding } from "./Utility/Data/Embedding";
-import { setVectors } from "./Ducks/StoriesDuck";
+import { setActiveStory, setVectors, addStory } from "./Ducks/StoriesDuck";
 // @ts-ignore
 import PseDataset from './Icons/pse-icon-dataset.svg'
 // @ts-ignore
@@ -80,14 +80,11 @@ import Split from 'react-split'
 import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
 import { setSplitRef } from "./Ducks/SplitRefDuck";
+import { Story } from "./Utility/Data/Story";
 import { BrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/BrightnessSlider/BrightnessSlider";
 import { setGlobalPointBrightness } from "./Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
 const d3 = require("d3")
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import { Conrec } from 'ml-conrec'
 
 
 /**
@@ -124,6 +121,8 @@ const mapStateToProps = (state: RootState) => ({
 
 
 const mapDispatchToProps = dispatch => ({
+  addStory: story => dispatch(addStory(story)),
+  setActiveStory: (activeStory: Story) => dispatch(setActiveStory(activeStory)),
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
@@ -140,9 +139,9 @@ const mapDispatchToProps = dispatch => ({
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
   wipeState: () => dispatch({ type: 'RESET_APP' }),
   setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
+  // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
+  // setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
   setChannelBrightness: channelBrightness => dispatch(setChannelBrightnessSelection(channelBrightness)),
-  setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
-  setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
   setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
   saveProjection: embedding => dispatch(addProjectionAction(embedding)),
   setVectors: vectors => dispatch(setVectors(vectors)),
@@ -302,13 +301,22 @@ var Application = connector(class extends React.Component<Props, any> {
 
     this.props.setVectors(dataset.vectors)
 
-    this.props.setLineUpInput_columns(dataset.columns);
-    this.props.setLineUpInput_data(dataset.vectors);
+    // this.props.setLineUpInput_columns(dataset.columns);
+    // this.props.setLineUpInput_data(dataset.vectors);
     this.props.setSplitRef(this.splitRef)
 
     this.props.setLineByOptions(dataset.getColumns())
 
     setTimeout(() => this.threeRef.current.requestRender(), 500)
+
+
+    // set default storybook that contains all clusters and no arrows
+    if(dataset.clusters.length > 0){
+      let story = new Story(dataset.clusters, []);
+      this.props.addStory(story)
+      this.props.setActiveStory(null)
+      // this.props.setActiveStory(story) // TODO: should we set the new story active?
+    }
   }
 
 

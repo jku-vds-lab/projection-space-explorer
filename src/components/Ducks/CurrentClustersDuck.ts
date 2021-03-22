@@ -19,12 +19,12 @@ function currentClusters(state = initialState, action): Cluster[] {
             // TODO: maybe should not be in a reducer
             // Add cluster label to vectors
             cluster.vectors.forEach(sample => {
-                if (Array.isArray(sample.clusterLabel)) {
-                    if (!sample.clusterLabel.includes(cluster.label)) {
-                        sample.clusterLabel.push(cluster.label)
+                if (Array.isArray(sample.groupLabel)) {
+                    if (!sample.groupLabel.includes(cluster.label)) {
+                        sample.groupLabel.push(cluster.label)
                     }
                 } else {
-                    sample.clusterLabel = [cluster.label]
+                    sample.groupLabel = [cluster.label]
                 }
             })
 
@@ -41,10 +41,10 @@ function currentClusters(state = initialState, action): Cluster[] {
                 // TODO: maybe should not be in a reduce
                 // Remove cluster label from vectors
                 cluster.vectors.forEach(sample => {
-                    if (Array.isArray(sample.clusterLabel)) {
-                        sample.clusterLabel.splice(sample.clusterLabel.indexOf(cluster.label), 1)
+                    if (Array.isArray(sample.groupLabel)) {
+                        sample.groupLabel.splice(sample.groupLabel.indexOf(cluster.label), 1)
                     } else {
-                        sample.clusterLabel = []
+                        sample.groupLabel = []
                     }
                 })
 

@@ -4,7 +4,7 @@ import { RootState } from "../Store/Store";
 import * as LineUpJS from 'lineupjs'
 import './LineUpContext.scss';
 import { setAggregationAction } from "../Ducks/AggregationDuck";
-import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM, ICategoricalColumn, isCategoricalColumn, isCategoricalLikeColumn } from "lineupjs";
+import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM, ICategoricalColumn, isCategoricalColumn, isCategoricalLikeColumn, CategoricalColumn } from "lineupjs";
 
 import * as backend_utils from "../../utils/backend-connect";
 import { FeatureType } from "../Utility/Data/FeatureType";
@@ -14,6 +14,7 @@ import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 import * as _ from 'lodash';
 import { Button, FormControlLabel, Switch } from "@material-ui/core";
 import BarCellRenderer from "./BarCellRenderer";
+import CategoricalColumnBuilder from "lineupjs/build/src/builder/column/CategoricalColumnBuilder";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -22,6 +23,8 @@ import BarCellRenderer from "./BarCellRenderer";
  */
 const mapStateToProps = (state: RootState) => ({
     lineUpInput: state.lineUpInput,
+    lineUpInput_data: state.dataset?.vectors,
+    lineUpInput_columns: state.dataset?.columns,
     currentAggregation: state.currentAggregation,
     activeStory: state.stories.active,
     splitRef: state.splitRef
@@ -81,24 +84,40 @@ const UNIQUE_ID = "unique_ID";
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({
-    lineUpInput,
-    currentAggregation,
-    setCurrentAggregation,
-    setLineUpInput_lineup,
-    setLineUpInput_visibility,
-    onFilter,
-    activeStory,
-    hoverUpdate,
-    splitRef }: Props) { // hoverState -> makes everything slow....
+export const LineUpContext = connector(function ({ 
+    lineUpInput, 
+    lineUpInput_data, 
+    lineUpInput_columns, 
+    currentAggregation, 
+    setCurrentAggregation, 
+    setLineUpInput_lineup, 
+    setLineUpInput_visibility, 
+    onFilter, 
+    activeStory, 
+    hoverUpdate }: Props) {
     // In case we have no input, dont render at all
-    if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
+    if (!lineUpInput || !lineUpInput_data || !lineUpInput.show) {
         //splitRef?.current?.setSizes([100, 0])
         return null;
     }
     let lineup_ref = React.useRef();
 
     const debouncedHighlight = React.useCallback(_.debounce(hover_item => hoverUpdate(hover_item, UPDATER), 200), []);
+
+    const preprocess_lineup_data = (data) => {
+        let lineup_data = [];
+        data.forEach(element => {
+            // if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
+            //     element[PrebuiltFeatures.ClusterLabel] = [-1];
+            // }
+            let row = Object.assign({}, element)
+            row[PrebuiltFeatures.ClusterLabel] = element[PrebuiltFeatures.ClusterLabel].toString();
+            row[UNIQUE_ID] = element["__meta__"]["view"]["meshIndex"];
+            lineup_data.push(row);
+        });
+
+        return lineup_data;
+    }
 
     React.useEffect(() => {
 
@@ -118,19 +137,10 @@ export const LineUpContext = connector(function ({
         // }
 
 
-        let lineup_data = [];
-        lineUpInput.data.forEach(element => {
-            // if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
-            //     element[PrebuiltFeatures.ClusterLabel] = [-1];
-            // }
-            let row = Object.assign({}, element) as any
-            row[PrebuiltFeatures.ClusterLabel] = element[PrebuiltFeatures.ClusterLabel].toString();
-            row[UNIQUE_ID] = element["__meta__"]["view"]["meshIndex"];
-            lineup_data.push(row);
-        });
+        let lineup_data = preprocess_lineup_data(lineUpInput_data);
 
 
-        const builder = buildLineup(lineUpInput.columns, lineup_data); //lineUpInput.data
+        const builder = buildLineup(lineUpInput_columns, lineup_data); //lineUpInput_data
         lineUpInput.lineup?.destroy();
         let lineup = null;
         // try{
@@ -174,14 +184,14 @@ export const LineUpContext = connector(function ({
         // make lineup selection interact with the scatter plot view
         lineup.on('selectionChanged', e => {
             const currentSelection_lineup = lineup.getSelection();
-            if (currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
-
-            const currentSelection_scatter = lineUpInput.data.map((x, i) => { if (x.view.selected) return i; }).filter(x => x !== undefined);
-
-            if (!arrayEquals(currentSelection_lineup, currentSelection_scatter)) { // need to check, if the current lineup selection is already the current aggregation
+            if(currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
+            
+            const currentSelection_scatter = lineUpInput_data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
+            
+            if(!arrayEquals(currentSelection_lineup, currentSelection_scatter)){ // need to check, if the current lineup selection is already the current aggregation
                 let agg = [];
                 currentSelection_lineup.forEach(index => {
-                    agg.push(lineUpInput.data[index]);
+                    agg.push(lineUpInput_data[index]);
                 })
 
                 setCurrentAggregation(agg);
@@ -191,7 +201,7 @@ export const LineUpContext = connector(function ({
         lineup.on('highlightChanged', idx => {
             let hover_item = null;
             if (idx >= 0) {
-                hover_item = lineUpInput.data[idx];
+                hover_item = lineUpInput_data[idx];
             }
             debouncedHighlight(hover_item);
         });
@@ -207,10 +217,10 @@ export const LineUpContext = connector(function ({
 
                 // custom filter adapted from michael
                 const filterChanged = (prev, cur: IStringFilter) => {
-                    if (prev?.filter !== cur?.filter) { // only update, if it is a new filter
-                        const filter = typeof (cur?.filter) === 'string' ? cur?.filter : null; // only allow string filters -> no regex (TODO: remove regex checkbox)
-                        if (lineup_smiles_col && filter) {
-                            backend_utils.get_substructure_count(lineUpInput.data.map((d) => d[lineup_smiles_col.desc.column]), filter).then((matches) => {
+                    if(prev?.filter !== cur?.filter){ // only update, if it is a new filter
+                        const filter = typeof(cur?.filter) === 'string' ? cur?.filter : null; // only allow string filters -> no regex (TODO: remove regex checkbox)
+                        if(lineup_smiles_col && filter) {
+                            backend_utils.get_substructure_count(lineUpInput_data.map((d) => d[lineup_smiles_col.desc.column]), filter).then((matches) => {
                                 const validSmiles = matches.filter(([smiles, count]) => count > 0).map(([smiles, count]) => smiles);
                                 lineup_smiles_col.setFilter({
                                     filter,
@@ -229,7 +239,35 @@ export const LineUpContext = connector(function ({
 
         setLineUpInput_lineup(lineup);
 
-    }, [lineUpInput.data, lineUpInput.columns, activeStory, activeStory?.clusters, activeStory?.clusters?.length]);
+    }, [lineUpInput_data, lineUpInput_columns, activeStory, activeStory?.clusters, activeStory?.clusters?.length]);
+
+    // React.useEffect(() => { //TODO: not working...
+    //     // update lineup, if current storybook (current cluster) changed
+    //     if(lineUpInput.lineup){
+    //         const data_provider = lineUpInput.lineup.data;
+    //         let lineup_data = preprocess_lineup_data(lineUpInput_data);
+    //         console.log("setdata")
+
+    //         const ranking = lineUpInput.lineup.data.getFirstRanking();
+    //         // let cluster_col = ranking.columns.find(x => x.desc.column == PrebuiltFeatures.ClusterLabel);
+    //         // const my_desc = cluster_col.desc;
+    //         // my_desc.categories = ["test"]
+    //         // const my_col = new CategoricalColumn(cluster_col.id, cluster_col.desc)
+    //         const my_col_builder = LineUpJS.buildCategoricalColumn(PrebuiltFeatures.ClusterLabel);
+    //         // console.log()
+    //         ranking.insert(lineUpInput.lineup.data.create(my_col_builder.build(lineup_data))); //asSet(',')
+            
+    //         // data_provider.setData(lineup_data)
+    //         // lineUpInput.lineup.update();
+    //         // lineUpInput.lineup?.setDataProvider(data_provider);
+    //         lineUpInput.lineup.restore(lineUpInput.lineup.dump())
+
+    //         // console.log(cluster_col.dump())
+    //         // console.log(lineUpInput.lineup.dump())
+            
+    //     }
+    // }, [activeStory, activeStory?.clusters, activeStory?.clusters?.length]);
+
 
     // this effect is allways executed after the component is rendered when currentAggregation changed
     React.useEffect(() => {
@@ -238,7 +276,7 @@ export const LineUpContext = connector(function ({
 
             // select those instances that are also selected in the scatter plot view
             if (currentAggregation.aggregation && currentAggregation.aggregation.length > 0) {
-                const currentSelection_scatter = lineUpInput.data.map((x, i) => { if (x.view.selected) return i; }).filter(x => x !== undefined);
+                const currentSelection_scatter = lineUpInput_data.map((x, i) => { if (x.view.selected) return i; }).filter(x => x !== undefined);
                 lineUpInput.lineup.setSelection(currentSelection_scatter);
 
                 // const lineup_idx = lineup.renderer?.rankings[0]?.findNearest(currentSelection_scatter);
@@ -316,7 +354,7 @@ function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight {
             return null;
 
         const col_widths = cols.map(x => x.getWidth());
-        const col_width = Math.max(...col_widths);//col.getWidth();
+        const col_width = Math.max(Math.max(...col_widths), 23);//col.getWidth();
 
         let height = function (item: IGroupItem | Readonly<IOrderedGroup>): number {
             return col_width;
@@ -326,7 +364,7 @@ function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight {
         }
         return { defaultHeight: col_width, height: height, padding: padding };
     }
-    return null;
+    return { defaultHeight: 23, height:() => 23, padding: () => 0};
 }
 
 
@@ -344,8 +382,8 @@ function buildLineup(cols, data) {
                 builder.column(LineUpJS.buildColumn("mySmilesStructureColumn", i).label(smiles_col).renderer("mySmilesStructureRenderer", "mySmilesStructureRenderer").width(50).build([]));
 
             }
-            if (i == PrebuiltFeatures.ClusterLabel) {
-                builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show).width(70)); // shows avg of cluster labels if there is more than one label
+            if(i == PrebuiltFeatures.ClusterLabel){
+                builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show).width(70)); // .asSet(',')
             }
             else if (typeof col.featureType !== 'undefined') {
                 switch (col.featureType) {
