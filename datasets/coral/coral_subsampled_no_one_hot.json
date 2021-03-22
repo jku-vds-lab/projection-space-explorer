@@ -37,7 +37,7 @@
                 "in_cohort_12[0;1]",
                 "in_cohort_13[0;1]",
                 "in_cohort_14[0;1]",
-                "clusterLabel"
+                "groupLabel"
             ],
             "index": [
                 0,

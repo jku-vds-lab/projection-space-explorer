@@ -209,7 +209,7 @@ export const ClusteringTabPanel = connector(({
 
                 worker.postMessage({
                     type: 'extract',
-                    message: dataset.vectors.map(vector => [vector.x, vector.y, vector.clusterLabel])
+                    message: dataset.vectors.map(vector => [vector.x, vector.y, vector.groupLabel])
                 })
             }
         }
@@ -249,7 +249,7 @@ export const ClusteringTabPanel = connector(({
                 setActiveStory(story)
 
                 // Update UI, dont know how to right now
-                var clusterAttribute = categoryOptions.getAttribute("color", "clusterLabel", "categorical")
+                var clusterAttribute = categoryOptions.getAttribute("color", "groupLabel", "categorical")
 
                 if (clusterAttribute) {
                     setChannelColor(clusterAttribute)
@@ -565,7 +565,7 @@ function ClusterPopover({
         setAnchorEl(null)
         // setLineUpInput_data(cluster.vectors)
         setLineUpInput_visibility(true)
-        setLineUpInput_filter({ 'clusterLabel': cluster.getTextRepresentation() });
+        setLineUpInput_filter({ 'groupLabel': cluster.getTextRepresentation() });
         handleClusterClick(cluster); // select items in cluster when opening lineup
         splitRef.current.split.setSizes([50, 50])
     }
