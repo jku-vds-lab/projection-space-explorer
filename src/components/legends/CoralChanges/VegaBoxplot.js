@@ -5,7 +5,8 @@ export default createClassFromLiteSpec('BoxplotChanges', {
     "width": 100,
     "mark": {
       "type": "boxplot",
-      "extent": "min-max"
+      "extent": "min-max",
+      "median": {"color": "black"}
     },
     "encoding": {
       "y": {"field": "selection", "type": "nominal", "axis": null},
