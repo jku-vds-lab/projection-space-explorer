@@ -34,7 +34,8 @@ export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hov
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
             {/* TODO: Cluster count not working */}
-            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset && dataset.vectors.length}</b> items in <b>{currentAggregation.selectedClusters.length}</b> Groups</Typography>
+            {/* in <b>{currentAggregation.selectedClusters.length}</b> Groups */}
+            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset && dataset.vectors.length}</b> items</Typography> 
 
             <FormControlLabel
                 control={<Switch checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
