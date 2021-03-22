@@ -156,32 +156,32 @@ export class Preprocessor {
         });
 
         // If data has no cluster labels, add default ones
-        if (!header.includes('clusterLabel')) {
+        if (!header.includes('groupLabel')) {
             vectors.forEach(vector => {
-                vector.clusterLabel = [];
+                vector.groupLabel = [];
                 vector.clusterProbability = 0.0;
             });
         } else {
-            // Support multivariate points ... eg each clusterLabel is actually an array
+            // Support multivariate points ... eg each groupLabel is actually an array
             vectors.forEach(vector => {
                 try {
                     //@ts-ignore
-                    if (isNaN(vector.clusterLabel)) {
+                    if (isNaN(vector.groupLabel)) {
                         // convert string to array
                         //@ts-ignore
-                        vector.clusterLabel = JSON.parse(vector.clusterLabel);
+                        vector.groupLabel = JSON.parse(vector.groupLabel);
                     } else {
                         //@ts-ignore
-                        if (vector.clusterLabel < 0) {
-                            vector.clusterLabel = [];
+                        if (vector.groupLabel < 0) {
+                            vector.groupLabel = [];
                         } else {
                             // convert number to array
-                            vector.clusterLabel = [vector.clusterLabel];
+                            vector.groupLabel = [vector.groupLabel];
                         }
                     }
                 } catch {
                     // default is empty array
-                    vector.clusterLabel = [];
+                    vector.groupLabel = [];
                 }
             });
         }

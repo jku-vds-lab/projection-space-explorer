@@ -86,7 +86,7 @@ export class CSVLoader implements Loader {
 
         worker.postMessage({
             type: 'extract',
-            message: vectors.map(vector => [vector.x, vector.y, vector.clusterLabel])
+            message: vectors.map(vector => [vector.x, vector.y, vector.groupLabel])
         })
     }
 
@@ -214,7 +214,7 @@ export class CSVLoader implements Loader {
 
             // Reset cluster label after extraction
             dataset.vectors.forEach(vector => {
-                vector.clusterLabel = []
+                vector.groupLabel = []
             })
 
             finished(dataset, new InferCategory(vectors).load(ranges))

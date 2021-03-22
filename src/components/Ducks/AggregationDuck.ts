@@ -32,7 +32,7 @@ function deriveFromSamples(samples: Vect[], clusters: Cluster[]) {
     let labels = new Set()
 
     samples.forEach(sample => {
-        sample.clusterLabel.forEach(label => {
+        sample.groupLabel.forEach(label => {
             labels.add(label)
         })
     })

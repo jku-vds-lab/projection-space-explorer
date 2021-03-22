@@ -182,10 +182,10 @@ export function valueInRange(value, range) {
 
 export function replaceClusterLabels(vectors: Vect[], from: any, to: any) {
   vectors.forEach(vector => {
-    let i = vector.clusterLabel.findIndex((e) => e === from)
+    let i = vector.groupLabel.findIndex((e) => e === from)
     if (i >= 0) {
-      vector.clusterLabel.splice(i, 1)
-      vector.clusterLabel.push(to)
+      vector.groupLabel.splice(i, 1)
+      vector.groupLabel.push(to)
     }
   })
 }
