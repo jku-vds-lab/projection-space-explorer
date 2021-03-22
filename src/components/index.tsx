@@ -355,9 +355,9 @@ var Application = connector(class extends React.Component<Props, any> {
     }
     if (scale instanceof ContinuosScale) {
       var min = null, max = null
-      if (attribute.key in dataset.ranges) {
-        min = dataset.ranges[attribute.key].min
-        max = dataset.ranges[attribute.key].max
+      if (dataset.columns[attribute.key].range) {
+        min = dataset.columns[attribute.key].range.min
+        max = dataset.columns[attribute.key].range.max
       } else {
         var filtered = this.props.dataset.vectors.map(vector => vector[attribute.key])
         max = Math.max(...filtered)

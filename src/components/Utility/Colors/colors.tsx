@@ -5,8 +5,9 @@ import { ContinuousMapping } from "./ContinuousMapping";
 import { NamedScales } from "./NamedScales";
 import { NamedCategoricalScales } from "./NamedCategoricalScales";
 import { ShallowSet } from "../ShallowSet";
+import { Dataset } from "../Data/Dataset";
 
-export const mappingFromScale = (scale, attribute, dataset) => {
+export const mappingFromScale = (scale, attribute, dataset: Dataset) => {
   if (scale instanceof DiscreteScale) {
     // Generate scale
     return new DiscreteMapping(scale, new ShallowSet(dataset.vectors.map(vector => vector[attribute.key])))
@@ -14,9 +15,9 @@ export const mappingFromScale = (scale, attribute, dataset) => {
   }
   if (scale instanceof ContinuosScale) {
     var min = null, max = null
-    if (attribute.key in dataset.ranges) {
-      min = dataset.ranges[attribute.key].min
-      max = dataset.ranges[attribute.key].max
+    if (dataset.columns[attribute.key].range) {
+      min = dataset.columns[attribute.key].range.min
+      max = dataset.columns[attribute.key].range.max
     } else {
       var filtered = dataset.vectors.map(vector => vector[attribute.key])
       max = Math.max(...filtered)
