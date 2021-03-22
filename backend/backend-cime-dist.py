@@ -135,7 +135,7 @@ def get_uploaded_files_list():
 
 
 @bottle.route('/delete_file/<filename>', method=['GET'])
-def get_uploaded_files_list(filename):
+def delete_uploaded_file(filename):
     if filename == "test.sdf":
         return {"deleted": "false", "error": "can't delete default file"}
     folder = './temp-files'
@@ -354,7 +354,7 @@ def mol_to_base64_highlight_substructure(mol, patt, width=250, d = None, showMCS
     stream.close()
     return img_str.decode("utf-8") #d.GetDrawingText()
 
-
+import re
 def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourLines, scale, sigma, showMCS, width=250):
     contourLines = int(contourLines)
     scale = float(scale)
@@ -419,6 +419,7 @@ def smiles_list_to_imgs():
         sigma = request.forms.get("sigma")
         showMCS = request.forms.get("showMCS")
         width = request.forms.get("width")
+        doAlignment = request.forms.get("doAlignment") == "true"
 
         if len(smiles_list) == 0:
             return {"error": "empty SMILES list"}
@@ -436,7 +437,7 @@ def smiles_list_to_imgs():
                 
         if len(mol_lst) > 1:
             #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
-            res=Chem.rdFMCS.FindMCS(mol_lst, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True) # there are different settings possible here
+            res=Chem.rdFMCS.FindMCS(mol_lst, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=False) #completeRingsOnly=True # there are different settings possible here
             if(res.canceled):
                 patt = Chem.MolFromSmiles("*")
                 #return {"error": "the MCS search had a timeout. please try to select fewer compounds."}
@@ -448,9 +449,11 @@ def smiles_list_to_imgs():
 
         img_lst = []
         for mol in mol_lst:
-            TemplateAlign.rdDepictor.Compute2DCoords(mol)
-            if(patt and Chem.MolToSmiles(patt) != "*"): # if no common substructure was found, skip the alignment
-                TemplateAlign.AlignMolToTemplate2D(mol,patt,clearConfs=True)
+            if doAlignment: # if user disables alignment, skip
+                if(patt and Chem.MolToSmiles(patt) != "*"): # if no common substructure was found, skip the alignment
+                    TemplateAlign.rdDepictor.Compute2DCoords(mol)
+                    match = mol.GetSubstructMatch(patt)
+                    TemplateAlign.AlignMolToTemplate2D(mol,patt,match=match,clearConfs=True)
             if current_rep == "Common Substructure":
                 img_lst.append(mol_to_base64_highlight_substructure(mol, patt, width=width))
             else:
@@ -479,7 +482,7 @@ def smiles_list_to_common_substructure_img():
             else:
                 error_smiles.append(smiles)
         #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
-        res = rdFMCS.FindMCS(mol_lst, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True)
+        res = rdFMCS.FindMCS(mol_lst, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=False)
         m = res.queryMol
         pil_img = Draw.MolToImage(m)
 

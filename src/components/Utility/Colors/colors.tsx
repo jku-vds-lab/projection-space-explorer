@@ -6,6 +6,7 @@ import { NamedScales } from "./NamedScales";
 import { NamedCategoricalScales } from "./NamedCategoricalScales";
 import { ShallowSet } from "../ShallowSet";
 
+
 export const mappingFromScale = (scale, attribute, dataset) => {
   if (scale instanceof DiscreteScale) {
     // Generate scale

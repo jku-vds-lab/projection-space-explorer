@@ -848,7 +848,8 @@ var Application = connector(class extends React.Component<Props, any> {
                 ref={this.threeRef}
               />
             </div>
-            <div style={{ flexGrow: 0.1 }}>
+            <div style={{ flexGrow: 0.1 }}> 
+            {/* TODO: lineupFilter is not used anymore... */}
               <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
             </div>
 

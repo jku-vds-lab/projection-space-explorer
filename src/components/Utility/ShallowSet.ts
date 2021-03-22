@@ -44,4 +44,8 @@ export class ShallowSet {
     map(callbackfn) {
         return this.values.map(callbackfn)
     }
+
+    filter(callbackfn){
+        return this.values.filter(callbackfn)
+    }
 }
