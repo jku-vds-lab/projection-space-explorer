@@ -239,13 +239,15 @@ const mapStateToProps = state => ({
     activeLine: state.activeLine,
     currentTool: state.currentTool,
     highlightedSequence: state.highlightedSequence,
-    dataset: state.dataset
+    dataset: state.dataset,
+    stories: state.stories
 })
 
 const mapDispatchToProps = dispatch => ({
     setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence)),
     setActiveLine: activeLine => dispatch(setActiveLine(activeLine)),
-    setCurrentAggregation: currentAggregation => dispatch(setAggregationAction(currentAggregation))
+    // setCurrentAggregation: (currentAggregation, clusters) => dispatch(setAggregationAction(currentAggregation, clusters))
+    setCurrentAggregation: (currentAggregation) => dispatch(setAggregationAction(currentAggregation))
 })
 
 

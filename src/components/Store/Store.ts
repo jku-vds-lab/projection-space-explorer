@@ -38,6 +38,9 @@ import hoverSettings from '../Ducks/HoverSettingsDuck';
 import hoverState from '../Ducks/HoverStateDuck';
 import selectedLineBy from '../Ducks/SelectedLineByDuck';
 import splitRef from '../Ducks/SplitRefDuck';
+import globalPointBrightness from '../Ducks/GlobalPointBrightnessDuck';
+import channelBrightness from '../Ducks/ChannelBrightnessDuck';
+import groupVisualizationMode from '../Ducks/GroupVisualizationMode';
 
 const allReducers = {
   currentTool: currentTool,
@@ -66,6 +69,7 @@ const allReducers = {
   categoryOptions: categoryOptions,
   channelSize: channelSize,
   channelColor: channelColor,
+  channelBrightness: channelBrightness,
   globalPointSize: globalPointSize,
   hoverState: hoverState,
   pointColorScale: pointColorScale,
@@ -78,7 +82,9 @@ const allReducers = {
   projections: projections,
   hoverSettings: hoverSettings,
   selectedLineBy: selectedLineBy,
-  splitRef: splitRef
+  splitRef: splitRef,
+  globalPointBrightness: globalPointBrightness,
+  groupVisualizationMode: groupVisualizationMode
 }
 
 const appReducer = combineReducers(allReducers)

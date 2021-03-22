@@ -1,5 +1,5 @@
 import React = require("react")
-import { Avatar, Box, Button, Checkbox, FormGroup, IconButton, InputAdornment, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, Paper, Popover, Switch, TextField, Typography } from "@material-ui/core"
+import { Avatar, Box, Button, Checkbox, FormControl, FormGroup, IconButton, InputAdornment, InputLabel, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Typography } from "@material-ui/core"
 import { connect, ConnectedProps } from 'react-redux'
 import Cluster from "../../Utility/Data/Cluster"
 import { Story } from "../../Utility/Data/Story"
@@ -23,6 +23,7 @@ import { setLineUpInput_visibility, setLineUpInput_filter } from "../../Ducks/Li
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import groupVisualizationMode, { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
 const d3 = require("d3")
 
 const mapStateToProps = (state: RootState) => ({
@@ -32,7 +33,8 @@ const mapStateToProps = (state: RootState) => ({
     webGLView: state.webGLView,
     categoryOptions: state.categoryOptions,
     currentAggregation: state.currentAggregation,
-    splitRef: state.splitRef
+    splitRef: state.splitRef,
+    groupVisualizationMode: state.groupVisualizationMode
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -47,6 +49,7 @@ const mapDispatchToProps = dispatch => ({
     // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
     setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
+    setGroupVisualizationMode: groupVisualizationMode => dispatch(setGroupVisualizationMode(groupVisualizationMode))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -86,7 +89,9 @@ export const ClusteringTabPanel = connector(({
     setLineUpInput_visibility,
     currentAggregation,
     setLineUpInput_filter,
-    splitRef }: Props) => {
+    splitRef,
+    groupVisualizationMode,
+    setGroupVisualizationMode }: Props) => {
 
 
     function storyLayout(edges: Edge[]) {
@@ -159,6 +164,7 @@ export const ClusteringTabPanel = connector(({
                     // Point clusteruing
                     let clusters = []
                     Object.keys(e.data).forEach(k => {
+                        console.log(e.data[k])
                         let t = e.data[k]
                         let f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
                         f.label = k
@@ -248,21 +254,11 @@ export const ClusteringTabPanel = connector(({
                 if (clusterAttribute) {
                     setChannelColor(clusterAttribute)
                 }
-
-                let c = d3.contourDensity()
-                    .x(d => d.x)
-                    .y(d => d.y)
-                    .size([500, 500])
-                    .bandwidth(30)
-                    .thresholds(30)
-                    (dataset.vectors.map(vect => ({x: vect.x, y: vect.y})))
-
-                console.log(c)
             })
-            .catch(error => console.log(error))
-        , loading_area);
+                .catch(error => console.log(error))
+            , loading_area);
     }
-    
+
     const { cancellablePromise } = useCancellablePromise();
 
     const [openClusterPanel, setOpenClusterPanel] = React.useState(false);
@@ -281,7 +277,6 @@ export const ClusteringTabPanel = connector(({
 
     const handleClusterSliderChange = (event, newValue) => {
         let min_clust = 0;
-        console.log(Math.log10(dataset.vectors.length))
         switch (newValue) {
             case 0:
                 const c_few = 11;
@@ -305,7 +300,7 @@ export const ClusteringTabPanel = connector(({
                 min_clust = Math.log10(dataset.vectors.length) * c_many;
                 // min_clust = Math.max(dataset.vectors.length / 700, 5);
                 set_min_cluster_size(Math.round(min_clust));
-                set_min_cluster_samples(Math.round(min_clust/5));
+                set_min_cluster_samples(Math.round(min_clust / 5));
                 set_allow_single_cluster(false);
                 break;
         }
@@ -360,7 +355,7 @@ export const ClusteringTabPanel = connector(({
             <Typography variant="subtitle2" gutterBottom>{'Group Settings'}</Typography>
         </Box>
 
-        <Box paddingLeft={2}>
+        <Box paddingLeft={2} paddingRight={2}>
             <FormControlLabel
                 control={<Switch checked={displayMode != DisplayMode.OnlyClusters && displayMode != DisplayMode.None} onChange={onCheckItems} />}
                 label="Show Items"
@@ -369,6 +364,26 @@ export const ClusteringTabPanel = connector(({
                 control={<Switch checked={displayMode != DisplayMode.OnlyStates && displayMode != DisplayMode.None} onChange={onCheckClusters} />}
                 label="Show Group Centers"
             />
+
+            <div style={{ width: '100%' }}>
+                <FormControl style={{ width: '100%' }}>
+                    <InputLabel id="demo-customized-select-label">Group Visualization</InputLabel>
+                    <Select
+                        labelId="demo-customized-select-label"
+                        id="demo-customized-select"
+                        value={groupVisualizationMode}
+                        onChange={(event) => {
+                            setGroupVisualizationMode(event.target.value)
+                        }}
+                    >
+                        <MenuItem value={GroupVisualizationMode.None}>
+                            <em>None</em>
+                        </MenuItem>
+                        <MenuItem value={GroupVisualizationMode.ConvexHull}>Convex Hull</MenuItem>
+                        <MenuItem value={GroupVisualizationMode.StarVisualization}>Star Visualization</MenuItem>
+                    </Select>
+                </FormControl>
+            </div>
         </Box>
 
         <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
@@ -550,7 +565,7 @@ function ClusterPopover({
         setAnchorEl(null)
         // setLineUpInput_data(cluster.vectors)
         setLineUpInput_visibility(true)
-        setLineUpInput_filter({'clusterLabel': cluster.getTextRepresentation()});
+        setLineUpInput_filter({ 'clusterLabel': cluster.getTextRepresentation() });
         handleClusterClick(cluster); // select items in cluster when opening lineup
         splitRef.current.split.setSizes([50, 50])
     }
@@ -623,7 +638,7 @@ function ClusterPopover({
 
 
 
-                    
+
                 </FormGroup>
             </Paper>
         </div>
@@ -669,7 +684,8 @@ function ClusterList({
         <List>
             {stories.active?.clusters.map((cluster, key) => {
                 return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={(event) => {
-                    webGLView.current.onClusterClicked(cluster, event.shiftKey)
+                    // webGLView.current.onClusterClicked(cluster, event.shiftKey)
+                    webGLView.current.onClusterClicked(cluster, event.ctrlKey)
                 }}>
                     <ListItemAvatar>
                         <Avatar>

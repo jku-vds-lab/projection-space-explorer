@@ -60,8 +60,10 @@ const mapStateToProps = (state: RootState) => ({
     lineBrightness: state.lineBrightness,
     pathLengthRange: state.pathLengthRange,
     globalPointSize: state.globalPointSize,
+    globalPointBrightness: state.globalPointBrightness,
     channelSize: state.channelSize,
     channelColor: state.channelColor,
+    channelBrightness: state.channelBrightness,
     pointColorScale: state.pointColorScale,
     stories: state.stories,
     trailSettings: state.trailSettings,
@@ -508,7 +510,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         this.lines?.dispose(this.scene)
         this.lines = null
-        
+
         this.lines = new LineVisualization(segments, this.lineColorScheme)
         this.lines.createMesh(this.props.lineBrightness)
         this.lines.setZoom(this.camera.zoom)
@@ -895,7 +897,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.camera.position.y = 0.0
         this.camera.updateProjectionMatrix();
 
-        
+
 
         this.requestRender()
     }
@@ -1023,7 +1025,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
     onClusterClicked(cluster: Cluster, shiftKey: boolean = false) {
-        this.props.setSelectedCluster(cluster, shiftKey)         
+        this.props.setSelectedCluster(cluster, shiftKey)
     }
 
 
@@ -1139,6 +1141,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             this.particles.updateSize()
         }
 
+        if (prevProps.globalPointBrightness != this.props.globalPointBrightness && this.particles) {
+            this.particles.transparencyCat(this.props.channelBrightness, this.props.globalPointBrightness)
+            this.particles.updateColor()
+            this.particles.update()
+        }
+
 
         if (prevProps.lineBrightness != this.props.lineBrightness) {
             this.lines?.setBrightness(this.props.lineBrightness)
@@ -1167,16 +1175,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             this.particles.updateColor()
         }
 
-        // If 
-        if ((this.props.currentTool == Tool.Default && !arraysEqual(prevProps.currentAggregation.aggregation, this.props.currentAggregation.aggregation))
-            || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Default)) {
-            this.multivariateClusterView?.current.highlightSamples(this.props.currentAggregation.aggregation)
-        }
 
-        // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
-        if (!arraysEqual(prevProps.currentAggregation.selectedClusters, this.props.currentAggregation.selectedClusters)) {
-            this.multivariateClusterView?.current.highlightCluster(this.props.currentAggregation.selectedClusters)
-        }
+
+
 
         // Path length range has changed, update view accordingly
         if (this.props.dataset && this.props.dataset.isSequential && prevProps.pathLengthRange !== this.props.pathLengthRange) {
@@ -1201,9 +1202,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         if (prevProps.activeLine != this.props.activeLine) {
             if (this.props.activeLine != null) {
-                // Highlight correct line
-
-                //this.lines.groupHighlight([this.props.activeLine.lineKey])
                 this.lines.highlight([this.props.activeLine.lineKey], this.getWidth(), this.getHeight(), this.scene, true)
             } else {
                 this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene, true)
@@ -1277,38 +1275,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.multivariateClusterView?.current.createTriangulatedMesh()
     }
 
-    renderEdge(ctx) {
-        if (this.trees) {
-
-            ctx.setLineDash([]);
-            ctx.strokeStyle = 'rgba(127, 127, 255, 0.7)';
-            ctx.lineWidth = 10 * window.devicePixelRatio;
-
-            ctx.beginPath()
-
-            this.trees.forEach(tree => {
-                tree.forEach((connection, i) => {
-                    var a = this.edgeClusters[connection.source]
-                    var b = this.edgeClusters[connection.target]
-
-                    var p0 = CameraTransformations.worldToScreen(new Cluster(a.map(e => e.source)).getCenter(), this.createTransform())
-                    var p1 = CameraTransformations.worldToScreen(new Cluster(a.map(e => e.target)).getCenter(), this.createTransform())
-
-                    ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
-                    ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
-
-                    p0 = CameraTransformations.worldToScreen(new Cluster(b.map(e => e.source)).getCenter(), this.createTransform())
-                    p1 = CameraTransformations.worldToScreen(new Cluster(b.map(e => e.target)).getCenter(), this.createTransform())
-                    ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
-                    ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
-                })
-            })
-
-            ctx.stroke()
-            ctx.closePath()
-        }
-    }
-
     loadProjection(projection: Embedding) {
         this.props.dataset.vectors.forEach(vector => {
             let position = projection.positions[vector.view.meshIndex]
@@ -1342,8 +1308,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 (event) => { this.onMouseLeave(event) }
             }
             style={{
-                //display: 'flex',
-                //flexGrow: 1,
                 width: '100%',
                 height: '100%',
                 overflow: "hidden",
@@ -1394,7 +1358,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     }
 
                     handleClose()
-                }}>{"Create Cluster from Selection"}</MenuItem>
+                }}>{"Create Group from Selection"}</MenuItem>
             </Menu>
 
 
@@ -1468,7 +1432,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     return <div><MenuItem onClick={() => {
         props.handleClose();
         setOpenDumpDialog(() => true);
-    }}>{'Load Table from dump'}</MenuItem> 
+    }}>{'Load Table from dump'}</MenuItem>
     <LineUpDumpDialog openDialog={openDumpDialog} setOpenDumpDialog={setOpenDumpDialog}></LineUpDumpDialog>
     </div>
 }**/

@@ -170,7 +170,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                                     ></SidePath>
 
                                                     <line x1={x} y1={pos1.y + 35 + 70 - 6} x2={x} y2={pos1.y + elementHeight} stroke={strokeColors[si]}></line>
-                                                    <rect x={x - 6} y={pos1.y + elementHeight - 6} width={stateSize} height={stateSize} fill={fillColors[si]} />
+                                                    <rect x={x - 6} y={pos1.y + elementHeight - 6} width={stateSize} height={stateSize} fill={fillColors[si]} transform={`rotate(45,${x},${pos1.y + elementHeight})`}  />
                                                 </g>
                                             } else if (node.out && i != sidePath.syncNodes.length - 1 && sidePath.syncNodes[i + 1].in) {
 
@@ -232,7 +232,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                         position.map((p, index) => {
                             return <g key={`${p.x}${p.y}`}>
                                 <text x={midX + 10} y={p.y} fill="black" fontWeight="bold" fontFamily="monospace">{index}</text>
-                                <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={mainColor} />
+                                <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={mainColor} transform={`rotate(45,${midX},${p.y})`} />
 
                             </g>
                         })
@@ -359,7 +359,7 @@ export const ClusterOverview = connector(function ({
                         flexDirection: 'column',
                         minWidth: '100px'
                     }}>
-                        <Typography align="center" variant="subtitle2">Cluster</Typography>
+                        <Typography align="center" variant="subtitle2">Group Summary</Typography>
                         {
                             stories.trace?.mainPath.map((cluster, index) => {
                                 return <ToggleButton
@@ -384,7 +384,7 @@ export const ClusterOverview = connector(function ({
                         flexDirection: 'column',
                         minWidth: '100px'
                     }}>
-                        <Typography align="center" variant="subtitle2">Change</Typography><br />
+                        <Typography align="center" variant="subtitle2">Difference Summary</Typography><br />
                         {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
                         {
                             stories.trace?.mainEdges.map((edge, index) => {

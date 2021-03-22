@@ -16,11 +16,6 @@ export const setAggregationAction = samples => ({
     aggregation: samples
 });
 
-export const mergeAggregation = (samples: Vect[]) => ({
-    type: MERGE,
-    samples: samples
-})
-
 export const aggSelectCluster = (cluster: Cluster, shiftKey: boolean) => ({
     type: SELECT_CLUSTER,
     cluster: cluster,
@@ -33,12 +28,36 @@ function deriveFromClusters(clusters: Cluster[]) {
     return [...new Set(agg)]
 }
 
-const currentAggregation = (state = { aggregation: [], selectedClusters: [] }, action) => {
+function deriveFromSamples(samples: Vect[], clusters: Cluster[]) {
+    let labels = new Set()
+
+    samples.forEach(sample => {
+        sample.clusterLabel.forEach(label => {
+            labels.add(label)
+        })
+    })
+
+    let arr = Array.from(labels)
+
+    return clusters.filter(cluster => {
+        return arr.includes(cluster.label)
+    })
+}
+
+const initialState = {
+    aggregation: [] as Vect[],
+    selectedClusters: [] as Cluster[],
+    source: 'sample' as ('sample' | 'cluster')
+}
+
+
+const currentAggregation = (state = initialState, action): typeof initialState => {
     switch (action.type) {
         case SET:
             return {
                 aggregation: action.aggregation,
-                selectedClusters: []
+                selectedClusters: deriveFromSamples(action.aggregation, []),
+                source: 'sample'
             }
         case TOGGLE: {
             let newState = state.aggregation.slice(0)
@@ -51,7 +70,8 @@ const currentAggregation = (state = { aggregation: [], selectedClusters: [] }, a
             })
             return {
                 aggregation: newState,
-                selectedClusters: []
+                selectedClusters: deriveFromSamples(newState, []),
+                source: 'sample'
             }
         }
         case MERGE: {
@@ -62,8 +82,9 @@ const currentAggregation = (state = { aggregation: [], selectedClusters: [] }, a
                 }
             })
             return {
-                aggregation: state,
-                selectedClusters: []
+                aggregation: newState,
+                selectedClusters: [],
+                source: 'sample'
             }
         }
         case SELECT_CLUSTER: {
@@ -76,12 +97,14 @@ const currentAggregation = (state = { aggregation: [], selectedClusters: [] }, a
                 }
                 return {
                     aggregation: deriveFromClusters(newState),
-                    selectedClusters: newState
+                    selectedClusters: newState,
+                    source: 'cluster'
                 }
             } else {
                 return {
                     selectedClusters: [action.cluster],
-                    aggregation: [...action.cluster.vectors]
+                    aggregation: [...action.cluster.vectors],
+                    source: 'cluster'
                 }
             }
         }

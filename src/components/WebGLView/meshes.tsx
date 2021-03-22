@@ -371,7 +371,7 @@ export class PointVisualization {
     this.dataset = dataset
 
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
-    this.colorsChecked = [true, true, true, true, true, true, true, true, true]
+    this.colorsChecked = null
 
     this.grayedLayerSystem = new LayeringSystem(dataset.vectors.length)
 
@@ -614,16 +614,14 @@ export class PointVisualization {
 
     if (category == null) {
       this.vectorColorScheme = null
-      //this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
     } else {
       if (category.type == 'categorical') {
         this.vectorColorScheme = scale
-        //this.vectorColorScheme = new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[category.key]))])
       } else {
         var min = null, max = null
-        if (category.key in this.dataset.ranges) {
-          min = this.dataset.ranges[category.key].min
-          max = this.dataset.ranges[category.key].max
+        if (this.dataset.columns[category.key].range) {
+          min = this.dataset.columns[category.key].range.min
+          max = this.dataset.columns[category.key].range.max
         } else {
           var filtered = this.vectors.map(vector => vector[category.key])
           max = Math.max(...filtered)
@@ -657,22 +655,22 @@ export class PointVisualization {
     }
   }
 
-  transparencyCat(category) {
+  transparencyCat(category, range) {
     //var color = this.mesh.geometry.attributes.customColor.array
 
     if (category == null) {
       // default transparency
       //this.vectors.forEach(vector => color[vector.view.meshIndex * 4 + 3] = 1.0)
-      this.vectors.forEach(sample => sample.view.brightness = 1.0)
+      this.vectors.forEach(sample => sample.view.brightness = range[0])
     } else {
       if (category.type == 'sequential') {
 
         if (this.dataset.isSequential) {
           this.segments.forEach(segment => {
             var min = null, max = null
-            if (category.key in this.dataset.ranges) {
-              min = this.dataset.ranges[category.key].min
-              max = this.dataset.ranges[category.key].max
+            if (this.dataset.columns[category.key].range) {
+              min = this.dataset.columns[category.key].range.min
+              max = this.dataset.columns[category.key].range.max
             } else {
               var filtered = segment.vectors.map(vector => vector[category.key])
               max = Math.max(...filtered)
@@ -680,15 +678,19 @@ export class PointVisualization {
             }
 
             segment.vectors.forEach(vector => {
-              vector.view.brightness = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
-              //color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+              if (min == max) {
+                vector.view.brightness = range[0]
+              } else {
+                vector.view.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
+              }
+             
             })
           })
         } else {
           var min = null, max = null
-          if (category.key in this.dataset.ranges) {
-            min = this.dataset.ranges[category.key].min
-            max = this.dataset.ranges[category.key].max
+          if (this.dataset.columns[category.key].range) {
+            min = this.dataset.columns[category.key].range.min
+            max = this.dataset.columns[category.key].range.max
           } else {
             var filtered = this.vectors.map(vector => vector[category.key])
             max = Math.max(...filtered)
@@ -696,8 +698,12 @@ export class PointVisualization {
           }
 
           this.vectors.forEach(vector => {
-            //color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
-            vector.view.brightness = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+            if (min == max) {
+              vector.view.brightness = range[0]
+            } else {
+              vector.view.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
+            }
+            
           })
         }
       }
@@ -717,9 +723,9 @@ export class PointVisualization {
           // dataset with lines, we have segments
           this.segments.forEach(segment => {
             var min = null, max = null
-            if (category.key in this.dataset.ranges) {
-              min = this.dataset.ranges[category.key].min
-              max = this.dataset.ranges[category.key].max
+            if (this.dataset.columns[category.key].range) {
+              min = this.dataset.columns[category.key].range.min
+              max = this.dataset.columns[category.key].range.max
             } else {
               var filtered = segment.vectors.map(vector => vector[category.key])
               max = Math.max(...filtered)
@@ -737,9 +743,9 @@ export class PointVisualization {
         } else {
           // for state based data, min and max is based on whole dataset
           var min = null, max = null
-          if (category.key in this.dataset.ranges) {
-            min = this.dataset.ranges[category.key].min
-            max = this.dataset.ranges[category.key].max
+          if (this.dataset.columns[category.key].range) {
+            min = this.dataset.columns[category.key].range.min
+            max = this.dataset.columns[category.key].range.max
           } else {
             var filtered = this.vectors.map(vector => vector[category.key])
             max = Math.max(...filtered)

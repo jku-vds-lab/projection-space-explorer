@@ -1,4 +1,4 @@
-import { Dataset } from "../../../Utility/Data/Dataset";
+import { Dataset, DefaultFeatureLabel } from "../../../Utility/Data/Dataset";
 import { makeStyles, Modal, Box, Grid, Card, Checkbox, Button, withStyles, Paper } from "@material-ui/core";
 import { connect, ConnectedProps } from 'react-redux'
 import React = require("react");
@@ -253,7 +253,7 @@ type Props = PropsFromRedux & {
 
 function filterGroups(selection) {
     let label = 0
-    let groups = [{ groupLabel: label, name: "Default", items: [], checkedCount: 0, normalizedCount: 0 }]
+    let groups = [{ groupLabel: label, name: DefaultFeatureLabel, items: [], checkedCount: 0, normalizedCount: 0 }]
 
 
 

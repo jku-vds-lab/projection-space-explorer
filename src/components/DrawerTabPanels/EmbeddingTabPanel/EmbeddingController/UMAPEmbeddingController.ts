@@ -8,6 +8,7 @@ export class UMAPEmbeddingController extends EmbeddingController {
     targetBounds: any
     
     init(dataset: Dataset, selection: any, params: any, samples?) {
+
         this.worker = new Worker(frontend_utils.BASE_PATH + 'umap.js') //dist/
         this.worker.postMessage({
             messageType: 'init',
