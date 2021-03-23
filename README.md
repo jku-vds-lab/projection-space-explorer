@@ -175,13 +175,36 @@ https://www.npmjs.com/package/graphology-layout-forceatlas2
 # Documentation CIME
 The ChemInformatics Model Explorer (short CIME) extension of the Projection Space Explorer allows users to interactively explore a fixed subspace of chemical compounds.
 Users are able to apply a 2D projection to the provided data, and additionally show the high-dimensional data in a LineUp table.
-Furthermore, users can select datapoints and show the 2D structures of all selected items, aligned to each other, in a side-view.
-If provided in the data, users can change the representation in the side-view to show atom-level attributions in the 2D structure. 
-This could be used for comparing point neighbors for example to check, if machine learning model explanations generated for those datapoints make sense.
-Using the grouping tool allows for easier interaction with point neighborhoods.
+Furthermore, users can select datapoints and show the 2D compound-structures of all selected items, aligned to each other, in a side-view.
+If provided in the data, users can change the representation in the side-view to show atom-level attributions in the 2D compound-structure. 
+This could be used for comparing neighbors for example to check, if machine learning model explanations generated for those datapoints make sense.
+Using the grouping tool allows for easier interaction with item neighborhoods.
 
-The documentation is mainly organized according to the tabs that can be opened on the left side of the website.
+Instructions for installing the application are provided at the end of this documentation.
 
+## General/Controls
+This section explains the general layout of the tool and the basic controls with which you can interact with the tool.
+
+### View Components
+- Left Menu Drawer: Shows tabs that contain different groups of actions
+- Center View: Shows the current projection and allows the user to interact with the low dimensional projection of the data items
+- Table Component: Can be dragged up from the bottom of the window to show a LineUp table of the high dimensional space of the data items
+
+### Controls
+In the top right corner there is a tool list which lets you switch between predefined tools: Selection Tool and Panning Tool. Hovering over them will show you a description of what they do.
+The following describes a list of controls when the “Selection Tool” is chosen:
+- hover over item: shows a detailed view of the item
+- hover over cluster center: TODO
+- left-click on item: select this item
+- left-click + shift on item: toggle the selection status (i.e. if the item is selected, it is removed from selection; if the item is not selected, it is added to the selection)
+- left-click on group-center: select the whole group
+- left-click + shift on group-center: add the group to the selection
+- left-click + drag: new selection of items
+- left-click + shift + drag: toggles the selection (i.e. unselected points that are within the lasso selection are added to the selection and selected points that are within the lasso selection are deselected)
+- right-click + drag: allows you to move the whole scatterplot
+- mousewheel: zoom in and out to get a more/less detailed view of the items in the scatterplot
+- right-click on background or item: opens context menu that allows to create a group from the selected points
+- right-click on group center: opens group context menu that allows to delete a cluster or start the storytelling feature
 
 ## Dataset
 When loading the website there is a default dataset loaded, which is called "test.sdf".
@@ -207,7 +230,7 @@ Compound specific properties can contain arbitrary values, however the naming sh
 
 There are special properties that are handled differently by the system:
 - Including properties "x" and "y" tells the system to initialize the scatterplot according to these values.
-- The property “groupLabel” specifies the group each compound belongs to. 
+- The property “clusterLabel” specifies the group each compound belongs to. 
  
 #### Atom Properties 
 Atom specific properties are recognized by the backend if the property starts with “atom.dprops”. Those properties are interpreted as attribution scores and shown on top of the compound structure with a heatmap and contour lines (see section “Details” for more information.
@@ -253,7 +276,7 @@ Parameters that can not be defined by the user are set to the defaults suggested
 ### Progress
 The “Project” tab panel includes a view that shows the progress of a projection as soon as the projection starts to calculate. Here, the calculations can be paused and continued. 
 ### Settings
-If there are groups specified, the movement (trail) of the group centers during the projection can be visualized by enbaling the “Show Group Trail” toggle.
+If there are groups specified, the movement (trail) of the group centers during the projection can be visualized by enabling the “Show Group Trail” toggle.
 
 Users also have the possibility to save current projections and change between the projections of those savepoints.
 
@@ -262,9 +285,13 @@ Users also have the possibility to save current projections and change between t
 
 ## Encoding
 In the "Encoding" tab panel users can change the marks and channels of the displayed data.
-TODO: line by??
-TODO: shape by??
-TODO: need explanation??
+- shape by: select a categorical attribute and encode each value as a different mark 
+- brightness by: select a numerical attribute and scale the brightness (opacity) of each point by that value; the upper and lower limit of the brightness can be adjusted with the scale below; if nothing is selected, the slider can be adjusted to set the general brightness value of all points
+- size by: select a numerical attribute and scale the size of each point by that value; the upper and lower limit of the size can be adjusted with the scale below; if nothing is selected, the slider can be adjusted to set the general size value of all points
+- color by: select a categorical or numerical attribute that defines the color of the points; the colormap can be chosen below and depends on whether the attribute is numerical or categorical
+- advanced coloring: if you color by a categorical attribute, this allows you to hide/show items with certain values
+
+
 
 
 
@@ -331,14 +358,6 @@ The SMILES columns have some additional features:
 The table can be used interactively with the scatter plot that represents the embedding space and the summary view that shows selected items:
 - Hovering items in the table highlights the corresponding items in the other views as well and vice versa.
 - Users can select items in the table, which are also selected in the other views and vice versa.
-## General/Controls
-
-TODO: buttons on right top corner?
-TODO: main view description: hover,...
-TODO: general controls (left-click + drag = new selection; left-click + shift + drag = toggle selection; right-click + drag = pan; mousewheel = zoom; right-click: context-menu; right-click on group: group context menu;)
-TODO: item select vs group select
-
-
 # Installation
 ## Install npm packages
 Use a git tool to clone this repository to your computer.
