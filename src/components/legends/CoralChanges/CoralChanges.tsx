@@ -457,7 +457,7 @@ export const CoralChanges = connector(class extends React.Component<Props> {
     this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.projectionColumns, this.props.dataset);
     // filter entire vega specs with threshold
     this.rows = this.rows.filter(r => {
-      return r.difference >= this.props.differenceThreshold
+      return Math.abs(r.difference) >= this.props.differenceThreshold
     })
     // filter individual categorical vega spec bars with threshold
     this.rows = filterReactVega(this.rows, this.props.differenceThreshold, this.props.dataset)
