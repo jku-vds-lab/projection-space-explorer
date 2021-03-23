@@ -169,10 +169,11 @@ export async function get_structures_from_smiles_list(formData:FormData, control
 }
 
 
-export async function get_mcs_from_smiles_list(formData:FormData) {
+export async function get_mcs_from_smiles_list(formData:FormData, controller?) {
     return fetch(BASE_URL+'/get_common_mol_img', {
         method: 'POST',
         body: formData,
+        signal: controller?.signal
     })
     .then(handle_errors)
     .then(response => response.json())

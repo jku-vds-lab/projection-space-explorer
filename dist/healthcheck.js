@@ -175,12 +175,12 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_substructure_count = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.get_uploaded_files = exports.delete_file = exports.BASE_URL = exports.CREDENTIALS = void 0; // export const CREDENTIALS = 'include'; // for AWS/docker
+exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_substructure_count = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.get_uploaded_files = exports.delete_file = exports.BASE_URL = exports.CREDENTIALS = void 0;
+exports.CREDENTIALS = 'include'; // for AWS/docker
+// export const CREDENTIALS = 'omit'; // for netlify/local
+// export const BASE_URL = 'https://cime.caleydoapp.org'; // for netlify
 
-exports.CREDENTIALS = 'omit'; // for netlify/local
-
-exports.BASE_URL = 'https://cime.caleydoapp.org'; // for netlify
-// export const BASE_URL = 'http://127.0.0.1:8080'; // for local
+exports.BASE_URL = 'http://127.0.0.1:8080'; // for local
 // export const BASE_URL = ''; // for AWS/docker
 
 var smiles_cache = {};
@@ -412,7 +412,7 @@ function get_structures_from_smiles_list(formData, controller) {
 
 exports.get_structures_from_smiles_list = get_structures_from_smiles_list;
 
-function get_mcs_from_smiles_list(formData) {
+function get_mcs_from_smiles_list(formData, controller) {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
     return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
@@ -420,7 +420,8 @@ function get_mcs_from_smiles_list(formData) {
           case 0:
             return _context6.abrupt("return", fetch(exports.BASE_URL + '/get_common_mol_img', {
               method: 'POST',
-              body: formData
+              body: formData,
+              signal: controller === null || controller === void 0 ? void 0 : controller.signal
             }).then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (response) {

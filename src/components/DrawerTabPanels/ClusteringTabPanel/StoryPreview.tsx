@@ -67,7 +67,6 @@ export const StoryPreview = connector(({
                 </ListItem>
                 {
                     stories.stories && stories.stories.map((story, key) => {
-
                         return <ListItem
                             key={key}
                             button

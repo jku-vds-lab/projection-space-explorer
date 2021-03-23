@@ -28,6 +28,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
     dataset: state.dataset,
     hoverSettings: state.hoverSettings,
     rdkitSettings: state.rdkitSettings,
+    columns: state.dataset?.columns,
 })
 const mapDispatchToProps_Chem = dispatch => ({
     setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
@@ -42,14 +43,55 @@ const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
 
  type Props_Chem_Parent = PropsFromRedux_Chem & {
      selection: any, 
-     columns: any, 
      aggregate: boolean, 
-     hoverUpdate
+     hoverUpdate?: any,
+     mcs_only?: boolean
  }
  
 
 
 export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Parent) {
+
+    if(props.mcs_only){
+
+        const [mcsComp, setMcsComp] = React.useState(<div>loading...</div>)
+        const { cancellablePromise, cancelPromises } = useCancellablePromise();
+
+        let smiles_col = "SMILES";
+
+        React.useEffect(() => {
+            cancelPromises();
+
+            if(smiles_col in props.columns){
+                const formData = new FormData();
+                props.selection.every((row) => {
+                    formData.append('smiles_list', row[smiles_col]);
+                    return true;
+                });
+                const controller = new AbortController();
+                trackPromise(
+                    cancellablePromise(
+                        backend_utils.get_mcs_from_smiles_list(formData, controller)
+                        .then(x => {
+                            if (x.length > 100) { // check if it is actually long enogh to be an img
+                                setMcsComp(() => <div style={{width:80, height:80, backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundImage: `url('data:image/jpg;base64,${x}')` }}></div>);
+                            }else{
+                                setMcsComp(() => <div>{x}</div>);
+                            }
+                        }), controller
+                    )
+                );
+            }
+        }, [props.selection, props.mcs_only])
+        
+
+        if(smiles_col in props.columns){
+            return <div>{mcsComp}</div>;
+        }
+        return <div>No SMILES column found.</div>
+    }
+
+
     const [settingsOpen, setSettingsOpen] = React.useState(false);
     const [repList, setRepList] = React.useState(["Common Substructure"]);
     const [cancelables, setCancelables] = React.useState([]);
@@ -130,7 +172,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                     <div style={{width:(props.rdkitSettings.width+20)*chemComponents.length}}>
                         {chemComponents.map((x, i) => {
                             return <div key={x} style={{width: (props.rdkitSettings.width+20), float:'left'}}>
-                                <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, x)} currentRep={chemComponentsCurrentRep[i]} removeComponent={() => removeComponent(x)} id={x} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                                <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, x)} currentRep={chemComponentsCurrentRep[i]} removeComponent={() => removeComponent(x)} id={x} rep_list={repList} selection={props.selection} aggregate={props.aggregate} hoverUpdate={props.hoverUpdate}></ChemLegend>
                             </div>
                         })}
                     </div>
@@ -138,7 +180,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                 {chemComponents.length <= 1 &&
                     <div>
                         <div style={{minWidth: props.rdkitSettings.width}} key={chemComponents[0]}>
-                            <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, chemComponents[0])} currentRep={chemComponentsCurrentRep[0]} id={chemComponents[0]} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                            <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, chemComponents[0])} currentRep={chemComponentsCurrentRep[0]} id={chemComponents[0]} rep_list={repList} selection={props.selection} aggregate={props.aggregate} hoverUpdate={props.hoverUpdate}></ChemLegend>
                         </div>
                     </div>
                 }
@@ -146,7 +188,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
             
         </Box>;
     }else{
-        return <ChemLegend id={-1} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+        return <ChemLegend id={-1} rep_list={repList} selection={props.selection} aggregate={props.aggregate} hoverUpdate={props.hoverUpdate}></ChemLegend>
     }
 
 });

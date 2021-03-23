@@ -210,9 +210,8 @@ export const LineUpContext = connector(function ({
         // });
 
         // make lineup selection interact with the scatter plot view
-        lineup.on('selectionChanged', e => {
-            const currentSelection_lineup = lineup.getSelection();
-            if(currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
+        lineup.on('selectionChanged', currentSelection_lineup => {
+            // if(currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
             
             const currentSelection_scatter = lineUpInput_data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
             
@@ -341,7 +340,7 @@ export const LineUpContext = connector(function ({
                         const filter_col = ranking.children.find(x => { return x.desc.column == UNIQUE_ID; });
 
                         let regex_str = "";
-                        currentAggregation.aggregation.forEach(element => {
+                        lineUpInput.filter[key].forEach(element => {
                             regex_str += "|"
                             regex_str += element["__meta__"]["view"]["meshIndex"]
                         });
@@ -480,6 +479,7 @@ function buildLineup(cols, data, pointColorScale) {
         filter: false
     });
     builder.dynamicHeight(myDynamicHeight);
+    builder.animated(false);
 
 
     return builder;

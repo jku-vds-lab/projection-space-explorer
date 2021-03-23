@@ -28,7 +28,7 @@ const SelectionClustersFull = function ({
     }
 
     const genericAggregateLegend = currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? 
-                <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation.aggregation} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend> : 
+                <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation.aggregation} hoverUpdate={hoverUpdate}></GenericLegend> : 
                 <Box paddingLeft={2}>
                     <Typography color={"textSecondary"}>
                         Select Points in the Embedding Space to show a Summary Visualization.
@@ -46,7 +46,7 @@ const SelectionClustersFull = function ({
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>
-                <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState.data]} columns={dataset.columns} hoverUpdate={hoverUpdate}></GenericLegend>
+                <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState.data]} hoverUpdate={hoverUpdate}></GenericLegend>
             </Card>
         </HoverItemPortal>}
 
