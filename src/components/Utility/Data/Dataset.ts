@@ -61,6 +61,7 @@ export class Dataset {
         this.type = this.info.type;
         this.metaInformation = metaInformation
 
+
         this.calculateBounds();
         this.calculateColumnTypes(ranges, featureTypes, metaInformation);
         this.checkLabels();
@@ -193,15 +194,15 @@ export class Dataset {
 
 
         if ('algo' in this.columns)
-            this.columns['algo'].featureType = FeatureType.Categorical;
+            this.columns['algo'].featureType = FeatureType.String;
         if ('groupLabel' in this.columns)
-            this.columns['groupLabel'].featureType = FeatureType.Categorical;
+            this.columns['groupLabel'].featureType = FeatureType.String;
         if ('clusterProbability' in this.columns)
-            this.columns['clusterProbability'].featureType = FeatureType.Quantitative;
+            this.columns['clusterProbability'].featureType = FeatureType.Numeric;
         if ('x' in this.columns)
-            this.columns['x'].featureType = FeatureType.Quantitative;
+            this.columns['x'].featureType = FeatureType.Numeric;
         if ('y' in this.columns)
-            this.columns['y'].featureType = FeatureType.Quantitative;
+            this.columns['y'].featureType = FeatureType.Numeric;
     }
 
     mapProjectionInitialization = entry => {

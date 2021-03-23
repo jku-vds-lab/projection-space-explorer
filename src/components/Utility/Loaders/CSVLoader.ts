@@ -134,18 +134,12 @@ export class CSVLoader implements Loader {
             if(col_meta?.dtype){
                 switch(col_meta.dtype){
                     case "numerical":
-                        types[current_key] = FeatureType.Quantitative;
+                        types[current_key] = FeatureType.Numeric;
                         break;
                     case "date":
                         types[current_key] = FeatureType.Date;
                         break;
                     case "categorical":
-                        types[current_key] = FeatureType.Categorical;
-                        break;
-                    case "string":
-                        types[current_key] = FeatureType.String;
-                        break;
-                    default:
                         types[current_key] = FeatureType.String;
                         break;
                 }
@@ -167,13 +161,13 @@ export class CSVLoader implements Loader {
                 
                 if (contains_number[current_key] && !contains_date[current_key] && !contains_arbitrary[current_key]) {
                     // only numbers -> quantitative type
-                    types[current_key] = FeatureType.Quantitative
+                    types[current_key] = FeatureType.Numeric
                 } else if (!contains_number[current_key] && contains_date[current_key] && !contains_arbitrary[current_key]) {
                     // only date -> date type
                     types[current_key] = FeatureType.Date
                 } else {
                     // otherwise categorical
-                    types[current_key] = FeatureType.Categorical
+                    types[current_key] = FeatureType.String
                 }
             }
             index++;
@@ -188,7 +182,7 @@ export class CSVLoader implements Loader {
         for (var key in types) {
             if (types[key] === FeatureType.Date) {
                 dateFeatures.push(key)
-            } else if (types[key] === FeatureType.Quantitative) {
+            } else if (types[key] === FeatureType.Numeric) {
                 quantFeatures.push(key)
             }
         }

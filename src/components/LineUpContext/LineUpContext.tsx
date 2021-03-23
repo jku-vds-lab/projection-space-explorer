@@ -387,21 +387,18 @@ function buildLineup(cols, data) {
             }
             else if (typeof col.featureType !== 'undefined') {
                 switch (col.featureType) {
-                    case FeatureType.Categorical:
+                    case FeatureType.String:
                         if (data && col.distinct && col.distinct.length / data.length <= 0.5) {
                             builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
                         } else {
                             builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
                         }
                         break;
-                    case FeatureType.Quantitative:
+                    case FeatureType.Numeric:
                         builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show));//.renderer("myBarCellRenderer")); //.renderer("numberWithValues")
                         break;
                     case FeatureType.Date:
                         builder.column(LineUpJS.buildDateColumn(i).custom("visible", show));
-                        break;
-                    case FeatureType.String:
-                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
                         break;
                     default:
                         builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));

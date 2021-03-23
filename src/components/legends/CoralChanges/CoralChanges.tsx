@@ -262,7 +262,7 @@ function getDifference(a, b, type): [number, string, number] {
   var maxDifFeature = ""
   var maxDifVal = 0
 
-  if (type !== FeatureType.Categorical) {
+  if (type !== FeatureType.String) {
     // bin continuous data and turn into categorical data using bin numbers
     const flatBins = getFlattenedBins(a, b)
     a = flatBins[0]
@@ -277,7 +277,7 @@ function getDifference(a, b, type): [number, string, number] {
   const dif = test.calc(a, b)
 
   // for quantitative data use score avlue as difference
-  if (type !== FeatureType.Categorical) {
+  if (type !== FeatureType.String) {
     maxDifVal = dif.scoreValue
   }
 
@@ -350,7 +350,7 @@ function getContinuousVis(a, b, feature) {
 }
 
 function getVis(a, b, type, feature) {
-  if (type === FeatureType.Categorical) {
+  if (type === FeatureType.String) {
     return getCategoricalVis(a, b, feature)
   } else {
     return getContinuousVis(a, b, feature)
@@ -434,7 +434,7 @@ function filterReactVega(rows, threshold, dataset) {
 
     const type = dataset.columns[rows[i].feature]?.featureType
 
-    if (type === FeatureType.Categorical) {
+    if (type === FeatureType.String) {
       rows[i].char.props.children[2].props.data.values = rows[i].char.props.children[2].props.data.values.filter(v => {
         return Math.abs(v.difference) >= threshold
       })

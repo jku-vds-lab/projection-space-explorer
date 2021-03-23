@@ -41,6 +41,7 @@ import splitRef from '../Ducks/SplitRefDuck';
 import globalPointBrightness from '../Ducks/GlobalPointBrightnessDuck';
 import channelBrightness from '../Ducks/ChannelBrightnessDuck';
 import groupVisualizationMode from '../Ducks/GroupVisualizationMode';
+import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -84,7 +85,8 @@ const allReducers = {
   selectedLineBy: selectedLineBy,
   splitRef: splitRef,
   globalPointBrightness: globalPointBrightness,
-  groupVisualizationMode: groupVisualizationMode
+  groupVisualizationMode: groupVisualizationMode,
+  genericFingerprintAttributes: genericFingerprintAttributes
 }
 
 const appReducer = combineReducers(allReducers)

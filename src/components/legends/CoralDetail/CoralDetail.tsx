@@ -181,12 +181,12 @@ function genRows(vectors, projectionColumns, dataset) {
   for (var key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-      if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
+      if (dataset.columns[key]?.featureType === FeatureType.Numeric) {
         // quantitative feature
         var densityData = mapDensityData(dataset.vectors, vectors, key)
         rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDensity data={densityData} actions={false} tooltip={new Handler().call}/>])
 
-      } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
+      } else if (dataset.columns[key]?.featureType === FeatureType.String) {
         // categorical feature
         var barData = mapBarChartData(vectors, key)
         rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])

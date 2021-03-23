@@ -108,13 +108,13 @@ export class JSONLoader implements Loader {
             if (contains_number[f] && !contains_date[f] && !contains_arbitrary[f]) {
                 // only numbers -> quantitative type
                 // (no way to tell if a feature of only numbers should be categorical, even if it is all integers)
-                types[f] = FeatureType.Quantitative
+                types[f] = FeatureType.Numeric
             } else if (!contains_number[f] && contains_date[f] && !contains_arbitrary[f]) {
                 // only date -> date type
                 types[f] = FeatureType.Date
             } else {
                 // otherwise categorical
-                types[f] = FeatureType.Categorical
+                types[f] = FeatureType.String
             }
         })
 
@@ -126,7 +126,7 @@ export class JSONLoader implements Loader {
         for (var key in types) {
             if (types[key] === FeatureType.Date) {
                 dateFeatures.push(key)
-            } else if (types[key] === FeatureType.Quantitative) {
+            } else if (types[key] === FeatureType.String) {
                 quantFeatures.push(key)
             }
         }

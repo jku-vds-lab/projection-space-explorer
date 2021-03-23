@@ -1,7 +1,9 @@
 
+/**
+ * The data type of a feature
+ */
 export enum FeatureType {
     String,
-    Categorical,
-    Quantitative,
+    Numeric,
     Date
 }

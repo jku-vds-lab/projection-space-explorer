@@ -529,7 +529,7 @@ function ClusterPopover({
 
     if (!cluster) return null;
 
-    const [name, setName] = React.useState(cluster.name)
+    const [name, setName] = React.useState(cluster.label)
 
     const useStyles = makeStyles(theme => ({
         button: {
@@ -549,7 +549,6 @@ function ClusterPopover({
     }, [anchorEl, cluster])
 
     const onSave = () => {
-        cluster.name = name
         cluster.label = name
         // Rename cluster labels in dataset
         replaceClusterLabels(cluster.vectors, cluster.label, name)

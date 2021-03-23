@@ -59,7 +59,7 @@ import { devToolsEnhancer } from 'redux-devtools-extension';
 import { setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
 import { SDFLoader } from "./Utility/Loaders/SDFLoader";
 import * as frontend_utils from "../utils/frontend-connect";
-import { HoverTabPanel } from "./DrawerTabPanels/HoverTabPanel/HoverTabPanel";
+import { DetailsTabPanel } from "./DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
 import { addProjectionAction } from "./Ducks/ProjectionsDuck";
 import { Embedding } from "./Utility/Data/Embedding";
 import { setActiveStory, setVectors, addStory } from "./Ducks/StoriesDuck";
@@ -84,6 +84,7 @@ import { Story } from "./Utility/Data/Story";
 import { BrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/BrightnessSlider/BrightnessSlider";
 import { setGlobalPointBrightness } from "./Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
+import { setGenericFingerprintAttributes } from "./Ducks/GenericFingerprintAttributesDuck";
 const d3 = require("d3")
 
 
@@ -147,7 +148,8 @@ const mapDispatchToProps = dispatch => ({
   setVectors: vectors => dispatch(setVectors(vectors)),
   setLineByOptions: options => dispatch(setLineByOptions(options)),
   setSplitRef: splitRef => dispatch(setSplitRef(splitRef)),
-  setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value))
+  setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
+  setGenericFingerprintAttriutes: value => dispatch(setGenericFingerprintAttributes(value))
 })
 
 
@@ -334,6 +336,10 @@ var Application = connector(class extends React.Component<Props, any> {
     this.props.setPathLengthMaximum(dataset.getMaxPathLength())
     this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
     this.props.saveProjection(new Embedding(dataset.vectors, "Initial Projection"))
+    this.props.setGenericFingerprintAttriutes(dataset.getColumns(true).map(column => ({
+      feature: column,
+      show: true
+    })))
 
     const formatRange = range => {
       try {
@@ -785,7 +791,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
               <FixedHeightTabPanel value={this.props.openTab} index={4}>
-                <HoverTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></HoverTabPanel>
+                <DetailsTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></DetailsTabPanel>
               </FixedHeightTabPanel>
 
               {/* {frontend_utils.CHEM_PROJECT && 
