@@ -13,6 +13,7 @@ const initialState: HoverStateType = {
     data: null,
     updater: ""
 }
+
 export type HoverStateType = {
     data: Vect | Cluster,
     updater: String

@@ -57,7 +57,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
     open,
-    backendRunning,
     clusteringWorker,
     splitRef
 }
@@ -357,11 +356,11 @@ export const ClusteringTabPanel = connector(({
 
         <Box paddingLeft={2} paddingRight={2}>
             <FormControlLabel
-                control={<Switch checked={displayMode != DisplayMode.OnlyClusters && displayMode != DisplayMode.None} onChange={onCheckItems} />}
+                control={<Switch color="primary" checked={displayMode != DisplayMode.OnlyClusters && displayMode != DisplayMode.None} onChange={onCheckItems} />}
                 label="Show Items"
             />
             <FormControlLabel
-                control={<Switch checked={displayMode != DisplayMode.OnlyStates && displayMode != DisplayMode.None} onChange={onCheckClusters} />}
+                control={<Switch color="primary" checked={displayMode != DisplayMode.OnlyStates && displayMode != DisplayMode.None} onChange={onCheckClusters} />}
                 label="Show Group Centers"
             />
 
@@ -544,7 +543,7 @@ function ClusterPopover({
 
     React.useEffect(() => {
         if (cluster && anchorEl) {
-            setName(cluster.getTextRepresentation())
+            setName(cluster.label)
         }
     }, [anchorEl, cluster])
 
@@ -564,7 +563,7 @@ function ClusterPopover({
         setAnchorEl(null)
         // setLineUpInput_data(cluster.vectors)
         setLineUpInput_visibility(true)
-        setLineUpInput_filter({ 'groupLabel': cluster.getTextRepresentation() });
+        setLineUpInput_filter({ 'groupLabel': cluster.label });
         handleClusterClick(cluster); // select items in cluster when opening lineup
         splitRef.current.split.setSizes([50, 50])
     }
@@ -686,11 +685,6 @@ function ClusterList({
                     // webGLView.current.onClusterClicked(cluster, event.shiftKey)
                     webGLView.current.onClusterClicked(cluster, event.ctrlKey)
                 }}>
-                    <ListItemAvatar>
-                        <Avatar>
-                            <FolderIcon />
-                        </Avatar>
-                    </ListItemAvatar>
                     <ListItemText
                         primary={cluster.getTextRepresentation()}
                         secondary={`${cluster.vectors.length} Items`}

@@ -32,7 +32,6 @@ import { connect } from 'react-redux'
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
 import { setProjectionOpenAction } from "./Ducks/ProjectionOpenDuck";
-import { setHighlightedSequenceAction } from "./Ducks/HighlightedSequenceDuck";
 import { setDatasetAction } from "./Ducks/DatasetDuck";
 import { setOpenTabAction } from "./Ducks/OpenTabDuck";
 import { setWebGLView } from "./Ducks/WebGLViewDuck";
@@ -85,7 +84,8 @@ import { BrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/BrightnessSli
 import { setGlobalPointBrightness } from "./Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
 import { setGenericFingerprintAttributes } from "./Ducks/GenericFingerprintAttributesDuck";
-const d3 = require("d3")
+import { GroupVisualizationMode, setGroupVisualizationMode } from "./Ducks/GroupVisualizationMode";
+import { HoverStateOrientation } from "./Ducks/HoverStateOrientationDuck";
 
 
 /**
@@ -117,7 +117,8 @@ const mapStateToProps = (state: RootState) => ({
   channelSize: state.channelSize,
   channelColor: state.channelColor,
   channelBrightness: state.channelBrightness,
-  splitRef: state.splitRef
+  splitRef: state.splitRef,
+  hoverStateOrientation: state.hoverStateOrientation
 })
 
 
@@ -127,7 +128,6 @@ const mapDispatchToProps = dispatch => ({
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
-  setHighlightedSequence: value => dispatch(setHighlightedSequenceAction(value)),
   setActiveLine: value => dispatch(setActiveLine(value)),
   setProjectionColumns: projectionColumns => dispatch(setProjectionColumns(projectionColumns)),
   setProjectionOpen: projectionOpen => dispatch(setProjectionOpenAction(projectionOpen)),
@@ -149,7 +149,8 @@ const mapDispatchToProps = dispatch => ({
   setLineByOptions: options => dispatch(setLineByOptions(options)),
   setSplitRef: splitRef => dispatch(setSplitRef(splitRef)),
   setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
-  setGenericFingerprintAttriutes: value => dispatch(setGenericFingerprintAttributes(value))
+  setGenericFingerprintAttriutes: value => dispatch(setGenericFingerprintAttributes(value)),
+  setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value))
 })
 
 
@@ -202,25 +203,14 @@ var Application = connector(class extends React.Component<Props, any> {
     this.state = {
       fileDialogOpen: true,
 
-      selectedLines: {},
-
-      backendRunning: false
-
-
-    }
-    
-    var worker = new Worker(frontend_utils.BASE_PATH + 'healthcheck.js') //dist/
-    worker.onmessage = (e) => {
-      this.setState({
-        backendRunning: e.data
-      })
+      selectedLines: {}
     }
 
 
     this.threeRef = React.createRef()
     this.splitRef = React.createRef()
     this.props.setWebGLView(this.threeRef)
-    
+
     this.legend = React.createRef()
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
@@ -284,6 +274,7 @@ var Application = connector(class extends React.Component<Props, any> {
     this.threeRef.current.disposeScene()
 
     this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
+    this.props.setGroupVisualizationMode(dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull)
 
     // Set new dataset as variable
     this.props.setDataset(dataset)
@@ -313,7 +304,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
     // set default storybook that contains all clusters and no arrows
-    if(dataset.clusters.length > 0){
+    if (dataset.clusters.length > 0) {
       let story = new Story(dataset.clusters, []);
       this.props.addStory(story)
       this.props.setActiveStory(null)
@@ -338,7 +329,7 @@ var Application = connector(class extends React.Component<Props, any> {
     this.props.saveProjection(new Embedding(dataset.vectors, "Initial Projection"))
     this.props.setGenericFingerprintAttriutes(dataset.getColumns(true).map(column => ({
       feature: column,
-      show: true
+      show: dataset.columns[column].project
     })))
 
     const formatRange = range => {
@@ -412,7 +403,7 @@ var Application = connector(class extends React.Component<Props, any> {
     }
 
     var defaultBrightnessAttribute = this.props.categoryOptions.getAttribute("transparency", "age", "sequential")
-  
+
     if (defaultBrightnessAttribute) {
       this.props.setGlobalPointBrightness([0.25, 1])
       this.props.setChannelBrightness(defaultBrightnessAttribute)
@@ -422,7 +413,7 @@ var Application = connector(class extends React.Component<Props, any> {
       this.props.setChannelBrightness(null)
       this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute, [1])
     }
-    
+
     this.setState(state)
   }
 
@@ -472,7 +463,7 @@ var Application = connector(class extends React.Component<Props, any> {
               <Typography variant="subtitle2">Load Dataset</Typography>
               <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
             </React.Fragment>}><Tab value={0} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
-            
+
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Embedding and Projection</Typography>
               <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
@@ -482,12 +473,12 @@ var Application = connector(class extends React.Component<Props, any> {
               <Typography variant="subtitle2">Point and Line Channels</Typography>
               <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
             </React.Fragment>}><Tab className="pse-tab" value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
-            
+
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Clustering</Typography>
               <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
             </React.Fragment>}><Tab className="pse-tab" value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
-            
+
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
@@ -533,7 +524,7 @@ var Application = connector(class extends React.Component<Props, any> {
               <FixedHeightTabPanel value={this.props.openTab} index={0} >
                 <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
               </FixedHeightTabPanel>
-              
+
 
               <FixedHeightTabPanel value={this.props.openTab} index={1}>
                 <EmbeddingTabPanel></EmbeddingTabPanel>
@@ -783,7 +774,6 @@ var Application = connector(class extends React.Component<Props, any> {
                 {this.props.dataset != null ?
                   <ClusteringTabPanel
                     open={this.props.openTab == 2}
-                    backendRunning={this.state.backendRunning}
                     clusteringWorker={this.state.clusteringWorker}
                   ></ClusteringTabPanel> : <div></div>
                 }
@@ -798,7 +788,7 @@ var Application = connector(class extends React.Component<Props, any> {
               <FixedHeightTabPanel value={this.props.openTab} index={5}>
                 <ChemTabPanel></ChemTabPanel>
               </FixedHeightTabPanel>} */}
-              
+
               <FixedHeightTabPanel value={this.props.openTab} index={5}>
                 <LineUpTabPanel></LineUpTabPanel>
               </FixedHeightTabPanel>
@@ -812,8 +802,8 @@ var Application = connector(class extends React.Component<Props, any> {
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          width: '100%',
-          height: '100%'
+          height: '100%',
+          flexGrow: 1
         }}>
           <AppBar variant="outlined" position="relative" color="transparent">
             <Toolbar>
@@ -822,7 +812,6 @@ var Application = connector(class extends React.Component<Props, any> {
               <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
                 Projection Space Explorer
               </Typography>
-              <ToolSelectionRedux />
             </Toolbar>
           </AppBar>
 
@@ -857,8 +846,6 @@ var Application = connector(class extends React.Component<Props, any> {
             <div style={{ flexGrow: 0.1 }}>
               <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
             </div>
-
-
           </Split>
 
 
@@ -880,13 +867,20 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
 
-        <div id="HoverItemDiv" style={{
+        {this.props.hoverStateOrientation == HoverStateOrientation.SouthWest && <div id="HoverItemDiv" style={{
           position: 'absolute',
           left: '0px',
           bottom: '0px',
           zIndex: 10000,
           padding: 8
-        }}></div>
+        }}></div>}
+        {this.props.hoverStateOrientation == HoverStateOrientation.NorthEast && <div id="HoverItemDiv" style={{
+          position: 'absolute',
+          right: '0px',
+          top: '0px',
+          zIndex: 10000,
+          padding: 8
+        }}></div>}
       </div>
     </div>
   }

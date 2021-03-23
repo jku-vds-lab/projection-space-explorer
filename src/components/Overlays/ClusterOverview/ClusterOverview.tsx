@@ -1,10 +1,8 @@
 import "./ClusterOverview.scss";
 import * as React from 'react'
 import Cluster from "../../Utility/Data/Cluster";
-import { Story } from "../../Utility/Data/Story";
 import { GenericFingerprint } from "../../Legends/Generic";
-import { Card, Grow, Typography, Tooltip, IconButton, Input, CardHeader } from "@material-ui/core";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import { Card, Typography, Tooltip, IconButton, CardHeader } from "@material-ui/core";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect, ConnectedProps } from 'react-redux'
 import { DatasetType } from "../../Utility/Data/DatasetType";
@@ -17,6 +15,8 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import { DifferenceThresholdSlider } from '../../legends/CoralChanges/DifferenceThresholdSlider';
 import CloseIcon from '@material-ui/icons/Close';
+
+
 
 
 const mapStateToProps = (state: RootState) => ({
@@ -93,7 +93,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
         const fillColors = ["#F1DCA5", "#F8C7A0"]
         const strokeColors = ["#e9c46a", "#f4a261"]
-        const mainColor = "#4d94ff"
+        const mainColor = '#007dad'
         const stateSize = 12
 
         if (!this.props.input) return null;
@@ -327,9 +327,7 @@ export const ClusterOverview = connector(function ({
     }, [stories.trace])
 
 
-
-    return <Grow in={stories.active != null && stories.trace != null}>
-        <Card className="ClusterOverviewParent" variant="outlined">
+    return <Card className="ClusterOverviewParent" variant="outlined">
 
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
                 <CardHeader
@@ -341,7 +339,7 @@ export const ClusterOverview = connector(function ({
                             <CloseIcon />
                         </IconButton>
                     }
-                    title="Story Telling"
+                    title="Storytelling"
                 />
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -362,11 +360,12 @@ export const ClusterOverview = connector(function ({
                         <Typography align="center" variant="subtitle2">Group Summary</Typography>
                         {
                             stories.trace?.mainPath.map((cluster, index) => {
-                                return <ToggleButton
+                                return <div
                                     key={index}
                                     className="ClusterItem"
                                     selected={stories.activeTraceState == cluster}
                                     value={index}
+                                
                                     onClick={() => {
                                         itemClicked(cluster)
                                         setActiveTraceState(cluster)
@@ -375,7 +374,7 @@ export const ClusterOverview = connector(function ({
                                         vectors={cluster.vectors}
                                         scale={1}
                                     ></GenericFingerprint>
-                                </ToggleButton>
+                                </div>
                             })
                         }
                     </div>
@@ -407,5 +406,4 @@ export const ClusterOverview = connector(function ({
                 </div>
             </div>
         </Card>
-    </Grow >
 })

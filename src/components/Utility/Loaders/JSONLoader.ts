@@ -108,13 +108,13 @@ export class JSONLoader implements Loader {
             if (contains_number[f] && !contains_date[f] && !contains_arbitrary[f]) {
                 // only numbers -> quantitative type
                 // (no way to tell if a feature of only numbers should be categorical, even if it is all integers)
-                types[f] = FeatureType.Numeric
+                types[f] = FeatureType.Quantitative
             } else if (!contains_number[f] && contains_date[f] && !contains_arbitrary[f]) {
                 // only date -> date type
                 types[f] = FeatureType.Date
             } else {
                 // otherwise categorical
-                types[f] = FeatureType.String
+                types[f] = FeatureType.Categorical
             }
         })
 
@@ -126,7 +126,7 @@ export class JSONLoader implements Loader {
         for (var key in types) {
             if (types[key] === FeatureType.Date) {
                 dateFeatures.push(key)
-            } else if (types[key] === FeatureType.String) {
+            } else if (types[key] === FeatureType.Quantitative) {
                 quantFeatures.push(key)
             }
         }
@@ -147,7 +147,7 @@ export class JSONLoader implements Loader {
 
         let clusters: Cluster[] = []
         content.clusters[0].data.forEach(row => {
-            let nameIndex = content.edges[0].columns.indexOf("name")
+            let nameIndex = content.clusters[0].columns.indexOf("name")
 
             let points = []
             row[1].forEach(i => {
@@ -161,6 +161,7 @@ export class JSONLoader implements Loader {
             }
             
             cluster.label = row[0]
+
             clusters.push(cluster)
         })
 

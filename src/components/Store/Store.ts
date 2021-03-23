@@ -42,6 +42,7 @@ import globalPointBrightness from '../Ducks/GlobalPointBrightnessDuck';
 import channelBrightness from '../Ducks/ChannelBrightnessDuck';
 import groupVisualizationMode from '../Ducks/GroupVisualizationMode';
 import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
+import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -86,7 +87,8 @@ const allReducers = {
   splitRef: splitRef,
   globalPointBrightness: globalPointBrightness,
   groupVisualizationMode: groupVisualizationMode,
-  genericFingerprintAttributes: genericFingerprintAttributes
+  genericFingerprintAttributes: genericFingerprintAttributes,
+  hoverStateOrientation: hoverStateOrientation
 }
 
 const appReducer = combineReducers(allReducers)

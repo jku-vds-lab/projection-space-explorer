@@ -18,7 +18,6 @@ export class VirtualTable extends React.Component<VirtualTableProps, any> {
         // Initial props:
         super(props)
 
-        console.log(this.props.children)
 
         // Initial state:
         this.state = {
@@ -70,19 +69,25 @@ export class VirtualTable extends React.Component<VirtualTableProps, any> {
                     top: (index * rowHeight),
                     left: 0,
                     height: rowHeight,
-                    lineHeight: `${rowHeight}px`
+                    lineHeight: `${rowHeight}px`,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    width: '100%',
+                    padding: 4,
+                    boxSizing: 'border-box'
                 },
                 className: `tr ${(index % 2) === 0 ? 'tr-odd' : 'tr-even'}`
             }
 
             items.push(
-                <tr {...rowAttrs} key={index}>
+                <div {...rowAttrs} key={index}>
                     {this.props.children.map((child, i) => {
-                        return <td key={i}>
+                        return <div key={i} style={{display: 'inline-block', flexGrow: 1, flexBasis: 0}}>
                             {child.props.renderer(rows[index])}
-                        </td>
+                        </div>
                     })}
-                </tr>
+                </div>
             )
 
             index++
@@ -96,11 +101,12 @@ export class VirtualTable extends React.Component<VirtualTableProps, any> {
             wrapper: { className: 'wrapper' },
             tr: { className: 'tr' },
             content: {
-                className: 'table-content',
+                className: 'table-content dorime',
                 style: {
                     height: (this.props.tableHeight > this.state.tableHeight)
                         ? this.state.tableHeight + 2
-                        : this.props.tableHeight
+                        : this.props.tableHeight,
+                    width: 500
                 },
                 onScroll: this.onScroll
             },
@@ -117,22 +123,11 @@ export class VirtualTable extends React.Component<VirtualTableProps, any> {
 
         return (
             <div {...attrs.wrapper}>
-                <table>
-                    <thead>
-                        <tr {...attrs.tr}>
-                            {
-                                this.props.children.map((child, i) => {
-                                    return <th key={i} style={{width: child.props.width}}>{child.props.name}</th>
-                                })
-                            }
-                        </tr>
-                    </thead>
-                </table>
-                <table {...attrs.content}>
-                    <tbody {...attrs.tbody}>
+                <div {...attrs.content}>
+                    <div {...attrs.tbody}>
                         {this.generateRows()}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
             </div>
         )
     }

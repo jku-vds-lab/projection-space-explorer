@@ -1,9 +1,10 @@
-import { Box, Button, Checkbox, FormControlLabel, Popover, Switch, Typography } from "@material-ui/core";
+import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, Popover, Select, Switch, Typography } from "@material-ui/core";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import { setGenericFingerprintAttributes } from "../../Ducks/GenericFingerprintAttributesDuck";
 import { setHoverWindowMode, WindowMode } from "../../Ducks/HoverSettingsDuck";
+import { HoverStateOrientation, setHoverStateOrientation } from "../../Ducks/HoverStateOrientationDuck";
 import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClusters";
 import { RootState } from "../../Store/Store";
 import { VirtualColumn, VirtualTable } from "../../UI/VirtualTable";
@@ -11,12 +12,14 @@ import { VirtualColumn, VirtualTable } from "../../UI/VirtualTable";
 const mapStateToProps = (state: RootState) => ({
     hoverSettings: state.hoverSettings,
     currentAggregation: state.currentAggregation,
-    dataset: state.dataset
+    dataset: state.dataset,
+    hoverStateOrientation: state.hoverStateOrientation
 })
 
 const mapDispatchToProps = dispatch => ({
     setHoverWindowMode: value => dispatch(setHoverWindowMode(value)),
-    setAggregation: value => dispatch(setAggregationAction(value))
+    setAggregation: value => dispatch(setAggregationAction(value)),
+    setHoverStateOrientation: value => dispatch(setHoverStateOrientation(value))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -28,7 +31,7 @@ type Props = PropsFromRedux & {
 }
 
 
-export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset }: Props) => {
+export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
@@ -36,22 +39,50 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, h
 
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box paddingLeft={2} paddingTop={2}>
-            {/* TODO: Cluster count not working */}
+        <Box paddingX={2} paddingY={1}>
             <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset && dataset.vectors.length}</b> items in <b>{currentAggregation.selectedClusters.length}</b> Groups</Typography>
+        </Box>
 
+        <Box paddingX={2} paddingY={1}>
             <FormControlLabel
                 control={<Switch checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
-                label="External Selection Summary"
+                label="External Summary"
             />
+        </Box>
+        <Box paddingX={2} paddingY={1}>
+            <Button variant="outlined" style={{ width: '100%' }} onClick={() => { setAggregation([]) }}>Clear Selection</Button>
+        </Box>
 
-            <Button variant="outlined" onClick={() => { setAggregation([]) }}>Clear Selection</Button>
-
+        <Box paddingX={2} paddingY={1}>
             <AttributeTable></AttributeTable>
         </Box>
 
+        <Box paddingX={2} paddingY={1}>
+            <div style={{ width: '100%' }}>
+                <FormControl style={{ width: '100%' }}>
+                    <InputLabel id="demo-customized-select-label">Hover Orientation</InputLabel>
+                    <Select
+                        labelId="demo-customized-select-label"
+                        id="demo-customized-select"
+                        value={hoverStateOrientation}
+                        onChange={(event) => {
+                            setHoverStateOrientation(event.target.value)
+                        }}
+                    >
+                        <MenuItem value={HoverStateOrientation.NorthEast}>North East</MenuItem>
+                        <MenuItem value={HoverStateOrientation.SouthWest}>South West</MenuItem>
+                    </Select>
+                </FormControl>
+            </div>
+        </Box>
+
+        <Box paddingY={2}>
+            <Divider orientation="horizontal"></Divider>
+        </Box>
+
+
         <SelectionClusters hoverUpdate={hoverUpdate}></SelectionClusters>
-    </div>
+    </div >
 })
 
 
@@ -101,17 +132,24 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
 
     const handleClose = () => {
         setAnchorEl(null)
+        setGenericFingerprintAttributes([...localAttributes])
     }
+
+    const [localAttributes, setLocalAttributes] = React.useState<any>([])
+
+    React.useEffect(() => {
+        setLocalAttributes(genericFingerprintAttributes)
+    }, [genericFingerprintAttributes])
 
     const booleanRenderer = (row: any) => {
         return <Checkbox disableRipple checked={row['show']} onChange={(event) => {
             row['show'] = event.target.checked
-            setGenericFingerprintAttributes([...genericFingerprintAttributes])
+            setLocalAttributes([...localAttributes])
         }}></Checkbox>
     }
 
     return <div>
-        <Button variant="outlined" onClick={fingerprintAttributes}>Fingerprint Attributes</Button>
+        <Button style={{ width: '100%' }} variant="outlined" onClick={fingerprintAttributes}>Fingerprint Attributes</Button>
 
         <Popover
             open={Boolean(anchorEl)}
@@ -126,10 +164,12 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
                 horizontal: 'center',
             }}
         >
-            <VirtualTable rows={genericFingerprintAttributes} rowHeight={35} tableHeight={300}>
-                <VirtualColumn width={150} name="Feature" renderer={(row) => strrenderer("feature", row)}></VirtualColumn>
-                <VirtualColumn width={50} name="Show" renderer={(row) => booleanRenderer(row)}></VirtualColumn>
-            </VirtualTable>
+            <Box margin={2}>
+                <VirtualTable rows={localAttributes} rowHeight={42} tableHeight={300}>
+                    <VirtualColumn width={300} name="Feature" renderer={(row) => strrenderer("feature", row)}></VirtualColumn>
+                    <VirtualColumn width={50} name="Show" renderer={(row) => booleanRenderer(row)}></VirtualColumn>
+                </VirtualTable>
+            </Box>
         </Popover>
     </div>
 })
@@ -137,5 +177,5 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
 
 
 const strrenderer = (name: string, row: any) => {
-    return <div>{row[name]}</div>
+    return <React.Fragment>{row[name]}</React.Fragment>
 }

@@ -194,15 +194,15 @@ export class Dataset {
 
 
         if ('algo' in this.columns)
-            this.columns['algo'].featureType = FeatureType.String;
+            this.columns['algo'].featureType = FeatureType.Categorical;
         if ('groupLabel' in this.columns)
-            this.columns['groupLabel'].featureType = FeatureType.String;
+            this.columns['groupLabel'].featureType = FeatureType.Categorical;
         if ('clusterProbability' in this.columns)
-            this.columns['clusterProbability'].featureType = FeatureType.Numeric;
+            this.columns['clusterProbability'].featureType = FeatureType.Quantitative;
         if ('x' in this.columns)
-            this.columns['x'].featureType = FeatureType.Numeric;
+            this.columns['x'].featureType = FeatureType.Quantitative;
         if ('y' in this.columns)
-            this.columns['y'].featureType = FeatureType.Numeric;
+            this.columns['y'].featureType = FeatureType.Quantitative;
     }
 
     mapProjectionInitialization = entry => {

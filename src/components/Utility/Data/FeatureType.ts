@@ -4,6 +4,7 @@
  */
 export enum FeatureType {
     String,
-    Numeric,
+    Quantitative,
+    Categorical,
     Date
 }

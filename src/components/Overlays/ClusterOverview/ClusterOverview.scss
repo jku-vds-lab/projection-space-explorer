@@ -9,16 +9,14 @@
 
 
 .ClusterOverviewParent {
-    position: absolute;
-    right: 0px;
-    bottom: 0px;
-    height: calc(100vh - 80px);
-    margin: 8px;
+    flex: 0 0 auto;
 }
 
 .ClusterItem {
     margin-top: 16px;
     margin-bottom: 16px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 

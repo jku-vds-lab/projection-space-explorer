@@ -89,7 +89,7 @@ export const LineUpTabPanel = connector(({ setLineUpInput_visibility, setLineUpI
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
             <FormControlLabel
-                control={<Switch checked={true} onChange={handleChange} name="checkedA" />}
+                control={<Switch color="primary" checked={true} onChange={handleChange} name="checkedA" />}
                 label="(TODO) External Selection Summary"
             />
 
@@ -100,7 +100,7 @@ export const LineUpTabPanel = connector(({ setLineUpInput_visibility, setLineUpI
         <Box padding={2}>
             <Button variant="outlined" onClick={() => { exportCSV() }}>Export CSV</Button> 
             <FormControlLabel
-                control={<Switch onChange={(event) => { //value={cell_value_vis} 
+                control={<Switch color="primary" onChange={(event) => { //value={cell_value_vis} 
                     toggleVis()
                 }} />}
                 label="Show Cell Value"
