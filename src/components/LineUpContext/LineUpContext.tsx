@@ -126,22 +126,25 @@ export const LineUpContext = connector(function ({
         return lineup_data;
     }
 
+    const clear_automatic_filters = (lineUpInput, filter) => {
+        if (filter) {
+            for (const key in filter) {
+                const lineup = lineUpInput.lineup;
+                const ranking = lineup.data.getFirstRanking();
+                if (key === 'selection') {
+                    const filter_col = ranking.children.find(x => { return x.desc.column == UNIQUE_ID; });
+                    filter_col?.clearFilter()
+                } else {
+                    const filter_col = ranking.children.find(x => { return x.desc.column == key; });
+                    filter_col?.clearFilter()
+                }
+            }
+
+        }
+    }
     const get_lineup_dump = (lineUpInput) => {
         if(lineUpInput.lineup){
-            if (lineUpInput.filter) {
-                for (const key in lineUpInput.filter) {
-                    const lineup = lineUpInput.lineup;
-                    const ranking = lineup.data.getFirstRanking();
-                    if (key === 'selection') {
-                        const filter_col = ranking.children.find(x => { return x.desc.column == UNIQUE_ID; });
-                        filter_col.clearFilter()
-                    } else {
-                        const filter_col = ranking.children.find(x => { return x.desc.column == key; });
-                        filter_col.clearFilter()
-                    }
-                }
-
-            }
+            clear_automatic_filters(lineUpInput, lineUpInput.filter)
             const dump = lineUpInput.lineup.dump()
             return dump;
         }
@@ -331,12 +334,15 @@ export const LineUpContext = connector(function ({
     React.useEffect(() => {
         if (lineUpInput.lineup && lineUpInput.lineup.data) {
             const ranking = lineUpInput.lineup.data.getFirstRanking();
-            ranking?.clearFilters();
+            console.log("clearFilters")
+            clear_automatic_filters(lineUpInput, lineUpInput.previousfilter);
             if (lineUpInput.filter) {
                 for (const key in lineUpInput.filter) {
                     const cur_filter = lineUpInput.filter[key];
 
-                    if (key === 'selection') {
+                    if(key === 'reset' && cur_filter){
+                        ranking.clearFilters();
+                    }else if (key === 'selection') {
                         const filter_col = ranking.children.find(x => { return x.desc.column == UNIQUE_ID; });
 
                         let regex_str = "";
@@ -361,9 +367,7 @@ export const LineUpContext = connector(function ({
                 }
 
             }
-            // else {
-            //     ranking.clearFilters();
-            // }
+            
 
         }
     }, [lineUpInput.lineup, lineUpInput.filter]);

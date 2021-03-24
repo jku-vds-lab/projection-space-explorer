@@ -172,6 +172,7 @@ https://www.npmjs.com/package/graphology-layout-forceatlas2
 
 
 
+
 # Documentation CIME
 The ChemInformatics Model Explorer (short CIME) extension of the Projection Space Explorer allows users to interactively explore a fixed subspace of chemical compounds.
 Users are able to apply a 2D projection to the provided data, and additionally show the high-dimensional data in a LineUp table.
@@ -191,14 +192,14 @@ This section explains the general layout of the tool and the basic controls with
 - Table Component: Can be dragged up from the bottom of the window to show a LineUp (https://lineup.js.org/) table of the high dimensional space of the data items
 
 ### Controls
-In the top right corner there is a tool list which lets you switch between predefined tools: Selection Tool and Panning Tool. Hovering over them will show you a description of what they do.
-The following describes a list of controls when the “Selection Tool” is chosen:
+The following describes a list of controls:
 - hover over item: shows a detailed view of the item
-- hover over group center: TODO
+- hover over group center: shows group label
 - left-click on item: select this item
 - left-click + shift on item: toggle the selection status (i.e. if the item is selected, it is removed from selection; if the item is not selected, it is added to the selection)
 - left-click on group-center: select the whole group
 - left-click + shift on group-center: add the group to the selection
+- left-click + drag on group-center: draw a storytelling arrow to another group center
 - left-click + drag: new selection of items
 - left-click + shift + drag: toggles the selection (i.e. unselected points that are within the lasso are added to the selection and selected points that are within the lasso are deselected)
 - right-click + drag: allows you to move the whole scatterplot
@@ -228,11 +229,11 @@ Properties without semantic meaning like fingerprints or the embedding space of 
 Compound specific properties can contain arbitrary values, however the naming should be consistent for all compounds (i.e. each property should be present for each compound).
 
 There are special properties that are handled differently by the system:
-- Including properties "x" and "y" tells the system to initialize the scatterplot according to these values.
-- The property “groupLabel” specifies the group each compound belongs to. 
+- Including properties **x** and **y** tells the system to initialize the scatterplot according to these values.
+- The property **groupLabel** specifies the group each compound belongs to. 
  
 #### Atom Properties 
-Atom specific properties are recognized by the backend if the property starts with “atom.dprops”. Those properties are interpreted as attribution scores and shown on top of the compound structure with a heatmap and contour lines (see section “Details” for more information.
+Atom specific properties are recognized by the backend if the property starts with **atom.dprops**. Those properties are interpreted as attribution scores and shown on top of the compound structure with a heatmap and contour lines (see section “Details” for more information.
 
 Atom properties must contain one value for each atom of the compound. They can be easily generated with RDKit: https://www.rdkit.org/docs/RDKit_Book.html#atom-properties-and-sdf-files. 
 
@@ -250,9 +251,9 @@ When choosing a file a dialog window opens where users can specify custom modifi
 
 To decorate a property with a modifier, the modifier has to be prepended to the propertyname and separated by an underscore (e.g. “fingerprint_1”, “fingerprint_2” etc).
 
-The predefined "smiles" modifier has a special function: if a property is decorated with "smiles_*" the system will recognize the property as a SMILES string and thus show the compound structure in the LineUp table.
+The predefined **smiles** modifier has a special function: if a property is decorated with "smiles_*" the system will recognize the property as a SMILES string and thus show the compound structure in the LineUp table.
 
-If there is no "fingerprint" modifier in the properties of a dataset, the system will create them automatically using the built-in RDKit function: https://rdkit.readthedocs.io/en/latest/GettingStartedInPython.html#morgan-fingerprints-circular-fingerprints. 
+If there is no **fingerprint** modifier in the properties of a dataset, the system will create them automatically using the built-in RDKit function: https://rdkit.readthedocs.io/en/latest/GettingStartedInPython.html#morgan-fingerprints-circular-fingerprints. 
 
 
 ## Project
@@ -269,14 +270,14 @@ Users are also able to choose, if a numerical feature should be normalized, whic
 
 The range value indicates the minimum and maximum values of the feature.
 
-Furthermore, users can adjust hyper parameters used for the projection. Noteworthy here is the checkbox “Seed Position”, which tells the system to initialize the projection with the current positions of the items instead of using a random initialization.
+Furthermore, users can adjust hyper parameters used for the projection. Noteworthy here is the checkbox **Seed Position**, which tells the system to initialize the projection with the current positions of the items instead of using a random initialization.
 
 Parameters that can not be defined by the user are set to the defaults suggested in https://umap-learn.readthedocs.io/en/latest/api.html. 
 
 ### Progress
 The “Project” tab panel includes a view that shows the progress of a projection as soon as the projection starts to calculate. Here, the calculations can be paused and continued. 
 ### Settings
-If there are item groups specified, the movement (trail) of the group centers during the projection can be visualized by enabling the “Show Group Trail” toggle.
+If there are item groups specified, the movement (trail) of the group centers during the projection can be visualized by enabling the **Show Group Trail** toggle.
 
 Users also have the possibility to save current projections and change between the projection states of those savepoints.
 
@@ -301,16 +302,16 @@ In the "Groups" tab panel users can adjust group settings, automatically define 
 ### Group Settings 
 One toggle allows users to show or hide items in the scatterplot. The other one allows users to show or hide group centers (grey diamonds).
 
-Users can choose, how the items of a selected group should look like. If a user clicks on a group center (grey diamond), all items belonging to that group are highlighted. If “Convex Hull” is selected, the items belonging to that group are surrounded by a convex hull. If “Star Visualization” is selected, there are lines drawn from the group center to each item. If “None” is selected, the points belonging to the group are just highlighted. TODO: contours
+Users can choose, how the items of a selected group should look like. If a user clicks on a group center (grey diamond), all items belonging to that group are highlighted. If **Convex Hull** is selected, the items belonging to that group are surrounded by a convex hull. If **Star Visualization** is selected, there are lines drawn from the group center to each item. If **None** is selected, the points belonging to the group are just highlighted. TODO: contours
 
 ### Define Groups by Clustering
 Automatic Clustering of the projected features can be done in this panel. The algorithm used for clustering is HDBSCAN (https://hdbscan.readthedocs.io/en/latest/index.html). 
-Parameters can be changed either by adjusting the slider (few clusters...many clusters), or by enabling the "Advanced''-Mode. Chosen parameters are always synchronized with the values in the "Advanced'' user inputs. Any other possible parameters that could be used for HDBSCAN are set to the default parameters that can be retrieved from the HDBSCAN docs.
+Parameters can be changed either by adjusting the slider (few clusters...many clusters), or by enabling the **Advanced**-Mode. Chosen parameters are always synchronized with the values in the advanced user inputs. Any other possible parameters that could be used for HDBSCAN are set to the default parameters that can be retrieved from the HDBSCAN docs.
 
 ### Groups and Stories
 A story book is a set of groups and possible connections between those groups that were either created automatically or manually composed. This way, users are able to view different groupings by just switching between stories.
 
-A new story book can be created by clicking "Add Empty". 
+A new story book can be created by clicking **Add Empty**. 
 Users can manually add groups to a new or existing story book by selecting points in the scatter plot and choosing "Create Group from Selection" from the context menu that opens with a right click on the scatter plot.
 
 The groups in a story book are listed below the user select. Each item in the list represents one group. If a user clicks on a group, the corresponding points are highlighted in the scatter plot.
@@ -320,30 +321,38 @@ Next to each group label there is a settings button where users can adjust group
 ## Details
 In this tab panel summary visualizations of selected points are shown. The user can choose to show this in an external window by clicking the corresponding toggle.
 When points are selected users can see the 2D compound structure of the selected items, aligned to each other according to their maximum common substructure.
-Users can select compounds from this view if they check the corresponding checkboxes and filter by the selected compounds by clicking on "Confirm Selection".
+Users can select compounds from this view if they check the corresponding checkboxes and filter by the selected compounds by clicking on **Confirm Selection**.
 
 There is a user input that allows to choose among all provided representations. 
 The available representations are specified in the dataset and contain atom-level attribution scores for each compound.
 To choose a representation users can either scroll through the list, or they can filter the list by typing in the auto-complete textfield. 
 Representations are organized by groups that can be specified manually as described in the "Atom Properties" chapter.
 
-The "Settings" button allows users to manually refresh the representation list. Furthermore, users can adjust settings that are used in the backend. Especially important is the “Align Structure” toggle, since it might happen that the alignment distorts the compound structure. By disabling this feature, the compound structures are not aligned to each other anymore. However, the structures will be shown as expected again.
+The **Settings** button allows users to manually refresh the representation list. Furthermore, users can adjust settings that are used in the backend. Especially important is the **Align Structure** toggle, since it might happen that the alignment distorts the compound structure. By disabling this feature, the compound structures are not aligned to each other anymore. However, the structures will be shown as expected again.
 
-Clicking on "Add View" places an additional view of the selected compounds next to the existing view and enables the user to choose and compare several representations at once.
-Additional views can be removed again using the "Delete"-symbol button.
+Clicking on **Add View** places an additional view of the selected compounds next to the existing view and enables the user to choose and compare several representations at once.
+Additional views can be removed again using the **Delete**-symbol button.
 It is recommended to use this feature in the external window only, because there is more space.
 
 
 
 ## LineUp
 For high dimensional data exploration, we included a LineUp table (https://lineup.js.org/) that can be viewed on demand. 
-TODO: options to display it
-To show the table, the user has several options: ………….
+To show the table you need to drag the component from the bottom of the window to increase the size of the table. 
 
 The table shows all properties that were included in the provided dataset except properties that have the "fingerprint" modifier. Fingerprints were excluded because their values usually do not contain semantic meaning and would take a lot of space in the table, which causes higher loading times and makes the table more complex.
 
 All LineUp functionalities are included like filtering, searching, sorting etc.
 The grouping functionality can be performed in all columns, especially relevant is group by selected items and group by group labels, which actively uses features of the Projection Space Explorer.
+
+### LineUp Settings
+The **Load All** button automatically makes the table component visible - if it was not shown yet - and removes all filters. 
+
+The **Load Selection** button automatically makes the table component visible - if it was not shown yet - and filters the table by the selected items. 
+
+The **Show Cell Values** toggle can be enabled to show values in numerical table cells. If it is disabled, the values are only shown for highlighted rows.
+
+The **Export CSV** downloads the table in its current state as .csv file. Current filters, ordering and custom annotations are contained in this file.
 
 ### SMILES
 Using the "smiles" modifier, users can manually specify, which properties represent SMILES strings. For each column that contains SMILES, there is an additional "structure" column created that shows the 2D structure next to the SMILES column.

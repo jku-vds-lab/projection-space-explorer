@@ -98,24 +98,24 @@ export const LineUpTabPanel = connector(({ setLineUpInput_visibility, setLineUpI
             </Typography>
         </Box>
         <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
+            {/* <FormControlLabel
+                control={<Switch checked={true} onChange={handleChange} name="checkedA" />}
+                label="External Selection Summary"
+            /> */}
+
+            <Button fullWidth style={{ marginRight: 2}} variant="outlined" onClick={() => onLoad({'reset': true})}>Load All</Button>
+
+        </Box>
+        <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
+            <Button fullWidth variant="outlined" onClick={() => onLoad({'selection': currentAggregation.aggregation})}>Load Selection</Button>
+        </Box>
+        <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
             <FormControlLabel
                 control={<Switch color="primary" value={cell_value_vis} onChange={(event) => {
                     toggleVis()
                 }} />}
                 label="Show Cell Values"
             />
-        </Box>
-        <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
-            {/* <FormControlLabel
-                control={<Switch checked={true} onChange={handleChange} name="checkedA" />}
-                label="External Selection Summary"
-            /> */}
-
-            <Button fullWidth style={{ marginRight: 2}} variant="outlined" onClick={() => onLoad(null)}>Load All</Button>
-
-        </Box>
-        <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
-            <Button fullWidth variant="outlined" onClick={() => onLoad({'selection': currentAggregation.aggregation})}>Load Selection</Button>
         </Box>
         <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
             <Button fullWidth variant="outlined" onClick={() => { exportCSV() }}><GetAppIcon/>&nbsp;Export CSV</Button> 
