@@ -61,6 +61,7 @@ export class Dataset {
         this.type = this.info.type;
         this.metaInformation = metaInformation
 
+
         this.calculateBounds();
         this.calculateColumnTypes(ranges, featureTypes, metaInformation);
         this.checkLabels();

@@ -18,6 +18,7 @@ import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { FeatureType } from "../../Utility/Data/FeatureType";
 import { Vect } from "../../Utility/Data/Vect";
+import { RootState } from '../../Store/Store.js';
 
 const useStyles = makeStyles({
   table: {
@@ -143,14 +144,14 @@ function getExplainingFeatures(data) {
   return features
 }
 
-function getProjectionColumns(projectionColumns) {
-  if (projectionColumns === null) {
+function getProjectionColumns(legendAttributes) {
+  if (legendAttributes === null) {
     return []
   }
   const pcol = []
-  for (var i = 0; i <= projectionColumns.length; i++) {
-    if (projectionColumns[i] !== undefined && projectionColumns[i]['checked']) {
-      pcol.push(projectionColumns[i]['name'])
+  for (var i = 0; i <= legendAttributes.length; i++) {
+    if (legendAttributes[i] !== undefined && legendAttributes[i]['show']) {
+      pcol.push(legendAttributes[i]['feature'])
     }
   }
   return pcol
@@ -168,13 +169,13 @@ function getNormalizedSTD(data, min, max) {
   
 }
 
-function genRows(vectors, projectionColumns, dataset) {
+function genRows(vectors, legendAttributes, dataset) {
   if (dataset === undefined) {
     return []
   }
   const rows = []
   const dictOfArrays = dictionary(vectors)
-  const preselect = getProjectionColumns(projectionColumns)
+  const preselect = getProjectionColumns(legendAttributes)
 
 
   // loop through dict
@@ -211,16 +212,15 @@ function genRows(vectors, projectionColumns, dataset) {
   return ret
 }
 
-function getTable(vectors, aggregation, projectionColumns, dataset) {
+function getTable(vectors, aggregation, legendAttributes, dataset) {
   const classes = useStyles()
-  const rows = genRows(vectors, projectionColumns, dataset)
+  const rows = genRows(vectors, legendAttributes, dataset)
 
   
 
   return (
     <div style={{ width: "100%" }}>
       <TableContainer component={Paper} style={{
-        height: "400px",
         width: "100%",
         overflow: "auto"
       }}>
@@ -243,9 +243,9 @@ function getTable(vectors, aggregation, projectionColumns, dataset) {
   );
 }
 
-const mapState = state => {
+const mapState = (state: RootState) => {
   return ({
-    projectionColumns: state.projectionColumns,
+    legendAttributes: state.genericFingerprintAttributes,
     dataset: state.dataset
   })
 }
@@ -261,6 +261,6 @@ type Props = PropsFromRedux & {
     selection: Vect[]
 }
 
-export var CoralLegend = connector(({ selection, aggregate, projectionColumns, dataset }: Props) => {
-  return getTable(selection, aggregate, projectionColumns, dataset)
+export var CoralLegend = connector(({ selection, aggregate, legendAttributes, dataset }: Props) => {
+  return getTable(selection, aggregate, legendAttributes, dataset)
 })

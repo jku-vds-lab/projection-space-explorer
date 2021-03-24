@@ -108,9 +108,9 @@ export default class Cluster {
 
     getTextRepresentation() {
         if (this.name) {
-            return this.name
+            return `${this.label} / ${this.name}`
         } else {
-            return this.label
+            return "" + this.label
         }
     }
 }

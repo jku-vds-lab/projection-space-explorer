@@ -1,10 +1,13 @@
 import Cluster from "../Utility/Data/Cluster";
 import { Vect } from "../Utility/Data/Vect";
 
-const SET = "ducks/aggregation/SET"
+const SELECT_SAMPLES = "ducks/aggregation/SET"
+const SELECT_GROUPS = "ducks/aggregation/SELECT_CLUSTER"
+
 const TOGGLE = "ducks/aggregation/TOGGLE"
 const MERGE = "ducks/aggregation/MERGE"
-const SELECT_CLUSTER = "ducks/aggregation/SELECT_CLUSTER"
+
+const SET_AVAILABLE_GROUPS = "ducks/aggregation/SET_GROUPS"
 
 export const toggleAggregationAction = aggregation => ({
     type: TOGGLE,
@@ -12,14 +15,19 @@ export const toggleAggregationAction = aggregation => ({
 });
 
 export const setAggregationAction = samples => ({
-    type: SET,
+    type: SELECT_SAMPLES,
     aggregation: samples
 });
 
 export const aggSelectCluster = (cluster: Cluster, shiftKey: boolean) => ({
-    type: SELECT_CLUSTER,
+    type: SELECT_GROUPS,
     cluster: cluster,
     shiftKey: shiftKey
+})
+
+export const setAggregationGroups = (groups: Cluster[]) => ({
+    type: SET_AVAILABLE_GROUPS,
+    groups: groups
 })
 
 
@@ -47,16 +55,18 @@ function deriveFromSamples(samples: Vect[], clusters: Cluster[]) {
 const initialState = {
     aggregation: [] as Vect[],
     selectedClusters: [] as Cluster[],
+    groups: [] as Cluster[],
     source: 'sample' as ('sample' | 'cluster')
 }
 
 
 const currentAggregation = (state = initialState, action): typeof initialState => {
     switch (action.type) {
-        case SET:
+        case SELECT_SAMPLES:
             return {
                 aggregation: action.aggregation,
-                selectedClusters: deriveFromSamples(action.aggregation, []),
+                selectedClusters: deriveFromSamples(action.aggregation, state.groups),
+                groups: state.groups,
                 source: 'sample'
             }
         case TOGGLE: {
@@ -70,7 +80,8 @@ const currentAggregation = (state = initialState, action): typeof initialState =
             })
             return {
                 aggregation: newState,
-                selectedClusters: deriveFromSamples(newState, []),
+                selectedClusters: deriveFromSamples(newState, state.groups),
+                groups: state.groups,
                 source: 'sample'
             }
         }
@@ -83,11 +94,12 @@ const currentAggregation = (state = initialState, action): typeof initialState =
             })
             return {
                 aggregation: newState,
-                selectedClusters: [],
+                selectedClusters: deriveFromSamples(newState, state.groups),
+                groups: state.groups,
                 source: 'sample'
             }
         }
-        case SELECT_CLUSTER: {
+        case SELECT_GROUPS: {
             if (action.shiftKey) {
                 var newState = state.selectedClusters.slice(0)
                 if (newState.includes(action.cluster)) {
@@ -98,12 +110,14 @@ const currentAggregation = (state = initialState, action): typeof initialState =
                 return {
                     aggregation: deriveFromClusters(newState),
                     selectedClusters: newState,
+                    groups: state.groups,
                     source: 'cluster'
                 }
             } else {
                 return {
                     selectedClusters: [action.cluster],
                     aggregation: [...action.cluster.vectors],
+                    groups: state.groups,
                     source: 'cluster'
                 }
             }

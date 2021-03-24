@@ -37,12 +37,26 @@ export var AdvancedColoringLegendFull = ({ mapping, advancedColoringSelection, s
                             values[event.target.value] = event.target.checked
                             setAdvancedColoringSelection(values)
                         }} value={index}></Checkbox>}
-                    label={<Typography style={{ color: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})` }}>{value}</Typography>}
+                    label={<Typography style={{ color: `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})` }}>{toLabel(value)}</Typography>}
                 ></FormControlLabel>
             })}</Grid>
     }
 
     return <div></div>
+}
+
+function toLabel (value: any): string {
+    if (value === '') {
+        return '<Empty String>'
+    }
+    if (value === null) {
+        return '<Null>'
+    }
+    if (value === undefined) {
+        return '<Undefined>'
+    }
+
+    return value
 }
 
 export const AdvancedColoringLegend = connect(mapStateToProps, mapDispatchToProps)(AdvancedColoringLegendFull)

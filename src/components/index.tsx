@@ -32,7 +32,6 @@ import { connect } from 'react-redux'
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
 import { setProjectionOpenAction } from "./Ducks/ProjectionOpenDuck";
-import { setHighlightedSequenceAction } from "./Ducks/HighlightedSequenceDuck";
 import { setDatasetAction } from "./Ducks/DatasetDuck";
 import { setOpenTabAction } from "./Ducks/OpenTabDuck";
 import { setWebGLView } from "./Ducks/WebGLViewDuck";
@@ -59,7 +58,7 @@ import { devToolsEnhancer } from 'redux-devtools-extension';
 import { setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
 import { SDFLoader } from "./Utility/Loaders/SDFLoader";
 import * as frontend_utils from "../utils/frontend-connect";
-import { HoverTabPanel } from "./DrawerTabPanels/HoverTabPanel/HoverTabPanel";
+import { DetailsTabPanel } from "./DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
 import { addProjectionAction } from "./Ducks/ProjectionsDuck";
 import { Embedding } from "./Utility/Data/Embedding";
 import { setActiveStory, setVectors, addStory } from "./Ducks/StoriesDuck";
@@ -84,7 +83,12 @@ import { Story } from "./Utility/Data/Story";
 import { BrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/BrightnessSlider/BrightnessSlider";
 import { setGlobalPointBrightness } from "./Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
-const d3 = require("d3")
+import { setGenericFingerprintAttributes } from "./Ducks/GenericFingerprintAttributesDuck";
+import { GroupVisualizationMode, setGroupVisualizationMode } from "./Ducks/GroupVisualizationMode";
+import { HoverStateOrientation } from "./Ducks/HoverStateOrientationDuck";
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 
 
 /**
@@ -116,7 +120,8 @@ const mapStateToProps = (state: RootState) => ({
   channelSize: state.channelSize,
   channelColor: state.channelColor,
   channelBrightness: state.channelBrightness,
-  splitRef: state.splitRef
+  splitRef: state.splitRef,
+  hoverStateOrientation: state.hoverStateOrientation
 })
 
 
@@ -126,7 +131,6 @@ const mapDispatchToProps = dispatch => ({
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
-  setHighlightedSequence: value => dispatch(setHighlightedSequenceAction(value)),
   setActiveLine: value => dispatch(setActiveLine(value)),
   setProjectionColumns: projectionColumns => dispatch(setProjectionColumns(projectionColumns)),
   setProjectionOpen: projectionOpen => dispatch(setProjectionOpenAction(projectionOpen)),
@@ -147,7 +151,9 @@ const mapDispatchToProps = dispatch => ({
   setVectors: vectors => dispatch(setVectors(vectors)),
   setLineByOptions: options => dispatch(setLineByOptions(options)),
   setSplitRef: splitRef => dispatch(setSplitRef(splitRef)),
-  setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value))
+  setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
+  setGenericFingerprintAttriutes: value => dispatch(setGenericFingerprintAttributes(value)),
+  setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value))
 })
 
 
@@ -200,25 +206,14 @@ var Application = connector(class extends React.Component<Props, any> {
     this.state = {
       fileDialogOpen: true,
 
-      selectedLines: {},
-
-      backendRunning: false
-
-
-    }
-    
-    var worker = new Worker(frontend_utils.BASE_PATH + 'healthcheck.js') //dist/
-    worker.onmessage = (e) => {
-      this.setState({
-        backendRunning: e.data
-      })
+      selectedLines: {}
     }
 
 
     this.threeRef = React.createRef()
     this.splitRef = React.createRef()
     this.props.setWebGLView(this.threeRef)
-    
+
     this.legend = React.createRef()
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
@@ -282,6 +277,7 @@ var Application = connector(class extends React.Component<Props, any> {
     this.threeRef.current.disposeScene()
 
     this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
+    this.props.setGroupVisualizationMode(dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull)
 
     // Set new dataset as variable
     this.props.setDataset(dataset)
@@ -311,7 +307,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
     // set default storybook that contains all clusters and no arrows
-    if(dataset.clusters.length > 0){
+    if (dataset.clusters.length > 0) {
       let story = new Story(dataset.clusters, []);
       this.props.addStory(story)
       this.props.setActiveStory(null)
@@ -334,6 +330,10 @@ var Application = connector(class extends React.Component<Props, any> {
     this.props.setPathLengthMaximum(dataset.getMaxPathLength())
     this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
     this.props.saveProjection(new Embedding(dataset.vectors, "Initial Projection"))
+    this.props.setGenericFingerprintAttriutes(dataset.getColumns(true).map(column => ({
+      feature: column,
+      show: dataset.columns[column].project
+    })))
 
     const formatRange = range => {
       try {
@@ -406,7 +406,7 @@ var Application = connector(class extends React.Component<Props, any> {
     }
 
     var defaultBrightnessAttribute = this.props.categoryOptions.getAttribute("transparency", "age", "sequential")
-  
+
     if (defaultBrightnessAttribute) {
       this.props.setGlobalPointBrightness([0.25, 1])
       this.props.setChannelBrightness(defaultBrightnessAttribute)
@@ -416,7 +416,7 @@ var Application = connector(class extends React.Component<Props, any> {
       this.props.setChannelBrightness(null)
       this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute, [1])
     }
-    
+
     this.setState(state)
   }
 
@@ -466,7 +466,7 @@ var Application = connector(class extends React.Component<Props, any> {
               <Typography variant="subtitle2">Load Dataset</Typography>
               <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
             </React.Fragment>}><Tab value={0} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
-            
+
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Embedding and Projection</Typography>
               <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
@@ -476,12 +476,12 @@ var Application = connector(class extends React.Component<Props, any> {
               <Typography variant="subtitle2">Point and Line Channels</Typography>
               <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
             </React.Fragment>}><Tab className="pse-tab" value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
-            
+
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Clustering</Typography>
               <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
             </React.Fragment>}><Tab className="pse-tab" value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
-            
+
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
@@ -527,7 +527,7 @@ var Application = connector(class extends React.Component<Props, any> {
               <FixedHeightTabPanel value={this.props.openTab} index={0} >
                 <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
               </FixedHeightTabPanel>
-              
+
 
               <FixedHeightTabPanel value={this.props.openTab} index={1}>
                 <EmbeddingTabPanel></EmbeddingTabPanel>
@@ -618,98 +618,10 @@ var Application = connector(class extends React.Component<Props, any> {
                     </Typography>
                   </div>
 
-
-
-
-
                   <StatesTabPanel></StatesTabPanel>
 
 
-
-                  {
-                    this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("transparency") ?
-                      <Grid
-                        container
-                        justify="center"
-                        alignItems="stretch"
-                        direction="column"
-                        style={{ padding: '0 16px' }}>
-                        <FormControl style={{ margin: '4px 0px' }}>
-                          <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
-                          <Select labelId="vectorByTransparencySelectLabel"
-                            id="vectorByTransparencySelect"
-                            displayEmpty
-                            value={this.props.channelBrightness ? this.props.channelBrightness.key : ''}
-                            onChange={(event) => {
-                              var attribute = this.props.categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
-
-                              if (attribute == undefined) {
-                                attribute = null
-                              }
-
-                              let pointBrightness = attribute ? [0.25, 1] : [1]
-
-                              this.props.setGlobalPointBrightness(pointBrightness)
-                              this.props.setChannelBrightness(attribute)
-                              this.threeRef.current.particles.transparencyCat(attribute, pointBrightness)
-                              this.threeRef.current.requestRender()
-                            }}
-                          >
-                            <MenuItem value="">None</MenuItem>
-                            {this.props.categoryOptions.getCategory("transparency").attributes.map(attribute => {
-                              return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      :
-                      <div></div>
-                  }
-
-                  <BrightnessSlider></BrightnessSlider>
-
-                  {
-                    this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("size") ?
-                      <Grid
-                        container
-                        justify="center"
-                        alignItems="stretch"
-                        direction="column"
-                        style={{ padding: '0 16px' }}>
-                        <FormControl style={{ margin: '4px 0px' }}>
-                          <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                          <Select labelId="vectorBySizeSelectLabel"
-                            id="vectorBySizeSelect"
-                            displayEmpty
-                            value={this.props.channelSize ? this.props.channelSize.key : ''}
-                            onChange={(event) => {
-                              var attribute = this.props.categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
-                              if (attribute == undefined) {
-                                attribute = null
-                              }
-
-                              let pointSize = attribute ? [1, 2] : [1]
-
-                              this.props.setGlobalPointSize(pointSize)
-
-                              this.props.setChannelSize(attribute)
-
-                              this.threeRef.current.particles.sizeCat(attribute, pointSize)
-                            }}
-                          >
-                            <MenuItem value="">None</MenuItem>
-                            {this.props.categoryOptions.getCategory("size").attributes.map(attribute => {
-                              return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      :
-                      <div></div>
-                  }
-
-
-                  <SizeSlider></SizeSlider>
+                  
 
 
                   {
@@ -777,7 +689,6 @@ var Application = connector(class extends React.Component<Props, any> {
                 {this.props.dataset != null ?
                   <ClusteringTabPanel
                     open={this.props.openTab == 2}
-                    backendRunning={this.state.backendRunning}
                     clusteringWorker={this.state.clusteringWorker}
                   ></ClusteringTabPanel> : <div></div>
                 }
@@ -785,8 +696,13 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
               <FixedHeightTabPanel value={this.props.openTab} index={4}>
-                <HoverTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></HoverTabPanel>
+                <DetailsTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></DetailsTabPanel>
               </FixedHeightTabPanel>
+
+              {/* {frontend_utils.CHEM_PROJECT && 
+              <FixedHeightTabPanel value={this.props.openTab} index={5}>
+                <ChemTabPanel></ChemTabPanel>
+              </FixedHeightTabPanel>} */}
 
               <FixedHeightTabPanel value={this.props.openTab} index={5}>
                 <LineUpTabPanel></LineUpTabPanel>
@@ -801,8 +717,8 @@ var Application = connector(class extends React.Component<Props, any> {
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          width: '100%',
-          height: '100%'
+          height: '100%',
+          flexGrow: 1
         }}>
           <AppBar variant="outlined" position="relative" color="transparent">
             <Toolbar>
@@ -811,7 +727,6 @@ var Application = connector(class extends React.Component<Props, any> {
               <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
                 {frontend_utils.CHEM_PROJECT ? "CIME: Chem-Informatics Model Explorer" : "Projection Space Explorer"}
               </Typography>
-              <ToolSelectionRedux />
             </Toolbar>
           </AppBar>
 
@@ -847,8 +762,6 @@ var Application = connector(class extends React.Component<Props, any> {
             {/* TODO: lineupFilter is not used anymore... */}
               <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
             </div>
-
-
           </Split>
 
 
@@ -870,13 +783,20 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
 
-        <div id="HoverItemDiv" style={{
+        {this.props.hoverStateOrientation == HoverStateOrientation.SouthWest && <div id="HoverItemDiv" style={{
           position: 'absolute',
           left: '0px',
           bottom: '0px',
           zIndex: 10000,
           padding: 8
-        }}></div>
+        }}></div>}
+        {this.props.hoverStateOrientation == HoverStateOrientation.NorthEast && <div id="HoverItemDiv" style={{
+          position: 'absolute',
+          right: '0px',
+          top: '0px',
+          zIndex: 10000,
+          padding: 8
+        }}></div>}
       </div>
     </div>
   }

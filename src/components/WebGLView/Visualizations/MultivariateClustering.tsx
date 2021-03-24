@@ -19,7 +19,7 @@ import * as frontend_utils from "../../../utils/frontend-connect";
 import { toPlainObject } from "lodash";
 import { GroupVisualizationMode } from "../../Ducks/GroupVisualizationMode";
 
-const SELECTED_COLOR = 0x4d94ff
+const SELECTED_COLOR = 0x007dad
 const DEFAULT_COLOR = 0x808080
 const GRAYED = 0xDCDCDC
 
@@ -515,9 +515,9 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     .size([100, bounds.width == 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])
                     (cluster.vectors.map(vect => ({ x: vect.x, y: vect.y })))
 
-                
+                let clusterObject = this.clusterObjects.find(e => e.cluster.label == cluster.label)
 
-                let material = new THREE.LineBasicMaterial({ color: 0x909090 })
+                let material = new THREE.LineBasicMaterial({ color: clusterObject.lineColor.hex })
 
 
 
@@ -544,7 +544,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             })
         }
 
-        //this.clusterVis = { clusterMeshes: clusterMeshes, lineMeshes: lineMeshes }
+        this.clusterVis = { clusterMeshes: clusterMeshes, lineMeshes: lineMeshes }
     }
 
 
@@ -636,6 +636,11 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             }
 
             {
+                this.props.hoverState.data && this.props.hoverState.data instanceof Cluster
+                && hoverLabel(this.props.hoverState.data, this.props.viewTransform)
+            }
+
+            {
                 this.props.stories.trace && this.props.stories.trace.mainPath.map((cluster, index) => {
                     let screen = CameraTransformations.worldToScreen(cluster.getCenter(), this.props.viewTransform)
 
@@ -654,3 +659,20 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         </div>
     }
 })
+
+const hoverLabel = (hoverState: Cluster, viewTransform) => {
+    let screen = CameraTransformations.worldToScreen(hoverState.getCenter(), viewTransform)
+
+    return <Typography style={{
+        textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',
+        position: 'absolute',
+        left: screen.x,
+        top: screen.y,
+        background: 'transparent',
+        color: 'black',
+        fontWeight: "bold",
+        transform: 'translate(-50%, -100%)',
+        pointerEvents: 'none',
+        fontSize: '16px'
+    }}>{hoverState.getTextRepresentation()}</Typography>
+}

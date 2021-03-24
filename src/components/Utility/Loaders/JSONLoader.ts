@@ -147,7 +147,7 @@ export class JSONLoader implements Loader {
 
         let clusters: Cluster[] = []
         content.clusters[0].data.forEach(row => {
-            let nameIndex = content.edges[0].columns.indexOf("name")
+            let nameIndex = content.clusters[0].columns.indexOf("name")
 
             let points = []
             row[1].forEach(i => {
@@ -161,6 +161,7 @@ export class JSONLoader implements Loader {
             }
             
             cluster.label = row[0]
+
             clusters.push(cluster)
         })
 

@@ -108,82 +108,79 @@ export class InferCategory {
                 // Check for given header key if its categorical, sequential or diverging
                 var distinct = [...new Set(this.vectors.map(vector => vector[key]))];
 
-                if (distinct.length > 8 || key in ranges || key == 'multiplicity') {
-                    // Check if values are numeric
-                    if (!distinct.find(value => isNaN(value))) {
-                        // If we have a lot of different values, the values or probably sequential data
-                        var category = options.find(e => e.category == "color");
 
-                        var min = null, max = null;
+                // numerical values with more than 8 disctinct values
+                if ((distinct.length > 8 || key in ranges || key == 'multiplicity') && !distinct.find(value => isNaN(value))) {
+                    // If we have a lot of different values, the values or probably sequential data
+                    var category = options.find(e => e.category == "color");
 
-                        if (key in ranges) {
-                            min = ranges[key].min;
-                            max = ranges[key].max;
-                        } else {
-                            min = Math.min(...distinct);
-                            max = Math.max(...distinct);
+                    var min = null, max = null;
+
+                    if (key in ranges) {
+                        min = ranges[key].min;
+                        max = ranges[key].max;
+                    } else {
+                        min = Math.min(...distinct);
+                        max = Math.max(...distinct);
+                    }
+
+                    category.attributes.push({
+                        "key": key,
+                        "name": key,
+                        "type": "sequential",
+                        "range": {
+                            "min": min,
+                            "max": max
                         }
+                    });
 
-                        category.attributes.push({
+                    options.find(e => e.category == "transparency").attributes.push({
+                        "key": key,
+                        "name": key,
+                        "type": "sequential",
+                        "range": {
+                            "min": min,
+                            "max": max
+                        },
+                        "values": {
+                            range: [0.3, 1.0]
+                        }
+                    });
+
+                    options.find(e => e.category == "size").attributes.push({
+                        "key": key,
+                        "name": key,
+                        "type": "sequential",
+                        "range": {
+                            "min": min,
+                            "max": max
+                        },
+                        "values": {
+                            range: [1, 2]
+                        }
+                    });
+                } else if (distinct.find(value => isNaN(value)) || key == 'algo') {
+                    options.find(e => e.category == 'color').attributes.push({
+                        "key": key,
+                        "name": key,
+                        "type": "categorical"
+                    });
+
+                    if (distinct.length <= 4) {
+                        var shapes = ["circle", "star", "square", "cross"];
+                        options.find(e => e.category == 'shape').attributes.push({
                             "key": key,
                             "name": key,
-                            "type": "sequential",
-                            "range": {
-                                "min": min,
-                                "max": max
-                            }
-                        });
-
-                        options.find(e => e.category == "transparency").attributes.push({
-                            "key": key,
-                            "name": key,
-                            "type": "sequential",
-                            "range": {
-                                "min": min,
-                                "max": max
-                            },
-                            "values": {
-                                range: [0.3, 1.0]
-                            }
-                        });
-
-                        options.find(e => e.category == "size").attributes.push({
-                            "key": key,
-                            "name": key,
-                            "type": "sequential",
-                            "range": {
-                                "min": min,
-                                "max": max
-                            },
-                            "values": {
-                                range: [1, 2]
-                            }
+                            "type": "categorical",
+                            "values": distinct.map((value, index) => {
+                                return {
+                                    from: value,
+                                    to: shapes[index]
+                                };
+                            })
                         });
                     }
-                } else {
-                    if (distinct.find(value => isNaN(value)) || key == 'algo') {
 
-                        options.find(e => e.category == 'color').attributes.push({
-                            "key": key,
-                            "name": key,
-                            "type": "categorical"
-                        });
-
-                        if (distinct.length <= 4) {
-                            var shapes = ["circle",  "star", "square", "cross"];
-                            options.find(e => e.category == 'shape').attributes.push({
-                                "key": key,
-                                "name": key,
-                                "type": "categorical",
-                                "values": distinct.map((value, index) => {
-                                    return {
-                                        from: value,
-                                        to: shapes[index]
-                                    };
-                                })
-                            });
-                        }
-                    }
                 }
             }
         });

@@ -99,7 +99,7 @@ export const LineUpTabPanel = connector(({ setLineUpInput_visibility, setLineUpI
         </Box>
         <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
             <FormControlLabel
-                control={<Switch value={cell_value_vis} onChange={(event) => {
+                control={<Switch color="primary" value={cell_value_vis} onChange={(event) => {
                     toggleVis()
                 }} />}
                 label="Show Cell Values"

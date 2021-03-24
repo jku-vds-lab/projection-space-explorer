@@ -657,26 +657,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     onMouseUp(event: MouseEvent) {
         event.preventDefault()
         this.mouseController.mouseUp(event)
-
-        var bounds = this.containerRef.current.getBoundingClientRect()
-        var coords = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
-
-        switch (this.props.currentTool) {
-            case Tool.Crosshair:
-                if (this.props.displayMode == DisplayMode.OnlyClusters) {
-                    break;
-                }
-
-                var idx = this.choose(coords)
-                if (idx >= 0) {
-                    var vector = this.props.dataset.vectors[idx]
-                    this.props.setActiveLine(vector.view.segment)
-                }
-
-                break;
-        }
-
-        this.particles.update()
     }
 
 
@@ -1077,7 +1057,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
-    private updateItemClusterDisplay(){
+    private updateItemClusterDisplay() {
         switch (this.props.displayMode) {
             case DisplayMode.StatesAndClusters:
             case DisplayMode.OnlyStates:
@@ -1359,6 +1339,20 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                     handleClose()
                 }}>{"Create Group from Selection"}</MenuItem>
+
+                <MenuItem onClick={() => {
+                    var coords = CameraTransformations.screenToWorld({ x: this.mouseController.currentMousePosition.x, y: this.mouseController.currentMousePosition.y }, this.createTransform())
+
+                    if (this.props.displayMode == DisplayMode.OnlyClusters) {
+                        return;
+                    }
+
+                    var idx = this.choose(coords)
+                    if (idx >= 0) {
+                        var vector = this.props.dataset.vectors[idx]
+                        this.props.setActiveLine(vector.view.segment)
+                    }
+                }}>Investigate Line</MenuItem>
             </Menu>
 
 

@@ -24,6 +24,7 @@ import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import groupVisualizationMode, { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
+import { setAggregationGroups } from "../../Ducks/AggregationDuck"
 const d3 = require("d3")
 
 const mapStateToProps = (state: RootState) => ({
@@ -49,7 +50,8 @@ const mapDispatchToProps = dispatch => ({
     // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
     setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
-    setGroupVisualizationMode: groupVisualizationMode => dispatch(setGroupVisualizationMode(groupVisualizationMode))
+    setGroupVisualizationMode: groupVisualizationMode => dispatch(setGroupVisualizationMode(groupVisualizationMode)),
+    setAggregationGroups: groups => dispatch(setAggregationGroups(groups))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -57,7 +59,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
     open,
-    backendRunning,
     clusteringWorker,
     splitRef
 }
@@ -91,7 +92,12 @@ export const ClusteringTabPanel = connector(({
     setLineUpInput_filter,
     splitRef,
     groupVisualizationMode,
+    setAggregationGroups,
     setGroupVisualizationMode }: Props) => {
+
+    if (stories && stories.active && stories.active.clusters) {
+        setAggregationGroups(stories.active.clusters)
+    }
 
 
     function storyLayout(edges: Edge[]) {
@@ -366,11 +372,11 @@ export const ClusteringTabPanel = connector(({
 
         <Box paddingLeft={2} paddingRight={2}>
             <FormControlLabel
-                control={<Switch checked={displayMode != DisplayMode.OnlyClusters && displayMode != DisplayMode.None} onChange={onCheckItems} />}
+                control={<Switch color="primary" checked={displayMode != DisplayMode.OnlyClusters && displayMode != DisplayMode.None} onChange={onCheckItems} />}
                 label="Show Items"
             />
             <FormControlLabel
-                control={<Switch checked={displayMode != DisplayMode.OnlyStates && displayMode != DisplayMode.None} onChange={onCheckClusters} />}
+                control={<Switch color="primary" checked={displayMode != DisplayMode.OnlyStates && displayMode != DisplayMode.None} onChange={onCheckClusters} />}
                 label="Show Group Centers"
             />
 
@@ -563,7 +569,7 @@ function ClusterPopover({
 
     if (!cluster) return null;
 
-    const [name, setName] = React.useState(cluster.name)
+    const [name, setName] = React.useState(cluster.label)
 
     const useStyles = makeStyles(theme => ({
         button: {
@@ -578,12 +584,11 @@ function ClusterPopover({
 
     React.useEffect(() => {
         if (cluster && anchorEl) {
-            setName(cluster.getTextRepresentation())
+            setName(cluster.label)
         }
     }, [anchorEl, cluster])
 
     const onSave = () => {
-        cluster.name = name
         cluster.label = name
         // Rename cluster labels in dataset
         replaceClusterLabels(cluster.vectors, cluster.label, name)
@@ -599,7 +604,7 @@ function ClusterPopover({
         setAnchorEl(null)
         // setLineUpInput_data(cluster.vectors)
         setLineUpInput_visibility(true)
-        setLineUpInput_filter({ 'groupLabel': cluster.getTextRepresentation() });
+        setLineUpInput_filter({ 'groupLabel': cluster.label });
         handleClusterClick(cluster); // select items in cluster when opening lineup
         
         const curr_sizes = splitRef.current.split.getSizes();
@@ -725,11 +730,6 @@ function ClusterList({
                     // webGLView.current.onClusterClicked(cluster, event.shiftKey)
                     webGLView.current.onClusterClicked(cluster, event.ctrlKey)
                 }}>
-                    <ListItemAvatar>
-                        <Avatar>
-                            <FolderIcon />
-                        </Avatar>
-                    </ListItemAvatar>
                     <ListItemText
                         primary={cluster.getTextRepresentation()}
                         secondary={`${cluster.vectors.length} Items`}
