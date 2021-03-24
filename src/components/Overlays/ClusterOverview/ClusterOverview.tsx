@@ -358,6 +358,7 @@ export const ClusterOverview = connector(function ({
                         display: 'flex',
                         flexDirection: 'column',
                         minWidth: '100px'
+                        // width: '200px'
                     }}>
                         <Typography align="center" variant="subtitle2">Group Summary</Typography>
                         {
@@ -383,6 +384,7 @@ export const ClusterOverview = connector(function ({
                         display: 'flex',
                         flexDirection: 'column',
                         minWidth: '100px'
+                        // width: '200px'
                     }}>
                         <Typography align="center" variant="subtitle2">Difference Summary</Typography><br />
                         {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}

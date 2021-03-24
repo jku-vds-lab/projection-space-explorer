@@ -249,8 +249,8 @@ export const ClusteringTabPanel = connector(({
                 });
 
                 // if(!addClusterToCurrentStory){
-                    addStory(story)
-                    setActiveStory(story)
+                addStory(story)
+                setActiveStory(story)
                 // }
 
                 // Update UI, dont know how to right now

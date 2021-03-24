@@ -74,7 +74,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                         backend_utils.get_mcs_from_smiles_list(formData, controller)
                         .then(x => {
                             if (x.length > 100) { // check if it is actually long enogh to be an img
-                                setMcsComp(() => <div style={{width:80, height:80, backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundImage: `url('data:image/jpg;base64,${x}')` }}></div>);
+                                setMcsComp(() => <div style={{width:200, height:200, backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundImage: `url('data:image/jpg;base64,${x}')` }}></div>);
                             }else{
                                 setMcsComp(() => <div>{x}</div>);
                             }
