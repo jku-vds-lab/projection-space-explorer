@@ -10,7 +10,7 @@ import { Dataset } from "../../Utility/Data/Dataset";
 import { GenericChanges } from "../../Legends/GenericChanges/GenericChanges";
 import { StoryMode } from "../../Ducks/StoryModeDuck";
 import { RootState } from "../../Store/Store";
-import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState } from "../../Ducks/StoriesDuck";
+import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType } from "../../Ducks/StoriesDuck";
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import { DifferenceThresholdSlider } from '../../legends/CoralChanges/DifferenceThresholdSlider';
@@ -94,11 +94,12 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
         const fillColors = ["#F1DCA5", "#F8C7A0"]
         const strokeColors = ["#e9c46a", "#f4a261"]
         const mainColor = '#007dad'
+        const grayColor = '#808080'
         const stateSize = 12
 
         if (!this.props.input) return null;
 
-        let { position, stories, elementHeight } = this.props.input
+        let { position, stories, elementHeight }: { position: any, stories: StoriesType, elementHeight: any } = this.props.input
 
         let currentAggregation = this.props.currentAggregation
         let selectSideBranch = this.props.selectSideBranch
@@ -170,7 +171,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                                     ></SidePath>
 
                                                     <line x1={x} y1={pos1.y + 35 + 70 - 6} x2={x} y2={pos1.y + elementHeight} stroke={strokeColors[si]}></line>
-                                                    <rect x={x - 6} y={pos1.y + elementHeight - 6} width={stateSize} height={stateSize} fill={fillColors[si]} transform={`rotate(45,${x},${pos1.y + elementHeight})`}  />
+                                                    <rect x={x - 6} y={pos1.y + elementHeight - 6} width={stateSize} height={stateSize} fill={fillColors[si]} transform={`rotate(45,${x},${pos1.y + elementHeight})`} />
                                                 </g>
                                             } else if (node.out && i != sidePath.syncNodes.length - 1 && sidePath.syncNodes[i + 1].in) {
 
@@ -228,15 +229,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                         }()
                     }
 
-                    {// <!--<circle cx={midX} cy={p.y} r="6" fill={mainColor} />-->
-                        position.map((p, index) => {
-                            return <g key={`${p.x}${p.y}`}>
-                                <text x={midX + 10} y={p.y} fill="black" fontWeight="bold" fontFamily="monospace">{index}</text>
-                                <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={mainColor} transform={`rotate(45,${midX},${p.y})`} />
 
-                            </g>
-                        })
-                    }
 
                     {
                         position.map((p, i) => {
@@ -275,9 +268,21 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                             }} />
                         </g>
                     }
+
+                    {// <!--<circle cx={midX} cy={p.y} r="6" fill={mainColor} />-->
+                        position.map((p, index) => {
+                            let cluster = stories.trace.mainPath[index]
+
+                            return < g key={`${p.x}${p.y}`
+                            }>
+                                <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={currentAggregation.selectedClusters.includes(cluster) ? mainColor : grayColor} transform={`rotate(45,${midX},${p.y})`} />
+                                <text style={{textShadow:'-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white'}} x={midX} y={p.y} alignment-baseline="middle" text-anchor="middle" fill="black" fontWeight="bold" fontFamily="sans-serif">{cluster.label}</text>
+                            </g>
+                        })
+                    }
                 </svg>
             </div>
-        </div>
+        </div >
     }
 }
 
@@ -330,80 +335,80 @@ export const ClusterOverview = connector(function ({
     return <Card className="ClusterOverviewParent" variant="outlined">
 
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
-                <CardHeader
-                    
-                    action={
-                        <IconButton onClick={() => {
-                            setActiveTrace(null)
-                        }}>
-                            <CloseIcon />
-                        </IconButton>
+            <CardHeader
+
+                action={
+                    <IconButton onClick={() => {
+                        setActiveTrace(null)
+                    }}>
+                        <CloseIcon />
+                    </IconButton>
+                }
+                title="Storytelling"
+            />
+
+            <div style={{ display: 'flex', flexDirection: 'row' }}>
+
+                <ProvenanceGraph
+                    input={input}
+                    currentAggregation={currentAggregation}
+                    addClusterToTrace={addClusterToTrace}
+                    selectSideBranch={selectSideBranch}
+                    dataset={dataset}
+                ></ProvenanceGraph>
+
+                <div ref={itemRef} style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minWidth: '100px'
+                }}>
+                    <Typography align="center" variant="subtitle2">Summary</Typography>
+                    {
+                        stories.trace?.mainPath.map((cluster, index) => {
+                            return <div
+                                key={index}
+                                className="ClusterItem"
+                                selected={stories.activeTraceState == cluster}
+                                value={index}
+
+                                onClick={() => {
+                                    itemClicked(cluster)
+                                    setActiveTraceState(cluster)
+                                }}><GenericFingerprint
+                                    type={dataset.type}
+                                    vectors={cluster.vectors}
+                                    scale={1}
+                                ></GenericFingerprint>
+                            </div>
+                        })
                     }
-                    title="Storytelling"
-                />
-
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-
-                    <ProvenanceGraph
-                        input={input}
-                        currentAggregation={currentAggregation}
-                        addClusterToTrace={addClusterToTrace}
-                        selectSideBranch={selectSideBranch}
-                        dataset={dataset}
-                    ></ProvenanceGraph>
-
-                    <div ref={itemRef} style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        minWidth: '100px'
-                    }}>
-                        <Typography align="center" variant="subtitle2">Summary</Typography>
-                        {
-                            stories.trace?.mainPath.map((cluster, index) => {
-                                return <div
-                                    key={index}
-                                    className="ClusterItem"
-                                    selected={stories.activeTraceState == cluster}
-                                    value={index}
-                                
-                                    onClick={() => {
-                                        itemClicked(cluster)
-                                        setActiveTraceState(cluster)
-                                    }}><GenericFingerprint
-                                        type={dataset.type}
-                                        vectors={cluster.vectors}
-                                        scale={1}
-                                    ></GenericFingerprint>
-                                </div>
-                            })
-                        }
-                    </div>
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        minWidth: '100px'
-                    }}>
-                        <Typography align="center" variant="subtitle2">Difference</Typography><br />
-                        {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
-                        {
-                            stories.trace?.mainEdges.map((edge, index) => {
-                                return <div
-                                    key={index}
-                                    className="ClusterItem CORightItem"
-                                    value={index}
-                                    onClick={() => {
-                                        itemClicked(edge.destination)
-                                    }}>
-                                    <GenericChanges
-                                        scale={1}
-                                        vectorsA={edge.source.vectors}
-                                        vectorsB={edge.destination.vectors}
-                                    />
-                                </div>
-                            })
-                        }
-                    </div>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minWidth: '100px'
+                }}>
+                    <Typography align="center" variant="subtitle2">Difference</Typography><br />
+                    {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
+                    {
+                        stories.trace?.mainEdges.map((edge, index) => {
+                            return <div
+                                key={index}
+                                className="ClusterItem CORightItem"
+                                value={index}
+                                onClick={() => {
+                                    itemClicked(edge.destination)
+                                }}>
+                                <GenericChanges
+                                    scale={1}
+                                    vectorsA={edge.source.vectors}
+                                    vectorsB={edge.destination.vectors}
+                                />
+                            </div>
+                        })
+                    }
                 </div>
             </div>
-        </Card>
+        </div>
+    </Card>
 })

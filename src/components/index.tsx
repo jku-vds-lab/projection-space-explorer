@@ -2,11 +2,7 @@ import "regenerator-runtime/runtime";
 
 import Typography from '@material-ui/core/Typography';
 import { WebGLView } from './WebGLView/WebGLView'
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import { NamedCategoricalScales } from "./Utility/Colors/NamedCategoricalScales";
 import { ContinuousMapping } from "./Utility/Colors/ContinuousMapping";
 import { DiscreteMapping } from "./Utility/Colors/DiscreteMapping";
@@ -19,9 +15,7 @@ import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import * as React from "react";
-import { ToolSelectionRedux } from "./Overlays/ToolSelection/ToolSelection";
 import { PathLengthFilter } from "./DrawerTabPanels/StatesTabPanel/PathLengthFilter/PathLengthFilter";
-import { SizeSlider } from "./DrawerTabPanels/StatesTabPanel/SizeSlider/SizeSlider";
 import { ClusterOverview } from "./Overlays/ClusterOverview/ClusterOverview";
 import { Legend } from "./DrawerTabPanels/StatesTabPanel/LineSelection/LineSelection";
 import * as ReactDOM from 'react-dom';
@@ -38,8 +32,6 @@ import { setWebGLView } from "./Ducks/WebGLViewDuck";
 import { ClusterMode, setClusterModeAction } from "./Ducks/ClusterModeDuck";
 import { setAdvancedColoringSelectionAction } from "./Ducks/AdvancedColoringSelectionDuck";
 import { CategoryOptions } from "./WebGLView/CategoryOptions";
-import { AdvancedColoringPopover } from "./DrawerTabPanels/StatesTabPanel/AdvancedColoring/AdvancedColoringPopover/AdvancedColoringPopover";
-import { ColorScaleSelect } from "./DrawerTabPanels/StatesTabPanel/ColorScaleSelect/ColorScaleSelect";
 import { setProjectionColumns } from "./Ducks/ProjectionColumnsDuck";
 import { EmbeddingTabPanel } from "./DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel";
 import { CSVLoader } from "./Utility/Loaders/CSVLoader";
@@ -204,9 +196,7 @@ var Application = connector(class extends React.Component<Props, any> {
     super(props)
 
     this.state = {
-      fileDialogOpen: true,
-
-      selectedLines: {}
+      fileDialogOpen: true
     }
 
 
@@ -534,153 +524,7 @@ var Application = connector(class extends React.Component<Props, any> {
               </FixedHeightTabPanel>
 
               <FixedHeightTabPanel value={this.props.openTab} index={2}>
-                <div style={{
-                  overflowY: 'auto',
-                  overflowX: 'hidden',
-                  height: '100%'
-                }}>
-
-
-
-
-                  {this.props.dataset && this.props.dataset.isSequential && <div>
-                    <div>
-                      <Typography
-                        style={{ margin: '0px 0 0px 16px' }}
-                        variant="body1"
-                        display="block"
-                      >
-                        Lines
-                      </Typography>
-                    </div>
-
-                    <Grid
-                      container
-                      justify="center"
-                      alignItems="stretch"
-                      direction="column"
-                      style={{ padding: '0 16px' }}>
-                      <Legend
-                        ref={this.legend}
-                        onLineSelect={this.onLineSelect}></Legend>
-
-                      <Box p={1}></Box>
-
-                      <LineTreePopover
-                        onSelectAll={(algo, checked) => {
-                          var ch = this.state.selectedLines
-                          Object.keys(ch).forEach(key => {
-                            var e = this.state.selectedLineAlgos.find(e => e.algo == algo)
-                            if (e.lines.find(e => e.line == key)) {
-                              ch[key] = checked
-                            }
-
-                          })
-
-                          this.setState({
-                            selectedLines: ch
-                          })
-
-                          this.threeRef.current.setLineFilter(ch)
-                          this.threeRef.current.requestRender()
-                        }}
-                        onChange={(id, checked) => {
-                          var ch = this.state.selectedLines
-                          ch[id] = checked
-
-                          this.setState({
-                            selectedLines: ch
-                          })
-
-                          this.threeRef.current.setLineFilter(ch)
-                          this.threeRef.current.requestRender()
-                        }} checkboxes={this.state.selectedLines} algorithms={this.state.selectedLineAlgos} colorScale={this.state.lineColorScheme} />
-                    </Grid>
-
-
-                    <div style={{ margin: '8px 0px' }}></div>
-
-                    <PathLengthFilter></PathLengthFilter>
-                    <PathBrightnessSlider></PathBrightnessSlider>
-                  </div>
-                  }
-
-                  <Divider style={{ margin: '8px 0px' }} />
-
-                  <div>
-                    <Typography
-                      style={{ margin: '0px 0 0px 16px' }}
-                      color="textPrimary"
-                      variant="body1"
-                      display="block"
-                    >
-                      Points
-                    </Typography>
-                  </div>
-
-                  <StatesTabPanel></StatesTabPanel>
-
-
-                  
-
-
-                  {
-                    this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("color") ?
-                      <Grid
-                        container
-                        item
-                        alignItems="stretch"
-                        direction="column"
-                        style={{ padding: '0 16px' }}
-                      >
-
-                        <Grid container item alignItems="stretch" direction="column">
-                          <FormControl style={{ margin: '4px 0px' }}>
-                            <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
-                            <Select labelId="vectorByColorSelectLabel"
-                              id="vectorByColorSelect"
-                              displayEmpty
-                              value={this.props.channelColor ? this.props.channelColor.key : ""}
-                              onChange={(event) => {
-                                var attribute = null
-                                if (event.target.value != "") {
-                                  attribute = this.props.categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
-                                }
-
-                                this.props.setAdvancedColoringSelection(new Array(10000).fill(true))
-                                this.props.setChannelColor(attribute)
-                              }}
-                            >
-                              <MenuItem value="">None</MenuItem>
-                              {this.props.categoryOptions.getCategory("color").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                              })}
-                            </Select>
-                          </FormControl>
-                        </Grid>
-                      </Grid>
-                      :
-                      <div></div>
-                  }
-
-                  <Grid item>
-
-                    <ColorScaleSelect></ColorScaleSelect>
-                  </Grid>
-
-
-                  <Grid item>
-                    {
-                      this.props.channelColor != null && this.props.channelColor.type == 'categorical' ?
-
-                        <AdvancedColoringPopover></AdvancedColoringPopover>
-                        :
-                        <div></div>
-                    }
-
-
-                  </Grid>
-                </div>
+                  <StatesTabPanel lineColorScheme={this.state.lineColorScheme}></StatesTabPanel>
               </FixedHeightTabPanel>
 
 

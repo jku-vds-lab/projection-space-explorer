@@ -95,9 +95,12 @@ export const ClusteringTabPanel = connector(({
     setAggregationGroups,
     setGroupVisualizationMode }: Props) => {
 
-    if (stories && stories.active && stories.active.clusters) {
-        setAggregationGroups(stories.active.clusters)
-    }
+    React.useEffect(() => {
+        if (stories && stories.active && stories.active.clusters) {
+            setAggregationGroups(stories.active.clusters)
+        }
+    }, [stories])
+
 
 
     function storyLayout(edges: Edge[]) {
@@ -385,7 +388,7 @@ export const ClusteringTabPanel = connector(({
                         <MenuItem value={GroupVisualizationMode.None}>
                             <em>None</em>
                         </MenuItem>
-                        <MenuItem value={GroupVisualizationMode.ConvexHull}>Convex Hull</MenuItem>
+                        <MenuItem value={GroupVisualizationMode.ConvexHull}>Contour Plot</MenuItem>
                         <MenuItem value={GroupVisualizationMode.StarVisualization}>Star Visualization</MenuItem>
                     </Select>
                 </FormControl>
