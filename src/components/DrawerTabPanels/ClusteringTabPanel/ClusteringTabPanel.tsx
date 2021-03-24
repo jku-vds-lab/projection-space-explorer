@@ -216,7 +216,7 @@ export const ClusteringTabPanel = connector(({
     }
 
 
-    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly) {
+    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory) {
         const loading_area = "global_loading_indicator";
         let data_points = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation : dataset.vectors;
         const points = data_points.map(point => [point.x, point.y]);
@@ -229,8 +229,10 @@ export const ClusteringTabPanel = connector(({
                     alert("No Cluster could be derived. Please, adjust the Clustering Cettings and try again.")
                     return;
                 }
-                let story = new Story([], []);
-                let clusters = []
+
+
+                let story = addClusterToCurrentStory && stories.active ? stories.active : new Story([], []);
+                // let clusters = []
 
                 
                 dist_cluster_labels.forEach(cluster_label => {
@@ -240,14 +242,16 @@ export const ClusteringTabPanel = connector(({
 
                         // Set correct label for cluster
                         cluster.label = cluster_label
-                        clusters.push(cluster)
+                        // clusters.push(cluster)
 
                         story.clusters.push(cluster)
                     }
                 });
 
-                addStory(story)
-                setActiveStory(story)
+                // if(!addClusterToCurrentStory){
+                    addStory(story)
+                    setActiveStory(story)
+                // }
 
                 // Update UI, dont know how to right now
                 var clusterAttribute = categoryOptions.getAttribute("color", "groupLabel", "categorical")
@@ -266,6 +270,7 @@ export const ClusteringTabPanel = connector(({
     const anchorRef = React.useRef();
 
     const [clusterSelectionOnly, setClusterSelectionOnly] = React.useState(false);
+    const [addClusterToCurrentStory, setAddClusterToCurrentStory] = React.useState(false);
 
     const [clusterAdvancedMode, setClusterAdvancedMode] = React.useState(false);
     const [clusterSliderValue, setClusterSliderValue] = React.useState(2);
@@ -411,18 +416,7 @@ export const ClusteringTabPanel = connector(({
             <Box paddingLeft={2} paddingTop={2} width={300}>
                 <Typography variant="subtitle2" gutterBottom>Clustering Settings</Typography>
             </Box>
-            <Box paddingLeft={2}>
-                <FormControlLabel
-                    control={
-                        <Switch
-                            checked={clusterSelectionOnly}
-                            onChange={(event, newValue) => { setClusterSelectionOnly(newValue) }}
-                            name="selectionClustering"
-                        />
-                    }
-                    label="Cluster only Selected Items"
-                />
-            </Box>
+            
             <Box paddingLeft={2}>
                 <FormControlLabel
                     control={
@@ -437,6 +431,30 @@ export const ClusteringTabPanel = connector(({
             </Box>
             {clusterAdvancedMode ?
                 <Box paddingLeft={2} paddingRight={2}>
+                    <Box>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={clusterSelectionOnly}
+                                    onChange={(event, newValue) => { setClusterSelectionOnly(newValue) }}
+                                    name="selectionClustering"
+                                />
+                            }
+                            label="Cluster only Selected Items"
+                        />
+                    </Box>
+                    <Box>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={addClusterToCurrentStory}
+                                    onChange={(event, newValue) => { setAddClusterToCurrentStory(newValue) }}
+                                    name="addClusterToCurrentStory"
+                                />
+                            }
+                            label="Add Cluster to current Story"
+                        />
+                    </Box>
                     <TextField
                         fullWidth
                         label="Min Cluster Size"
@@ -486,7 +504,7 @@ export const ClusteringTabPanel = connector(({
                         width: '100%'
                     }}
                     onClick={() => {
-                        calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly);
+                        calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory);
                         setOpenClusterPanel(false);
                     }}>
                         Run Clustering{/* Projection-based Clustering */}
