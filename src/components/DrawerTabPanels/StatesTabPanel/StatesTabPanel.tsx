@@ -8,6 +8,12 @@ import { setVectorByShapeAction } from "../../Ducks/VectorByShapeDuck"
 import { setCheckedShapesAction } from "../../Ducks/CheckedShapesDuck"
 import { RootState } from '../../Store/Store'
 import { setSelectedLineBy } from '../../Ducks/SelectedLineByDuck'
+import { setChannelBrightnessSelection } from '../../Ducks/ChannelBrightnessDuck'
+import { setGlobalPointBrightness } from '../../Ducks/GlobalPointBrightnessDuck'
+import { BrightnessSlider } from './BrightnessSlider/BrightnessSlider'
+import { setChannelSize } from '../../Ducks/ChannelSize'
+import { setGlobalPointSize } from '../../Ducks/GlobalPointSizeDuck'
+import { SizeSlider } from './SizeSlider/SizeSlider'
 
 const mapStateToProps = (state: RootState) => ({
     selectedVectorByShape: state.selectedVectorByShape,
@@ -15,14 +21,20 @@ const mapStateToProps = (state: RootState) => ({
     vectorByShape: state.vectorByShape,
     dataset: state.dataset,
     categoryOptions: state.categoryOptions,
-    webGlView: state.webGLView
+    webGlView: state.webGLView,
+    channelBrightness: state.channelBrightness,
+    channelSize: state.channelSize
 })
 
 const mapDispatchToProps = dispatch => ({
     setSelectedVectorByShape: selectedVectorByShape => dispatch(setSelectedVectorByShapeAction(selectedVectorByShape)),
     setVectorByShape: vectorByShape => dispatch(setVectorByShapeAction(vectorByShape)),
     setCheckedShapes: checkedShapes => dispatch(setCheckedShapesAction(checkedShapes)),
-    setSelectedLineBy: lineBy => dispatch(setSelectedLineBy(lineBy))
+    setSelectedLineBy: lineBy => dispatch(setSelectedLineBy(lineBy)),
+    setChannelBrightness: value => dispatch(setChannelBrightnessSelection(value)),
+    setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
+    setChannelSize: value => dispatch(setChannelSize(value)),
+    setGlobalPointSize: value => dispatch(setGlobalPointSize(value))
 })
 
 
@@ -71,7 +83,13 @@ export const StatesTabPanelFull = ({
     categoryOptions,
     selectedLineBy,
     setSelectedLineBy,
-    webGlView
+    webGlView,
+    channelBrightness,
+    setChannelBrightness,
+    setGlobalPointBrightness,
+    channelSize,
+    setChannelSize,
+    setGlobalPointSize
 }: Props) => {
     return <div>
 
@@ -121,8 +139,141 @@ export const StatesTabPanelFull = ({
                     setCheckedShapes(checkboxes)
                 }}></ShapeLegend>
         </Grid>
+
+
+        {
+            categoryOptions != null && categoryOptions.hasCategory("transparency") ?
+                <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                        <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
+                        <Select labelId="vectorByTransparencySelectLabel"
+                            id="vectorByTransparencySelect"
+                            displayEmpty
+                            value={channelBrightness ? channelBrightness.key : ''}
+                            onChange={(event) => {
+                                var attribute = categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
+
+                                if (attribute == undefined) {
+                                    attribute = null
+                                }
+
+                                let pointBrightness = attribute ? [0.25, 1] : [1]
+
+                                setGlobalPointBrightness(pointBrightness)
+                                setChannelBrightness(attribute)
+                                webGlView.current.particles.transparencyCat(attribute, pointBrightness)
+                                webGlView.current.requestRender()
+                            }}
+                        >
+                            <MenuItem value="">None</MenuItem>
+                            {categoryOptions.getCategory("transparency").attributes.map(attribute => {
+                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                            })}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                :
+                <div></div>
+        }
+
+        <BrightnessSlider></BrightnessSlider>
+
+
+
+
+        {
+            categoryOptions != null && categoryOptions.hasCategory("size") ?
+                <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                        <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
+                        <Select labelId="vectorBySizeSelectLabel"
+                            id="vectorBySizeSelect"
+                            displayEmpty
+                            value={channelSize ? channelSize.key : ''}
+                            onChange={(event) => {
+                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+                                if (attribute == undefined) {
+                                    attribute = null
+                                }
+
+                                let pointSize = attribute ? [1, 2] : [1]
+
+                                setGlobalPointSize(pointSize)
+
+                                setChannelSize(attribute)
+
+                                webGlView.current.particles.sizeCat(attribute, pointSize)
+                            }}
+                        >
+                            <MenuItem value="">None</MenuItem>
+                            {categoryOptions.getCategory("size").attributes.map(attribute => {
+                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                            })}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                :
+                <div></div>
+        }
+
+        <SizeSlider></SizeSlider>
+
     </div>
 }
 
 
 export const StatesTabPanel = connector(StatesTabPanelFull)
+
+
+/**
+ *
+         {
+            categoryOptions != null && categoryOptions.hasCategory("size") ?
+                <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                        <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
+                        <Select labelId="vectorBySizeSelectLabel"
+                            id="vectorBySizeSelect"
+                            displayEmpty
+                            value={channelSize ? channelSize.key : ''}
+                            onChange={(event) => {
+                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+                                if (attribute == undefined) {
+                                    attribute = null
+                                }
+
+                                let pointSize = attribute ? [1, 2] : [1]
+
+                                setGlobalPointSize(pointSize)
+
+                                setChannelSize(attribute)
+
+                                webGlView.current.particles.sizeCat(attribute, pointSize)
+                            }}
+                        >
+                            <MenuItem value="">None</MenuItem>
+                            {categoryOptions.getCategory("size").attributes.map(attribute => {
+                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                            })}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                :
+                <div></div>
+        }
+ */

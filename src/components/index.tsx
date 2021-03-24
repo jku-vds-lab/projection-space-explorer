@@ -86,6 +86,9 @@ import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
 import { setGenericFingerprintAttributes } from "./Ducks/GenericFingerprintAttributesDuck";
 import { GroupVisualizationMode, setGroupVisualizationMode } from "./Ducks/GroupVisualizationMode";
 import { HoverStateOrientation } from "./Ducks/HoverStateOrientationDuck";
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
 
 
 /**
@@ -615,98 +618,10 @@ var Application = connector(class extends React.Component<Props, any> {
                     </Typography>
                   </div>
 
-
-
-
-
                   <StatesTabPanel></StatesTabPanel>
 
 
-
-                  {
-                    this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("transparency") ?
-                      <Grid
-                        container
-                        justify="center"
-                        alignItems="stretch"
-                        direction="column"
-                        style={{ padding: '0 16px' }}>
-                        <FormControl style={{ margin: '4px 0px' }}>
-                          <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
-                          <Select labelId="vectorByTransparencySelectLabel"
-                            id="vectorByTransparencySelect"
-                            displayEmpty
-                            value={this.props.channelBrightness ? this.props.channelBrightness.key : ''}
-                            onChange={(event) => {
-                              var attribute = this.props.categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
-
-                              if (attribute == undefined) {
-                                attribute = null
-                              }
-
-                              let pointBrightness = attribute ? [0.25, 1] : [1]
-
-                              this.props.setGlobalPointBrightness(pointBrightness)
-                              this.props.setChannelBrightness(attribute)
-                              this.threeRef.current.particles.transparencyCat(attribute, pointBrightness)
-                              this.threeRef.current.requestRender()
-                            }}
-                          >
-                            <MenuItem value="">None</MenuItem>
-                            {this.props.categoryOptions.getCategory("transparency").attributes.map(attribute => {
-                              return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      :
-                      <div></div>
-                  }
-
-                  <BrightnessSlider></BrightnessSlider>
-
-                  {
-                    this.props.categoryOptions != null && this.props.categoryOptions.hasCategory("size") ?
-                      <Grid
-                        container
-                        justify="center"
-                        alignItems="stretch"
-                        direction="column"
-                        style={{ padding: '0 16px' }}>
-                        <FormControl style={{ margin: '4px 0px' }}>
-                          <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                          <Select labelId="vectorBySizeSelectLabel"
-                            id="vectorBySizeSelect"
-                            displayEmpty
-                            value={this.props.channelSize ? this.props.channelSize.key : ''}
-                            onChange={(event) => {
-                              var attribute = this.props.categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
-                              if (attribute == undefined) {
-                                attribute = null
-                              }
-
-                              let pointSize = attribute ? [1, 2] : [1]
-
-                              this.props.setGlobalPointSize(pointSize)
-
-                              this.props.setChannelSize(attribute)
-
-                              this.threeRef.current.particles.sizeCat(attribute, pointSize)
-                            }}
-                          >
-                            <MenuItem value="">None</MenuItem>
-                            {this.props.categoryOptions.getCategory("size").attributes.map(attribute => {
-                              return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      :
-                      <div></div>
-                  }
-
-
-                  <SizeSlider></SizeSlider>
+                  
 
 
                   {

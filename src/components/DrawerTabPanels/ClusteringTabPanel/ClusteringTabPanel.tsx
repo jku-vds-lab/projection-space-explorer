@@ -24,6 +24,7 @@ import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import groupVisualizationMode, { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
+import { setAggregationGroups } from "../../Ducks/AggregationDuck"
 const d3 = require("d3")
 
 const mapStateToProps = (state: RootState) => ({
@@ -49,7 +50,8 @@ const mapDispatchToProps = dispatch => ({
     // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
     setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
-    setGroupVisualizationMode: groupVisualizationMode => dispatch(setGroupVisualizationMode(groupVisualizationMode))
+    setGroupVisualizationMode: groupVisualizationMode => dispatch(setGroupVisualizationMode(groupVisualizationMode)),
+    setAggregationGroups: groups => dispatch(setAggregationGroups(groups))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -90,7 +92,12 @@ export const ClusteringTabPanel = connector(({
     setLineUpInput_filter,
     splitRef,
     groupVisualizationMode,
+    setAggregationGroups,
     setGroupVisualizationMode }: Props) => {
+
+    if (stories && stories.active && stories.active.clusters) {
+        setAggregationGroups(stories.active.clusters)
+    }
 
 
     function storyLayout(edges: Edge[]) {
