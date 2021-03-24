@@ -1,6 +1,6 @@
 .Parent {
     width: 18rem;
-    overflow-y: auto;
+    // overflow-y: auto;
     height: 100px;
     flex: 1 1 auto;
 }
@@ -11,5 +11,5 @@
     flex-shrink: 0;
     // align-items: center;
     justify-content: center;
-    // height: 50%;
+    height: 100%;
 }

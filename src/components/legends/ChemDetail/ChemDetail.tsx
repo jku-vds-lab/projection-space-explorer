@@ -157,7 +157,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
 
     if(props.aggregate){
 
-        return <Box className={"ParentChem"}>
+        return <Box className={"ParentChem"} paddingBottom={3}>
             {props.aggregate && <Box paddingLeft={2} paddingRight={2}>
                 <Tooltip title="Summary Settings">
                     <Button style={{color:"gray"}} ref={anchorRef} onClick={() => setSettingsOpen(true)}><SettingsIcon></SettingsIcon>&nbsp; Settings</Button>
@@ -483,7 +483,7 @@ const ImageView = connector_Img(function ({chemRef, id, hoverState, selection, c
                         if(container && imgList[idx]){
                             //@ts-ignore
                             container.scrollTop = imgList[idx].offsetTop - container.offsetTop;
-                            // imgList[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+                            // imgList[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' }) // this seems to be buggy sometimes
                         }
                     }
                 }
