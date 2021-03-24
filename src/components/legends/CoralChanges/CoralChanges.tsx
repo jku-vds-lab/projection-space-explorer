@@ -11,7 +11,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import './coral.scss';
-import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { ChiSquareTest } from './ChiSquare'
 import BarChanges from './VegaBarChanges.js';
 import Boxplot from './VegaBoxplot.js';
@@ -20,6 +19,7 @@ import { Vect } from '../../Utility/Data/Vect';
 import { FeatureType } from '../../Utility/Data/FeatureType';
 import { setDifferenceThreshold } from "../../Ducks/DifferenceThresholdDuck";
 import { cloneDeep } from "../../Utility/CloneDeep";
+import { RootState } from '../../Store/Store.js';
 
 const useStyles = makeStyles({
   table: {
@@ -27,14 +27,14 @@ const useStyles = makeStyles({
   },
 });
 
-function getProjectionColumns(projectionColumns) {
-  if (projectionColumns === null) {
+function getProjectionColumns(legendAttributes) {
+  if (legendAttributes === null) {
     return []
   }
   const pcol = []
-  for (var i = 0; i <= projectionColumns.length; i++) {
-    if (projectionColumns[i] !== undefined && projectionColumns[i]['checked']) {
-      pcol.push(projectionColumns[i]['name'])
+  for (var i = 0; i <= legendAttributes.length; i++) {
+    if (legendAttributes[i] !== undefined && legendAttributes[i]['show']) {
+      pcol.push(legendAttributes[i]['feature'])
     }
   }
   return pcol
@@ -357,7 +357,7 @@ function getVis(a, b, type, feature) {
   } 
 }
 
-function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
+function genRows(vectorsA, vectorsB, legendAttributes, dataset) {
 
   if (dataset === undefined) {
     return []
@@ -365,7 +365,7 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
   const rows = []
   const dictOfArraysA = dictionary(vectorsA)
   const dictOfArraysB = dictionary(vectorsB)
-  const preselect = getProjectionColumns(projectionColumns)
+  const preselect = getProjectionColumns(legendAttributes)
 
   // for each feature in preselect
   preselect.forEach(key => {
@@ -396,16 +396,16 @@ function genRows(vectorsA, vectorsB, projectionColumns, dataset) {
   return ret
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state: RootState) => {
   return ({
-    projectionColumns: state.projectionColumns,
     dataset: state.dataset,
-    differenceThreshold: state.differenceThreshold
+    differenceThreshold: state.differenceThreshold,
+    legendAttributes: state.genericFingerprintAttributes
   })
 }
 
 const mapDispatch = dispatch => ({
-  // projectionColumns and dataset should not be changed from within this component
+  // legendAttributes and dataset should not be changed from within this component
 })
 
 const connector = connect(mapStateToProps, mapDispatch);
@@ -454,7 +454,7 @@ export const CoralChanges = connector(class extends React.Component<Props> {
   
   render() {
     // generate rows including vega specs for table div
-    this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.projectionColumns, this.props.dataset);
+    this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.legendAttributes, this.props.dataset);
     // filter entire vega specs with threshold
     this.rows = this.rows.filter(r => {
       return Math.abs(r.difference) >= this.props.differenceThreshold
