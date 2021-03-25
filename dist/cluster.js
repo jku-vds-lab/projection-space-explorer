@@ -3768,8 +3768,9 @@ exports.upload_sdf_file = upload_sdf_file;
 function get_representation_list() {
   var refresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   var dataset_name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+  var controller = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
-    var cached_data, path;
+    var cached_data, path, my_fetch;
     return regeneratorRuntime.wrap(function _callee10$(_context10) {
       while (1) {
         switch (_context10.prev = _context10.next) {
@@ -3791,10 +3792,22 @@ function get_representation_list() {
           case 4:
             path = exports.BASE_URL + '/get_atom_rep_list';
             if (localStorage.getItem("unique_filename")) path += "/" + localStorage.getItem("unique_filename");
-            return _context10.abrupt("return", fetch(path, {
-              method: 'GET',
-              credentials: exports.CREDENTIALS
-            }).then(handle_errors).then(function (response) {
+            my_fetch = null;
+
+            if (controller) {
+              my_fetch = fetch(path, {
+                method: 'GET',
+                credentials: exports.CREDENTIALS,
+                signal: controller.signal
+              });
+            } else {
+              my_fetch = fetch(path, {
+                method: 'GET',
+                credentials: exports.CREDENTIALS
+              });
+            }
+
+            return _context10.abrupt("return", my_fetch.then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (data) {
               setCache("representation_list_" + dataset_name, data);
@@ -3804,7 +3817,7 @@ function get_representation_list() {
               console.log(error);
             }));
 
-          case 7:
+          case 9:
           case "end":
             return _context10.stop();
         }

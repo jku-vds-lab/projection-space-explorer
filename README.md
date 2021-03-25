@@ -187,9 +187,9 @@ Instructions for installing the application are provided at the end of this docu
 This section explains the general layout of the tool and the basic controls with which you can interact with the tool.
 
 ### View Components
-- Left Menu Drawer: Shows tabs that contain different groups of actions
-- Center View: Shows the current projection and allows the user to interact with the low dimensional projection of the data items
-- Table Component: Can be dragged up from the bottom of the window to show a LineUp (https://lineup.js.org/) table of the high dimensional space of the data items
+- Left Menu Drawer (orange): Shows tabs that contain different groups of actions
+- Center View (yellow): Shows the current projection and allows the user to interact with the low dimensional projection of the data items
+- Table Component (blue): Can be dragged up from the bottom of the window to show a LineUp (https://lineup.js.org/) table of the high dimensional space of the data items
 
 ### Controls
 The following describes a list of controls:
@@ -214,13 +214,14 @@ The list can also be manually refreshed with the refresh button next to "Uploade
 
 If a user wants to upload a custom file they have to use the file format that is described in the “Data Format” subsection.
 
-
 ### Data Format
 Data is handed to the system using a Structure-Data File (SDF) (https://en.wikipedia.org/wiki/Chemical_table_file#SDF) that contains a collection of chemical compounds and additional properties that can be customized.
 New files are first uploaded to the python backend that runs with Bottle (https://bottlepy.org/docs/dev/) and then processed with the help of the RDKit framework (https://www.rdkit.org/).
 For big files, the initial upload and preprocessing can take several minutes. If the files are already uploaded, it is much faster.
 
 Properties can be compound specific (i.e. for the whole datapoint) or atom specific (i.e. one value for each atom in the compound). Details are described in the next subsections.
+
+An example can be found in “backend/test.sdf”.
 
 #### Compound Properties
 These properties can be used for projection and can be shown in the LineUp table (like solubility, atom weight or any other property that is important to the user). 
@@ -263,7 +264,7 @@ The values for x and y can then be calculated with a projection method.
 Currently only UMAP projection is available for CIME. To implement the projection we used this library: https://github.com/PAIR-code/umap-js. 
 The JavaScript library code is a reimplementation of this python library https://github.com/lmcinnes/umap, with the difference that the JS library uses random seed points as initialization by default. 
 
-### Parameters
+### Parameters (orange)
 Before calculating the projection, users are able to choose the features which should be used for the projection. This can be done by selecting and deselecting the corresponding checkboxes. To select or deselect whole semantic groups of features, users can interact with the checkboxes next to the group name. Clicking on a group-row collapses/expands the list of items in this group.
 
 Users are also able to choose, if a numerical feature should be normalized, which applies standardization to all values of this feature (i.e. subtract by mean and divide by standard deviation). 
@@ -274,9 +275,10 @@ Furthermore, users can adjust hyper parameters used for the projection. Notewort
 
 Parameters that can not be defined by the user are set to the defaults suggested in https://umap-learn.readthedocs.io/en/latest/api.html. 
 
-### Progress
+### Progress (yellow)
 The “Project” tab panel includes a view that shows the progress of a projection as soon as the projection starts to calculate. Here, the calculations can be paused and continued. 
-### Settings
+
+### Settings (blue)
 If there are item groups specified, the movement (trail) of the group centers during the projection can be visualized by enabling the **Show Group Trail** toggle.
 
 Users also have the possibility to save current projections and change between the projection states of those savepoints.
@@ -294,21 +296,22 @@ In the "Encoding" tab panel users can change the marks and channels of the displ
 
 
 
-
-
 ## Groups
 In the "Groups" tab panel users can adjust group settings, automatically define groups by clustering and select different stories.
 
-### Group Settings 
+
+### Group Settings (orange)
 One toggle allows users to show or hide items in the scatterplot. The other one allows users to show or hide group centers (grey diamonds).
 
 Users can choose, how the items of a selected group should look like. If a user clicks on a group center (grey diamond), all items belonging to that group are highlighted. If **Contour Plot** is selected, the items belonging to that group are surrounded by contour lines. If **Star Visualization** is selected, there are lines drawn from the group center to each item. If **None** is selected, the points belonging to the group are just highlighted.
 
-### Define Groups by Clustering
+
+### Define Groups by Clustering (yellow)
 Automatic Clustering of the projected features can be done in this panel. The algorithm used for clustering is HDBSCAN (https://hdbscan.readthedocs.io/en/latest/index.html). 
 Parameters can be changed either by adjusting the slider (few clusters...many clusters), or by enabling the **Advanced**-Mode. Chosen parameters are always synchronized with the values in the advanced user inputs. Any other possible parameters that could be used for HDBSCAN are set to the default parameters that can be retrieved from the HDBSCAN docs.
 
-### Groups and Stories
+
+### Groups and Stories (blue)
 A story book is a set of groups and possible connections between those groups that were either created automatically or manually composed. This way, users are able to view different groupings by just switching between stories.
 
 A new story book can be created by clicking **Add Empty**. 
@@ -320,17 +323,19 @@ Next to each group label there is a settings button where users can adjust group
 
 ## Details
 In this tab panel summary visualizations of selected points are shown. The user can choose to show this in an external window by clicking the corresponding toggle.
-When points are selected users can see the 2D compound structure of the selected items, aligned to each other according to their maximum common substructure.
-Users can select compounds from this view if they check the corresponding checkboxes and filter by the selected compounds by clicking on **Confirm Selection**.
 
-There is a user input that allows to choose among all provided representations. 
+
+When points are selected users can see the 2D compound structure of the selected items, aligned to each other according to their maximum common substructure.
+Users can select compounds from this view if they check the corresponding checkboxes and filter by the selected compounds by clicking on **Confirm Selection** (green).
+
+There is a user input that allows to choose among all provided representations (yellow). 
 The available representations are specified in the dataset and contain atom-level attribution scores for each compound.
 To choose a representation users can either scroll through the list, or they can filter the list by typing in the auto-complete textfield. 
 Representations are organized by groups that can be specified manually as described in the "Atom Properties" chapter.
 
-The **Settings** button allows users to manually refresh the representation list. Furthermore, users can adjust settings that are used in the backend. Especially important is the **Align Structure** toggle, since it might happen that the alignment distorts the compound structure. By disabling this feature, the compound structures are not aligned to each other anymore. However, the structures will be shown as expected again.
+The **Settings** button allows users to manually refresh the representation list (blue). Furthermore, users can adjust settings that are used in the backend. Especially important is the **Align Structure** toggle, since it might happen that the alignment distorts the compound structure. By disabling this feature, the compound structures are not aligned to each other anymore. However, the structures will be shown as expected again.
 
-Clicking on **Add View** places an additional view of the selected compounds next to the existing view and enables the user to choose and compare several representations at once.
+Clicking on **Add View** (orange) places an additional view of the selected compounds next to the existing view and enables the user to choose and compare several representations at once.
 Additional views can be removed again using the **Delete**-symbol button.
 It is recommended to use this feature in the external window only, because there is more space.
 
@@ -339,6 +344,7 @@ It is recommended to use this feature in the external window only, because there
 ## LineUp
 For high dimensional data exploration, we included a LineUp table (https://lineup.js.org/) that can be viewed on demand. 
 To show the table you need to drag the component from the bottom of the window to increase the size of the table. 
+
 
 The table shows all properties that were included in the provided dataset except properties that have the "fingerprint" modifier. Fingerprints were excluded because their values usually do not contain semantic meaning and would take a lot of space in the table, which causes higher loading times and makes the table more complex.
 
@@ -365,9 +371,6 @@ The SMILES columns have some additional features:
 The table can be used interactively with the scatter plot that represents the projected space and the summary view that shows selected items:
 - Hovering items in the table highlights the corresponding items in the other views as well and vice versa.
 - Users can select items in the table, which are also selected in the other views and vice versa.
-
-
-
 # Installation
 ## Install npm packages
 Use a git tool to clone this repository to your computer.

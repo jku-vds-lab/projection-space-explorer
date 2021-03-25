@@ -334,7 +334,6 @@ export const LineUpContext = connector(function ({
     React.useEffect(() => {
         if (lineUpInput.lineup && lineUpInput.lineup.data) {
             const ranking = lineUpInput.lineup.data.getFirstRanking();
-            console.log("clearFilters")
             clear_automatic_filters(lineUpInput, lineUpInput.previousfilter);
             if (lineUpInput.filter) {
                 for (const key in lineUpInput.filter) {

@@ -18,6 +18,7 @@ import rdkitSettings, { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale,
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { WindowMode } from '../../Ducks/HoverSettingsDuck';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { setChannelColor } from '../../Ducks/ChannelColorDuck';
 
 
 /**
@@ -53,10 +54,10 @@ const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
 
 
 export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Parent) {
+    const { cancellablePromise, cancelPromises } = useCancellablePromise();
     if(props.mcs_only){
         
         const [mcsComp, setMcsComp] = React.useState(<div>loading...</div>)
-        const { cancellablePromise, cancelPromises } = useCancellablePromise();
 
         let smiles_col = "SMILES";
 
@@ -108,21 +109,23 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
 
     const [settingsOpen, setSettingsOpen] = React.useState(false);
     const [repList, setRepList] = React.useState(["Common Substructure"]);
-    const [cancelables, setCancelables] = React.useState([]);
     const [chemComponents, setChemComponents] = React.useState([0]);
     const [chemComponentsCurrentRep, setChemComponentsCurrentRep] = React.useState(["Common Substructure"]);
 
     const loadRepList = function(refresh=false){
         if(refresh || repList.length <= 1){
-            const cancelable = makeCancelable(backend_utils.get_representation_list(refresh, props.dataset.info.path));
-            setCancelables(cancelables.concat(cancelable));
-            cancelable.promise.then(x => {
-                if(x["rep_list"].length > 0){
-                    let rep_list = [...x["rep_list"]];
-                    rep_list.splice(0, 0, "Common Substructure");
-                    setRepList(rep_list);
-                }
-            })
+            const controller = new AbortController();
+            cancellablePromise(
+                backend_utils.get_representation_list(refresh, props.dataset.info.path, controller)
+                    .then(x => {
+                        if(x["rep_list"].length > 0){
+                            let rep_list = [...x["rep_list"]];
+                            rep_list.splice(0, 0, "Common Substructure");
+                            setRepList(rep_list);
+                        }
+                    }), controller
+            );
+            
         }
     }
 
@@ -137,12 +140,8 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
     }
 
     React.useEffect(() => {
+        cancelPromises();
         loadRepList();
-
-        return () => {
-            cancelables.forEach(p => p.cancel());
-            setCancelables([]);
-        }
     }, []);
 
     const removeComponent = (id) => {

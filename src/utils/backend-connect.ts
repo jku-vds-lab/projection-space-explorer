@@ -299,7 +299,7 @@ export async function upload_sdf_file(file, controller?){
 }
 
 
-export async function get_representation_list(refresh=false, dataset_name=""){
+export async function get_representation_list(refresh=false, dataset_name="", controller:AbortController=null){
     if(!refresh){
         const cached_data = handleCache("representation_list_" + dataset_name)
         if(cached_data && cached_data["rep_list"].length > 0){
@@ -311,10 +311,22 @@ export async function get_representation_list(refresh=false, dataset_name=""){
         path += "/" + localStorage.getItem("unique_filename");
 
 
-    return fetch(path, {
-        method: 'GET',
-        credentials: CREDENTIALS
-    })
+    let my_fetch = null;
+    if(controller){
+        my_fetch = fetch(path, {
+            method: 'GET',
+            credentials: CREDENTIALS,
+            signal: controller.signal
+        })
+    }else{
+        my_fetch = fetch(path, {
+            method: 'GET',
+            credentials: CREDENTIALS
+        })
+    }
+
+
+    return my_fetch
     .then(handle_errors)
     .then(response => response.json())
     .then(handle_errors_json)
