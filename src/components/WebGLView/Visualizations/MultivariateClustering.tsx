@@ -26,6 +26,9 @@ const GRAYED = 0xDCDCDC
 const WING_SIZE = 2.2
 const LINE_WIDTH = 1.5
 
+const CLUSTER_PIXEL_SIZE = 12
+
+
 type ClusterObjectType = {
     cluster: Cluster,
     geometry: THREE.Geometry,
@@ -194,7 +197,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             let markerOffset = start.clone().sub(end).normalize().multiplyScalar(24)
             let left = new Vector2(-dir.y, dir.x).multiplyScalar(LINE_WIDTH)
             let right = new Vector2(dir.y, -dir.x).multiplyScalar(LINE_WIDTH)
-            let offset = dir.clone().multiplyScalar(this.devicePixelRatio * 12)
+            let offset = dir.clone().multiplyScalar(this.devicePixelRatio * CLUSTER_PIXEL_SIZE)
 
             // line without arrow
             arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + left.x + offset.x, start.y * zoom + left.y + offset.y, 0))
@@ -341,7 +344,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.props.stories.active.clusters.forEach((cluster, ci) => {
 
             // Add circle to scene
-            var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * 12, this.devicePixelRatio * 12);
+            var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * CLUSTER_PIXEL_SIZE, this.devicePixelRatio * CLUSTER_PIXEL_SIZE);
             geometry.rotateZ(Math.PI / 4)
             geometry.scale(0.85, 1.0, 1.0)
 
@@ -486,7 +489,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     createTriangulatedMesh() {
         this.disposeTriangulatedMesh()
 
-        if (this.props.dataset.multivariateLabels) {
+        if (this.props.groupVisualizationMode != GroupVisualizationMode.ConvexHull) {
             return;
         }
 
@@ -495,16 +498,15 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         if (this.props.stories.active) {
             this.props.stories.active.clusters.map(cluster => {
-
                 const bounds = Cluster.calcBounds(cluster.vectors)
 
                 let xAxis = d3.scaleLinear()
                     .range([0, 100])
-                    .domain([cluster.bounds.minX, cluster.bounds.maxX])
+                    .domain([bounds.left, bounds.right])
 
                 let yAxis = d3.scaleLinear()
                     .range([0, 100 * (bounds.height / bounds.width)])
-                    .domain([cluster.bounds.minY, cluster.bounds.maxY])
+                    .domain([bounds.top, bounds.bottom])
 
 
                 let contours = d3.contourDensity()
@@ -518,8 +520,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 let clusterObject = this.clusterObjects.find(e => e.cluster.label == cluster.label)
 
                 let material = new THREE.LineBasicMaterial({ color: clusterObject.lineColor.hex })
-
-
 
                 const points = []
                 contours.forEach(contour => {
@@ -637,7 +637,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             {
                 this.props.hoverState.data && this.props.hoverState.data instanceof Cluster
-                && hoverLabel(this.props.hoverState.data, this.props.viewTransform)
+                && this.props.hoverState.data.name && hoverLabel(this.props.hoverState.data, this.props.viewTransform)
             }
 
             {
@@ -645,6 +645,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     let screen = CameraTransformations.worldToScreen(cluster.getCenter(), this.props.viewTransform)
 
                     return <Typography style={{
+                        textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',
                         position: 'absolute',
                         left: screen.x,
                         top: screen.y,
@@ -653,7 +654,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                         fontWeight: "bold",
                         transform: 'translate(-50%, -50%)',
                         pointerEvents: 'none'
-                    }}>{index}</Typography>
+                    }}>{cluster.label}</Typography>
                 })
             }
         </div>
@@ -671,8 +672,8 @@ const hoverLabel = (hoverState: Cluster, viewTransform) => {
         background: 'transparent',
         color: 'black',
         fontWeight: "bold",
-        transform: 'translate(-50%, -100%)',
+        transform: 'translate(-50%, -150%)',
         pointerEvents: 'none',
         fontSize: '16px'
-    }}>{hoverState.getTextRepresentation()}</Typography>
+    }}>{hoverState.name}</Typography>
 }

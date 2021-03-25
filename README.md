@@ -302,7 +302,7 @@ In the "Groups" tab panel users can adjust group settings, automatically define 
 ### Group Settings 
 One toggle allows users to show or hide items in the scatterplot. The other one allows users to show or hide group centers (grey diamonds).
 
-Users can choose, how the items of a selected group should look like. If a user clicks on a group center (grey diamond), all items belonging to that group are highlighted. If **Convex Hull** is selected, the items belonging to that group are surrounded by a convex hull. If **Star Visualization** is selected, there are lines drawn from the group center to each item. If **None** is selected, the points belonging to the group are just highlighted. TODO: contours
+Users can choose, how the items of a selected group should look like. If a user clicks on a group center (grey diamond), all items belonging to that group are highlighted. If **Contour Plot** is selected, the items belonging to that group are surrounded by contour lines. If **Star Visualization** is selected, there are lines drawn from the group center to each item. If **None** is selected, the points belonging to the group are just highlighted.
 
 ### Define Groups by Clustering
 Automatic Clustering of the projected features can be done in this panel. The algorithm used for clustering is HDBSCAN (https://hdbscan.readthedocs.io/en/latest/index.html). 

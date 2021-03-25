@@ -62,6 +62,8 @@ const initialState = {
 
 const currentAggregation = (state = initialState, action): typeof initialState => {
     switch (action.type) {
+        case SET_AVAILABLE_GROUPS:
+            return { ... state, groups: action.groups }
         case SELECT_SAMPLES:
             return {
                 aggregation: action.aggregation,
