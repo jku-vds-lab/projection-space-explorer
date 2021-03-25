@@ -190,6 +190,7 @@ This section explains the general layout of the tool and the basic controls with
 - Left Menu Drawer (orange): Shows tabs that contain different groups of actions
 - Center View (yellow): Shows the current projection and allows the user to interact with the low dimensional projection of the data items
 - Table Component (blue): Can be dragged up from the bottom of the window to show a LineUp (https://lineup.js.org/) table of the high dimensional space of the data items
+
 ![overview](https://user-images.githubusercontent.com/45741696/112500382-9d5b3100-8d88-11eb-9b2e-8229ea1daf4c.png)
 
 ### Controls
@@ -264,6 +265,7 @@ The values for x and y can then be calculated with a projection method.
 
 Currently only UMAP projection is available for CIME. To implement the projection we used this library: https://github.com/PAIR-code/umap-js. 
 The JavaScript library code is a reimplementation of this python library https://github.com/lmcinnes/umap, with the difference that the JS library uses random seed points as initialization by default. 
+
 ![project](https://user-images.githubusercontent.com/45741696/112500515-be238680-8d88-11eb-82a0-be61b1f77697.png)
 
 ### Parameters (orange)
@@ -299,17 +301,20 @@ In the "Encoding" tab panel users can change the marks and channels of the displ
 
 ## Groups
 In the "Groups" tab panel users can adjust group settings, automatically define groups by clustering and select different stories.
+
 ![groups](https://user-images.githubusercontent.com/45741696/112500597-d09dc000-8d88-11eb-85a0-56bd378dd801.png)
 
 ### Group Settings (orange)
 One toggle allows users to show or hide items in the scatterplot. The other one allows users to show or hide group centers (grey diamonds).
 
 Users can choose, how the items of a selected group should look like. If a user clicks on a group center (grey diamond), all items belonging to that group are highlighted. If **Contour Plot** is selected, the items belonging to that group are surrounded by contour lines. If **Star Visualization** is selected, there are lines drawn from the group center to each item. If **None** is selected, the points belonging to the group are just highlighted.
+
 ![group_highlight](https://user-images.githubusercontent.com/45741696/112500760-f3c86f80-8d88-11eb-90fc-c2cd2b9301ca.gif)
 
 ### Define Groups by Clustering (yellow)
 Automatic Clustering of the projected features can be done in this panel. The algorithm used for clustering is HDBSCAN (https://hdbscan.readthedocs.io/en/latest/index.html). 
 Parameters can be changed either by adjusting the slider (few clusters...many clusters), or by enabling the **Advanced**-Mode. Chosen parameters are always synchronized with the values in the advanced user inputs. Any other possible parameters that could be used for HDBSCAN are set to the default parameters that can be retrieved from the HDBSCAN docs.
+
 ![defineGroupsByClustering](https://user-images.githubusercontent.com/45741696/112500865-0b075d00-8d89-11eb-8484-fc1a5a148221.png)
 
 ### Groups and Stories (blue)
@@ -321,10 +326,12 @@ Users can manually add groups to a new or existing story book by selecting point
 The groups in a story book are listed below the user select. Each item in the list represents one group. If a user clicks on a group, the corresponding points are highlighted in the scatter plot.
 Holding CTRL adds a group to the selection.
 Next to each group label there is a settings button where users can adjust group names, delete a group or filter the LineUp table by this group.
+
 ![storybooks](https://user-images.githubusercontent.com/45741696/112500941-1d819680-8d89-11eb-8049-0e36f56caf8d.gif)
 
 ## Details
 In this tab panel summary visualizations of selected points are shown. The user can choose to show this in an external window by clicking the corresponding toggle.
+
 ![detailView](https://user-images.githubusercontent.com/45741696/112501006-2c684900-8d89-11eb-8fbd-43087150db93.png)
 
 When points are selected users can see the 2D compound structure of the selected items, aligned to each other according to their maximum common substructure.
@@ -346,6 +353,7 @@ It is recommended to use this feature in the external window only, because there
 ## LineUp
 For high dimensional data exploration, we included a LineUp table (https://lineup.js.org/) that can be viewed on demand. 
 To show the table you need to drag the component from the bottom of the window to increase the size of the table. 
+
 ![lineup-open](https://user-images.githubusercontent.com/45741696/112501102-3e49ec00-8d89-11eb-9b1c-513e49321cae.gif)
 
 The table shows all properties that were included in the provided dataset except properties that have the "fingerprint" modifier. Fingerprints were excluded because their values usually do not contain semantic meaning and would take a lot of space in the table, which causes higher loading times and makes the table more complex.
