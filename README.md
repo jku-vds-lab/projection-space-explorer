@@ -191,7 +191,7 @@ This section explains the general layout of the tool and the basic controls with
 - Center View (yellow): Shows the current projection and allows the user to interact with the low dimensional projection of the data items
 - Table Component (blue): Can be dragged up from the bottom of the window to show a LineUp (https://lineup.js.org/) table of the high dimensional space of the data items
 
-![overview](https://user-images.githubusercontent.com/45741696/112500382-9d5b3100-8d88-11eb-9b2e-8229ea1daf4c.png?v=4&s=200)
+<img src="https://user-images.githubusercontent.com/45741696/112500382-9d5b3100-8d88-11eb-9b2e-8229ea1daf4c.png" width="400">
 
 ### Controls
 The following describes a list of controls:
@@ -266,7 +266,7 @@ The values for x and y can then be calculated with a projection method.
 Currently only UMAP projection is available for CIME. To implement the projection we used this library: https://github.com/PAIR-code/umap-js. 
 The JavaScript library code is a reimplementation of this python library https://github.com/lmcinnes/umap, with the difference that the JS library uses random seed points as initialization by default. 
 
-![project](https://user-images.githubusercontent.com/45741696/112500515-be238680-8d88-11eb-82a0-be61b1f77697.png)
+<img src="https://user-images.githubusercontent.com/45741696/112500515-be238680-8d88-11eb-82a0-be61b1f77697.png" width="100">
 
 ### Parameters (orange)
 Before calculating the projection, users are able to choose the features which should be used for the projection. This can be done by selecting and deselecting the corresponding checkboxes. To select or deselect whole semantic groups of features, users can interact with the checkboxes next to the group name. Clicking on a group-row collapses/expands the list of items in this group.
