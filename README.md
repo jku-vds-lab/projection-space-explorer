@@ -365,11 +365,14 @@ The SMILES columns have some additional features:
 The table can be used interactively with the scatter plot that represents the projected space and the summary view that shows selected items:
 - Hovering items in the table highlights the corresponding items in the other views as well and vice versa.
 - Users can select items in the table, which are also selected in the other views and vice versa.
+
+
+
 # Installation
 ## Install npm packages
 Use a git tool to clone this repository to your computer.
 ```bash
-git clone https://github.com/JKU-ICG/projection-path-explorer
+git clone https://github.com/jku-vds-lab/projection-space-explorer/tree/chemVis
 ```
 Then navigate to this folder in a terminal using
 ```bash

@@ -45,15 +45,16 @@ const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
      selection: any, 
      aggregate: boolean, 
      hoverUpdate?: any,
-     mcs_only?: boolean
+     mcs_only?: boolean,
+     diff?: boolean,
+     selection_ref?: any,
  }
  
 
 
 export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Parent) {
-
     if(props.mcs_only){
-
+        
         const [mcsComp, setMcsComp] = React.useState(<div>loading...</div>)
         const { cancellablePromise, cancelPromises } = useCancellablePromise();
 
@@ -62,16 +63,28 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
         React.useEffect(() => {
             cancelPromises();
 
+            
             if(smiles_col in props.columns){
-                const formData = new FormData();
-                props.selection.every((row) => {
-                    formData.append('smiles_list', row[smiles_col]);
-                    return true;
-                });
                 const controller = new AbortController();
+                let my_fetch = null;
+
+                if(props.diff && props.selection_ref){
+                    const smilesA = props.selection.map(row => row[smiles_col]);
+                    const smilesB = props.selection_ref.map(row => row[smiles_col]);
+                    my_fetch = backend_utils.get_difference_highlight(smilesA, smilesB, controller);
+                }else{
+                    const formData = new FormData();
+                    props.selection.every((row) => {
+                        formData.append('smiles_list', row[smiles_col]);
+                        return true;
+                    });
+                    my_fetch = backend_utils.get_mcs_from_smiles_list(formData, controller);
+                }
+
+                
                 trackPromise(
                     cancellablePromise(
-                        backend_utils.get_mcs_from_smiles_list(formData, controller)
+                        my_fetch
                         .then(x => {
                             if (x.length > 100) { // check if it is actually long enogh to be an img
                                 setMcsComp(() => <div style={{width:200, height:200, backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundImage: `url('data:image/jpg;base64,${x}')` }}></div>);
@@ -81,8 +94,9 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                         }), controller
                     )
                 );
+                
             }
-        }, [props.selection, props.mcs_only])
+        }, [props.selection, props.selection_ref, props.mcs_only])
         
 
         if(smiles_col in props.columns){

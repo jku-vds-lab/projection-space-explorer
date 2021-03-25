@@ -563,7 +563,6 @@ function ClusterPopover({
     setAnchorEl,
     cluster,
     removeClusterFromStories,
-    // setLineUpInput_data,
     setLineUpInput_visibility,
     setLineUpInput_filter,
     handleClusterClick,
@@ -596,6 +595,7 @@ function ClusterPopover({
         // Rename cluster labels in dataset
         replaceClusterLabels(cluster.vectors, cluster.label, name)
         setAnchorEl(null)
+        // TODO: update vectors...
     }
 
     const onDelete = () => {

@@ -291,6 +291,23 @@ from rdkit.Chem import rdFMCS
 
 # --- helper functions ---
 
+def get_mcs(mol_list):
+
+    if len(mol_list) <= 1:
+        return Chem.MolFromSmiles("*")
+        
+    if type(mol_list[0])==str:
+        mol_list = [Chem.MolFromSmiles(sm) for sm in mol_list] #TODO: handle invalid smiles
+        
+
+    res=Chem.rdFMCS.FindMCS(mol_list, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=False) #completeRingsOnly=True # there are different settings possible here
+    if(res.canceled):
+        patt = Chem.MolFromSmiles("*")
+    else:
+        patt = res.queryMol
+    
+    return patt
+
 def smiles_to_base64(smiles, highlight=False):
 #    filename = request.session.get("unique_filename", None)
 #    if filename and highlight:
@@ -391,6 +408,60 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourL
 
 # --- routing ---
 
+@bottle.route('/get_difference_highlight', method=['OPTIONS', 'POST'])
+def smiles_to_difference_highlight():
+    if request.method == 'POST':
+        smilesA = request.forms.get("smilesA").split(",")
+        smilesB = request.forms.get("smilesB").split(",")
+        
+        if type(smilesA)==list:
+            if len(smilesA) <= 1:
+                smilesA = smilesA[0]
+                molA = Chem.MolFromSmiles(smilesA)
+            else:
+                molA = get_mcs(smilesA)
+                smilesA = Chem.MolToSmiles(molA)
+        else:
+            molA = Chem.MolFromSmiles(smilesA)
+            
+        if type(smilesB) == list:
+            if len(smilesB) <= 1:
+                smilesB = smilesB[0]
+                molB = Chem.MolFromSmiles(smilesB)
+            else:
+                molB = get_mcs(smilesB)
+                smilesB = Chem.MolToSmiles(molB)
+        else:
+            molB = Chem.MolFromSmiles(smilesB)
+        
+        
+        # need a copy because otherwise the structure is messed up
+        molA_cpy = Chem.MolFromSmiles(smilesA)
+        molB_cpy = Chem.MolFromSmiles(smilesB)
+        mol_cpy = molA_cpy
+        patt = get_mcs([molA_cpy, molB_cpy])
+        
+        mol = molA
+        
+        highlight_atom_colors = None
+        highlight_bond_colors = None
+        highlight_atoms = set(range(len(mol_cpy.GetAtoms()))) - set(mol_cpy.GetSubstructMatch(patt))
+        highlight_bonds = [bond.GetIdx() for bond in mol_cpy.GetBonds() if bond.GetBeginAtomIdx() in highlight_atoms or bond.GetEndAtomIdx() in highlight_atoms]
+
+        d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(200, 200)
+        Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=highlight_atoms, highlightBonds=highlight_bonds, highlightAtomColors=highlight_atom_colors, highlightBondColors=highlight_bond_colors)
+        
+        d.FinishDrawing()
+        
+        stream = BytesIO(d.GetDrawingText())
+        
+        img_str = base64.b64encode(stream.getvalue())
+        stream.close()
+        return {"data": img_str.decode("utf-8")}
+        #return {"data": mol_to_base64(mol)}
+    else:
+        return {}
+
 @bottle.route('/get_mol_img', method=['OPTIONS', 'POST'])
 def smiles_to_img_post(highlight=False):
     if request.method == 'POST':
@@ -436,13 +507,8 @@ def smiles_list_to_imgs():
                 error_smiles.append(smiles)
                 
         if len(mol_lst) > 1:
-            #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
-            res=Chem.rdFMCS.FindMCS(mol_lst, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=False) #completeRingsOnly=True # there are different settings possible here
-            if(res.canceled):
-                patt = Chem.MolFromSmiles("*")
-                #return {"error": "the MCS search had a timeout. please try to select fewer compounds."}
-            else:
-                patt = res.queryMol
+            patt = get_mcs(mol_lst)
+            
             TemplateAlign.rdDepictor.Compute2DCoords(patt)
         else:
             patt = Chem.MolFromSmiles("*")
@@ -471,7 +537,8 @@ def smiles_list_to_common_substructure_img():
         if len(smiles_list) == 0:
             return {"error": "empty SMILES list"}
         if len(smiles_list) == 1:
-            return smiles_to_base64(smiles_list[0])
+            ret = smiles_to_base64(smiles_list[0])
+            return {"data": ret, "smiles": smiles_list[0]}
 
         mol_lst = []
         error_smiles = []
@@ -481,15 +548,14 @@ def smiles_list_to_common_substructure_img():
                 mol_lst.append(mol)
             else:
                 error_smiles.append(smiles)
-        #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
-        res = rdFMCS.FindMCS(mol_lst, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=False)
-        m = res.queryMol
+                
+        m = get_mcs(mol_lst)
         pil_img = Draw.MolToImage(m)
 
         buffered = BytesIO()
         pil_img.save(buffered, format="JPEG")
         img_str = base64.b64encode(buffered.getvalue())
-        return {"data": img_str.decode("utf-8")}
+        return {"data": img_str.decode("utf-8"), "smiles": Chem.MolToSmiles(m)}
     else:
         return {}
         
@@ -613,8 +679,8 @@ def test():
 # CONSTANTS
 # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
 response_header_origin_all = '*'
-# response_header_origin_localhost = 'http://127.0.0.1:5500'
-response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
+response_header_origin_localhost = 'http://127.0.0.1:5500'
+#response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
 class EnableCors(object):
     name = 'enable_cors'
     api = 2
@@ -638,8 +704,8 @@ bottle.install(EnableCors())
 #app.run(port=8080) # not working for docker and apparently not needed
 
 # CONSTANTS
-# run(app=app, host='localhost', port=8080, debug=True, reloader=True)
-run(app=app, host='0.0.0.0', port=8080) # use for docker
+run(app=app, host='localhost', port=8080, debug=True, reloader=True)
+# run(app=app, host='0.0.0.0', port=8080) # use for docker
 
 
 # ------------------

@@ -3348,7 +3348,7 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_substructure_count = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.get_uploaded_files = exports.delete_file = exports.BASE_URL = exports.CREDENTIALS = void 0;
+exports.calculate_hdbscan_clusters = exports.get_representation_list = exports.upload_sdf_file = exports.get_substructure_count = exports.get_mcs_from_smiles_list = exports.get_structures_from_smiles_list = exports.get_structure_from_smiles = exports.get_difference_highlight = exports.get_uploaded_files = exports.delete_file = exports.BASE_URL = exports.CREDENTIALS = void 0;
 exports.CREDENTIALS = 'include'; // for AWS/docker
 // export const CREDENTIALS = 'omit'; // for netlify/local
 // export const BASE_URL = 'https://cime.caleydoapp.org'; // for netlify
@@ -3479,23 +3479,73 @@ function get_uploaded_files() {
 
 exports.get_uploaded_files = get_uploaded_files;
 
-function get_structure_from_smiles(smiles) {
-  var highlight = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+function get_difference_highlight(smilesA, smilesB) {
   var controller = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-    var cached_data, formData, path, my_fetch;
+    var formData, path, my_fetch;
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
+            formData = new FormData();
+            formData.append('smilesA', smilesA);
+            formData.append('smilesB', smilesB);
+            path = exports.BASE_URL + '/get_difference_highlight';
+            my_fetch = null;
+
+            if (controller) {
+              my_fetch = fetch(path, {
+                method: 'POST',
+                body: formData,
+                credentials: exports.CREDENTIALS,
+                signal: controller.signal
+              });
+            } else {
+              my_fetch = fetch(path, {
+                method: 'POST',
+                body: formData,
+                credentials: exports.CREDENTIALS
+              });
+            }
+
+            return _context4.abrupt("return", my_fetch.then(handle_errors).then(function (response) {
+              return response.json();
+            }).then(handle_errors_json).then(function (data) {
+              console.log(data);
+              return data["data"];
+            }).catch(function (error) {
+              // alert("could not load structure");
+              console.log(error);
+            }));
+
+          case 7:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+}
+
+exports.get_difference_highlight = get_difference_highlight;
+
+function get_structure_from_smiles(smiles) {
+  var highlight = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var controller = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+    var cached_data, formData, path, my_fetch;
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
             cached_data = handleSmilesCache(smiles, highlight);
 
             if (!cached_data) {
-              _context4.next = 3;
+              _context5.next = 3;
               break;
             }
 
-            return _context4.abrupt("return", async_cache(cached_data));
+            return _context5.abrupt("return", async_cache(cached_data));
 
           case 3:
             formData = new FormData();
@@ -3524,7 +3574,7 @@ function get_structure_from_smiles(smiles) {
               });
             }
 
-            return _context4.abrupt("return", my_fetch.then(handle_errors).then(function (response) {
+            return _context5.abrupt("return", my_fetch.then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (data) {
               setSmilesCache(smiles, highlight, data["data"]);
@@ -3536,28 +3586,41 @@ function get_structure_from_smiles(smiles) {
 
           case 11:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
       }
-    }, _callee4);
+    }, _callee5);
   }));
 }
 
 exports.get_structure_from_smiles = get_structure_from_smiles;
 
 function get_structures_from_smiles_list(formData, controller) {
-  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+    var my_fetch;
+    return regeneratorRuntime.wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
             if (localStorage.getItem("unique_filename")) formData.append('filename', localStorage.getItem("unique_filename"));
-            return _context5.abrupt("return", fetch(exports.BASE_URL + '/get_mol_imgs', {
-              method: 'POST',
-              body: formData,
-              credentials: exports.CREDENTIALS,
-              signal: controller === null || controller === void 0 ? void 0 : controller.signal
-            }).then(handle_errors).then(function (response) {
+            my_fetch = null;
+
+            if (controller) {
+              my_fetch = fetch(exports.BASE_URL + '/get_mol_imgs', {
+                method: 'POST',
+                body: formData,
+                credentials: exports.CREDENTIALS,
+                signal: controller === null || controller === void 0 ? void 0 : controller.signal
+              });
+            } else {
+              my_fetch = fetch(exports.BASE_URL + '/get_mol_imgs', {
+                method: 'POST',
+                body: formData,
+                credentials: exports.CREDENTIALS
+              });
+            }
+
+            return _context6.abrupt("return", my_fetch.then(handle_errors).then(function (response) {
               return response.json();
             }).then(handle_errors_json).then(function (data) {
               if (data["error_smiles"].length > 0) {
@@ -3574,37 +3637,7 @@ function get_structures_from_smiles_list(formData, controller) {
               }
             }));
 
-          case 2:
-          case "end":
-            return _context5.stop();
-        }
-      }
-    }, _callee5);
-  }));
-}
-
-exports.get_structures_from_smiles_list = get_structures_from_smiles_list;
-
-function get_mcs_from_smiles_list(formData, controller) {
-  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
-    return regeneratorRuntime.wrap(function _callee6$(_context6) {
-      while (1) {
-        switch (_context6.prev = _context6.next) {
-          case 0:
-            return _context6.abrupt("return", fetch(exports.BASE_URL + '/get_common_mol_img', {
-              method: 'POST',
-              body: formData,
-              signal: controller === null || controller === void 0 ? void 0 : controller.signal
-            }).then(handle_errors).then(function (response) {
-              return response.json();
-            }).then(handle_errors_json).then(function (response) {
-              return response["data"];
-            }).catch(function (error) {
-              // alert("could not get maximum common substructure")
-              console.log(error);
-            }));
-
-          case 1:
+          case 4:
           case "end":
             return _context6.stop();
         }
@@ -3613,19 +3646,61 @@ function get_mcs_from_smiles_list(formData, controller) {
   }));
 }
 
-exports.get_mcs_from_smiles_list = get_mcs_from_smiles_list;
+exports.get_structures_from_smiles_list = get_structures_from_smiles_list;
 
-function get_substructure_count(smiles_list, filter) {
+function get_mcs_from_smiles_list(formData, controller) {
   return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
-    var formData;
+    var my_fetch;
     return regeneratorRuntime.wrap(function _callee7$(_context7) {
       while (1) {
         switch (_context7.prev = _context7.next) {
           case 0:
+            my_fetch = null;
+
+            if (controller) {
+              my_fetch = fetch(exports.BASE_URL + '/get_common_mol_img', {
+                method: 'POST',
+                body: formData,
+                signal: controller === null || controller === void 0 ? void 0 : controller.signal
+              });
+            } else {
+              my_fetch = fetch(exports.BASE_URL + '/get_common_mol_img', {
+                method: 'POST',
+                body: formData
+              });
+            }
+
+            return _context7.abrupt("return", my_fetch.then(handle_errors).then(function (response) {
+              return response.json();
+            }).then(handle_errors_json).then(function (response) {
+              return response["data"];
+            }).catch(function (error) {
+              // alert("could not get maximum common substructure")
+              console.log(error);
+            }));
+
+          case 3:
+          case "end":
+            return _context7.stop();
+        }
+      }
+    }, _callee7);
+  }));
+}
+
+exports.get_mcs_from_smiles_list = get_mcs_from_smiles_list;
+
+function get_substructure_count(smiles_list, filter) {
+  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+    var formData;
+    return regeneratorRuntime.wrap(function _callee8$(_context8) {
+      while (1) {
+        switch (_context8.prev = _context8.next) {
+          case 0:
             formData = new FormData();
             formData.append('smiles_list', smiles_list);
             formData.append('filter_smiles', filter);
-            return _context7.abrupt("return", fetch(exports.BASE_URL + '/get_substructure_count', {
+            return _context8.abrupt("return", fetch(exports.BASE_URL + '/get_substructure_count', {
               method: 'POST',
               body: formData
             }).then(handle_errors).then(function (response) {
@@ -3639,21 +3714,21 @@ function get_substructure_count(smiles_list, filter) {
 
           case 4:
           case "end":
-            return _context7.stop();
+            return _context8.stop();
         }
       }
-    }, _callee7);
+    }, _callee8);
   }));
 }
 
 exports.get_substructure_count = get_substructure_count;
 
 function upload_sdf_file(file, controller) {
-  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
     var formData_file, promise;
-    return regeneratorRuntime.wrap(function _callee8$(_context8) {
+    return regeneratorRuntime.wrap(function _callee9$(_context9) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context9.prev = _context9.next) {
           case 0:
             // upload the sdf file to the server
             // the response is a unique filename that can be used to make further requests
@@ -3677,14 +3752,14 @@ function upload_sdf_file(file, controller) {
                 console.log(error);
               }
             });
-            return _context8.abrupt("return", promise);
+            return _context9.abrupt("return", promise);
 
           case 5:
           case "end":
-            return _context8.stop();
+            return _context9.stop();
         }
       }
-    }, _callee8);
+    }, _callee9);
   }));
 }
 
@@ -3693,30 +3768,30 @@ exports.upload_sdf_file = upload_sdf_file;
 function get_representation_list() {
   var refresh = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   var dataset_name = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
-  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
+  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
     var cached_data, path;
-    return regeneratorRuntime.wrap(function _callee9$(_context9) {
+    return regeneratorRuntime.wrap(function _callee10$(_context10) {
       while (1) {
-        switch (_context9.prev = _context9.next) {
+        switch (_context10.prev = _context10.next) {
           case 0:
             if (refresh) {
-              _context9.next = 4;
+              _context10.next = 4;
               break;
             }
 
             cached_data = handleCache("representation_list_" + dataset_name);
 
             if (!(cached_data && cached_data["rep_list"].length > 0)) {
-              _context9.next = 4;
+              _context10.next = 4;
               break;
             }
 
-            return _context9.abrupt("return", async_cache(cached_data));
+            return _context10.abrupt("return", async_cache(cached_data));
 
           case 4:
             path = exports.BASE_URL + '/get_atom_rep_list';
             if (localStorage.getItem("unique_filename")) path += "/" + localStorage.getItem("unique_filename");
-            return _context9.abrupt("return", fetch(path, {
+            return _context10.abrupt("return", fetch(path, {
               method: 'GET',
               credentials: exports.CREDENTIALS
             }).then(handle_errors).then(function (response) {
@@ -3731,28 +3806,28 @@ function get_representation_list() {
 
           case 7:
           case "end":
-            return _context9.stop();
+            return _context10.stop();
         }
       }
-    }, _callee9);
+    }, _callee10);
   }));
 }
 
 exports.get_representation_list = get_representation_list;
 
 function calculate_hdbscan_clusters(X, min_cluster_size, min_cluster_samples, allow_single_cluster) {
-  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
+  return __awaiter(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee11() {
     var formData;
-    return regeneratorRuntime.wrap(function _callee10$(_context10) {
+    return regeneratorRuntime.wrap(function _callee11$(_context11) {
       while (1) {
-        switch (_context10.prev = _context10.next) {
+        switch (_context11.prev = _context11.next) {
           case 0:
             formData = new FormData();
             formData.append('min_cluster_size', min_cluster_size);
             formData.append('min_cluster_samples', min_cluster_samples);
             formData.append('allow_single_cluster', allow_single_cluster);
             formData.append('X', X);
-            return _context10.abrupt("return", fetch(exports.BASE_URL + '/segmentation', {
+            return _context11.abrupt("return", fetch(exports.BASE_URL + '/segmentation', {
               method: 'POST',
               body: formData
             }).then(handle_errors).then(function (response) {
@@ -3764,10 +3839,10 @@ function calculate_hdbscan_clusters(X, min_cluster_size, min_cluster_samples, al
 
           case 6:
           case "end":
-            return _context10.stop();
+            return _context11.stop();
         }
       }
-    }, _callee10);
+    }, _callee11);
   }));
 }
 

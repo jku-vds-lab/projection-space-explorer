@@ -32,7 +32,7 @@ export const GenericChanges = connect(mapStateToProps, mapDispatchToProps)(({ ve
         case DatasetType.Coral:
             return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale}></CoralChanges>
         case DatasetType.Chem:
-            return <ChemLegendParent selection={vectorsA.concat(vectorsB)} aggregate={true} mcs_only={true}></ChemLegendParent>
+            return <ChemLegendParent selection={vectorsA} selection_ref={vectorsB} diff={true} aggregate={true} mcs_only={true}></ChemLegendParent>
         default:
             return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale}></CoralChanges>
     }

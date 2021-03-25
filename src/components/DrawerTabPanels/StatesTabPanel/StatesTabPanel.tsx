@@ -56,7 +56,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRe
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux
+type Props = PropsFromRedux & {
+    lineColorScheme
+}
 
 /**
  
@@ -178,6 +180,7 @@ export const StatesTabPanelFull = ({
                             onSelectAll={(algo, checked) => {
                                 var ch = selectedLines
                                 Object.keys(ch).forEach(key => {
+                                    // @ts-ignore
                                     var e = selectedLineAlgos.find(e => e.algo == algo)
                                     if (e.lines.find(e => e.line == key)) {
                                         ch[key] = checked
