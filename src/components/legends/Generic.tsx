@@ -39,7 +39,7 @@ export var GenericLegend = ({ type, vectors, aggregate, columns, hoverUpdate }: 
         case DatasetType.Neural:
             return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
         case DatasetType.Chess:
-            return <ChessLegend selection={vectors}></ChessLegend>
+            return <ChessFingerprint width={250} height={250} vectors={vectors}></ChessFingerprint>
         case DatasetType.Coral:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Go:
@@ -65,7 +65,7 @@ export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({
         case DatasetType.Rubik:
             return <RubikFingerprint width={81 * scale} height={108 * scale} vectors={vectors}></RubikFingerprint>
         case DatasetType.Chess:
-            return <ChessFingerprint width={80 * scale} height={80 * scale} vectors={vectors}></ChessFingerprint>
+            return <ChessFingerprint width={150 * scale} height={150 * scale} vectors={vectors}></ChessFingerprint>
         case DatasetType.Neural:
             return <NeuralLegend selection={vectors} aggregate={true}></NeuralLegend>
         case DatasetType.Story:

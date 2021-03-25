@@ -20,6 +20,9 @@ var symbols = {
     '': ''
 }
 
+const WHITE = "#D18B47"
+const BLACK = "#FFCE9E"
+
 Object.keys(symbols).filter(key => key != '').forEach(key => {
     var path = symbols[key]
     var img = new Image(45, 45)
@@ -133,17 +136,17 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
         keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
         // variable determining the current field color
-        var col = "white"
+        var col = WHITE
 
 
         for (var i = 0; i < 64; i++) {
             var x = i % 8
             var y = Math.floor(i / 8)
             if (i % 8 != 0) {
-                if (col == "white") {
-                    col = "black"
+                if (col == WHITE) {
+                    col = BLACK
                 } else {
-                    col = "white"
+                    col = WHITE
                 }
             }
 
@@ -163,6 +166,7 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
                 deleted = true
             }
 
+            this.canvasContext.globalAlpha = 1.0
             this.canvasContext.fillStyle = col
 
             this.canvasContext.fillRect(

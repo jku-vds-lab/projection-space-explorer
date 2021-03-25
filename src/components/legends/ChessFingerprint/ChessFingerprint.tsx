@@ -19,6 +19,9 @@ var symbols = {
     '': ''
 }
 
+const WHITE = "#D18B47"
+const BLACK = "#FFCE9E"
+
 export const requiredChessColumns = [];
 
 ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].forEach(c => {
@@ -100,17 +103,17 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
         keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
         // variable determining the current field color
-        var col = "white"
+        var col = WHITE
 
 
         for (var i = 0; i < 64; i++) {
             var x = i % 8
             var y = Math.floor(i / 8)
             if (i % 8 != 0) {
-                if (col == "white") {
-                    col = "black"
+                if (col == WHITE) {
+                    col = BLACK
                 } else {
-                    col = "white"
+                    col = WHITE
                 }
             }
 
@@ -131,18 +134,19 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
                     var v = aggregation[key][k]
                     total += v.count
 
-                    if (v.count > max) {
+                    // if (v.count > max) {
                         max = v.count
                         content = symbols[aggregation[key][k].key]
                         content = aggregation[key][k].key
-                    }
+                    // }
                 }
 
-                opacity = (max / total)
+                opacity = Math.max((max / total), 0.25)
             }
+            this.canvasContext.globalAlpha = 1.0
 
             this.canvasContext.fillStyle = col
-
+            
             this.canvasContext.fillRect(
                 x * size,
                 y * size,
