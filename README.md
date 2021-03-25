@@ -266,7 +266,7 @@ The values for x and y can then be calculated with a projection method.
 Currently only UMAP projection is available for CIME. To implement the projection we used this library: https://github.com/PAIR-code/umap-js. 
 The JavaScript library code is a reimplementation of this python library https://github.com/lmcinnes/umap, with the difference that the JS library uses random seed points as initialization by default. 
 
-<img src="https://user-images.githubusercontent.com/45741696/112500515-be238680-8d88-11eb-82a0-be61b1f77697.png" width="400">
+<img src="https://user-images.githubusercontent.com/45741696/112500515-be238680-8d88-11eb-82a0-be61b1f77697.png" width="300">
 
 ### Parameters (orange)
 Before calculating the projection, users are able to choose the features which should be used for the projection. This can be done by selecting and deselecting the corresponding checkboxes. To select or deselect whole semantic groups of features, users can interact with the checkboxes next to the group name. Clicking on a group-row collapses/expands the list of items in this group.
@@ -302,14 +302,14 @@ In the "Encoding" tab panel users can change the marks and channels of the displ
 ## Groups
 In the "Groups" tab panel users can adjust group settings, automatically define groups by clustering and select different stories.
 
-<img src="https://user-images.githubusercontent.com/45741696/112500597-d09dc000-8d88-11eb-85a0-56bd378dd801.png" width="400">
+<img src="https://user-images.githubusercontent.com/45741696/112500597-d09dc000-8d88-11eb-85a0-56bd378dd801.png" width="300">
 
 ### Group Settings (orange)
 One toggle allows users to show or hide items in the scatterplot. The other one allows users to show or hide group centers (grey diamonds).
 
 Users can choose, how the items of a selected group should look like. If a user clicks on a group center (grey diamond), all items belonging to that group are highlighted. If **Contour Plot** is selected, the items belonging to that group are surrounded by contour lines. If **Star Visualization** is selected, there are lines drawn from the group center to each item. If **None** is selected, the points belonging to the group are just highlighted.
 
-<img src="https://user-images.githubusercontent.com/45741696/112500760-f3c86f80-8d88-11eb-90fc-c2cd2b9301ca.gif" width="400">
+<img src="https://user-images.githubusercontent.com/45741696/112500760-f3c86f80-8d88-11eb-90fc-c2cd2b9301ca.gif" width="300">
 
 ### Define Groups by Clustering (yellow)
 Automatic Clustering of the projected features can be done in this panel. The algorithm used for clustering is HDBSCAN (https://hdbscan.readthedocs.io/en/latest/index.html). 
