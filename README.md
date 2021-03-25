@@ -191,7 +191,7 @@ This section explains the general layout of the tool and the basic controls with
 - Center View (yellow): Shows the current projection and allows the user to interact with the low dimensional projection of the data items
 - Table Component (blue): Can be dragged up from the bottom of the window to show a LineUp (https://lineup.js.org/) table of the high dimensional space of the data items
 
-![overview](https://user-images.githubusercontent.com/45741696/112500382-9d5b3100-8d88-11eb-9b2e-8229ea1daf4c.png | width=100)
+![overview](https://user-images.githubusercontent.com/45741696/112500382-9d5b3100-8d88-11eb-9b2e-8229ea1daf4c.png&s=200)
 
 ### Controls
 The following describes a list of controls:
