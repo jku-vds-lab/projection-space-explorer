@@ -327,7 +327,7 @@ The groups in a story book are listed below the user select. Each item in the li
 Holding CTRL adds a group to the selection.
 Next to each group label there is a settings button where users can adjust group names, delete a group or filter the LineUp table by this group.
 
-<img src="https://user-images.githubusercontent.com/45741696/112500941-1d819680-8d89-11eb-8049-0e36f56caf8d.gif" width="400">
+<img src="https://user-images.githubusercontent.com/45741696/112500941-1d819680-8d89-11eb-8049-0e36f56caf8d.gif" width="250">
 
 ## Details
 In this tab panel summary visualizations of selected points are shown. The user can choose to show this in an external window by clicking the corresponding toggle.
@@ -354,7 +354,7 @@ It is recommended to use this feature in the external window only, because there
 For high dimensional data exploration, we included a LineUp table (https://lineup.js.org/) that can be viewed on demand. 
 To show the table you need to drag the component from the bottom of the window to increase the size of the table. 
 
-<img src="https://user-images.githubusercontent.com/45741696/112501102-3e49ec00-8d89-11eb-9b1c-513e49321cae.gif" width="400">
+<img src="https://user-images.githubusercontent.com/45741696/112501102-3e49ec00-8d89-11eb-9b1c-513e49321cae.gif" width="600">
 
 The table shows all properties that were included in the provided dataset except properties that have the "fingerprint" modifier. Fingerprints were excluded because their values usually do not contain semantic meaning and would take a lot of space in the table, which causes higher loading times and makes the table more complex.
 
