@@ -20,7 +20,7 @@ export class DatasetDatabase {
 
     constructor() {
         this.data = [
-           {
+            {
                 display: "Coral sub-sampled",
                 path: "datasets/coral/coral_subsampled.json",
                 type: DatasetType.Coral
@@ -48,6 +48,11 @@ export class DatasetDatabase {
             {
                 display: "Chess: 450 Games",
                 path: "datasets/chess/chess40k.csv",
+                type: DatasetType.Chess
+            },
+            {
+                display: "Chess: 450 Games (Groups)",
+                path: "datasets/chess/chess40k_groups.json",
                 type: DatasetType.Chess
             },
             {
