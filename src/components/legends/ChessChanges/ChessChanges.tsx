@@ -181,6 +181,7 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
                 if (!deleted) {
                     this.canvasContext.drawImage(symbols[content], x * size, y * size, size, size)
                 } else {
+                    this.canvasContext.globalAlpha = 1.0
                     this.canvasContext.fillStyle = 'red'
                     this.canvasContext.fillRect(x * size, y * size, size, size)
                 }

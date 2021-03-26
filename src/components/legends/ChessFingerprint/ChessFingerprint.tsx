@@ -143,7 +143,7 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
                     }
                 }
 
-                opacity = Math.max((max / total), 0.25)
+                opacity = Math.max((max / total), 0.15)
             }
             this.canvasContext.globalAlpha = 1.0
 

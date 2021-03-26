@@ -139,13 +139,13 @@ function aggregateChess(vectors) {
       for (var k in aggregation[key]) {
         var v = aggregation[key][k]
         total += v.count
-        // if (v.count > max) {
+        if (v.count > max && symbols[aggregation[key][k].key] !== "") {
           max = v.count
           content = symbols[aggregation[key][k].key]
-        // }
+        }
       }
 
-        opacity = Math.max((max / total), 0.25)
+        opacity = Math.max((max / total), 0.15)
     }
 
     var imgwrap = board.append("div")
