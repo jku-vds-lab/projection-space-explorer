@@ -72,6 +72,7 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
                     return <div>{cellData?.toString()}</div>
                 } else if (columnIndex == 1) {
                     return <Checkbox
+                        color="primary"
                         disableRipple
                         indeterminate={rowData.checkedCount != 0 && rowData.checkedCount != rowData.items.length}
                         checked={rowData.checkedCount == rowData.items.length}
@@ -83,6 +84,7 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
                     />
                 } else if (columnIndex == 2) {
                     return <Checkbox
+                        color="primary"
                         disableRipple
                         indeterminate={rowData.normalizedCount != 0 && rowData.normalizedCount != rowData.items.length}
                         checked={rowData.normalizedCount == rowData.items.length}
@@ -99,6 +101,7 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
             } else {
                 if (typeof cellData == "boolean") {
                     return <Checkbox
+                        color="primary"
                         disableRipple
                         disabled={!rowData.checked && columnIndex == 2}
                         checked={cellData}
@@ -170,7 +173,7 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
         if ("groupLabel" in props.rowData) {
             props.style.background = 'rgba(234, 234, 234, 1)'
             props.style.borderLeft = '2px solid black'
-            return <div style={{position: 'static'}} key={this.props.items[props.index]} onClick={() => {
+            return <div style={{position: 'static'}} key={this.props.items[props.index].name} onClick={() => {
                 this.props.groupCollapse(props.index)
             }}>{defaultTableRowRenderer(props)}</div>
         } else {

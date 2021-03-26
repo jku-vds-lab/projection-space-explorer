@@ -7,7 +7,13 @@ type VirtualTableProps = {
     tableHeight: number
 }
 
-export class VirtualColumn extends React.Component {
+type VirtualColumnProps = {
+    width: number
+    name: string
+    renderer: (row:any) => any
+}
+
+export class VirtualColumn extends React.Component<VirtualColumnProps, any> {
 
 }
 
@@ -81,7 +87,9 @@ export class VirtualTable extends React.Component<VirtualTableProps, any> {
             }
 
             items.push(
+                //@ts-ignore
                 <div {...rowAttrs} key={index}>
+                    {/* @ts-ignore */}
                     {this.props.children.map((child, i) => {
                         return <div key={i} style={{display: 'inline-block', flexGrow: 1, flexBasis: 0}}>
                             {child.props.renderer(rows[index])}
@@ -124,6 +132,7 @@ export class VirtualTable extends React.Component<VirtualTableProps, any> {
         return (
             <div {...attrs.wrapper}>
                 <div {...attrs.content}>
+                    {/* @ts-ignore */}
                     <div {...attrs.tbody}>
                         {this.generateRows()}
                     </div>

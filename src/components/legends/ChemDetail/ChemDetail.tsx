@@ -18,6 +18,7 @@ import rdkitSettings, { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale,
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { WindowMode } from '../../Ducks/HoverSettingsDuck';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { setChannelColor } from '../../Ducks/ChannelColorDuck';
 
 
 /**
@@ -28,6 +29,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
     dataset: state.dataset,
     hoverSettings: state.hoverSettings,
     rdkitSettings: state.rdkitSettings,
+    columns: state.dataset?.columns,
 })
 const mapDispatchToProps_Chem = dispatch => ({
     setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
@@ -42,31 +44,88 @@ const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
 
  type Props_Chem_Parent = PropsFromRedux_Chem & {
      selection: any, 
-     columns: any, 
      aggregate: boolean, 
-     hoverUpdate
+     hoverUpdate?: any,
+     mcs_only?: boolean,
+     diff?: boolean,
+     selection_ref?: any,
  }
  
 
 
 export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Parent) {
+    const { cancellablePromise, cancelPromises } = useCancellablePromise();
+    if(props.mcs_only){
+        
+        const [mcsComp, setMcsComp] = React.useState(<div>loading...</div>)
+
+        let smiles_col = "SMILES";
+
+        React.useEffect(() => {
+            cancelPromises();
+
+            
+            if(smiles_col in props.columns){
+                const controller = new AbortController();
+                let my_fetch = null;
+
+                if(props.diff && props.selection_ref){
+                    const smilesA = props.selection.map(row => row[smiles_col]);
+                    const smilesB = props.selection_ref.map(row => row[smiles_col]);
+                    my_fetch = backend_utils.get_difference_highlight(smilesA, smilesB, controller);
+                }else{
+                    const formData = new FormData();
+                    props.selection.every((row) => {
+                        formData.append('smiles_list', row[smiles_col]);
+                        return true;
+                    });
+                    my_fetch = backend_utils.get_mcs_from_smiles_list(formData, controller);
+                }
+
+                
+                trackPromise(
+                    cancellablePromise(
+                        my_fetch
+                        .then(x => {
+                            if (x.length > 100) { // check if it is actually long enogh to be an img
+                                setMcsComp(() => <div style={{width:200, height:200, backgroundSize: "contain", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundImage: `url('data:image/jpg;base64,${x}')` }}></div>);
+                            }else{
+                                setMcsComp(() => <div>{x}</div>);
+                            }
+                        }), controller
+                    )
+                );
+                
+            }
+        }, [props.selection, props.selection_ref, props.mcs_only])
+        
+
+        if(smiles_col in props.columns){
+            return <div>{mcsComp}</div>;
+        }
+        return <div>No SMILES column found.</div>
+    }
+
+
     const [settingsOpen, setSettingsOpen] = React.useState(false);
     const [repList, setRepList] = React.useState(["Common Substructure"]);
-    const [cancelables, setCancelables] = React.useState([]);
     const [chemComponents, setChemComponents] = React.useState([0]);
     const [chemComponentsCurrentRep, setChemComponentsCurrentRep] = React.useState(["Common Substructure"]);
 
     const loadRepList = function(refresh=false){
         if(refresh || repList.length <= 1){
-            const cancelable = makeCancelable(backend_utils.get_representation_list(refresh, props.dataset.info.path));
-            setCancelables(cancelables.concat(cancelable));
-            cancelable.promise.then(x => {
-                if(x["rep_list"].length > 0){
-                    let rep_list = [...x["rep_list"]];
-                    rep_list.splice(0, 0, "Common Substructure");
-                    setRepList(rep_list);
-                }
-            })
+            const controller = new AbortController();
+            cancellablePromise(
+                backend_utils.get_representation_list(refresh, props.dataset.info.path, controller)
+                    .then(x => {
+                        if(x["rep_list"].length > 0){
+                            let rep_list = [...x["rep_list"]];
+                            rep_list.splice(0, 0, "Common Substructure");
+                            setRepList(rep_list);
+                        }
+                    }), controller
+            );
+            
         }
     }
 
@@ -81,12 +140,8 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
     }
 
     React.useEffect(() => {
+        cancelPromises();
         loadRepList();
-
-        return () => {
-            cancelables.forEach(p => p.cancel());
-            setCancelables([]);
-        }
     }, []);
 
     const removeComponent = (id) => {
@@ -115,7 +170,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
 
     if(props.aggregate){
 
-        return <Box className={"ParentChem"}>
+        return <Box className={"ParentChem"} paddingBottom={3}>
             {props.aggregate && <Box paddingLeft={2} paddingRight={2}>
                 <Tooltip title="Summary Settings">
                     <Button style={{color:"gray"}} ref={anchorRef} onClick={() => setSettingsOpen(true)}><SettingsIcon></SettingsIcon>&nbsp; Settings</Button>
@@ -130,7 +185,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                     <div style={{width:(props.rdkitSettings.width+20)*chemComponents.length}}>
                         {chemComponents.map((x, i) => {
                             return <div key={x} style={{width: (props.rdkitSettings.width+20), float:'left'}}>
-                                <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, x)} currentRep={chemComponentsCurrentRep[i]} removeComponent={() => removeComponent(x)} id={x} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                                <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, x)} currentRep={chemComponentsCurrentRep[i]} removeComponent={() => removeComponent(x)} id={x} rep_list={repList} selection={props.selection} aggregate={props.aggregate} hoverUpdate={props.hoverUpdate}></ChemLegend>
                             </div>
                         })}
                     </div>
@@ -138,7 +193,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                 {chemComponents.length <= 1 &&
                     <div>
                         <div style={{minWidth: props.rdkitSettings.width}} key={chemComponents[0]}>
-                            <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, chemComponents[0])} currentRep={chemComponentsCurrentRep[0]} id={chemComponents[0]} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                            <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, chemComponents[0])} currentRep={chemComponentsCurrentRep[0]} id={chemComponents[0]} rep_list={repList} selection={props.selection} aggregate={props.aggregate} hoverUpdate={props.hoverUpdate}></ChemLegend>
                         </div>
                     </div>
                 }
@@ -146,7 +201,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
             
         </Box>;
     }else{
-        return <ChemLegend id={-1} rep_list={repList} selection={props.selection} aggregate={props.aggregate} columns={props.columns} hoverUpdate={props.hoverUpdate}></ChemLegend>
+        return <ChemLegend id={-1} rep_list={repList} selection={props.selection} aggregate={props.aggregate} hoverUpdate={props.hoverUpdate}></ChemLegend>
     }
 
 });
@@ -292,7 +347,7 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                             return <Grid className={"legend_multiple"} key={i} item>
                                 <FormControlLabel
                                     labelPlacement="bottom"
-                                    control={<Checkbox onChange={(event) => { onUpdateItem(i, event.target.checked); }} />}
+                                    control={<Checkbox color="primary" onChange={(event) => { onUpdateItem(i, event.target.checked); }} />}
                                     label={<img
                                         src={"data:image/jpeg;base64," + base64} 
                                         onMouseEnter={() => {handleMouseEnter(i);}} 
@@ -441,7 +496,7 @@ const ImageView = connector_Img(function ({chemRef, id, hoverState, selection, c
                         if(container && imgList[idx]){
                             //@ts-ignore
                             container.scrollTop = imgList[idx].offsetTop - container.offsetTop;
-                            // imgList[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+                            // imgList[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' }) // this seems to be buggy sometimes
                         }
                     }
                 }
@@ -591,12 +646,12 @@ const SettingsPopover = connector_settings(function ({
 
 
                     <FormControlLabel
-                        control={<Switch checked={rdkitSettings.showMCS} onChange={(_, value) => {setShowMCS(value);}} />}
+                        control={<Switch color="primary" checked={rdkitSettings.showMCS} onChange={(_, value) => {setShowMCS(value);}} />}
                         label="Show MCS"
                     />
 
                     <FormControlLabel
-                        control={<Switch checked={rdkitSettings.doAlignment} onChange={(_, value) => {setDoAlignment(value);}} />}
+                        control={<Switch color="primary" checked={rdkitSettings.doAlignment} onChange={(_, value) => {setDoAlignment(value);}} />}
                         label="Align Structure"
                     />
 

@@ -92,6 +92,43 @@ export async function get_uploaded_files(){
     });
 }
 
+export async function get_difference_highlight(smilesA:any, smilesB:any, controller=null) {
+    
+    const formData = new FormData();
+    formData.append('smilesA', smilesA);
+    formData.append('smilesB', smilesB);
+
+    let path = BASE_URL+'/get_difference_highlight';
+    let my_fetch = null;
+    if(controller){
+        my_fetch = fetch(path, {
+            method: 'POST',
+            body: formData,
+            credentials: CREDENTIALS,
+            signal: controller.signal
+        })
+    }else{
+        my_fetch = fetch(path, {
+            method: 'POST',
+            body: formData,
+            credentials: CREDENTIALS,
+        })
+    }
+
+    return my_fetch
+    .then(handle_errors)
+    .then(response => response.json())
+    .then(handle_errors_json)
+    .then(data => {
+        console.log(data)
+        return data["data"];
+    })
+    .catch(error => {
+        // alert("could not load structure");
+        console.log(error)
+    });
+}
+
 
 export async function get_structure_from_smiles(smiles:string, highlight=false, controller=null) {
     const cached_data = handleSmilesCache(smiles, highlight)
@@ -143,12 +180,22 @@ export async function get_structures_from_smiles_list(formData:FormData, control
     if(localStorage.getItem("unique_filename"))
         formData.append('filename', localStorage.getItem("unique_filename"));
 
-    return fetch(BASE_URL+'/get_mol_imgs', {
-        method: 'POST',
-        body: formData,
-        credentials: CREDENTIALS,
-        signal: controller?.signal
-    })
+    let my_fetch = null;
+    if(controller){
+        my_fetch = fetch(BASE_URL+'/get_mol_imgs', {
+            method: 'POST',
+            body: formData,
+            credentials: CREDENTIALS,
+            signal: controller?.signal
+        })
+    }else{
+        my_fetch = fetch(BASE_URL+'/get_mol_imgs', {
+            method: 'POST',
+            body: formData,
+            credentials: CREDENTIALS,
+        })
+    }
+    return my_fetch
     .then(handle_errors)
     .then(response => response.json())
     .then(handle_errors_json)
@@ -169,11 +216,22 @@ export async function get_structures_from_smiles_list(formData:FormData, control
 }
 
 
-export async function get_mcs_from_smiles_list(formData:FormData) {
-    return fetch(BASE_URL+'/get_common_mol_img', {
-        method: 'POST',
-        body: formData,
-    })
+export async function get_mcs_from_smiles_list(formData:FormData, controller?) {
+    
+    let my_fetch = null;
+    if(controller){
+        my_fetch = fetch(BASE_URL+'/get_common_mol_img', {
+            method: 'POST',
+            body: formData,
+            signal: controller?.signal
+        })
+    }else{
+        my_fetch = fetch(BASE_URL+'/get_common_mol_img', {
+            method: 'POST',
+            body: formData,
+        })
+    }
+    return my_fetch
     .then(handle_errors)
     .then(response => response.json())
     .then(handle_errors_json)
@@ -241,7 +299,7 @@ export async function upload_sdf_file(file, controller?){
 }
 
 
-export async function get_representation_list(refresh=false, dataset_name=""){
+export async function get_representation_list(refresh=false, dataset_name="", controller:AbortController=null){
     if(!refresh){
         const cached_data = handleCache("representation_list_" + dataset_name)
         if(cached_data && cached_data["rep_list"].length > 0){
@@ -253,10 +311,22 @@ export async function get_representation_list(refresh=false, dataset_name=""){
         path += "/" + localStorage.getItem("unique_filename");
 
 
-    return fetch(path, {
-        method: 'GET',
-        credentials: CREDENTIALS
-    })
+    let my_fetch = null;
+    if(controller){
+        my_fetch = fetch(path, {
+            method: 'GET',
+            credentials: CREDENTIALS,
+            signal: controller.signal
+        })
+    }else{
+        my_fetch = fetch(path, {
+            method: 'GET',
+            credentials: CREDENTIALS
+        })
+    }
+
+
+    return my_fetch
     .then(handle_errors)
     .then(response => response.json())
     .then(handle_errors_json)

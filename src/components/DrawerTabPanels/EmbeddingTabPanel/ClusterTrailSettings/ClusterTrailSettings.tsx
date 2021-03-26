@@ -26,7 +26,7 @@ export const ClusterTrailSettings = connector(({ trailSettings, setTrailVisibili
 
     return <FormGroup>
         <FormControlLabel
-            control={<Switch checked={trailSettings.show} onChange={(_, newVal) => setTrailVisibility(newVal)} name="jason" />}
+            control={<Switch color="primary" checked={trailSettings.show} onChange={(_, newVal) => setTrailVisibility(newVal)} name="jason" />}
             label="Show Group Trail"
         />
         <Typography id="discrete-slider" gutterBottom>

@@ -157,6 +157,12 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             domainSettings={domainSettings}
             open={open} onClose={() => setOpen(false)}
             onStart={(params, selection) => {
+                const checked_sel = selection.filter(s => s.checked)
+                if(checked_sel.length <= 0){
+                    alert("Select at least one feature.")
+                    return;
+                }
+
                 setOpen(false)
                 props.setProjectionColumns(selection)
                 props.setProjectionParams(params)

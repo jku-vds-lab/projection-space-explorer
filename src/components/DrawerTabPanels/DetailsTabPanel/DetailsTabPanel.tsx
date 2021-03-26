@@ -8,12 +8,14 @@ import { HoverStateOrientation, setHoverStateOrientation } from "../../Ducks/Hov
 import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClusters";
 import { RootState } from "../../Store/Store";
 import { VirtualColumn, VirtualTable } from "../../UI/VirtualTable";
+import * as frontend_utils from "../../../utils/frontend-connect";
 
 const mapStateToProps = (state: RootState) => ({
     hoverSettings: state.hoverSettings,
     currentAggregation: state.currentAggregation,
     dataset: state.dataset,
-    hoverStateOrientation: state.hoverStateOrientation
+    hoverStateOrientation: state.hoverStateOrientation,
+    activeStorybook: state.stories?.active
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -31,33 +33,40 @@ type Props = PropsFromRedux & {
 }
 
 
-export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation }: Props) => {
+export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
 
 
 
-    return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box paddingX={2} paddingY={1}>
-            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset && dataset.vectors.length}</b> items in <b>{currentAggregation.selectedClusters.length}</b> Groups</Typography>
+    return <div style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
+        <Box paddingX={2} paddingTop={1}>
+            {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ? 
+            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.selectedClusters.length}</b> out of <b>{activeStorybook.clusters.length}</b> groups</Typography>
+            :<Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> items</Typography>
+        }
+            
         </Box>
 
-        <Box paddingX={2} paddingY={1}>
+        <Box paddingX={2} paddingTop={1}>
             <FormControlLabel
-                control={<Switch checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
+                control={<Switch color="primary" checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
                 label="External Summary"
             />
         </Box>
-        <Box paddingX={2} paddingY={1}>
+        <Box paddingX={2} paddingTop={1}>
             <Button variant="outlined" style={{ width: '100%' }} onClick={() => { setAggregation([]) }}>Clear Selection</Button>
         </Box>
 
-        <Box paddingX={2} paddingY={1}>
+        { !frontend_utils.CHEM_PROJECT && 
+        <Box paddingX={2} paddingTop={1}>
             <AttributeTable></AttributeTable>
         </Box>
+        }
+        
 
-        <Box paddingX={2} paddingY={1}>
+        <Box paddingX={2} paddingTop={1}>
             <div style={{ width: '100%' }}>
                 <FormControl style={{ width: '100%' }}>
                     <InputLabel id="demo-customized-select-label">Hover Orientation</InputLabel>
@@ -82,7 +91,7 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, h
 
 
         <SelectionClusters hoverUpdate={hoverUpdate}></SelectionClusters>
-    </div >
+    </div>
 })
 
 
@@ -142,7 +151,7 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
     }, [genericFingerprintAttributes])
 
     const booleanRenderer = (row: any) => {
-        return <Checkbox disableRipple checked={row['show']} onChange={(event) => {
+        return <Checkbox color="primary" disableRipple checked={row['show']} onChange={(event) => {
             row['show'] = event.target.checked
             setLocalAttributes([...localAttributes])
         }}></Checkbox>

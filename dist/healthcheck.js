@@ -93,7 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-throw new Error("Module build failed (from ./node_modules/ts-loader/index.js):\nError: ENOENT: no such file or directory, open 'C:\\Users\\Moritz\\Desktop\\projection-space-explorer\\src\\components\\workers\\worker_healthcheck.tsx'");
+throw new Error("Module build failed (from ./node_modules/ts-loader/index.js):\nError: ENOENT: no such file or directory, open 'C:\\Users\\Christina\\Workspace\\ICG\\bayer\\projection path explorer\\src\\components\\workers\\worker_healthcheck.tsx'");
 
 /***/ })
 

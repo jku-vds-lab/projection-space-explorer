@@ -267,7 +267,9 @@ var Application = connector(class extends React.Component<Props, any> {
     this.threeRef.current.disposeScene()
 
     this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
-    this.props.setGroupVisualizationMode(dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull)
+
+    // if(!frontend_utils.CHEM_PROJECT)
+      this.props.setGroupVisualizationMode(dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull)
 
     // Set new dataset as variable
     this.props.setDataset(dataset)
@@ -569,7 +571,7 @@ var Application = connector(class extends React.Component<Props, any> {
               <a href={"https://jku-vds-lab.at"} target={"_blank"}><img style={{ height: 48 }} src={"textures/vds-lab-logo-notext.svg"} /></a>
               {frontend_utils.CHEM_PROJECT && <a href={"https://www.bayer.com"} target={"_blank"}><img style={{ height: 48, marginLeft: 48 }} src={"textures/bayer-logo.svg"} alt="Powered By Bayer" /></a>}
               <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
-                Projection Space Explorer
+                {frontend_utils.CHEM_PROJECT ? "CIME: Chem-Informatics Model Explorer" : "Projection Space Explorer"}
               </Typography>
             </Toolbar>
           </AppBar>
@@ -602,7 +604,8 @@ var Application = connector(class extends React.Component<Props, any> {
                 ref={this.threeRef}
               />
             </div>
-            <div style={{ flexGrow: 0.1 }}>
+            <div style={{ flexGrow: 0.1 }}> 
+            {/* TODO: lineupFilter is not used anymore... */}
               <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
             </div>
           </Split>

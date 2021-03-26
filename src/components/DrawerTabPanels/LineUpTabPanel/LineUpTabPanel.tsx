@@ -1,13 +1,17 @@
+import { Typography } from "@material-ui/core";
 import { Box, Button, FormControlLabel, Switch } from "@material-ui/core";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { setLineUpInput_filter, setLineUpInput_visibility } from "../../Ducks/LineUpInputDuck";
 import { RootState } from "../../Store/Store";
+import GetAppIcon from '@material-ui/icons/GetApp';
+import splitRef from "../../Ducks/SplitRefDuck";
 
 const mapStateToProps = (state: RootState) => ({
     dataset: state.dataset,
     currentAggregation: state.currentAggregation,
-    lineUpInput: state.lineUpInput
+    lineUpInput: state.lineUpInput,
+    splitRef: state.splitRef,
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -23,20 +27,21 @@ type Props = PropsFromRedux & {
 }
 
 
-export const LineUpTabPanel = connector(({ setLineUpInput_visibility, setLineUpInput_filter, lineUpInput, dataset, currentAggregation }: Props) => {
+export const LineUpTabPanel = connector(({ setLineUpInput_visibility, setLineUpInput_filter, lineUpInput, dataset, currentAggregation, splitRef }: Props) => {
     const handleChange = (_, value) => {
 
     }
 
-    const onLoadAll = () => {
+    const onLoad = (filter) => {
         setLineUpInput_visibility(true);
-        setLineUpInput_filter(null);
+        setLineUpInput_filter(filter);
+
+        const curr_sizes = splitRef.current.split.getSizes();
+        if(curr_sizes[1] < 2){
+            splitRef.current.split.setSizes([curr_sizes[0], 70])
+        }
     }
 
-    const onLoadSelection = () => {
-        setLineUpInput_visibility(true);
-        setLineUpInput_filter({'selection': true});
-    }
 
     
     // https://stackoverflow.com/questions/31214677/download-a-reactjs-object-as-a-file
@@ -87,24 +92,33 @@ export const LineUpTabPanel = connector(({ setLineUpInput_visibility, setLineUpI
     }
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box paddingLeft={2} paddingTop={2}>
-            <FormControlLabel
-                control={<Switch color="primary" checked={true} onChange={handleChange} name="checkedA" />}
-                label="(TODO) External Selection Summary"
-            />
+        <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
+            <Typography variant="subtitle2" gutterBottom>
+                LineUp Settings
+            </Typography>
+        </Box>
+        <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
+            {/* <FormControlLabel
+                control={<Switch checked={true} onChange={handleChange} name="checkedA" />}
+                label="External Selection Summary"
+            /> */}
 
-            <Button variant="outlined" onClick={onLoadAll}>Load All</Button>
-            <Button variant="outlined" onClick={onLoadSelection}>Load Selection</Button>
+            <Button fullWidth style={{ marginRight: 2}} variant="outlined" onClick={() => onLoad({'reset': true})}>Load All</Button>
 
         </Box>
-        <Box padding={2}>
-            <Button variant="outlined" onClick={() => { exportCSV() }}>Export CSV</Button> 
+        <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
+            <Button fullWidth variant="outlined" onClick={() => onLoad({'selection': currentAggregation.aggregation})}>Load Selection</Button>
+        </Box>
+        <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
             <FormControlLabel
-                control={<Switch color="primary" onChange={(event) => { //value={cell_value_vis} 
+                control={<Switch color="primary" value={cell_value_vis} onChange={(event) => {
                     toggleVis()
                 }} />}
-                label="Show Cell Value"
+                label="Show Cell Values"
             />
+        </Box>
+        <Box paddingLeft={2} paddingTop={1} paddingRight={2}>
+            <Button fullWidth variant="outlined" onClick={() => { exportCSV() }}><GetAppIcon/>&nbsp;Export CSV</Button> 
         </Box>
     </div>
 })

@@ -15,6 +15,10 @@ import * as _ from 'lodash';
 import { Button, FormControlLabel, Switch } from "@material-ui/core";
 import BarCellRenderer from "./BarCellRenderer";
 import CategoricalColumnBuilder from "lineupjs/build/src/builder/column/CategoricalColumnBuilder";
+import { fromDumpFile } from "./loader_dump";
+import { mappingFromScale } from "../Utility/Colors/colors";
+import { DiscreteMapping } from "../Utility/Colors/DiscreteMapping";
+import { ShallowSet } from "../Utility/ShallowSet";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -27,7 +31,8 @@ const mapStateToProps = (state: RootState) => ({
     lineUpInput_columns: state.dataset?.columns,
     currentAggregation: state.currentAggregation,
     activeStory: state.stories.active,
-    splitRef: state.splitRef
+    pointColorScale: state.pointColorScale,
+    // splitRef: state.splitRef
     //hoverState: state.hoverState
 })
 
@@ -94,6 +99,7 @@ export const LineUpContext = connector(function ({
     setLineUpInput_visibility, 
     onFilter, 
     activeStory, 
+    pointColorScale,
     hoverUpdate }: Props) {
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput_data || !lineUpInput.show) {
@@ -101,6 +107,7 @@ export const LineUpContext = connector(function ({
         return null;
     }
     let lineup_ref = React.useRef();
+    
 
     const debouncedHighlight = React.useCallback(_.debounce(hover_item => hoverUpdate(hover_item, UPDATER), 200), []);
 
@@ -119,8 +126,33 @@ export const LineUpContext = connector(function ({
         return lineup_data;
     }
 
-    React.useEffect(() => {
+    const clear_automatic_filters = (lineUpInput, filter) => {
+        if (filter) {
+            for (const key in filter) {
+                const lineup = lineUpInput.lineup;
+                const ranking = lineup.data.getFirstRanking();
+                if (key === 'selection') {
+                    const filter_col = ranking.children.find(x => { return x.desc.column == UNIQUE_ID; });
+                    filter_col?.clearFilter()
+                } else {
+                    const filter_col = ranking.children.find(x => { return x.desc.column == key; });
+                    filter_col?.clearFilter()
+                }
+            }
 
+        }
+    }
+    const get_lineup_dump = (lineUpInput) => {
+        if(lineUpInput.lineup){
+            clear_automatic_filters(lineUpInput, lineUpInput.filter)
+            const dump = lineUpInput.lineup.dump()
+            return dump;
+        }
+        return null;
+    }
+
+    React.useEffect(() => {
+        
         // if(lineUpInput.dump){
         //     try {
         //         const json_parsed = JSON.parse(lineUpInput.dump)
@@ -139,17 +171,16 @@ export const LineUpContext = connector(function ({
 
         let lineup_data = preprocess_lineup_data(lineUpInput_data);
 
+        const builder = buildLineup(lineUpInput_columns, lineup_data, pointColorScale); //lineUpInput_data
+        let dump = get_lineup_dump(lineUpInput);
 
-        const builder = buildLineup(lineUpInput_columns, lineup_data); //lineUpInput_data
         lineUpInput.lineup?.destroy();
         let lineup = null;
-        // try{
         lineup = builder.build(lineup_ref.current);
-        // }catch(e){
-        //     console.log("error");
-        // }
+        if(dump){
+            lineup.restore(dump);
+        }
         
-
 
         const ranking = lineup.data.getFirstRanking();
 
@@ -182,9 +213,8 @@ export const LineUpContext = connector(function ({
         // });
 
         // make lineup selection interact with the scatter plot view
-        lineup.on('selectionChanged', e => {
-            const currentSelection_lineup = lineup.getSelection();
-            if(currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
+        lineup.on('selectionChanged', currentSelection_lineup => {
+            // if(currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
             
             const currentSelection_scatter = lineUpInput_data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
             
@@ -247,23 +277,30 @@ export const LineUpContext = connector(function ({
     //         const data_provider = lineUpInput.lineup.data;
     //         let lineup_data = preprocess_lineup_data(lineUpInput_data);
     //         console.log("setdata")
+    //         data_provider.setData(lineup_data);
 
     //         const ranking = lineUpInput.lineup.data.getFirstRanking();
-    //         // let cluster_col = ranking.columns.find(x => x.desc.column == PrebuiltFeatures.ClusterLabel);
-    //         // const my_desc = cluster_col.desc;
-    //         // my_desc.categories = ["test"]
-    //         // const my_col = new CategoricalColumn(cluster_col.id, cluster_col.desc)
     //         const my_col_builder = LineUpJS.buildCategoricalColumn(PrebuiltFeatures.ClusterLabel);
-    //         // console.log()
-    //         ranking.insert(lineUpInput.lineup.data.create(my_col_builder.build(lineup_data))); //asSet(',')
-            
-    //         // data_provider.setData(lineup_data)
-    //         // lineUpInput.lineup.update();
-    //         // lineUpInput.lineup?.setDataProvider(data_provider);
-    //         lineUpInput.lineup.restore(lineUpInput.lineup.dump())
+    //         console.log(lineup_data)
+    //          ranking.insert(lineUpInput.lineup.data.create(my_col_builder.build(lineup_data)));
+    //         ranking.insert(lineUpInput.lineup.data.create(my_col_builder.build([]])));
 
-    //         // console.log(cluster_col.dump())
-    //         // console.log(lineUpInput.lineup.dump())
+    //         // const ranking = lineUpInput.lineup.data.getFirstRanking();
+    //         // // let cluster_col = ranking.columns.find(x => x.desc.column == PrebuiltFeatures.ClusterLabel);
+    //         // // const my_desc = cluster_col.desc;
+    //         // // my_desc.categories = ["test"]
+    //         // // const my_col = new CategoricalColumn(cluster_col.id, cluster_col.desc)
+    //         // const my_col_builder = LineUpJS.buildCategoricalColumn(PrebuiltFeatures.ClusterLabel);
+    //         // // console.log()
+    //         // ranking.insert(lineUpInput.lineup.data.create(my_col_builder.build(lineup_data))); //asSet(',')
+            
+    //         // // data_provider.setData(lineup_data)
+    //         // // lineUpInput.lineup.update();
+    //         // // lineUpInput.lineup?.setDataProvider(data_provider);
+    //         // lineUpInput.lineup.restore(lineUpInput.lineup.dump())
+
+    //         // // console.log(cluster_col.dump())
+    //         // // console.log(lineUpInput.lineup.dump())
             
     //     }
     // }, [activeStory, activeStory?.clusters, activeStory?.clusters?.length]);
@@ -296,16 +333,19 @@ export const LineUpContext = connector(function ({
 
     React.useEffect(() => {
         if (lineUpInput.lineup && lineUpInput.lineup.data) {
+            const ranking = lineUpInput.lineup.data.getFirstRanking();
+            clear_automatic_filters(lineUpInput, lineUpInput.previousfilter);
             if (lineUpInput.filter) {
-                const ranking = lineUpInput.lineup.data.getFirstRanking();
                 for (const key in lineUpInput.filter) {
                     const cur_filter = lineUpInput.filter[key];
 
-                    if (key === 'selection') {
+                    if(key === 'reset' && cur_filter){
+                        ranking.clearFilters();
+                    }else if (key === 'selection') {
                         const filter_col = ranking.children.find(x => { return x.desc.column == UNIQUE_ID; });
 
                         let regex_str = "";
-                        currentAggregation.aggregation.forEach(element => {
+                        lineUpInput.filter[key].forEach(element => {
                             regex_str += "|"
                             regex_str += element["__meta__"]["view"]["meshIndex"]
                         });
@@ -325,10 +365,8 @@ export const LineUpContext = connector(function ({
                     }
                 }
 
-            } else {
-                const ranking = lineUpInput.lineup.data.getFirstRanking();
-                ranking.clearFilters();
             }
+            
 
         }
     }, [lineUpInput.lineup, lineUpInput.filter]);
@@ -368,7 +406,15 @@ function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight {
 }
 
 
-function buildLineup(cols, data) {
+function buildLineup(cols, data, pointColorScale) {
+
+    let groupLabel_mapping = new DiscreteMapping(pointColorScale, new ShallowSet(data.map(vector => vector[PrebuiltFeatures.ClusterLabel])))
+    const groupLabel_cat_color = groupLabel_mapping.values
+        .filter(cat => cat && cat !== "")
+        .map(cat => {
+            return {name: cat, color: groupLabel_mapping.map(cat).hex};
+        })
+    
     const builder = LineUpJS.builder(data);
 
     for (const i in cols) {
@@ -383,7 +429,8 @@ function buildLineup(cols, data) {
 
             }
             if(i == PrebuiltFeatures.ClusterLabel){
-                builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show).width(70)); // .asSet(',')
+                const clust_col = LineUpJS.buildCategoricalColumn(i, groupLabel_cat_color).custom("visible", show).width(70) // .asSet(',')
+                builder.column(clust_col);
             }
             else if (typeof col.featureType !== 'undefined') {
                 switch (col.featureType) {
@@ -432,6 +479,7 @@ function buildLineup(cols, data) {
         filter: false
     });
     builder.dynamicHeight(myDynamicHeight);
+    builder.animated(false);
 
 
     return builder;

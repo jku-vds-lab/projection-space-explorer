@@ -135,7 +135,7 @@ def get_uploaded_files_list():
 
 
 @bottle.route('/delete_file/<filename>', method=['GET'])
-def get_uploaded_files_list(filename):
+def delete_uploaded_file(filename):
     if filename == "test.sdf":
         return {"deleted": "false", "error": "can't delete default file"}
     folder = './temp-files'
@@ -291,6 +291,23 @@ from rdkit.Chem import rdFMCS
 
 # --- helper functions ---
 
+def get_mcs(mol_list):
+
+    if len(mol_list) <= 1:
+        return Chem.MolFromSmiles("*")
+        
+    if type(mol_list[0])==str:
+        mol_list = [Chem.MolFromSmiles(sm) for sm in mol_list] #TODO: handle invalid smiles
+        
+
+    res=Chem.rdFMCS.FindMCS(mol_list, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=False) #completeRingsOnly=True # there are different settings possible here
+    if(res.canceled):
+        patt = Chem.MolFromSmiles("*")
+    else:
+        patt = res.queryMol
+    
+    return patt
+
 def smiles_to_base64(smiles, highlight=False):
 #    filename = request.session.get("unique_filename", None)
 #    if filename and highlight:
@@ -354,7 +371,7 @@ def mol_to_base64_highlight_substructure(mol, patt, width=250, d = None, showMCS
     stream.close()
     return img_str.decode("utf-8") #d.GetDrawingText()
 
-
+import re
 def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourLines, scale, sigma, showMCS, width=250):
     contourLines = int(contourLines)
     scale = float(scale)
@@ -391,6 +408,60 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourL
 
 # --- routing ---
 
+@bottle.route('/get_difference_highlight', method=['OPTIONS', 'POST'])
+def smiles_to_difference_highlight():
+    if request.method == 'POST':
+        smilesA = request.forms.get("smilesA").split(",")
+        smilesB = request.forms.get("smilesB").split(",")
+        
+        if type(smilesA)==list:
+            if len(smilesA) <= 1:
+                smilesA = smilesA[0]
+                molA = Chem.MolFromSmiles(smilesA)
+            else:
+                molA = get_mcs(smilesA)
+                smilesA = Chem.MolToSmiles(molA)
+        else:
+            molA = Chem.MolFromSmiles(smilesA)
+            
+        if type(smilesB) == list:
+            if len(smilesB) <= 1:
+                smilesB = smilesB[0]
+                molB = Chem.MolFromSmiles(smilesB)
+            else:
+                molB = get_mcs(smilesB)
+                smilesB = Chem.MolToSmiles(molB)
+        else:
+            molB = Chem.MolFromSmiles(smilesB)
+        
+        
+        # need a copy because otherwise the structure is messed up
+        molA_cpy = Chem.MolFromSmiles(smilesA)
+        molB_cpy = Chem.MolFromSmiles(smilesB)
+        mol_cpy = molA_cpy
+        patt = get_mcs([molA_cpy, molB_cpy])
+        
+        mol = molA
+        
+        highlight_atom_colors = None
+        highlight_bond_colors = None
+        highlight_atoms = set(range(len(mol_cpy.GetAtoms()))) - set(mol_cpy.GetSubstructMatch(patt))
+        highlight_bonds = [bond.GetIdx() for bond in mol_cpy.GetBonds() if bond.GetBeginAtomIdx() in highlight_atoms or bond.GetEndAtomIdx() in highlight_atoms]
+
+        d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(200, 200)
+        Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=highlight_atoms, highlightBonds=highlight_bonds, highlightAtomColors=highlight_atom_colors, highlightBondColors=highlight_bond_colors)
+        
+        d.FinishDrawing()
+        
+        stream = BytesIO(d.GetDrawingText())
+        
+        img_str = base64.b64encode(stream.getvalue())
+        stream.close()
+        return {"data": img_str.decode("utf-8")}
+        #return {"data": mol_to_base64(mol)}
+    else:
+        return {}
+
 @bottle.route('/get_mol_img', method=['OPTIONS', 'POST'])
 def smiles_to_img_post(highlight=False):
     if request.method == 'POST':
@@ -419,6 +490,7 @@ def smiles_list_to_imgs():
         sigma = request.forms.get("sigma")
         showMCS = request.forms.get("showMCS")
         width = request.forms.get("width")
+        doAlignment = request.forms.get("doAlignment") == "true"
 
         if len(smiles_list) == 0:
             return {"error": "empty SMILES list"}
@@ -435,22 +507,19 @@ def smiles_list_to_imgs():
                 error_smiles.append(smiles)
                 
         if len(mol_lst) > 1:
-            #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
-            res=Chem.rdFMCS.FindMCS(mol_lst, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True) # there are different settings possible here
-            if(res.canceled):
-                patt = Chem.MolFromSmiles("*")
-                #return {"error": "the MCS search had a timeout. please try to select fewer compounds."}
-            else:
-                patt = res.queryMol
+            patt = get_mcs(mol_lst)
+            
             TemplateAlign.rdDepictor.Compute2DCoords(patt)
         else:
             patt = Chem.MolFromSmiles("*")
 
         img_lst = []
         for mol in mol_lst:
-            TemplateAlign.rdDepictor.Compute2DCoords(mol)
-            if(patt and Chem.MolToSmiles(patt) != "*"): # if no common substructure was found, skip the alignment
-                TemplateAlign.AlignMolToTemplate2D(mol,patt,clearConfs=True)
+            if doAlignment: # if user disables alignment, skip
+                if(patt and Chem.MolToSmiles(patt) != "*"): # if no common substructure was found, skip the alignment
+                    TemplateAlign.rdDepictor.Compute2DCoords(mol)
+                    match = mol.GetSubstructMatch(patt)
+                    TemplateAlign.AlignMolToTemplate2D(mol,patt,match=match,clearConfs=True)
             if current_rep == "Common Substructure":
                 img_lst.append(mol_to_base64_highlight_substructure(mol, patt, width=width))
             else:
@@ -468,7 +537,8 @@ def smiles_list_to_common_substructure_img():
         if len(smiles_list) == 0:
             return {"error": "empty SMILES list"}
         if len(smiles_list) == 1:
-            return smiles_to_base64(smiles_list[0])
+            ret = smiles_to_base64(smiles_list[0])
+            return {"data": ret, "smiles": smiles_list[0]}
 
         mol_lst = []
         error_smiles = []
@@ -478,15 +548,14 @@ def smiles_list_to_common_substructure_img():
                 mol_lst.append(mol)
             else:
                 error_smiles.append(smiles)
-        #mol_lst = [Chem.MolFromSmiles(smiles) for smiles in smiles_list]
-        res = rdFMCS.FindMCS(mol_lst, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=True)
-        m = res.queryMol
+                
+        m = get_mcs(mol_lst)
         pil_img = Draw.MolToImage(m)
 
         buffered = BytesIO()
         pil_img.save(buffered, format="JPEG")
         img_str = base64.b64encode(buffered.getvalue())
-        return {"data": img_str.decode("utf-8")}
+        return {"data": img_str.decode("utf-8"), "smiles": Chem.MolToSmiles(m)}
     else:
         return {}
         

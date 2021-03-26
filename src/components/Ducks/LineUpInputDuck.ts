@@ -47,7 +47,8 @@ const initialState: LineUpType = {
     show: false,
     dump: "",
     filter: null,
-    lineup: null
+    previousfilter: null,
+    lineup: null,
 }
 export type LineUpType = {
     // data: Vect[],
@@ -55,7 +56,8 @@ export type LineUpType = {
     show: boolean,
     dump: string,
     filter: object,
-    lineup: any
+    previousfilter: object,
+    lineup: any,
 }
 
 const lineUpInput = (state = initialState, action): LineUpType => {
@@ -69,7 +71,8 @@ const lineUpInput = (state = initialState, action): LineUpType => {
         case SET_DUMP:
             return {...state, dump: action.input}
         case SET_FILTER:
-            return {...state, filter: action.input}
+            const prev_filter = {...state.filter};
+            return {...state, previousfilter: prev_filter, filter: action.input}
         case SET_LINEUP:
             return {...state, lineup: action.input}
         default:

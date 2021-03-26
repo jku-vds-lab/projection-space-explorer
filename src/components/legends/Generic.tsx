@@ -25,12 +25,11 @@ type GenericLegendProps = {
     type: DatasetType
     vectors: Vect[]
     aggregate: boolean
-    columns?: any
     hoverUpdate?
 }
 
 //shows single and aggregated view
-export var GenericLegend = ({ type, vectors, aggregate, columns, hoverUpdate }: GenericLegendProps) => {
+export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate }: GenericLegendProps) => {
     switch (type) {
         case DatasetType.Story:
             return <StoryLegend selection={vectors}></StoryLegend>
@@ -45,7 +44,7 @@ export var GenericLegend = ({ type, vectors, aggregate, columns, hoverUpdate }: 
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
         case DatasetType.Chem:
-            return <ChemLegendParent selection={vectors} aggregate={aggregate} columns={columns} hoverUpdate={hoverUpdate}></ChemLegendParent>
+            return <ChemLegendParent selection={vectors} aggregate={aggregate} hoverUpdate={hoverUpdate}></ChemLegendParent>
         default:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
     }
@@ -74,6 +73,8 @@ export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({
             return <CoralLegend selection={vectors} aggregate={true}></CoralLegend>
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={true}></GoLegend>
+        case DatasetType.Chem:
+            return <ChemLegendParent selection={vectors} aggregate={true} mcs_only={true}></ChemLegendParent>
         default:
             return <CoralLegend selection={vectors} aggregate={true}></CoralLegend>
     }

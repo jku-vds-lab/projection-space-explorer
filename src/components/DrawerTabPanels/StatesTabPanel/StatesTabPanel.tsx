@@ -56,7 +56,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRe
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux
+type Props = PropsFromRedux & {
+    lineColorScheme
+}
 
 /**
  
@@ -147,81 +149,8 @@ export const StatesTabPanelFull = ({
         setExpanded(isExpanded ? panel : false);
     };
 
-    return <div style={{
-    }}>
-        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1bh-content"
-                id="panel1bh-header"
-            >
-                <Typography className={classes.heading}>Lines</Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.details}>
-                {dataset && dataset.isSequential && <div>
-                    <Grid
-                        container
-                        justify="center"
-                        alignItems="stretch"
-                        direction="column"
-                        style={{ padding: '0 16px' }}>
-                        {//<Legend
-                            //   ref={this.legend}
-                            //   onLineSelect={this.onLineSelect}></Legend>
-
-                        }
-
-
-                        <Box p={1}></Box>
-
-                        <LineTreePopover
-                            onSelectAll={(algo, checked) => {
-                                var ch = selectedLines
-                                Object.keys(ch).forEach(key => {
-                                    var e = selectedLineAlgos.find(e => e.algo == algo)
-                                    if (e.lines.find(e => e.line == key)) {
-                                        ch[key] = checked
-                                    }
-
-                                })
-
-                                setSelectedLines(ch)
-
-                                webGlView.current.setLineFilter(ch)
-                                webGlView.current.requestRender()
-                            }}
-                            onChange={(id, checked) => {
-                                var ch = selectedLines
-                                ch[id] = checked
-
-                                setSelectedLines(ch)
-
-                                webGlView.current.setLineFilter(ch)
-                                webGlView.current.requestRender()
-                            }} checkboxes={selectedLines} algorithms={selectedLineAlgos} colorScale={lineColorScheme} />
-                    </Grid>
-
-
-                    <div style={{ margin: '8px 0px' }}></div>
-
-                    <PathLengthFilter></PathLengthFilter>
-                    <PathBrightnessSlider></PathBrightnessSlider>
-                </div>
-                }
-            </AccordionDetails>
-        </Accordion>
-
-
-        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1bh-content"
-                id="panel1bh-header"
-            >
-                <Typography className={classes.heading}>Points</Typography>
-            </AccordionSummary>
-            <AccordionDetails className={classes.details}>
-                {
+    const points_box = <Box>
+        {
                     categoryOptions != null && categoryOptions.hasCategory("shape") ?
                         <Grid
                             container
@@ -412,10 +341,89 @@ export const StatesTabPanelFull = ({
 
 
                 </Grid>
+    </Box>
 
+    const accordion = <div style={{
+    }}>
+        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1bh-content"
+                id="panel1bh-header"
+            >
+                <Typography className={classes.heading}>Lines</Typography>
+            </AccordionSummary>
+            <AccordionDetails className={classes.details}>
+                {dataset && dataset.isSequential && <div>
+                    <Grid
+                        container
+                        justify="center"
+                        alignItems="stretch"
+                        direction="column"
+                        style={{ padding: '0 16px' }}>
+                        {//<Legend
+                            //   ref={this.legend}
+                            //   onLineSelect={this.onLineSelect}></Legend>
+
+                        }
+
+
+                        <Box p={1}></Box>
+
+                        <LineTreePopover
+                            onSelectAll={(algo, checked) => {
+                                var ch = selectedLines
+                                Object.keys(ch).forEach(key => {
+                                    // @ts-ignore
+                                    var e = selectedLineAlgos.find(e => e.algo == algo)
+                                    if (e.lines.find(e => e.line == key)) {
+                                        ch[key] = checked
+                                    }
+
+                                })
+
+                                setSelectedLines(ch)
+
+                                webGlView.current.setLineFilter(ch)
+                                webGlView.current.requestRender()
+                            }}
+                            onChange={(id, checked) => {
+                                var ch = selectedLines
+                                ch[id] = checked
+
+                                setSelectedLines(ch)
+
+                                webGlView.current.setLineFilter(ch)
+                                webGlView.current.requestRender()
+                            }} checkboxes={selectedLines} algorithms={selectedLineAlgos} colorScale={lineColorScheme} />
+                    </Grid>
+
+
+                    <div style={{ margin: '8px 0px' }}></div>
+
+                    <PathLengthFilter></PathLengthFilter>
+                    <PathBrightnessSlider></PathBrightnessSlider>
+                </div>
+                }
             </AccordionDetails>
         </Accordion>
-    </div>
+
+
+        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1bh-content"
+                id="panel1bh-header"
+            >
+                <Typography className={classes.heading}>Points</Typography>
+            </AccordionSummary>
+            <AccordionDetails className={classes.details}>
+                {points_box}
+            </AccordionDetails>
+        </Accordion>
+    </div>;
+
+    return <div>{ dataset && dataset.isSequential ? accordion : points_box }</div>
 }
 
 

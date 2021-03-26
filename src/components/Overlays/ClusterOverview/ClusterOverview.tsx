@@ -149,8 +149,10 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                         sidePath.syncNodes.map((node, i) => {
                                             let x = midX - rectWidth * (si + 1) - margin * (si + 1) + rectWidth / 2
 
+                                            // @ts-ignore
                                             if (i == sidePath.syncNodes.length - 1 && node.out) {
                                                 // Case where its the last syncnode and its outgoing
+                                                // @ts-ignore
                                                 let pos1 = position[node.index]
 
 
@@ -173,9 +175,12 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                                     <line x1={x} y1={pos1.y + 35 + 70 - 6} x2={x} y2={pos1.y + elementHeight} stroke={strokeColors[si]}></line>
                                                     <rect x={x - 6} y={pos1.y + elementHeight - 6} width={stateSize} height={stateSize} fill={fillColors[si]} transform={`rotate(45,${x},${pos1.y + elementHeight})`} />
                                                 </g>
-                                            } else if (node.out && i != sidePath.syncNodes.length - 1 && sidePath.syncNodes[i + 1].in) {
-
+                                            } else 
+                                            // @ts-ignore
+                                            if (node.out && i != sidePath.syncNodes.length - 1 && sidePath.syncNodes[i + 1].in) {
+                                                // @ts-ignore
                                                 let i1 = sidePath.syncNodes[i].index
+                                                // @ts-ignore
                                                 let i2 = sidePath.syncNodes[i + 1].index
 
 
@@ -276,7 +281,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                             return < g key={`${p.x}${p.y}`
                             }>
                                 <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={currentAggregation.selectedClusters.includes(cluster) ? mainColor : grayColor} transform={`rotate(45,${midX},${p.y})`} />
-                                <text style={{textShadow:'-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white'}} x={midX} y={p.y} alignment-baseline="middle" text-anchor="middle" fill="black" fontWeight="bold" fontFamily="sans-serif">{cluster.label}</text>
+                                <text style={{textShadow:'-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white'}} x={midX} y={p.y} alignmentBaseline="middle" textAnchor="middle" fill="black" fontWeight="bold" fontFamily="sans-serif">{cluster.label}</text>
                             </g>
                         })
                     }
@@ -361,6 +366,7 @@ export const ClusterOverview = connector(function ({
                     display: 'flex',
                     flexDirection: 'column',
                     minWidth: '100px'
+                    // width: '200px'
                 }}>
                     <Typography align="center" variant="subtitle2">Summary</Typography>
                     {
@@ -368,8 +374,8 @@ export const ClusterOverview = connector(function ({
                             return <div
                                 key={index}
                                 className="ClusterItem"
-                                selected={stories.activeTraceState == cluster}
-                                value={index}
+                                // selected={stories.activeTraceState == cluster}
+                                // value={index}
 
                                 onClick={() => {
                                     itemClicked(cluster)
@@ -387,6 +393,7 @@ export const ClusterOverview = connector(function ({
                     display: 'flex',
                     flexDirection: 'column',
                     minWidth: '100px'
+                    // width: '200px'
                 }}>
                     <Typography align="center" variant="subtitle2">Difference</Typography><br />
                     {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
@@ -395,7 +402,7 @@ export const ClusterOverview = connector(function ({
                             return <div
                                 key={index}
                                 className="ClusterItem CORightItem"
-                                value={index}
+                                // value={index}
                                 onClick={() => {
                                     itemClicked(edge.destination)
                                 }}>

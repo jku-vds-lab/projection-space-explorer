@@ -225,9 +225,10 @@ export const ClusteringTabPanel = connector(({
     }
 
 
-    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise) {
+    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory) {
         const loading_area = "global_loading_indicator";
-        const points = dataset.vectors.map(point => [point.x, point.y]);
+        let data_points = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation : dataset.vectors;
+        const points = data_points.map(point => [point.x, point.y]);
         trackPromise(
             cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster)).then(data => {
                 const cluster_labels = data["result"];
@@ -237,25 +238,29 @@ export const ClusteringTabPanel = connector(({
                     alert("No Cluster could be derived. Please, adjust the Clustering Cettings and try again.")
                     return;
                 }
-                let story = new Story([], []);
-                let clusters = []
+
+
+                let story = addClusterToCurrentStory && stories.active ? stories.active : new Story([], []);
+                // let clusters = []
 
                 
                 dist_cluster_labels.forEach(cluster_label => {
                     if (cluster_label >= 0) {
-                        const current_cluster_vects = dataset.vectors.filter((x, i) => cluster_labels[i] == cluster_label);
+                        const current_cluster_vects = data_points.filter((x, i) => cluster_labels[i] == cluster_label);
                         const cluster = Cluster.fromSamples(current_cluster_vects);
 
                         // Set correct label for cluster
                         cluster.label = cluster_label
-                        clusters.push(cluster)
+                        // clusters.push(cluster)
 
                         story.clusters.push(cluster)
                     }
                 });
 
+                // if(!addClusterToCurrentStory){
                 addStory(story)
                 setActiveStory(story)
+                // }
 
                 // Update UI, dont know how to right now
                 var clusterAttribute = categoryOptions.getAttribute("color", "groupLabel", "categorical")
@@ -273,6 +278,9 @@ export const ClusteringTabPanel = connector(({
     const [openClusterPanel, setOpenClusterPanel] = React.useState(false);
     const anchorRef = React.useRef();
 
+    const [clusterSelectionOnly, setClusterSelectionOnly] = React.useState(false);
+    const [addClusterToCurrentStory, setAddClusterToCurrentStory] = React.useState(false);
+
     const [clusterAdvancedMode, setClusterAdvancedMode] = React.useState(false);
     const [clusterSliderValue, setClusterSliderValue] = React.useState(2);
 
@@ -281,16 +289,17 @@ export const ClusteringTabPanel = connector(({
     const [allow_single_cluster, set_allow_single_cluster] = React.useState(false);
 
     React.useEffect(() => {
-        handleClusterSliderChange(null, clusterSliderValue);
-    }, [dataset.info.path]);
+        handleClusterSliderChange(clusterSliderValue, clusterSelectionOnly);
+    }, [dataset.info.path, currentAggregation, clusterSelectionOnly]);
 
-    const handleClusterSliderChange = (event, newValue) => {
+    const handleClusterSliderChange = (newValue, clusterSelectionOnly) => {
+        let data = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation : dataset.vectors;
         let min_clust = 0;
         switch (newValue) {
             case 0:
                 const c_few = 11;
-                min_clust = Math.log10(dataset.vectors.length) * c_few;
-                // min_clust = Math.max(dataset.vectors.length / 200, 20);
+                min_clust = Math.log10(data.length) * c_few;
+                // min_clust = Math.max(data.length / 200, 20);
                 set_min_cluster_size(Math.round(min_clust));
                 set_min_cluster_samples(Math.round(min_clust / 2))
                 // set_allow_single_cluster(true);
@@ -298,16 +307,16 @@ export const ClusteringTabPanel = connector(({
                 break;
             case 1:
                 const c_med = 6;
-                min_clust = Math.log10(dataset.vectors.length) * c_med;
-                // min_clust = Math.max(dataset.vectors.length / 500, 9);
+                min_clust = Math.log10(data.length) * c_med;
+                // min_clust = Math.max(data.length / 500, 9);
                 set_min_cluster_size(Math.round(min_clust));
                 set_min_cluster_samples(Math.round(min_clust / 2))
                 set_allow_single_cluster(false);
                 break;
             case 2:
                 const c_many = 3;
-                min_clust = Math.log10(dataset.vectors.length) * c_many;
-                // min_clust = Math.max(dataset.vectors.length / 700, 5);
+                min_clust = Math.log10(data.length) * c_many;
+                // min_clust = Math.max(data.length / 700, 5);
                 set_min_cluster_size(Math.round(min_clust));
                 set_min_cluster_samples(Math.round(min_clust / 5));
                 set_allow_single_cluster(false);
@@ -416,10 +425,12 @@ export const ClusteringTabPanel = connector(({
             <Box paddingLeft={2} paddingTop={2} width={300}>
                 <Typography variant="subtitle2" gutterBottom>Clustering Settings</Typography>
             </Box>
+            
             <Box paddingLeft={2}>
                 <FormControlLabel
                     control={
                         <Switch
+                            color="primary" 
                             checked={clusterAdvancedMode}
                             onChange={(event, newValue) => { setClusterAdvancedMode(newValue) }}
                             name="advancedClustering"
@@ -430,6 +441,32 @@ export const ClusteringTabPanel = connector(({
             </Box>
             {clusterAdvancedMode ?
                 <Box paddingLeft={2} paddingRight={2}>
+                    <Box>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    color="primary" 
+                                    checked={clusterSelectionOnly}
+                                    onChange={(event, newValue) => { setClusterSelectionOnly(newValue) }}
+                                    name="selectionClustering"
+                                />
+                            }
+                            label="Cluster only Selected Items"
+                        />
+                    </Box>
+                    <Box>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    color="primary" 
+                                    checked={addClusterToCurrentStory}
+                                    onChange={(event, newValue) => { setAddClusterToCurrentStory(newValue) }}
+                                    name="addClusterToCurrentStory"
+                                />
+                            }
+                            label="Add Cluster to current Story"
+                        />
+                    </Box>
                     <TextField
                         fullWidth
                         label="Min Cluster Size"
@@ -454,7 +491,7 @@ export const ClusteringTabPanel = connector(({
                     />
                     <br></br>
                     <FormControlLabel
-                        control={<Checkbox checked={allow_single_cluster} onChange={(event) => { set_allow_single_cluster(event.target.checked) }} />}
+                        control={<Checkbox color="primary" checked={allow_single_cluster} onChange={(event) => { set_allow_single_cluster(event.target.checked) }} />}
                         label="Allow Single Cluster"
                     />
                 </Box> :
@@ -468,7 +505,7 @@ export const ClusteringTabPanel = connector(({
                         min={0}
                         max={2}
                         value={clusterSliderValue}
-                        onChange={handleClusterSliderChange}
+                        onChange={(event, newValue) => handleClusterSliderChange(newValue, clusterSelectionOnly)}
                     />
                 </Box>
             }
@@ -479,7 +516,7 @@ export const ClusteringTabPanel = connector(({
                         width: '100%'
                     }}
                     onClick={() => {
-                        calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise);
+                        calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory);
                         setOpenClusterPanel(false);
                     }}>
                         Run Clustering{/* Projection-based Clustering */}
@@ -529,7 +566,6 @@ function ClusterPopover({
     setAnchorEl,
     cluster,
     removeClusterFromStories,
-    // setLineUpInput_data,
     setLineUpInput_visibility,
     setLineUpInput_filter,
     handleClusterClick,
@@ -562,6 +598,7 @@ function ClusterPopover({
         // Rename cluster labels in dataset
         replaceClusterLabels(cluster.vectors, cluster.label, name)
         setAnchorEl(null)
+        // TODO: update vectors...
     }
 
     const onDelete = () => {
@@ -575,7 +612,11 @@ function ClusterPopover({
         setLineUpInput_visibility(true)
         setLineUpInput_filter({ 'groupLabel': cluster.label });
         handleClusterClick(cluster); // select items in cluster when opening lineup
-        splitRef.current.split.setSizes([50, 50])
+        
+        const curr_sizes = splitRef.current.split.getSizes();
+        if(curr_sizes[1] < 2){
+            splitRef.current.split.setSizes([curr_sizes[0], 70])
+        }
     }
 
     return <Popover

@@ -1,16 +1,15 @@
 .chemComponents{
   width: 288px;
+  // width: 270px;
+  // height: 65vh;
   overflow-x: scroll;
+  height: 100%;
 }
 .portalSummary .chemComponents{
   width: 100%;
   height: 100%;
 }
 
-.ParentChem{
-  margin-top: -30px;
-
-}
 .portalSummary .ParentChem{
   margin-top: 50px;
 }
