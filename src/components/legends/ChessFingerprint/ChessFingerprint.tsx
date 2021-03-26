@@ -134,11 +134,13 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
                     var v = aggregation[key][k]
                     total += v.count
 
-                    // if (v.count > max) {
+                    if (v.count > max && symbols[aggregation[key][k].key] !== "") {
+                        console.log('v.count, max :>> ', v.count, max);
                         max = v.count
                         content = symbols[aggregation[key][k].key]
                         content = aggregation[key][k].key
-                    // }
+                        console.log('content :>> ', content);
+                    }
                 }
 
                 opacity = Math.max((max / total), 0.25)
