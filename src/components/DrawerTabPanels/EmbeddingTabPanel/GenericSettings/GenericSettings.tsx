@@ -131,11 +131,11 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                     }}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={seeded} onChange={(_, checked) => setSeeded(checked)} name="jason" />}
+                                    control={<Checkbox color="primary" checked={seeded} onChange={(_, checked) => setSeeded(checked)} name="jason" />}
                                     label="Seed Position"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={useSelection} onChange={(_, checked) => setUseSelection(checked)} />}
+                                    control={<Checkbox color="primary" checked={useSelection} onChange={(_, checked) => setUseSelection(checked)} />}
                                     label="Project Selection Only"
                                 />
                                 {(domainSettings == 'tsne' || domainSettings == 'umap') && <FormControl>

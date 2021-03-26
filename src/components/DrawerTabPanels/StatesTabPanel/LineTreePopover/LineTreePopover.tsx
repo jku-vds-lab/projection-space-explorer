@@ -159,6 +159,7 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component<
 
                                         <div>
                                             <Checkbox
+                                                color="primary"
                                                 disableRipple
                                                 style={{ padding: '3px 9px', color: `${this.props.colorScale != null ? this.props.colorScale.map(algo.algo).hex : ''}` }}
                                                 onClick={(e) => { e.stopPropagation() }}

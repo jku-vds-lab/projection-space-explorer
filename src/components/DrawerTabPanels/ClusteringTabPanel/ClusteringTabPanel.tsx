@@ -430,6 +430,7 @@ export const ClusteringTabPanel = connector(({
                 <FormControlLabel
                     control={
                         <Switch
+                            color="primary" 
                             checked={clusterAdvancedMode}
                             onChange={(event, newValue) => { setClusterAdvancedMode(newValue) }}
                             name="advancedClustering"
@@ -444,6 +445,7 @@ export const ClusteringTabPanel = connector(({
                         <FormControlLabel
                             control={
                                 <Switch
+                                    color="primary" 
                                     checked={clusterSelectionOnly}
                                     onChange={(event, newValue) => { setClusterSelectionOnly(newValue) }}
                                     name="selectionClustering"
@@ -456,6 +458,7 @@ export const ClusteringTabPanel = connector(({
                         <FormControlLabel
                             control={
                                 <Switch
+                                    color="primary" 
                                     checked={addClusterToCurrentStory}
                                     onChange={(event, newValue) => { setAddClusterToCurrentStory(newValue) }}
                                     name="addClusterToCurrentStory"
@@ -488,7 +491,7 @@ export const ClusteringTabPanel = connector(({
                     />
                     <br></br>
                     <FormControlLabel
-                        control={<Checkbox checked={allow_single_cluster} onChange={(event) => { set_allow_single_cluster(event.target.checked) }} />}
+                        control={<Checkbox color="primary" checked={allow_single_cluster} onChange={(event) => { set_allow_single_cluster(event.target.checked) }} />}
                         label="Allow Single Cluster"
                     />
                 </Box> :

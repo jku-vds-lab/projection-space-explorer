@@ -38,7 +38,7 @@ export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hov
             <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset && dataset.vectors.length}</b> items</Typography> 
 
             <FormControlLabel
-                control={<Switch checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
+                control={<Switch color="primary" checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
                 label="External Selection Summary"
             />
 

@@ -51,7 +51,7 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, h
 
         <Box paddingX={2} paddingTop={1}>
             <FormControlLabel
-                control={<Switch checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
+                control={<Switch color="primary" checked={hoverSettings.windowMode == WindowMode.Extern} onChange={handleChange} name="checkedA" />}
                 label="External Summary"
             />
         </Box>
@@ -151,7 +151,7 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
     }, [genericFingerprintAttributes])
 
     const booleanRenderer = (row: any) => {
-        return <Checkbox disableRipple checked={row['show']} onChange={(event) => {
+        return <Checkbox color="primary" disableRipple checked={row['show']} onChange={(event) => {
             row['show'] = event.target.checked
             setLocalAttributes([...localAttributes])
         }}></Checkbox>

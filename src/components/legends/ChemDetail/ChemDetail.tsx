@@ -347,7 +347,7 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
                             return <Grid className={"legend_multiple"} key={i} item>
                                 <FormControlLabel
                                     labelPlacement="bottom"
-                                    control={<Checkbox onChange={(event) => { onUpdateItem(i, event.target.checked); }} />}
+                                    control={<Checkbox color="primary" onChange={(event) => { onUpdateItem(i, event.target.checked); }} />}
                                     label={<img
                                         src={"data:image/jpeg;base64," + base64} 
                                         onMouseEnter={() => {handleMouseEnter(i);}} 
@@ -646,12 +646,12 @@ const SettingsPopover = connector_settings(function ({
 
 
                     <FormControlLabel
-                        control={<Switch checked={rdkitSettings.showMCS} onChange={(_, value) => {setShowMCS(value);}} />}
+                        control={<Switch color="primary" checked={rdkitSettings.showMCS} onChange={(_, value) => {setShowMCS(value);}} />}
                         label="Show MCS"
                     />
 
                     <FormControlLabel
-                        control={<Switch checked={rdkitSettings.doAlignment} onChange={(_, value) => {setDoAlignment(value);}} />}
+                        control={<Switch color="primary" checked={rdkitSettings.doAlignment} onChange={(_, value) => {setDoAlignment(value);}} />}
                         label="Align Structure"
                     />
 

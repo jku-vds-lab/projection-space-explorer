@@ -72,6 +72,7 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
                     return <div>{cellData?.toString()}</div>
                 } else if (columnIndex == 1) {
                     return <Checkbox
+                        color="primary"
                         disableRipple
                         indeterminate={rowData.checkedCount != 0 && rowData.checkedCount != rowData.items.length}
                         checked={rowData.checkedCount == rowData.items.length}
@@ -83,6 +84,7 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
                     />
                 } else if (columnIndex == 2) {
                     return <Checkbox
+                        color="primary"
                         disableRipple
                         indeterminate={rowData.normalizedCount != 0 && rowData.normalizedCount != rowData.items.length}
                         checked={rowData.normalizedCount == rowData.items.length}
@@ -99,6 +101,7 @@ class MuiVirtualizedTable extends React.PureComponent<any> {
             } else {
                 if (typeof cellData == "boolean") {
                     return <Checkbox
+                        color="primary"
                         disableRipple
                         disabled={!rowData.checked && columnIndex == 2}
                         checked={cellData}
