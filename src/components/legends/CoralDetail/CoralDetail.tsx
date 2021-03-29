@@ -8,6 +8,7 @@ import VegaDensity from './VegaDensity.js';
 import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
+import { withStyles } from '@material-ui/core';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -23,6 +24,9 @@ import { RootState } from '../../Store/Store.js';
 const useStyles = makeStyles({
   table: {
     maxWidth: 288,
+  },
+  tableRow: {
+    height: "66px"
   },
 });
 
@@ -190,7 +194,13 @@ function genRows(vectors, legendAttributes, dataset) {
       } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
         // categorical feature
         var barData = mapBarChartData(vectors, key)
-        rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
+        var barChart
+        if (Object.keys(barData.values).length != 1) {
+          barChart = <BarChart data={barData} actions={false} tooltip={new Handler().call}/>
+        } else {
+          barChart = null
+        }
+        rows.push([key, barData['values'][0]['category'], getMaxMean(barData), barChart])
         
       } else if (dataset.columns[key]?.featureType === FeatureType.Date) {
         // date feature
@@ -229,7 +239,7 @@ function getTable(vectors, aggregation, legendAttributes, dataset) {
           </TableHead>
           <TableBody>
             {rows.map((row) => (
-              <TableRow key={row.feature}>
+              <TableRow className={classes.tableRow} key={row.feature}>
                 <TableCell component="th" scope="row">
                 {row.feature}<br/><b>{row.category}</b>
                 </TableCell>
