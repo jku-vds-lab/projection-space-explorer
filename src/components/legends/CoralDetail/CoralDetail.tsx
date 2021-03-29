@@ -219,8 +219,8 @@ function getTable(vectors, aggregation, legendAttributes, dataset) {
   
 
   return (
-    <div style={{ width: "100%" }}>
-      <TableContainer component={Paper} style={{
+    <div style={{ width: "100%", maxHeight: '100%' }}>
+      <div style={{
         width: "100%",
         overflow: "auto"
       }}>
@@ -238,7 +238,7 @@ function getTable(vectors, aggregation, legendAttributes, dataset) {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </div>
     </div>
   );
 }

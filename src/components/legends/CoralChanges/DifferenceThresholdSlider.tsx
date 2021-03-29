@@ -29,6 +29,29 @@ class simpleSlider extends React.Component<Props> {
     const { differenceThreshold, setDifferenceThreshold } = this.props
     const { value } = this.state;
 
+    const marks = [
+      {
+        value: 0,
+        label: '0',
+      },
+      {
+        value: 0.25,
+        label: '0.25',
+      },
+      {
+        value: 0.5,
+        label: '0.5',
+      },
+      {
+        value: 0.75,
+        label: '0.75',
+      },
+      {
+        value: 1,
+        label: '1',
+      },
+    ];
+
     return (
       <div style={{ margin: '0 16px', padding: '0 8px' }}>
         <Typography id="range-slider" align="center">Filter Threshold</Typography>
@@ -37,13 +60,13 @@ class simpleSlider extends React.Component<Props> {
           min={0.01}
           max={1}
           step={0.01}
+          marks={marks}
           aria-labelledby="label"
           onChange={this.handleChange}
           onChangeCommitted={(_, newValue) => {
             setDifferenceThreshold(newValue)
           }}
         />
-        <Typography align="center">{ value.toFixed(2) }</Typography>
       </div>
     );
   }

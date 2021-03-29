@@ -24,7 +24,7 @@ import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import groupVisualizationMode, { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
-import { setAggregationGroups } from "../../Ducks/AggregationDuck"
+import { aggSelectCluster, setAggregationGroups } from "../../Ducks/AggregationDuck"
 const d3 = require("d3")
 
 const mapStateToProps = (state: RootState) => ({
@@ -51,7 +51,8 @@ const mapDispatchToProps = dispatch => ({
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
     setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
     setGroupVisualizationMode: groupVisualizationMode => dispatch(setGroupVisualizationMode(groupVisualizationMode)),
-    setAggregationGroups: groups => dispatch(setAggregationGroups(groups))
+    setAggregationGroups: groups => dispatch(setAggregationGroups(groups)),
+    setSelectedCluster: (cluster, shift) => dispatch(aggSelectCluster(cluster, shift))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -93,7 +94,8 @@ export const ClusteringTabPanel = connector(({
     splitRef,
     groupVisualizationMode,
     setAggregationGroups,
-    setGroupVisualizationMode }: Props) => {
+    setGroupVisualizationMode,
+    setSelectedCluster }: Props) => {
 
     React.useEffect(() => {
         if (stories && stories.active && stories.active.clusters) {
@@ -544,6 +546,7 @@ export const ClusteringTabPanel = connector(({
                 setLineUpInput_visibility={setLineUpInput_visibility}
                 setLineUpInput_filter={setLineUpInput_filter}
                 splitRef={splitRef}
+                setSelectedCluster={setSelectedCluster}
             ></ClusterList>
         </div>
     </div>
@@ -557,8 +560,8 @@ type ClusterPopoverProps = {
     // setLineUpInput_data: any
     setLineUpInput_visibility: any
     setLineUpInput_filter: any
-    handleClusterClick: any
     splitRef: any
+    setSelectedCluster: any
 }
 
 function ClusterPopover({
@@ -568,8 +571,8 @@ function ClusterPopover({
     removeClusterFromStories,
     setLineUpInput_visibility,
     setLineUpInput_filter,
-    handleClusterClick,
-    splitRef
+    splitRef,
+    setSelectedCluster
 }: ClusterPopoverProps) {
 
     if (!cluster) return null;
@@ -611,7 +614,7 @@ function ClusterPopover({
         // setLineUpInput_data(cluster.vectors)
         setLineUpInput_visibility(true)
         setLineUpInput_filter({ 'groupLabel': cluster.label });
-        handleClusterClick(cluster); // select items in cluster when opening lineup
+        setSelectedCluster(cluster)
         
         const curr_sizes = splitRef.current.split.getSizes();
         if(curr_sizes[1] < 2){
@@ -655,16 +658,6 @@ function ClusterPopover({
                         value={name}
                         onChange={(event) => { setName(event.target.value) }}
                         margin="normal"
-                        // InputProps={{
-                        //     endAdornment: <InputAdornment position="end">
-                        //         <IconButton
-                        //             color="primary"
-                        //             aria-label="Save"
-                        //             className={classes.button}
-                        //             onClick={onSave}
-                        //         ><SaveIcon /></IconButton>
-                        //     </InputAdornment>
-                        // }}
                     />
 
                     <div style={{ display: 'flex' }}>
@@ -703,17 +696,14 @@ function ClusterList({
     // setLineUpInput_data,
     setLineUpInput_visibility,
     setLineUpInput_filter,
-    splitRef
+    splitRef,
+    setSelectedCluster
 }) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [popoverCluster, setPopoverCluster] = React.useState(null)
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget);
-    };
-
-    const handleClusterClick = cluster => {
-        webGLView.current.onClusterClicked(cluster)
     };
 
 
@@ -725,16 +715,14 @@ function ClusterList({
             removeClusterFromStories={removeClusterFromStories}
             setLineUpInput_visibility={setLineUpInput_visibility}
             setLineUpInput_filter={setLineUpInput_filter}
-            // setLineUpInput_data={setLineUpInput_data}
-            handleClusterClick={handleClusterClick}
             splitRef={splitRef}
+            setSelectedCluster={setSelectedCluster}
         ></ClusterPopover>
 
         <List>
             {stories.active?.clusters.map((cluster, key) => {
                 return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={(event) => {
-                    // webGLView.current.onClusterClicked(cluster, event.shiftKey)
-                    webGLView.current.onClusterClicked(cluster, event.ctrlKey)
+                    setSelectedCluster(cluster, event.ctrlKey)
                 }}>
                     <ListItemText
                         primary={cluster.getTextRepresentation()}
