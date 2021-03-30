@@ -66,7 +66,8 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
         width = Math.floor(width / 8) * 8
         height = Math.floor(height / 8) * 8
 
-        var size = width / 8
+        var size = (width * 10) / 82
+        var borderOffset = width / 82
 
         this.canvasRef.current.setAttribute('width', width.toString())
         this.canvasRef.current.setAttribute('height', height.toString())
@@ -104,6 +105,18 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
 
         // variable determining the current field color
         var col = CHESS_TILE_WHITE
+
+        // draw border around chess board
+        this.canvasContext.globalAlpha = 1.0
+        this.canvasContext.fillStyle = CHESS_TILE_BLACK
+        try {
+            console.log('drawign border')
+            this.canvasContext.save()
+            this.canvasContext.globalAlpha = 1.0
+            this.canvasContext.fillRect(0, 0, width, height)
+            this.canvasContext.restore()
+        } catch (e) {
+        }
 
 
         for (var i = 0; i < 64; i++) {
@@ -150,15 +163,15 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
             this.canvasContext.fillStyle = col
             
             this.canvasContext.fillRect(
-                x * size,
-                y * size,
+                x * size + borderOffset,
+                y * size + borderOffset,
                 size,
                 size)
 
             try {
                 this.canvasContext.save()
                 this.canvasContext.globalAlpha = opacity
-                this.canvasContext.drawImage(symbols[content], x * size, y * size, size, size)
+                this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
                 this.canvasContext.restore()
             } catch (e) {
             }

@@ -364,10 +364,12 @@ export const Storytelling = connector(function ({
         }
     }, [stories, dirtyFlag])
 
-    React.useEffect(() => {
-        setActiveTraceState(stories.trace.mainPath[0])
-        setSelectedCluster(stories.trace.mainPath[0], false)
-    }, [stories.trace])
+    if (stories.trace && stories.trace.mainPath.length > 0) {
+        React.useEffect(() => {
+            setActiveTraceState(stories.trace.mainPath[0])
+            setSelectedCluster(stories.trace.mainPath[0], false)
+        }, [stories.trace])
+    }
 
 
     return <Card className="ClusterOverviewParent" variant="outlined">

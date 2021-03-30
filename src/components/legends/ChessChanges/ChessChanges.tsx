@@ -3,6 +3,7 @@ import { arraysEqual } from '../../WebGLView/UtilityFunctions'
 import { Vect } from "../../Utility/Data/Vect"
 import { CHESS_TILE_BLACK, CHESS_TILE_WHITE } from "../ChessFingerprint/ChessFingerprint"
 
+const CHESS_TILE_CHANGES = 'orange'
 
 // Lookup table for chess UNICODE symbols
 var symbols = {
@@ -110,7 +111,8 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
         width = Math.floor(width / 8) * 8
         height = Math.floor(height / 8) * 8
 
-        var size = width / 8
+        var size = (width * 10) / 82
+        var borderOffset = width / 82
 
         this.canvasRef.current.setAttribute('width', width.toString())
         this.canvasRef.current.setAttribute('height', height.toString())
@@ -135,6 +137,20 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
 
         // variable determining the current field color
         var col = CHESS_TILE_WHITE
+
+        // draw border around chess board
+        this.canvasContext.globalAlpha = 1.0
+        this.canvasContext.fillStyle = CHESS_TILE_BLACK
+        try {
+            console.log('drawign border')
+            this.canvasContext.save()
+            this.canvasContext.globalAlpha = 1.0
+            this.canvasContext.fillRect(0, 0, width, height)
+            this.canvasContext.restore()
+        } catch (e) {
+        }
+            
+            
 
 
         for (var i = 0; i < 64; i++) {
@@ -168,8 +184,8 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
             this.canvasContext.fillStyle = col
 
             this.canvasContext.fillRect(
-                x * size,
-                y * size,
+                x * size + borderOffset,
+                y * size + borderOffset,
                 size,
                 size)
 
@@ -177,11 +193,11 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
                 this.canvasContext.save()
                 this.canvasContext.globalAlpha = opacity
                 if (!deleted) {
-                    this.canvasContext.drawImage(symbols[content], x * size, y * size, size, size)
+                    this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
                 } else {
                     this.canvasContext.globalAlpha = 1.0
-                    this.canvasContext.fillStyle = 'red'
-                    this.canvasContext.fillRect(x * size, y * size, size, size)
+                    this.canvasContext.fillStyle = CHESS_TILE_CHANGES
+                    this.canvasContext.fillRect(x * size + borderOffset, y * size + borderOffset, size, size)
                 }
                 
                 this.canvasContext.restore()
