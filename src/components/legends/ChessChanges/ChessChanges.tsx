@@ -174,6 +174,7 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
 
             let [contentA, opacityA] = getProminent(countA, key) as [string, number]
             let [contentB, opacityB] = getProminent(countB, key) as [string, number]
+            opacityA = Math.max(opacityA, 0.15)
             opacityB = Math.max(opacityB, 0.15)
 
             if (contentA != contentB) {
@@ -198,7 +199,7 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
                 if (!deleted) {
                     this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
                 } else {
-                    this.canvasContext.globalAlpha = opacityB
+                    this.canvasContext.globalAlpha = opacityA
                     this.canvasContext.fillStyle = CHESS_TILE_CHANGES
                     this.canvasContext.fillRect(x * size + borderOffset, y * size + borderOffset, size, size)
                 }
