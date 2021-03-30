@@ -19,7 +19,7 @@ var symbols = {
     '': ''
 }
 
-export const CHESS_TILE_BLACK = "#bee1ef"
+export const CHESS_TILE_BLACK = "#edeeef"
 export const CHESS_TILE_WHITE = "#ffffff"
 
 export const requiredChessColumns = [];
