@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Box, Card, Typography } from '@material-ui/core'
-import { GenericLegend } from '../../Legends/Generic'
+import { GenericLegend } from '../../legends/Generic'
 import './SelectionClusters.scss'
 import { connect } from 'react-redux'
 import { Vect } from '../../Utility/Data/Vect'

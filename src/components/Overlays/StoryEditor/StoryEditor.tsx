@@ -12,7 +12,7 @@ import GestureIcon from '@material-ui/icons/Gesture';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
 import { setAggregationAction } from "../../Ducks/AggregationDuck";
-import { GenericFingerprint } from '../../Legends/Generic';
+import { GenericFingerprint } from '../../legends/Generic';
 import { RootState } from '../../Store/Store';
 import { addEdgeToActive, setActiveTrace } from '../../Ducks/StoriesDuck';
 import { Edge } from '../../Utility/graphs';

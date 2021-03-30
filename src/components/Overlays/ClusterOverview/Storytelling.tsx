@@ -1,13 +1,13 @@
 import "./Storytelling.scss";
 import * as React from 'react'
 import Cluster from "../../Utility/Data/Cluster";
-import { GenericFingerprint } from "../../Legends/Generic";
+import { GenericFingerprint } from "../../legends/Generic";
 import { Card, Typography, Tooltip, IconButton, CardHeader, CardContent } from "@material-ui/core";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { connect, ConnectedProps } from 'react-redux'
 import { DatasetType } from "../../Utility/Data/DatasetType";
 import { Dataset } from "../../Utility/Data/Dataset";
-import { GenericChanges } from "../../Legends/GenericChanges/GenericChanges";
+import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
 import { RootState } from "../../Store/Store";
 import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType } from "../../Ducks/StoriesDuck";
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -19,6 +19,8 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import StopIcon from '@material-ui/icons/Stop';
 import { aggSelectCluster } from "../../Ducks/AggregationDuck";
+import { ResizeObserver } from 'resize-observer';
+
 
 const mainColor = '#007dad'
 
@@ -42,7 +44,6 @@ const connector = connect(mapStateToProps, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    // itemClicked: any
     dataset: Dataset
 }
 
