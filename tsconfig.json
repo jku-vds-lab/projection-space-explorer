@@ -3,7 +3,7 @@
     "outDir": "dist/",
     "noImplicitAny": false,
     "module": "commonjs",
-    "target": "es2015",
+    "target": "es2016",
     "jsx": "react",
     "lib": ["ESNext","DOM"]
   },

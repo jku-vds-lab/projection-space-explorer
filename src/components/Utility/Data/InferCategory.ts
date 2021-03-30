@@ -1,5 +1,5 @@
-import { requiredChessColumns } from "../../Legends/ChessFingerprint/ChessFingerprint";
-import { requiredRubikColumns } from "../../Legends/RubikFingerprint/RubikFingerprint";
+import { requiredChessColumns } from "../../legends/ChessFingerprint/ChessFingerprint";
+import { requiredRubikColumns } from "../../legends/RubikFingerprint/RubikFingerprint";
 import { PrebuiltFeatures } from "./Dataset";
 import { DatasetType } from "./DatasetType";
 import { Vect } from "./Vect";
