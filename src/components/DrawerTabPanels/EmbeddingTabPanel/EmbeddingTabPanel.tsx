@@ -25,7 +25,6 @@ import * as frontend_utils from '../../../utils/frontend-connect';
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
     stories: state.stories,
-    storyMode: state.storyMode,
     projectionWorker: state.projectionWorker,
     projectionOpen: state.projectionOpen,
     dataset: state.dataset,

@@ -1,7 +1,9 @@
 import * as React from 'react'
 import { arraysEqual } from '../../WebGLView/UtilityFunctions'
 import { Vect } from "../../Utility/Data/Vect"
+import { CHESS_TILE_BLACK, CHESS_TILE_WHITE } from "../ChessFingerprint/ChessFingerprint"
 
+const CHESS_TILE_CHANGES = '#ff9900'
 
 // Lookup table for chess UNICODE symbols
 var symbols = {
@@ -19,9 +21,6 @@ var symbols = {
     'bp': 'textures/chess/Chess_pdt45.svg',
     '': ''
 }
-
-const WHITE = "#D18B47"
-const BLACK = "#FFCE9E"
 
 Object.keys(symbols).filter(key => key != '').forEach(key => {
     var path = symbols[key]
@@ -79,14 +78,17 @@ function getProminent(aggregation, key) {
         var v = aggregation[key][k]
         total += v.count
 
-        if (v.count > max) {
+        if (v.count > max && symbols[aggregation[key][k].key] !== "" && symbols[aggregation[key][k].key] !== undefined) {
             max = v.count
             content = aggregation[key][k].key
         }
     }
 
-    opacity = (max / total)
+    if (content == null) {
+        content = ""
+    }
 
+    opacity = (max / total)
     return [content, opacity]
 }
 
@@ -112,7 +114,8 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
         width = Math.floor(width / 8) * 8
         height = Math.floor(height / 8) * 8
 
-        var size = width / 8
+        var size = (width * 10) / 82
+        var borderOffset = width / 82
 
         this.canvasRef.current.setAttribute('width', width.toString())
         this.canvasRef.current.setAttribute('height', height.toString())
@@ -136,17 +139,30 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
         keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
         // variable determining the current field color
-        var col = WHITE
+        var col = CHESS_TILE_WHITE
+
+        // draw border around chess board
+        this.canvasContext.globalAlpha = 1.0
+        this.canvasContext.fillStyle = CHESS_TILE_BLACK
+        try {
+            this.canvasContext.save()
+            this.canvasContext.globalAlpha = 1.0
+            this.canvasContext.fillRect(0, 0, width, height)
+            this.canvasContext.restore()
+        } catch (e) {
+        }
+            
+            
 
 
         for (var i = 0; i < 64; i++) {
             var x = i % 8
             var y = Math.floor(i / 8)
             if (i % 8 != 0) {
-                if (col == WHITE) {
-                    col = BLACK
+                if (col == CHESS_TILE_WHITE) {
+                    col = CHESS_TILE_BLACK
                 } else {
-                    col = WHITE
+                    col = CHESS_TILE_WHITE
                 }
             }
 
@@ -158,6 +174,8 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
 
             let [contentA, opacityA] = getProminent(countA, key) as [string, number]
             let [contentB, opacityB] = getProminent(countB, key) as [string, number]
+            opacityA = Math.max(opacityA, 0.15)
+            opacityB = Math.max(opacityB, 0.15)
 
             if (contentA != contentB) {
                 content = contentB
@@ -170,20 +188,20 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
             this.canvasContext.fillStyle = col
 
             this.canvasContext.fillRect(
-                x * size,
-                y * size,
+                x * size + borderOffset,
+                y * size + borderOffset,
                 size,
                 size)
 
             try {
                 this.canvasContext.save()
-                this.canvasContext.globalAlpha = opacity
+                this.canvasContext.globalAlpha = opacityB
                 if (!deleted) {
-                    this.canvasContext.drawImage(symbols[content], x * size, y * size, size, size)
+                    this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
                 } else {
-                    this.canvasContext.globalAlpha = 1.0
-                    this.canvasContext.fillStyle = 'red'
-                    this.canvasContext.fillRect(x * size, y * size, size, size)
+                    this.canvasContext.globalAlpha = opacityA
+                    this.canvasContext.fillStyle = CHESS_TILE_CHANGES
+                    this.canvasContext.fillRect(x * size + borderOffset, y * size + borderOffset, size, size)
                 }
                 
                 this.canvasContext.restore()

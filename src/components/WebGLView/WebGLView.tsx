@@ -285,7 +285,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                                 if (indices.length > 0 && wasDrawing && displayModeSupportsStates(this.props.displayMode)) {
                                     var selected = indices.map(index => this.props.dataset.vectors[index])
 
-                                    if (event.shiftKey) {
+                                    if (event.ctrlKey) {
                                         this.props.toggleAggregation(selected)
                                     } else {
                                         this.props.setCurrentAggregation(selected)
@@ -382,14 +382,14 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                             this.traceSelect = null
                         } else if (this.currentHover && this.currentHover instanceof Vect) {
                             // We click on a hover target
-                            if (event.shiftKey) {
+                            if (event.ctrlKey) {
                                 // There is a hover target ... select it
                                 this.props.toggleAggregation([this.currentHover])
                             } else {
                                 this.props.setCurrentAggregation([this.currentHover])
                             }
                         } else if (this.currentHover && this.currentHover instanceof Cluster) {
-                            this.onClusterClicked(this.currentHover, event.shiftKey)
+                            this.props.setSelectedCluster(this.currentHover, event.ctrlKey)
                         }
 
 

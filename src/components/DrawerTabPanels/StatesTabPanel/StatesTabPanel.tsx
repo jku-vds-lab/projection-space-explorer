@@ -136,11 +136,11 @@ export const StatesTabPanelFull = ({
 
     const classes = useStyles();
 
-    var algos = LineSelectionTree_GenAlgos(dataset.vectors)
-    var selLines = LineSelectionTree_GetChecks(algos)
 
-    const [selectedLines, setSelectedLines] = React.useState(selLines)
-    const [selectedLineAlgos, setSelectedLineAlgos] = React.useState(algos)
+
+
+
+
 
 
     const [expanded, setExpanded] = React.useState<boolean | string>(false);
@@ -151,196 +151,196 @@ export const StatesTabPanelFull = ({
 
     const points_box = <Box>
         {
-                    categoryOptions != null && categoryOptions.hasCategory("shape") ?
-                        <Grid
-                            container
-                            justify="center"
-                            alignItems="stretch"
-                            direction="column"
-                            style={{ padding: '0 16px' }}>
-                            <FormControl style={{ margin: '4px 0px' }}>
-                                <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
-                                <Select labelId="vectorByShapeSelectLabel"
-                                    id="vectorByShapeSelect"
-                                    displayEmpty
-                                    value={selectedVectorByShape}
-                                    onChange={(event) => {
-                                        setSelectedVectorByShape(event.target.value)
+            categoryOptions != null && categoryOptions.hasCategory("shape") ?
+                <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                        <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
+                        <Select labelId="vectorByShapeSelectLabel"
+                            id="vectorByShapeSelect"
+                            displayEmpty
+                            value={selectedVectorByShape}
+                            onChange={(event) => {
+                                setSelectedVectorByShape(event.target.value)
 
-                                        if (event.target.value != null && event.target.value != "") {
-                                            var attribute = categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
-                                            setVectorByShape(attribute)
-                                        } else {
-                                            setVectorByShape(null)
-                                        }
-                                    }}
-                                >
-                                    <MenuItem value="">None</MenuItem>
-                                    {categoryOptions.getCategory("shape").attributes.map(attribute => {
-                                        return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                                    })}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-
-                        :
-                        <div></div>
-                }
-
-                <Grid item style={{ padding: '0 16px' }}>
-                    <ShapeLegend
-                        dataset={dataset}
-                        category={vectorByShape}
-                        onChange={(checkboxes) => {
-                            setCheckedShapes(checkboxes)
-                        }}></ShapeLegend>
-                </Grid>
-
-
-                {
-                    categoryOptions != null && categoryOptions.hasCategory("transparency") ?
-                        <Grid
-                            container
-                            justify="center"
-                            alignItems="stretch"
-                            direction="column"
-                            style={{ padding: '0 16px' }}>
-                            <FormControl style={{ margin: '4px 0px' }}>
-                                <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
-                                <Select labelId="vectorByTransparencySelectLabel"
-                                    id="vectorByTransparencySelect"
-                                    displayEmpty
-                                    value={channelBrightness ? channelBrightness.key : ''}
-                                    onChange={(event) => {
-                                        var attribute = categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
-
-                                        if (attribute == undefined) {
-                                            attribute = null
-                                        }
-
-                                        let pointBrightness = attribute ? [0.25, 1] : [1]
-
-                                        setGlobalPointBrightness(pointBrightness)
-                                        setChannelBrightness(attribute)
-                                        webGlView.current.particles.transparencyCat(attribute, pointBrightness)
-                                        webGlView.current.requestRender()
-                                    }}
-                                >
-                                    <MenuItem value="">None</MenuItem>
-                                    {categoryOptions.getCategory("transparency").attributes.map(attribute => {
-                                        return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                                    })}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        :
-                        <div></div>
-                }
-
-                <BrightnessSlider></BrightnessSlider>
-
-
-
-
-                {
-                    categoryOptions != null && categoryOptions.hasCategory("size") ?
-                        <Grid
-                            container
-                            justify="center"
-                            alignItems="stretch"
-                            direction="column"
-                            style={{ padding: '0 16px' }}>
-                            <FormControl style={{ margin: '4px 0px' }}>
-                                <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                                <Select labelId="vectorBySizeSelectLabel"
-                                    id="vectorBySizeSelect"
-                                    displayEmpty
-                                    value={channelSize ? channelSize.key : ''}
-                                    onChange={(event) => {
-                                        var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
-                                        if (attribute == undefined) {
-                                            attribute = null
-                                        }
-
-                                        let pointSize = attribute ? [1, 2] : [1]
-
-                                        setGlobalPointSize(pointSize)
-
-                                        setChannelSize(attribute)
-
-                                        webGlView.current.particles.sizeCat(attribute, pointSize)
-                                    }}
-                                >
-                                    <MenuItem value="">None</MenuItem>
-                                    {categoryOptions.getCategory("size").attributes.map(attribute => {
-                                        return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                                    })}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        :
-                        <div></div>
-                }
-
-                <SizeSlider></SizeSlider>
-
-
-                {
-                    categoryOptions != null && categoryOptions.hasCategory("color") ?
-                        <Grid
-                            container
-                            item
-                            alignItems="stretch"
-                            direction="column"
-                            style={{ padding: '0 16px' }}
+                                if (event.target.value != null && event.target.value != "") {
+                                    var attribute = categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
+                                    setVectorByShape(attribute)
+                                } else {
+                                    setVectorByShape(null)
+                                }
+                            }}
                         >
-
-                            <Grid container item alignItems="stretch" direction="column">
-                                <FormControl style={{ margin: '4px 0px' }}>
-                                    <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
-                                    <Select labelId="vectorByColorSelectLabel"
-                                        id="vectorByColorSelect"
-                                        displayEmpty
-                                        value={channelColor ? channelColor.key : ""}
-                                        onChange={(event) => {
-                                            var attribute = null
-                                            if (event.target.value != "") {
-                                                attribute = categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
-                                            }
-
-                                            setAdvancedColoringSelection(new Array(10000).fill(true))
-                                            setChannelColor(attribute)
-                                        }}
-                                    >
-                                        <MenuItem value="">None</MenuItem>
-                                        {categoryOptions.getCategory("color").attributes.map(attribute => {
-                                            return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                                        })}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                        :
-                        <div></div>
-                }
-
-                <Grid item>
-
-                    <ColorScaleSelect></ColorScaleSelect>
+                            <MenuItem value="">None</MenuItem>
+                            {categoryOptions.getCategory("shape").attributes.map(attribute => {
+                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                            })}
+                        </Select>
+                    </FormControl>
                 </Grid>
 
+                :
+                <div></div>
+        }
 
-                <Grid item style={{ padding: '16px 0px' }}>
-                    {
-                        channelColor != null && channelColor.type == 'categorical' ?
+        <Grid item style={{ padding: '0 16px' }}>
+            <ShapeLegend
+                dataset={dataset}
+                category={vectorByShape}
+                onChange={(checkboxes) => {
+                    setCheckedShapes(checkboxes)
+                }}></ShapeLegend>
+        </Grid>
 
-                            <AdvancedColoringPopover></AdvancedColoringPopover>
-                            :
-                            <div></div>
-                    }
 
+        {
+            categoryOptions != null && categoryOptions.hasCategory("transparency") ?
+                <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                        <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
+                        <Select labelId="vectorByTransparencySelectLabel"
+                            id="vectorByTransparencySelect"
+                            displayEmpty
+                            value={channelBrightness ? channelBrightness.key : ''}
+                            onChange={(event) => {
+                                var attribute = categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
 
+                                if (attribute == undefined) {
+                                    attribute = null
+                                }
+
+                                let pointBrightness = attribute ? [0.25, 1] : [1]
+
+                                setGlobalPointBrightness(pointBrightness)
+                                setChannelBrightness(attribute)
+                                webGlView.current.particles.transparencyCat(attribute, pointBrightness)
+                                webGlView.current.requestRender()
+                            }}
+                        >
+                            <MenuItem value="">None</MenuItem>
+                            {categoryOptions.getCategory("transparency").attributes.map(attribute => {
+                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                            })}
+                        </Select>
+                    </FormControl>
                 </Grid>
+                :
+                <div></div>
+        }
+
+        <BrightnessSlider></BrightnessSlider>
+
+
+
+
+        {
+            categoryOptions != null && categoryOptions.hasCategory("size") ?
+                <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                        <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
+                        <Select labelId="vectorBySizeSelectLabel"
+                            id="vectorBySizeSelect"
+                            displayEmpty
+                            value={channelSize ? channelSize.key : ''}
+                            onChange={(event) => {
+                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+                                if (attribute == undefined) {
+                                    attribute = null
+                                }
+
+                                let pointSize = attribute ? [1, 2] : [1]
+
+                                setGlobalPointSize(pointSize)
+
+                                setChannelSize(attribute)
+
+                                webGlView.current.particles.sizeCat(attribute, pointSize)
+                            }}
+                        >
+                            <MenuItem value="">None</MenuItem>
+                            {categoryOptions.getCategory("size").attributes.map(attribute => {
+                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                            })}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                :
+                <div></div>
+        }
+
+        <SizeSlider></SizeSlider>
+
+
+        {
+            categoryOptions != null && categoryOptions.hasCategory("color") ?
+                <Grid
+                    container
+                    item
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}
+                >
+
+                    <Grid container item alignItems="stretch" direction="column">
+                        <FormControl style={{ margin: '4px 0px' }}>
+                            <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
+                            <Select labelId="vectorByColorSelectLabel"
+                                id="vectorByColorSelect"
+                                displayEmpty
+                                value={channelColor ? channelColor.key : ""}
+                                onChange={(event) => {
+                                    var attribute = null
+                                    if (event.target.value != "") {
+                                        attribute = categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+                                    }
+
+                                    setAdvancedColoringSelection(new Array(10000).fill(true))
+                                    setChannelColor(attribute)
+                                }}
+                            >
+                                <MenuItem value="">None</MenuItem>
+                                {categoryOptions.getCategory("color").attributes.map(attribute => {
+                                    return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                                })}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                </Grid>
+                :
+                <div></div>
+        }
+
+        <Grid item>
+
+            <ColorScaleSelect></ColorScaleSelect>
+        </Grid>
+
+
+        <Grid item style={{ padding: '16px 0px' }}>
+            {
+                channelColor != null && channelColor.type == 'categorical' ?
+
+                    <AdvancedColoringPopover></AdvancedColoringPopover>
+                    :
+                    <div></div>
+            }
+
+
+        </Grid>
     </Box>
 
     const accordion = <div style={{
@@ -371,31 +371,9 @@ export const StatesTabPanelFull = ({
                         <Box p={1}></Box>
 
                         <LineTreePopover
-                            onSelectAll={(algo, checked) => {
-                                var ch = selectedLines
-                                Object.keys(ch).forEach(key => {
-                                    // @ts-ignore
-                                    var e = selectedLineAlgos.find(e => e.algo == algo)
-                                    if (e.lines.find(e => e.line == key)) {
-                                        ch[key] = checked
-                                    }
-
-                                })
-
-                                setSelectedLines(ch)
-
-                                webGlView.current.setLineFilter(ch)
-                                webGlView.current.requestRender()
-                            }}
-                            onChange={(id, checked) => {
-                                var ch = selectedLines
-                                ch[id] = checked
-
-                                setSelectedLines(ch)
-
-                                webGlView.current.setLineFilter(ch)
-                                webGlView.current.requestRender()
-                            }} checkboxes={selectedLines} algorithms={selectedLineAlgos} colorScale={lineColorScheme} />
+                            webGlView={webGlView}
+                            dataset={dataset}
+                            colorScale={lineColorScheme} />
                     </Grid>
 
 
@@ -423,7 +401,7 @@ export const StatesTabPanelFull = ({
         </Accordion>
     </div>;
 
-    return <div>{ dataset && dataset.isSequential ? accordion : points_box }</div>
+    return <div>{dataset && dataset.isSequential ? accordion : points_box}</div>
 }
 
 

@@ -1,39 +1,16 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="45" height="45">
-  <g style="opacity:1; fill:000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;">
-    <path
-      d="M 9,39 L 36,39 L 36,36 L 9,36 L 9,39 z "
-      style="stroke-linecap:butt;" />
-    <path
-      d="M 12.5,32 L 14,29.5 L 31,29.5 L 32.5,32 L 12.5,32 z "
-      style="stroke-linecap:butt;" />
-    <path
-      d="M 12,36 L 12,32 L 33,32 L 33,36 L 12,36 z "
-      style="stroke-linecap:butt;" />
-    <path
-      d="M 14,29.5 L 14,16.5 L 31,16.5 L 31,29.5 L 14,29.5 z "
-      style="stroke-linecap:butt;stroke-linejoin:miter;" />
-    <path
-      d="M 14,16.5 L 11,14 L 34,14 L 31,16.5 L 14,16.5 z "
-      style="stroke-linecap:butt;" />
-    <path
-      d="M 11,14 L 11,9 L 15,9 L 15,11 L 20,11 L 20,9 L 25,9 L 25,11 L 30,11 L 30,9 L 34,9 L 34,14 L 11,14 z "
-      style="stroke-linecap:butt;" />
-    <path
-      d="M 12,35.5 L 33,35.5 L 33,35.5"
-      style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;" />
-    <path
-      d="M 13,31.5 L 32,31.5"
-      style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;" />
-    <path
-      d="M 14,29.5 L 31,29.5"
-      style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;" />
-    <path
-      d="M 14,16.5 L 31,16.5"
-      style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;" />
-    <path
-      d="M 11,14 L 34,14"
-      style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;" />
-  </g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="11.906mm" height="11.906mm" version="1.1" viewBox="0 0 11.906 11.906" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g transform="translate(-2234.9 407.9)">
+  <rect x="1353.8" y="-115.3" width="266.7" height="266.7" ry="1.3726" fill-opacity="0"/>
+  <path d="m2237.9-405.01v1.6285c0 0.1988 0.091 0.38669 0.2468 0.51005l0.8196 0.64853h3.9132l0.8196-0.64853c0.1559-0.12336 0.2468-0.31125 0.2468-0.51005v-1.6285c0-0.17382-0.1409-0.31473-0.3147-0.31475h-0.713c-0.1738 2e-5 -0.3147 0.14093-0.3147 0.31475v0.92786h-0.6596v-0.92786c0-0.17382-0.1409-0.31473-0.3148-0.31475h-1.4125c-0.1738 2e-5 -0.3147 0.14093-0.3147 0.31475v0.92786h-0.6598v-0.92786c0-0.17382-0.1409-0.31473-0.3148-0.31475h-0.7127c-0.1738-1e-5 -0.3147 0.14091-0.3147 0.31475zm1.3815 3.2391-0.3524 1.9707h3.9876l-0.3525-1.9707zm-0.9088 2.4227-0.3538 0.24665c-0.1618 0.11277-0.2583 0.29752-0.2583 0.49473v1.049c0 0.17382 0.1409 0.31473 0.3148 0.31475h5.695c0.1738-2e-5 0.3147-0.14093 0.3147-0.31475v-1.049c0-0.19721-0.096-0.38196-0.2582-0.49473l-0.3539-0.24665z" fill="#404040"/>
+ </g>
 </svg>

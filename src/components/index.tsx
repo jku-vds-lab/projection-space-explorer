@@ -16,7 +16,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import * as React from "react";
 import { PathLengthFilter } from "./DrawerTabPanels/StatesTabPanel/PathLengthFilter/PathLengthFilter";
-import { ClusterOverview } from "./Overlays/ClusterOverview/ClusterOverview";
+import { Storytelling } from "./Overlays/ClusterOverview/Storytelling";
 import { Legend } from "./DrawerTabPanels/StatesTabPanel/LineSelection/LineSelection";
 import * as ReactDOM from 'react-dom';
 import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
@@ -618,11 +618,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
         <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
 
-        <ClusterOverview
-          itemClicked={(cluster) => {
-            //this.threeRef.current.setZoomTarget(cluster.vectors, 1)
-            this.threeRef.current.onClusterClicked(cluster)
-          }}></ClusterOverview>
+        <Storytelling></Storytelling>
 
 
         <StoryEditor></StoryEditor>

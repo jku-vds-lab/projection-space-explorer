@@ -12,7 +12,6 @@ import displayMode from "../Ducks/DisplayModeDuck";
 import lineBrightness from "../Ducks/LineBrightnessDuck";
 import activeLine from "../Ducks/ActiveLineDuck";
 import stories from "../Ducks/StoriesDuck";
-import storyMode from "../Ducks/StoryModeDuck";
 import currentAggregation from "../Ducks/AggregationDuck";
 import { viewTransform } from "../Ducks/ViewTransformDuck";
 import projectionParams from "../Ducks/ProjectionParamsDuck";
@@ -58,7 +57,6 @@ const allReducers = {
   highlightedSequence: highlightedSequence,
   viewTransform: viewTransform,
   advancedColoringSelection: advancedColoringSelection,
-  storyMode: storyMode,
   projectionColumns: projectionColumns,
   projectionOpen: projectionOpen,
   projectionParams: projectionParams,

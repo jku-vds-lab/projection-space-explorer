@@ -452,6 +452,8 @@ export const CoralChanges = connector(class extends React.Component<Props> {
     super(props)
   }
   
+  
+
   render() {
     // generate rows including vega specs for table div
     this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.legendAttributes, this.props.dataset);
@@ -463,11 +465,10 @@ export const CoralChanges = connector(class extends React.Component<Props> {
     this.rows = filterReactVega(this.rows, this.props.differenceThreshold, this.props.dataset)
 
     return (
-      <div>
-        <TableContainer component={Paper} style={{
-          height: "400px",
+        <div style={{
           width: "100%",
-          overflow: "auto"
+          maxHeight: '100%',
+          
         }}>
           <Table aria-label="simple table" size={'small'}>
             <TableHead>
@@ -480,8 +481,7 @@ export const CoralChanges = connector(class extends React.Component<Props> {
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
-      </div>
+        </div>
     );
   }
 })
