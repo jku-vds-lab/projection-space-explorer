@@ -19,8 +19,8 @@ var symbols = {
     '': ''
 }
 
-const WHITE = "#D18B47"
-const BLACK = "#FFCE9E"
+const BLACK = "#D18B47"
+const WHITE = "#FFCE9E"
 
 export const requiredChessColumns = [];
 

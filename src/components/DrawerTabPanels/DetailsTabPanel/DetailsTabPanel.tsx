@@ -158,7 +158,7 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
     }
 
     return <div>
-        <Button style={{ width: '100%' }} variant="outlined" onClick={fingerprintAttributes}>Fingerprint Attributes</Button>
+        <Button style={{ width: '100%' }} variant="outlined" onClick={fingerprintAttributes}>Summary Attributes</Button>
 
         <Popover
             open={Boolean(anchorEl)}
