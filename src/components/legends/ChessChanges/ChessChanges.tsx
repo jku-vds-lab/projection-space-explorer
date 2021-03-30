@@ -3,7 +3,7 @@ import { arraysEqual } from '../../WebGLView/UtilityFunctions'
 import { Vect } from "../../Utility/Data/Vect"
 import { CHESS_TILE_BLACK, CHESS_TILE_WHITE } from "../ChessFingerprint/ChessFingerprint"
 
-const CHESS_TILE_CHANGES = 'orange'
+const CHESS_TILE_CHANGES = '#ff9900'
 
 // Lookup table for chess UNICODE symbols
 var symbols = {
@@ -84,8 +84,11 @@ function getProminent(aggregation, key) {
         }
     }
 
-    opacity = (max / total)
+    if (content == null) {
+        content = ""
+    }
 
+    opacity = (max / total)
     return [content, opacity]
 }
 
@@ -142,7 +145,6 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
         this.canvasContext.globalAlpha = 1.0
         this.canvasContext.fillStyle = CHESS_TILE_BLACK
         try {
-            console.log('drawign border')
             this.canvasContext.save()
             this.canvasContext.globalAlpha = 1.0
             this.canvasContext.fillRect(0, 0, width, height)
@@ -172,6 +174,7 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
 
             let [contentA, opacityA] = getProminent(countA, key) as [string, number]
             let [contentB, opacityB] = getProminent(countB, key) as [string, number]
+            opacityB = Math.max(opacityB, 0.15)
 
             if (contentA != contentB) {
                 content = contentB
@@ -191,11 +194,11 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
 
             try {
                 this.canvasContext.save()
-                this.canvasContext.globalAlpha = opacity
+                this.canvasContext.globalAlpha = opacityB
                 if (!deleted) {
                     this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
                 } else {
-                    this.canvasContext.globalAlpha = 1.0
+                    this.canvasContext.globalAlpha = opacityB
                     this.canvasContext.fillStyle = CHESS_TILE_CHANGES
                     this.canvasContext.fillRect(x * size + borderOffset, y * size + borderOffset, size, size)
                 }

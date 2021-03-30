@@ -110,7 +110,6 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
         this.canvasContext.globalAlpha = 1.0
         this.canvasContext.fillStyle = CHESS_TILE_BLACK
         try {
-            console.log('drawign border')
             this.canvasContext.save()
             this.canvasContext.globalAlpha = 1.0
             this.canvasContext.fillRect(0, 0, width, height)
@@ -148,11 +147,9 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
                     total += v.count
 
                     if (v.count > max && symbols[aggregation[key][k].key] !== "") {
-                        console.log('v.count, max :>> ', v.count, max);
                         max = v.count
                         content = symbols[aggregation[key][k].key]
                         content = aggregation[key][k].key
-                        console.log('content :>> ', content);
                     }
                 }
 
