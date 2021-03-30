@@ -11,8 +11,8 @@ export default createClassFromLiteSpec('VegaDensity', {
       "axis": null},
     "y": {"field": "density", "type": "quantitative",
       "axis": null},
-    "color": {"field": "selection", "type": "nominal", "legend": null, "scale": {"range": ["#aaaaaa", "#4c78a8"]}},
+    "color": {"field": "selection", "type": "nominal", "legend": null, "scale": {"range": ["#aaaaaa", "#007dad"]}},
     "fillOpacity": {"field": "selection", "type": "nominal", "legend": null, "scale": {"range": ["0", "1.0"]}},
-    "stroke": {"field": "selection", "type": "nominal", "legend": null, "scale": {"range": ["#000000", "#4c78a8"]}},
+    "stroke": {"field": "selection", "type": "nominal", "legend": null, "scale": {"range": ["#000000", "#007dad"]}},
   }
 });

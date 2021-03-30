@@ -17,6 +17,9 @@ export default createClassFromLiteSpec('VegaHist', {
     "y": {
       "aggregate": "count",
       "axis": null
+    },
+    "color": {
+      "value": "#007dad"
     }
   }
 });

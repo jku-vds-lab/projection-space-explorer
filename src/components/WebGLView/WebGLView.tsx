@@ -1403,13 +1403,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     }
 
                     handleClose()
-                }}>{"Stories ... Starting from this Cluster"}</MenuItem>
+                }}>{"Stories ... Starting from this Group"}</MenuItem>
 
                 <MenuItem onClick={() => {
                     this.traceSelect = new TraceSelectTool(this.state.menuTarget)
 
                     handleClose()
-                }}>{"Stories ... Between 2 Clusters"}</MenuItem>
+                }}>{"Stories ... Between 2 Group"}</MenuItem>
 
             </Menu>
 

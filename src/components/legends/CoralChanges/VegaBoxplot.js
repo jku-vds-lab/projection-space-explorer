@@ -15,6 +15,9 @@ export default createClassFromLiteSpec('BoxplotChanges', {
         "type": "quantitative",
         "scale": {"zero": false},
         "axis": {"title": null, "grid": false}
+      },
+      "color": {
+        "value": "#007dad"
       }
     },
     "config": {

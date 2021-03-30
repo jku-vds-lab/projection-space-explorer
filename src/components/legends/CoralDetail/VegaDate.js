@@ -18,6 +18,9 @@ export default createClassFromLiteSpec('VegaDate', {
     "y": {
       "aggregate": "count",
       "axis": null
+    },
+    "color": {
+      "value": "#007dad"
     }
   }
 });
