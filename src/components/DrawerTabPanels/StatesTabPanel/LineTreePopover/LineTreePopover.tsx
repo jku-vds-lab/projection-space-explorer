@@ -96,21 +96,6 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component<
         this.state = state
     }
 
-    static getDerivedStateFromProps(props, state) {
-        // Create a tree structure for our view
-        var vectors = props.vectors
-        if (vectors == null) return {}
-
-        if (props.vectors != state.vectors) {
-            return {
-                vectors: props.vectors,
-                expanded: []
-            }
-        } else {
-            return {}
-        }
-    }
-
     render() {
         if (this.props.algorithms == null) return <div></div>
 
@@ -195,7 +180,7 @@ export var LineSelectionTree = withStyles(styles)(class extends React.Component<
 
 
 
-export var LineTreePopover = ({ onChange, checkboxes, algorithms, colorScale, onSelectAll }) => {
+export var LineTreePopover = ({ webGlView, dataset, colorScale }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = event => {
@@ -209,6 +194,16 @@ export var LineTreePopover = ({ onChange, checkboxes, algorithms, colorScale, on
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
 
+    const [selectedLines, setSelectedLines] = React.useState(null)
+    const [selectedLineAlgos, setSelectedLineAlgos] = React.useState(null)
+
+    React.useEffect(() => {
+        var algos = LineSelectionTree_GenAlgos(dataset.vectors)
+        var selLines = LineSelectionTree_GetChecks(algos)
+
+        setSelectedLines(selLines)
+        setSelectedLineAlgos(algos)
+    }, [dataset])
 
     return <div>
         <Button aria-describedby={id} variant="outlined" onClick={handleClick}>
@@ -229,7 +224,29 @@ export var LineTreePopover = ({ onChange, checkboxes, algorithms, colorScale, on
             }}
         >
             <Grid style={{ padding: '12px', width: 300, maxHeight: 600 }} container alignItems="stretch" direction="column">
-                <LineSelectionTree onChange={onChange} checkboxes={checkboxes} algorithms={algorithms} colorScale={colorScale} onSelectAll={onSelectAll}></LineSelectionTree>
+                <LineSelectionTree onChange={(id, checked) => {
+                    var ch = selectedLines
+                    ch[id] = checked
+
+                    setSelectedLines(Object.assign({}, ch))
+
+                    webGlView.current.setLineFilter(ch)
+                    webGlView.current.requestRender()
+                }} checkboxes={selectedLines} algorithms={selectedLineAlgos} colorScale={colorScale} onSelectAll={(algo, checked) => {
+                    var ch = selectedLines
+                    Object.keys(ch).forEach(key => {
+                        var e = selectedLineAlgos.find(e => e.algo == algo)
+                        if (e.lines.find(e => e.line == key)) {
+                            ch[key] = checked
+                        }
+
+                    })
+
+                    setSelectedLines(Object.assign({}, ch))
+
+                    webGlView.current.setLineFilter(ch)
+                    webGlView.current.requestRender()
+                }}></LineSelectionTree>
             </Grid>
 
         </Popover>
