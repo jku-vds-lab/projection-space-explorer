@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { arraysEqual } from '../../WebGLView/UtilityFunctions'
 import { Vect } from "../../Utility/Data/Vect"
+import { CHESS_TILE_BLACK, CHESS_TILE_WHITE } from "../ChessFingerprint/ChessFingerprint"
 
 
 // Lookup table for chess UNICODE symbols
@@ -19,9 +20,6 @@ var symbols = {
     'bp': 'textures/chess/Chess_pdt45.svg',
     '': ''
 }
-
-const BLACK = "#D18B47"
-const WHITE = "#FFCE9E"
 
 Object.keys(symbols).filter(key => key != '').forEach(key => {
     var path = symbols[key]
@@ -136,17 +134,17 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
         keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
         // variable determining the current field color
-        var col = WHITE
+        var col = CHESS_TILE_WHITE
 
 
         for (var i = 0; i < 64; i++) {
             var x = i % 8
             var y = Math.floor(i / 8)
             if (i % 8 != 0) {
-                if (col == WHITE) {
-                    col = BLACK
+                if (col == CHESS_TILE_WHITE) {
+                    col = CHESS_TILE_BLACK
                 } else {
-                    col = WHITE
+                    col = CHESS_TILE_WHITE
                 }
             }
 

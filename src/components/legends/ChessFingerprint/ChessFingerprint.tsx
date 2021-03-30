@@ -19,8 +19,8 @@ var symbols = {
     '': ''
 }
 
-const BLACK = "#D18B47"
-const WHITE = "#FFCE9E"
+export const CHESS_TILE_BLACK = "#bee1ef"
+export const CHESS_TILE_WHITE = "#ffffff"
 
 export const requiredChessColumns = [];
 
@@ -103,17 +103,17 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
         keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
         // variable determining the current field color
-        var col = WHITE
+        var col = CHESS_TILE_WHITE
 
 
         for (var i = 0; i < 64; i++) {
             var x = i % 8
             var y = Math.floor(i / 8)
             if (i % 8 != 0) {
-                if (col == WHITE) {
-                    col = BLACK
+                if (col == CHESS_TILE_WHITE) {
+                    col = CHESS_TILE_BLACK
                 } else {
-                    col = WHITE
+                    col = CHESS_TILE_WHITE
                 }
             }
 
