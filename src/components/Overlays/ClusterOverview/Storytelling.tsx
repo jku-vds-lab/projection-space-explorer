@@ -227,7 +227,8 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
 
 
-                    {
+
+                    { // Generates the lines between the diamon 
                         position.map((p, i) => {
                             if (i != position.length - 1) {
                                 let p1 = p
@@ -251,21 +252,26 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                         })
                     }
 
-                    {
+                    { // Generates the plus icon that is shown when its empty
                         position.length == 0 && <g key={"plusmarker"}>
                             <line x1={midX} y1={0} x2={midX} y2={100} stroke={mainColor} strokeWidth="2"></line>
-                            <Plus x={midX} y={50} r={10} onClick={() => {
-
+                            <Plus x={midX} y={100} r={10} onClick={() => {
                                 if (currentAggregation.aggregation.length > 0) {
                                     let cluster = Cluster.fromSamples(this.props.currentAggregation.aggregation)
 
                                     addClusterToTrace(cluster)
                                 }
                             }} />
+
+                            <text x={60} y={120} textAnchor="middle" fontFamily="sans-serif" fontSize="12">
+                                <tspan x="60" dy="1.2em">Select points and</tspan>
+                                <tspan x="60" dy="1.2em">start a story</tspan>
+                            </text>
                         </g>
                     }
 
-                    {// <!--<circle cx={midX} cy={p.y} r="6" fill={mainColor} />-->//<text style={{ textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white' }} x={midX} y={p.y} alignmentBaseline="middle" textAnchor="middle" fill="black" fontWeight="bold" fontFamily="sans-serif">{cluster.label}</text>
+
+                    { // Generates the diamond shapes
                         position.map((p, index) => {
                             let cluster = stories.trace.mainPath[index]
 
@@ -273,7 +279,6 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                             }>
                                 {stories.activeTraceState === cluster && <circle cx={midX} cy={p.y} r={stateSize} fill={'transparent'} stroke={mainColor} strokeWidth="2" />}
                                 <rect x={midX - 6} y={p.y - 6} width={stateSize} height={stateSize} fill={currentAggregation.selectedClusters.includes(cluster) ? mainColor : grayColor} transform={`rotate(45,${midX},${p.y})`} onClick={() => this.props.onClusterClicked(cluster)} />
-
                             </g>
                         })
                     }
@@ -328,8 +333,8 @@ export const Storytelling = connector(function ({
             }
         }
     }, [])
-    
-    
+
+
 
     React.useEffect(() => {
         const current = itemRef.current
@@ -366,12 +371,14 @@ export const Storytelling = connector(function ({
         }
     }, [stories, dirtyFlag])
 
-    if (stories.trace && stories.trace.mainPath.length > 0) {
-        React.useEffect(() => {
+
+    React.useEffect(() => {
+        if (stories.trace && stories.trace.mainPath.length > 0) {
             setActiveTraceState(stories.trace.mainPath[0])
             setSelectedCluster(stories.trace.mainPath[0], false)
-        }, [stories.trace])
-    }
+        }
+    }, [stories.trace])
+
 
 
     return <Card className="ClusterOverviewParent" variant="outlined">
@@ -551,7 +558,7 @@ export const Storytelling = connector(function ({
                                     }}
                                 >
                                     <GenericChanges
-                                        
+
                                         scale={1}
                                         vectorsA={edge.source.vectors}
                                         vectorsB={edge.destination.vectors}
