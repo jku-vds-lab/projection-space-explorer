@@ -69,7 +69,7 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, h
         <Box paddingX={2} paddingTop={1}>
             <div style={{ width: '100%' }}>
                 <FormControl style={{ width: '100%' }}>
-                    <InputLabel id="demo-customized-select-label">Hover Orientation</InputLabel>
+                    <InputLabel id="demo-customized-select-label">Hover Position</InputLabel>
                     <Select
                         labelId="demo-customized-select-label"
                         id="demo-customized-select"

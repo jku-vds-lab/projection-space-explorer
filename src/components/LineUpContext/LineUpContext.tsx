@@ -12,13 +12,10 @@ import { PrebuiltFeatures } from "../Utility/Data/Dataset";
 import { setLineUpInput_lineup, setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 import * as _ from 'lodash';
-import { Button, FormControlLabel, Switch } from "@material-ui/core";
 import BarCellRenderer from "./BarCellRenderer";
-import CategoricalColumnBuilder from "lineupjs/build/src/builder/column/CategoricalColumnBuilder";
-import { fromDumpFile } from "./loader_dump";
-import { mappingFromScale } from "../Utility/Colors/colors";
 import { DiscreteMapping } from "../Utility/Colors/DiscreteMapping";
 import { ShallowSet } from "../Utility/ShallowSet";
+import Cluster from "../Utility/Data/Cluster";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -30,7 +27,7 @@ const mapStateToProps = (state: RootState) => ({
     lineUpInput_data: state.dataset?.vectors,
     lineUpInput_columns: state.dataset?.columns,
     currentAggregation: state.currentAggregation,
-    activeStory: state.stories.active,
+    activeStory: state.stories?.active,
     pointColorScale: state.pointColorScale,
     // splitRef: state.splitRef
     //hoverState: state.hoverState
@@ -112,8 +109,11 @@ export const LineUpContext = connector(function ({
     const debouncedHighlight = React.useCallback(_.debounce(hover_item => hoverUpdate(hover_item, UPDATER), 200), []);
 
     const preprocess_lineup_data = (data) => {
+        if(activeStory)
+            Cluster.deriveVectorLabelsFromClusters(data, activeStory.clusters)
         let lineup_data = [];
         data.forEach(element => {
+
             // if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
             //     element[PrebuiltFeatures.ClusterLabel] = [-1];
             // }
@@ -269,7 +269,7 @@ export const LineUpContext = connector(function ({
 
         setLineUpInput_lineup(lineup);
 
-    }, [lineUpInput_data, lineUpInput_columns, activeStory, activeStory?.clusters, activeStory?.clusters?.length]);
+    }, [lineUpInput_data, lineUpInput_columns, activeStory, activeStory?.clusters, activeStory?.clusters?.length, lineUpInput.update]);
 
     // React.useEffect(() => { //TODO: not working...
     //     // update lineup, if current storybook (current cluster) changed
