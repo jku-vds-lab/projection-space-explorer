@@ -146,7 +146,7 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
                     var v = aggregation[key][k]
                     total += v.count
 
-                    if (v.count > max && symbols[aggregation[key][k].key] !== "") {
+                    if (v.count > max && symbols[aggregation[key][k].key] !== "" && symbols[aggregation[key][k].key] !== undefined) {
                         max = v.count
                         content = symbols[aggregation[key][k].key]
                         content = aggregation[key][k].key

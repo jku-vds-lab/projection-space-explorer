@@ -78,7 +78,7 @@ function getProminent(aggregation, key) {
         var v = aggregation[key][k]
         total += v.count
 
-        if (v.count > max) {
+        if (v.count > max && symbols[aggregation[key][k].key] !== "" && symbols[aggregation[key][k].key] !== undefined) {
             max = v.count
             content = aggregation[key][k].key
         }
