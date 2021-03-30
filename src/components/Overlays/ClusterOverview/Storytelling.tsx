@@ -318,6 +318,7 @@ export const Storytelling = connector(function ({
     const [input, setInput] = React.useState<InputType>(null)
 
     React.useEffect(() => {
+        // @ts-ignore
         const observer = new ResizeObserver(() => {
             setDirtyFlag(Math.random())
         })

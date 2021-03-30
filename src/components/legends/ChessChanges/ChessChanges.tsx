@@ -3,7 +3,7 @@ import { arraysEqual } from '../../WebGLView/UtilityFunctions'
 import { Vect } from "../../Utility/Data/Vect"
 import { CHESS_TILE_BLACK, CHESS_TILE_WHITE } from "../ChessFingerprint/ChessFingerprint"
 
-const CHESS_TILE_CHANGES = '#ff9900'
+const CHESS_TILE_CHANGES = '#007dad'
 
 // Lookup table for chess UNICODE symbols
 var symbols = {

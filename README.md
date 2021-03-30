@@ -175,10 +175,10 @@ https://www.npmjs.com/package/graphology-layout-forceatlas2
 
 # Documentation CIME
 The ChemInformatics Model Explorer (short CIME) extension of the Projection Space Explorer allows users to interactively explore a fixed subspace of chemical compounds.
-Users are able to apply a 2D projection to the provided data, and additionally show the high-dimensional data in a LineUp table.
-Furthermore, users can select datapoints and show the 2D compound-structures of all selected items, aligned to each other, in a side-view.
-If provided in the data, users can change the representation in the side-view to show atom-level attributions in the 2D compound-structure. 
-This could be used for comparing neighbors for example to check, if machine learning model explanations - generated for those datapoints - make sense.
+Users can apply a 2D projection to the provided data, and additionally show the high-dimensional data in a LineUp table.
+Furthermore, users can select datapoints and show the 2D compound structures of all selected items, aligned to each other, in a side-view.
+If provided in the data, users can change the representation in the side-view to show atom-level attributions in the 2D compound structure. 
+This could be used for comparing neighbors for example to check if machine learning model explanations - generated for those datapoints - make sense.
 Using the grouping tool allows for easier interaction with item neighborhoods.
 
 Instructions for installing the application are provided at the end of this documentation.
@@ -205,14 +205,14 @@ The following describes a list of controls:
 - left-click + drag: new selection of items
 - left-click + shift + drag: toggles the selection (i.e. unselected points that are within the lasso are added to the selection and selected points that are within the lasso are deselected)
 - right-click + drag: allows you to move the whole scatterplot
-- mousewheel: zoom in and out to get a more/less detailed view of the items in the scatterplot
-- right-click on background or item: opens context menu that allows to create a group from the selected points
+- mouse wheel: zoom in and out to get a more/less detailed view of the items in the scatterplot
+- right-click on background or item: opens a context menu that allows to create a group from the selected points
 - right-click on group center: opens group context menu that allows to delete a group or start the storytelling feature
 ## Dataset
 When loading the website there is a default dataset loaded, which is called "test.sdf".
 Additionally, users can load datasets that were already uploaded previously or they can upload their own custom dataset.
 The list of uploaded files includes all SDF files that are available in the backend (from any user!) and can be deleted with the delete button next to the filename.
-The list can also be manually refreshed with the refresh button next to "Uploaded Files" (this is only necessary, if another user uploads a file during a simultaneous session and the current user needs this exact file).
+The list can also be manually refreshed with the refresh button next to "Uploaded Files" (this is only necessary if another user uploads a file during a simultaneous session and the current user needs this exact file).
 
 If a user wants to upload a custom file they have to use the file format that is described in the “Data Format” subsection.
 
@@ -221,22 +221,22 @@ Data is handed to the system using a Structure-Data File (SDF) (https://en.wikip
 New files are first uploaded to the python backend that runs with Bottle (https://bottlepy.org/docs/dev/) and then processed with the help of the RDKit framework (https://www.rdkit.org/).
 For big files, the initial upload and preprocessing can take several minutes. If the files are already uploaded, it is much faster.
 
-Properties can be compound specific (i.e. for the whole datapoint) or atom specific (i.e. one value for each atom in the compound). Details are described in the next subsections.
+Properties can be compound-specific (i.e. for the whole datapoint) or atom-specific (i.e. one value for each atom in the compound). Details are described in the next subsections.
 
 An example can be found in “backend/test.sdf”.
 
 #### Compound Properties
-These properties can be used for projection and can be shown in the LineUp table (like solubility, atom weight or any other property that is important to the user). 
+These properties can be used for projection and can be shown in the LineUp table (like solubility, atom weight, or any other property that is important to the user). 
 Properties without semantic meaning like fingerprints or the embedding space of a compound can be used for projection, but are not shown in the table to reduce unnecessary information and loading times. Such properties can be specified with the “fingerprint” modifier as described in the “Modifiers” subsection. 
 
-Compound specific properties can contain arbitrary values, however the naming should be consistent for all compounds (i.e. each property should be present for each compound).
+Compound-specific properties can contain arbitrary values, however the naming should be consistent for all compounds (i.e. each property should be present for each compound).
 
 There are special properties that are handled differently by the system:
 - Including properties **x** and **y** tells the system to initialize the scatterplot according to these values.
 - The property **groupLabel** specifies the group each compound belongs to. 
  
 #### Atom Properties 
-Atom specific properties are recognized by the backend if the property starts with **atom.dprops**. Those properties are interpreted as attribution scores and shown on top of the compound structure with a heatmap and contour lines (see section “Details” for more information.
+Atom-specific properties are recognized by the backend if the property starts with **atom.dprops**. Those properties are interpreted as attribution scores and shown on top of the compound structure with a heatmap and contour lines (see section “Details” for more information.
 
 Atom properties must contain one value for each atom of the compound. They can be easily generated with RDKit: https://www.rdkit.org/docs/RDKit_Book.html#atom-properties-and-sdf-files. 
 
@@ -246,13 +246,13 @@ In the frontend there is an autocomplete user input that groups atom properties.
 - value: substring after the last underscore (e.g. "0")
 
 ### Modifiers
-Modifiers are used to group compound properties together. This enables the system to provide features that enhance usability (e.g. when projecting the data users can choose, which properties should be used for the projection; with grouping, users are allowed to (de-)select entire groups, which is important if a group consists of hundreds of properties as in the case of fingerprints).
-There are also modifiers that have special functions, which will be explained later in this section.
+Modifiers are used to group compound properties. This enables the system to provide features that enhance usability (e.g. when projecting the data users can choose, which properties should be used for the projection; with grouping, users are allowed to (de-)select entire groups, which is important if a group consists of hundreds of properties as in the case of fingerprints).
+Some modifiers have special functions, which will be explained later in this section.
 
 By default the system recognizes the following modifiers: "fingerprint", "rep", "pred", "predicted", "measured", "smiles".
 When choosing a file a dialog window opens where users can specify custom modifiers in addition to the default set of modifiers.
 
-To decorate a property with a modifier, the modifier has to be prepended to the propertyname and separated by an underscore (e.g. “fingerprint_1”, “fingerprint_2” etc).
+To decorate a property with a modifier, the modifier has to be prepended to the property name and separated by an underscore (e.g. “fingerprint_1”, “fingerprint_2” etc).
 
 The predefined **smiles** modifier has a special function: if a property is decorated with "smiles_*" the system will recognize the property as a SMILES string and thus show the compound structure in the LineUp table.
 
@@ -263,19 +263,19 @@ If there is no **fingerprint** modifier in the properties of a dataset, the syst
 When the data is loaded the x and y properties are used as initial positions for the scatterplot. If x and y are not specified they will be randomly initialized. 
 The values for x and y can then be calculated with a projection method. 
 
-Currently only UMAP projection is available for CIME. To implement the projection we used this library: https://github.com/PAIR-code/umap-js. 
+Currently, only UMAP projection is available for CIME. To implement the projection we used this library: https://github.com/PAIR-code/umap-js. 
 The JavaScript library code is a reimplementation of this python library https://github.com/lmcinnes/umap, with the difference that the JS library uses random seed points as initialization by default. 
 
 <img src="https://user-images.githubusercontent.com/45741696/112500515-be238680-8d88-11eb-82a0-be61b1f77697.png" width="300">
 
 ### Parameters (orange)
-Before calculating the projection, users are able to choose the features which should be used for the projection. This can be done by selecting and deselecting the corresponding checkboxes. To select or deselect whole semantic groups of features, users can interact with the checkboxes next to the group name. Clicking on a group-row collapses/expands the list of items in this group.
+Before calculating the projection, users can choose the features which should be used for the projection. This can be done by selecting and deselecting the corresponding checkboxes. To select or deselect whole semantic groups of features, users can interact with the checkboxes next to the group name. Clicking on a group-row collapses/expands the list of items in this group.
 
 Users are also able to choose, if a numerical feature should be normalized, which applies standardization to all values of this feature (i.e. subtract by mean and divide by standard deviation). 
 
 The range value indicates the minimum and maximum values of the feature.
 
-Furthermore, users can adjust hyper parameters used for the projection. Noteworthy here is the checkbox **Seed Position**, which tells the system to initialize the projection with the current positions of the items instead of using a random initialization.
+Furthermore, users can adjust hyperparameters used for the projection. Noteworthy here is the checkbox **Seed Position**, which tells the system to initialize the projection with the current positions of the items instead of using a random initialization.
 
 Parameters that can not be defined by the user are set to the defaults suggested in https://umap-learn.readthedocs.io/en/latest/api.html. 
 
@@ -318,12 +318,12 @@ Parameters can be changed either by adjusting the slider (few clusters...many cl
 <img src="https://user-images.githubusercontent.com/45741696/112500865-0b075d00-8d89-11eb-8484-fc1a5a148221.png" width="400">
 
 ### Groups and Stories (blue)
-A story book is a set of groups and possible connections between those groups that were either created automatically or manually composed. This way, users are able to view different groupings by just switching between stories.
+A storybook is a set of groups and possible connections between those groups that were either created automatically or manually composed. This way, users can view different groupings by just switching between stories.
 
-A new story book can be created by clicking **Add Empty**. 
-Users can manually add groups to a new or existing story book by selecting points in the scatter plot and choosing "Create Group from Selection" from the context menu that opens with a right click on the scatter plot.
+A new storybook can be created by clicking **Add Empty**. 
+Users can manually add groups to a new or existing storybook by selecting points in the scatter plot and choosing "Create Group from Selection" from the context menu that opens with a right-click on the scatter plot.
 
-The groups in a story book are listed below the user select. Each item in the list represents one group. If a user clicks on a group, the corresponding points are highlighted in the scatter plot.
+The groups in a storybook are listed below the user select. Each item in the list represents one group. If a user clicks on a group, the corresponding points are highlighted in the scatter plot.
 Holding CTRL adds a group to the selection.
 Next to each group label there is a settings button where users can adjust group names, delete a group or filter the LineUp table by this group.
 
@@ -339,26 +339,26 @@ Users can select compounds from this view if they check the corresponding checkb
 
 There is a user input that allows to choose among all provided representations (yellow). 
 The available representations are specified in the dataset and contain atom-level attribution scores for each compound.
-To choose a representation users can either scroll through the list, or they can filter the list by typing in the auto-complete textfield. 
+To choose a representation users can either scroll through the list, or they can filter the list by typing in the auto-complete text field. 
 Representations are organized by groups that can be specified manually as described in the "Atom Properties" chapter.
 
-The **Settings** button allows users to manually refresh the representation list (blue). Furthermore, users can adjust settings that are used in the backend. Especially important is the **Align Structure** toggle, since it might happen that the alignment distorts the compound structure. By disabling this feature, the compound structures are not aligned to each other anymore. However, the structures will be shown as expected again.
+The **Settings** button allows users to manually refresh the representation list (blue). Furthermore, users can adjust settings that are used in the backend. Especially important is the **Align Structure** toggle, since the alignment might distort the compound structure. By disabling this feature, the compound structures are not aligned to each other anymore. However, the structures will be shown as expected again.
 
 Clicking on **Add View** (orange) places an additional view of the selected compounds next to the existing view and enables the user to choose and compare several representations at once.
 Additional views can be removed again using the **Delete**-symbol button.
-It is recommended to use this feature in the external window only, because there is more space.
+It is recommended to use this feature in the external window only because there is more space.
 
 
 
 ## LineUp
-For high dimensional data exploration, we included a LineUp table (https://lineup.js.org/) that can be viewed on demand. 
+For high-dimensional data exploration, we included a LineUp table (https://lineup.js.org/) that can be viewed on-demand. 
 To show the table you need to drag the component from the bottom of the window to increase the size of the table. 
 
 <img src="https://user-images.githubusercontent.com/45741696/112501102-3e49ec00-8d89-11eb-9b1c-513e49321cae.gif" width="600">
 
 The table shows all properties that were included in the provided dataset except properties that have the "fingerprint" modifier. Fingerprints were excluded because their values usually do not contain semantic meaning and would take a lot of space in the table, which causes higher loading times and makes the table more complex.
 
-All LineUp functionalities are included like filtering, searching, sorting etc.
+All LineUp functionalities are included like filtering, searching, sorting, etc.
 The grouping functionality can be performed in all columns, especially relevant is group by selected items and group by group labels, which actively uses features of the Projection Space Explorer.
 
 ### LineUp Settings
@@ -368,7 +368,7 @@ The **Load Selection** button automatically makes the table component visible - 
 
 The **Show Cell Values** toggle can be enabled to show values in numerical table cells. If it is disabled, the values are only shown for highlighted rows.
 
-The **Export CSV** downloads the table in its current state as .csv file. Current filters, ordering and custom annotations are contained in this file.
+The **Export CSV** downloads the table in its current state as .csv file. Current filters, ordering, and custom annotations are contained in this file.
 
 ### SMILES
 Using the "smiles" modifier, users can manually specify, which properties represent SMILES strings. For each column that contains SMILES, there is an additional "structure" column created that shows the 2D structure next to the SMILES column.
@@ -405,7 +405,7 @@ Whenever a file is changed while this server is running, it will automatically b
 To start the application you just need to start the index.html locally. The easiest way to this is by using the live server provided by either Atom or Visual Studio Code.
 
 ## Backend
-In the backend a Python server runs with the Bottle Framework (https://bottlepy.org/docs/dev/). Many features that relate to the “Chem” aspects of the Projection Space Explorer are only available if the backend is running. Also, the feature to derive groups from clustering is only available in the backend.
+In the backend, a Python server runs with the Bottle Framework (https://bottlepy.org/docs/dev/). Many features that relate to the “Chem” aspects of the Projection Space Explorer are only available if the backend is running. Also, the feature to derive groups from clustering is only available in the backend.
 
 To start the server you need to create a conda environment with the following dependencies:
 - bottle=0.12.18
@@ -429,7 +429,7 @@ Before creating the image you have to adjust some settings:
 - In the “src/utils/backend-connect.ts” the “BASE_URL” constant needs to be set to an empty string (i.e. “”)
 - In the “src/utils/frontend-connect.ts” the “BASE_PATH” constant needs to be set to an empty string (i.e. “”)
 
-In the root folder of the project you can create the docker image by running
+In the root folder of the project, you can create the docker image by running
 ```bash
 docker build -f Dockerfile -t cime .
 ```
@@ -438,4 +438,3 @@ and run the image with
 docker run -d -p 8080:8080 --detach cime
 ```
 The application will be available on ‘localhost:8080’.
-

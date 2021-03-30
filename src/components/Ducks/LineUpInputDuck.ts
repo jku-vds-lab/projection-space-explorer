@@ -2,6 +2,7 @@
  * Duck file for the LineUp input data
  */
 
+import { filter } from "lodash";
 import { Vect } from "../Utility/Data/Vect";
 
 // const SET_DATA = "ducks/lineUpInput/SET_DATA"
@@ -9,7 +10,9 @@ import { Vect } from "../Utility/Data/Vect";
 const SET_VISIBILITY = "ducks/lineUpInput/SET_VISIBILITY"
 const SET_DUMP = "ducks/lineUpInput/SET_DUMP"
 const SET_FILTER = "ducks/lineUpInput/SET_FILTER"
+const UPDATE_FILTER = "ducks/lineUpInput/UPDATE_FILTER"
 const SET_LINEUP = "ducks/lineUpInput/SET_LINEUP"
+const SET_UPDATE = "ducks/lineUpInput/SET_UPDATE"
 
 // export const setLineUpInput_data = input => ({
 //     type: SET_DATA,
@@ -36,8 +39,18 @@ export const setLineUpInput_filter = input => ({
     input: input
 });
 
+export const updateLineUpInput_filter = input => ({
+    type: UPDATE_FILTER,
+    input: input
+});
+
 export const setLineUpInput_lineup = input => ({
     type: SET_LINEUP,
+    input: input
+});
+
+export const setLineUpInput_update = input => ({
+    type: SET_UPDATE,
     input: input
 });
 
@@ -49,6 +62,7 @@ const initialState: LineUpType = {
     filter: null,
     previousfilter: null,
     lineup: null,
+    update: 0,
 }
 export type LineUpType = {
     // data: Vect[],
@@ -58,6 +72,7 @@ export type LineUpType = {
     filter: object,
     previousfilter: object,
     lineup: any,
+    update: number,
 }
 
 const lineUpInput = (state = initialState, action): LineUpType => {
@@ -73,8 +88,20 @@ const lineUpInput = (state = initialState, action): LineUpType => {
         case SET_FILTER:
             const prev_filter = {...state.filter};
             return {...state, previousfilter: prev_filter, filter: action.input}
+        case UPDATE_FILTER:
+            if(state.filter && Object.keys(state.filter).includes(action.input["key"])){
+                if(state.filter[action.input["key"]] == action.input["val_old"]){
+                    const filter_new = {...filter}
+                    filter_new[action.input["key"]] = action.input["val_new"]
+                    return {...state, filter: filter_new};
+                }
+            }
+            return state;
         case SET_LINEUP:
             return {...state, lineup: action.input}
+        case SET_UPDATE:
+            const cur = state.update;
+            return {...state, update: cur+1}
         default:
             return state
     }
