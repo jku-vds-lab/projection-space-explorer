@@ -1373,7 +1373,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
                     handleClose()
-                }}>{'Delete Cluster'}</MenuItem>
+                }}>{'Delete Group'}</MenuItem>
 
                 <MenuItem onClick={() => {
                     let paths = this.props.stories.active.getAllStoriesFromSource(this.state.menuTarget.label)
@@ -1409,7 +1409,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     this.traceSelect = new TraceSelectTool(this.state.menuTarget)
 
                     handleClose()
-                }}>{"Stories ... Between 2 Group"}</MenuItem>
+                }}>{"Stories ... Between 2 Groups"}</MenuItem>
 
             </Menu>
 

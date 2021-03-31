@@ -26,19 +26,20 @@ type GenericLegendProps = {
     vectors: Vect[]
     aggregate: boolean
     hoverUpdate?
+    scale?: number
 }
 
 //shows single and aggregated view
-export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate }: GenericLegendProps) => {
+export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: GenericLegendProps) => {
     switch (type) {
         case DatasetType.Story:
             return <StoryLegend selection={vectors}></StoryLegend>
         case DatasetType.Rubik:
-            return <RubikLegend selection={vectors}></RubikLegend>
+            return <RubikFingerprint vectors={vectors} width={81 * scale} height={108 * scale}></RubikFingerprint>
         case DatasetType.Neural:
             return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
         case DatasetType.Chess:
-            return <ChessFingerprint width={250} height={250} vectors={vectors}></ChessFingerprint>
+            return <ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint>
         case DatasetType.Coral:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Go:
