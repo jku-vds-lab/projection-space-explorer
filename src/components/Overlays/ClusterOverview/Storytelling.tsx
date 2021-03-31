@@ -95,10 +95,12 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
         const rectWidth = 16
         const margin = 12
 
-        const fillColors = ["#F1DCA5", "#F8C7A0"]
-        const strokeColors = ["#e9c46a", "#f4a261"]
-
         const grayColor = '#808080'
+
+        const fillColors = ['#DCDCDC', '#DCDCDC']
+        const strokeColors = [grayColor, grayColor]
+
+       
         const stateSize = 12
 
         if (!this.props.input) return null;
