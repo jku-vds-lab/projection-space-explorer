@@ -28,7 +28,7 @@ export const GenericChanges = connect(mapStateToProps, mapDispatchToProps)(({ ve
         case DatasetType.Rubik:
             return <RubikChanges width={81 * scale} height={108 * scale} vectorsA={vectorsA} vectorsB={vectorsB}></RubikChanges>
         case DatasetType.Chess:
-            return <ChessChanges width={150 * scale} height={150 * scale} vectorsA={vectorsA} vectorsB={vectorsB}></ChessChanges>
+            return <ChessChanges width={144 * scale} height={144 * scale} vectorsA={vectorsA} vectorsB={vectorsB}></ChessChanges>
         case DatasetType.Coral:
             return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale}></CoralChanges>
         case DatasetType.Chem:
