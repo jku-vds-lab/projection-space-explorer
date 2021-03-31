@@ -269,7 +269,7 @@ var Application = connector(class extends React.Component<Props, any> {
     this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
 
     // if(!frontend_utils.CHEM_PROJECT)
-      this.props.setGroupVisualizationMode(dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull)
+    this.props.setGroupVisualizationMode(dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull)
 
     // Set new dataset as variable
     this.props.setDataset(dataset)
@@ -526,7 +526,7 @@ var Application = connector(class extends React.Component<Props, any> {
               </FixedHeightTabPanel>
 
               <FixedHeightTabPanel value={this.props.openTab} index={2}>
-                  <StatesTabPanel lineColorScheme={this.state.lineColorScheme}></StatesTabPanel>
+                <StatesTabPanel lineColorScheme={this.state.lineColorScheme}></StatesTabPanel>
               </FixedHeightTabPanel>
 
 
@@ -604,8 +604,8 @@ var Application = connector(class extends React.Component<Props, any> {
                 ref={this.threeRef}
               />
             </div>
-            <div style={{ flexGrow: 0.1 }}> 
-            {/* TODO: lineupFilter is not used anymore... */}
+            <div style={{ flexGrow: 0.1 }}>
+              {/* TODO: lineupFilter is not used anymore... */}
               <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
             </div>
           </Split>
@@ -615,10 +615,11 @@ var Application = connector(class extends React.Component<Props, any> {
         </div>
 
 
-
+        
         <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
 
         <Storytelling></Storytelling>
+
 
 
         <StoryEditor></StoryEditor>

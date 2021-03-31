@@ -152,6 +152,8 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                                 }}>
                                                     <path d={`M ${midX - stateSize / 2} ${pos1.y} Q ${x} ${pos1.y} ${x} ${pos1.y + 35}`} stroke={strokeColors[si]} fill="transparent" strokeWidth="2"></path>
 
+                                                    <line x1={x} y1={pos1.y + 35 + 70 - 6} x2={x} y2={pos1.y + elementHeight} stroke={strokeColors[si]}></line>
+
                                                     <SidePath
                                                         dataset={dataset}
                                                         syncPart={[]}
@@ -163,7 +165,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                                         height={elementHeight - 70}
                                                     ></SidePath>
 
-                                                    <line x1={x} y1={pos1.y + 35 + 70 - 6} x2={x} y2={pos1.y + elementHeight} stroke={strokeColors[si]}></line>
+
                                                     <rect x={x - 6} y={pos1.y + elementHeight - 6} width={stateSize} height={stateSize} fill={fillColors[si]} transform={`rotate(45,${x},${pos1.y + elementHeight})`} />
                                                 </g>
                                             } else
@@ -318,7 +320,6 @@ export const Storytelling = connector(function ({
     const [input, setInput] = React.useState<InputType>(null)
 
     React.useEffect(() => {
-        // @ts-ignore
         const observer = new ResizeObserver(() => {
             setDirtyFlag(Math.random())
         })
@@ -386,8 +387,7 @@ export const Storytelling = connector(function ({
         <div style={{
             display: 'flex',
             flexDirection: 'column',
-            height: '100%',
-            overflowY: 'auto'
+            height: '100%'
         }}>
             <CardHeader
                 style={{ paddingBottom: 0 }}
@@ -460,113 +460,115 @@ export const Storytelling = connector(function ({
                 </IconButton>
             </div>
 
-            <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                margin: '8px'
-            }}>
-
-                <ProvenanceGraph
-                    input={input}
-                    currentAggregation={currentAggregation}
-                    addClusterToTrace={addClusterToTrace}
-                    selectSideBranch={selectSideBranch}
-                    dataset={dataset}
-                    onClusterClicked={(cluster) => {
-                        setActiveTraceState(cluster)
-                        setSelectedCluster(cluster, false)
-                    }}
-                ></ProvenanceGraph>
-
-                <div ref={itemRef} style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minWidth: '100px'
-                }}>
-                    <Typography align="center" variant="subtitle2">Summary</Typography>
-
-                    {
-                        stories.trace?.mainPath.map((cluster, index) => {
-                            return <div
-                                key={index}
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    margin: 8
-                                }}
-                                onClick={() => {
-                                    setActiveTraceState(cluster)
-                                    setSelectedCluster(cluster, false)
-                                }}>
-                                <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{cluster.getTextRepresentation()}</Typography>
-
-                                <div className="ClusterItem"
-                                    style={{
-                                        border: currentAggregation.selectedClusters.includes(cluster) ? `1px solid ${mainColor}` : '1px solid rgba(0, 0, 0, 0.12)',
-                                        borderRadius: 4,
-                                        padding: '8px',
-                                        display: 'flex'
-                                    }}
-                                >
-                                    <GenericFingerprint
-                                        type={dataset.type}
-                                        vectors={cluster.vectors}
-                                        scale={1}
-                                    />
-                                </div>
-                            </div>
-                        })
-                    }
-                </div>
-
-
+            <div
+                style={{ overflowY: 'auto' }}>
                 <div style={{
                     display: 'flex',
-                    flexDirection: 'column',
-                    minWidth: '100px',
-                    position: 'relative'
+                    flexDirection: 'row',
+                    padding: '8px'
                 }}>
-                    <Typography align="center" variant="subtitle2">Difference</Typography>
-                    {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
 
-                    {
-                        input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
-                    }
-                    {
-                        input && input.position.slice(0, input.position.length - 1).map((elem, index) => {
-                            let edge = elem.mainEdge
-                            console.log(input.position.slice(0))
-                            return <div
-                                key={index}
-                                className=""
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    //top: input.position[index].y + input.position[index].height / 2 - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0),
-                                    height: (input.position[index + 1].y + input.position[index + 1].height / 2) - (input.position[index].y + input.position[index].height / 2) - 16,
-                                    margin: 8,
+                    <ProvenanceGraph
+                        input={input}
+                        currentAggregation={currentAggregation}
+                        addClusterToTrace={addClusterToTrace}
+                        selectSideBranch={selectSideBranch}
+                        dataset={dataset}
+                        onClusterClicked={(cluster) => {
+                            setActiveTraceState(cluster)
+                            setSelectedCluster(cluster, false)
+                        }}
+                    ></ProvenanceGraph>
 
-                                }}>
-                                <div
+                    <div ref={itemRef} style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        minWidth: '100px'
+                    }}>
+                        <Typography align="center" variant="subtitle2">Summary</Typography>
 
+                        {
+                            stories.trace?.mainPath.map((cluster, index) => {
+                                return <div
+                                    key={index}
                                     style={{
-                                        border: '1px solid rgba(0, 0, 0, 0.12)',
-                                        borderRadius: 4,
-                                        padding: 8,
-                                        maxHeight: '100%',
-                                        overflowY: 'auto'
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        margin: 8
                                     }}
-                                >
-                                    <GenericChanges
+                                    onClick={() => {
+                                        setActiveTraceState(cluster)
+                                        setSelectedCluster(cluster, false)
+                                    }}>
+                                    <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{cluster.getTextRepresentation()}</Typography>
 
-                                        scale={1}
-                                        vectorsA={edge.source.vectors}
-                                        vectorsB={edge.destination.vectors}
-                                    />
+                                    <div className="ClusterItem"
+                                        style={{
+                                            border: currentAggregation.selectedClusters.includes(cluster) ? `1px solid ${mainColor}` : '1px solid rgba(0, 0, 0, 0.12)',
+                                            borderRadius: 4,
+                                            padding: '8px',
+                                            display: 'flex'
+                                        }}
+                                    >
+                                        <GenericFingerprint
+                                            type={dataset.type}
+                                            vectors={cluster.vectors}
+                                            scale={1}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        })
-                    }
+                            })
+                        }
+                    </div>
+
+
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        minWidth: '100px',
+                        position: 'relative'
+                    }}>
+                        <Typography align="center" variant="subtitle2">Difference</Typography>
+                        {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
+
+                        {
+                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
+                        }
+                        {
+                            input && input.position.slice(0, input.position.length - 1).map((elem, index) => {
+                                let edge = elem.mainEdge
+                                return <div
+                                    key={index}
+                                    className=""
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        //top: input.position[index].y + input.position[index].height / 2 - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0),
+                                        height: (input.position[index + 1].y + input.position[index + 1].height / 2) - (input.position[index].y + input.position[index].height / 2) - 16,
+                                        margin: 8,
+
+                                    }}>
+                                    <div
+
+                                        style={{
+                                            border: '1px solid rgba(0, 0, 0, 0.12)',
+                                            borderRadius: 4,
+                                            padding: 8,
+                                            maxHeight: '100%',
+                                            overflowY: 'auto'
+                                        }}
+                                    >
+                                        <GenericChanges
+
+                                            scale={1}
+                                            vectorsA={edge.source.vectors}
+                                            vectorsB={edge.destination.vectors}
+                                        />
+                                    </div>
+                                </div>
+                            })
+                        }
+                    </div>
                 </div>
             </div>
         </div>
