@@ -52,22 +52,35 @@ function getOccurences(vectors: Array<Vect>) {
     })
 
     vectors.forEach((vector, index) => {
+
         keys.forEach((key, keyIndex) => {
             if (aggregation[key] == undefined) {
                 aggregation[key] = []
+                aggregation[key].push({ key: 'total', count: 0, relative: 1.0})
             }
 
             if (!aggregation[key].some((e) => e.key == vector[key])) {
-                aggregation[key].push({ key: vector[key], count: 1 })
+                aggregation[key].push({ key: vector[key], count: 1, relative: 0 })
+                aggregation[key].filter(e => e.key == 'total')[0].count += 1
             } else {
                 aggregation[key].filter(e => e.key == vector[key])[0].count += 1
+                aggregation[key].filter(e => e.key == 'total')[0].count += 1
             }
+        })
+    })
+
+    // calculate relative counts
+    vectors.forEach((vector, index) => {
+
+        keys.forEach((key, keyIndex) => {
+            let x = aggregation[key].filter(e => e.key == vector[key])[0]
+            let total = aggregation[key].filter(e => e.key == 'total')[0].count
+            x.relative = x.count / total
         })
     })
 
     return aggregation
 }
-
 
 function getProminent(aggregation, key) {
     var max = 0.0
@@ -75,6 +88,9 @@ function getProminent(aggregation, key) {
     let content = ""
     let opacity = 1
     for (var k in aggregation[key]) {
+        if (aggregation[key][k].key === 'total') {
+            continue
+        }
         var v = aggregation[key][k]
         total += v.count
 
@@ -174,8 +190,42 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
 
             let [contentA, opacityA] = getProminent(countA, key) as [string, number]
             let [contentB, opacityB] = getProminent(countB, key) as [string, number]
-            opacityA = Math.max(opacityA, 0.15)
-            opacityB = Math.max(opacityB, 0.15)
+
+            // calculate opacity for colour difference visualization for this field
+
+            // collect fieldKeys that exist in both selections
+            let keysA = []
+            let numsA = Object.keys(countA[key]);
+            for (var num in numsA) {
+                keysA.push(countA[key][num].key)
+            }
+            let keysB = []
+            let numsB = Object.keys(countB[key]);
+            for (var num in numsB) {
+                keysB.push(countB[key][num].key)
+            }
+            let allKeys = keysA.concat(keysB)
+            allKeys = allKeys.filter((item, pos) => allKeys.indexOf(item) === pos)
+
+            let diffSum = 0
+
+            // iterate over all keys
+            for (var n in allKeys) {
+                var fieldKey = allKeys[n]
+
+                let entryA = countA[key].filter(e => e.key == fieldKey)
+                let entryB = countB[key].filter(e => e.key == fieldKey)
+
+                if (entryA[0] && entryB[0]) {
+                    diffSum += Math.abs(entryA[0].relative - entryB[0].relative)
+                } else if (entryA[0]) {
+                    diffSum += Math.abs(entryA[0].relative)
+                } else if (entryB[0]) {
+                    diffSum += Math.abs(entryB[0].relative)
+                }
+            }
+            // opacity
+            let difColourOpacity = diffSum / 2
 
             if (contentA != contentB) {
                 content = contentB
@@ -195,15 +245,14 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
 
             try {
                 this.canvasContext.save()
-                this.canvasContext.globalAlpha = opacityB
-                if (!deleted) {
-                    this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
-                } else {
-                    this.canvasContext.globalAlpha = opacityA
-                    this.canvasContext.fillStyle = CHESS_TILE_CHANGES
-                    this.canvasContext.fillRect(x * size + borderOffset, y * size + borderOffset, size, size)
-                }
-                
+                // diff colour
+                this.canvasContext.globalAlpha = difColourOpacity
+                this.canvasContext.fillStyle = CHESS_TILE_CHANGES
+                this.canvasContext.fillRect(x * size + borderOffset, y * size + borderOffset, size, size)
+
+                // chess pieces
+                this.canvasContext.globalAlpha = Math.max(opacityB, 0.15)
+                this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
                 this.canvasContext.restore()
             } catch (e) {
             }
