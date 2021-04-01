@@ -371,7 +371,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 mesh: circle,
                 children: [],
                 trailPositions: [],
-                lineColor: new SchemeColor(DEFAULT_COLOR),//TODO (after paper) use this again: scale.map(ci),
+                lineColor: scale.map(ci),//for paper used: new SchemeColor(DEFAULT_COLOR),
                 triangulatedMesh: {
 
                 },
@@ -442,7 +442,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
     highlightCluster(clusters?: Cluster[]) {
         this.clusterObjects.forEach((clusterObject, index) => {
-            var visible = true//clusters?.includes(clusterObject.cluster) // TODO (after paper): use comment again after patrick took screenshot
+            var visible = clusters?.includes(clusterObject.cluster) // for paper used: true
 
             clusterObject.material.color = visible ? new THREE.Color(SELECTED_COLOR) : new THREE.Color(DEFAULT_COLOR)
 
