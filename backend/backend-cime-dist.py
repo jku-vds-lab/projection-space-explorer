@@ -407,7 +407,7 @@ def mol_to_base64_highlight_importances(mol_aligned, patt, current_rep, contourL
 
 
 # --- routing ---
-
+import copy
 @bottle.route('/get_difference_highlight', method=['OPTIONS', 'POST'])
 def smiles_to_difference_highlight():
     if request.method == 'POST':
@@ -436,17 +436,20 @@ def smiles_to_difference_highlight():
         
         
         # need a copy because otherwise the structure is messed up
-        molA_cpy = Chem.MolFromSmiles(smilesA)
-        molB_cpy = Chem.MolFromSmiles(smilesB)
-        mol_cpy = molA_cpy
+        molA_cpy = copy.deepcopy(molA)#molA#Chem.MolFromSmarts(smilesA)
+        molB_cpy = copy.deepcopy(molB)#molB#Chem.MolFromSmarts(smilesB)
+        #mol_cpy = molB_cpy
         patt = get_mcs([molA_cpy, molB_cpy])
         
-        mol = molA
+        mol = molB
         
-        highlight_atom_colors = None
-        highlight_bond_colors = None
-        highlight_atoms = set(range(len(mol_cpy.GetAtoms()))) - set(mol_cpy.GetSubstructMatch(patt))
-        highlight_bonds = [bond.GetIdx() for bond in mol_cpy.GetBonds() if bond.GetBeginAtomIdx() in highlight_atoms or bond.GetEndAtomIdx() in highlight_atoms]
+        highlight_atoms = set(range(len(mol.GetAtoms()))) - set(mol.GetSubstructMatch(patt))
+        highlight_bonds = [bond.GetIdx() for bond in mol.GetBonds() if bond.GetBeginAtomIdx() in highlight_atoms or bond.GetEndAtomIdx() in highlight_atoms]
+        print(highlight_atoms, mol.GetSubstructMatch(patt))
+
+        highlight_atom_colors = {i: (0,0.49,0.68) for i in highlight_atoms}
+        highlight_bond_colors = {i: (0,0.49,0.68) for i in highlight_bonds}
+        #print(mol_cpy.GetSubstructMatch(patt), mol.GetSubstructMatch(patt), highlight_atoms)
 
         d = Chem.Draw.rdMolDraw2D.MolDraw2DCairo(200, 200)
         Chem.Draw.rdMolDraw2D.PrepareAndDrawMolecule(d, mol, highlightAtoms=highlight_atoms, highlightBonds=highlight_bonds, highlightAtomColors=highlight_atom_colors, highlightBondColors=highlight_bond_colors)
