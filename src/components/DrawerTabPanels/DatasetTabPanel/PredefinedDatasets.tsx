@@ -23,7 +23,7 @@ export var PredefinedDatasets = ({ onChange }) => {
                 types.map(type => (
                     <li key={type} style={{ backgroundColor: 'inherit' }}>
                         <ul style={{ backgroundColor: 'inherit', paddingInlineStart: '0px' }}>
-                            <ListSubheader>{Object.keys(DatasetType)[Object.values(DatasetType).indexOf(type)]}</ListSubheader>
+                            <ListSubheader>{Object.keys(DatasetType)[Object.values(DatasetType).indexOf(type)].replace('_', ' ')}</ListSubheader>
                             {
 
                                 database.data.filter(value => value.type == type).map(entry => {

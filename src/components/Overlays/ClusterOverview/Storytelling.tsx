@@ -531,10 +531,10 @@ export const Storytelling = connector(function ({
                         position: 'relative'
                     }}>
                         <Typography align="center" variant="subtitle2">Difference</Typography>
-                        {(dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
+                        {(dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
 
                         {
-                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
+                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
                         }
                         {
                             input && input.position.slice(0, input.position.length - 1).map((elem, index) => {
