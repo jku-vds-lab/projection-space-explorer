@@ -1,3 +1,4 @@
+import { isNumber } from "lodash";
 import { Vect } from "./Vect";
 
 /**
@@ -80,7 +81,12 @@ export class Preprocessor {
             let pool = {};
             this.vectors.forEach(sample => {
                 if (sample.x in pool) {
-                    pool[sample.x][sample.y] = pool[sample.x][sample.y] + 1;
+                    if (sample.y in pool[sample.x]) {
+                        pool[sample.x][sample.y] = pool[sample.x][sample.y] + 1;
+                    } else {
+                        pool[sample.x][sample.y] = 1;
+                    }
+                    
                 } else {
                     let o = {};
                     pool[sample.x] = o;
@@ -150,29 +156,32 @@ export class Preprocessor {
         });
 
         // If data has no cluster labels, add default ones
-        if (!header.includes('clusterLabel')) {
+        if (!header.includes('groupLabel')) {
             vectors.forEach(vector => {
-                vector.clusterLabel = [];
+                vector.groupLabel = [];
                 vector.clusterProbability = 0.0;
             });
         } else {
-            // Support multivariate points ... eg each clusterLabel is actually an array
+            // Support multivariate points ... eg each groupLabel is actually an array
             vectors.forEach(vector => {
                 try {
-                    if (isNaN(vector.clusterLabel)) {
+                    //@ts-ignore
+                    if (isNaN(vector.groupLabel)) {
                         // convert string to array
-                        vector.clusterLabel = JSON.parse(vector.clusterLabel);
+                        //@ts-ignore
+                        vector.groupLabel = JSON.parse(vector.groupLabel);
                     } else {
-                        if (vector.clusterLabel < 0) {
-                            vector.clusterLabel = [];
+                        //@ts-ignore
+                        if (vector.groupLabel < 0) {
+                            vector.groupLabel = [];
                         } else {
                             // convert number to array
-                            vector.clusterLabel = [vector.clusterLabel];
+                            vector.groupLabel = [vector.groupLabel];
                         }
                     }
                 } catch {
                     // default is empty array
-                    vector.clusterLabel = [];
+                    vector.groupLabel = [];
                 }
             });
         }

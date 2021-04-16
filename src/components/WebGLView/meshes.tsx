@@ -5,7 +5,6 @@ import { DataLine } from "../Utility/Data/DataLine"
 import { Vect } from "../Utility/Data/Vect"
 import { Dataset } from "../Utility/Data/Dataset"
 import { LayeringSystem } from './LayeringSystem/LayeringSystem'
-import { Story } from '../Utility/Data/Story'
 import { StoriesType } from '../Ducks/StoriesDuck'
 
 /**
@@ -66,42 +65,6 @@ function shapeToInt(value) {
     case Shapes.Star:
       return 3
   }
-}
-
-function shapeToString(value) {
-  switch (value) {
-    case Shapes.Cross:
-      return 'cross'
-    case Shapes.Square:
-      return 'square'
-    case Shapes.Circle:
-      return 'circle'
-    case Shapes.Star:
-      return 'star'
-  }
-}
-
-/**
- * Returns the line opacity for a given line count.
- */
-function getLineOpacity(count) {
-  if (count >= 0 && count <= 9) {
-    return 1.0
-  }
-  if (count >= 10 && count <= 30) {
-    return 0.5
-  }
-  if (count >= 30 && count <= 70) {
-    return 0.3
-  }
-  if (count >= 70 && count <= 130) {
-    return 0.25
-  }
-  if (count >= 130) {
-    return 0.17
-  }
-
-  return 0.3 + 0.7 / count
 }
 
 
@@ -181,7 +144,7 @@ export class LineVisualization {
     if (indices != null && indices.length > 0) {
       this.grayedLayerSystem.setLayerActive(5, true)
       this.grayedLayerSystem.clearLayer(5, true)
-      
+
       indices.forEach(index => {
         this.grayedLayerSystem.setValue(this.segments.findIndex(e => e.lineKey == index), 5, false)
       })
@@ -206,7 +169,7 @@ export class LineVisualization {
           lineIndices.add(sample.view.lineIndex)
         })
       })
-  
+
       lineIndices.forEach(lineIndex => {
         this.grayedLayerSystem.setValue(lineIndex, 3, false)
       })
@@ -227,7 +190,7 @@ export class LineVisualization {
           lineIndices.add(sample.view.lineIndex)
         })
       })
-  
+
       lineIndices.forEach(lineIndex => {
         this.grayedLayerSystem.setValue(lineIndex, 4, false)
       })
@@ -235,7 +198,7 @@ export class LineVisualization {
       this.grayedLayerSystem.clearLayer(4, false)
       this.grayedLayerSystem.setLayerActive(4, false)
     }
-    
+
   }
 
 
@@ -335,7 +298,7 @@ export class LineVisualization {
 
       // Store line data in segment...
       segment.view.lineMesh = line
-      
+
 
       lines.push(new LineVis(line))
     })
@@ -373,7 +336,6 @@ export class LineVisualization {
    */
   update() {
     this.segments.forEach((segment, si) => {
-
       segment.view.lineMesh.material.color.setStyle(this.grayedLayerSystem.getValue(si) ? '#C0C0C0' : segment.view.intrinsicColor.hex)
 
       segment.view.lineMesh.visible = segment.view.detailVisible
@@ -409,7 +371,7 @@ export class PointVisualization {
     this.dataset = dataset
 
     this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
-    this.colorsChecked = [true, true, true, true, true, true, true, true, true]
+    this.colorsChecked = null
 
     this.grayedLayerSystem = new LayeringSystem(dataset.vectors.length)
 
@@ -422,7 +384,7 @@ export class PointVisualization {
 
     // story layer
     this.grayedLayerSystem.registerLayer(3, true)
-    
+
 
     this.lineLayerSystem = lineLayerSystem
   }
@@ -532,12 +494,11 @@ export class PointVisualization {
 
 
 
-  hide() {
-
-  }
-
-
-
+  /**
+   * Applies the gray-out effect on the particles based on the given story model
+   * 
+   * @param stories The story model
+   */
   storyTelling(stories: StoriesType) {
     if (stories && stories.active) {
       this.grayedLayerSystem.setLayerActive(3, true)
@@ -648,20 +609,19 @@ export class PointVisualization {
   }
 
   colorCat(category, scale) {
+
     this.colorAttribute = category
 
     if (category == null) {
       this.vectorColorScheme = null
-      //this.vectorColorScheme = new DefaultVectorColorScheme().createMapping([... new Set(this.vectors.map(vector => vector.algo))])
     } else {
       if (category.type == 'categorical') {
         this.vectorColorScheme = scale
-        //this.vectorColorScheme = new DiscreteMapping(scale, [... new Set(this.vectors.map(vector => vector[category.key]))])
       } else {
         var min = null, max = null
-        if (category.key in this.dataset.ranges) {
-          min = this.dataset.ranges[category.key].min
-          max = this.dataset.ranges[category.key].max
+        if (this.dataset.columns[category.key].range) {
+          min = this.dataset.columns[category.key].range.min
+          max = this.dataset.columns[category.key].range.max
         } else {
           var filtered = this.vectors.map(vector => vector[category.key])
           max = Math.max(...filtered)
@@ -695,22 +655,22 @@ export class PointVisualization {
     }
   }
 
-  transparencyCat(category) {
+  transparencyCat(category, range) {
     //var color = this.mesh.geometry.attributes.customColor.array
 
     if (category == null) {
       // default transparency
       //this.vectors.forEach(vector => color[vector.view.meshIndex * 4 + 3] = 1.0)
-      this.vectors.forEach(sample => sample.view.brightness = 1.0)
+      this.vectors.forEach(sample => sample.view.brightness = range[0])
     } else {
       if (category.type == 'sequential') {
 
         if (this.dataset.isSequential) {
           this.segments.forEach(segment => {
             var min = null, max = null
-            if (category.key in this.dataset.ranges) {
-              min = this.dataset.ranges[category.key].min
-              max = this.dataset.ranges[category.key].max
+            if (this.dataset.columns[category.key].range) {
+              min = this.dataset.columns[category.key].range.min
+              max = this.dataset.columns[category.key].range.max
             } else {
               var filtered = segment.vectors.map(vector => vector[category.key])
               max = Math.max(...filtered)
@@ -718,15 +678,19 @@ export class PointVisualization {
             }
 
             segment.vectors.forEach(vector => {
-              vector.view.brightness = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
-              //color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+              if (min == max) {
+                vector.view.brightness = range[0]
+              } else {
+                vector.view.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
+              }
+             
             })
           })
         } else {
           var min = null, max = null
-          if (category.key in this.dataset.ranges) {
-            min = this.dataset.ranges[category.key].min
-            max = this.dataset.ranges[category.key].max
+          if (this.dataset.columns[category.key].range) {
+            min = this.dataset.columns[category.key].range.min
+            max = this.dataset.columns[category.key].range.max
           } else {
             var filtered = this.vectors.map(vector => vector[category.key])
             max = Math.max(...filtered)
@@ -734,8 +698,12 @@ export class PointVisualization {
           }
 
           this.vectors.forEach(vector => {
-            //color[vector.view.meshIndex * 4 + 3] = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
-            vector.view.brightness = category.values.range[0] + (category.values.range[1] - category.values.range[0]) * ((vector[category.key] - min) / (max - min))
+            if (min == max) {
+              vector.view.brightness = range[0]
+            } else {
+              vector.view.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
+            }
+            
           })
         }
       }
@@ -755,9 +723,9 @@ export class PointVisualization {
           // dataset with lines, we have segments
           this.segments.forEach(segment => {
             var min = null, max = null
-            if (category.key in this.dataset.ranges) {
-              min = this.dataset.ranges[category.key].min
-              max = this.dataset.ranges[category.key].max
+            if (this.dataset.columns[category.key].range) {
+              min = this.dataset.columns[category.key].range.min
+              max = this.dataset.columns[category.key].range.max
             } else {
               var filtered = segment.vectors.map(vector => vector[category.key])
               max = Math.max(...filtered)
@@ -775,9 +743,9 @@ export class PointVisualization {
         } else {
           // for state based data, min and max is based on whole dataset
           var min = null, max = null
-          if (category.key in this.dataset.ranges) {
-            min = this.dataset.ranges[category.key].min
-            max = this.dataset.ranges[category.key].max
+          if (this.dataset.columns[category.key].range) {
+            min = this.dataset.columns[category.key].range.min
+            max = this.dataset.columns[category.key].range.max
           } else {
             var filtered = this.vectors.map(vector => vector[category.key])
             max = Math.max(...filtered)
@@ -936,7 +904,7 @@ export class PointVisualization {
       selected[vector.view.meshIndex] = vector.view.selected ? 1.0 : 0.0
     })
 
-    this.updateColor()
+    //this.updateColor()
     this.updateSize()
     this.updatePosition()
 

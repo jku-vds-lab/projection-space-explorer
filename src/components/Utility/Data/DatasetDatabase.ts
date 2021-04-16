@@ -5,6 +5,7 @@ export type DatasetEntry = {
     display: string
     path: string
     type: DatasetType
+    uploaded?: boolean
 }
 
 
@@ -20,26 +21,6 @@ export class DatasetDatabase {
     constructor() {
         this.data = [
             {
-                display: "Coral sub-sampled",
-                path: "datasets/coral/coral_subsampled.json",
-                type: DatasetType.Coral
-            },
-            {
-                display: "Coral sub-sampled normalized",
-                path: "datasets/coral/coral_subsampled_normalized.json",
-                type: DatasetType.Coral
-            },
-            {
-                display: "Coral no one-hot encoding",
-                path: "datasets/coral/coral_subsampled_no_one_hot.json",
-                type: DatasetType.Coral
-            },
-            {
-                display: "Coral no one-hot encoding normalized",
-                path: "datasets/coral/coral_subsampled_normalized_no_one_hot.json",
-                type: DatasetType.Coral
-            },
-            {
                 display: "Chess: 190 Games",
                 path: "datasets/chess/chess16k.csv",
                 type: DatasetType.Chess
@@ -47,6 +28,11 @@ export class DatasetDatabase {
             {
                 display: "Chess: 450 Games",
                 path: "datasets/chess/chess40k.csv",
+                type: DatasetType.Chess
+            },
+            {
+                display: "Chess: 450 Games (Groups)",
+                path: "datasets/chess/chess40k_groups.json",
                 type: DatasetType.Chess
             },
             {
@@ -138,7 +124,33 @@ export class DatasetDatabase {
                 display: "Toy: Iris",
                 path: "datasets/toy/iris.csv",
                 type: DatasetType.None
-            }
+            },
+            {
+                display: "Toy: Story",
+                path: "datasets/toy/toy.csv",
+                type: DatasetType.None
+            },
+            {
+                display: "Penguins",
+                path: "datasets/penguins/penguins_without_nan.csv",
+                type: DatasetType.None
+            },
+            {
+                display: "CIME: Test",
+                path: "test.sdf",
+                type: DatasetType.Chem,
+                uploaded: true
+            },
+            {
+                display: "Cohort: TCGA Sub-sampled",
+                path: "datasets/coral/coral_subsampled_normalized_no_one_hot.json",
+                type: DatasetType.Cohort_Analysis
+            },
+            {
+                display: "Cohort: TCGA Lung, Colorectal, and Pancreatic Cancer",
+                path: "datasets/coral/coral_usecase_3TumorTypes_expression_normalized_no_one_hot.json",
+                type: DatasetType.Cohort_Analysis
+            },
         ];
     }
 

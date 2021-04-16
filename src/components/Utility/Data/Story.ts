@@ -1,4 +1,5 @@
-import { Edge, Graph } from "../graphs";
+// import { Edge, Graph } from "../graphs";
+import { Edge } from "../graphs";
 import Cluster from "./Cluster";
 const Graph = require('graphology');
 
@@ -39,6 +40,50 @@ export class Story {
 
         return graph
     }
+
+
+
+    /**
+     * Performs depth first search between a source cluster and a target cluster,
+     * returning a list of paths sorted by length.
+     * 
+     * @param graph 
+     * @param source 
+     * @param target 
+     */
+    static depthFirstSearch(graph, source, target) {
+        let visited = {}
+        let pathList = [source]
+        let output = []
+
+        DFS_iter(source, target, visited, pathList)
+
+        function DFS_iter(source, target, visited, pathList: any[]) {
+            if (source == target) {
+                output.push(pathList.slice(0))
+                return;
+            }
+
+            visited[source] = true
+
+            graph.outNeighbors(source).forEach(neighbor => {
+                if (!visited[neighbor]) {
+                    pathList.push(neighbor)
+
+                    DFS_iter(neighbor, target, visited, pathList)
+
+                    pathList.pop()
+                }
+            })
+
+            visited[source] = false
+        }
+
+        return output.sort((a, b) => a.length - b.length)
+    }
+
+
+
 
 
 

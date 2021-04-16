@@ -7,14 +7,13 @@ export default createClassFromLiteSpec('BarChart', {
   "transform": [
     {
       "window": [{
-        "op": "rank",
+        "op": "row_number",
         "as": "rank"
       }],
       "sort": [{ "field": "count", "order": "descending" }]
     }, {
       "filter": "datum.rank <= 5"
-    },
-    {"calculate": "datum.rank==1", "as": "color"}
+    }
   ],
   "mark": {"type": "bar", "tooltip": true},
   "encoding": {
@@ -25,8 +24,7 @@ export default createClassFromLiteSpec('BarChart', {
         "test": "indexof(['null', 'undefined', 'unknown', 'none', 'Null', 'Undefined', 'Unknown', 'None', 'NULL', 'UNDEFINED', 'UNKNOWN', 'NONE'], datum.category) >= 0 || datum.category === null",
         "value": "#aaaaaa"
       },
-      "field": "color",
-      "scale": {"range": ["#4c78a8", "#000088"]},
+      "value": "#007dad",
       "legend": null
     }
   }

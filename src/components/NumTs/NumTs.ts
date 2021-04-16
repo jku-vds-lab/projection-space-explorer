@@ -19,7 +19,7 @@ export function euclideanDistanceVec(v1: VectorType, v2: VectorType) {
 
 
 
-export function getSyncNodesAlt(nodes1: [], nodes2: []) {
+export function getSyncNodesAlt(nodes1: any[], nodes2: any[]) {
     const convert = (nodes) => {
         let edges = []
         nodes.forEach((node, index) => {
@@ -206,3 +206,16 @@ export class VectBase implements VectorType {
 
 
 
+
+export function std(array) {
+    const n = array.length
+    const mean = array.reduce((a, b) => a + b) / n
+    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n)
+}
+
+
+export function mean(array) {
+    const n = array.length
+    const mean = array.reduce((a, b) => a + b) / n
+    return mean
+}

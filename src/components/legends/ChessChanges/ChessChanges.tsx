@@ -1,7 +1,9 @@
 import * as React from 'react'
 import { arraysEqual } from '../../WebGLView/UtilityFunctions'
 import { Vect } from "../../Utility/Data/Vect"
+import { CHESS_TILE_BLACK, CHESS_TILE_WHITE } from "../ChessFingerprint/ChessFingerprint"
 
+const CHESS_TILE_CHANGES = '#007dad'
 
 // Lookup table for chess UNICODE symbols
 var symbols = {
@@ -50,22 +52,35 @@ function getOccurences(vectors: Array<Vect>) {
     })
 
     vectors.forEach((vector, index) => {
+
         keys.forEach((key, keyIndex) => {
             if (aggregation[key] == undefined) {
                 aggregation[key] = []
+                aggregation[key].push({ key: 'total', count: 0, relative: 1.0})
             }
 
             if (!aggregation[key].some((e) => e.key == vector[key])) {
-                aggregation[key].push({ key: vector[key], count: 1 })
+                aggregation[key].push({ key: vector[key], count: 1, relative: 0 })
+                aggregation[key].filter(e => e.key == 'total')[0].count += 1
             } else {
                 aggregation[key].filter(e => e.key == vector[key])[0].count += 1
+                aggregation[key].filter(e => e.key == 'total')[0].count += 1
             }
+        })
+    })
+
+    // calculate relative counts
+    vectors.forEach((vector, index) => {
+
+        keys.forEach((key, keyIndex) => {
+            let x = aggregation[key].filter(e => e.key == vector[key])[0]
+            let total = aggregation[key].filter(e => e.key == 'total')[0].count
+            x.relative = x.count / total
         })
     })
 
     return aggregation
 }
-
 
 function getProminent(aggregation, key) {
     var max = 0.0
@@ -73,17 +88,23 @@ function getProminent(aggregation, key) {
     let content = ""
     let opacity = 1
     for (var k in aggregation[key]) {
+        if (aggregation[key][k].key === 'total') {
+            continue
+        }
         var v = aggregation[key][k]
         total += v.count
 
-        if (v.count > max) {
+        if (v.count > max && symbols[aggregation[key][k].key] !== "" && symbols[aggregation[key][k].key] !== undefined) {
             max = v.count
             content = aggregation[key][k].key
         }
     }
 
-    opacity = (max / total)
+    if (content == null) {
+        content = ""
+    }
 
+    opacity = (max / total)
     return [content, opacity]
 }
 
@@ -109,7 +130,8 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
         width = Math.floor(width / 8) * 8
         height = Math.floor(height / 8) * 8
 
-        var size = width / 8
+        var size = (width * 10) / 82
+        var borderOffset = width / 82
 
         this.canvasRef.current.setAttribute('width', width.toString())
         this.canvasRef.current.setAttribute('height', height.toString())
@@ -133,17 +155,30 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
         keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
         // variable determining the current field color
-        var col = "white"
+        var col = CHESS_TILE_WHITE
+
+        // draw border around chess board
+        this.canvasContext.globalAlpha = 1.0
+        this.canvasContext.fillStyle = CHESS_TILE_BLACK
+        try {
+            this.canvasContext.save()
+            this.canvasContext.globalAlpha = 1.0
+            this.canvasContext.fillRect(0, 0, width, height)
+            this.canvasContext.restore()
+        } catch (e) {
+        }
+            
+            
 
 
         for (var i = 0; i < 64; i++) {
             var x = i % 8
             var y = Math.floor(i / 8)
             if (i % 8 != 0) {
-                if (col == "white") {
-                    col = "black"
+                if (col == CHESS_TILE_WHITE) {
+                    col = CHESS_TILE_BLACK
                 } else {
-                    col = "white"
+                    col = CHESS_TILE_WHITE
                 }
             }
 
@@ -156,6 +191,42 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
             let [contentA, opacityA] = getProminent(countA, key) as [string, number]
             let [contentB, opacityB] = getProminent(countB, key) as [string, number]
 
+            // calculate opacity for colour difference visualization for this field
+
+            // collect fieldKeys that exist in both selections
+            let keysA = []
+            let numsA = Object.keys(countA[key]);
+            for (var num in numsA) {
+                keysA.push(countA[key][num].key)
+            }
+            let keysB = []
+            let numsB = Object.keys(countB[key]);
+            for (var num in numsB) {
+                keysB.push(countB[key][num].key)
+            }
+            let allKeys = keysA.concat(keysB)
+            allKeys = allKeys.filter((item, pos) => allKeys.indexOf(item) === pos)
+
+            let diffSum = 0
+
+            // iterate over all keys
+            for (var n in allKeys) {
+                var fieldKey = allKeys[n]
+
+                let entryA = countA[key].filter(e => e.key == fieldKey)
+                let entryB = countB[key].filter(e => e.key == fieldKey)
+
+                if (entryA[0] && entryB[0]) {
+                    diffSum += Math.abs(entryA[0].relative - entryB[0].relative)
+                } else if (entryA[0]) {
+                    diffSum += Math.abs(entryA[0].relative)
+                } else if (entryB[0]) {
+                    diffSum += Math.abs(entryB[0].relative)
+                }
+            }
+            // opacity
+            let difColourOpacity = diffSum / 2
+
             if (contentA != contentB) {
                 content = contentB
             }
@@ -163,24 +234,25 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
                 deleted = true
             }
 
+            this.canvasContext.globalAlpha = 1.0
             this.canvasContext.fillStyle = col
 
             this.canvasContext.fillRect(
-                x * size,
-                y * size,
+                x * size + borderOffset,
+                y * size + borderOffset,
                 size,
                 size)
 
             try {
                 this.canvasContext.save()
-                this.canvasContext.globalAlpha = opacity
-                if (!deleted) {
-                    this.canvasContext.drawImage(symbols[content], x * size, y * size, size, size)
-                } else {
-                    this.canvasContext.fillStyle = 'red'
-                    this.canvasContext.fillRect(x * size, y * size, size, size)
-                }
-                
+                // diff colour
+                this.canvasContext.globalAlpha = difColourOpacity
+                this.canvasContext.fillStyle = CHESS_TILE_CHANGES
+                this.canvasContext.fillRect(x * size + borderOffset, y * size + borderOffset, size, size)
+
+                // chess pieces
+                this.canvasContext.globalAlpha = Math.max(opacityB, 0.15)
+                this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
                 this.canvasContext.restore()
             } catch (e) {
             }

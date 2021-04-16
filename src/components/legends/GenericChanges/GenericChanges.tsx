@@ -6,6 +6,7 @@ import { RubikChanges } from "../RubikChanges/RubikChanges";
 import React = require("react");
 import { ChessChanges } from "../ChessChanges/ChessChanges";
 import { CoralChanges } from "../CoralChanges/CoralChanges";
+import { ChemLegendParent } from "../ChemDetail/ChemDetail";
 
 
 type GenericChangesType = {
@@ -27,9 +28,11 @@ export const GenericChanges = connect(mapStateToProps, mapDispatchToProps)(({ ve
         case DatasetType.Rubik:
             return <RubikChanges width={81 * scale} height={108 * scale} vectorsA={vectorsA} vectorsB={vectorsB}></RubikChanges>
         case DatasetType.Chess:
-            return <ChessChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB}></ChessChanges>
-        case DatasetType.Coral:
+            return <ChessChanges width={144 * scale} height={144 * scale} vectorsA={vectorsA} vectorsB={vectorsB}></ChessChanges>
+        case DatasetType.Cohort_Analysis:
             return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale}></CoralChanges>
+        case DatasetType.Chem:
+            return <ChemLegendParent selection={vectorsA} selection_ref={vectorsB} diff={true} aggregate={true} mcs_only={true}></ChemLegendParent>
         default:
             return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale}></CoralChanges>
     }

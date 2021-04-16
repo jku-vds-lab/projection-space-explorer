@@ -1,6 +1,7 @@
 import * as concaveman from 'concaveman'
 import * as libtess from 'libtess'
 import { isNumber } from 'util';
+import * as backend_utils from "../../utils/backend-connect";
 
 /*global libtess */
 /* exported triangulate */
@@ -129,7 +130,7 @@ self.addEventListener('message', function (e) {
     if (e.data.type == 'point') {
         var xy = e.data.load
 
-        fetch('http://localhost:8090/hdbscan', {
+        fetch(backend_utils.BASE_URL+'/hdbscan', {
             method: 'POST',
             body: JSON.stringify(xy)
         }).then(response => {
@@ -180,7 +181,7 @@ self.addEventListener('message', function (e) {
     } else if (e.data.type == 'segment') {
         var xy = e.data.load
 
-        fetch('http://localhost:8090/segmentation', {
+        fetch(backend_utils.BASE_URL+'/segmentation', {
             method: 'POST',
             body: JSON.stringify(xy)
         }).then(response => {

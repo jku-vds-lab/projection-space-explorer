@@ -1,5 +1,6 @@
-import { requiredChessColumns } from "../../Legends/ChessFingerprint/ChessFingerprint";
-import { requiredRubikColumns } from "../../Legends/RubikFingerprint/RubikFingerprint";
+import { requiredChessColumns } from "../../legends/ChessFingerprint/ChessFingerprint";
+import { requiredRubikColumns } from "../../legends/RubikFingerprint/RubikFingerprint";
+import { PrebuiltFeatures } from "./Dataset";
 import { DatasetType } from "./DatasetType";
 import { Vect } from "./Vect";
 
@@ -56,7 +57,7 @@ export class InferCategory {
             return DatasetType.Go;
         }
 
-        if (header.toString().toLowerCase().includes('smiles')){
+        if (header.toString().toLowerCase().includes('smiles')) {
             return DatasetType.Chem;
         }
 
@@ -97,12 +98,19 @@ export class InferCategory {
         var header = Object.keys(this.vectors[0]).filter(a => a != "line");
 
         header.forEach(key => {
-            // Check for given header key if its categorical, sequential or diverging
-            var distinct = [...new Set(this.vectors.map(vector => vector[key]))];
+            if (key == PrebuiltFeatures.ClusterLabel) {
+                options.find(e => e.category == "color").attributes.push({
+                    "key": key,
+                    "name": key,
+                    "type": "categorical"
+                })
+            } else {
+                // Check for given header key if its categorical, sequential or diverging
+                var distinct = [...new Set(this.vectors.map(vector => vector[key]))];
 
-            if (distinct.length > 8 || key in ranges || key == 'multiplicity') {
-                // Check if values are numeric
-                if (!distinct.find(value => isNaN(value))) {
+
+                // numerical values with more than 8 disctinct values
+                if ((distinct.length > 8 || key in ranges || key == 'multiplicity') && !distinct.find(value => isNaN(value))) {
                     // If we have a lot of different values, the values or probably sequential data
                     var category = options.find(e => e.category == "color");
 
@@ -151,10 +159,7 @@ export class InferCategory {
                             range: [1, 2]
                         }
                     });
-                }
-            } else {
-                if (distinct.find(value => isNaN(value)) || key == 'algo') {
-
+                } else if (distinct.find(value => isNaN(value)) || key == 'algo') {
                     options.find(e => e.category == 'color').attributes.push({
                         "key": key,
                         "name": key,
@@ -162,7 +167,7 @@ export class InferCategory {
                     });
 
                     if (distinct.length <= 4) {
-                        var shapes = ["star", "cross", "circle", "square"];
+                        var shapes = ["circle", "star", "square", "cross"];
                         options.find(e => e.category == 'shape').attributes.push({
                             "key": key,
                             "name": key,
@@ -175,6 +180,7 @@ export class InferCategory {
                             })
                         });
                     }
+
                 }
             }
         });

@@ -4,9 +4,11 @@ import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
 import VegaHist from './VegaHist.js';
+import VegaDensity from './VegaDensity.js';
 import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
+import { withStyles } from '@material-ui/core';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -17,10 +19,14 @@ import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { FeatureType } from "../../Utility/Data/FeatureType";
 import { Vect } from "../../Utility/Data/Vect";
+import { RootState } from '../../Store/Store.js';
 
 const useStyles = makeStyles({
   table: {
     maxWidth: 288,
+  },
+  tableRow: {
+    height: "66px"
   },
 });
 
@@ -34,6 +40,23 @@ function mapHistData(data, feature) {
       feature: +d[feature]
     }
   })
+  return {"values": mapped}
+}
+
+function mapDensityData(allData, selectedData, feature) {
+  const mappedData = allData.map((d) => {
+    return {
+      feature: +d[feature],
+      selection: "all"
+    }
+  })
+  const mappedSelection = selectedData.map((d) => {
+    return {
+      feature: +d[feature],
+      selection: "selection"
+    }
+  })
+  const mapped = [...mappedSelection, ...mappedData]
   return {"values": mapped}
 }
 
@@ -125,14 +148,14 @@ function getExplainingFeatures(data) {
   return features
 }
 
-function getProjectionColumns(projectionColumns) {
-  if (projectionColumns === null) {
+function getProjectionColumns(legendAttributes) {
+  if (legendAttributes === null) {
     return []
   }
   const pcol = []
-  for (var i = 0; i <= projectionColumns.length; i++) {
-    if (projectionColumns[i] !== undefined && projectionColumns[i]['checked']) {
-      pcol.push(projectionColumns[i]['name'])
+  for (var i = 0; i <= legendAttributes.length; i++) {
+    if (legendAttributes[i] !== undefined && legendAttributes[i]['show']) {
+      pcol.push(legendAttributes[i]['feature'])
     }
   }
   return pcol
@@ -150,13 +173,14 @@ function getNormalizedSTD(data, min, max) {
   
 }
 
-function genRows(vectors, projectionColumns, dataset) {
+function genRows(vectors, legendAttributes, dataset) {
   if (dataset === undefined) {
     return []
   }
   const rows = []
   const dictOfArrays = dictionary(vectors)
-  const preselect = getProjectionColumns(projectionColumns)
+  const preselect = getProjectionColumns(legendAttributes)
+
 
   // loop through dict
   for (var key in dictOfArrays) {
@@ -164,13 +188,19 @@ function genRows(vectors, projectionColumns, dataset) {
     if (preselect.indexOf(key) > -1) {
       if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
-        var histData = mapHistData(vectors, key)
-        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaHist data={histData} actions={false} tooltip={new Handler().call}/>])
+        var densityData = mapDensityData(dataset.vectors, vectors, key)
+        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDensity data={densityData} actions={false} tooltip={new Handler().call}/>])
 
       } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
         // categorical feature
         var barData = mapBarChartData(vectors, key)
-        rows.push([key, barData['values'][0]['category'], getMaxMean(barData), <BarChart data={barData} actions={false} tooltip={new Handler().call}/>])
+        var barChart
+        if (Object.keys(barData.values).length != 1) {
+          barChart = <BarChart data={barData} actions={false} tooltip={new Handler().call}/>
+        } else {
+          barChart = null
+        }
+        rows.push([key, barData['values'][0]['category'], getMaxMean(barData), barChart])
         
       } else if (dataset.columns[key]?.featureType === FeatureType.Date) {
         // date feature
@@ -192,27 +222,24 @@ function genRows(vectors, projectionColumns, dataset) {
   return ret
 }
 
-function getTable(vectors, aggregation, projectionColumns, dataset) {
+function getTable(vectors, aggregation, legendAttributes, dataset) {
   const classes = useStyles()
-  const rows = genRows(vectors, projectionColumns, dataset)
+  const rows = genRows(vectors, legendAttributes, dataset)
+
+  
 
   return (
-    <div>
-      <TableContainer component={Paper} style={{
-        height: "400px",
+    <div style={{ width: "100%", maxHeight: '100%' }}>
+      <div style={{
         width: "100%",
         overflow: "auto"
       }}>
         <Table className={classes.table} aria-label="simple table" size={'small'}>
           <TableHead>
-            <TableRow>
-              <TableCell>Feature</TableCell>
-              <TableCell>Char</TableCell>
-            </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row) => (
-              <TableRow key={row.feature}>
+              <TableRow className={classes.tableRow} key={row.feature}>
                 <TableCell component="th" scope="row">
                 {row.feature}<br/><b>{row.category}</b>
                 </TableCell>
@@ -221,14 +248,14 @@ function getTable(vectors, aggregation, projectionColumns, dataset) {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </div>
     </div>
   );
 }
 
-const mapState = state => {
+const mapState = (state: RootState) => {
   return ({
-    projectionColumns: state.projectionColumns,
+    legendAttributes: state.genericFingerprintAttributes,
     dataset: state.dataset
   })
 }
@@ -244,6 +271,6 @@ type Props = PropsFromRedux & {
     selection: Vect[]
 }
 
-export var CoralLegend = connector(({ selection, aggregate, projectionColumns, dataset }: Props) => {
-  return getTable(selection, aggregate, projectionColumns, dataset)
+export var CoralLegend = connector(({ selection, aggregate, legendAttributes, dataset }: Props) => {
+  return getTable(selection, aggregate, legendAttributes, dataset)
 })

@@ -12,9 +12,7 @@ import displayMode from "../Ducks/DisplayModeDuck";
 import lineBrightness from "../Ducks/LineBrightnessDuck";
 import activeLine from "../Ducks/ActiveLineDuck";
 import stories from "../Ducks/StoriesDuck";
-import storyMode from "../Ducks/StoryModeDuck";
 import currentAggregation from "../Ducks/AggregationDuck";
-import selectedClusters from "../Ducks/SelectedClustersDuck";
 import { viewTransform } from "../Ducks/ViewTransformDuck";
 import projectionParams from "../Ducks/ProjectionParamsDuck";
 import checkedShapes from "../Ducks/CheckedShapesDuck";
@@ -27,12 +25,23 @@ import categoryOptions from '../Ducks/CategoryOptionsDuck';
 import channelSize from '../Ducks/ChannelSize';
 import channelColor from '../Ducks/ChannelColorDuck';
 import globalPointSize from '../Ducks/GlobalPointSizeDuck';
-import hoverState from '../Ducks/HoverStateDuck';
 import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
 import storyEditor from '../Ducks/StoryEditorDuck';
 import lineUpInput from '../Ducks/LineUpInputDuck';
+import rdkitSettings from '../Ducks/RDKitSettingsDuck';
+import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
+import projections from '../Ducks/ProjectionsDuck';
+import hoverSettings from '../Ducks/HoverSettingsDuck';
+import hoverState from '../Ducks/HoverStateDuck';
+import selectedLineBy from '../Ducks/SelectedLineByDuck';
+import splitRef from '../Ducks/SplitRefDuck';
+import globalPointBrightness from '../Ducks/GlobalPointBrightnessDuck';
+import channelBrightness from '../Ducks/ChannelBrightnessDuck';
+import groupVisualizationMode from '../Ducks/GroupVisualizationMode';
+import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
+import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 
 const allReducers = {
   currentTool: currentTool,
@@ -48,27 +57,36 @@ const allReducers = {
   highlightedSequence: highlightedSequence,
   viewTransform: viewTransform,
   advancedColoringSelection: advancedColoringSelection,
-  storyMode: storyMode,
   projectionColumns: projectionColumns,
   projectionOpen: projectionOpen,
   projectionParams: projectionParams,
   projectionWorker: projectionWorker,
   webGLView: webGLView,
   clusterMode: clusterMode,
-  selectedClusters: selectedClusters,
   displayMode: displayMode,
   lineBrightness: lineBrightness,
   pathLengthRange: pathLengthRange,
   categoryOptions: categoryOptions,
   channelSize: channelSize,
   channelColor: channelColor,
+  channelBrightness: channelBrightness,
   globalPointSize: globalPointSize,
   hoverState: hoverState,
   pointColorScale: pointColorScale,
   pointColorMapping: pointColorMapping,
   trailSettings: trailSettings,
   storyEditor: storyEditor,
-  lineUpInput: lineUpInput
+  lineUpInput: lineUpInput,
+  rdkitSettings: rdkitSettings,
+  differenceThreshold: differenceThreshold,
+  projections: projections,
+  hoverSettings: hoverSettings,
+  selectedLineBy: selectedLineBy,
+  splitRef: splitRef,
+  globalPointBrightness: globalPointBrightness,
+  groupVisualizationMode: groupVisualizationMode,
+  genericFingerprintAttributes: genericFingerprintAttributes,
+  hoverStateOrientation: hoverStateOrientation
 }
 
 const appReducer = combineReducers(allReducers)

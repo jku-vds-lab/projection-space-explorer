@@ -1,9 +1,10 @@
-import { Button, Checkbox, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, makeStyles, Paper, Switch, TextField } from '@material-ui/core';
+import { Button, Checkbox, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, InputLabel, makeStyles, MenuItem, Paper, Select, Switch, TextField } from '@material-ui/core';
 import React = require('react')
 import { connect, ConnectedProps } from 'react-redux'
 import trailSettings from '../../../Ducks/TrailSettingsDuck';
 import { RootState } from '../../../Store/Store';
 import FeaturePicker from '../FeaturePicker/FeaturePicker';
+import clone = require('fast-clone')
 
 const mapState = (state: RootState) => ({
     projectionColumns: state.projectionColumns
@@ -80,14 +81,11 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
     const [seeded, setSeeded] = React.useState(projectionParams.seeded)
     const [useSelection, setUseSelection] = React.useState(projectionParams.useSelection)
 
+    const [distanceMetric, setDistanceMetric] = React.useState(projectionParams.distanceMetric)
+
     const cloneColumns = (projectionColumns) => {
         return projectionColumns.map(val => {
-            return {
-                name: val.name,
-                normalized: val.normalized,
-                checked: val.checked,
-                range: val.range
-            }
+            return clone(val)
         })
     }
 
@@ -105,7 +103,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
         onClose={onClose}>
 
         <DialogContent>
-            <Container >
+            <Container>
                 {domainSettings != 'forceatlas2' && <FeaturePicker selection={selection} setSelection={setSelection}></FeaturePicker>}
 
 
@@ -133,13 +131,25 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                     }}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={seeded} onChange={(_, checked) => setSeeded(checked)} name="jason" />}
+                                    control={<Checkbox color="primary" checked={seeded} onChange={(_, checked) => setSeeded(checked)} name="jason" />}
                                     label="Seed Position"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={useSelection} onChange={(_, checked) => setUseSelection(checked)} />}
+                                    control={<Checkbox color="primary" checked={useSelection} onChange={(_, checked) => setUseSelection(checked)} />}
                                     label="Project Selection Only"
                                 />
+                                {(domainSettings == 'tsne' || domainSettings == 'umap') && <FormControl>
+                                    <InputLabel id="demo-controlled-open-select-label">Distance Metric</InputLabel>
+                                    <Select
+                                        labelId="demo-controlled-open-select-label"
+                                        id="demo-controlled-open-select"
+                                        value={distanceMetric}
+                                        onChange={(event) => { setDistanceMetric(event.target.value) }}
+                                    >
+                                        <MenuItem value={'euclidean'}>Euclidean</MenuItem>
+                                        <MenuItem value={'jaccard'}>Jaccard</MenuItem>
+                                    </Select>
+                                </FormControl>}
                             </FormGroup>
                         </FormControl>
                     </Grid>
@@ -156,7 +166,8 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                     seeded: seeded,
                     nNeighbors: nNeighbors,
                     method: domainSettings,
-                    useSelection: useSelection
+                    useSelection: useSelection,
+                    distanceMetric: distanceMetric
                 }, selection)
             }}>Start</Button>
         </DialogActions>

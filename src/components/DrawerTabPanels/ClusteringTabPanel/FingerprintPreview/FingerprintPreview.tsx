@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Cluster from "../../../Utility/Data/Cluster";
 import './FingerprintPreview.scss'
-import { GenericFingerprint } from '../../../Legends/Generic';
+import { GenericFingerprint } from '../../../legends/Generic';
 import { DatasetType } from "../../../Utility/Data/DatasetType";
 
 type ClusterOverviewProps = {

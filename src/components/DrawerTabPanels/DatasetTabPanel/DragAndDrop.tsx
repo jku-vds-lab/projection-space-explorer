@@ -86,7 +86,7 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
                         style={{
                             border: 'dashed blue 2px',
                             position: 'absolute',
-                            borderRadius: '16px',
+                            borderRadius: '4px',
                             top: 0,
                             bottom: 0,
                             left: 0,
@@ -109,7 +109,7 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
                         style={{
                             border: 'dashed grey 2px',
                             position: 'absolute',
-                            borderRadius: '16px',
+                            borderRadius: '4px',
                             top: 0,
                             bottom: 0,
                             left: 0,

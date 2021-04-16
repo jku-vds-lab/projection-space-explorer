@@ -4,40 +4,20 @@ import { DiscreteMapping } from "./DiscreteMapping";
 import { ContinuousMapping } from "./ContinuousMapping";
 import { NamedScales } from "./NamedScales";
 import { NamedCategoricalScales } from "./NamedCategoricalScales";
+import { ShallowSet } from "../ShallowSet";
+import { Dataset } from "../Data/Dataset";
 
-var d3 = require('d3')
-
-
-
-
-
-
-
-/**
- * Breaks an integer down into its r,g,b components.
- */
-export function hexToRGB(color) {
-  return {
-    r: (color & 0xff0000) >> 16,
-    g: (color & 0x00ff00) >> 8,
-    b: (color & 0x0000ff)
-  }
-}
-
-
-
-
-
-export const mappingFromScale = (scale, attribute, dataset) => {
+export const mappingFromScale = (scale, attribute, dataset: Dataset) => {
   if (scale instanceof DiscreteScale) {
     // Generate scale
-    return new DiscreteMapping(scale, [... new Set(dataset.vectors.map(vector => vector[attribute.key]))])
+    return new DiscreteMapping(scale, new ShallowSet(dataset.vectors.map(vector => vector[attribute.key])))
+
   }
   if (scale instanceof ContinuosScale) {
     var min = null, max = null
-    if (attribute.key in dataset.ranges) {
-      min = dataset.ranges[attribute.key].min
-      max = dataset.ranges[attribute.key].max
+    if (dataset.columns[attribute.key].range) {
+      min = dataset.columns[attribute.key].range.min
+      max = dataset.columns[attribute.key].range.max
     } else {
       var filtered = dataset.vectors.map(vector => vector[attribute.key])
       max = Math.max(...filtered)

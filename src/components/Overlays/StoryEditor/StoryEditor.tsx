@@ -12,13 +12,15 @@ import GestureIcon from '@material-ui/icons/Gesture';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SelectAllIcon from '@material-ui/icons/SelectAll';
 import { setAggregationAction } from "../../Ducks/AggregationDuck";
-import { GenericFingerprint } from '../../Legends/Generic';
+import { GenericFingerprint } from '../../legends/Generic';
 import { RootState } from '../../Store/Store';
 import { addEdgeToActive, setActiveTrace } from '../../Ducks/StoriesDuck';
 import { Edge } from '../../Utility/graphs';
 import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
 import { getSyncNodes, getSyncNodesAlt, VectBase } from '../../NumTs/NumTs';
 let unweighted = require('graphology-shortest-path')
+
+import * as frontend_utils from "../../../utils/frontend-connect";
 
 
 export function rescalePoints(
@@ -456,7 +458,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
                 destination: nodes.find(node => node.meshIndex == edge.destination.label)
             }))
 
-            let worker = new Worker("dist/forceatlas2.js")
+            let worker = new Worker(frontend_utils.BASE_PATH + "forceatlas2.js") //dist/
 
             let self = this
             worker.onmessage = function (e) {
@@ -509,7 +511,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
             Math.floor(Math.random() * 100)
         )
 
-        node.cluster = Cluster.fromSamples(this.props.currentAggregation)
+        node.cluster = Cluster.fromSamples(this.props.currentAggregation.aggregation)
     }
 
     componentDidMount() {

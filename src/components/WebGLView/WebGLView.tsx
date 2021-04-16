@@ -11,31 +11,32 @@ import { Tool, getToolCursor, ToolSelectionRedux } from '../Overlays/ToolSelecti
 import { Vect } from "../Utility/Data/Vect";
 import { setClusterEdgesAction } from "../Ducks/ClusterEdgesDuck";
 import { setViewTransform } from "../Ducks/ViewTransformDuck";
-import { setSelectedClusters, toggleSelectedCluster } from "../Ducks/SelectedClustersDuck";
-import { setAggregationAction, toggleAggregationAction } from "../Ducks/AggregationDuck";
+import { aggSelectCluster, setAggregationAction, toggleAggregationAction } from "../Ducks/AggregationDuck";
 import { CameraTransformations } from './CameraTransformations'
 import { Camera } from 'three';
 import { LineVisualization, PointVisualization } from './meshes';
 import { MultivariateClustering } from './Visualizations/MultivariateClustering';
-import { DisplayMode } from '../Ducks/DisplayModeDuck';
+import { DisplayMode, displayModeSupportsStates } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
-import { ClusterMode } from '../Ducks/ClusterModeDuck';
-import { setHoverState } from '../Ducks/HoverStateDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
-import { Backdrop, Dialog, DialogContent, Divider, Menu, MenuItem, Typography } from '@material-ui/core';
+import { Divider, Menu, MenuItem } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
 import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, setActiveStory, setActiveTrace } from '../Ducks/StoriesDuck';
-import { setLineUpInput_data, setLineUpInput_columns, setLineUpInput_visibility } from '../Ducks/LineUpInputDuck';
+import { setLineUpInput_visibility, setLineUpInput_dump, setLineUpInput_filter } from '../Ducks/LineUpInputDuck';
 import { Story } from '../Utility/Data/Story';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
 import { Edge } from '../Utility/graphs';
 import { getSyncNodesAlt } from '../NumTs/NumTs';
 import { ClusterDragTool } from './Tools/ClusterDragTool';
 import { TraceSelectTool } from './Tools/TraceSelectTool';
-
+import { Embedding } from '../Utility/Data/Embedding';
+import { setOpenTabAction } from '../Ducks/OpenTabDuck';
+import { setHoverState } from '../Ducks/HoverStateDuck';
+import './WebGl.scss'
+import { LineUpDumpDialog } from '../LineUpContext/LineUpDumpDialog';
 
 type ViewState = {
     displayClusters: any
@@ -55,16 +56,17 @@ const mapStateToProps = (state: RootState) => ({
     activeLine: state.activeLine,
     advancedColoringSelection: state.advancedColoringSelection,
     clusterMode: state.clusterMode,
-    selectedClusters: state.selectedClusters,
     displayMode: state.displayMode,
     lineBrightness: state.lineBrightness,
     pathLengthRange: state.pathLengthRange,
     globalPointSize: state.globalPointSize,
+    globalPointBrightness: state.globalPointBrightness,
     channelSize: state.channelSize,
     channelColor: state.channelColor,
+    channelBrightness: state.channelBrightness,
     pointColorScale: state.pointColorScale,
     stories: state.stories,
-    trailSettings: state.trailSettings
+    trailSettings: state.trailSettings,
 })
 
 
@@ -73,20 +75,23 @@ const mapDispatchToProps = dispatch => ({
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setActiveLine: activeLine => dispatch(setActiveLine(activeLine)),
     setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
-    toggleSelectedCluster: selectedCluster => dispatch(toggleSelectedCluster(selectedCluster)),
     toggleAggregation: aggregation => dispatch(toggleAggregationAction(aggregation)),
-    setHoverState: hoverState => dispatch(setHoverState(hoverState)),
+    setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
     setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping)),
     removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
-    setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
-    setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
-    setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
+    // setSelectedClusters: clusters => dispatch(setSelectedClusters(clusters)),
+    // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
+    // setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
+    setLineUpInput_dump: input => dispatch(setLineUpInput_dump(input)),
+    setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
     addStory: story => dispatch(addStory(story)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
     setActiveStory: story => dispatch(setActiveStory(story)),
     addEdgeToActive: edge => dispatch(addEdgeToActive(edge)),
-    setActiveTrace: trace => dispatch(setActiveTrace(trace))
+    setActiveTrace: trace => dispatch(setActiveTrace(trace)),
+    setOpenTab: tab => dispatch(setOpenTabAction(tab)),
+    setSelectedCluster: (cluster, shiftKey) => dispatch(aggSelectCluster(cluster, shiftKey))
 })
 
 
@@ -98,6 +103,7 @@ type Props = PropsFromRedux
 
 
 
+const UPDATER = "scatter";
 
 
 export const WebGLView = connector(class extends React.Component<Props, ViewState> {
@@ -135,6 +141,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     lastTime: number;
     mouseMoveListener: any;
     mouseDownListener: any;
+    mouseLeaveListener: any;
     keyDownListener: any;
     wheelListener: any;
     mouseUpListener: any;
@@ -165,21 +172,67 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             menuY: null,
             menuTarget: null
         }
+
     }
 
 
-    lineupFilterUpdate(){
+    lineupFilterUpdate() {
         this.particles.update()
         this.requestRender()
     }
 
-
+    async hoverUpdate(hover_item, updater) {
+        let idx = -1;
+        if (hover_item && hover_item["__meta__"]) {
+            idx = hover_item["__meta__"]["view"]["meshIndex"];
+        }
+        this.particles.highlight(idx);
+        if (this.props.dataset.isSequential) {
+            if (idx >= 0) {
+                this.lines.highlight([this.props.dataset.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
+            } else {
+                this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+            }
+        }
+        if (idx >= 0) {
+            if (this.currentHover != this.props.dataset.vectors[idx]) {
+                this.currentHover = this.props.dataset.vectors[idx]
+                this.props.setHoverState(this.props.dataset.vectors[idx], updater)
+                this.requestRender()
+            }
+        } else {
+            if (this.currentHover) {
+                this.currentHover = null
+                this.props.setHoverState(null, updater)
+                this.requestRender()
+            }
+        }
+    }
 
 
     /**
      * Initializes the callbacks for the MouseController.
      */
     initMouseController() {
+        this.mouseController.onMouseLeave = (event: MouseEvent) => {
+            if (this.infoTimeout != null) {
+                clearTimeout(this.infoTimeout)
+            }
+
+            this.particles?.highlight(null)
+
+            if (this.props.dataset?.isSequential) {
+                this.lines?.highlight([], this.getWidth(), this.getHeight(), this.scene)
+            }
+
+            if (this.currentHover) {
+                this.currentHover = null
+                this.props.setHoverState(null, UPDATER)
+                this.requestRender()
+            }
+        }
+
+
         this.mouseController.onDragStart = (event: MouseEvent, button: number, initial: nt.VectorType) => {
             switch (button) {
                 case 0:
@@ -205,7 +258,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
         this.mouseController.onDragEnd = (event: MouseEvent, button: number) => {
-            // console.log("on drag end")
             switch (button) {
                 case 0:
                     switch (this.props.currentTool) {
@@ -230,14 +282,16 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                                 this.lasso.mouseUp(coords.x, coords.y)
 
                                 var indices = this.lasso.selection(this.props.dataset.vectors, (vector) => this.particles.isPointVisible(vector))
-                                if (indices.length > 0 && wasDrawing) {
+                                if (indices.length > 0 && wasDrawing && displayModeSupportsStates(this.props.displayMode)) {
                                     var selected = indices.map(index => this.props.dataset.vectors[index])
 
-                                    if (event.shiftKey) {
+                                    if (event.ctrlKey) {
                                         this.props.toggleAggregation(selected)
                                     } else {
                                         this.props.setCurrentAggregation(selected)
                                     }
+
+                                    this.props.setOpenTab(4)
 
                                 } else if (wasDrawing) {
                                     this.clearSelection()
@@ -252,7 +306,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.mouseController.onDragMove = (event: MouseEvent, button: number) => {
-            //console.log("on drag move")
 
             switch (button) {
                 case 0:
@@ -285,28 +338,58 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.mouseController.onContext = (event: MouseEvent, button: number) => {
-            //console.log("on context")
 
             if (this.props.currentTool == Tool.Default) {
                 switch (button) {
                     case 0:
-                        if (this.props.displayMode == DisplayMode.OnlyClusters) {
-                            break;
-                        }
                         if (this.props.activeLine) {
                             break;
                         }
 
-                        
 
 
-                        if (this.currentHover && this.currentHover instanceof Vect) {
-                            if (event.shiftKey) {
+
+                        if (this.traceSelect) {
+                            let target = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
+
+                            if (target) {
+                                // We want to select a trace between 2 clusters
+                                let paths = Story.depthFirstSearch(this.props.stories.active.toGraph(), this.traceSelect.cluster.label, target.label)
+
+                                if (paths.length > 0) {
+                                    let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                                    let mainEdges = mainPath.slice(1).map((item, index) => {
+                                        return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
+                                    })
+                                    this.props.setActiveTrace({
+                                        mainPath: mainPath,
+                                        mainEdges: mainEdges,
+                                        sidePaths: paths.slice(1).map(ids => {
+                                            let path = ids.map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                                            let edges = path.slice(1).map((item, index) => {
+                                                return this.props.stories.active.edges.find(edge => edge.source == path[index] && edge.destination == item)
+                                            })
+                                            return {
+                                                nodes: path,
+                                                edges: edges,
+                                                syncNodes: getSyncNodesAlt(mainPath, path)
+                                            }
+                                        })
+                                    })
+                                }
+                            }
+
+                            this.traceSelect = null
+                        } else if (this.currentHover && this.currentHover instanceof Vect) {
+                            // We click on a hover target
+                            if (event.ctrlKey) {
                                 // There is a hover target ... select it
                                 this.props.toggleAggregation([this.currentHover])
                             } else {
                                 this.props.setCurrentAggregation([this.currentHover])
                             }
+                        } else if (this.currentHover && this.currentHover instanceof Cluster) {
+                            this.props.setSelectedCluster(this.currentHover, event.ctrlKey)
                         }
 
 
@@ -330,26 +413,11 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                         break;
                 }
-            } else if (this.props.currentTool == Tool.Grab) {
-                // In case we have a line in the sequence UI
-                if (this.props.activeLine) {
-                    return;
-                }
-
-
-                if (event.button == 0) {
-                    let selected = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
-
-                    // Toggle
-                    if (selected) {
-                        this.onClusterClicked(selected)
-                    }
-                }
             }
         }
 
         this.mouseController.onMouseUp = (event: MouseEvent) => {
-            //console.log("mouse up")
+
         }
 
 
@@ -376,7 +444,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         if (cluster) {
                             if (this.currentHover != cluster) {
                                 this.currentHover = cluster
-                                this.props.setHoverState(cluster)
+                                this.props.setHoverState(cluster, UPDATER)
 
                                 if (this.props.dataset.isSequential) {
                                     this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
@@ -406,13 +474,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                                 if (this.currentHover != this.props.dataset.vectors[idx]) {
                                     this.currentHover = this.props.dataset.vectors[idx]
 
-                                    this.props.setHoverState(this.props.dataset.vectors[idx])
+                                    this.props.setHoverState(this.props.dataset.vectors[idx], UPDATER)
                                     this.requestRender()
                                 }
                             } else {
                                 if (this.currentHover) {
                                     this.currentHover = null
-                                    this.props.setHoverState(null)
+                                    this.props.setHoverState(null, UPDATER)
                                     this.requestRender()
                                 }
                             }
@@ -424,6 +492,51 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         }
     }
+
+
+
+
+    /**
+     * Creates the line visualization for given attribute key, e. g. line or algo
+     * 
+     * @param attribute The attribute key
+     */
+    recreateLines(attribute: string) {
+        const dataset = this.props.dataset
+        const segments = dataset.getSegs(attribute)
+
+        dataset.segments = segments
+
+
+        this.lines?.dispose(this.scene)
+        this.lines = null
+
+        this.lines = new LineVisualization(segments, this.lineColorScheme)
+        this.lines.createMesh(this.props.lineBrightness)
+        this.lines.setZoom(this.camera.zoom)
+
+        // First add lines, then particles
+        this.lines.meshes.forEach(line => this.scene.add(line.line))
+
+        this.pointScene.remove(this.particles?.mesh)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 8, this.lines?.grayedLayerSystem)
+        this.particles.createMesh(this.props.dataset.vectors, segments)
+        this.particles.zoom(this.camera.zoom)
+        this.particles.updateColor()
+        this.particles.update()
+
+
+        //this.scene.add(this.particles.mesh);
+        this.pointScene.add(this.particles.mesh)
+
+        this.requestRender()
+    }
+
+
+
+
+
+
 
 
 
@@ -526,7 +639,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     onKeyDown(event) {
     }
 
-
+    onMouseLeave(event) {
+        event.preventDefault()
+        this.mouseController.mouseLeave(event)
+    }
 
     onMouseDown(event) {
         event.preventDefault()
@@ -541,26 +657,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     onMouseUp(event: MouseEvent) {
         event.preventDefault()
         this.mouseController.mouseUp(event)
-
-        var bounds = this.containerRef.current.getBoundingClientRect()
-        var coords = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform())
-
-        switch (this.props.currentTool) {
-            case Tool.Crosshair:
-                if (this.props.displayMode == DisplayMode.OnlyClusters) {
-                    break;
-                }
-
-                var idx = this.choose(coords)
-                if (idx >= 0) {
-                    var vector = this.props.dataset.vectors[idx]
-                    this.props.setActiveLine(vector.view.segment)
-                }
-
-                break;
-        }
-
-        this.particles.update()
     }
 
 
@@ -580,6 +676,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         })
 
         this.props.setCurrentAggregation([])
+
+        this.particles?.updateColor()
     }
 
 
@@ -692,7 +790,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             this.lines.meshes.forEach(line => this.scene.add(line.line))
         }
 
-        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 12, this.lines?.grayedLayerSystem)
+        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 8, this.lines?.grayedLayerSystem)
         this.particles.createMesh(this.props.dataset.vectors, this.segments)
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
@@ -779,6 +877,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.camera.position.y = 0.0
         this.camera.updateProjectionMatrix();
 
+
+
         this.requestRender()
     }
 
@@ -842,7 +942,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         try {
             this.renderLoop()
-        } catch (e) { console.log(e) }
+        } catch { }
     }
 
 
@@ -895,6 +995,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         if (this.traceSelect) {
             this.traceSelect.viewTransform = this.createTransform()
+            this.traceSelect.mousePosition = this.mouseController.currentMousePosition
             this.traceSelect.renderToContext(extended)
         }
 
@@ -903,23 +1004,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
-    onClusterClicked(cluster: Cluster) {
-        function deriveFromClusters(clusters: Cluster[]) {
-            let agg = clusters.map(cluster => cluster.vectors).flat()
-            return [...new Set(agg)]
-        }
-
-        switch (this.props.currentTool) {
-            case Tool.Default:
-                this.props.toggleSelectedCluster(cluster)
-                this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
-                break;
-            case Tool.Grab:
-                this.props.toggleSelectedCluster(cluster)
-                this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
-                break;
-
-        }
+    onClusterClicked(cluster: Cluster, shiftKey: boolean = false) {
+        this.props.setSelectedCluster(cluster, shiftKey)
     }
 
 
@@ -942,8 +1028,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             camera.position.y = this.camera.position.y * this.camera.zoom
             camera.updateProjectionMatrix();
 
-
-
             this.renderer.clear()
             this.renderer.render(this.scene, this.camera)
 
@@ -960,27 +1044,57 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             }
 
-
             if (this.pointScene) {
                 this.renderer.render(this.pointScene, this.camera)
             }
-
-
-
 
             if (this.multivariateClusterView.current) {
                 if (this.multivariateClusterView.current.clusterScene) {
                     this.renderer.render(this.multivariateClusterView.current.clusterScene, camera)
                 }
             }
-
         } catch (e) {
         }
     }
 
+    private updateItemClusterDisplay() {
+        switch (this.props.displayMode) {
+            case DisplayMode.StatesAndClusters:
+            case DisplayMode.OnlyStates:
+                if (this.props.dataset.isSequential) {
+                    this.lines.meshes.forEach(line => {
+                        this.scene.remove(line.line)
+                        this.scene.add(line.line)
+                    })
+                }
 
+                this.pointScene.remove(this.particles.mesh)
+                this.pointScene.add(this.particles.mesh)
+                break;
+            case DisplayMode.OnlyClusters:
+            case DisplayMode.None:
+                if (this.props.dataset.isSequential) {
+                    this.lines.meshes.forEach(line => {
+                        this.scene.remove(line.line)
+                    })
+                }
+
+                this.pointScene.remove(this.particles.mesh)
+                break;
+        }
+    }
 
     componentDidUpdate(prevProps, prevState) {
+        if (prevProps.pointColorScale != this.props.pointColorScale || prevProps.stories != this.props.stories) {
+            if (this.props.channelColor && this.props.pointColorScale) {
+                let mapping = mappingFromScale(this.props.pointColorScale, this.props.channelColor, this.props.dataset)
+                this.props.setPointColorMapping(mapping)
+                this.particles.colorCat(this.props.channelColor, mapping)
+            } else {
+                this.props.setPointColorMapping(null)
+                this.particles?.colorCat(null, null)
+            }
+        }
 
         if (prevProps.stories != this.props.stories) {
             if (this.props.stories.active) {
@@ -990,6 +1104,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 this.lines?.update()
 
                 this.particles?.update()
+                this.particles?.updateColor()
             } else {
                 this.particles?.storyTelling(null)
 
@@ -997,17 +1112,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 this.lines?.update()
 
                 this.particles?.update()
-            }
-        }
-
-        if (prevProps.pointColorScale != this.props.pointColorScale) {
-            if (this.props.channelColor && this.props.pointColorScale) {
-                let mapping = mappingFromScale(this.props.pointColorScale, this.props.channelColor, this.props.dataset)
-                this.props.setPointColorMapping(mapping)
-                this.particles.colorCat(this.props.channelColor, mapping)
-            } else {
-                this.props.setPointColorMapping(null)
-                this.particles.colorCat(null, null)
+                this.particles?.updateColor()
             }
         }
 
@@ -1016,73 +1121,43 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             this.particles.updateSize()
         }
 
+        if (prevProps.globalPointBrightness != this.props.globalPointBrightness && this.particles) {
+            this.particles.transparencyCat(this.props.channelBrightness, this.props.globalPointBrightness)
+            this.particles.updateColor()
+            this.particles.update()
+        }
+
 
         if (prevProps.lineBrightness != this.props.lineBrightness) {
             this.lines?.setBrightness(this.props.lineBrightness)
         }
 
         if (prevProps.displayMode != this.props.displayMode) {
-            switch (this.props.displayMode) {
-                case DisplayMode.StatesAndClusters:
-                    if (this.props.dataset.isSequential) {
-                        this.lines.meshes.forEach(line => {
-                            this.scene.remove(line.line)
-                            this.scene.add(line.line)
-                        })
-                    }
-
-                    this.pointScene.remove(this.particles.mesh)
-                    this.pointScene.add(this.particles.mesh)
-                    break;
-                case DisplayMode.OnlyClusters:
-                    if (this.props.dataset.isSequential) {
-                        this.lines.meshes.forEach(line => {
-                            this.scene.remove(line.line)
-                        })
-                    }
-
-                    this.pointScene.remove(this.particles.mesh)
-                    break;
-            }
+            this.updateItemClusterDisplay();
         }
 
 
-        if (!arraysEqual(prevProps.currentAggregation, this.props.currentAggregation)) {
+        if (!arraysEqual(prevProps.currentAggregation.aggregation, this.props.currentAggregation.aggregation)) {
             if (this.props.dataset.isSequential) {
-                var uniqueIndices = [...new Set(this.props.currentAggregation.map(vector => vector.view.segment.lineKey))]
+                var uniqueIndices = [...new Set(this.props.currentAggregation.aggregation.map(vector => vector.view.segment.lineKey))]
 
                 this.lines.groupHighlight(uniqueIndices)
             } else {
-                this.particles.groupHighlight(this.props.currentAggregation)
+                this.particles.groupHighlight(this.props.currentAggregation.aggregation)
             }
 
             this.props.dataset.vectors.forEach(sample => sample.view.selected = false)
-            this.props.currentAggregation.forEach(sample => {
+            this.props.currentAggregation.aggregation.forEach(sample => {
                 sample.view.selected = true
             })
 
             this.particles.update()
+            this.particles.updateColor()
         }
 
-        // If 
-        if ((this.props.currentTool == Tool.Default && !arraysEqual(prevProps.currentAggregation, this.props.currentAggregation))
-            || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Default)) {
-            this.multivariateClusterView?.current.highlightSamples(this.props.currentAggregation)
-        }
 
-        // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
-        if (!arraysEqual(prevProps.selectedClusters, this.props.selectedClusters)
-            || (prevProps.currentTool != this.props.currentTool && this.props.currentTool == Tool.Grab)) {
 
-            this.multivariateClusterView?.current.highlightCluster(this.props.selectedClusters)
 
-            function deriveFromClusters(clusters: Cluster[]) {
-                let agg = clusters.map(cluster => cluster.vectors).flat()
-                return [...new Set(agg)]
-            }
-
-            this.props.setCurrentAggregation(deriveFromClusters(this.props.selectedClusters))
-        }
 
         // Path length range has changed, update view accordingly
         if (this.props.dataset && this.props.dataset.isSequential && prevProps.pathLengthRange !== this.props.pathLengthRange) {
@@ -1093,6 +1168,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
             this.lines.update()
             this.particles.update()
+            this.particles.updateColor()
         }
 
         if (prevProps.vectorByShape != this.props.vectorByShape && this.particles) {
@@ -1106,13 +1182,11 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         if (prevProps.activeLine != this.props.activeLine) {
             if (this.props.activeLine != null) {
-                // Highlight correct line
-
-                //this.lines.groupHighlight([this.props.activeLine.lineKey])
                 this.lines.highlight([this.props.activeLine.lineKey], this.getWidth(), this.getHeight(), this.scene, true)
             } else {
                 this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene, true)
                 this.particles.update()
+                this.particles.updateColor()
             }
         }
 
@@ -1181,43 +1255,20 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.multivariateClusterView?.current.createTriangulatedMesh()
     }
 
-    renderEdge(ctx) {
-        if (this.trees) {
+    loadProjection(projection: Embedding) {
+        this.props.dataset.vectors.forEach(vector => {
+            let position = projection.positions[vector.view.meshIndex]
+            vector.x = position.x
+            vector.y = position.y
+        })
 
-            ctx.setLineDash([]);
-            ctx.strokeStyle = 'rgba(127, 127, 255, 0.7)';
-            ctx.lineWidth = 10 * window.devicePixelRatio;
-
-            ctx.beginPath()
-
-            this.trees.forEach(tree => {
-                tree.forEach((connection, i) => {
-                    var a = this.edgeClusters[connection.source]
-                    var b = this.edgeClusters[connection.target]
-
-                    var p0 = CameraTransformations.worldToScreen(new Cluster(a.map(e => e.source)).getCenter(), this.createTransform())
-                    var p1 = CameraTransformations.worldToScreen(new Cluster(a.map(e => e.target)).getCenter(), this.createTransform())
-
-                    ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
-                    ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
-
-                    p0 = CameraTransformations.worldToScreen(new Cluster(b.map(e => e.source)).getCenter(), this.createTransform())
-                    p1 = CameraTransformations.worldToScreen(new Cluster(b.map(e => e.target)).getCenter(), this.createTransform())
-                    ctx.moveTo(p0.x * window.devicePixelRatio, p0.y * window.devicePixelRatio)
-                    ctx.lineTo(p1.x * window.devicePixelRatio, p1.y * window.devicePixelRatio)
-                })
-            })
-
-            ctx.stroke()
-            ctx.closePath()
-        }
+        this.updateXY()
     }
 
-
-
     onClusterZoom(cluster) {
-        this.props.setCurrentAggregation(cluster.vectors)
-        this.props.setSelectedClusters([cluster])
+        this.props.setSelectedCluster(cluster, false)
+        //this.props.setCurrentAggregation(cluster.vectors)
+        //this.props.setSelectedClusters([cluster])
     }
 
 
@@ -1233,9 +1284,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             onContextMenu={
                 (event) => { event.preventDefault() }
             }
+            onMouseLeave={
+                (event) => { this.onMouseLeave(event) }
+            }
             style={{
-                //display: 'flex',
-                //flexGrow: 1,
                 width: '100%',
                 height: '100%',
                 overflow: "hidden",
@@ -1273,36 +1325,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             >
                 <MenuItem onClick={() => {
-                    // when lineup is shown, hide fingerprint
-                    this.props.setLineUpInput_data(this.props.dataset.vectors); // can be removed, if the input data would always be the whole dataset
-                    this.props.setLineUpInput_visibility(true);
-
-                    handleClose()
-                }}>Load LineUp</MenuItem>
-
-                <MenuItem onClick={() => {
-                    // Only load LineUp if the current selection is not empty
-                    if (this.props.currentAggregation.length > 0) {
-                        this.props.setLineUpInput_data(this.props.currentAggregation); // can be removed, if the input data would always be the whole dataset
-                        this.props.setLineUpInput_visibility(true);
-
-                        handleClose()
-                    }
-                }}>Load LineUp (selection only)</MenuItem>
-
-                <MenuItem onClick={() => {
-                    this.props.setLineUpInput_visibility(false);
-
-                    handleClose()
-                }}>{'Debug -> Close LineUp'}</MenuItem>
-
-                <Divider orientation="horizontal"></Divider>
-
-
-                <MenuItem onClick={() => {
-                    // Set LineUp input to null closes it
-                    if (this.props.currentAggregation.length > 0) {
-                        let cluster = Cluster.fromSamples(this.props.currentAggregation)
+                    if (this.props.currentAggregation.aggregation.length > 0) {
+                        let cluster = Cluster.fromSamples(this.props.currentAggregation.aggregation)
 
                         if (!this.props.stories.active) {
                             let story = new Story([cluster], [])
@@ -1314,7 +1338,21 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     }
 
                     handleClose()
-                }}>{"Create Cluster from Selection"}</MenuItem>
+                }}>{"Create Group from Selection"}</MenuItem>
+
+                <MenuItem onClick={() => {
+                    var coords = CameraTransformations.screenToWorld({ x: this.mouseController.currentMousePosition.x, y: this.mouseController.currentMousePosition.y }, this.createTransform())
+
+                    if (this.props.displayMode == DisplayMode.OnlyClusters) {
+                        return;
+                    }
+
+                    var idx = this.choose(coords)
+                    if (idx >= 0) {
+                        var vector = this.props.dataset.vectors[idx]
+                        this.props.setActiveLine(vector.view.segment)
+                    }
+                }}>Investigate Line</MenuItem>
             </Menu>
 
 
@@ -1335,10 +1373,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
                     handleClose()
-                }}>{'Delete Cluster'}</MenuItem>
+                }}>{'Delete Group'}</MenuItem>
 
                 <MenuItem onClick={() => {
                     let paths = this.props.stories.active.getAllStoriesFromSource(this.state.menuTarget.label)
+
+
 
                     if (paths.length > 0) {
                         let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
@@ -1363,13 +1403,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     }
 
                     handleClose()
-                }}>{"Stories ... Starting from this Cluster"}</MenuItem>
+                }}>{"Stories ... Starting from this Group"}</MenuItem>
 
                 <MenuItem onClick={() => {
                     this.traceSelect = new TraceSelectTool(this.state.menuTarget)
 
                     handleClose()
-                }}>{"Stories ... Between 2 Clusters"}</MenuItem>
+                }}>{"Stories ... Between 2 Groups"}</MenuItem>
 
             </Menu>
 
@@ -1378,3 +1418,15 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         </div>
     }
 })
+
+
+/**const LinupDumpMenuItem = props => {
+    const [openDumpDialog, setOpenDumpDialog] = React.useState(false);
+
+    return <div><MenuItem onClick={() => {
+        props.handleClose();
+        setOpenDumpDialog(() => true);
+    }}>{'Load Table from dump'}</MenuItem>
+    <LineUpDumpDialog openDialog={openDumpDialog} setOpenDumpDialog={setOpenDumpDialog}></LineUpDumpDialog>
+    </div>
+}**/

@@ -1,0 +1,46 @@
+FROM ubuntu:14.04
+MAINTAINER Christina Humer <christina.humer@jku.at>
+
+# The conda instalation is taking long, maybe
+#TODO there is a conda implementation just as there is a Node implementation to call? for example:
+# FROM continuumio/anaconda3
+# RUN /opt/conda/bin/conda update -n base -c defaults conda && \
+#    /opt/conda/bin/conda install python=3.6 && \
+
+## install miniconda
+ENV PATH="/root/miniconda3/bin:${PATH}"
+ARG PATH="/root/miniconda3/bin:${PATH}"
+RUN apt-get update
+
+RUN apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+RUN wget \
+    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && mkdir /root/.conda \
+    && bash Miniconda3-latest-Linux-x86_64.sh -b \
+    && rm -f Miniconda3-latest-Linux-x86_64.sh 
+RUN conda --version
+###
+
+RUN apt-get update && apt-get install -y python-pip python-dev && apt-get clean
+
+RUN conda install -c conda-forge rdkit
+RUN pip install bottle
+
+
+#define target folder
+WORKDIR /app
+
+#copy everything from our backend to our app folder
+COPY backend /app/
+
+#copy the pre-built front-end
+#TODO the docker could build and copy
+COPY dist/ /app/dist/ 
+
+EXPOSE 8080
+
+CMD ["python", "backend-cime-dist.py"]
+
+# Running
+# docker build -f Dockerfile -t cime .
+# docker run -d -p 8080:8080 --detach cime

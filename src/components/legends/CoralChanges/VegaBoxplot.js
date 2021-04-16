@@ -2,11 +2,11 @@ import React, { PropTypes } from 'react';
 import {createClassFromLiteSpec} from 'react-vega-lite';
 
 export default createClassFromLiteSpec('BoxplotChanges', {
-    "height": 100,
-    "width": 250,
+    "width": 100,
     "mark": {
       "type": "boxplot",
-      "extent": "min-max"
+      "extent": "min-max",
+      "median": {"color": "black"}
     },
     "encoding": {
       "y": {"field": "selection", "type": "nominal", "axis": null},
@@ -14,9 +14,14 @@ export default createClassFromLiteSpec('BoxplotChanges', {
         "field": "val",
         "type": "quantitative",
         "scale": {"zero": false},
-        "axis": {"title": null}
+        "axis": {"title": null, "grid": false}
       },
-      "color": {"field": "selection", "type": "nominal", "legend": null}
+      "color": {
+        "value": "#007dad"
+      }
+    },
+    "config": {
+      "view": {"stroke": 0}
     }
   }
 );

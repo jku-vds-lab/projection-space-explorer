@@ -1,13 +1,21 @@
-import { LineUp, LineUpCategoricalColumnDesc, LineUpColumn, LineUpColumnDesc, LineUpNumberColumnDesc, LineUpStringColumnDesc } from "lineupjsx";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../Store/Store";
-// import * as LineUpJs from 'lineupjs'
+import * as LineUpJS from 'lineupjs'
 import './LineUpContext.scss';
 import { setAggregationAction } from "../Ducks/AggregationDuck";
-import { Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn } from "lineupjs";
+import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM, ICategoricalColumn, isCategoricalColumn, isCategoricalLikeColumn, CategoricalColumn } from "lineupjs";
 
 import * as backend_utils from "../../utils/backend-connect";
+import { FeatureType } from "../Utility/Data/FeatureType";
+import { PrebuiltFeatures } from "../Utility/Data/Dataset";
+import { setLineUpInput_lineup, setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
+import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
+import * as _ from 'lodash';
+import BarCellRenderer from "./BarCellRenderer";
+import { DiscreteMapping } from "../Utility/Colors/DiscreteMapping";
+import { ShallowSet } from "../Utility/ShallowSet";
+import Cluster from "../Utility/Data/Cluster";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -16,10 +24,14 @@ import * as backend_utils from "../../utils/backend-connect";
  */
 const mapStateToProps = (state: RootState) => ({
     lineUpInput: state.lineUpInput,
-    currentAggregation: state.currentAggregation
+    lineUpInput_data: state.dataset?.vectors,
+    lineUpInput_columns: state.dataset?.columns,
+    currentAggregation: state.currentAggregation,
+    activeStory: state.stories?.active,
+    pointColorScale: state.pointColorScale,
+    // splitRef: state.splitRef
+    //hoverState: state.hoverState
 })
-
-
 
 
 /**
@@ -28,7 +40,9 @@ const mapStateToProps = (state: RootState) => ({
  * @param dispatch The generic dispatch function declared in redux
  */
 const mapDispatchToProps = dispatch => ({
-    setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
+    setCurrentAggregation: samples => dispatch(setAggregationAction(samples)),
+    setLineUpInput_visibility: visibility => dispatch(setLineUpInput_visibility(visibility)),
+    setLineUpInput_lineup: input => dispatch(setLineUpInput_lineup(input)),
 })
 
 
@@ -43,197 +57,512 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
  */
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-
-
-
 /**
  * Type that holds every property that is relevant to our component, that is the props declared above + our OWN component props
  */
+// type Props = PropsFromRedux & {
+//     onFilter: any
+//     // My own property 1
+//     // My own property 2
+// }
+
 type Props = PropsFromRedux & {
-    onFilter: any
-    // My own property 1
-    // My own property 2
+    onFilter, hoverUpdate
 }
 
 function arrayEquals(a, b) {
     return Array.isArray(a) &&
-      Array.isArray(b) &&
-      a.length === b.length &&
-      a.every((val, index) => val === b[index]);
-  }
+        Array.isArray(b) &&
+        a.length === b.length &&
+        a.every((val, index) => val === b[index]);
+}
 
-// taken from: https://github.com/VirginiaSabando/ChemVA/blob/master/ChemVA_client/public/main.js
-var colors = ['#000000','#E69F00','#56B4E9','#009E73','#F0E442', '#0072B2', '#D55E00','#CC79A7'];
-var cur_col = 0;
+
+const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "clusterProbability"];
+// let lineup = null;
+const UPDATER = "lineup";
+const UNIQUE_ID = "unique_ID";
+
 /**
  * Our component definition, by declaring our props with 'Props' we have static types for each of our property
  */
-export const LineUpContext = connector(function ({ lineUpInput, currentAggregation, setCurrentAggregation, onFilter }: Props) {
+export const LineUpContext = connector(function ({ 
+    lineUpInput, 
+    lineUpInput_data, 
+    lineUpInput_columns, 
+    currentAggregation, 
+    setCurrentAggregation, 
+    setLineUpInput_lineup, 
+    setLineUpInput_visibility, 
+    onFilter, 
+    activeStory, 
+    pointColorScale,
+    hoverUpdate }: Props) {
     // In case we have no input, dont render at all
-    if (!lineUpInput || !lineUpInput.data || !lineUpInput.show) {
+    if (!lineUpInput || !lineUpInput_data || !lineUpInput.show) {
+        //splitRef?.current?.setSizes([100, 0])
         return null;
     }
-    lineUpInput.data.forEach(element => {
-        if(element["clusterLabel"].length <= 0){
-            element["clusterLabel"] = [-1];
-        }
-    });
+    let lineup_ref = React.useRef();
+    
 
-    let ref = React.useRef()
-    React.useEffect(() => {
-        // @ts-ignore
-        ref.current.adapter.instance.data.getFirstRanking().on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
-            
-            if (dirtyReason.indexOf('filter') === -1) {
-                return;
-            }
+    const debouncedHighlight = React.useCallback(_.debounce(hover_item => hoverUpdate(hover_item, UPDATER), 200), []);
 
-            const onRankingChanged = (current) => {
-                for (let i=0; i < lineUpInput.data.length; i++) {
-                    lineUpInput.data[i].view.lineUpFiltered = !current.includes(i);
+    const preprocess_lineup_data = (data) => {
+        if(activeStory)
+            Cluster.deriveVectorLabelsFromClusters(data, activeStory.clusters)
+        let lineup_data = [];
+        data.forEach(element => {
+
+            // if(element[PrebuiltFeatures.ClusterLabel].length <= 0){
+            //     element[PrebuiltFeatures.ClusterLabel] = [-1];
+            // }
+            let row = Object.assign({}, element)
+            row[PrebuiltFeatures.ClusterLabel] = element[PrebuiltFeatures.ClusterLabel].toString();
+            row[UNIQUE_ID] = element["__meta__"]["view"]["meshIndex"];
+            lineup_data.push(row);
+        });
+
+        return lineup_data;
+    }
+
+    const clear_automatic_filters = (lineUpInput, filter) => {
+        if (filter) {
+            for (const key in filter) {
+                const lineup = lineUpInput.lineup;
+                const ranking = lineup.data.getFirstRanking();
+                if (key === 'selection') {
+                    const filter_col = ranking.children.find(x => { return x.desc.column == UNIQUE_ID; });
+                    filter_col?.clearFilter()
+                } else {
+                    const filter_col = ranking.children.find(x => { return x.desc.column == key; });
+                    filter_col?.clearFilter()
                 }
-
-                onFilter()
-
             }
 
-            onRankingChanged(current)
+        }
+    }
+    const get_lineup_dump = (lineUpInput) => {
+        if(lineUpInput.lineup){
+            clear_automatic_filters(lineUpInput, lineUpInput.filter)
+            const dump = lineUpInput.lineup.dump()
+            return dump;
+        }
+        return null;
+    }
 
-        })
+    React.useEffect(() => {
+        
+        // if(lineUpInput.dump){
+        //     try {
+        //         const json_parsed = JSON.parse(lineUpInput.dump)
+        //         const restored = fromDumpFile(json_parsed)
+        //         console.log(restored);
+        //         const builder = buildLineup(lineUpInput.columns, restored.dat).restore(restored.dump);
+        //         // const builder = LineUpJS.builder(restored.data).restore(restored.dump);
+        //         lineup?.destroy();
+        //         lineup = builder.build(lineup_ref.current);
+        //         return;
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // }
 
-        // @ts-ignore
-        const lineup = ref.current.adapter.instance;
 
-        lineup.on('selectionChanged', e => {
-            const currentSelection_lineup = lineup.getSelection();
-            if(currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
+        let lineup_data = preprocess_lineup_data(lineUpInput_data);
+
+        const builder = buildLineup(lineUpInput_columns, lineup_data, pointColorScale); //lineUpInput_data
+        let dump = get_lineup_dump(lineUpInput);
+
+        lineUpInput.lineup?.destroy();
+        let lineup = null;
+        lineup = builder.build(lineup_ref.current);
+        if(dump){
+            lineup.restore(dump);
+        }
+        
+
+        const ranking = lineup.data.getFirstRanking();
+
+        // add selection checkbox column
+        let selection_col = ranking.children.find(x => x.label == "Selection Checkboxes");
+        if (!selection_col) {
+            selection_col = lineup.data.create(createSelectionDesc());
+            if (selection_col) {
+                ranking.insert(selection_col, 1);
+            }
+        }
+
+        // // make lineup filter interact with the scatter plot view
+        // ranking.on('orderChanged.custom', (previous, current, previousGroups, currentGroups, dirtyReason) => {
+
+        //     if (dirtyReason.indexOf('filter') === -1) {
+        //         return;
+        //     }
+
+        //     const onRankingChanged = (current) => {
+        //         for (let i=0; i < lineUpInput.data.length; i++) {
+        //             lineUpInput.data[i].view.lineUpFiltered = !current.includes(i);
+        //         }
+
+        //         onFilter()
+
+        //     }
+
+        //     onRankingChanged(current)
+        // });
+
+        // make lineup selection interact with the scatter plot view
+        lineup.on('selectionChanged', currentSelection_lineup => {
+            // if(currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
             
-            const currentSelection_scatter = lineUpInput.data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
+            const currentSelection_scatter = lineUpInput_data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
             
             if(!arrayEquals(currentSelection_lineup, currentSelection_scatter)){ // need to check, if the current lineup selection is already the current aggregation
                 let agg = [];
                 currentSelection_lineup.forEach(index => {
-                    agg.push(lineUpInput.data[index]);
+                    agg.push(lineUpInput_data[index]);
                 })
 
                 setCurrentAggregation(agg);
             }
         });
 
-        if(smiles_col)
-            lineup.data.getFirstRanking().columns.find(x => x.label == smiles_col).on("widthChanged", (prev, current) => {
-                lineup.update()
-            });
+        lineup.on('highlightChanged', idx => {
+            let hover_item = null;
+            if (idx >= 0) {
+                hover_item = lineUpInput_data[idx];
+            }
+            debouncedHighlight(hover_item);
+        });
 
-    }, [lineUpInput.data])
+        // update lineup when smiles_column width changes
+        if (smiles_structure_columns && smiles_structure_columns.length > 0) {
+            const lineup_smiles_cols = ranking.children.filter(x => smiles_structure_columns.includes(x.label));
+            for (const i in lineup_smiles_cols) {
+                let lineup_smiles_col = lineup_smiles_cols[i];
+                lineup_smiles_col.on("widthChanged", (prev, current) => {
+                    lineup.update()
+                });
+
+                // custom filter adapted from michael
+                const filterChanged = (prev, cur: IStringFilter) => {
+                    if(prev?.filter !== cur?.filter){ // only update, if it is a new filter
+                        const filter = typeof(cur?.filter) === 'string' ? cur?.filter : null; // only allow string filters -> no regex (TODO: remove regex checkbox)
+                        if(lineup_smiles_col && filter) {
+                            backend_utils.get_substructure_count(lineUpInput_data.map((d) => d[lineup_smiles_col.desc.column]), filter).then((matches) => {
+                                const validSmiles = matches.filter(([smiles, count]) => count > 0).map(([smiles, count]) => smiles);
+                                lineup_smiles_col.setFilter({
+                                    filter,
+                                    valid: new Set(validSmiles),
+                                    filterMissing: cur.filterMissing
+                                });
+                            }).catch((e) => {
+                                lineup_smiles_col.setFilter(null);
+                            });
+                        }
+                    }
+                };
+                lineup_smiles_col.on(StringColumn.EVENT_FILTER_CHANGED, filterChanged);
+            }
+        }
+
+        setLineUpInput_lineup(lineup);
+
+    }, [lineUpInput_data, lineUpInput_columns, activeStory, activeStory?.clusters, activeStory?.clusters?.length, lineUpInput.update]);
+
+    // React.useEffect(() => { //TODO: not working...
+    //     // update lineup, if current storybook (current cluster) changed
+    //     if(lineUpInput.lineup){
+    //         const data_provider = lineUpInput.lineup.data;
+    //         let lineup_data = preprocess_lineup_data(lineUpInput_data);
+    //         console.log("setdata")
+    //         data_provider.setData(lineup_data);
+
+    //         const ranking = lineUpInput.lineup.data.getFirstRanking();
+    //         const my_col_builder = LineUpJS.buildCategoricalColumn(PrebuiltFeatures.ClusterLabel);
+    //         console.log(lineup_data)
+    //          ranking.insert(lineUpInput.lineup.data.create(my_col_builder.build(lineup_data)));
+    //         ranking.insert(lineUpInput.lineup.data.create(my_col_builder.build([]])));
+
+    //         // const ranking = lineUpInput.lineup.data.getFirstRanking();
+    //         // // let cluster_col = ranking.columns.find(x => x.desc.column == PrebuiltFeatures.ClusterLabel);
+    //         // // const my_desc = cluster_col.desc;
+    //         // // my_desc.categories = ["test"]
+    //         // // const my_col = new CategoricalColumn(cluster_col.id, cluster_col.desc)
+    //         // const my_col_builder = LineUpJS.buildCategoricalColumn(PrebuiltFeatures.ClusterLabel);
+    //         // // console.log()
+    //         // ranking.insert(lineUpInput.lineup.data.create(my_col_builder.build(lineup_data))); //asSet(',')
+            
+    //         // // data_provider.setData(lineup_data)
+    //         // // lineUpInput.lineup.update();
+    //         // // lineUpInput.lineup?.setDataProvider(data_provider);
+    //         // lineUpInput.lineup.restore(lineUpInput.lineup.dump())
+
+    //         // // console.log(cluster_col.dump())
+    //         // // console.log(lineUpInput.lineup.dump())
+            
+    //     }
+    // }, [activeStory, activeStory?.clusters, activeStory?.clusters?.length]);
+
 
     // this effect is allways executed after the component is rendered when currentAggregation changed
     React.useEffect(() => {
-        // @ts-ignore
-        const lineup = ref.current.adapter.instance;
-        if(currentAggregation && currentAggregation.length > 0){
-            const currentSelection_scatter = lineUpInput.data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
-            lineup.setSelection(currentSelection_scatter);
-        }
-    }, [currentAggregation])
 
+        if (lineUpInput.lineup != null) {
 
+            // select those instances that are also selected in the scatter plot view
+            if (currentAggregation.aggregation && currentAggregation.aggregation.length > 0) {
+                const currentSelection_scatter = lineUpInput_data.map((x, i) => { if (x.view.selected) return i; }).filter(x => x !== undefined);
+                lineUpInput.lineup.setSelection(currentSelection_scatter);
 
-    let cols = lineUpInput.columns;
+                // const lineup_idx = lineup.renderer?.rankings[0]?.findNearest(currentSelection_scatter);
+                // lineup.renderer?.rankings[0]?.scrollIntoView(lineup_idx);
 
-    cur_col = 0;
-    let lineup_col_list = [];
-    for (const i in cols) {
-        let col = cols[i];
-        let show = typeof col.meta_data !== 'undefined' && col.meta_data.includes("lineup_show");
-
-        if(!col.meta_data || !col.meta_data.includes("lineup_none")){ // only if there is a "lineup_none" modifier at this column, we don't do anything
-            if(col.meta_data && col.meta_data.includes("smiles_to_img")){
-                smiles_col = "Structure";
-                lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} label={smiles_col} visible={show} renderer="mySmilesRenderer" groupRenderer="mySmilesRenderer" width={150} />) 
+                // set the grouping to selection checkboxes -> uncomment if this should be automatically if something changes
+                // const ranking = lineup.data.getFirstRanking();
+                // let selection_col = ranking.children.find(x => x.label == "Selection Checkboxes");
+                // ranking.groupBy(selection_col, -1) // remove grouping first
+                // ranking.groupBy(selection_col);
+            } else {
+                lineUpInput.lineup.setSelection([]);
             }
-
-            if(col.isNumeric){
-                lineup_col_list.push(<LineUpNumberColumnDesc key={i} column={i} domain={[col.range.min, col.range.max]} color={colors[cur_col]} visible={show} />);
-                cur_col = (cur_col + 1) % colors.length;
-            }else if(col.distinct)
-                if(col.distinct.length/lineUpInput.data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
-                    lineup_col_list.push(<LineUpCategoricalColumnDesc key={i} column={i} categories={col.distinct} visible={show} />)
-                else
-                    lineup_col_list.push(<LineUpStringColumnDesc width={100} key={i} column={i} visible={show} />) 
-            else
-                lineup_col_list.push(<LineUpStringColumnDesc key={i} column={i} visible={show} />)
         }
-        
-    }
 
-    
+    }, [lineUpInput.lineup, currentAggregation])
 
-    return <div className="LineUpParent">
-        <LineUp ref={ref} data={lineUpInput.data} dynamicHeight={myDynamicHeight} renderers={{mySmilesRenderer: new MySmilesCellRenderer()}} >
-            {lineup_col_list}
-        </LineUp>
-    </div>
+    React.useEffect(() => {
+        if (lineUpInput.lineup && lineUpInput.lineup.data) {
+            const ranking = lineUpInput.lineup.data.getFirstRanking();
+            clear_automatic_filters(lineUpInput, lineUpInput.previousfilter);
+            if (lineUpInput.filter) {
+                for (const key in lineUpInput.filter) {
+                    const cur_filter = lineUpInput.filter[key];
+
+                    if(key === 'reset' && cur_filter){
+                        ranking.clearFilters();
+                    }else if (key === 'selection') {
+                        const filter_col = ranking.children.find(x => { return x.desc.column == UNIQUE_ID; });
+
+                        let regex_str = "";
+                        lineUpInput.filter[key].forEach(element => {
+                            regex_str += "|"
+                            regex_str += element["__meta__"]["view"]["meshIndex"]
+                        });
+                        regex_str = regex_str.substr(1); // remove the leading "|"
+                        const my_regex = new RegExp(`^(${regex_str})$`, "i"); // i modifier says that it's not case sensitive; ^ means start of string; $ means end of string
+                        filter_col?.setFilter({
+                            filter: my_regex,
+                            filterMissing: true
+                        });
+                    } else {
+                        const filter_col = ranking.children.find(x => { return x.desc.column == key; });
+                        const my_regex = new RegExp(`^(.+,)?${cur_filter}(,.+)?$`, "i"); // i modifier says that it's not case sensitive; ^ means start of string; $ means end of string
+                        filter_col?.setFilter({
+                            filter: my_regex,
+                            filterMissing: true
+                        });
+                    }
+                }
+
+            }
+            
+
+        }
+    }, [lineUpInput.lineup, lineUpInput.filter]);
+
+
+    //https://github.com/lineupjs/lineup_app/blob/master/src/export.ts
+    return false ?
+        <MyWindowPortal onClose={() => { lineUpInput.lineup?.destroy(); setLineUpInput_visibility(false); }}>
+            <div ref={lineup_ref} id="lineup_view"></div>
+        </MyWindowPortal> :
+        <div className="LineUpParent">
+            <div><div ref={lineup_ref} id="lineup_view"></div></div>
+        </div>
 })
 
 
-let smiles_col = null;
-function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight{
-    if(smiles_col){
-        const col = ranking.children.find(x => x.label == smiles_col);
-        const col_width = col.getWidth();
 
-        let height = function(item: IGroupItem | Readonly<IOrderedGroup>): number{
+let smiles_structure_columns = [];
+function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight {
+    if (smiles_structure_columns.length > 0) {
+        const cols = ranking.children.filter(x => smiles_structure_columns.includes(x.label));
+        if (!cols || cols.length == 0)
+            return null;
+
+        const col_widths = cols.map(x => x.getWidth());
+        const col_width = Math.max(Math.max(...col_widths), 23);//col.getWidth();
+
+        let height = function (item: IGroupItem | Readonly<IOrderedGroup>): number {
             return col_width;
         }
-        let padding = function(item: IGroupItem | Readonly<IOrderedGroup>): number{
+        let padding = function (item: IGroupItem | Readonly<IOrderedGroup>): number {
             return 0;
         }
-        return { defaultHeight: col_width, height:height, padding:padding};
+        return { defaultHeight: col_width, height: height, padding: padding };
     }
-    return null;
+    return { defaultHeight: 23, height:() => 23, padding: () => 0};
 }
 
 
-export class MySmilesCellRenderer implements ICellRendererFactory {
-    readonly title: string = 'Image';
-  
-    canRender(col: Column, mode: ERenderMode): boolean {
-      return col instanceof LinkColumn && mode === ERenderMode.CELL;
+function buildLineup(cols, data, pointColorScale) {
+
+    let groupLabel_mapping = new DiscreteMapping(pointColorScale, new ShallowSet(data.map(vector => vector[PrebuiltFeatures.ClusterLabel])))
+    const groupLabel_cat_color = groupLabel_mapping.values
+        .filter(cat => cat && cat !== "")
+        .map(cat => {
+            return {name: cat, color: groupLabel_mapping.map(cat).hex};
+        })
+    
+    const builder = LineUpJS.builder(data);
+
+    for (const i in cols) {
+        let col = cols[i];
+        let show = true; //!(typeof col.metaInformation.hideLineUp !== 'undefined' && col.metaInformation.hideLineUp); // hide column if "hideLineUp" is specified -> there is a lineup bug with that option
+
+        if (!EXCLUDED_COLUMNS.includes(i) && (Object.keys(col.metaInformation).length <= 0 || !col.metaInformation.noLineUp)) { // only if there is a "noLineUp" modifier at this column or thix column is excluded, we don't do anything
+            if (col.metaInformation.imgSmiles) {
+                const smiles_col = "Structure: " + i;
+                smiles_structure_columns.push(smiles_col);
+                builder.column(LineUpJS.buildColumn("mySmilesStructureColumn", i).label(smiles_col).renderer("mySmilesStructureRenderer", "mySmilesStructureRenderer").width(50).build([]));
+
+            }
+            if(i == PrebuiltFeatures.ClusterLabel){
+                const clust_col = LineUpJS.buildCategoricalColumn(i, groupLabel_cat_color).custom("visible", show).width(70) // .asSet(',')
+                builder.column(clust_col);
+            }
+            else if (typeof col.featureType !== 'undefined') {
+                switch (col.featureType) {
+                    case FeatureType.Categorical:
+                        if (data && col.distinct && col.distinct.length / data.length <= 0.5) {
+                            builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
+                        } else {
+                            builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
+                        }
+                        break;
+                    case FeatureType.Quantitative:
+                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show));//.renderer("myBarCellRenderer")); //.renderer("numberWithValues")
+                        break;
+                    case FeatureType.Date:
+                        builder.column(LineUpJS.buildDateColumn(i).custom("visible", show));
+                        break;
+                    default:
+                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
+                        break;
+
+                }
+            } else {
+                if (col.isNumeric) {
+                    builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));//.renderer("myBarCellRenderer"));
+                } else if (col.distinct)
+                    if (data && col.distinct.length / data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
+                        builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
+                    else
+                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
+                else
+                    builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
+            }
+        }
     }
-  
-    create(col: LinkColumn): ICellRenderer {
+
+    builder.column(LineUpJS.buildStringColumn("Annotations").editable())
+    builder.column(LineUpJS.buildStringColumn(UNIQUE_ID).width(50)); // we need this to be able to filter by all indices; this ID corresponds to the mesh index
+
+    builder.defaultRanking(true);
+    builder.deriveColors();
+    builder.registerRenderer("mySmilesStructureRenderer", new MySmilesStructureRenderer());
+    builder.registerRenderer("myBarCellRenderer", new BarCellRenderer(true));
+    builder.registerColumnType("mySmilesStructureColumn", StructureImageColumn);
+    builder.sidePanel(true, true); // collapse side panel by default
+    builder.livePreviews({
+        filter: false
+    });
+    builder.dynamicHeight(myDynamicHeight);
+    builder.animated(false);
+
+
+    return builder;
+}
+
+export interface IStructureFilter extends IStringFilter {
+    filter: string;
+    valid: Set<string>;
+}
+export class StructureImageColumn extends StringColumn {
+    protected structureFilter: IStructureFilter | null = null;
+    filter(row: IDataRow): boolean {
+        if (!this.isFiltered()) {
+            return true;
+        }
+        return this.structureFilter!.valid.has(this.getLabel(row));
+    }
+    isFiltered(): boolean {
+        return this.structureFilter != null && this.structureFilter.valid?.size > 0;
+    }
+    getFilter() {
+        return this.structureFilter;
+    }
+    setFilter(filter: IStructureFilter | null) {
+        if (equal(filter, this.structureFilter)) {
+            return;
+        }
+        this.fire([StringColumn.EVENT_FILTER_CHANGED, Column.EVENT_DIRTY_VALUES, Column.EVENT_DIRTY], this.structureFilter, this.structureFilter = filter);
+    }
+}
+
+
+
+export class MySmilesStructureRenderer implements ICellRendererFactory {
+    readonly title: string = 'Compound Structure';
+    // better with background image, because with img tag the user might drag the img when they actually want to select several rows
+    readonly template = '<div style="background-size: contain; background-position: center; background-repeat: no-repeat;"></div>';
+
+    canRender(col: StructureImageColumn, mode: ERenderMode): boolean {
+        return col instanceof StructureImageColumn && (mode === ERenderMode.CELL || mode === ERenderMode.GROUP);
+    }
+
+    create(col: StructureImageColumn): ICellRenderer {
         return {
-            template: `<img/>`,
+            template: this.template,
             update: (n: HTMLImageElement, d: IDataRow) => {
-                backend_utils.get_structure_from_smiles(d.v[col.desc.column]).then(x => n.src = "data:image/gif;base64," + x);
+                // @ts-ignore
+                let smiles = d.v[col.desc.column];
+                backend_utils.get_structure_from_smiles(smiles)
+                    .then(x => {
+                        if (x.length > 100) { // check if it is actually long enogh to be an img
+                            n.style.backgroundImage = `url('data:image/jpg;base64,${x}')`;
+                        } else {
+                            n.innerHTML = x;
+                        }
+                        n.alt = smiles;
+                    });
             }
         };
     }
-  
-    createGroup(col: LinkColumn, context: IRenderContext): IGroupCellRenderer {
+
+    createGroup(col: StructureImageColumn, context: IRenderContext): IGroupCellRenderer {
         return {
-            template: `<img/>`,
+            template: this.template,
             update: (n: HTMLImageElement, group: IOrderedGroup) => {
                 const formData = new FormData();
                 return context.tasks.groupRows(col, group, 'string', (rows) => {
-                        rows.every((row) => {
-                            const v = col.getLabel(row);
-                            formData.append('smiles_list', v);
-                            return true;
-                        });
-                    })
+                    rows.every((row) => {
+                        const v = col.getLabel(row);
+                        formData.append('smiles_list', v);
+                        return true;
+                    });
+                })
                     .then(() => {
                         backend_utils.get_mcs_from_smiles_list(formData)
-                        .then(data => n.src = "data:image/gif;base64," + data);
+                            .then(x => {
+                                n.style.backgroundImage = `url('data:image/jpg;base64,${x}')`;
+                                n.alt = formData.getAll("smiles_list").toString();
+                            });
                     });
             }
-          };
+        };
     }
-  
-    createSummary(col: LinkColumn): ISummaryRenderer {
-        return null;
-    }
-  }
 
-  
+
+}

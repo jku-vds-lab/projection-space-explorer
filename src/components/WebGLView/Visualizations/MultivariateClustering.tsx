@@ -10,15 +10,26 @@ import { connect, ConnectedProps } from "react-redux";
 import { arraysEqual } from "../UtilityFunctions";
 import { NamedCategoricalScales } from "../../Utility/Colors/NamedCategoricalScales";
 import { TrailVisualization } from "./TrailVisualization";
-import { ClusterMode } from "../../Ducks/ClusterModeDuck";
 import { Typography } from "@material-ui/core";
 import { CameraTransformations } from "../CameraTransformations";
 import { Story } from "../../Utility/Data/Story";
 import * as nt from '../../NumTs/NumTs'
+const d3 = require("d3")
+import * as frontend_utils from "../../../utils/frontend-connect";
+import { toPlainObject } from "lodash";
+import { GroupVisualizationMode } from "../../Ducks/GroupVisualizationMode";
+import { SchemeColor } from "../../Utility/Colors/SchemeColor";
 
-const SELECTED_COLOR = 0x4d94ff
-const DEFAULT_COLOR = 0x000000
-const GRAYED = 0x3c3c3c
+
+const SELECTED_COLOR = 0x007dad
+const DEFAULT_COLOR = 0x808080
+const GRAYED = 0xDCDCDC
+
+const WING_SIZE = 2.2
+const LINE_WIDTH = 1.5
+
+const CLUSTER_PIXEL_SIZE = 12
+
 
 type ClusterObjectType = {
     cluster: Cluster,
@@ -36,12 +47,13 @@ const mapState = (state: RootState) => ({
     dataset: state.dataset,
     displayMode: state.displayMode,
     webGLView: state.webGLView,
-    selectedClusters: state.selectedClusters,
-    clusterMode: state.clusterMode,
     trailSettings: state.trailSettings,
     stories: state.stories,
     globalPointSize: state.globalPointSize,
-    viewTransform: state.viewTransform
+    viewTransform: state.viewTransform,
+    currentAggregation: state.currentAggregation,
+    hoverState: state.hoverState,
+    groupVisualizationMode: state.groupVisualizationMode
 })
 
 
@@ -94,11 +106,11 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.trail.create(this.clusterObjects)
         this.scene.add(this.trail.mesh)
 
-        this.triangulationWorker = new Worker('dist/tessy.js')
+        this.triangulationWorker = new Worker(frontend_utils.BASE_PATH + 'tessy.js')
     }
 
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: Props) {
         if (prevProps.trailSettings != this.props.trailSettings) {
             this.trail.setVisible(this.props.trailSettings.show)
             this.trail.setLength(this.props.trailSettings.length)
@@ -110,29 +122,55 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             this.disposeTriangulatedMesh()
 
             if (this.props.stories.active && this.props.stories.active.clusters.length > 0) {
-                if (this.props.dataset.multivariateLabels) {
-                    this.create()
-                } else {
-                    this.create()
-                    this.createTriangulatedMesh()
-                }
+                this.create()
+                this.createTriangulatedMesh()
             }
         }
 
         if (prevProps.displayMode != this.props.displayMode) {
             switch (this.props.displayMode) {
                 case DisplayMode.StatesAndClusters:
-                    this.highlightCluster(this.props.selectedClusters)
+                    this.highlightCluster(this.props.currentAggregation.selectedClusters)
+                    this.clusterScene.visible = true
+                    this.scalingScene.visible = true
+                    this.scene.visible = true
                     break;
                 case DisplayMode.OnlyClusters:
+                    this.clusterScene.visible = true
+                    this.scalingScene.visible = true
+                    this.scene.visible = true
                     this.clusterObjects.forEach(clusterObject => {
                         clusterObject.children.forEach(child => {
                             child.visible = false
                         })
                     })
                     break;
+                case DisplayMode.OnlyStates:
+                case DisplayMode.None:
+                    this.clusterScene.visible = false
+                    this.scalingScene.visible = false
+                    this.scene.visible = false
+
+                    break;
             }
         }
+
+
+        if (prevProps.currentAggregation != this.props.currentAggregation || prevProps.groupVisualizationMode != this.props.groupVisualizationMode) {
+            this.deactivateAll()
+
+
+            if (this.props.currentAggregation.source == 'sample') {
+                this.highlightSamples(this.props.currentAggregation.aggregation)
+            }
+
+            // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
+            if (this.props.currentAggregation.source == 'cluster') {
+                this.highlightCluster(this.props.currentAggregation.selectedClusters)
+            }
+        }
+
+        this.props.webGLView.current.requestRender()
     }
 
     updateArrows(zoom: number) {
@@ -148,7 +186,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         let index = 0
         this.props.stories.active?.edges.forEach(edge => {
-            let color = new THREE.Color(0x000000)
+            let color = new THREE.Color(DEFAULT_COLOR)
             if (this.props.stories.trace && this.props.stories.trace.mainEdges.includes(edge)) {
                 color = new THREE.Color(SELECTED_COLOR)
             }
@@ -159,9 +197,9 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             let dir = end.clone().sub(start).normalize()
             let markerOffset = start.clone().sub(end).normalize().multiplyScalar(24)
-            let left = new Vector2(-dir.y, dir.x).multiplyScalar(2)
-            let right = new Vector2(dir.y, -dir.x).multiplyScalar(2)
-            let offset = dir.clone().multiplyScalar(this.devicePixelRatio * 12)
+            let left = new Vector2(-dir.y, dir.x).multiplyScalar(LINE_WIDTH)
+            let right = new Vector2(dir.y, -dir.x).multiplyScalar(LINE_WIDTH)
+            let offset = dir.clone().multiplyScalar(this.devicePixelRatio * CLUSTER_PIXEL_SIZE)
 
             // line without arrow
             arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + left.x + offset.x, start.y * zoom + left.y + offset.y, 0))
@@ -172,12 +210,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             // left wing
             arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x - offset.x, middle.y * zoom + left.y - offset.y, 0))
             arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x + offset.x, middle.y * zoom + left.y + offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x * 3 - offset.x, middle.y * zoom + left.y * 3 - offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x * WING_SIZE - offset.x, middle.y * zoom + left.y * WING_SIZE - offset.y, 0))
 
             // Right wing
             arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x - offset.x, middle.y * zoom + right.y - offset.y, 0))
             arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x + offset.x, middle.y * zoom + right.y + offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x * 3 - offset.x, middle.y * zoom + right.y * 3 - offset.y, 0))
+            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x * WING_SIZE - offset.x, middle.y * zoom + right.y * WING_SIZE - offset.y, 0))
 
             let i = index * 10
             // line without arrow
@@ -275,7 +313,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     }
 
     getColorForClusterObject(clusterObject) {
-        if (this.props.selectedClusters.includes(clusterObject.cluster) || clusterObject.sampleConnection) {
+        if (this.props.currentAggregation.selectedClusters.includes(clusterObject.cluster) || clusterObject.sampleConnection) {
             return new THREE.Color(SELECTED_COLOR)
         }
 
@@ -308,8 +346,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.props.stories.active.clusters.forEach((cluster, ci) => {
 
             // Add circle to scene
-            var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * 16, this.devicePixelRatio * 16);
-            var material = new THREE.MeshBasicMaterial({ color: new THREE.Color() });
+            var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * CLUSTER_PIXEL_SIZE, this.devicePixelRatio * CLUSTER_PIXEL_SIZE);
+            geometry.rotateZ(Math.PI / 4)
+            geometry.scale(0.85, 1.0, 1.0)
+
+
+            var material = new THREE.MeshBasicMaterial({ color: new THREE.Color(DEFAULT_COLOR) });
             var circle = new THREE.Mesh(geometry, material);
 
 
@@ -329,7 +371,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 mesh: circle,
                 children: [],
                 trailPositions: [],
-                lineColor: scale.map(ci),
+                lineColor: scale.map(ci),//for paper used: new SchemeColor(DEFAULT_COLOR),
                 triangulatedMesh: {
 
                 },
@@ -340,15 +382,13 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             this.clusterObjects.push(clusterObject)
 
-            if (this.props.clusterMode == ClusterMode.Multivariate) {
-                // Create line geometry
-                cluster.vectors.forEach(vector => {
-                    clusterObject.children.push({
-                        sample: vector,
-                        visible: false
-                    })
+            // Create line geometry
+            cluster.vectors.forEach(vector => {
+                clusterObject.children.push({
+                    sample: vector,
+                    visible: false
                 })
-            }
+            })
         })
     }
 
@@ -362,11 +402,10 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         })
 
         samples.forEach(sample => {
-            sample.clusterLabel.forEach(label => {
+            sample.groupLabel.forEach(label => {
                 let clusterObject = this.clusterObjects.find(e => e.cluster.label == label)
 
-
-                if (clusterObject) {
+                if (clusterObject && this.props.groupVisualizationMode == GroupVisualizationMode.StarVisualization) {
                     clusterObject.sampleConnection = true
 
                     clusterObject.children.forEach(child => {
@@ -393,7 +432,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             this.clusterVis.lineMeshes.forEach(mesh => {
                 mesh.visible = false
             })
-            this.clusterVis.clusterMeshes.forEach(mesh => {
+            this.clusterVis.clusterMeshes?.forEach(mesh => {
                 mesh.visible = false
             })
         }
@@ -402,24 +441,22 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
     highlightCluster(clusters?: Cluster[]) {
-        this.deactivateAll()
-
         this.clusterObjects.forEach((clusterObject, index) => {
-            var visible = clusters?.includes(clusterObject.cluster)
+            var visible = clusters?.includes(clusterObject.cluster) // for paper used: true
 
             clusterObject.material.color = visible ? new THREE.Color(SELECTED_COLOR) : new THREE.Color(DEFAULT_COLOR)
 
-            clusterObject.children.forEach(child => {
-                child.visible = visible
-            })
-
-            if (this.clusterVis) {
-                let triangulatedMesh = this.clusterVis.clusterMeshes[index]
-                let triangulatedHull = this.clusterVis.lineMeshes[index]
-                triangulatedHull.visible = visible
-                triangulatedMesh.visible = visible
+            if (this.props.groupVisualizationMode == GroupVisualizationMode.StarVisualization) {
+                clusterObject.children.forEach(child => {
+                    child.visible = visible
+                })
             }
 
+
+            if (this.clusterVis && this.props.groupVisualizationMode == GroupVisualizationMode.ConvexHull) {
+                this.clusterVis.clusterMeshes[index].visible = visible
+                this.clusterVis.lineMeshes[index].visible = visible
+            }
         })
     }
 
@@ -447,12 +484,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
 
-
-
-
-
-
-
     /**
      * Creates the triangulated mesh that visualizes the clustering.
      * @param clusters an array of clusters
@@ -460,74 +491,60 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     createTriangulatedMesh() {
         this.disposeTriangulatedMesh()
 
-        if (this.props.dataset.multivariateLabels) {
+        if (this.props.groupVisualizationMode != GroupVisualizationMode.ConvexHull) {
             return;
         }
 
         var clusterMeshes = []
         var lineMeshes = []
 
-
         if (this.props.stories.active) {
-            this.triangulationWorker.postMessage({
-                messageType: 'triangulate',
-                input: this.props.stories.active.clusters.map(cluster => cluster.vectors.map(sample => [sample.x, sample.y]))
+            this.props.stories.active.clusters.map(cluster => {
+                const bounds = Cluster.calcBounds(cluster.vectors)
+
+                let xAxis = d3.scaleLinear()
+                    .range([0, 100])
+                    .domain([bounds.left, bounds.right])
+
+                let yAxis = d3.scaleLinear()
+                    .range([0, 100 * (bounds.height / bounds.width)])
+                    .domain([bounds.top, bounds.bottom])
+
+
+                let contours = d3.contourDensity()
+                    .x(d => xAxis(d.x))
+                    .y(d => yAxis(d.y))
+                    .bandwidth(10)
+                    .thresholds(10)
+                    .size([100, bounds.width == 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])
+                    (cluster.vectors.map(vect => ({ x: vect.x, y: vect.y })))
+
+                let clusterObject = this.clusterObjects.find(e => e.cluster.label == cluster.label)
+
+                let material = new THREE.LineBasicMaterial({ color: clusterObject.lineColor.hex })
+
+                const points = []
+                contours.forEach(contour => {
+                    const coordinates = contour.coordinates[0][0]
+
+
+                    for (let i = 0; i < coordinates.length - 1; i++) {
+                        let cur = coordinates[i]
+                        let next = coordinates[i + 1]
+
+                        points.push(new THREE.Vector3(xAxis.invert(cur[0]), yAxis.invert(cur[1]), -5))
+                        points.push(new THREE.Vector3(xAxis.invert(next[0]), yAxis.invert(next[1]), -5))
+                    }
+                })
+                let line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points), material)
+
+                line.visible = false
+                this.scalingScene.add(line)
+
+                lineMeshes.push(line)
+                clusterMeshes.push(line)
             })
         }
-
-        this.triangulationWorker.onmessage = (e) => {
-            let Y = e.data
-
-            for (let idx = 0; idx < Y.length; idx++) {
-                let test = Y[idx].triangulation
-                let polygon = Y[idx].hull
-
-
-                var points = [];
-
-                let material = new THREE.LineBasicMaterial({ color: 0x909090 });
-                polygon.forEach(pt => {
-                    points.push(new THREE.Vector3(pt[0], pt[1], -5));
-                })
-                var linege = new THREE.BufferGeometry().setFromPoints(points);
-                var line = new THREE.Line(linege, material);
-                this.scalingScene.add(line);
-
-                var geometry = new THREE.Geometry();
-
-                var vi = 0
-                for (let i = 0; i < test.length; i += 6) {
-                    var faceIn = []
-
-                    for (var x = 0; x < 3; x++) {
-
-                        faceIn.push(vi)
-                        var vertex = new THREE.Vector3(test[i + x * 2], test[i + x * 2 + 1])
-                        vi = vi + 1
-                        geometry.vertices.push(vertex)
-                    }
-
-                    geometry.faces.push(
-                        new THREE.Face3(faceIn[0], faceIn[1], faceIn[2])
-                    )
-                }
-
-                let meshMat = new THREE.MeshBasicMaterial({
-                    color: 0x909090,
-                    side: THREE.DoubleSide,
-                    transparent: true,
-                    opacity: 0.2
-                });
-                var mesh = new THREE.Mesh(geometry, meshMat);
-                clusterMeshes.push(mesh)
-                lineMeshes.push(line)
-                this.scalingScene.add(mesh);
-
-                mesh.visible = false
-                line.visible = false
-            }
-        }
-
 
         this.clusterVis = { clusterMeshes: clusterMeshes, lineMeshes: lineMeshes }
     }
@@ -540,12 +557,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     disposeTriangulatedMesh() {
         if (this.clusterVis != null) {
             const { clusterMeshes, lineMeshes } = this.clusterVis
-            clusterMeshes.forEach(mesh => {
+            clusterMeshes?.forEach(mesh => {
                 mesh.geometry.dispose()
                 mesh.material.dispose()
                 this.scalingScene.remove(mesh)
             })
-            lineMeshes.forEach(mesh => {
+            lineMeshes?.forEach(mesh => {
                 mesh.geometry.dispose()
                 mesh.material.dispose()
                 this.scalingScene.remove(mesh)
@@ -561,7 +578,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
      * @param cluster A cluster
      */
     textColor(cluster: Cluster) {
-        if (this.props.selectedClusters.includes(cluster)) {
+        if (this.props.currentAggregation.selectedClusters.includes(cluster)) {
             return 'black'
         } else {
             return 'white'
@@ -608,6 +625,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
 
+
+
     /**
      * Render an empty div, so componentDidMount will get called.
      */
@@ -619,21 +638,44 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             }
 
             {
+                this.props.hoverState.data && this.props.hoverState.data instanceof Cluster
+                && this.props.hoverState.data.name && hoverLabel(this.props.hoverState.data, this.props.viewTransform)
+            }
+
+            {
                 this.props.stories.trace && this.props.stories.trace.mainPath.map((cluster, index) => {
                     let screen = CameraTransformations.worldToScreen(cluster.getCenter(), this.props.viewTransform)
 
                     return <Typography style={{
+                        textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',
                         position: 'absolute',
                         left: screen.x,
                         top: screen.y,
                         background: 'transparent',
-                        color: 'white',
+                        color: 'black',
                         fontWeight: "bold",
                         transform: 'translate(-50%, -50%)',
                         pointerEvents: 'none'
-                    }}>{index}</Typography>
+                    }}>{cluster.label}</Typography>
                 })
             }
         </div>
     }
 })
+
+const hoverLabel = (hoverState: Cluster, viewTransform) => {
+    let screen = CameraTransformations.worldToScreen(hoverState.getCenter(), viewTransform)
+
+    return <Typography style={{
+        textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',
+        position: 'absolute',
+        left: screen.x,
+        top: screen.y,
+        background: 'transparent',
+        color: 'black',
+        fontWeight: "bold",
+        transform: 'translate(-50%, -150%)',
+        pointerEvents: 'none',
+        fontSize: '16px'
+    }}>{hoverState.name}</Typography>
+}

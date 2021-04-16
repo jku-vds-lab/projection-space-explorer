@@ -24,28 +24,25 @@ type Props = PropsFromRedux & {
 export const ClusterTrailSettings = connector(({ trailSettings, setTrailVisibility, setTrailLength }: Props) => {
 
 
-    return <div style={{ margin: '24px' }}>
-        <FormLabel component="legend">Cluster Trail Settings</FormLabel>
-        <FormGroup>
-            <FormControlLabel
-                control={<Switch checked={trailSettings.show} onChange={(_, newVal) => setTrailVisibility(newVal)} name="jason" />}
-                label="Show Cluster Trail"
-            />
-            <Typography id="discrete-slider" gutterBottom>
-                Trail Length
+    return <FormGroup>
+        <FormControlLabel
+            control={<Switch color="primary" checked={trailSettings.show} onChange={(_, newVal) => setTrailVisibility(newVal)} name="jason" />}
+            label="Show Group Trail"
+        />
+        <Typography id="discrete-slider" gutterBottom>
+            Trail Length
             </Typography>
-            <Slider
-                value={trailSettings.length}
-                aria-labelledby="discrete-slider"
-                valueLabelDisplay="auto"
-                step={5}
-                marks
-                min={10}
-                max={100}
-                onChange={(_, newVal) => {
-                    setTrailLength(newVal)
-                }}
-            />
-        </FormGroup>
-    </div>
+        <Slider
+            value={trailSettings.length}
+            aria-labelledby="discrete-slider"
+            valueLabelDisplay="auto"
+            step={5}
+            marks
+            min={10}
+            max={100}
+            onChange={(_, newVal) => {
+                setTrailLength(newVal)
+            }}
+        />
+    </FormGroup>
 })

@@ -3,9 +3,11 @@ import { DatasetType } from "../Data/DatasetType"
 import { Vect } from "../Data/Vect"
 import { InferCategory } from "../Data/InferCategory"
 import { Preprocessor } from "../Data/Preprocessor"
-import { Dataset } from "../Data/Dataset"
+import { Dataset, DefaultFeatureLabel } from "../Data/Dataset"
 import { Loader } from "./Loader"
 import { DatasetEntry } from "../Data/DatasetDatabase"
+import Cluster from "../Data/Cluster"
+import * as frontend_utils from "../../../utils/frontend-connect"
 
 
 var d3v5 = require('d3')
@@ -37,10 +39,6 @@ export class CSVLoader implements Loader {
         return { min: range[0], max: range[1], inferred: true }
     }
 
-    parseMetaData(str){
-        var metadata = str.split(";");
-        return metadata;
-    }
 
     resolveContent(content, finished) {
         this.vectors = convertFromCSV(d3v5.csvParse(content))
@@ -50,21 +48,54 @@ export class CSVLoader implements Loader {
     }
 
     getFeatureType(x) {
-        if (typeof x  === "number" || !isNaN(Number(x))) {
+        if (typeof x === "number" || !isNaN(Number(x))) {
             return 'number'
-        } else if (""+new Date(x) !== "Invalid Date") {
+        } else if ("" + new Date(x) !== "Invalid Date") {
             return 'date'
         } else {
             return 'arbitrary'
         }
     }
 
+
+    getClusters(vectors: Vect[], callback) {
+        let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js')
+
+        worker.onmessage = (e) => {
+            // Point clustering
+            let clusters = []
+            Object.keys(e.data).forEach(k => {
+                let t = e.data[k]
+                let f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
+                f.label = k
+                clusters.push(f)
+            })
+
+
+            // Inject cluster attributes
+            clusters.forEach(cluster => {
+                let vecs = []
+                cluster.points.forEach(point => {
+                    vecs.push(vectors[point.meshIndex])
+                })
+                cluster.vectors = vecs
+                cluster.points = cluster.vectors
+            })
+            callback(clusters)
+        }
+
+        worker.postMessage({
+            type: 'extract',
+            message: vectors.map(vector => [vector.x, vector.y, vector.groupLabel])
+        })
+    }
+
+
     async resolve(finished, vectors, datasetType, entry: DatasetEntry) {
         var header = Object.keys(vectors[0])
 
         var ranges = header.reduce((map, value) => {
-            var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/) 
-
+            var matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/)
             if (matches != null) {
                 var cutHeader = value.substring(0, value.length - matches[0].length)
                 vectors.forEach(vector => {
@@ -76,54 +107,78 @@ export class CSVLoader implements Loader {
             }
             return map
         }, {})
-        
-        var meta_data = header.reduce((map, value) => {
-            var matches = value.match(/\[(.*)\]/) // round brackets to get the string within the square brackets
 
-            if (matches != null) {
-                var cutHeader = value.substring(0, value.length - matches[0].length)
+        // Check for JSON header inside column, store it as key/value pair
+        var metaInformation = header.reduce((map, value) => {
+            let json = value.match(/[{].*[}]/)
+            if (json != null) {
+                let cutHeader = value.substring(0, value.length - json[0].length)
+
                 vectors.forEach(vector => {
                     vector[cutHeader] = vector[value]
                     delete vector[value]
                 })
-                header[header.indexOf(value)] = cutHeader
-                map[cutHeader] = this.parseMetaData(matches[1]); // only take string inside the square brackets
+                map[cutHeader] = JSON.parse(json[0])
+            } else {
+                map[value] = {"featureLabel": DefaultFeatureLabel}
             }
             return map
-        }, {});
+        }, {})
 
-
-        // infer for each feature whether it contains numeric, date, or arbitrary values
-        var contains_number = {}
-        var contains_date = {}
-        var contains_arbitrary = {}
-        vectors.forEach((r) => {
-            header.forEach(f => {
-                const type = this.getFeatureType(r[f])
-                if (type === 'number') {
-                    contains_number[f] = true
-                } else if (type === 'date') {
-                    contains_date[f] = true
-                } else {
-                    contains_arbitrary[f] = true
-                }
-            })
-
-        })
+        let index = 0;
         var types = {}
         // decide the type of each feature - categorical/quantitative/date
         header.forEach((f) => {
-            if (contains_number[f] && !contains_date[f] && !contains_arbitrary[f]) {
-                // only numbers -> quantitative type
-                types[f] = FeatureType.Quantitative
-            } else if (!contains_number[f] && contains_date[f] && !contains_arbitrary[f]) {
-                // only date -> date type
-                types[f] = FeatureType.Date
-            } else {
-                // otherwise categorical
-                types[f] = FeatureType.Categorical
+            const current_key = Object.keys(metaInformation)[index]
+            const col_meta = metaInformation[current_key];
+            if(col_meta?.dtype){
+                switch(col_meta.dtype){
+                    case "numerical":
+                        types[current_key] = FeatureType.Quantitative;
+                        break;
+                    case "date":
+                        types[current_key] = FeatureType.Date;
+                        break;
+                    case "categorical":
+                        types[current_key] = FeatureType.Categorical;
+                        break;
+                    case "string":
+                        types[current_key] = FeatureType.String;
+                        break;
+                    default:
+                        types[current_key] = FeatureType.String;
+                        break;
+                }
+            }else{
+                // infer for each feature whether it contains numeric, date, or arbitrary values
+                var contains_number = {}
+                var contains_date = {}
+                var contains_arbitrary = {}
+                vectors.forEach((r) => {
+                    const type = this.getFeatureType(r[current_key])
+                    if (type === 'number') {
+                        contains_number[current_key] = true
+                    } else if (type === 'date') {
+                        contains_date[current_key] = true
+                    } else {
+                        contains_arbitrary[current_key] = true
+                    }
+                })
+                
+                if (contains_number[current_key] && !contains_date[current_key] && !contains_arbitrary[current_key]) {
+                    // only numbers -> quantitative type
+                    types[current_key] = FeatureType.Quantitative
+                } else if (!contains_number[current_key] && contains_date[current_key] && !contains_arbitrary[current_key]) {
+                    // only date -> date type
+                    types[current_key] = FeatureType.Date
+                } else {
+                    // otherwise categorical
+                    types[current_key] = FeatureType.Categorical
+                }
             }
+            index++;
         })
+        
 
         // replace date features by their numeric timestamp equivalent
         // and fix all quantitative features to be numbers
@@ -138,7 +193,7 @@ export class CSVLoader implements Loader {
             }
         }
         // for all rows
-        for (var i=0; i < vectors.length; i++) {
+        for (var i = 0; i < vectors.length; i++) {
             // for all date features f
             dateFeatures.forEach(f => {
                 // overwrite sample with its timestamp
@@ -150,25 +205,19 @@ export class CSVLoader implements Loader {
             });
         }
 
-        var preselection = Object.keys(header.reduce((map, value) => {
-            if (value.startsWith('*')) {
-                var cutHeader = value.substring(1)
-                vectors.forEach(vector => {
-                    vector[cutHeader] = vector[value]
-                    delete vector[value]
-                })
-                header[header.indexOf(value)] = cutHeader
-                map[cutHeader] = 0
-            }
-
-            return map
-        }, {}))
-
-        if (preselection == null || preselection.length == 0) {
-            preselection = null
-        }
         ranges = new Preprocessor(vectors).preprocess(ranges)
+        
+        let dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation)
+        
+        this.getClusters(vectors, clusters => {
+            dataset.clusters = clusters
 
-        finished(new Dataset(vectors, ranges, preselection, { type: datasetType, path: entry.path }, types, meta_data), new InferCategory(vectors).load(ranges))
+            // Reset cluster label after extraction
+            dataset.vectors.forEach(vector => {
+                vector.groupLabel = []
+            })
+
+            finished(dataset, new InferCategory(vectors).load(ranges))
+        })
     }
 }

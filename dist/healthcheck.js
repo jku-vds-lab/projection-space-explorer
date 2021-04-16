@@ -93,32 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-var backendRunning = false;
-
-function check() {
-  fetch('http://localhost:8090/heart', {
-    method: 'POST',
-    body: JSON.stringify("")
-  }).then(function () {
-    var context = self;
-
-    if (backendRunning == false) {
-      context.postMessage(true);
-    }
-
-    backendRunning = true;
-  }).catch(function () {
-    var context = self;
-
-    if (backendRunning == true) {
-      context.postMessage(false);
-    }
-
-    backendRunning = false;
-  });
-}
-
-check();
+throw new Error("Module build failed (from ./node_modules/ts-loader/index.js):\nError: ENOENT: no such file or directory, open 'C:\\Users\\Christina\\Workspace\\ICG\\bayer\\projection path explorer\\src\\components\\workers\\worker_healthcheck.tsx'");
 
 /***/ })
 

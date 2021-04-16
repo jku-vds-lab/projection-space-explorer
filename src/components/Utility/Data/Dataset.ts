@@ -4,13 +4,25 @@ import { FeatureType } from "./FeatureType";
 import { DatasetType } from "./DatasetType";
 import { DataLine } from "./DataLine";
 import { Vect } from "./Vect";
+import { mean, std } from "../../NumTs/NumTs";
 
 
 export enum PrebuiltFeatures {
-    Line = 'line'
+    Line = 'line',
+    ClusterLabel = 'groupLabel'
 }
 
+export const DefaultFeatureLabel = "Default"
 
+type ColumnType = {
+    distinct: any
+    isNumeric: boolean
+    metaInformation: any
+    featureType: FeatureType
+    range: any
+    featureLabel: string
+    project: boolean
+}
 
 
 /**
@@ -20,16 +32,11 @@ export class Dataset {
     vectors: Vect[];
     segments: DataLine[];
     bounds: { x; y; scaleBase; scaleFactor; };
-    ranges: any;
-    meta_data: any;
     info: { path: string; type: DatasetType; };
-    columns: any;
+    columns: { [name: string] : ColumnType }
 
     // The type of the dataset (or unknown if not possible to derive)
     type: DatasetType;
-
-    // dict of 'featureName': featureType
-    featureTypes: any;
 
     // True if the dataset has multiple labels per sample
     multivariateLabels: boolean;
@@ -37,24 +44,26 @@ export class Dataset {
     // True if the dataset has sequential information (line attribute)
     isSequential: boolean;
 
-    // Preselected projection columns.
-    preselectedProjectionColumns: string[];
-
     clusters: Cluster[];
 
     // The edges between clusters.
     clusterEdges: Edge[];
 
-    constructor(vectors, ranges, preselection, info, featureTypes, meta_data={}) {
+    // Dictionary containing the key/value pairs for each column
+    metaInformation
+
+
+
+    constructor(vectors, ranges, info, featureTypes, metaInformation={}) {
         this.vectors = vectors;
-        this.ranges = ranges;
-        this.meta_data = meta_data;
         this.info = info;
         this.columns = {};
         this.type = this.info.type;
+        this.metaInformation = metaInformation
+
 
         this.calculateBounds();
-        this.calculateColumnTypes(ranges, featureTypes, meta_data);
+        this.calculateColumnTypes(ranges, featureTypes, metaInformation);
         this.checkLabels();
 
         // If the dataset is sequential, calculate the segments
@@ -62,19 +71,17 @@ export class Dataset {
         if (this.isSequential) {
             this.segments = this.getSegs()
         }
-
-        this.preselectedProjectionColumns = preselection;
     }
 
-    getSegs() {
+    getSegs(key = 'line') {
         let vectors = this.vectors
 
         // Get a list of lines that are in the set
-        var lineKeys = [... new Set(vectors.map(vector => vector.line))]
+        var lineKeys = [... new Set(vectors.map(vector => vector[key]))]
 
 
         var segments = lineKeys.map(lineKey => {
-            var l = new DataLine(lineKey, vectors.filter(vector => vector.line == lineKey).sort((a, b) => a.age - b.age))
+            var l = new DataLine(lineKey, vectors.filter(vector => vector[key] == lineKey).sort((a, b) => a.age - b.age))
             // Set segment of vectors
             l.vectors.forEach((v, vi) => {
                 v.view.segment = l
@@ -94,18 +101,20 @@ export class Dataset {
         let max = Number.MIN_SAFE_INTEGER;
 
         values.forEach(value => {
+            value = parseFloat(value);
             if (isNaN(value)) {
                 numeric = false;
             } else if (numeric) {
                 if (value < min) {
                     min = value;
-                } else if (value > max) {
+                } 
+                if (value > max) {
                     max = value;
                 }
             }
         });
 
-        return numeric ? { min: min, max: max, inferred: false } : null;
+        return numeric ? { min: min, max: max, inferred: true } : null; // false
     }
 
     reloadRanges() {
@@ -129,7 +138,7 @@ export class Dataset {
     checkLabels() {
         this.multivariateLabels = false;
         this.vectors.forEach(vector => {
-            if (vector.clusterLabel.length > 1) {
+            if (vector.groupLabel.length > 1) {
                 this.multivariateLabels = true;
                 return;
             }
@@ -139,13 +148,35 @@ export class Dataset {
     /**
      * Creates a map which shows the distinct types and data types of the columns.
      */
-    calculateColumnTypes(ranges, featureTypes, meta_data) {
+    calculateColumnTypes(ranges, featureTypes, metaInformation) {
         var columnNames = Object.keys(this.vectors[0]);
         columnNames.forEach(columnName => {
-            this.columns[columnName] = {};
-
+            // @ts-ignore
+            this.columns[columnName] = { }
+            
             this.columns[columnName].featureType = featureTypes[columnName];
-            this.columns[columnName].meta_data = meta_data[columnName];
+
+
+            // Store dictionary with key/value pairs in column
+            let columnMetaInformation = metaInformation[columnName] ?? {}
+            this.columns[columnName].metaInformation = columnMetaInformation
+
+            // Extract featureLabel from dictionary
+            if ("featureLabel" in columnMetaInformation) {
+                this.columns[columnName].featureLabel = columnMetaInformation["featureLabel"]
+            } else {
+                this.columns[columnName].featureLabel = DefaultFeatureLabel
+            }
+
+
+            // Extract included
+            if ("project" in columnMetaInformation) {
+                this.columns[columnName].project = columnMetaInformation["project"]
+            } else {
+                this.columns[columnName].project = true
+            }
+
+
 
             // Check data type
             if (columnName in ranges) {
@@ -160,10 +191,12 @@ export class Dataset {
                 }
             }
         });
+
+
         if ('algo' in this.columns)
             this.columns['algo'].featureType = FeatureType.Categorical;
-        if ('clusterLabel' in this.columns)
-            this.columns['clusterLabel'].featureType = FeatureType.Categorical;
+        if ('groupLabel' in this.columns)
+            this.columns['groupLabel'].featureType = FeatureType.Categorical;
         if ('clusterProbability' in this.columns)
             this.columns['clusterProbability'].featureType = FeatureType.Quantitative;
         if ('x' in this.columns)
@@ -186,7 +219,7 @@ export class Dataset {
         var vector = this.vectors[0];
 
         if (excludeGenerated) {
-            const blackList = ["x", "y", "algo", "age", "clusterProbability", "multiplicity", "clusterLabel"];
+            const blackList = ["x", "y", "algo", "age", "clusterProbability", "multiplicity", "groupLabel"];
             return Object.keys(vector).filter(e => e != '__meta__' && !blackList.includes(e));
         } else {
             return Object.keys(vector).filter(e => e != '__meta__');
@@ -205,7 +238,7 @@ export class Dataset {
      * Returns the vectors in this dataset as a 2d array, which
      * can be used as input for tsne for example.
      */
-    asTensor(columns, samples?) {
+    asTensor(projectionColumns, samples?) {
         var tensor = [];
 
         function oneHot(n, length) {
@@ -214,20 +247,35 @@ export class Dataset {
             return arr;
         }
 
+        let lookup = {
 
-        (samples ?? this.vectors).forEach(vector => {
+        }
+
+        ;(samples ?? this.vectors).forEach(vector => {
             var data = [];
-            columns.forEach(entry => {
+            projectionColumns.forEach(entry => {
                 let column = entry.name;
                 if (this.columns[column].isNumeric) {
-                    // Numeric data can just be appended to the array
-                    if (column in this.ranges) {
-                        let abs = Math.max(Math.abs(this.ranges[column].min), Math.abs(this.ranges[column].max));
-                        data.push(+vector[column] / abs);
+                    if (this.columns[column].range && entry.normalized) {
+                        let m, s;
+                        
+                        if (column in lookup) {
+                            m = lookup[column].mean
+                            s = lookup[column].std
+                        } else {
+                            m = mean(this.vectors.map(v => +v[column]))
+                            s = std(this.vectors.map(v => +v[column]))
+
+                            lookup[column] = {
+                                mean: m,
+                                std: s
+                            }
+                        }
+
+                        data.push((+vector[column] - m) / s);
                     } else {
                         data.push(+vector[column]);
                     }
-
                 } else {
                     // Not numeric data can be converted using one-hot encoding
                     data = data.concat(oneHot(this.columns[column].distinct.indexOf(vector[column]), this.columns[column].distinct.length));
@@ -235,6 +283,8 @@ export class Dataset {
             });
             tensor.push(data);
         });
+
+        // console.log(this.columns)
 
         return tensor;
     }

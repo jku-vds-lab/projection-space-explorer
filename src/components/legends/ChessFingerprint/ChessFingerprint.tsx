@@ -19,6 +19,9 @@ var symbols = {
     '': ''
 }
 
+export const CHESS_TILE_BLACK = "#edeeef"
+export const CHESS_TILE_WHITE = "#ffffff"
+
 export const requiredChessColumns = [];
 
 ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].forEach(c => {
@@ -63,7 +66,8 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
         width = Math.floor(width / 8) * 8
         height = Math.floor(height / 8) * 8
 
-        var size = width / 8
+        var size = (width * 10) / 82
+        var borderOffset = width / 82
 
         this.canvasRef.current.setAttribute('width', width.toString())
         this.canvasRef.current.setAttribute('height', height.toString())
@@ -100,17 +104,28 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
         keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
         // variable determining the current field color
-        var col = "white"
+        var col = CHESS_TILE_WHITE
+
+        // draw border around chess board
+        this.canvasContext.globalAlpha = 1.0
+        this.canvasContext.fillStyle = CHESS_TILE_BLACK
+        try {
+            this.canvasContext.save()
+            this.canvasContext.globalAlpha = 1.0
+            this.canvasContext.fillRect(0, 0, width, height)
+            this.canvasContext.restore()
+        } catch (e) {
+        }
 
 
         for (var i = 0; i < 64; i++) {
             var x = i % 8
             var y = Math.floor(i / 8)
             if (i % 8 != 0) {
-                if (col == "white") {
-                    col = "black"
+                if (col == CHESS_TILE_WHITE) {
+                    col = CHESS_TILE_BLACK
                 } else {
-                    col = "white"
+                    col = CHESS_TILE_WHITE
                 }
             }
 
@@ -131,28 +146,29 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
                     var v = aggregation[key][k]
                     total += v.count
 
-                    if (v.count > max) {
+                    if (v.count > max && symbols[aggregation[key][k].key] !== "" && symbols[aggregation[key][k].key] !== undefined) {
                         max = v.count
                         content = symbols[aggregation[key][k].key]
                         content = aggregation[key][k].key
                     }
                 }
 
-                opacity = (max / total)
+                opacity = Math.max((max / total), 0.15)
             }
+            this.canvasContext.globalAlpha = 1.0
 
             this.canvasContext.fillStyle = col
-
+            
             this.canvasContext.fillRect(
-                x * size,
-                y * size,
+                x * size + borderOffset,
+                y * size + borderOffset,
                 size,
                 size)
 
             try {
                 this.canvasContext.save()
                 this.canvasContext.globalAlpha = opacity
-                this.canvasContext.drawImage(symbols[content], x * size, y * size, size, size)
+                this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
                 this.canvasContext.restore()
             } catch (e) {
             }
