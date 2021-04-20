@@ -3,26 +3,63 @@ import { Edge } from "../graphs";
 import Cluster from "./Cluster";
 const Graph = require('graphology');
 
+function* labelGenerator() {
+    const code_0 = '0'.charCodeAt(0)
+    const code_9 = '9'.charCodeAt(0)
+    const code_A = 'A'.charCodeAt(0)
+    const code_Z = 'Z'.charCodeAt(0)
+    const code_a = 'a'.charCodeAt(0)
+    
+    
+    function mapChar(c) {
+        if (c >= code_0 && c <= code_9) {
+          return String.fromCharCode(code_A + (c - code_0))
+      } else {
+          return String.fromCharCode(code_A + (c - code_a))
+      }
+    }
+    
+    let i = 0
+
+    while (true) {
+        let str = i.toString(26)
+        let comb = Array.prototype.map.call(str, e => mapChar(e.charCodeAt(0))).join('')
+        yield comb
+        i = i + 1
+    }
+}
+
+
 /**
  * A story is a list of clusters with a specific order.
  */
-export class Story {
+export class Storybook {
     clusters: Cluster[];
     edges: Edge[];
     uuid: number;
 
     static generator = 0;
+    
+    labelGenerator = labelGenerator()
 
     constructor(clusters, edges) {
         this.clusters = clusters;
         this.edges = edges;
-        Story.generator = Story.generator + 1;
-        this.uuid = Story.generator;
+        Storybook.generator = Storybook.generator + 1;
+        this.uuid = Storybook.generator;
     }
+
+
+    getNextClusterLabel() {
+        return this.labelGenerator.next().value
+    }
+
 
     getId() {
         return this.uuid;
     }
+
+
 
 
     /**

@@ -1,3 +1,4 @@
+import * as THREE from 'three'
 import { Vect } from "./Vect"
 
 export default class Cluster {
@@ -100,6 +101,11 @@ export default class Cluster {
             x: x / this.vectors.length,
             y: y / this.vectors.length
         }
+    }
+
+    getCenterAsVector2() {
+        let center = this.getCenter()
+        return new THREE.Vector2(center.x, center.y)
     }
 
     differentLines() {

@@ -3,7 +3,7 @@ import { Button, FormControl, Grid, IconButton, InputLabel, List, ListItem, List
 import { connect, ConnectedProps } from 'react-redux'
 import './StoryPreview.scss'
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Story } from '../../Utility/Data/Story';
+import { Storybook } from '../../Utility/Data/Storybook';
 import { addStory, deleteStory, setActiveStory } from '../../Ducks/StoriesDuck';
 import { RootState } from '../../Store/Store';
 import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
@@ -44,7 +44,7 @@ export const StoryPreview = connector(({
     }
 
     const addHandler = () => {
-        addStory(new Story([], []))
+        addStory(new Storybook([], []))
     }
     
     return <div className="StoryPreviewContent">

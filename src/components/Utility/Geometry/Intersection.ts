@@ -1,4 +1,4 @@
-export function isPointInConvaveHull(seat, points) {
+export function pointInHull(seat, points) {
     if (points.length <= 1) {
         return false;
     }
@@ -9,6 +9,7 @@ export function isPointInConvaveHull(seat, points) {
     for (var index = 1; index < points.length; index++) {
         var start = points[index - 1];
         var end = points[index];
+        var line = { start: start, end: end };
 
         //Testes
 
