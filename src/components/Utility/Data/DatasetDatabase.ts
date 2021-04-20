@@ -21,26 +21,6 @@ export class DatasetDatabase {
     constructor() {
         this.data = [
             {
-                display: "Coral sub-sampled",
-                path: "datasets/coral/coral_subsampled.json",
-                type: DatasetType.Coral
-            },
-            {
-                display: "Coral sub-sampled normalized",
-                path: "datasets/coral/coral_subsampled_normalized.json",
-                type: DatasetType.Coral
-            },
-            {
-                display: "Coral no one-hot encoding",
-                path: "datasets/coral/coral_subsampled_no_one_hot.json",
-                type: DatasetType.Coral
-            },
-            {
-                display: "Coral no one-hot encoding normalized",
-                path: "datasets/coral/coral_subsampled_normalized_no_one_hot.json",
-                type: DatasetType.Coral
-            },
-            {
                 display: "Chess: 190 Games",
                 path: "datasets/chess/chess16k.csv",
                 type: DatasetType.Chess
@@ -152,11 +132,6 @@ export class DatasetDatabase {
             },
             {
                 display: "Penguins",
-                path: "datasets/penguins/penguins_with_nan.csv",
-                type: DatasetType.None
-            },
-            {
-                display: "Penguins without NaN values",
                 path: "datasets/penguins/penguins_without_nan.csv",
                 type: DatasetType.None
             },
@@ -165,6 +140,16 @@ export class DatasetDatabase {
                 path: "test.sdf",
                 type: DatasetType.Chem,
                 uploaded: true
+            },
+            {
+                display: "Cohort: TCGA Sub-sampled",
+                path: "datasets/coral/coral_subsampled_normalized_no_one_hot.json",
+                type: DatasetType.Cohort_Analysis
+            },
+            {
+                display: "Cohort: TCGA Lung, Colorectal, and Pancreatic Cancer",
+                path: "datasets/coral/coral_usecase_3TumorTypes_expression_normalized_no_one_hot.json",
+                type: DatasetType.Cohort_Analysis
             },
         ];
     }

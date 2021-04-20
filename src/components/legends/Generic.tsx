@@ -26,7 +26,7 @@ type GenericLegendProps = {
     vectors: Vect[]
     aggregate: boolean
     hoverUpdate?
-    scale: number
+    scale?: number
 }
 
 //shows single and aggregated view
@@ -40,7 +40,7 @@ export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: G
             return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
         case DatasetType.Chess:
             return <ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint>
-        case DatasetType.Coral:
+        case DatasetType.Cohort_Analysis:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
@@ -70,7 +70,7 @@ export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({
             return <NeuralLegend selection={vectors} aggregate={true}></NeuralLegend>
         case DatasetType.Story:
             return <StoryLegend selection={vectors}></StoryLegend>
-        case DatasetType.Coral:
+        case DatasetType.Cohort_Analysis:
             return <CoralLegend selection={vectors} aggregate={true}></CoralLegend>
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={true}></GoLegend>

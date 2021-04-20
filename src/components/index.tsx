@@ -470,8 +470,8 @@ var Application = connector(class extends React.Component<Props, any> {
             </React.Fragment>}><Tab className="pse-tab" value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Clustering</Typography>
-              <Typography variant="body2">Contains options for displaying and navigating clusters in the dataset.</Typography>
+              <Typography variant="subtitle2">Groups</Typography>
+              <Typography variant="body2">Contains options for displaying and navigating groups in the dataset.</Typography>
             </React.Fragment>}><Tab className="pse-tab" value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>

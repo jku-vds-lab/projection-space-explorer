@@ -8,7 +8,7 @@ export enum DatasetType {
     Go,
     Test,
     Story,
-    Coral,
+    Cohort_Analysis,
     Chem,
     None
 }

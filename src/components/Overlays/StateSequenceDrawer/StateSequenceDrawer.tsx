@@ -25,6 +25,7 @@ import { setActiveLine } from '../../Ducks/ActiveLineDuck';
 import { GenericLegend } from '../../legends/Generic';
 import { GenericChanges } from '../../legends/GenericChanges/GenericChanges';
 import { DatasetType } from '../../Utility/Data/DatasetType';
+import { ResizeObserver } from 'resize-observer';
 
 type StateSequenceDrawerProps = {
     activeLine: DataLine,
@@ -103,12 +104,15 @@ const StateSequenceDrawer = ({
 
     React.useEffect(() => {
         const current = itemRef.current
+        //@ts-ignore
         if (current && current.children.length > 0) {
             const state: { y: number, height: number, textY: number }[] = []
             let elementHeight = 0
             let firstDiv = 0
 
+            //@ts-ignore
             for (var i = 1; i < current.children.length; i++) {
+                //@ts-ignore
                 const child = current.children[i] as HTMLElement;
                 elementHeight = child.offsetHeight
                 const fingerprint = child.childNodes.item(1)
@@ -328,7 +332,7 @@ const StateSequenceDrawer = ({
                     }}>
                         <Typography align="center" variant="subtitle2">Change</Typography>
                         {
-                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
+                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
                         }
                         {
                             input && activeLine.vectors.slice(0, activeLine.vectors.length - 1).map((vector, index) => {

@@ -18,6 +18,8 @@ const d3 = require("d3")
 import * as frontend_utils from "../../../utils/frontend-connect";
 import { toPlainObject } from "lodash";
 import { GroupVisualizationMode } from "../../Ducks/GroupVisualizationMode";
+import { SchemeColor } from "../../Utility/Colors/SchemeColor";
+
 
 const SELECTED_COLOR = 0x007dad
 const DEFAULT_COLOR = 0x808080
@@ -369,7 +371,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 mesh: circle,
                 children: [],
                 trailPositions: [],
-                lineColor: scale.map(ci),
+                lineColor: scale.map(ci),//for paper used: new SchemeColor(DEFAULT_COLOR),
                 triangulatedMesh: {
 
                 },
@@ -440,7 +442,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
     highlightCluster(clusters?: Cluster[]) {
         this.clusterObjects.forEach((clusterObject, index) => {
-            var visible = clusters?.includes(clusterObject.cluster)
+            var visible = clusters?.includes(clusterObject.cluster) // for paper used: true
 
             clusterObject.material.color = visible ? new THREE.Color(SELECTED_COLOR) : new THREE.Color(DEFAULT_COLOR)
 
