@@ -114,18 +114,21 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
 
     const loadRepList = function(refresh=false){
         if(refresh || repList.length <= 1){
+            const loading_area = "global_loading_indicator";
             const controller = new AbortController();
-            cancellablePromise(
-                backend_utils.get_representation_list(refresh, props.dataset.info.path, controller)
-                    .then(x => {
-                        if(x["rep_list"].length > 0){
-                            let rep_list = [...x["rep_list"]];
-                            rep_list.splice(0, 0, "Common Substructure");
-                            setRepList(rep_list);
-                        }
-                    }), controller
-            );
-            
+            trackPromise(
+                cancellablePromise(
+                    backend_utils.get_representation_list(refresh, props.dataset.info.path, controller)
+                        .then(x => {
+                            if(x["rep_list"].length > 0){
+                                let rep_list = [...x["rep_list"]];
+                                rep_list.splice(0, 0, "Common Substructure");
+                                setRepList(rep_list);
+                            }
+                        }), controller
+                )
+            , loading_area);
+                
         }
     }
 
@@ -141,7 +144,9 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
 
     React.useEffect(() => {
         cancelPromises();
-        loadRepList();
+        if(props.aggregate){
+            loadRepList();
+        }
     }, []);
 
     const removeComponent = (id) => {
@@ -388,6 +393,8 @@ function updateImage(props, cancellablePromise){
     if(smiles_col in props.columns){
         let imgList = props.imgContainer.childNodes;
         if(props.selection.length == imgList.length){
+            props.imgContainer.style.display = "none";
+
             const formData = new FormData();
             formData.append('current_rep', props.current_rep);
             props.selection.forEach(row => {
@@ -409,6 +416,7 @@ function updateImage(props, cancellablePromise){
                         // cur_img.width = props.rdkitSettings.width;
                         // cur_img.height = props.rdkitSettings.width;
                     });
+                    props.imgContainer.style.display = "flex";
                 })
             , loading_area + props.id);
             
@@ -472,8 +480,10 @@ const ImageView = connector_Img(function ({chemRef, id, hoverState, selection, c
     }, [selection])
 
     React.useEffect(() => {
-        if(aggregate)
+        if(aggregate){
             updateImage({id: id, columns: columns, current_rep: current_rep, selection: selection, imgContainer: ref?.current, rdkitSettings: rdkitSettings}, cancellablePromise); 
+        }
+    
     }, [current_rep, rdkitSettings.refresh]);
     
     React.useEffect(() => {
