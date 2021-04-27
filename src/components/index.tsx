@@ -71,7 +71,7 @@ import Split from 'react-split'
 import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
 import { setSplitRef } from "./Ducks/SplitRefDuck";
-import { Story } from "./Utility/Data/Story";
+import { Storybook } from "./Utility/Data/Storybook";
 import { BrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/BrightnessSlider/BrightnessSlider";
 import { setGlobalPointBrightness } from "./Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
@@ -119,7 +119,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = dispatch => ({
   addStory: story => dispatch(addStory(story)),
-  setActiveStory: (activeStory: Story) => dispatch(setActiveStory(activeStory)),
+  setActiveStory: (activeStory: Storybook) => dispatch(setActiveStory(activeStory)),
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
@@ -300,7 +300,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
     // set default storybook that contains all clusters and no arrows
     if (dataset.clusters.length > 0) {
-      let story = new Story(dataset.clusters, []);
+      let story = new Storybook(dataset.clusters, []);
       this.props.addStory(story)
       this.props.setActiveStory(null)
       // this.props.setActiveStory(story) // TODO: should we set the new story active?

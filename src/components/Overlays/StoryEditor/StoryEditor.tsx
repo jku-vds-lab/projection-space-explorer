@@ -3,7 +3,7 @@ import React = require('react')
 import { Paper, Tooltip, Typography } from '@material-ui/core'
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 import Cluster from '../../Utility/Data/Cluster';
-import { Story } from "../../Utility/Data/Story";
+import { Storybook } from "../../Utility/Data/Storybook";
 const Graph = require('graphology');
 import { connect, ConnectedProps } from 'react-redux'
 import { DatasetType } from "../../Utility/Data/DatasetType";
@@ -227,7 +227,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
 
     }
 
-    toGraph(story: Story) {
+    toGraph(story: Storybook) {
         let graph = new Graph()
 
         story.clusters.forEach(cluster => {
@@ -442,7 +442,7 @@ export const StoryEditor = connector(class extends React.Component<Props, StoryE
     }
 
 
-    initWithStory(story: Story) {
+    initWithStory(story: Storybook) {
         const nodes = story.clusters.map(cluster => ({
             meshIndex: cluster.label,
             x: Math.random(),

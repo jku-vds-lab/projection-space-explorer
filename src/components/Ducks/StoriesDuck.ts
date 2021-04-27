@@ -1,7 +1,7 @@
 import { getSyncNodesAlt } from "../NumTs/NumTs";
 import Cluster from "../Utility/Data/Cluster";
 import { Edge } from "../Utility/graphs";
-import { Story } from "../Utility/Data/Story";
+import { Storybook } from "../Utility/Data/Storybook";
 import { Vect } from "../Utility/Data/Vect";
 
 const ADD_STORY_BOOK = "ducks/stories/ADD"
@@ -16,6 +16,7 @@ const ADD_CLUSTER_TO_TRACE = "ducks/stories/ADD_CLUSTER_TO_TRACE"
 const SET_ACTIVE_TRACE_STATE = "ducks/stories/SET_ACTIVE_TRACE_STATE"
 const SELECT_SIDE_BRANCH = "ducks/stories/SELECT_SIDE_BRANCH"
 const SET_VECTORS = "ducks/stories/SET_VECTORS"
+const REMOVE_EDGE_FROM_ACTIVE = "ducks/stories/REMOVE_EDGE_FROM_ACTIVE"
 
 export const addStory = story => ({
     type: ADD_STORY_BOOK,
@@ -27,7 +28,7 @@ export const deleteStory = story => ({
     story: story
 });
 
-export function setStories(stories: Story[]) {
+export function setStories(stories: Storybook[]) {
     return {
         type: SET,
         stories: stories
@@ -40,7 +41,7 @@ export const addClusterToStory = cluster => ({
     cluster: cluster
 })
 
-export function setActiveStory(activeStory: Story) {
+export function setActiveStory(activeStory: Storybook) {
     return {
         type: SET_ACTIVE_STORY_BOOK,
         activeStory: activeStory
@@ -57,6 +58,13 @@ export function removeClusterFromStories(cluster: Cluster) {
 export function addEdgeToActive(edge) {
     return {
         type: ADD_EDGE_TO_ACTIVE,
+        edge: edge
+    }
+}
+
+export function removeEdgeFromActive(edge) {
+    return {
+        type: REMOVE_EDGE_FROM_ACTIVE,
         edge: edge
     }
 }
@@ -104,9 +112,9 @@ const initialState = {
 export type StoriesType = {
     vectors: Vect[]
 
-    stories: Story[]
+    stories: Storybook[]
 
-    active: Story
+    active: Storybook
 
     trace: { mainPath: Cluster[], mainEdges: any[], sidePaths: { nodes: Cluster[], edges: Edge[], syncNodes: number[] }[] }
 
@@ -223,7 +231,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 activeTraceState: state.activeTraceState
             }
         case ADD_STORY_BOOK: {
-            let storyBook = action.story as Story
+            let storyBook = action.story as Storybook
             let trace = state.trace
             let activeTraceState = state.activeTraceState
 
@@ -260,7 +268,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             }
         }
         case SET_ACTIVE_STORY_BOOK: {
-            let storyBook = action.activeStory as Story
+            let storyBook = action.activeStory as Storybook
 
             let trace = state.trace
             let activeTraceState = state.activeTraceState
@@ -356,6 +364,11 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 trace: state.trace,
                 activeTraceState: state.activeTraceState
             }
+        }
+        case REMOVE_EDGE_FROM_ACTIVE: {
+            state.active.edges.splice(state.active.edges.indexOf(action.edge), 1)
+
+            return { ... state }
         }
         default:
             return state

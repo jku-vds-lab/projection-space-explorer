@@ -1,13 +1,12 @@
 
 import { getDefaultZoom, arraysEqual, normalizeWheel, centerOfMass, interpolateLinear, generateZoomForSet } from './UtilityFunctions';
 import { LassoSelection } from './tools'
-import { isPointInConvaveHull } from '../Utility/geometry'
 import * as React from "react";
 import * as THREE from 'three'
 import { LassoLayer } from './LassoLayer/LassoLayer';
 import Cluster from '../Utility/Data/Cluster';
 import { connect, ConnectedProps } from 'react-redux'
-import { Tool, getToolCursor, ToolSelectionRedux } from '../Overlays/ToolSelection/ToolSelection';
+import { Tool, getToolCursor } from '../Overlays/ToolSelection/ToolSelection';
 import { Vect } from "../Utility/Data/Vect";
 import { setClusterEdgesAction } from "../Ducks/ClusterEdgesDuck";
 import { setViewTransform } from "../Ducks/ViewTransformDuck";
@@ -21,12 +20,12 @@ import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
-import { Divider, Menu, MenuItem } from '@material-ui/core';
+import { Menu, MenuItem } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
-import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, setActiveStory, setActiveTrace } from '../Ducks/StoriesDuck';
+import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, removeEdgeFromActive, setActiveStory, setActiveTrace } from '../Ducks/StoriesDuck';
 import { setLineUpInput_visibility, setLineUpInput_dump, setLineUpInput_filter } from '../Ducks/LineUpInputDuck';
-import { Story } from '../Utility/Data/Story';
+import { Storybook } from '../Utility/Data/Storybook';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
 import { Edge } from '../Utility/graphs';
 import { getSyncNodesAlt } from '../NumTs/NumTs';
@@ -36,7 +35,7 @@ import { Embedding } from '../Utility/Data/Embedding';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import './WebGl.scss'
-import { LineUpDumpDialog } from '../LineUpContext/LineUpDumpDialog';
+import { pointInHull } from '../Utility/Geometry/Intersection';
 
 type ViewState = {
     displayClusters: any
@@ -91,7 +90,8 @@ const mapDispatchToProps = dispatch => ({
     addEdgeToActive: edge => dispatch(addEdgeToActive(edge)),
     setActiveTrace: trace => dispatch(setActiveTrace(trace)),
     setOpenTab: tab => dispatch(setOpenTabAction(tab)),
-    setSelectedCluster: (cluster, shiftKey) => dispatch(aggSelectCluster(cluster, shiftKey))
+    setSelectedCluster: (cluster, shiftKey) => dispatch(aggSelectCluster(cluster, shiftKey)),
+    removeEdgeFromActive: (edge) => dispatch(removeEdgeFromActive(edge))
 })
 
 
@@ -354,7 +354,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                             if (target) {
                                 // We want to select a trace between 2 clusters
-                                let paths = Story.depthFirstSearch(this.props.stories.active.toGraph(), this.traceSelect.cluster.label, target.label)
+                                let paths = Storybook.depthFirstSearch(this.props.stories.active.toGraph(), this.traceSelect.cluster.label, target.label)
 
                                 if (paths.length > 0) {
                                     let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
@@ -404,11 +404,20 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                                 menuTarget: cluster
                             })
                         } else {
-                            this.setState({
-                                menuX: event.clientX,
-                                menuY: event.clientY,
-                                menuTarget: null
-                            })
+                            let edge = this.chooseEdge(this.mouseController.currentMousePosition)
+                            if (edge) {
+                                this.setState({
+                                    menuX: event.clientX,
+                                    menuY: event.clientY,
+                                    menuTarget: edge
+                                })
+                            } else {
+                                this.setState({
+                                    menuX: event.clientX,
+                                    menuY: event.clientY,
+                                    menuTarget: null
+                                })
+                            }
                         }
 
                         break;
@@ -456,32 +465,41 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         } else {
                             let coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform())
 
-                            // Get index of selected node
-                            var idx = this.choose(coords)
-                            this.particles.highlight(idx)
-
-                            if (this.props.dataset.isSequential) {
-                                if (idx >= 0) {
-                                    this.lines.highlight([this.props.dataset.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
-                                } else {
-                                    this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
-                                }
-                            }
-
-
-
-                            if (idx >= 0) {
-                                if (this.currentHover != this.props.dataset.vectors[idx]) {
-                                    this.currentHover = this.props.dataset.vectors[idx]
-
-                                    this.props.setHoverState(this.props.dataset.vectors[idx], UPDATER)
-                                    this.requestRender()
+                            let edge = this.chooseEdge(this.mouseController.currentMousePosition)
+                            if (edge) {
+                                console.log("edge")
+                                if (this.currentHover !== edge) {
+                                    this.currentHover = edge
+                                    this.props.setHoverState(edge, UPDATER)
                                 }
                             } else {
-                                if (this.currentHover) {
-                                    this.currentHover = null
-                                    this.props.setHoverState(null, UPDATER)
-                                    this.requestRender()
+                                // Get index of selected node
+                                var idx = this.choose(coords)
+                                this.particles.highlight(idx)
+
+                                if (this.props.dataset.isSequential) {
+                                    if (idx >= 0) {
+                                        this.lines.highlight([this.props.dataset.vectors[idx].view.segment.lineKey], this.getWidth(), this.getHeight(), this.scene)
+                                    } else {
+                                        this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene)
+                                    }
+                                }
+
+
+
+                                if (idx >= 0) {
+                                    if (this.currentHover != this.props.dataset.vectors[idx]) {
+                                        this.currentHover = this.props.dataset.vectors[idx]
+
+                                        this.props.setHoverState(this.props.dataset.vectors[idx], UPDATER)
+                                        this.requestRender()
+                                    }
+                                } else {
+                                    if (this.currentHover) {
+                                        this.currentHover = null
+                                        this.props.setHoverState(null, UPDATER)
+                                        this.requestRender()
+                                    }
                                 }
                             }
                         }
@@ -557,6 +575,33 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         return nearest
     }
 
+
+
+    chooseEdge(position) {
+        if (!this.props.stories.active) {
+            return null
+        }
+
+        position = CameraTransformations.screenToWorld(position, this.createTransform())
+
+        for (let i = 0; i < this.props.stories.active.edges.length; i++) {
+            const edge = this.props.stories.active.edges[i]
+
+            const a = edge.source.getCenterAsVector2()
+            const b = edge.destination.getCenterAsVector2()
+            const dir = b.clone().sub(a.clone()).normalize()
+            const l = new THREE.Vector2(-dir.y, dir.x).multiplyScalar(0.5)
+            const r = new THREE.Vector2(dir.y, -dir.x).multiplyScalar(0.5)
+
+            let hull = [a.clone().add(l), b.clone().add(l), b.clone().add(r), a.clone().add(r)]
+
+            if (pointInHull(position, hull)) {
+                return edge
+            }
+        }
+
+        return null
+    }
 
 
 
@@ -1313,6 +1358,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             <MultivariateClustering ref={this.multivariateClusterView}></MultivariateClustering>
 
 
+
+
             <Menu
                 keepMounted
                 open={this.state.menuY !== null && !this.state.menuTarget}
@@ -1329,7 +1376,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         let cluster = Cluster.fromSamples(this.props.currentAggregation.aggregation)
 
                         if (!this.props.stories.active) {
-                            let story = new Story([cluster], [])
+                            let story = new Storybook([cluster], [])
                             this.props.addStory(story)
                             this.props.setActiveStory(story)
                         } else {
@@ -1415,18 +1462,26 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
 
+
+
+            <Menu
+                keepMounted
+                open={this.state.menuY !== null && this.state.menuTarget instanceof Edge}
+                onClose={handleClose}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    this.state.menuY !== null && this.state.menuX !== null
+                        ? { top: this.state.menuY, left: this.state.menuX }
+                        : undefined
+                }
+            >
+                <MenuItem onClick={() => {
+                    this.props.removeEdgeFromActive(this.state.menuTarget)
+
+                    handleClose()
+                }}>{'Delete Edge'}</MenuItem>
+            </Menu>
+
         </div>
     }
 })
-
-
-/**const LinupDumpMenuItem = props => {
-    const [openDumpDialog, setOpenDumpDialog] = React.useState(false);
-
-    return <div><MenuItem onClick={() => {
-        props.handleClose();
-        setOpenDumpDialog(() => true);
-    }}>{'Load Table from dump'}</MenuItem>
-    <LineUpDumpDialog openDialog={openDumpDialog} setOpenDumpDialog={setOpenDumpDialog}></LineUpDumpDialog>
-    </div>
-}**/

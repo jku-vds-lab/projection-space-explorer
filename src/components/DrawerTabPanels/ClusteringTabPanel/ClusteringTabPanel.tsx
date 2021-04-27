@@ -2,7 +2,7 @@ import React = require("react")
 import { Avatar, Box, Button, Checkbox, FormControl, FormGroup, IconButton, InputAdornment, InputLabel, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Typography } from "@material-ui/core"
 import { connect, ConnectedProps } from 'react-redux'
 import Cluster from "../../Utility/Data/Cluster"
-import { Story } from "../../Utility/Data/Story"
+import { Storybook } from "../../Utility/Data/Storybook"
 import { graphLayout, Edge } from "../../Utility/graphs"
 import SettingsIcon from '@material-ui/icons/Settings';
 import SaveIcon from '@material-ui/icons/Save';
@@ -40,7 +40,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = dispatch => ({
     setStories: stories => dispatch(setStories(stories)),
-    setActiveStory: (activeStory: Story) => dispatch(setActiveStory(activeStory)),
+    setActiveStory: (activeStory: Storybook) => dispatch(setActiveStory(activeStory)),
     setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
     setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
@@ -110,7 +110,7 @@ export const ClusteringTabPanel = connector(({
 
 
     function storyLayout(edges: Edge[]) {
-        var stories: Story[] = []
+        var stories: Storybook[] = []
         var copy = edges.slice(0)
         // hh
         while (copy.length > 0) {
@@ -139,7 +139,7 @@ export const ClusteringTabPanel = connector(({
             }
 
 
-            stories.push(new Story([...clusters], [...storyEdges]))
+            stories.push(new Storybook([...clusters], [...storyEdges]))
         }
         return stories
     }
@@ -155,7 +155,7 @@ export const ClusteringTabPanel = connector(({
                     //let stories = storyLayout(dataset.clusterEdges)
 
                     //setStories(stories)
-                    setStories([new Story(dataset.clusters, dataset.clusterEdges)])
+                    setStories([new Storybook(dataset.clusters, dataset.clusterEdges)])
 
                     //setActiveStory(stories[0])
                 } else {
@@ -246,7 +246,7 @@ export const ClusteringTabPanel = connector(({
                 }
 
 
-                let story = addClusterToCurrentStory && stories.active ? stories.active : new Story([], []);
+                let story = addClusterToCurrentStory && stories.active ? stories.active : new Storybook([], []);
                 // let clusters = []
 
                 

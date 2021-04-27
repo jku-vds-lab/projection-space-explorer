@@ -12,7 +12,7 @@ import { NamedCategoricalScales } from "../../Utility/Colors/NamedCategoricalSca
 import { TrailVisualization } from "./TrailVisualization";
 import { Typography } from "@material-ui/core";
 import { CameraTransformations } from "../CameraTransformations";
-import { Story } from "../../Utility/Data/Story";
+import { Storybook } from "../../Utility/Data/Storybook";
 import * as nt from '../../NumTs/NumTs'
 const d3 = require("d3")
 import * as frontend_utils from "../../../utils/frontend-connect";
@@ -590,7 +590,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     /**
      * Creates textual representations of the edges of the story.
      */
-    createStreetLabels(story: Story) {
+    createStreetLabels(story: Storybook) {
         let labels = []
 
         story.edges.filter(edge => edge.name && edge.name != "").map(edge => {

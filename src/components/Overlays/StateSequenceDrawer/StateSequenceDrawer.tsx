@@ -332,7 +332,7 @@ const StateSequenceDrawer = ({
                     }}>
                         <Typography align="center" variant="subtitle2">Change</Typography>
                         {
-                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
+                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
                         }
                         {
                             input && activeLine.vectors.slice(0, activeLine.vectors.length - 1).map((vector, index) => {
