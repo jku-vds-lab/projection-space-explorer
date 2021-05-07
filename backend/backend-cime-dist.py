@@ -327,6 +327,7 @@ def sdf_to_csv(filename=None, modifiers=None):
     frame.to_csv(csv_buffer, index=False)
     
     delta_time = time.time()-start_time
+    print("took", time.strftime('%H:%M:%S', time.gmtime(delta_time)), "to load file %s"%filename)
     print("took %i min %f s to load file %s"%(delta_time/60, delta_time%60, filename))
     #print("get_csv time elapsed [s]:", time.time()-start_time)
     

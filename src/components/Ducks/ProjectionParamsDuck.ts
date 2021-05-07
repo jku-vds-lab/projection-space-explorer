@@ -9,7 +9,7 @@ const initialState = {
     perplexity: 50,
     learningRate: 50,
     nNeighbors: 15,
-    iterations: 1000,
+    iterations: 500, // 1000, //TODO: for benchmark; revert to 1000 afterwards
     seeded: false,
     useSelection: false,
     method: '',

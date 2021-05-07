@@ -338,7 +338,7 @@ var Application = connector(class extends React.Component<Props, any> {
     this.props.setProjectionColumns(dataset.getColumns(true).map(column => ({
       name: column,
       checked: dataset.columns[column].project,
-      normalized: true,
+      normalized: false, //TODO: after benchmarking, reverse this to true,
       range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
       featureLabel: dataset.columns[column].featureLabel
     })))

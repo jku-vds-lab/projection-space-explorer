@@ -75,12 +75,19 @@ export var ProjectionControlCard = connector(({
     const [step, setStep] = React.useState(0)
     const ref = React.useRef(step)
 
-    if(step == 0){
-        console.time('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
-    }
+    //TODO: for benchmark; can be removed again
+    const [start, setStart] = React.useState(window.performance.now());
     if(step / projectionParams.iterations >= 1){
-        console.timeEnd('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
+        const end = window.performance.now();
+        let timeStr = new Date(end - start).toISOString().slice(11, 19);
+        console.log(`Time to project ${localStorage.getItem("unique_filename")}: ${timeStr} - ${end-start} ms`);
     }
+    // if(step == 0){
+    //     console.time('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
+    // }
+    // if(step / projectionParams.iterations >= 1){
+    //     console.timeEnd('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
+    // }
 
     const [computing, setComputing] = React.useState(true)
 

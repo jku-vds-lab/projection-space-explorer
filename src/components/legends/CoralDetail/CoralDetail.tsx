@@ -3,20 +3,15 @@ import * as React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
-import VegaHist from './VegaHist.js';
 import VegaDensity from './VegaDensity.js';
 import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
-import { withStyles } from '@material-ui/core';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import './coral.scss';
-import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { FeatureType } from "../../Utility/Data/FeatureType";
 import { Vect } from "../../Utility/Data/Vect";
 import { RootState } from '../../Store/Store.js';
