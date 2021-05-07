@@ -67,11 +67,11 @@ def tryParseFloat(value):
     return value
     
 
-# # not needed for production server
-# import psutil
-# def print_memory():
-#     mem = dict(psutil.virtual_memory()._asdict())
-#     print("percent:", mem["percent"], "|", "used MB:", mem["used"]/1000000)
+# not needed for production server
+#import psutil
+#def print_memory():
+#    mem = dict(psutil.virtual_memory()._asdict())
+#    print("percent:", mem["percent"], "|", "used MB:", mem["used"]/1000000)
 
     
 import sys
@@ -294,12 +294,12 @@ def sdf_to_csv(filename=None, modifiers=None):
             modifier = '%s"noLineUp":true,'%modifier # this modifier tells lineup that the column should not be viewed at all (remove this modifier, if you want to be able to add the column with the sideview of lineup)
             modifier = '%s"featureLabel":"%s",'%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
             split_col = col.split("_")
-            col_name = split_col[1] + " (" + split_col[0] + ")"
+            col_name = col.replace(split_col[0]+"_", "") + " (" + split_col[0] + ")"
         elif col.startswith(tuple(descriptor_names_show_lineup)):
             #modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
             modifier = '%s"featureLabel":"%s",'%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
             split_col = col.split("_")
-            col_name = split_col[1] + " (" + split_col[0] + ")"
+            col_name = col.replace(split_col[0]+"_", "") + " (" + split_col[0] + ")"
         #else:
             #modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
             
@@ -308,7 +308,7 @@ def sdf_to_csv(filename=None, modifiers=None):
             
             split_col = col.split("_")
             if len(split_col) >= 2:
-                col_name = split_col[1] + " (" + split_col[0] + ")"
+                col_name = col.replace(split_col[0]+"_", "") + " (" + split_col[0] + ")"
             
         if col == "ID":
             modifier = '%s"dtype":"string","project":false,'%modifier # TODO: json crashed....
@@ -326,7 +326,9 @@ def sdf_to_csv(filename=None, modifiers=None):
     csv_buffer = StringIO()
     frame.to_csv(csv_buffer, index=False)
     
-    print("get_csv time elapsed [s]:", time.time()-start_time)
+    delta_time = time.time()-start_time
+    print("took %i min %f s to load file %s"%(delta_time/60, delta_time%60, filename))
+    #print("get_csv time elapsed [s]:", time.time()-start_time)
     
     return csv_buffer.getvalue()
 
@@ -762,8 +764,8 @@ def test():
 # CONSTANTS
 # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
 response_header_origin_all = '*'
-# response_header_origin_localhost = 'http://127.0.0.1:5500'
-response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
+response_header_origin_localhost = 'http://127.0.0.1:5500'
+#response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
 class EnableCors(object):
     name = 'enable_cors'
     api = 2
@@ -787,8 +789,8 @@ bottle.install(EnableCors())
 #app.run(port=8080) # not working for docker and apparently not needed
 
 # CONSTANTS
-# run(app=app, host='localhost', port=8080, debug=True, reloader=True)
-run(app=app, host='0.0.0.0', port=8080) # use for docker
+run(app=app, host='localhost', port=8080, debug=True, reloader=True)
+# run(app=app, host='0.0.0.0', port=8080) # use for docker
 
 
 # ------------------

@@ -402,7 +402,7 @@ function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight {
         }
         return { defaultHeight: col_width, height: height, padding: padding };
     }
-    return { defaultHeight: 23, height:() => 23, padding: () => 0};
+    return { defaultHeight: 25, height:() => 25, padding: () => 0};
 }
 
 
