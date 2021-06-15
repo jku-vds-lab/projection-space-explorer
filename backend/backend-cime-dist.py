@@ -327,6 +327,7 @@ def sdf_to_csv(filename=None, modifiers=None):
     frame.to_csv(csv_buffer, index=False)
     
     delta_time = time.time()-start_time
+    print("took", time.strftime('%H:%M:%S', time.gmtime(delta_time)), "to load file %s"%filename)
     print("took %i min %f s to load file %s"%(delta_time/60, delta_time%60, filename))
     #print("get_csv time elapsed [s]:", time.time()-start_time)
     
@@ -764,8 +765,8 @@ def test():
 # CONSTANTS
 # https://medium.com/swlh/7-keys-to-the-mystery-of-a-missing-cookie-fdf22b012f09
 response_header_origin_all = '*'
-response_header_origin_localhost = 'http://127.0.0.1:5500'
-#response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
+# response_header_origin_localhost = 'http://127.0.0.1:5500'
+response_header_origin_localhost = 'http://localhost:8080' # use this for Docker 
 class EnableCors(object):
     name = 'enable_cors'
     api = 2
@@ -789,8 +790,8 @@ bottle.install(EnableCors())
 #app.run(port=8080) # not working for docker and apparently not needed
 
 # CONSTANTS
-run(app=app, host='localhost', port=8080, debug=True, reloader=True)
-# run(app=app, host='0.0.0.0', port=8080) # use for docker
+# run(app=app, host='localhost', port=8080, debug=True, reloader=True)
+run(app=app, host='0.0.0.0', port=8080) # use for docker
 
 
 # ------------------

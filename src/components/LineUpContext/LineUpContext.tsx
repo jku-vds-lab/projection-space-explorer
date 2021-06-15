@@ -29,6 +29,7 @@ const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
     activeStory: state.stories?.active,
     pointColorScale: state.pointColorScale,
+    channelColor: state.channelColor
     // splitRef: state.splitRef
     //hoverState: state.hoverState
 })
@@ -91,6 +92,7 @@ export const LineUpContext = connector(function ({
     lineUpInput_data, 
     lineUpInput_columns, 
     currentAggregation, 
+    channelColor,
     setCurrentAggregation, 
     setLineUpInput_lineup, 
     setLineUpInput_visibility, 
@@ -171,7 +173,7 @@ export const LineUpContext = connector(function ({
 
         let lineup_data = preprocess_lineup_data(lineUpInput_data);
 
-        const builder = buildLineup(lineUpInput_columns, lineup_data, pointColorScale); //lineUpInput_data
+        const builder = buildLineup(lineUpInput_columns, lineup_data, pointColorScale, channelColor); //lineUpInput_data
         let dump = get_lineup_dump(lineUpInput);
 
         lineUpInput.lineup?.destroy();
@@ -405,15 +407,18 @@ function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight {
     return { defaultHeight: 25, height:() => 25, padding: () => 0};
 }
 
-
-function buildLineup(cols, data, pointColorScale) {
-
-    let groupLabel_mapping = new DiscreteMapping(pointColorScale, new ShallowSet(data.map(vector => vector[PrebuiltFeatures.ClusterLabel])))
-    const groupLabel_cat_color = groupLabel_mapping.values
-        .filter(cat => cat && cat !== "")
-        .map(cat => {
-            return {name: cat, color: groupLabel_mapping.map(cat).hex};
-        })
+const base_color = "#1f77b4";
+function buildLineup(cols, data, pointColorScale, channelColor) {
+    // console.log(channelColor) //TODO: update lineup colorscale, if sth changes; TODO: do this for all columns, not just groupLabel
+    let groupLabel_cat_color = null;
+    if(channelColor.key === PrebuiltFeatures.ClusterLabel){
+        let groupLabel_mapping = new DiscreteMapping(pointColorScale, new ShallowSet(data.map(vector => vector[PrebuiltFeatures.ClusterLabel])))
+        groupLabel_cat_color = groupLabel_mapping.values
+            .filter(cat => cat && cat !== "")
+            .map(cat => {
+                return {name: cat, color: groupLabel_mapping.map(cat).hex};
+            })
+    }
     
     const builder = LineUpJS.builder(data);
 
@@ -442,35 +447,35 @@ function buildLineup(cols, data, pointColorScale) {
                         }
                         break;
                     case FeatureType.Quantitative:
-                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show));//.renderer("myBarCellRenderer")); //.renderer("numberWithValues")
+                        builder.column(LineUpJS.buildNumberColumn(i).numberFormat(".2f").custom("visible", show).color(base_color));//.renderer("myBarCellRenderer")); //.renderer("numberWithValues")
                         break;
                     case FeatureType.Date:
-                        builder.column(LineUpJS.buildDateColumn(i).custom("visible", show));
+                        builder.column(LineUpJS.buildDateColumn(i).custom("visible", show).color(base_color));
                         break;
                     default:
-                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
+                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show).color(base_color));
                         break;
 
                 }
             } else {
                 if (col.isNumeric) {
-                    builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show));//.renderer("myBarCellRenderer"));
+                    builder.column(LineUpJS.buildNumberColumn(i, [col.range.min, col.range.max]).numberFormat(".2f").custom("visible", show).color(base_color));//.renderer("myBarCellRenderer"));
                 } else if (col.distinct)
                     if (data && col.distinct.length / data.length <= 0.5) // if the ratio between distinct categories and nr of data points is less than 1:2, the column is treated as a string
                         builder.column(LineUpJS.buildCategoricalColumn(i).custom("visible", show));
                     else
-                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
+                        builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show).color(base_color));
                 else
-                    builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show));
+                    builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show).color(base_color));
             }
         }
     }
 
-    builder.column(LineUpJS.buildStringColumn("Annotations").editable())
-    builder.column(LineUpJS.buildStringColumn(UNIQUE_ID).width(50)); // we need this to be able to filter by all indices; this ID corresponds to the mesh index
+    builder.column(LineUpJS.buildStringColumn("Annotations").editable().color(base_color))
+    builder.column(LineUpJS.buildStringColumn(UNIQUE_ID).width(50).color(base_color)); // we need this to be able to filter by all indices; this ID corresponds to the mesh index
 
     builder.defaultRanking(true);
-    builder.deriveColors();
+    // builder.deriveColors();
     builder.registerRenderer("mySmilesStructureRenderer", new MySmilesStructureRenderer());
     builder.registerRenderer("myBarCellRenderer", new BarCellRenderer(true));
     builder.registerColumnType("mySmilesStructureColumn", StructureImageColumn);
