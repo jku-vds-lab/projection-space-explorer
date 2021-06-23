@@ -23,6 +23,8 @@ function getScatter(vectors, dataset) {
   return (
     <div style={{ width: "100%", maxHeight: '100%' }}>
       <div style={{
+        justifyContent: "center",
+        display: "flex",
         width: "100%",
         overflow: "auto"
       }}>
