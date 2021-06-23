@@ -2,8 +2,8 @@ import React, { PropTypes } from 'react';
 import {createClassFromLiteSpec} from 'react-vega-lite';
 
 export default createClassFromLiteSpec('TrrackScatter', {
-  "width": 100,
-  "height": 100,
+  "width": 200,
+  "height": 200,
   "mark": "circle",
   "encoding": {
     "x": {
