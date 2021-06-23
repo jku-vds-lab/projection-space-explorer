@@ -10,5 +10,6 @@ export enum DatasetType {
     Story,
     Cohort_Analysis,
     Chem,
+    Trrack,
     None
 }

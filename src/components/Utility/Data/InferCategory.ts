@@ -61,6 +61,10 @@ export class InferCategory {
             return DatasetType.Chem;
         }
 
+        if (header.includes('selectedCoordsNorm')) {
+            return DatasetType.Trrack
+        }
+
         return DatasetType.None;
     }
 

@@ -2,6 +2,7 @@ import { RubikLegend } from "./RubikDetail/RubikDetail";
 import { NeuralLegend } from "./NeuralDetail/NeuralDetail";
 import { ChessLegend } from "./ChessDetail/ChessDetail";
 import { CoralLegend } from "./CoralDetail/CoralDetail";
+import { TrrackLegend } from "./TrrackDetail/TrrackDetail";
 import { StoryLegend } from "./StoryDetail/StoryDetail";
 import { GoLegend } from "./GoDetail/GoDetail";
 
@@ -42,6 +43,8 @@ export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: G
             return <ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint>
         case DatasetType.Cohort_Analysis:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
+        case DatasetType.Trrack:
+            return <TrrackLegend selection={vectors} aggregate={aggregate}></TrrackLegend>
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
         case DatasetType.Chem:
