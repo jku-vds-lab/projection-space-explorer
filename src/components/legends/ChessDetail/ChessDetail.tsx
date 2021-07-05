@@ -145,7 +145,7 @@ function aggregateChess(vectors) {
         }
       }
 
-        opacity = Math.max((max / total), 0.15)
+        opacity = Math.max((max / total), 0.0)
     }
 
     var imgwrap = board.append("div")

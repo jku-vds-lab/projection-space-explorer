@@ -251,7 +251,7 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
                 this.canvasContext.fillRect(x * size + borderOffset, y * size + borderOffset, size, size)
 
                 // chess pieces
-                this.canvasContext.globalAlpha = Math.max(opacityB, 0.15)
+                this.canvasContext.globalAlpha = Math.max(opacityB, 0.0)
                 this.canvasContext.drawImage(symbols[content], x * size + borderOffset, y * size + borderOffset, size, size)
                 this.canvasContext.restore()
             } catch (e) {
