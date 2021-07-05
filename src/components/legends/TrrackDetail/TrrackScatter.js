@@ -9,12 +9,16 @@ export default createClassFromLiteSpec('TrrackScatter', {
     "x": {
       "field": "x",
       "type": "quantitative",
-      "axis": null
+      // "axis": null
+      "scale": {"domain": [0, 1]},
+      "axis": false
     },
     "y": {
       "field": "y",
       "type": "quantitative",
-      "axis": null},
+      // "axis": null
+      "scale": {"domain": [0, 1]},
+      "axis": false},
       "opacity":{"value": 0.15}
     }
 });
