@@ -577,7 +577,7 @@ var Application = connector(class extends React.Component<Props, any> {
               <a href={"https://jku-vds-lab.at"} target={"_blank"}><img style={{ height: 48 }} src={"textures/vds-lab-logo-notext.svg"} /></a>
               {frontend_utils.CHEM_PROJECT && <a href={"https://www.bayer.com"} target={"_blank"}><img style={{ height: 48, marginLeft: 48 }} src={"textures/bayer-logo.svg"} alt="Powered By Bayer" /></a>}
               <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
-                {frontend_utils.CHEM_PROJECT ? "CIME: Chem-Informatics Model Explorer" : "Projection Space Explorer - Provectories"}
+                {frontend_utils.CHEM_PROJECT ? "CIME: Chem-Informatics Model Explorer" : "Provectories"}
               </Typography>
             </Toolbar>
           </AppBar>
