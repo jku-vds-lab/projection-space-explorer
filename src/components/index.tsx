@@ -221,7 +221,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
-    var preselect = frontend_utils.CHEM_PROJECT ? "test.sdf" : "datasets/rubik/cube10x2_different_origins.csv"
+    var preselect = frontend_utils.CHEM_PROJECT ? "test.sdf" : "datasets/trrack/pse-csv/trrack_stories_task-outlier-26.csv"
     var loader = frontend_utils.CHEM_PROJECT ? new SDFLoader() : new CSVLoader();
 
     if (set != null) {
@@ -236,6 +236,12 @@ var Application = connector(class extends React.Component<Props, any> {
         loader = new CSVLoader();
       } else if (set == "cime") {
         preselect = "test.sdf";
+        loader = new SDFLoader();
+      } else if (set == "trrack") {
+        preselect = "datasets/trrack/pse-csv/trrack_stories_task-outlier-26.csv";
+        loader = new SDFLoader();
+      } else if (set == "story") {
+        preselect = "datasets/story/new_stories_tSNE_now.csv";
         loader = new SDFLoader();
       } else {
         preselect = mangleURL(set)
@@ -571,7 +577,7 @@ var Application = connector(class extends React.Component<Props, any> {
               <a href={"https://jku-vds-lab.at"} target={"_blank"}><img style={{ height: 48 }} src={"textures/vds-lab-logo-notext.svg"} /></a>
               {frontend_utils.CHEM_PROJECT && <a href={"https://www.bayer.com"} target={"_blank"}><img style={{ height: 48, marginLeft: 48 }} src={"textures/bayer-logo.svg"} alt="Powered By Bayer" /></a>}
               <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
-                {frontend_utils.CHEM_PROJECT ? "CIME: Chem-Informatics Model Explorer" : "Projection Space Explorer"}
+                {frontend_utils.CHEM_PROJECT ? "CIME: Chem-Informatics Model Explorer" : "Projection Space Explorer - Provectories"}
               </Typography>
             </Toolbar>
           </AppBar>
