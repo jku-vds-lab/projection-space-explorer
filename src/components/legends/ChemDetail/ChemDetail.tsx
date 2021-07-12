@@ -59,7 +59,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
         
         const [mcsComp, setMcsComp] = React.useState(<div>loading...</div>)
 
-        let smiles_col = "SMILES";
+        let smiles_col = get_smiles_col(props.columns);
 
         React.useEffect(() => {
             cancelPromises();
@@ -297,7 +297,7 @@ const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {che
 
 
 function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellablePromise, setCheckedList){ 
-    let smiles_col = "SMILES";
+    let smiles_col = get_smiles_col(props.columns);
 
     const onUpdateItem = (i, val) => {
         setCheckedList((checkedList) => {
@@ -386,9 +386,24 @@ function loadImage(props, setComp, handleMouseEnter, handleMouseOut, cancellable
     }
 }
 
-function updateImage(props, cancellablePromise){ 
+function get_smiles_col(columns){
     let smiles_col = "SMILES";
-    // TODO: find by meta_data -> how to handle multiple smiles columns?
+    // TODO: find by meta_data -> how to handle multiple smiles columns? for now: just take first column that contains "smiles"
+    if(!(smiles_col in columns)){
+        let col_names = Object.keys(columns);
+        for (const key in col_names) {
+            let col = col_names[key];
+            if(col.toLowerCase().includes('smiles')){
+                smiles_col = col;
+                break;
+            }
+        }
+    }
+    return smiles_col;
+}
+
+function updateImage(props, cancellablePromise){ 
+    let smiles_col = get_smiles_col(props.columns);
 
     if(smiles_col in props.columns){
         let imgList = props.imgContainer.childNodes;

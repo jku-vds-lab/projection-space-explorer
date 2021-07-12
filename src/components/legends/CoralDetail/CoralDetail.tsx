@@ -3,20 +3,15 @@ import * as React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
-import VegaHist from './VegaHist.js';
 import VegaDensity from './VegaDensity.js';
 import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
-import { withStyles } from '@material-ui/core';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import './coral.scss';
-import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { FeatureType } from "../../Utility/Data/FeatureType";
 import { Vect } from "../../Utility/Data/Vect";
 import { RootState } from '../../Store/Store.js';
@@ -177,6 +172,7 @@ function genRows(vectors, legendAttributes, dataset) {
   if (dataset === undefined) {
     return []
   }
+  console.log()
   const rows = []
   const dictOfArrays = dictionary(vectors)
   const preselect = getProjectionColumns(legendAttributes)
@@ -186,7 +182,9 @@ function genRows(vectors, legendAttributes, dataset) {
   for (var key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-      if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
+      if(dataset.columns[key]?.metaInformation.noLineUp){
+        //dont do anything, if column should not be shown
+      } else if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
         var densityData = mapDensityData(dataset.vectors, vectors, key)
         rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDensity data={densityData} actions={false} tooltip={new Handler().call}/>])
@@ -229,10 +227,10 @@ function getTable(vectors, aggregation, legendAttributes, dataset) {
   
 
   return (
-    <div style={{ width: "100%", maxHeight: '100%' }}>
+    <div style={{ width: "100%", maxHeight: '100%', overflowY: "scroll" }}>
       <div style={{
         width: "100%",
-        overflow: "auto"
+        // overflow: "auto"
       }}>
         <Table className={classes.table} aria-label="simple table" size={'small'}>
           <TableHead>
@@ -241,7 +239,7 @@ function getTable(vectors, aggregation, legendAttributes, dataset) {
             {rows.map((row) => (
               <TableRow className={classes.tableRow} key={row.feature}>
                 <TableCell component="th" scope="row">
-                {row.feature}<br/><b>{row.category}</b>
+                <div style={{maxWidth:200}}>{row.feature}<br/><b>{row.category}</b></div>
                 </TableCell>
                 <TableCell>{row.char}</TableCell>
               </TableRow>

@@ -21,6 +21,16 @@ export class DatasetDatabase {
     constructor() {
         this.data = [
             {
+                display: "CIME: Reaction Optimization 5000",
+                path: "datasets/chemvis/domain_5000_all_predictions.csv",
+                type: DatasetType.None
+            },
+            {
+                display: "CIME: Reaction Optimization 10000",
+                path: "datasets/chemvis/domain_10000_all_predictions.csv",
+                type: DatasetType.None
+            },
+            {
                 display: "Chess: 190 Games",
                 path: "datasets/chess/chess16k.csv",
                 type: DatasetType.Chess

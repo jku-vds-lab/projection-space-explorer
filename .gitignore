@@ -92,3 +92,7 @@ typings/
 
 # temp files
 /backend/temp-files
+
+# large dataset
+/datasets/chemvis
+/dist/datasets/chemvis
