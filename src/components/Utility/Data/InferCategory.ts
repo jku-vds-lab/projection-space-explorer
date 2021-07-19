@@ -57,9 +57,9 @@ export class InferCategory {
             return DatasetType.Go;
         }
 
-        if (header.toString().toLowerCase().includes('smiles')) {
-            return DatasetType.Chem;
-        }
+        // if (header.toString().toLowerCase().includes('smiles')) {
+        //     return DatasetType.Chem;
+        // }
 
         if (header.includes('selectedCoordsNorm')) {
             return DatasetType.Trrack

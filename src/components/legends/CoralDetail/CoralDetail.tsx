@@ -168,11 +168,15 @@ function getNormalizedSTD(data, min, max) {
   
 }
 
-function genRows(vectors, legendAttributes, dataset) {
+function genRows(vectors, aggregation, legendAttributes, dataset) {
   if (dataset === undefined) {
     return []
   }
-  console.log()
+  
+  if(!aggregation){ // if it shows the hover state, we don't need to generate all rows because we can't scroll anyway
+    return []
+  }
+
   const rows = []
   const dictOfArrays = dictionary(vectors)
   const preselect = getProjectionColumns(legendAttributes)
@@ -222,7 +226,7 @@ function genRows(vectors, legendAttributes, dataset) {
 
 function getTable(vectors, aggregation, legendAttributes, dataset) {
   const classes = useStyles()
-  const rows = genRows(vectors, legendAttributes, dataset)
+  const rows = genRows(vectors, aggregation, legendAttributes, dataset)
 
   
 
