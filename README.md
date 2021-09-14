@@ -10,7 +10,6 @@ This is the documentation for the Projection Space Explorer.
 - **Right click** the **context** to open a context-agnostic menu (has different actions when pressing on a cluster for example)
 
 
-
 ## UI Components
 
 This section describes the individual UI components of the main view.
