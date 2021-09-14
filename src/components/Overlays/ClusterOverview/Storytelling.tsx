@@ -400,7 +400,7 @@ export const Storytelling = connector(function ({
                         <CloseIcon />
                     </IconButton>
                 }
-                title="Storytelling"
+                title="Comparison"
             />
 
             <div style={{
