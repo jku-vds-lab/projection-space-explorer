@@ -533,7 +533,7 @@ export const ClusteringTabPanel = connector(({
         
 
         <Box paddingLeft={2} paddingTop={2}>
-            <Typography variant="subtitle2" gutterBottom>{'Groups and Stories'}</Typography>
+            <Typography variant="subtitle2" gutterBottom>{'Groups and Sessions'}</Typography>
         </Box>
 
         <Box paddingLeft={2} paddingRight={2} paddingBottom={2}>
