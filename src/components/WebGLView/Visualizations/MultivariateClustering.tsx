@@ -371,7 +371,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 mesh: circle,
                 children: [],
                 trailPositions: [],
-                lineColor: scale.map(ci),//for paper used: new SchemeColor(DEFAULT_COLOR),
+                lineColor: new SchemeColor(DEFAULT_COLOR),//for paper used: new SchemeColor(DEFAULT_COLOR),
                 triangulatedMesh: {
 
                 },
