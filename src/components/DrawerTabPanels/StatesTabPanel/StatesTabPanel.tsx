@@ -206,7 +206,7 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
+                        <InputLabel shrink id="vectorByTransparencySelectLabel">{"opacity by"}</InputLabel>
                         <Select labelId="vectorByTransparencySelectLabel"
                             id="vectorByTransparencySelect"
                             displayEmpty
