@@ -172,7 +172,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             menuY: null,
             menuTarget: null
         }
-
     }
 
 
@@ -1458,7 +1457,32 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     handleClose()
                 }}>{"Stories ... Between 2 Groups"}</MenuItem>
 
+
+                <MenuItem onClick={() => {
+                    const edges = []
+                    this.props.currentAggregation.groups.forEach((group, i) => {
+                        if (i !== this.props.currentAggregation.groups.length - 1) {
+                            edges.push({
+                                source: this.props.currentAggregation.groups[i],
+                                destination: this.props.currentAggregation.groups[i + 1]
+                            })
+                        }
+                    })
+
+                    this.props.setActiveTrace({
+                        mainPath: this.props.currentAggregation.selectedClusters,
+                        mainEdges: edges,
+                        sidePaths: []
+                    })
+
+                    handleClose()
+                }}>{"Show in Story Panel"}</MenuItem>
             </Menu>
+
+
+
+
+
 
 
 
