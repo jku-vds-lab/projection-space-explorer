@@ -11,5 +11,5 @@ export enum DatasetType {
     Cohort_Analysis,
     Chem,
     Trrack,
-    None
+    Toy
 }

@@ -20,6 +20,21 @@ export class DatasetDatabase {
 
     constructor() {
         this.data = [
+          {
+              display: "Iris",
+              path: "datasets/toy/iris.csv",
+              type: DatasetType.Toy
+          },
+          {
+              display: "Penguins",
+              path: "datasets/penguins/penguins_without_nan.csv",
+              type: DatasetType.Toy
+          },
+          {
+              display: "TCGA Lung, Colorectal, and Pancreatic Cancer",
+              path: "datasets/coral/coral_usecase_3TumorTypes_expression_normalized_no_one_hot.json",
+              type: DatasetType.Cohort_Analysis
+          },
             {
                 display: "Chess: 190 Games",
                 path: "datasets/chess/chess16k.csv",
@@ -27,11 +42,6 @@ export class DatasetDatabase {
             },
             {
                 display: "Chess: 450 Games",
-                path: "datasets/chess/chess40k.csv",
-                type: DatasetType.Chess
-            },
-            {
-                display: "Chess: 450 Games (Groups)",
                 path: "datasets/chess/chess40k_groups.json",
                 type: DatasetType.Chess
             },
@@ -101,21 +111,6 @@ export class DatasetDatabase {
                 type: DatasetType.Neural
             },
             {
-                display: "Story: With Names",
-                path: "datasets/story/withnames.csv",
-                type: DatasetType.Story
-            },
-            {
-                display: "Story: No Duplicates",
-                path: "datasets/story/stories_dup-del_p50_with-names.csv",
-                type: DatasetType.Story
-            },
-            {
-                display: "Story: Test",
-                path: "datasets/story/teststories.csv",
-                type: DatasetType.Story
-            },
-            {
                 display: "Go: State features",
                 path: "datasets/go/combined.csv",
                 type: DatasetType.Go
@@ -129,43 +124,7 @@ export class DatasetDatabase {
                 display: "Go: Move features (wavelet)",
                 path: "datasets/go/move_wavelet.csv",
                 type: DatasetType.Go
-            },
-            {
-                display: "Trrack: All Track Stories Updated",
-                path: "datasets/trrack/all_trrack_stories_updated.csv",
-                type: DatasetType.Trrack
-            },
-            {
-                display: "Toy: Iris",
-                path: "datasets/toy/iris.csv",
-                type: DatasetType.None
-            },
-            {
-                display: "Toy: Story",
-                path: "datasets/toy/toy.csv",
-                type: DatasetType.None
-            },
-            {
-                display: "Penguins",
-                path: "datasets/penguins/penguins_without_nan.csv",
-                type: DatasetType.None
-            },
-            {
-                display: "CIME: Test",
-                path: "test.sdf",
-                type: DatasetType.Chem,
-                uploaded: true
-            },
-            {
-                display: "Cohort: TCGA Sub-sampled",
-                path: "datasets/coral/coral_subsampled_normalized_no_one_hot.json",
-                type: DatasetType.Cohort_Analysis
-            },
-            {
-                display: "Cohort: TCGA Lung, Colorectal, and Pancreatic Cancer",
-                path: "datasets/coral/coral_usecase_3TumorTypes_expression_normalized_no_one_hot.json",
-                type: DatasetType.Cohort_Analysis
-            },
+            }
         ];
     }
 
