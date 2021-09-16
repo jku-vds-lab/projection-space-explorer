@@ -9,12 +9,14 @@ import { Dataset } from "../Data/Dataset";
 import Cluster from "../Data/Cluster";
 import { Edge } from "../graphs";
 
+
+var d3v5 = require('d3')
 export class JSONLoader implements Loader {
     vectors: Vect[]
     datasetType: DatasetType
 
     resolvePath(entry: any, finished: any) {
-        throw new Error("Method not implemented.");
+      d3v5.json(entry.path).then(file => this.resolve(file, finished, null, { path: "" }));
     }
 
     resolveContent(content: any, finished: any) {

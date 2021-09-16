@@ -81,6 +81,8 @@ import { HoverStateOrientation } from "./Ducks/HoverStateOrientationDuck";
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
+import { JSONLoader } from "./Utility/Loaders/JSONLoader";
+import { Loader } from "./Utility/Loaders/Loader";
 
 
 /**
@@ -221,8 +223,8 @@ var Application = connector(class extends React.Component<Props, any> {
 
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
-    var preselect = frontend_utils.CHEM_PROJECT ? "test.sdf" : "datasets/rubik/cube10x2_different_origins.csv"
-    var loader = frontend_utils.CHEM_PROJECT ? new SDFLoader() : new CSVLoader();
+    var preselect = frontend_utils.CHEM_PROJECT ? "test.sdf" : "datasets/chess/chess40k_groups.json"
+    var loader: Loader = frontend_utils.CHEM_PROJECT ? new SDFLoader() : new JSONLoader();
 
     if (set != null) {
       if (set == "neural") {
@@ -232,8 +234,8 @@ var Application = connector(class extends React.Component<Props, any> {
         preselect = "datasets/rubik/cube10x2_different_origins.csv"
         loader = new CSVLoader();
       } else if (set == "chess") {
-        preselect = "datasets/chess/chess16k.csv"
-        loader = new CSVLoader();
+        preselect = "datasets/chess/chess40k_groups.json"
+        loader = new JSONLoader();
       } else if (set == "cime") {
         preselect = "test.sdf";
         loader = new SDFLoader();
