@@ -239,6 +239,9 @@ var Application = connector(class extends React.Component<Props, any> {
       } else if (set == "cime") {
         preselect = "test.sdf";
         loader = new SDFLoader();
+      } else if (set == "penguin") {
+        preselect = "datasets/penguins/penguins_without_nan.csv"
+        loader = new CSVLoader();
       } else {
         preselect = mangleURL(set)
       }
