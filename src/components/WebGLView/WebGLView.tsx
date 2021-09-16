@@ -1476,7 +1476,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     })
 
                     handleClose()
-                }}>{"Show in Story Panel"}</MenuItem>
+                }}>{"Compare Selected Groups"}</MenuItem>
             </Menu>
 
 
