@@ -525,24 +525,25 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
                 const points = []
                 contours.forEach(contour => {
-                    const coordinates = contour.coordinates[0][0]
+                    contour.coordinates.forEach(contourPolygon => {
+                      const coordinates = contourPolygon[0];
 
+                      for (let i = 0; i < coordinates.length - 1; i++) {
+                          let cur = coordinates[i]
+                          let next = coordinates[i + 1]
+  
+                          points.push(new THREE.Vector3(xAxis.invert(cur[0]), yAxis.invert(cur[1]), -5))
+                          points.push(new THREE.Vector3(xAxis.invert(next[0]), yAxis.invert(next[1]), -5))
+                      }
+                  })
+              })
+              let line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points), material)
 
-                    for (let i = 0; i < coordinates.length - 1; i++) {
-                        let cur = coordinates[i]
-                        let next = coordinates[i + 1]
+              line.visible = false
+              this.scalingScene.add(line)
 
-                        points.push(new THREE.Vector3(xAxis.invert(cur[0]), yAxis.invert(cur[1]), -5))
-                        points.push(new THREE.Vector3(xAxis.invert(next[0]), yAxis.invert(next[1]), -5))
-                    }
-                })
-                let line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points), material)
-
-                line.visible = false
-                this.scalingScene.add(line)
-
-                lineMeshes.push(line)
-                clusterMeshes.push(line)
+              lineMeshes.push(line)
+              clusterMeshes.push(line)
             })
         }
 
