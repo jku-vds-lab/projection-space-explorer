@@ -1,5 +1,5 @@
 import { Edge } from "../graphs";
-import Cluster from "./Cluster";
+import { ICluster } from "./Cluster";
 import { FeatureType } from "./FeatureType";
 import { DatasetType } from "./DatasetType";
 import { DataLine } from "./DataLine";
@@ -25,6 +25,129 @@ type ColumnType = {
 }
 
 
+
+export class SegmentFN {
+
+    /**
+     * Calculates the maximum path length for this dataset.
+     */
+    static getMaxPathLength(dataset: Dataset) {
+        if (dataset.isSequential) {
+            return Math.max(...dataset.segments.map(segment => segment.vectors.length));
+        } else {
+            return 1;
+        }
+    }
+}
+
+
+
+export class DatasetUtil {
+        /**
+     * Calculates the dataset bounds for this set, eg the minimum and maximum x,y values
+     * which is needed for the zoom to work correctly
+     */
+    static calculateBounds(dataset: Dataset) {
+        var xAxis = dataset.vectors.map(vector => vector.x);
+        var yAxis = dataset.vectors.map(vector => vector.y);
+
+        var minX = Math.min(...xAxis);
+        var maxX = Math.max(...xAxis);
+        var minY = Math.min(...yAxis);
+        var maxY = Math.max(...yAxis);
+
+        var scaleBase = 100;
+        var absoluteMaximum = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY));
+
+        dataset.bounds = {
+            scaleBase: scaleBase,
+            scaleFactor: absoluteMaximum / scaleBase,
+            x: {
+                min: minX,
+                max: maxX
+            },
+            y: {
+                min: minY,
+                max: maxY
+            }
+        };
+    }
+
+
+
+    /**
+     * Returns an array of columns that are available in the vectors
+     */
+    static getColumns(dataset: Dataset, excludeGenerated = false) {
+        var vector = dataset.vectors[0];
+
+        if (excludeGenerated) {
+            const blackList = ["x", "y", "algo", "age", "clusterProbability", "multiplicity", "groupLabel"];
+            return Object.keys(vector).filter(e => e != '__meta__' && !blackList.includes(e));
+        } else {
+            return Object.keys(vector).filter(e => e != '__meta__');
+        }
+    }
+
+
+
+        /**
+     * Returns the vectors in this dataset as a 2d array, which
+     * can be used as input for tsne for example.
+     */
+    static asTensor(dataset: Dataset, projectionColumns, samples?) {
+        var tensor = [];
+
+        function oneHot(n, length) {
+            var arr = new Array(length).fill(0);
+            arr[n] = 1;
+            return arr;
+        }
+
+        let lookup = {
+
+        }
+
+        ;(samples ?? dataset.vectors).forEach(vector => {
+            var data = [];
+            projectionColumns.forEach(entry => {
+                let column = entry.name;
+                if (dataset.columns[column].isNumeric) {
+                    if (dataset.columns[column].range && entry.normalized) {
+                        let m, s;
+                        
+                        if (column in lookup) {
+                            m = lookup[column].mean
+                            s = lookup[column].std
+                        } else {
+                            m = mean(dataset.vectors.map(v => +v[column]))
+                            s = std(dataset.vectors.map(v => +v[column]))
+
+                            lookup[column] = {
+                                mean: m,
+                                std: s
+                            }
+                        }
+
+                        data.push((+vector[column] - m) / s);
+                    } else {
+                        data.push(+vector[column]);
+                    }
+                } else {
+                    // Not numeric data can be converted using one-hot encoding
+                    data = data.concat(oneHot(dataset.columns[column].distinct.indexOf(vector[column]), dataset.columns[column].distinct.length));
+                }
+            });
+            tensor.push(data);
+        });
+
+        return tensor;
+    }
+}
+
+
+
+
 /**
  * Dataset class that holds all data, the ranges and additional stuff
  */
@@ -44,13 +167,15 @@ export class Dataset {
     // True if the dataset has sequential information (line attribute)
     isSequential: boolean;
 
-    clusters: Cluster[];
+    clusters: ICluster[];
 
     // The edges between clusters.
     clusterEdges: Edge[];
 
     // Dictionary containing the key/value pairs for each column
     metaInformation
+
+    categories: any
 
 
 
@@ -62,7 +187,7 @@ export class Dataset {
         this.metaInformation = metaInformation
 
 
-        this.calculateBounds();
+        DatasetUtil.calculateBounds(this);
         this.calculateColumnTypes(ranges, featureTypes, metaInformation);
         this.checkLabels();
 
@@ -84,14 +209,43 @@ export class Dataset {
             var l = new DataLine(lineKey, vectors.filter(vector => vector[key] == lineKey).sort((a, b) => a.age - b.age))
             // Set segment of vectors
             l.vectors.forEach((v, vi) => {
-                v.view.segment = l
-                v.view.sequenceIndex = vi
+                v.__meta__.sequenceIndex = vi
             })
             return l
         })
 
         return segments
     }
+
+
+    // Checks if the dataset contains sequential data
+    checkSequential() {
+        var header = DatasetUtil.getColumns(this);
+
+        // If we have no line attribute, its not sequential
+        if (!header.includes(PrebuiltFeatures.Line)) {
+            return false;
+        }
+
+        // If each sample is a different line, its not sequential either
+        var set = new Set(this.vectors.map(vector => vector.line));
+
+        return set.size != this.vectors.length;
+    }
+
+    checkLabels() {
+        this.multivariateLabels = false;
+        this.vectors.forEach(vector => {
+            if (vector.groupLabel.length > 1) {
+                this.multivariateLabels = true;
+                return;
+            }
+        });
+    }
+
+
+
+
 
 
     inferRangeForAttribute(key: string) {
@@ -117,33 +271,8 @@ export class Dataset {
         return numeric ? { min: min, max: max, inferred: true } : null; // false
     }
 
-    reloadRanges() {
-    }
 
-    // Checks if the dataset contains sequential data
-    checkSequential() {
-        var header = this.getColumns();
 
-        // If we have no line attribute, its not sequential
-        if (!header.includes(PrebuiltFeatures.Line)) {
-            return false;
-        }
-
-        // If each sample is a different line, its not sequential either
-        var set = new Set(this.vectors.map(vector => vector.line));
-
-        return set.size != this.vectors.length;
-    }
-
-    checkLabels() {
-        this.multivariateLabels = false;
-        this.vectors.forEach(vector => {
-            if (vector.groupLabel.length > 1) {
-                this.multivariateLabels = true;
-                return;
-            }
-        });
-    }
 
     /**
      * Creates a map which shows the distinct types and data types of the columns.
@@ -205,128 +334,9 @@ export class Dataset {
             this.columns['y'].featureType = FeatureType.Quantitative;
     }
 
-    mapProjectionInitialization = entry => {
-        return {
-            name: entry,
-            checked: entry[0] === '*'
-        };
-    };
-
-    /**
-     * Returns an array of columns that are available in the vectors
-     */
-    getColumns(excludeGenerated = false) {
-        var vector = this.vectors[0];
-
-        if (excludeGenerated) {
-            const blackList = ["x", "y", "algo", "age", "clusterProbability", "multiplicity", "groupLabel"];
-            return Object.keys(vector).filter(e => e != '__meta__' && !blackList.includes(e));
-        } else {
-            return Object.keys(vector).filter(e => e != '__meta__');
-        }
-    }
-
-    /**
-     * Returns true if the dataset contains the column.
-     */
-    hasColumn(column) {
-        return this.getColumns().find(e => e == column) != undefined;
-    }
 
 
-    /**
-     * Returns the vectors in this dataset as a 2d array, which
-     * can be used as input for tsne for example.
-     */
-    asTensor(projectionColumns, samples?) {
-        var tensor = [];
 
-        function oneHot(n, length) {
-            var arr = new Array(length).fill(0);
-            arr[n] = 1;
-            return arr;
-        }
 
-        let lookup = {
 
-        }
-
-        ;(samples ?? this.vectors).forEach(vector => {
-            var data = [];
-            projectionColumns.forEach(entry => {
-                let column = entry.name;
-                if (this.columns[column].isNumeric) {
-                    if (this.columns[column].range && entry.normalized) {
-                        let m, s;
-                        
-                        if (column in lookup) {
-                            m = lookup[column].mean
-                            s = lookup[column].std
-                        } else {
-                            m = mean(this.vectors.map(v => +v[column]))
-                            s = std(this.vectors.map(v => +v[column]))
-
-                            lookup[column] = {
-                                mean: m,
-                                std: s
-                            }
-                        }
-
-                        data.push((+vector[column] - m) / s);
-                    } else {
-                        data.push(+vector[column]);
-                    }
-                } else {
-                    // Not numeric data can be converted using one-hot encoding
-                    data = data.concat(oneHot(this.columns[column].distinct.indexOf(vector[column]), this.columns[column].distinct.length));
-                }
-            });
-            tensor.push(data);
-        });
-
-        // console.log(this.columns)
-
-        return tensor;
-    }
-
-    /**
-     * Calculates the dataset bounds for this set, eg the minimum and maximum x,y values
-     * which is needed for the zoom to work correctly
-     */
-    calculateBounds() {
-        var xAxis = this.vectors.map(vector => vector.x);
-        var yAxis = this.vectors.map(vector => vector.y);
-
-        var minX = Math.min(...xAxis);
-        var maxX = Math.max(...xAxis);
-        var minY = Math.min(...yAxis);
-        var maxY = Math.max(...yAxis);
-
-        var scaleBase = 100;
-        var absoluteMaximum = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY));
-
-        this.bounds = {
-            scaleBase: scaleBase,
-            scaleFactor: absoluteMaximum / scaleBase,
-            x: {
-                min: minX,
-                max: maxX
-            },
-            y: {
-                min: minY,
-                max: maxY
-            }
-        };
-    }
-
-    /**
-     * Calculates the maximum path length for this dataset.
-     */
-    getMaxPathLength() {
-        if (this.isSequential) {
-            return Math.max(...this.segments.map(segment => segment.vectors.length));
-        } else {
-            return 1;
-        }
-    }
 }

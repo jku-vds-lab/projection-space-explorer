@@ -1,6 +1,6 @@
 import { Box, Button, FormControlLabel, Switch, Typography } from "@material-ui/core";
 import React = require("react");
-import { connect, ConnectedProps } from "react-redux";
+import { connect, ConnectedProps, useSelector } from "react-redux";
 import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import { setHoverWindowMode, WindowMode } from "../../Ducks/HoverSettingsDuck";
 import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClusters";

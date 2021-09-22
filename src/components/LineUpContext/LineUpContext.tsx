@@ -13,9 +13,9 @@ import { setLineUpInput_lineup, setLineUpInput_visibility } from "../Ducks/LineU
 import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 import * as _ from 'lodash';
 import BarCellRenderer from "./BarCellRenderer";
-import { DiscreteMapping } from "../Utility/Colors/DiscreteMapping";
+import { DiscreteMapping } from "../Utility/Colors/Mapping";
 import { ShallowSet } from "../Utility/ShallowSet";
-import Cluster from "../Utility/Data/Cluster";
+import Cluster, { ClusterObject } from "../Utility/Data/Cluster";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -110,7 +110,7 @@ export const LineUpContext = connector(function ({
 
     const preprocess_lineup_data = (data) => {
         if(activeStory)
-            Cluster.deriveVectorLabelsFromClusters(data, activeStory.clusters)
+            ClusterObject.deriveVectorLabelsFromClusters(data, activeStory.clusters)
         let lineup_data = [];
         data.forEach(element => {
 
@@ -216,7 +216,7 @@ export const LineUpContext = connector(function ({
         lineup.on('selectionChanged', currentSelection_lineup => {
             // if(currentSelection_lineup.length == 0) return; // selectionChanged is called during creation of lineup, before the current aggregation was set; therefore, it would always set the current aggregation to nothing because in the lineup table nothing was selected yet
             
-            const currentSelection_scatter = lineUpInput_data.map((x,i) => {if(x.view.selected) return i;}).filter(x => x !== undefined);
+            const currentSelection_scatter = lineUpInput_data.map((x,i) => {if(x.__meta__.selected) return i;}).filter(x => x !== undefined);
             
             if(!arrayEquals(currentSelection_lineup, currentSelection_scatter)){ // need to check, if the current lineup selection is already the current aggregation
                 let agg = [];
@@ -313,7 +313,7 @@ export const LineUpContext = connector(function ({
 
             // select those instances that are also selected in the scatter plot view
             if (currentAggregation.aggregation && currentAggregation.aggregation.length > 0) {
-                const currentSelection_scatter = lineUpInput_data.map((x, i) => { if (x.view.selected) return i; }).filter(x => x !== undefined);
+                const currentSelection_scatter = lineUpInput_data.map((x, i) => { if (x.__meta__.selected) return i; }).filter(x => x !== undefined);
                 lineUpInput.lineup.setSelection(currentSelection_scatter);
 
                 // const lineup_idx = lineup.renderer?.rankings[0]?.findNearest(currentSelection_scatter);

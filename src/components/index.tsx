@@ -3,50 +3,38 @@ import "regenerator-runtime/runtime";
 import Typography from '@material-ui/core/Typography';
 import { WebGLView } from './WebGLView/WebGLView'
 import Grid from '@material-ui/core/Grid';
-import { NamedCategoricalScales } from "./Utility/Colors/NamedCategoricalScales";
-import { ContinuousMapping } from "./Utility/Colors/ContinuousMapping";
-import { DiscreteMapping } from "./Utility/Colors/DiscreteMapping";
-import { ContinuosScale, DiscreteScale } from "./Utility/Colors/ContinuosScale";
-import { AppBar, createMuiTheme, Divider, Drawer, MuiThemeProvider, Paper, SvgIcon, Toolbar, Tooltip } from "@material-ui/core";
+import { AppBar, Button, Divider, Drawer, Paper, SvgIcon, Toolbar, Tooltip } from "@material-ui/core";
 import { DatasetDatabase } from "./Utility/Data/DatasetDatabase";
-import { Dataset } from "./Utility/Data/Dataset";
-import { LineTreePopover, LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
+import { Dataset, DatasetUtil, SegmentFN } from "./Utility/Data/Dataset";
+import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import * as React from "react";
-import { PathLengthFilter } from "./DrawerTabPanels/StatesTabPanel/PathLengthFilter/PathLengthFilter";
 import { Storytelling } from "./Overlays/ClusterOverview/Storytelling";
-import { Legend } from "./DrawerTabPanels/StatesTabPanel/LineSelection/LineSelection";
 import * as ReactDOM from 'react-dom';
 import { ClusteringTabPanel } from "./DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
-import { createStore } from 'redux'
-import { ConnectedProps, Provider } from 'react-redux'
+import { ConnectedProps } from 'react-redux'
 import { connect } from 'react-redux'
 import { StatesTabPanel } from "./DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./Overlays/StateSequenceDrawer/StateSequenceDrawer";
 import { setProjectionOpenAction } from "./Ducks/ProjectionOpenDuck";
 import { setDatasetAction } from "./Ducks/DatasetDuck";
 import { setOpenTabAction } from "./Ducks/OpenTabDuck";
-import { setWebGLView } from "./Ducks/WebGLViewDuck";
 import { ClusterMode, setClusterModeAction } from "./Ducks/ClusterModeDuck";
 import { setAdvancedColoringSelectionAction } from "./Ducks/AdvancedColoringSelectionDuck";
-import { CategoryOptions } from "./WebGLView/CategoryOptions";
+import { CategoryOptions, CategoryOptionsAPI } from "./WebGLView/CategoryOptions";
 import { setProjectionColumns } from "./Ducks/ProjectionColumnsDuck";
 import { EmbeddingTabPanel } from "./DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel";
 import { CSVLoader } from "./Utility/Loaders/CSVLoader";
-import { StoryEditor } from "./Overlays/StoryEditor/StoryEditor";
-import { PathBrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/PathTransparencySlider/PathBrightnessSlider";
 import { setActiveLine } from "./Ducks/ActiveLineDuck";
 import { setPathLengthMaximum, setPathLengthRange } from "./Ducks/PathLengthRange";
 import { setCategoryOptions } from "./Ducks/CategoryOptionsDuck";
 import { setChannelSize } from "./Ducks/ChannelSize";
 import { setGlobalPointSize } from "./Ducks/GlobalPointSizeDuck";
 import { setChannelColor } from "./Ducks/ChannelColorDuck";
-import { rootReducer, RootState } from "./Store/Store";
 import { DatasetTabPanel } from "./DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { LineUpContext } from "./LineUpContext/LineUpContext";
-import { devToolsEnhancer } from 'redux-devtools-extension';
 import { setLineUpInput_visibility } from './Ducks/LineUpInputDuck';
 import { SDFLoader } from "./Utility/Loaders/SDFLoader";
 import * as frontend_utils from "../utils/frontend-connect";
@@ -70,17 +58,16 @@ import './index.scss'
 import Split from 'react-split'
 import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
-import { setSplitRef } from "./Ducks/SplitRefDuck";
 import { Storybook } from "./Utility/Data/Storybook";
-import { BrightnessSlider } from "./DrawerTabPanels/StatesTabPanel/BrightnessSlider/BrightnessSlider";
 import { setGlobalPointBrightness } from "./Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
 import { setGenericFingerprintAttributes } from "./Ducks/GenericFingerprintAttributesDuck";
 import { GroupVisualizationMode, setGroupVisualizationMode } from "./Ducks/GroupVisualizationMode";
 import { HoverStateOrientation } from "./Ducks/HoverStateOrientationDuck";
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
+import { PSEContextProvider } from "./Store/PSEContext";
+import { API } from "./Store/PluginScript";
+import { RootState } from "./Store/Store";
+import { Vect } from "./Utility/Data/Vect";
 
 
 /**
@@ -112,9 +99,9 @@ const mapStateToProps = (state: RootState) => ({
   channelSize: state.channelSize,
   channelColor: state.channelColor,
   channelBrightness: state.channelBrightness,
-  splitRef: state.splitRef,
   hoverStateOrientation: state.hoverStateOrientation
 })
+
 
 
 const mapDispatchToProps = dispatch => ({
@@ -126,7 +113,6 @@ const mapDispatchToProps = dispatch => ({
   setActiveLine: value => dispatch(setActiveLine(value)),
   setProjectionColumns: projectionColumns => dispatch(setProjectionColumns(projectionColumns)),
   setProjectionOpen: projectionOpen => dispatch(setProjectionOpenAction(projectionOpen)),
-  setWebGLView: webGLView => dispatch(setWebGLView(webGLView)),
   setClusterMode: clusterMode => dispatch(setClusterModeAction(clusterMode)),
   setPathLengthMaximum: maximum => dispatch(setPathLengthMaximum(maximum)),
   setPathLengthRange: range => dispatch(setPathLengthRange(range)),
@@ -135,14 +121,11 @@ const mapDispatchToProps = dispatch => ({
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
   wipeState: () => dispatch({ type: 'RESET_APP' }),
   setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
-  // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
-  // setLineUpInput_columns: input => dispatch(setLineUpInput_columns(input)),
   setChannelBrightness: channelBrightness => dispatch(setChannelBrightnessSelection(channelBrightness)),
   setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
   saveProjection: embedding => dispatch(addProjectionAction(embedding)),
   setVectors: vectors => dispatch(setVectors(vectors)),
   setLineByOptions: options => dispatch(setLineByOptions(options)),
-  setSplitRef: splitRef => dispatch(setSplitRef(splitRef)),
   setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
   setGenericFingerprintAttriutes: value => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value))
@@ -166,15 +149,6 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
  */
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-/**
- * Type that holds every property that is relevant to our component, that is the props declared above + our OWN component props
- */
-// type Props = PropsFromRedux & {
-//     onFilter: any
-//     // My own property 1
-//     // My own property 2
-// }
-
 type Props = PropsFromRedux & {
 }
 
@@ -186,7 +160,6 @@ type Props = PropsFromRedux & {
  * Main application that contains all other components.
  */
 var Application = connector(class extends React.Component<Props, any> {
-  legend: React.RefObject<Legend>;
   dataset: Dataset;
   threeRef: any;
   splitRef: any;
@@ -202,9 +175,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
     this.threeRef = React.createRef()
     this.splitRef = React.createRef()
-    this.props.setWebGLView(this.threeRef)
 
-    this.legend = React.createRef()
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
   }
@@ -240,18 +211,11 @@ var Application = connector(class extends React.Component<Props, any> {
       } else {
         preselect = mangleURL(set)
       }
-      loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
+      loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
     } else {
-      loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
+      loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
     }
   }
-
-
-
-  convertRemToPixels(rem) {
-    return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-  }
-
 
 
   /**
@@ -259,7 +223,7 @@ var Application = connector(class extends React.Component<Props, any> {
    * @param dataset 
    * @param json 
    */
-  onDataSelected(dataset: Dataset, json) {
+  onDataSelected(dataset: Dataset) {
     // Wipe old state
     this.props.wipeState()
 
@@ -274,26 +238,19 @@ var Application = connector(class extends React.Component<Props, any> {
     // Set new dataset as variable
     this.props.setDataset(dataset)
 
-    // Load new view
-    let lineScheme = this.mappingFromScale(NamedCategoricalScales.DARK2(), { key: 'algo' }, dataset)
-
-    this.setState({
-      lineColorScheme: lineScheme
-    })
 
 
+    //this.threeRef.current.createVisualization(dataset, lineScheme, null)
 
-    this.threeRef.current.createVisualization(dataset, lineScheme, null)
-
-    this.finite(lineScheme, json, dataset)
+    this.finite(dataset)
 
     this.props.setVectors(dataset.vectors)
 
     // this.props.setLineUpInput_columns(dataset.columns);
     // this.props.setLineUpInput_data(dataset.vectors);
-    this.props.setSplitRef(this.splitRef)
 
-    this.props.setLineByOptions(dataset.getColumns())
+
+    this.props.setLineByOptions(DatasetUtil.getColumns(dataset))
 
     setTimeout(() => this.threeRef.current.requestRender(), 500)
 
@@ -308,7 +265,7 @@ var Application = connector(class extends React.Component<Props, any> {
   }
 
 
-  finite(lineColorScheme, categories, dataset: Dataset) {
+  finite(dataset: Dataset) {
     var algos = LineSelectionTree_GenAlgos(this.props.dataset.vectors)
     var selLines = LineSelectionTree_GetChecks(algos)
 
@@ -317,12 +274,13 @@ var Application = connector(class extends React.Component<Props, any> {
       selectedLines: selLines,
       selectedLineAlgos: algos
     })
-
-    this.props.setCategoryOptions(new CategoryOptions(this.props.dataset.vectors, categories))
-    this.props.setPathLengthMaximum(dataset.getMaxPathLength())
-    this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
+    const co = new CategoryOptions(this.props.dataset.vectors, this.props.dataset.categories)
+    CategoryOptionsAPI.init(co)
+    this.props.setCategoryOptions(co)
+    this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
+    this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
     this.props.saveProjection(new Embedding(dataset.vectors, "Initial Projection"))
-    this.props.setGenericFingerprintAttriutes(dataset.getColumns(true).map(column => ({
+    this.props.setGenericFingerprintAttriutes(DatasetUtil.getColumns(dataset, true).map(column => ({
       feature: column,
       show: dataset.columns[column].project
     })))
@@ -335,7 +293,7 @@ var Application = connector(class extends React.Component<Props, any> {
       }
     }
 
-    this.props.setProjectionColumns(dataset.getColumns(true).map(column => ({
+    this.props.setProjectionColumns(DatasetUtil.getColumns(dataset, true).map(column => ({
       name: column,
       checked: dataset.columns[column].project,
       normalized: true,
@@ -343,38 +301,17 @@ var Application = connector(class extends React.Component<Props, any> {
       featureLabel: dataset.columns[column].featureLabel
     })))
 
-    this.legend.current?.load(dataset.info.type, lineColorScheme, this.state.selectedLineAlgos)
-
     this.initializeEncodings(dataset)
   }
 
-  mappingFromScale(scale, attribute, dataset) {
-    if (scale instanceof DiscreteScale) {
-      // Generate scale
-      return new DiscreteMapping(scale, [... new Set(this.props.dataset.vectors.map(vector => vector[attribute.key]))])
-    }
-    if (scale instanceof ContinuosScale) {
-      var min = null, max = null
-      if (dataset.columns[attribute.key].range) {
-        min = dataset.columns[attribute.key].range.min
-        max = dataset.columns[attribute.key].range.max
-      } else {
-        var filtered = this.props.dataset.vectors.map(vector => vector[attribute.key])
-        max = Math.max(...filtered)
-        min = Math.min(...filtered)
-      }
 
-      return new ContinuousMapping(scale, { min: min, max: max })
-    }
-    return null
-  }
 
   initializeEncodings(dataset) {
     var state = {} as any
 
     this.threeRef.current.particles.shapeCat(null)
 
-    var defaultSizeAttribute = this.props.categoryOptions.getAttribute('size', 'multiplicity', 'sequential')
+    var defaultSizeAttribute = CategoryOptionsAPI.getAttribute(this.props.categoryOptions, 'size', 'multiplicity', 'sequential')
 
     if (defaultSizeAttribute) {
       this.props.setGlobalPointSize([1, 2])
@@ -390,14 +327,14 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
 
-    var defaultColorAttribute = this.props.categoryOptions.getAttribute("color", "algo", "categorical")
+    var defaultColorAttribute = CategoryOptionsAPI.getAttribute(this.props.categoryOptions, "color", "algo", "categorical")
     if (defaultColorAttribute) {
       this.props.setChannelColor(defaultColorAttribute)
     } else {
       this.props.setChannelColor(null)
     }
 
-    var defaultBrightnessAttribute = this.props.categoryOptions.getAttribute("transparency", "age", "sequential")
+    var defaultBrightnessAttribute = CategoryOptionsAPI.getAttribute(this.props.categoryOptions, "transparency", "age", "sequential")
 
     if (defaultBrightnessAttribute) {
       this.props.setGlobalPointBrightness([0.25, 1])
@@ -423,7 +360,6 @@ var Application = connector(class extends React.Component<Props, any> {
     } else {
       this.props.setOpenTab(newTab)
     }
-
   }
 
 
@@ -522,11 +458,15 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
               <FixedHeightTabPanel value={this.props.openTab} index={1}>
-                <EmbeddingTabPanel></EmbeddingTabPanel>
+                <EmbeddingTabPanel
+                  webGLView={this.threeRef}></EmbeddingTabPanel>
               </FixedHeightTabPanel>
 
               <FixedHeightTabPanel value={this.props.openTab} index={2}>
-                <StatesTabPanel lineColorScheme={this.state.lineColorScheme}></StatesTabPanel>
+                <StatesTabPanel
+                  webGLView={this.threeRef}
+                  lineColorScheme={this.state.lineColorScheme}
+                ></StatesTabPanel>
               </FixedHeightTabPanel>
 
 
@@ -534,6 +474,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
                 {this.props.dataset != null ?
                   <ClusteringTabPanel
+                    splitRef={this.splitRef}
                     open={this.props.openTab == 2}
                     clusteringWorker={this.state.clusteringWorker}
                   ></ClusteringTabPanel> : <div></div>
@@ -551,14 +492,11 @@ var Application = connector(class extends React.Component<Props, any> {
               </FixedHeightTabPanel>} */}
 
               <FixedHeightTabPanel value={this.props.openTab} index={5}>
-                <LineUpTabPanel></LineUpTabPanel>
+                <LineUpTabPanel splitRef={this.splitRef}></LineUpTabPanel>
               </FixedHeightTabPanel>
             </Grid>
-
           </div>
-
         </Box>
-
 
         <div style={{
           display: 'flex',
@@ -609,22 +547,11 @@ var Application = connector(class extends React.Component<Props, any> {
               <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
             </div>
           </Split>
-
-
-
         </div>
 
-
-        
         <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
 
         <Storytelling></Storytelling>
-
-
-
-        <StoryEditor></StoryEditor>
-
-
 
         {this.props.hoverStateOrientation == HoverStateOrientation.SouthWest && <div id="HoverItemDiv" style={{
           position: 'absolute',
@@ -653,26 +580,86 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
 
+const onClick = async (content: string) => {
+  const handle = await window.showSaveFilePicker({
+    suggestedName: 'session.pse',
+    types: [{
+      description: 'PSE Session',
+      accept: {
+        'text/plain': ['.pse'],
+      },
+    }],
+  });
+
+  const writable = await handle.createWritable()
+  writable.write(content)
+  await writable.close()
+
+  return handle;
+}
 
 
+const loo = async () => {
+  const [fileHandle] = await window.showOpenFilePicker();
+  const file = await fileHandle.getFile();
+  const contents = await file.text();
+
+  return contents
+}
 
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      // light: will be calculated from palette.primary.main,
-      main: '#007dad',
-      // dark: will be calculated from palette.primary.main,
-      // contrastText: will be calculated to contrast with palette.primary.main
-    }
+interface PSEPlugin {
+  type: string;
+
+  hasFileLayout(header: string[]);
+  createFingerprint(vectors: Vect[]): Promise<React.Component>;
+}
+
+class RubikPlugin implements PSEPlugin {
+  type: string;
+
+  hasFileLayout(header: string[]) {
+    throw new Error("Method not implemented.");
   }
-})
+
+  createFingerprint(vectors: Vect[]): Promise<React.Component> {
+    return new Promise(() => <div></div>)
+  }
+}
+
+
+
+const EntryPoint = () => {
+  const api = new API()
+  const [context, setContext] = React.useState(api)
+  const [test, setTest] = React.useState('')
+
+  api.onStateChanged = (values, keys) => {
+  }
+
+
+
+  return <div>
+    <Button style={{ zIndex: 10000, position: 'absolute' }
+    } onClick={() => {
+      onClick(context.serialize())
+    }}>store</Button>
+
+    <Button style={{ zIndex: 10000, position: 'absolute', left: 100 }} onClick={async () => {
+      const content = await loo()
+      setContext(new API(content))
+    }}>load</Button>
+    <PSEContextProvider
+      context={context}
+      onStateChanged={(values, keys) => {
+        //console.log(values)
+        console.log(keys)
+      }}>
+
+      <Application />
+    </PSEContextProvider>
+  </div>
+}
 
 // Render the application into our 'mountingPoint' div that is declared in 'index.html'.
-ReactDOM.render(
-  <Provider store={createStore(rootReducer, devToolsEnhancer({}))}>
-    <MuiThemeProvider theme={theme}>
-      <Application />
-    </MuiThemeProvider>
-
-  </Provider>, document.getElementById("mountingPoint"))
+ReactDOM.render(<EntryPoint></EntryPoint>, document.getElementById("mountingPoint"))

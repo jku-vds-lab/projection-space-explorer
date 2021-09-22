@@ -1,7 +1,7 @@
 import React = require("react")
 import { Avatar, Box, Button, Checkbox, FormControl, FormGroup, IconButton, InputAdornment, InputLabel, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Typography } from "@material-ui/core"
 import { connect, ConnectedProps } from 'react-redux'
-import Cluster from "../../Utility/Data/Cluster"
+import Cluster, { ClusterObject } from "../../Utility/Data/Cluster"
 import { Storybook } from "../../Utility/Data/Storybook"
 import { graphLayout, Edge } from "../../Utility/graphs"
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -19,22 +19,21 @@ import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
 import useCancellablePromise from "../../../utils/promise-helpers"
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import lineUpInput, { setLineUpInput_visibility, setLineUpInput_filter, setLineUpInput_update, updateLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
+import { setLineUpInput_visibility, setLineUpInput_filter, setLineUpInput_update, updateLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import groupVisualizationMode, { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
-import { aggSelectCluster, setAggregationGroups } from "../../Ducks/AggregationDuck"
+import { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
+import { selectClusters, selectVectors } from "../../Ducks/AggregationDuck"
+import { CategoryOptionsAPI } from "../../WebGLView/CategoryOptions"
 const d3 = require("d3")
 
 const mapStateToProps = (state: RootState) => ({
     stories: state.stories,
     displayMode: state.displayMode,
     dataset: state.dataset,
-    webGLView: state.webGLView,
     categoryOptions: state.categoryOptions,
     currentAggregation: state.currentAggregation,
-    splitRef: state.splitRef,
     groupVisualizationMode: state.groupVisualizationMode
 })
 
@@ -53,8 +52,7 @@ const mapDispatchToProps = dispatch => ({
     setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
     setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
     setGroupVisualizationMode: groupVisualizationMode => dispatch(setGroupVisualizationMode(groupVisualizationMode)),
-    setAggregationGroups: groups => dispatch(setAggregationGroups(groups)),
-    setSelectedCluster: (cluster, shift) => dispatch(aggSelectCluster(cluster, shift))
+    setSelectedClusters: (clusters: number[], shift: boolean) => dispatch(selectClusters(clusters, shift))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -87,7 +85,6 @@ export const ClusteringTabPanel = connector(({
     addStory,
     addClusterToStory,
     removeClusterFromStories,
-    webGLView,
     // selectedClusters,
     // setLineUpInput_data,
     updateLineUpInput_filter,
@@ -97,17 +94,8 @@ export const ClusteringTabPanel = connector(({
     setLineUpInput_filter,
     splitRef,
     groupVisualizationMode,
-    setAggregationGroups,
     setGroupVisualizationMode,
-    setSelectedCluster }: Props) => {
-
-    React.useEffect(() => {
-        if (stories && stories.active && stories.active.clusters) {
-            setAggregationGroups(stories.active.clusters)
-        }
-    }, [stories])
-
-
+    setSelectedClusters }: Props) => {
 
     function storyLayout(edges: Edge[]) {
         var stories: Storybook[] = []
@@ -160,7 +148,7 @@ export const ClusteringTabPanel = connector(({
                     //setActiveStory(stories[0])
                 } else {
                     if (dataset.isSequential) {
-                        const [edges] = graphLayout(clusters)
+                        const [edges] = graphLayout(dataset, clusters)
 
                         setClusterEdges(edges)
 
@@ -208,7 +196,7 @@ export const ClusteringTabPanel = connector(({
                         //setActiveStory(stories[0])
                     } else {
                         if (dataset.isSequential) {
-                            const [edges] = graphLayout(clusters)
+                            const [edges] = graphLayout(dataset, clusters)
 
                             setClusterEdges(edges)
 
@@ -233,7 +221,7 @@ export const ClusteringTabPanel = connector(({
 
     function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory) {
         const loading_area = "global_loading_indicator";
-        let data_points = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation : dataset.vectors;
+        let data_points = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation.map(i => dataset.vectors[i]) : dataset.vectors;
         const points = data_points.map(point => [point.x, point.y]);
         trackPromise(
             cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster)).then(data => {
@@ -253,7 +241,7 @@ export const ClusteringTabPanel = connector(({
                 dist_cluster_labels.forEach(cluster_label => {
                     if (cluster_label >= 0) {
                         const current_cluster_vects = data_points.filter((x, i) => cluster_labels[i] == cluster_label);
-                        const cluster = Cluster.fromSamples(current_cluster_vects);
+                        const cluster = ClusterObject.fromSamples(dataset, current_cluster_vects.map(i => i.__meta__.meshIndex));
 
                         // Set correct label for cluster
                         cluster.label = cluster_label
@@ -269,7 +257,7 @@ export const ClusteringTabPanel = connector(({
                 // }
 
                 // Update UI, dont know how to right now
-                var clusterAttribute = categoryOptions.getAttribute("color", "groupLabel", "categorical")
+                var clusterAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, "color", "groupLabel", "categorical")
 
                 if (clusterAttribute) {
                     setChannelColor(clusterAttribute)
@@ -544,7 +532,6 @@ export const ClusteringTabPanel = connector(({
             <ClusterList
                 removeClusterFromStories={removeClusterFromStories}
                 selectedClusters={currentAggregation.selectedClusters}
-                webGLView={webGLView}
                 stories={stories}
                 // setLineUpInput_data={setLineUpInput_data}
                 updateLineUpInput_filter={updateLineUpInput_filter}
@@ -552,7 +539,7 @@ export const ClusteringTabPanel = connector(({
                 setLineUpInput_visibility={setLineUpInput_visibility}
                 setLineUpInput_filter={setLineUpInput_filter}
                 splitRef={splitRef}
-                setSelectedCluster={setSelectedCluster}
+                setSelectedCluster={setSelectedClusters}
             ></ClusterList>
         </div>
     </div>
@@ -626,7 +613,7 @@ function ClusterPopover({
         // setLineUpInput_data(cluster.vectors)
         setLineUpInput_visibility(true)
         setLineUpInput_filter({ 'groupLabel': cluster.label });
-        setSelectedCluster(cluster)
+        setSelectedCluster([cluster])
         
         const curr_sizes = splitRef.current.split.getSizes();
         if(curr_sizes[1] < 2){
@@ -702,7 +689,6 @@ function ClusterPopover({
 
 function ClusterList({
     selectedClusters,
-    webGLView,
     stories,
     removeClusterFromStories,
     // setLineUpInput_data,
@@ -739,11 +725,11 @@ function ClusterList({
         <List>
             {stories.active?.clusters.map((cluster, key) => {
                 return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={(event) => {
-                    setSelectedCluster(cluster, event.ctrlKey)
+                    setSelectedCluster([key], event.ctrlKey)
                 }}>
                     <ListItemText
-                        primary={cluster.getTextRepresentation()}
-                        secondary={`${cluster.vectors.length} Items`}
+                        primary={ClusterObject.getTextRepresentation(cluster)}
+                        secondary={`${cluster.refactored.length} Items`}
                     />
                     <ListItemSecondaryAction>
                         <IconButton edge="end" aria-label="delete" onClick={(event) => {

@@ -2,7 +2,8 @@
  * Directed graph library for javascript.
  */
 
-import Cluster from "./Data/Cluster"
+import { ICluster } from "./Data/Cluster"
+import { Dataset } from "./Data/Dataset"
 import { Vect } from "./Data/Vect"
 
 
@@ -34,8 +35,8 @@ export class Node {
  * Edge class that is a connection between 2 nodes.
  */
 export class Edge {
-    source: Cluster
-    destination: Cluster
+    source: ICluster
+    destination: ICluster
     bundle: number[]
     name: string
 
@@ -53,21 +54,21 @@ export class Edge {
  * @param {*} clusters 
  * @param {*} vectors 
  */
-export function graphLayout(clusters) {
+export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
     var edges: Edge[] = []
 
     // For each cluster,
     Object.keys(clusters).forEach(srcKey => {
-        var srcCluster = clusters[srcKey]
+        var srcCluster = clusters[srcKey] as ICluster
         Object.keys(clusters).forEach(dstKey => {
-            var dstCluster = clusters[dstKey]
+            var dstCluster = clusters[dstKey] as ICluster
             if (dstCluster != srcCluster) {
                 var bundle = []
 
                 // For each vector in source cluster, check if the direct ancestor is in the destination cluster
-                srcCluster.vectors.forEach(srcVec => {
-                    if (dstCluster.vectors.find(dstVec => srcVec.view.segment.lineKey == dstVec.view.segment.lineKey && srcVec.view.sequenceIndex + 1 == dstVec.view.sequenceIndex)) {
-                        bundle.push(srcVec.view.segment.lineKey)
+                srcCluster.refactored.map(i => dataset.vectors[i]).forEach(srcVec => {
+                    if (dstCluster.refactored.map(i => dataset.vectors[i]).find(dstVec => srcVec.line == dstVec.line && srcVec.__meta__.sequenceIndex + 1 == dstVec.__meta__.sequenceIndex)) {
+                        bundle.push(srcVec.line)
                     }
                 })
 

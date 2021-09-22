@@ -11,7 +11,6 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import InfoIcon from '@material-ui/icons/Info';
 import useCancellablePromise, { makeCancelable } from '../../../utils/promise-helpers';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import { setAggregationAction } from '../../Ducks/AggregationDuck';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { isFunction } from 'lodash';
 import rdkitSettings, { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma, setRDKit_width, setRDKit_doAlignment } from '../../Ducks/RDKitSettingsDuck';
@@ -19,6 +18,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { WindowMode } from '../../Ducks/HoverSettingsDuck';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { setChannelColor } from '../../Ducks/ChannelColorDuck';
+import { selectVectors } from '../../Ducks/AggregationDuck';
 
 
 /**
@@ -32,7 +32,7 @@ import { setChannelColor } from '../../Ducks/ChannelColorDuck';
     columns: state.dataset?.columns,
 })
 const mapDispatchToProps_Chem = dispatch => ({
-    setCurrentAggregation: samples => dispatch(setAggregationAction(samples))
+    setCurrentAggregation: samples => dispatch(selectVectors(samples, false))
 })
 const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
 

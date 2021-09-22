@@ -1,6 +1,6 @@
 import "./Storytelling.scss";
 import * as React from 'react'
-import Cluster from "../../Utility/Data/Cluster";
+import Cluster, { ClusterObject } from "../../Utility/Data/Cluster";
 import { GenericFingerprint } from "../../legends/Generic";
 import { Card, Typography, Tooltip, IconButton, CardHeader, CardContent } from "@material-ui/core";
 import ToggleButton from "@material-ui/lab/ToggleButton";
@@ -246,7 +246,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                 return <g key={`${p.x}${p.y}`}>
                                     <line x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
                                     <Plus x={midX} y={p2.y} r={10} onClick={() => {
-                                        let cluster = Cluster.fromSamples(currentAggregation.aggregation)
+                                        let cluster = ClusterObject.fromSamples(this.props.dataset, currentAggregation.aggregation)
 
                                         addClusterToTrace(cluster)
 
@@ -261,7 +261,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                             <line x1={midX} y1={0} x2={midX} y2={100} stroke={mainColor} strokeWidth="2"></line>
                             <Plus x={midX} y={100} r={10} onClick={() => {
                                 if (currentAggregation.aggregation.length > 0) {
-                                    let cluster = Cluster.fromSamples(this.props.currentAggregation.aggregation)
+                                    let cluster = ClusterObject.fromSamples(this.props.dataset, this.props.currentAggregation.aggregation)
 
                                     addClusterToTrace(cluster)
                                 }
@@ -502,7 +502,7 @@ export const Storytelling = connector(function ({
                                         setActiveTraceState(cluster)
                                         setSelectedCluster(cluster, false)
                                     }}>
-                                    <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{cluster.getTextRepresentation()}</Typography>
+                                    <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{ClusterObject.getTextRepresentation(cluster)}</Typography>
 
                                     <div className="ClusterItem"
                                         style={{
@@ -514,7 +514,7 @@ export const Storytelling = connector(function ({
                                     >
                                         <GenericFingerprint
                                             type={dataset.type}
-                                            vectors={cluster.vectors}
+                                            vectors={cluster.refactored.map(i => dataset.vectors[i])}
                                             scale={1}
                                         />
                                     </div>

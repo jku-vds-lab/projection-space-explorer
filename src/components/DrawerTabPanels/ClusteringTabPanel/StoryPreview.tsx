@@ -6,18 +6,15 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { Storybook } from '../../Utility/Data/Storybook';
 import { addStory, deleteStory, setActiveStory } from '../../Ducks/StoriesDuck';
 import { RootState } from '../../Store/Store';
-import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
 
 const mapStateToProps = (state: RootState) => ({
-    stories: state.stories,
-    storyEditor: state.storyEditor
+    stories: state.stories
 })
 
 const mapDispatchToProps = dispatch => ({
     setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
     deleteStory: story => dispatch(deleteStory(story)),
-    addStory: story => dispatch(addStory(story)),
-    openStoryEditor: visible => dispatch(openStoryEditor(visible))
+    addStory: story => dispatch(addStory(story))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -32,9 +29,7 @@ export const StoryPreview = connector(({
     stories,
     setActiveStory,
     deleteStory,
-    addStory,
-    storyEditor,
-    openStoryEditor }: Props) => {
+    addStory}: Props) => {
     const deleteHandler = (story) => {
         if (stories.active == story) {
             setActiveStory(null)
@@ -53,9 +48,9 @@ export const StoryPreview = connector(({
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={stories.active ? stories.active.getId() : ''}
+                value={stories.active ? stories.active.uuid : ''}
                 onChange={(event) => {
-                    setActiveStory(stories.stories.find(story => story.getId() == event.target.value))
+                    setActiveStory(stories.stories.find(story => story.uuid == event.target.value))
                 }}
             >
                 <ListItem
@@ -70,7 +65,7 @@ export const StoryPreview = connector(({
                         return <ListItem
                             key={key}
                             button
-                            {...{ value: story.getId() }}
+                            {...{ value: story.uuid }}
                         >
                             <ListItemText primary={"Story Book"} secondary={`${story.clusters.length} nodes`} />
                             <ListItemSecondaryAction>
@@ -96,16 +91,6 @@ export const StoryPreview = connector(({
                 size="small"
                 aria-label="move selected left"
             >Add Empty</Button>
-
-
-            {stories.active && stories.active.clusters.length > 0 && false && <Grid item>
-                <Button style={{
-                    marginTop: '16px'
-                }}
-                    onClick={() => openStoryEditor(!storyEditor.visible)}
-                    size="small"
-                    variant="outlined">{`${storyEditor.visible ? 'Close' : 'Open'} Story Editor`}</Button>
-            </Grid>}
         </Grid>
     </div>
 })

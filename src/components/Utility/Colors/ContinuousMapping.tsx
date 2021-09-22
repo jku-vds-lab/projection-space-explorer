@@ -1,3 +1,4 @@
+import { ScaleUtil } from "./ContinuosScale";
 import { Mapping } from "./Mapping";
 
 
@@ -21,6 +22,6 @@ export class ContinuousMapping extends Mapping {
       return this.scale.map(0);
     }
     var normalized = (value - this.range.min) / (this.range.max - this.range.min);
-    return this.scale.map(normalized);
+    return ScaleUtil.mapScale(this.scale, normalized);
   }
 }

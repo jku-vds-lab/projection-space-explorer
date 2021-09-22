@@ -23,7 +23,7 @@ export class Embedding {
             this.positions[i] = {
                 x: vec.x,
                 y: vec.y,
-                meshIndex: vec.view.meshIndex
+                meshIndex: vec.__meta__.meshIndex
             }
         })
     }

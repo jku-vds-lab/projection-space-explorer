@@ -27,7 +27,7 @@ export class Vect {
     // age (generated)
     age: number;
 
-    __meta__: any;
+    __meta__: VectView;
 
     constructor(dict) {
         // Copy dictionary values to this object
@@ -35,41 +35,8 @@ export class Vect {
             this[key] = dict[key];
         });
 
-        this.__meta__ = {};
-        this.setMeta('view', new VectView());
+        this.__meta__ = new VectView()
     }
-
-    /**
-     * Sets some meta data for a key
-     */
-    setMeta(key, value) {
-        this.__meta__[key] = value;
-    }
-
-    /**
-     * Gets some meta data for a key
-     */
-    getMeta(key) {
-        return this.__meta__[key];
-    }
-
-    /**
-     * Getter for view details
-     */
-    get view() {
-        return this.getMeta('view') as VectView;
-    }
-
-
-    pureValues() {
-        var keys = this.pureHeader();
-        return keys.map(key => this[key]);
-    }
-
-    pureHeader() {
-        return Object.keys(this).filter(value => value != '__meta__');
-    }
-
 }
 
 
@@ -106,11 +73,6 @@ export class VectView {
      */
     lineIndex: any
 
-
-    /**
-     * The segment reference this vector belongs to.
-     */
-    segment: DataLine = null
 
     /**
      * Index of sequence from 0 to n, this is needed because the key for the line might be sortable, but not numeric

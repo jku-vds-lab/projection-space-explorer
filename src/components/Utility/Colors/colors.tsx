@@ -1,19 +1,20 @@
 import { SchemeColor } from "./SchemeColor"
 import { ContinuosScale, DiscreteScale } from "./ContinuosScale";
-import { DiscreteMapping } from "./DiscreteMapping";
-import { ContinuousMapping } from "./ContinuousMapping";
+import { DiscreteMapping } from "./Mapping";
+import { ContinuousMapping } from "./Mapping";
 import { NamedScales } from "./NamedScales";
 import { NamedCategoricalScales } from "./NamedCategoricalScales";
 import { ShallowSet } from "../ShallowSet";
 import { Dataset } from "../Data/Dataset";
+import { LinearColorScale } from "./LinearColorScale";
 
-export const mappingFromScale = (scale, attribute, dataset: Dataset) => {
-  if (scale instanceof DiscreteScale) {
+export const mappingFromScale = (scale: LinearColorScale, attribute, dataset: Dataset) => {
+  if (scale.type === 'discrete') {
     // Generate scale
     return new DiscreteMapping(scale, new ShallowSet(dataset.vectors.map(vector => vector[attribute.key])))
 
   }
-  if (scale instanceof ContinuosScale) {
+  if (scale.type === 'continuous') {
     var min = null, max = null
     if (dataset.columns[attribute.key].range) {
       min = dataset.columns[attribute.key].range.min

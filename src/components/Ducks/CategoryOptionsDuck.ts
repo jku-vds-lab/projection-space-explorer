@@ -1,6 +1,10 @@
+import { CategoryOptions } from "../WebGLView/CategoryOptions"
+
 const SET = "ducks/categoryOptions/SET"
 
-const categoryOptions = (state = null, action) => {
+const initialState: CategoryOptions = null
+
+const categoryOptions = (state = initialState, action): CategoryOptions => {
     switch (action.type) {
         case SET:
             return action.categoryOptions
@@ -11,7 +15,7 @@ const categoryOptions = (state = null, action) => {
 
 export default categoryOptions
 
-export const setCategoryOptions = categoryOptions => ({
+export const setCategoryOptions = (categoryOptions: CategoryOptions) => ({
     type: SET,
     categoryOptions: categoryOptions
 });

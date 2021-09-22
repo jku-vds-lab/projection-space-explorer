@@ -5,13 +5,11 @@ import { connect, ConnectedProps } from "react-redux";
 import { setLineUpInput_filter, setLineUpInput_visibility } from "../../Ducks/LineUpInputDuck";
 import { RootState } from "../../Store/Store";
 import GetAppIcon from '@material-ui/icons/GetApp';
-import splitRef from "../../Ducks/SplitRefDuck";
 
 const mapStateToProps = (state: RootState) => ({
     dataset: state.dataset,
     currentAggregation: state.currentAggregation,
-    lineUpInput: state.lineUpInput,
-    splitRef: state.splitRef,
+    lineUpInput: state.lineUpInput
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -24,6 +22,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
+    splitRef: any
 }
 
 

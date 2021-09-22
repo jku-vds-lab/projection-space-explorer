@@ -1,6 +1,6 @@
 
 import { Scene, Vector2, Vector3 } from "three";
-import Cluster from "../../Utility/Data/Cluster";
+import Cluster, { ClusterObject, ICluster } from "../../Utility/Data/Cluster";
 import THREE = require("three");
 import { Vect } from "../../Utility/Data/Vect";
 import { DisplayMode } from "../../Ducks/DisplayModeDuck";
@@ -19,6 +19,7 @@ import * as frontend_utils from "../../../utils/frontend-connect";
 import { toPlainObject } from "lodash";
 import { GroupVisualizationMode } from "../../Ducks/GroupVisualizationMode";
 import { SchemeColor } from "../../Utility/Colors/SchemeColor";
+import { ScaleUtil } from "../../Utility/Colors/ContinuosScale";
 
 
 const SELECTED_COLOR = 0x007dad
@@ -32,7 +33,7 @@ const CLUSTER_PIXEL_SIZE = 12
 
 
 type ClusterObjectType = {
-    cluster: Cluster,
+    cluster: ICluster,
     geometry: THREE.Geometry,
     material: THREE.MeshBasicMaterial,
     mesh: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>,
@@ -46,7 +47,6 @@ type ClusterObjectType = {
 const mapState = (state: RootState) => ({
     dataset: state.dataset,
     displayMode: state.displayMode,
-    webGLView: state.webGLView,
     trailSettings: state.trailSettings,
     stories: state.stories,
     globalPointSize: state.globalPointSize,
@@ -62,6 +62,8 @@ const connector = connect(mapState, null, null, { forwardRef: true });
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
+    // Callback that is called when a rerender should happen
+    onInvalidate?: () => void
 }
 
 /**
@@ -161,7 +163,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
             if (this.props.currentAggregation.source == 'sample') {
-                this.highlightSamples(this.props.currentAggregation.aggregation)
+                this.highlightSamples(this.props.currentAggregation.aggregation.map(i => this.props.dataset.vectors[i]))
             }
 
             // if the hoverCluster state changed and its a multivariate cluster, we need to enable the three js scene part
@@ -170,7 +172,9 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             }
         }
 
-        this.props.webGLView.current.requestRender()
+        if (this.props.onInvalidate) {
+            this.props.onInvalidate()
+        }
     }
 
     updateArrows(zoom: number) {
@@ -191,8 +195,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 color = new THREE.Color(SELECTED_COLOR)
             }
 
-            let start = new THREE.Vector2(edge.source.getCenter().x, edge.source.getCenter().y)
-            let end = new THREE.Vector2(edge.destination.getCenter().x, edge.destination.getCenter().y)
+            let start = new THREE.Vector2(ClusterObject.getCenter(this.props.dataset, edge.source).x, ClusterObject.getCenter(this.props.dataset, edge.source).y)
+            let end = new THREE.Vector2(ClusterObject.getCenter(this.props.dataset, edge.destination).x, ClusterObject.getCenter(this.props.dataset, edge.destination).y)
             let middle = new THREE.Vector2().addVectors(start, new THREE.Vector2().subVectors(end, start).multiplyScalar(0.5))
 
             let dir = end.clone().sub(start).normalize()
@@ -246,7 +250,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
     iterateTrail(zoom) {
         this.clusterObjects.forEach(clusterObject => {
-            let center = clusterObject.cluster.getCenter()
+            let center = ClusterObject.getCenter(this.props.dataset, clusterObject.cluster)
 
             let last = clusterObject.trailPositions[clusterObject.trailPositions.length - 1]
             if (!last || new THREE.Vector3(center.x, center.y, 0).distanceTo(last) > 0.1) {
@@ -279,7 +283,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         this.clusterObjects.forEach(clusterObject => {
             let cluster = clusterObject.cluster
-            let center = cluster.getCenter()
+            let center = ClusterObject.getCenter(this.props.dataset, cluster)
             let mesh = clusterObject.mesh
 
             mesh.position.set(center.x * zoom, center.y * zoom, -0.5)
@@ -360,7 +364,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             material.transparent = true
 
-            var center = cluster.getCenter()
+            var center = ClusterObject.getCenter(this.props.dataset, cluster)
             circle.position.set(center.x, center.y, 0)
             this.clusterScene.add(circle);
 
@@ -371,7 +375,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 mesh: circle,
                 children: [],
                 trailPositions: [],
-                lineColor: scale.map(ci),//for paper used: new SchemeColor(DEFAULT_COLOR),
+                lineColor: ScaleUtil.mapScale(scale, ci),//for paper used: new SchemeColor(DEFAULT_COLOR),
                 triangulatedMesh: {
 
                 },
@@ -383,7 +387,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             this.clusterObjects.push(clusterObject)
 
             // Create line geometry
-            cluster.vectors.forEach(vector => {
+            cluster.refactored.map(i => this.props.dataset.vectors[i]).forEach(vector => {
                 clusterObject.children.push({
                     sample: vector,
                     visible: false
@@ -436,11 +440,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 mesh.visible = false
             })
         }
-
     }
 
 
-    highlightCluster(clusters?: Cluster[]) {
+    highlightCluster(indices?: number[]) {
+        const clusters = indices.map(i => this.props.stories.active.clusters[i])
+
         this.clusterObjects.forEach((clusterObject, index) => {
             var visible = clusters?.includes(clusterObject.cluster) // for paper used: true
 
@@ -500,7 +505,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         if (this.props.stories.active) {
             this.props.stories.active.clusters.map(cluster => {
-                const bounds = Cluster.calcBounds(cluster.vectors)
+                const bounds = ClusterObject.calcBounds(this.props.dataset, cluster.refactored)
 
                 let xAxis = d3.scaleLinear()
                     .range([0, 100])
@@ -517,7 +522,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     .bandwidth(10)
                     .thresholds(10)
                     .size([100, bounds.width == 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])
-                    (cluster.vectors.map(vect => ({ x: vect.x, y: vect.y })))
+                    (cluster.refactored.map(i => this.props.dataset.vectors[i]).map(vect => ({ x: vect.x, y: vect.y })))
 
                 let clusterObject = this.clusterObjects.find(e => e.cluster.label == cluster.label)
 
@@ -572,19 +577,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         }
     }
 
-    /**
-     * Returns the label color of a given cluster
-     * 
-     * @param cluster A cluster
-     */
-    textColor(cluster: Cluster) {
-        if (this.props.currentAggregation.selectedClusters.includes(cluster)) {
-            return 'black'
-        } else {
-            return 'white'
-        }
-    }
-
 
 
     /**
@@ -594,8 +586,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         let labels = []
 
         story.edges.filter(edge => edge.name && edge.name != "").map(edge => {
-            let source = CameraTransformations.worldToScreen(edge.source.getCenter(), this.props.viewTransform)
-            let dest = CameraTransformations.worldToScreen(edge.destination.getCenter(), this.props.viewTransform)
+            let source = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, edge.source), this.props.viewTransform)
+            let dest = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, edge.destination), this.props.viewTransform)
 
             let angle = new nt.VectBase(dest.x - source.x, dest.y - source.y).angle()
             if (angle > Math.PI * 0.5 && angle < Math.PI * 1.5) {
@@ -639,12 +631,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             {
                 this.props.hoverState.data && this.props.hoverState.data instanceof Cluster
-                && this.props.hoverState.data.name && hoverLabel(this.props.hoverState.data, this.props.viewTransform)
+                && this.props.hoverState.data.name && hoverLabel(this.props.hoverState.data as ICluster, this.props.viewTransform, this.props.dataset)
             }
 
             {
                 this.props.stories.trace && this.props.stories.trace.mainPath.map((cluster, index) => {
-                    let screen = CameraTransformations.worldToScreen(cluster.getCenter(), this.props.viewTransform)
+                    let screen = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, cluster), this.props.viewTransform)
 
                     return <Typography style={{
                         textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',
@@ -663,8 +655,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     }
 })
 
-const hoverLabel = (hoverState: Cluster, viewTransform) => {
-    let screen = CameraTransformations.worldToScreen(hoverState.getCenter(), viewTransform)
+const hoverLabel = (hoverState: ICluster, viewTransform, dataset) => {
+    let screen = CameraTransformations.worldToScreen(ClusterObject.getCenter(dataset, hoverState), viewTransform)
 
     return <Typography style={{
         textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',

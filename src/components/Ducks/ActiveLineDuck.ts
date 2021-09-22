@@ -1,6 +1,6 @@
 const SET = "ducks/activeLine/SET"
 
-const activeLine = (state = null, action) => {
+const activeLine = (state = null, action): string => {
     switch (action.type) {
         case SET:
             return action.activeLine

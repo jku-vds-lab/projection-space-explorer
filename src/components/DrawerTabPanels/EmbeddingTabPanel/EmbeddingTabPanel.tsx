@@ -28,7 +28,6 @@ const mapStateToProps = (state: RootState) => ({
     projectionWorker: state.projectionWorker,
     projectionOpen: state.projectionOpen,
     dataset: state.dataset,
-    webGLView: state.webGLView,
     projectionParams: state.projectionParams,
     projections: state.projections
 })
@@ -219,7 +218,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
                         controller.stepper = (Y) => {
                             props.dataset.vectors.forEach((sample, i) => {
-                                let idx = controller.nodes[sample.view.duplicateOf].view.meshIndex
+                                let idx = controller.nodes[sample.__meta__.duplicateOf].__meta__.meshIndex
                                 sample.x = Y[idx].x
                                 sample.y = Y[idx].y
                             })

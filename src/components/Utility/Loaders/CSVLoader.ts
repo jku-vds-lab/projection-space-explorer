@@ -6,7 +6,7 @@ import { Preprocessor } from "../Data/Preprocessor"
 import { Dataset, DefaultFeatureLabel } from "../Data/Dataset"
 import { Loader } from "./Loader"
 import { DatasetEntry } from "../Data/DatasetDatabase"
-import Cluster from "../Data/Cluster"
+import { ICluster } from "../Data/Cluster"
 import * as frontend_utils from "../../../utils/frontend-connect"
 
 
@@ -63,24 +63,20 @@ export class CSVLoader implements Loader {
 
         worker.onmessage = (e) => {
             // Point clustering
-            let clusters = []
+            let clusters = new Array<ICluster>()
             Object.keys(e.data).forEach(k => {
                 let t = e.data[k]
-                let f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
-                f.label = k
-                clusters.push(f)
-            })
 
-
-            // Inject cluster attributes
-            clusters.forEach(cluster => {
-                let vecs = []
-                cluster.points.forEach(point => {
-                    vecs.push(vectors[point.meshIndex])
+                clusters.push({
+                    refactored: t.points.map(i => i.meshIndex),
+                    hull: t.hull,
+                    triangulation: t.triangulation,
+                    label: k,
+                    bounds: t.bounds,
+                    vectors: null
                 })
-                cluster.vectors = vecs
-                cluster.points = cluster.vectors
             })
+
             callback(clusters)
         }
 
@@ -217,7 +213,9 @@ export class CSVLoader implements Loader {
                 vector.groupLabel = []
             })
 
-            finished(dataset, new InferCategory(vectors).load(ranges))
+            dataset.categories = new InferCategory(vectors).load(ranges)
+
+            finished(dataset)
         })
     }
 }

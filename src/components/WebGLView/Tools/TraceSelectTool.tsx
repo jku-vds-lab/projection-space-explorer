@@ -1,14 +1,14 @@
-import Cluster from "../../Utility/Data/Cluster";
+import { ClusterObject, ICluster } from "../../Utility/Data/Cluster";
 import { RenderingContextEx } from "../../Utility/RenderingContextEx";
 import { CameraTransformations } from "../CameraTransformations";
 import { Tool } from "./Tool";
 
 export class TraceSelectTool implements Tool {
-    cluster: Cluster
+    cluster: ICluster
     viewTransform: any
     mousePosition: { x: number, y: number }
 
-    constructor(cluster: Cluster) {
+    constructor(cluster: ICluster) {
         this.cluster = cluster
     }
 
@@ -16,7 +16,7 @@ export class TraceSelectTool implements Tool {
         if (!this.cluster || !this.viewTransform) {
             return;
         }
-        let start = CameraTransformations.worldToScreen(this.cluster.getCenter(), this.viewTransform)
+        let start = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.cluster), this.viewTransform)
 
         context.lineWidth = "2"
 

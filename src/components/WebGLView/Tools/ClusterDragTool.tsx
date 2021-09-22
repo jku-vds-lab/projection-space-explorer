@@ -1,10 +1,10 @@
 
-import Cluster from "../../Utility/Data/Cluster";
+import { ICluster } from "../../Utility/Data/Cluster";
 import { RenderingContextEx } from "../../Utility/RenderingContextEx";
 import { Tool } from "./Tool";
 
 export class ClusterDragTool implements Tool {
-    cluster: Cluster
+    cluster: ICluster
 
     constructor(cluster) {
         this.cluster = cluster

@@ -6,7 +6,7 @@ import { Vect } from "../Data/Vect";
 import { InferCategory } from "../Data/InferCategory";
 import { Preprocessor } from "../Data/Preprocessor";
 import { Dataset } from "../Data/Dataset";
-import Cluster from "../Data/Cluster";
+import Cluster, { ICluster } from "../Data/Cluster";
 import { Edge } from "../graphs";
 
 export class JSONLoader implements Loader {
@@ -145,7 +145,7 @@ export class JSONLoader implements Loader {
 
         this.datasetType = datasetType ? datasetType : new InferCategory(this.vectors).inferType()
 
-        let clusters: Cluster[] = []
+        let clusters: ICluster[] = []
         content.clusters[0].data.forEach(row => {
             let nameIndex = content.clusters[0].columns.indexOf("name")
 
@@ -196,7 +196,8 @@ export class JSONLoader implements Loader {
         let dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation)
         dataset.clusters = clusters
         dataset.clusterEdges = edges
+        dataset.categories = new InferCategory(this.vectors).load(ranges)
 
-        finished(dataset, new InferCategory(this.vectors).load(ranges))
+        finished(dataset)
     }
 }

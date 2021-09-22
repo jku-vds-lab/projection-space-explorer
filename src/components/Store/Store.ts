@@ -1,10 +1,8 @@
 import { combineReducers } from 'redux';
-import currentTool from "../Ducks/CurrentToolDuck";
 import projectionOpen from "../Ducks/ProjectionOpenDuck";
 import highlightedSequence from "../Ducks/HighlightedSequenceDuck";
 import dataset from "../Ducks/DatasetDuck";
 import openTab from "../Ducks/OpenTabDuck";
-import webGLView from "../Ducks/WebGLViewDuck";
 import clusterMode from "../Ducks/ClusterModeDuck";
 import advancedColoringSelection from "../Ducks/AdvancedColoringSelectionDuck";
 import projectionColumns from "../Ducks/ProjectionColumnsDuck";
@@ -28,7 +26,6 @@ import globalPointSize from '../Ducks/GlobalPointSizeDuck';
 import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
-import storyEditor from '../Ducks/StoryEditorDuck';
 import lineUpInput from '../Ducks/LineUpInputDuck';
 import rdkitSettings from '../Ducks/RDKitSettingsDuck';
 import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
@@ -36,7 +33,6 @@ import projections from '../Ducks/ProjectionsDuck';
 import hoverSettings from '../Ducks/HoverSettingsDuck';
 import hoverState from '../Ducks/HoverStateDuck';
 import selectedLineBy from '../Ducks/SelectedLineByDuck';
-import splitRef from '../Ducks/SplitRefDuck';
 import globalPointBrightness from '../Ducks/GlobalPointBrightnessDuck';
 import channelBrightness from '../Ducks/ChannelBrightnessDuck';
 import groupVisualizationMode from '../Ducks/GroupVisualizationMode';
@@ -44,7 +40,6 @@ import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesD
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 
 const allReducers = {
-  currentTool: currentTool,
   currentAggregation: currentAggregation,
   stories: stories,
   openTab: openTab,
@@ -61,7 +56,6 @@ const allReducers = {
   projectionOpen: projectionOpen,
   projectionParams: projectionParams,
   projectionWorker: projectionWorker,
-  webGLView: webGLView,
   clusterMode: clusterMode,
   displayMode: displayMode,
   lineBrightness: lineBrightness,
@@ -75,14 +69,12 @@ const allReducers = {
   pointColorScale: pointColorScale,
   pointColorMapping: pointColorMapping,
   trailSettings: trailSettings,
-  storyEditor: storyEditor,
   lineUpInput: lineUpInput,
   rdkitSettings: rdkitSettings,
   differenceThreshold: differenceThreshold,
   projections: projections,
   hoverSettings: hoverSettings,
   selectedLineBy: selectedLineBy,
-  splitRef: splitRef,
   globalPointBrightness: globalPointBrightness,
   groupVisualizationMode: groupVisualizationMode,
   genericFingerprintAttributes: genericFingerprintAttributes,
@@ -93,8 +85,8 @@ const appReducer = combineReducers(allReducers)
 
 export const rootReducer = (state, action) => {
   if (action.type === 'RESET_APP') {
-    const { dataset, openTab, viewTransform, webGLView } = state;
-    state = { dataset, openTab, viewTransform, webGLView };
+    const { dataset, openTab, viewTransform } = state;
+    state = { dataset, openTab, viewTransform };
   }
 
   return appReducer(state, action)

@@ -1,5 +1,4 @@
 import { connect, ConnectedProps } from 'react-redux'
-import { FunctionComponent } from 'react'
 import * as React from 'react'
 import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, makeStyles } from '@material-ui/core'
 import { ShapeLegend } from './ShapeLegend/ShapeLegend'
@@ -19,10 +18,10 @@ import { AdvancedColoringPopover } from './AdvancedColoring/AdvancedColoringPopo
 import { setChannelColor } from '../../Ducks/ChannelColorDuck'
 import { setAdvancedColoringSelectionAction } from '../../Ducks/AdvancedColoringSelectionDuck'
 import { PathLengthFilter } from './PathLengthFilter/PathLengthFilter'
-import { Legend } from './LineSelection/LineSelection'
-import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks, LineTreePopover } from './LineTreePopover/LineTreePopover'
+import { LineTreePopover } from './LineTreePopover/LineTreePopover'
 import { PathBrightnessSlider } from './PathTransparencySlider/PathBrightnessSlider'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions'
 
 const mapStateToProps = (state: RootState) => ({
     selectedVectorByShape: state.selectedVectorByShape,
@@ -30,7 +29,6 @@ const mapStateToProps = (state: RootState) => ({
     vectorByShape: state.vectorByShape,
     dataset: state.dataset,
     categoryOptions: state.categoryOptions,
-    webGlView: state.webGLView,
     channelBrightness: state.channelBrightness,
     channelSize: state.channelSize,
     channelColor: state.channelColor
@@ -58,6 +56,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
     lineColorScheme
+    webGLView: any
 }
 
 /**
@@ -118,7 +117,7 @@ export const StatesTabPanelFull = ({
     categoryOptions,
     selectedLineBy,
     setSelectedLineBy,
-    webGlView,
+    webGLView,
     channelBrightness,
     setChannelBrightness,
     setGlobalPointBrightness,
@@ -151,7 +150,7 @@ export const StatesTabPanelFull = ({
 
     const points_box = <Box>
         {
-            categoryOptions != null && categoryOptions.hasCategory("shape") ?
+            categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "shape") ?
                 <Grid
                     container
                     justify="center"
@@ -168,7 +167,7 @@ export const StatesTabPanelFull = ({
                                 setSelectedVectorByShape(event.target.value)
 
                                 if (event.target.value != null && event.target.value != "") {
-                                    var attribute = categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
+                                    var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "shape").attributes.filter(a => a.key == event.target.value)[0]
                                     setVectorByShape(attribute)
                                 } else {
                                     setVectorByShape(null)
@@ -176,7 +175,7 @@ export const StatesTabPanelFull = ({
                             }}
                         >
                             <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("shape").attributes.map(attribute => {
+                            {CategoryOptionsAPI.getCategory(categoryOptions, "shape").attributes.map(attribute => {
                                 return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
                             })}
                         </Select>
@@ -198,7 +197,7 @@ export const StatesTabPanelFull = ({
 
 
         {
-            categoryOptions != null && categoryOptions.hasCategory("transparency") ?
+            categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "transparency") ?
                 <Grid
                     container
                     justify="center"
@@ -212,7 +211,7 @@ export const StatesTabPanelFull = ({
                             displayEmpty
                             value={channelBrightness ? channelBrightness.key : ''}
                             onChange={(event) => {
-                                var attribute = categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
+                                var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.filter(a => a.key == event.target.value)[0]
 
                                 if (attribute == undefined) {
                                     attribute = null
@@ -222,12 +221,12 @@ export const StatesTabPanelFull = ({
 
                                 setGlobalPointBrightness(pointBrightness)
                                 setChannelBrightness(attribute)
-                                webGlView.current.particles.transparencyCat(attribute, pointBrightness)
-                                webGlView.current.requestRender()
+                                webGLView.current.particles.transparencyCat(attribute, pointBrightness)
+                                webGLView.current.requestRender()
                             }}
                         >
                             <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("transparency").attributes.map(attribute => {
+                            {CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.map(attribute => {
                                 return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
                             })}
                         </Select>
@@ -243,7 +242,7 @@ export const StatesTabPanelFull = ({
 
 
         {
-            categoryOptions != null && categoryOptions.hasCategory("size") ?
+            categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "size") ?
                 <Grid
                     container
                     justify="center"
@@ -257,7 +256,7 @@ export const StatesTabPanelFull = ({
                             displayEmpty
                             value={channelSize ? channelSize.key : ''}
                             onChange={(event) => {
-                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+                                var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "size").attributes.filter(a => a.key == event.target.value)[0]
                                 if (attribute == undefined) {
                                     attribute = null
                                 }
@@ -268,11 +267,11 @@ export const StatesTabPanelFull = ({
 
                                 setChannelSize(attribute)
 
-                                webGlView.current.particles.sizeCat(attribute, pointSize)
+                                webGLView.current.particles.sizeCat(attribute, pointSize)
                             }}
                         >
                             <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("size").attributes.map(attribute => {
+                            {CategoryOptionsAPI.getCategory(categoryOptions, "size").attributes.map(attribute => {
                                 return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
                             })}
                         </Select>
@@ -286,7 +285,7 @@ export const StatesTabPanelFull = ({
 
 
         {
-            categoryOptions != null && categoryOptions.hasCategory("color") ?
+            categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "color") ?
                 <Grid
                     container
                     item
@@ -305,7 +304,7 @@ export const StatesTabPanelFull = ({
                                 onChange={(event) => {
                                     var attribute = null
                                     if (event.target.value != "") {
-                                        attribute = categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+                                        attribute = CategoryOptionsAPI.getCategory(categoryOptions, "color").attributes.filter(a => a.key == event.target.value)[0]
                                     }
 
                                     setAdvancedColoringSelection(new Array(10000).fill(true))
@@ -313,7 +312,7 @@ export const StatesTabPanelFull = ({
                                 }}
                             >
                                 <MenuItem value="">None</MenuItem>
-                                {categoryOptions.getCategory("color").attributes.map(attribute => {
+                                {CategoryOptionsAPI.getCategory(categoryOptions, "color").attributes.map(attribute => {
                                     return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
                                 })}
                             </Select>
@@ -370,10 +369,10 @@ export const StatesTabPanelFull = ({
 
                         <Box p={1}></Box>
 
-                        <LineTreePopover
-                            webGlView={webGlView}
+                        {/**<LineTreePopover
+                            webGlView={webGLView}
                             dataset={dataset}
-                            colorScale={lineColorScheme} />
+                        colorScale={lineColorScheme} />**/}
                     </Grid>
 
 
@@ -406,47 +405,3 @@ export const StatesTabPanelFull = ({
 
 
 export const StatesTabPanel = connector(StatesTabPanelFull)
-
-
-/**
- *
-         {
-            categoryOptions != null && categoryOptions.hasCategory("size") ?
-                <Grid
-                    container
-                    justify="center"
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}>
-                    <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                        <Select labelId="vectorBySizeSelectLabel"
-                            id="vectorBySizeSelect"
-                            displayEmpty
-                            value={channelSize ? channelSize.key : ''}
-                            onChange={(event) => {
-                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
-                                if (attribute == undefined) {
-                                    attribute = null
-                                }
-
-                                let pointSize = attribute ? [1, 2] : [1]
-
-                                setGlobalPointSize(pointSize)
-
-                                setChannelSize(attribute)
-
-                                webGlView.current.particles.sizeCat(attribute, pointSize)
-                            }}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("size").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
-                    </FormControl>
-                </Grid>
-                :
-                <div></div>
-        }
- */

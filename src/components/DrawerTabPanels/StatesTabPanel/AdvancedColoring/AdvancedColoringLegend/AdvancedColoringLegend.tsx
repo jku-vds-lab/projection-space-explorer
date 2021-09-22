@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { DiscreteMapping } from "../../../../Utility/Colors/DiscreteMapping"
+import { DiscreteMapping } from "../../../../Utility/Colors/Mapping"
 import React = require('react')
 import { FormControlLabel, Checkbox, Typography, Grid } from '@material-ui/core'
 import { setAdvancedColoringSelectionAction } from "../../../../Ducks/AdvancedColoringSelectionDuck"

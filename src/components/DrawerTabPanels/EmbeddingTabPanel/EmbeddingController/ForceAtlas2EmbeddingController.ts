@@ -3,6 +3,7 @@ import { Dataset } from "../../../Utility/Data/Dataset";
 import { EmbeddingController } from "./EmbeddingController"
 
 import * as frontend_utils from "../../../../utils/frontend-connect";
+import { Vect } from "../../../Utility/Data/Vect";
 
 const Graph = require('graphology');
 
@@ -10,12 +11,12 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
     nodes: any
 
     buildGraph(segments: DataLine[], reuse) {
-        let nodes = []
+        let nodes: Vect[] = []
         let edges = []
 
         let dups = []
         segments.forEach(segment => {
-            let prev = null
+            let prev: Vect = null
             let prevWasDuplicate = false
 
             segment.vectors.forEach((sample, i) => {
@@ -26,15 +27,15 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
                     dups.push(sample)
                     // If we have a duplicate, add edge only
                     if (!prevWasDuplicate && i != 0) {
-                        edges.push({ source: prev.view.meshIndex, destination: nodes[fIdx].view.meshIndex })
+                        edges.push({ source: prev.__meta__.meshIndex, destination: nodes[fIdx].__meta__.meshIndex })
                     }
-                    sample.view.duplicateOf = fIdx
+                    sample.__meta__.duplicateOf = fIdx
                 } else {
                     nodes.push(sample)
                     if (i != 0) {
-                        edges.push({ source: prev.view.meshIndex, destination: sample.view.meshIndex })
+                        edges.push({ source: prev.__meta__.meshIndex, destination: sample.__meta__.meshIndex })
                     }
-                    sample.view.duplicateOf = nodes.length - 1
+                    sample.__meta__.duplicateOf = nodes.length - 1
                 }
 
                 prevWasDuplicate = isDuplicate
@@ -57,7 +58,7 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
                 node.x = Math.random()
                 node.y = Math.random()
             }
-            graph.addNode(node.view.meshIndex, {
+            graph.addNode(node.__meta__.meshIndex, {
                 x: params.seeded ? node.x : Math.random(),
                 y: params.seeded ? node.y : Math.random()
             })
@@ -83,7 +84,7 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
 
         }
         this.worker.postMessage({
-            nodes: nodes.map(e => ({ x: e.x, y: e.y, meshIndex: e.view.meshIndex })),
+            nodes: nodes.map(e => ({ x: e.x, y: e.y, meshIndex: e.__meta__.meshIndex })),
             edges: edges,
             params: { iterations: params.iterations }
         })

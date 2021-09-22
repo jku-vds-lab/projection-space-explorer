@@ -1,33 +1,22 @@
 import * as THREE from 'three'
+import { Dataset } from './Dataset';
 import { Vect } from "./Vect"
 
-export default class Cluster {
-    points: Array<any>
-    label: any
-    bounds: any
-    hull: any
-    triangulation: any
-    vectors: Vect[]
-    name: string
-
-    constructor(points, bounds?, hull?, triangulation?) {
-        this.points = points
-        this.bounds = bounds
-        this.hull = hull
-        this.triangulation = triangulation
-    }
 
 
-    static calcBounds(samples: Vect[]) {
+export class ClusterObject {
+    static calcBounds(dataset: Dataset, indices: number[]) {
+        const samples = indices.map(i => dataset.vectors[i])
+
         // Get rectangle that fits around data set
         var minX = 1000, maxX = -1000, minY = 1000, maxY = -1000;
         samples.forEach(sample => {
-          minX = Math.min(minX, sample.x)
-          maxX = Math.max(maxX, sample.x)
-          minY = Math.min(minY, sample.y)
-          maxY = Math.max(maxY, sample.y)
+            minX = Math.min(minX, sample.x)
+            maxX = Math.max(maxX, sample.x)
+            minY = Math.min(minY, sample.y)
+            maxY = Math.max(maxY, sample.y)
         })
-      
+
         return {
             x: minX,
             y: minY,
@@ -40,30 +29,23 @@ export default class Cluster {
         }
     }
 
-
-    static fromSamples(samples: Vect[]) {
-        let cluster = new Cluster(samples.map(sample => ({
-            x: sample.x,
-            y: sample.y,
-            meshIndex: sample.view.meshIndex
-        })))
-
-        cluster.vectors = samples
-        cluster.label = Math.floor(Math.random() * 1000)
-        cluster.bounds = Cluster.calcBounds(samples)
-
-        return cluster
+    static fromSamples(dataset: Dataset, samples: number[]): ICluster {
+        return {
+            refactored: samples,
+            label: Math.floor(Math.random() * 1000),
+            bounds: ClusterObject.calcBounds(dataset, samples)
+        }
     }
 
 
 
-        /**
+    /**
      * Resets the labeling for given vectors based on given clusters
      * 
      * @param vectors The vectors to relabel
      * @param clusters The clusters to take the label from
      */
-    static deriveVectorLabelsFromClusters(vectors: Vect[], clusters: Cluster[]) {
+    static deriveVectorLabelsFromClusters(vectors: Vect[], clusters: ICluster[]) {
         // Clear all cluster labels from vectors
         vectors.forEach(vector => {
             vector.groupLabel = []
@@ -71,52 +53,74 @@ export default class Cluster {
 
         // Create new labels from clusters
         clusters.forEach(cluster => {
-            cluster.vectors.forEach(vector => {
+            cluster.refactored.map(i => vectors[i]).forEach(vector => {
                 vector.groupLabel.push(cluster.label)
             })
         })
     }
 
 
-    containsPoint(coords) {
+    static containsPoint(cluster: ICluster, coords) {
         var x = coords.x
         var y = coords.y
-        if (x > this.bounds.minX && x < this.bounds.maxX && y < this.bounds.maxY && y > this.bounds.minY) {
+        if (x > cluster.bounds.minX && x < cluster.bounds.maxX && y < cluster.bounds.maxY && y > cluster.bounds.minY) {
             return true
         }
 
         return false
     }
 
-    getCenter() {
+    static getCenter(dataset: Dataset, cluster: ICluster) {
         var x = 0
         var y = 0
 
-        this.vectors.forEach(p => {
+        cluster.refactored.map(i => dataset.vectors[i]).forEach(p => {
             x = x + p.x
             y = y + p.y
         })
 
         return {
-            x: x / this.vectors.length,
-            y: y / this.vectors.length
+            x: x / cluster.refactored.length,
+            y: y / cluster.refactored.length
         }
     }
 
-    getCenterAsVector2() {
-        let center = this.getCenter()
+    static getCenterAsVector2(dataset: Dataset, cluster: ICluster) {
+        let center = ClusterObject.getCenter(dataset, cluster)
         return new THREE.Vector2(center.x, center.y)
     }
 
-    differentLines() {
-        return [...new Set(this.vectors.map(v => v.view.segment.lineKey))].length
-    }
-
-    getTextRepresentation() {
-        if (this.name) {
-            return `${this.label} / ${this.name}`
+    static getTextRepresentation(cluster: ICluster) {
+        if (cluster.name) {
+            return `${cluster.label} / ${cluster.name}`
         } else {
-            return "" + this.label
+            return "" + cluster.label
         }
+    }
+}
+
+export type ICluster = {
+    label: any
+    bounds: any
+    hull?: any
+    triangulation?: any
+    vectors?: Vect[]
+    name?: string
+
+    refactored: number[]
+}
+
+export default class Cluster {
+    label: any
+    bounds: any
+    hull: any
+    triangulation: any
+    vectors: Vect[]
+    name: string
+
+    constructor(bounds?, hull?, triangulation?) {
+        this.bounds = bounds
+        this.hull = hull
+        this.triangulation = triangulation
     }
 }

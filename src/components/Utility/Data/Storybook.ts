@@ -1,6 +1,6 @@
 // import { Edge, Graph } from "../graphs";
 import { Edge } from "../graphs";
-import Cluster from "./Cluster";
+import { ICluster } from "./Cluster";
 const Graph = require('graphology');
 
 function* labelGenerator() {
@@ -30,11 +30,16 @@ function* labelGenerator() {
 }
 
 
+
+
+
+
+
 /**
  * A story is a list of clusters with a specific order.
  */
 export class Storybook {
-    clusters: Cluster[];
+    clusters: ICluster[];
     edges: Edge[];
     uuid: number;
 
@@ -48,19 +53,6 @@ export class Storybook {
         Storybook.generator = Storybook.generator + 1;
         this.uuid = Storybook.generator;
     }
-
-
-    getNextClusterLabel() {
-        return this.labelGenerator.next().value
-    }
-
-
-    getId() {
-        return this.uuid;
-    }
-
-
-
 
     /**
      * Converts this story to a graphology instance.

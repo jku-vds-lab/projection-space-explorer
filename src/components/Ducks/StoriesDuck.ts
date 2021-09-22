@@ -1,5 +1,5 @@
 import { getSyncNodesAlt } from "../NumTs/NumTs";
-import Cluster from "../Utility/Data/Cluster";
+import Cluster, { ClusterObject, ICluster } from "../Utility/Data/Cluster";
 import { Edge } from "../Utility/graphs";
 import { Storybook } from "../Utility/Data/Storybook";
 import { Vect } from "../Utility/Data/Vect";
@@ -116,9 +116,9 @@ export type StoriesType = {
 
     active: Storybook
 
-    trace: { mainPath: Cluster[], mainEdges: any[], sidePaths: { nodes: Cluster[], edges: Edge[], syncNodes: number[] }[] }
+    trace: { mainPath: ICluster[], mainEdges: any[], sidePaths: { nodes: ICluster[], edges: Edge[], syncNodes: number[] }[] }
 
-    activeTraceState: Cluster
+    activeTraceState: ICluster
 }
 
 export default function stories(state: StoriesType = initialState, action): StoriesType {
@@ -176,7 +176,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             // Add cluster to current trace
             state.trace.mainPath.push(cluster)
 
-            Cluster.deriveVectorLabelsFromClusters(state.vectors, state.active.clusters)
+            ClusterObject.deriveVectorLabelsFromClusters(state.vectors, state.active.clusters)
 
             return {
                 vectors: state.vectors,
@@ -197,7 +197,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
         }
         case SET:
             if (state.active) {
-                Cluster.deriveVectorLabelsFromClusters(state.vectors, state.active.clusters)
+                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, state.active.clusters)
             }
 
             return {
@@ -212,7 +212,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             newState.splice(newState.indexOf(action.story), 1)
 
             if (state.active == action.story) {
-                Cluster.deriveVectorLabelsFromClusters(state.vectors, [])
+                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, [])
 
                 return {
                     vectors: state.vectors,
@@ -244,7 +244,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 activeTraceState = null
             }
 
-            Cluster.deriveVectorLabelsFromClusters(state.vectors, storyBook.clusters)
+            ClusterObject.deriveVectorLabelsFromClusters(state.vectors, storyBook.clusters)
 
             if (state && state.stories.length > 0) {
                 const newState = state.stories.slice(0)
@@ -284,9 +284,9 @@ export default function stories(state: StoriesType = initialState, action): Stor
             }
 
             if (storyBook && storyBook.clusters) {
-                Cluster.deriveVectorLabelsFromClusters(state.vectors, storyBook.clusters)
+                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, storyBook.clusters)
             } else {
-                Cluster.deriveVectorLabelsFromClusters(state.vectors, [])
+                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, [])
             }
             
             return {
@@ -298,7 +298,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             }
         }
         case REMOVE_CLUSTER_FROM_STORIES: {
-            let cluster = action.cluster
+            let cluster = action.cluster as ICluster
 
             // Find stories where the cluster is located
             state.stories.forEach(story => {
@@ -315,7 +315,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
 
             // Remove cluster labels from samples
             // TODO: check if this is ok in a reducer
-            cluster.vectors.forEach(sample => {
+            cluster.refactored.map(i => state.vectors[i]).forEach(sample => {
                 if (Array.isArray(sample.groupLabel)) {
                     sample.groupLabel.splice(sample.groupLabel.indexOf(cluster.label), 1)
                 } else {

@@ -1,7 +1,6 @@
 import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, Popover, Select, Switch, Typography } from "@material-ui/core";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
-import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import { setGenericFingerprintAttributes } from "../../Ducks/GenericFingerprintAttributesDuck";
 import { setHoverWindowMode, WindowMode } from "../../Ducks/HoverSettingsDuck";
 import { HoverStateOrientation, setHoverStateOrientation } from "../../Ducks/HoverStateOrientationDuck";
@@ -9,6 +8,7 @@ import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClu
 import { RootState } from "../../Store/Store";
 import { VirtualColumn, VirtualTable } from "../../UI/VirtualTable";
 import * as frontend_utils from "../../../utils/frontend-connect";
+import { selectVectors } from "../../Ducks/AggregationDuck";
 
 const mapStateToProps = (state: RootState) => ({
     hoverSettings: state.hoverSettings,
@@ -20,7 +20,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = dispatch => ({
     setHoverWindowMode: value => dispatch(setHoverWindowMode(value)),
-    setAggregation: value => dispatch(setAggregationAction(value)),
+    setAggregation: value => dispatch(selectVectors(value, false)),
     setHoverStateOrientation: value => dispatch(setHoverStateOrientation(value))
 })
 
