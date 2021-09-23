@@ -173,7 +173,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     async hoverUpdate(hover_item, updater) {
         let idx = -1;
         if (hover_item && hover_item["__meta__"]) {
-            idx = hover_item["__meta__"]["view"]["meshIndex"];
+            idx = hover_item["__meta__"]["meshIndex"];
         }
         this.particles.highlight(idx);
         if (this.props.dataset.isSequential) {
