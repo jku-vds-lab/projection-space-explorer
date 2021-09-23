@@ -1,0 +1,83 @@
+[Event "Computer Match"]
+[Site "London, UK"]
+[Date "2018.01.18"]
+[Round "14385736216385115953"]
+[White "Stockfish 8"]
+[Black "AlphaZero"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 Nc6
+3. Bb5 Nf6 4. O-O Nxe4
+5. d4 Nd6 6. Bxc6 dxc6
+7. dxe5 Nf5 8. Qxd8+ Kxd8
+9. Nc3 Be7 10. Rd1+ Ke8
+11. Ne4 Be6 12. b3 b6
+13. h3 Rd8 14. Bb2 h5
+15. Rxd8+ Bxd8 16. Rd1 h4
+17. Nh2 c5 18. c4 a5
+19. Nc3 Nd4 20. Ng4 Rh5
+21. Kf1 Bd7 22. f3 Ne6
+23. Nd5 Bg5 24. Nf2 Bd8
+25. Nd3 Rf5 26. Ne3 Rg5
+27. Bc3 Rh5 28. Kf2 Bc8
+29. Nd5 Bg5 30. f4 Bd8
+31. Ne3 Bd7 32. Nd5 Bc8
+33. Ne3 g6 34. Bd2 Bb7
+35. Nd5 Kd7 36. Nc1 Kc8
+37. Ne2 Bc6 38. Be3 Ng7
+39. Nec3 Rh8 40. Ne4 a4
+41. Kf3 Nf5 42. Rd2 Re8
+43. Bf2 Rg8 44. b4 cxb4
+45. Nxb4 Bb7 46. Nd5 Re8
+47. Kg4 Nh6+ 48. Kf3 Nf5
+49. Kg4 Nh6+ 50. Kf3 Re6
+51. Rd3 Nf5 52. Rd2 a3
+53. Kg4 Nh6+ 54. Kf3 Nf5
+55. Kg4 Nh6+ 56. Kf3 Rc6
+57. Ke3 Nf5+ 58. Kd3 Re6
+59. Re2 Ne7 60. Ndf6 Nf5
+61. Nd5 Re8 62. Kc3 b5
+63. Nc5 Bc6 64. Ne4 Bb7
+65. Nc5 Bc6 66. Ne4 bxc4
+67. Kxc4 Bb7 68. Re1 Ba6+
+69. Kb3 Bb7 70. Kc4 Ba8
+71. Bc5 Re6 72. Ng5 Bxg5
+73. fxg5 Re8 74. Nf4 Ng7
+75. Bxa3 Rd8 76. Re2 Rd1
+77. Rf2 Ne6 78. Nxe6 Bd5+
+79. Kb5 Bxe6 80. Bc5 Rb1+
+81. Kc6 Rd1 82. Kb5 Ra1
+83. a3 Re1 84. Bd4 Rb1+
+85. Kc5 Rc1+ 86. Kb5 Bd7+
+87. Kb4 Be6 88. Kb5 Rb1+
+89. Kc5 Rd1 90. a4 Rc1+
+91. Kb5 Kb7 92. Rd2 Bb3
+93. Rb2 Bc4+ 94. Kb4 Be6
+95. Be3 Re1 96. Bd4 Rc1
+97. Kb5 Bd7+ 98. Kb4 Ka6
+99. Rb3 Rc2 100. g4 Rd2
+101. Kc5 Be6 102. Rf3 Kb7
+103. a5 Ra2 104. Bc3 Ra3
+105. Kb5 Rb3+ 106. Kc5 Ra3
+107. Re3 Ra2 108. Be1 Ra1
+109. Bd2 Kc8 110. Rd3 Rd1
+111. Kb5 Bd7+ 112. Kb4 Be6
+113. Kc5 Ra1 114. Kd4 Ra4+
+115. Kc5 Ra1 116. a6 Rxa6
+117. Be1 Kb7 118. Bxh4 Ra5+
+119. Kd4 c5+ 120. Ke4 Kc6
+121. Be1 Ra2 122. Rd6+ Kb5
+123. Rd3 Rh2 124. Re3 Rg2
+125. Kf3 Rc2 126. Rc3 Rh2
+127. Kg3 Re2 128. Bf2 Kb4
+129. Rc1 c4 130. Re1 Rc2
+131. Be3 c3 132. h4 Ra2
+133. h5 Kb3 134. h6 Ra8
+135. Rc1 c2 136. h7 Rh8
+137. Rh1 Kc3 138. Kf4 Kd3
+139. Rh2 Kc3 140. Ke4 Kb4
+141. Kd3 Bc4+ 142. Kxc2 Be6
+143. Bc1 Rc8+ 144. Kd3 Rh8
+145. Ke4 Ka4 146. Kf4 Kb3
+147. Rh3+ Ka4 148. Bb2 Kb5
+149. Ba3 1-0

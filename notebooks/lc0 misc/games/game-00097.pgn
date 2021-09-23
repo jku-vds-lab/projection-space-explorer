@@ -1,0 +1,104 @@
+[Event "Computer Match"]
+[Site "London, UK"]
+[Date "2018.01.18"]
+[Round "4229355007191865808"]
+[White "AlphaZero"]
+[Black "Stockfish 8"]
+[Result "1/2-1/2"]
+
+1. Nf3 e6 2. e4 d5
+3. e5 c5 4. c3 Nc6
+5. d4 Qb6 6. a3 c4
+7. Nbd2 Na5 8. Rb1 Bd7
+9. Be2 Ne7 10. h4 h6
+11. h5 O-O-O 12. Kf1 Kb8
+13. Rh3 f6 14. Kg1 Ka8
+15. Qc2 Qc7 16. Nf1 Be8
+17. N1h2 Nac6 18. Ng4 f5
+19. Ngh2 g5 20. hxg6 Nxg6
+21. g3 Qg7 22. Kh1 Na5
+23. Be3 Be7 24. Rg1 Bc6
+25. Rg2 Rdg8 26. Ne1 Nb3
+27. Bh5 Be8 28. Rg1 Qf8
+29. Ng2 a6 30. Nf3 Bg5
+31. Bxg6 Bxg6 32. Nf4 Bf7
+33. Rg2 Qe8 34. Rgh2 Rf8
+35. Ne1 Rhg8 36. Kg1 a5
+37. Rh1 b5 38. Qe2 Qd7
+39. Kg2 Rb8 40. Nf3 Qe7
+41. Qe1 b4 42. axb4 axb4
+43. Rxh6 Bxh6 44. Rxh6 bxc3
+45. bxc3 Rb7 46. Qh1 Na5
+47. Qh4 Qxh4 48. Nxh4 Re8
+49. Nf3 Nc6 50. Nxd5 exd5
+51. Rxc6 Rb3 52. Bd2 Rb2
+53. Rf6 Bh5 54. Be3 Rc2
+55. Ng5 Rxc3 56. Ne6 Kb7
+57. Nf4 Rh8 58. Nxd5 Rb3
+59. Nf4 c3 60. Nxh5 Rxh5
+61. d5 c2 62. Bf4 Rh8
+63. Rf7+ Kb6 64. d6 Kc6
+65. Rc7+ Kd5 66. Rxc2 Rb7
+67. Rc1 Rbh7 68. Rd1+ Ke6
+69. Bg5 Rb7 70. Bf6 Ra8
+71. Rd2 Ra4 72. Rc2 Raa7
+73. Kg1 Ra1+ 74. Kh2 Ra4
+75. Kh3 Rh7+ 76. Kg2 Rb7
+77. Rd2 Rba7 78. Rd1 Ra2
+79. Rh1 Rb7 80. Rh6 Kd5
+81. Bh8 Re2 82. Rh1 Ke6
+83. Rh2 Ra2 84. Rh6+ Kd5
+85. Kf3 Rb3+ 86. Kg2 Rb7
+87. Bf6 Rc2 88. Rh4 Ke6
+89. Rh6 Kd5 90. Rh5 Ke6
+91. g4 fxg4 92. Bh4 Rf7
+93. Bg3 Re2 94. Rh8 Re1
+95. Re8+ Kd7 96. Ra8 Ke6
+97. Re8+ Kd7 98. Rg8 Ke6
+99. Ra8 Kd5 100. Ra4 Rg7
+101. Rb4 Re2 102. Kf1 Ra2
+103. Rb5+ Ke6 104. Rb8 Ra1+
+105. Kg2 Kd5 106. Re8 Rh7
+107. Bf4 Rb1 108. Bh2 Rc1
+109. Bf4 Rb1 110. Bh2 Kc6
+111. Bg3 Kd5 112. Bf4 Ra1
+113. Bh2 Rb1 114. Rc8 Rg7
+115. Re8 Rh7 116. Bf4 Ra1
+117. Bg3 Rb1 118. Rg8 Rb4
+119. Rg5 Ra4 120. Kg1 Ke6
+121. Kg2 Kd5 122. Rg8 Re4
+123. Rb8 Re1 124. Rb5+ Ke6
+125. Rb8 Ra1 126. Rg8 Kf5
+127. Re8 Re1 128. Re7 Rh6
+129. Rf7+ Ke6 130. Rg7 Re4
+131. Re7+ Kf5 132. Re8 Rh7
+133. Kg1 Re1+ 134. Kg2 Re4
+135. Re7 Rh6 136. Ra7 Re1
+137. Rf7+ Ke6 138. Rg7 Re4
+139. f4 gxf3+ 140. Kxf3
+Rxe5 141. Re7+ Kxd6
+142. Rxe5 Rf6+ 143. Bf4 Rf7
+144. Ra5+ Ke7 145. Ke4 Ke6
+146. Ra6+ Kd7 147. Ke5 Re7+
+148. Kd5 Ke8 149. Be5 Kf7
+150. Ke4 Ke8 151. Kf5 Kf7
+152. Bf6 Rc7 153. Rd6 Rc5+
+154. Be5 Ra5 155. Rh6 Rc5
+156. Rh7+ Kg8 157. Rd7 Rc6
+158. Bf6 Kf8 159. Kg6 Re6
+160. Rd1 Re4 161. Rd5 Re1
+162. Rd2 Rg1+ 163. Bg5 Re1
+164. Rd6 Re2 165. Rd7 Re1
+166. Rd4 Re6+ 167. Bf6 Re2
+168. Rd8+ Re8 169. Rd6 Re1
+170. Rd4 Re2 171. Rd1 Re4
+172. Rd3 Re1 173. Rd5 Re6
+174. Rd2 Re1 175. Rd6 Re2
+176. Bg5 Re1 177. Rd7 Re2
+178. Rd6 Re1 179. Rd7 Re2
+180. Rd5 Re6+ 181. Bf6 Re1
+182. Rd3 Re6 183. Rd2 Re1
+184. Rd5 Re6 185. Rd3 Re1
+186. Rd2 Rg1+ 187. Bg5 Re1
+188. Rd6 Re2 189. Rd3 Re6+
+190. Bf6 Re1 1/2-1/2

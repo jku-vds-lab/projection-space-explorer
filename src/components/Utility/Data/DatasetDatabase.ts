@@ -51,6 +51,16 @@ export class DatasetDatabase {
                 type: DatasetType.Chess
             },
             {
+                display: "Chess: AlphaZero vs Stockfish, metadata, t-SNE",
+                path: "datasets/chess/alphazero_tsne.csv",
+                type: DatasetType.Chess
+            },
+            {
+                display: "Chess: AlphaZero vs Stockfish, metadata, UMAP",
+                path: "datasets/chess/alphazero_umap.csv",
+                type: DatasetType.Chess
+            },
+            {
                 display: "Rubik: 1x2 Different Origins",
                 path: "datasets/rubik/cube1x2_different_origins.csv",
                 type: DatasetType.Rubik

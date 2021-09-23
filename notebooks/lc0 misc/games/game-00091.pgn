@@ -1,0 +1,102 @@
+[Event "Computer Match"]
+[Site "London, UK"]
+[Date "2018.01.18"]
+[Round "17950604089883009910"]
+[White "AlphaZero"]
+[Black "Stockfish 8"]
+[Result "1/2-1/2"]
+
+1. d4 Nf6 2. c4 e6
+3. Nc3 Bb4 4. Nf3 b6
+5. e3 Bb7 6. Bd3 Ne4
+7. O-O Nxc3 8. bxc3 Bxc3
+9. Rb1 Ba5 10. e4 d6
+11. Ba3 O-O 12. Qe2 Re8
+13. e5 dxe5 14. dxe5 Nd7
+15. Bc2 Bxf3 16. Qxf3 Qh4
+17. Qe2 g6 18. Rfd1 Nc5
+19. g3 Qh5 20. Qxh5 gxh5
+21. Kg2 Bc3 22. f4 h4
+23. Bxc5 bxc5 24. Rb3 Bd4
+25. Rb7 a5 26. Be4 Rac8
+27. Kh3 hxg3 28. hxg3 Kg7
+29. Ra7 Rb8 30. Rxc7 Rb2
+31. Rb1 Rxa2 32. Bf3 Kg6
+33. Be4+ Kg7 34. Bf3 Kg6
+35. Rbb7 Rf8 36. Be4+ Kg7
+37. Bf3 Kg6 38. Re7 Bg1
+39. Be4+ Kg7 40. Bg2 Kg6
+41. Be4+ Kg7 42. Bg2 Kg6
+43. Ra7 h5 44. Be4+ Kg7
+45. Kh4 Re2 46. Bf3 Rh2+
+47. Kg5 Rh3 48. Bxh5 Rxg3+
+49. Bg4 Kg8 50. f5 exf5
+51. Kxf5 Be3 52. Red7 Rg1
+53. Rd1 Rg2 54. Bf3 Rg3
+55. Bd5 Rg5+ 56. Ke4 Bd4
+57. Kf4 Rh5 58. Re1 a4
+59. Re2 a3 60. Rxa3 Re8
+61. Rg3+ Kf8 62. e6 fxe6
+63. Bxe6 Rh4+ 64. Kf5 Rh5+
+65. Kf4 Rh4+ 66. Kg5 Rh1
+67. Rf3+ Kg7 68. Rf7+ Kh8
+69. Bd5 Rxe2 70. Bxh1 Re5+
+71. Kg6 Re6+ 72. Kf5 Re5+
+73. Kg6 Re6+ 74. Kf5 Re5+
+75. Kf4 Kg8 76. Rb7 Re1
+77. Bd5+ Kf8 78. Kf5 Re5+
+79. Kf4 Ba1 80. Rb5 Bd4
+81. Rxc5 Bxc5 82. Kxe5 Bg1
+83. Kd6 Be3 84. Be4 Bf4+
+85. Ke6 Bc1 86. c5 Ke8
+87. c6 Kd8 88. Kd6 Bf4+
+89. Kd5 Bc1 90. Kc5 Kc7
+91. Bh1 Bb2 92. Kd5 Ba3
+93. Ke6 Bc1 94. Ke5 Bb2+
+95. Kd5 Ba1 96. Bf3 Bb2
+97. Bg2 Ba1 98. Bh1 Bb2
+99. Bf3 Ba1 100. Bh1 Bb2
+101. Be4 Ba1 102. Bg2 Bb2
+103. Ke6 Ba1 104. Bh1 Bb2
+105. Bg2 Ba1 106. Kd5 Bb2
+107. Be4 Ba1 108. Bf3 Bb2
+109. Bg2 Ba1 110. Ke6 Bb2
+111. Bh1 Bc3 112. Bf3 Ba1
+113. Bg2 Bb2 114. Bh1 Ba1
+115. Kf5 Bb2 116. Kg6 Ba1
+117. Kh7 Bb2 118. Bf3 Kd6
+119. Bg2 Ba1 120. Bh1 Bb2
+121. Kg8 Ba1 122. Kh7 Bb2
+123. Bf3 Ba1 124. Bg2 Bb2
+125. Bh1 Ba1 126. Be4 Bb2
+127. Bh1 Ba1 128. Bf3 Bb2
+129. Bg2 Ba1 130. Kg8 Bb2
+131. Bh1 Ba1 132. Bf3 Bb2
+133. Bg2 Ba1 134. Bh1 Bb2
+135. Bd5 Ba1 136. Bg2 Bb2
+137. c7 Kxc7 138. Ba8 Kd6
+139. Bh1 Ke6 140. Ba8 Ba1
+141. Bh1 Kf5 142. Ba8 Bb2
+143. Bh1 Bc1 144. Ba8 Bg5
+145. Bh1 Be7 146. Ba8 Ba3
+147. Bh1 Bc5 148. Ba8 Bg1
+149. Bh1 Bf2 150. Ba8 Be1
+151. Bh1 Bd2 152. Ba8 Bc1
+153. Bh1 Bb2 154. Ba8 Ba1
+155. Bh1 Bd4 156. Ba8 Be3
+157. Bh1 Bg1 158. Ba8 Bf2
+159. Bh1 Be1 160. Ba8 Bd2
+161. Bh1 Be3 162. Ba8 Kf4
+163. Bh1 Bf2 164. Ba8 Ba7
+165. Bh1 Kf5 166. Ba8 Bc5
+167. Bh1 Ba3 168. Ba8 Kf6
+169. Bh1 Bc1 170. Ba8 Be3
+171. Bh1 Ba7 172. Ba8 Bg1
+173. Bh1 Ke5 174. Ba8 Bd4
+175. Bh1 Kd6 176. Ba8 Kc7
+177. Bh1 Kd7 178. Ba8 Ke6
+179. Bh1 Ba7 180. Ba8 Kf5
+181. Bh1 Bb6 182. Ba8 Bg1
+183. Bh1 Bf2 184. Ba8 Bg3
+185. Bh1 Be1 186. Ba8 Bd2
+187. Bh1 Bc1 1/2-1/2
