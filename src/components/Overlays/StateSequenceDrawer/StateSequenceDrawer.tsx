@@ -1,12 +1,9 @@
 import { connect } from 'react-redux'
 import * as React from 'react'
-import { Paper, Typography, Divider, IconButton, Card, CardHeader, CardContent } from "@material-ui/core";
+import { Typography, IconButton, Card, CardHeader } from "@material-ui/core";
 import './StateSequenceDrawer.scss';
-import { DataLine } from "../../Utility/Data/DataLine";
 import { Dataset } from "../../Utility/Data/Dataset";
-import { imageFromShape } from "../../WebGLView/meshes";
 import { setHighlightedSequenceAction } from "../../Ducks/HighlightedSequenceDuck";
-import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
@@ -18,6 +15,7 @@ import { GenericLegend } from '../../legends/Generic';
 import { GenericChanges } from '../../legends/GenericChanges/GenericChanges';
 import { DatasetType } from '../../Utility/Data/DatasetType';
 import { ResizeObserver } from 'resize-observer';
+import { selectVectors } from '../../Ducks/AggregationDuck';
 
 type StateSequenceDrawerProps = {
     activeLine: string,
@@ -25,7 +23,7 @@ type StateSequenceDrawerProps = {
     highlightedSequence: any,
     dataset: Dataset,
     setActiveLine: any
-    setCurrentAggregation: any
+    setCurrentAggregation: (select: number[]) => void
 }
 
 const mainColor = '#007dad'
@@ -76,7 +74,7 @@ const StateSequenceDrawer = ({
             current: vectors[0],
             next: vectors[1]
         })
-        setCurrentAggregation([vectors[0]])
+        setCurrentAggregation([vectors[0].__meta__.meshIndex])
         setPlaying(null)
     }, [activeLine])
 
@@ -166,7 +164,7 @@ const StateSequenceDrawer = ({
                             next: vectors[selected]
                         })
 
-                        setCurrentAggregation([vectors[selected - 1]])
+                        setCurrentAggregation([vectors[selected - 1].__meta__.meshIndex])
                         let myElement = document.getElementById(`ssdChild${selected - 2}`)
                         if (myElement) {
                             let topPos = myElement.offsetTop
@@ -184,7 +182,7 @@ const StateSequenceDrawer = ({
                             current: vectors[vectors.length - 2],
                             next: vectors[vectors.length - 1]
                         })
-                        setCurrentAggregation([vectors[vectors.length - 2]])
+                        setCurrentAggregation([vectors[vectors.length - 2].__meta__.meshIndex])
                         let myElement = document.getElementById(`ssdChild${vectors.length - 3}`)
                         let topPos = myElement.offsetTop
                         document.getElementById('ssdParent').scrollTop = topPos
@@ -214,7 +212,7 @@ const StateSequenceDrawer = ({
                             current: vectors[selected + 1],
                             next: vectors[selected + 2]
                         })
-                        setCurrentAggregation([vectors[selected + 1]])
+                        setCurrentAggregation([vectors[selected + 1].__meta__.meshIndex])
                         let myElement = document.getElementById(`ssdChild${selected}`)
                         let topPos = myElement.offsetTop
                         document.getElementById('ssdParent').scrollTop = topPos
@@ -226,7 +224,7 @@ const StateSequenceDrawer = ({
                             current: vectors[0],
                             next: vectors[0 + 1]
                         })
-                        setCurrentAggregation([vectors[0]])
+                        setCurrentAggregation([vectors[0].__meta__.meshIndex])
                         let myElement = document.getElementById(`ssdChild${0}`)
                         let topPos = myElement.offsetTop
                         document.getElementById('ssdParent').scrollTop = topPos
@@ -296,7 +294,7 @@ const StateSequenceDrawer = ({
                                             current: vector,
                                             next: vectors[index + 1]
                                         })
-                                        setCurrentAggregation([vector])
+                                        setCurrentAggregation([vector.__meta__.meshIndex])
                                         setSelected(index)
                                     }}>
                                     <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{`Point ${index}`}</Typography>
@@ -382,7 +380,7 @@ const mapDispatchToProps = dispatch => ({
     setHighlightedSequence: highlightedSequence => dispatch(setHighlightedSequenceAction(highlightedSequence)),
     setActiveLine: activeLine => dispatch(setActiveLine(activeLine)),
     // setCurrentAggregation: (currentAggregation, clusters) => dispatch(setAggregationAction(currentAggregation, clusters))
-    setCurrentAggregation: (currentAggregation) => dispatch(setAggregationAction(currentAggregation))
+    setCurrentAggregation: (currentAggregation: number[]) => dispatch(selectVectors(currentAggregation))
 })
 
 

@@ -1,13 +1,11 @@
 import { Shapes } from "../../WebGLView/meshes";
-import { DataLine } from "./DataLine";
+import { TypedObject } from "./Cluster";
+import { ObjectTypes } from "./ObjectType";
 
 /**
  * Main data class for points
  */
-
-
-
-export class Vect {
+export interface IVect extends TypedObject {
     x: number;
     y: number;
 
@@ -28,27 +26,27 @@ export class Vect {
     age: number;
 
     __meta__: VectView;
-
-    constructor(dict) {
-        // Copy dictionary values to this object
-        Object.keys(dict).forEach(key => {
-            this[key] = dict[key];
-        });
-
-        this.__meta__ = new VectView()
-    }
 }
 
 
 
 
 
+export class IVectUtil {
+    static create(dict): IVect {
+        let vect = {}
 
+        // Copy dictionary values to this object
+        Object.keys(dict).forEach(key => {
+            vect[key] = dict[key];
+        });
 
+        vect['__meta__'] = new VectView()
+        vect['objectType'] = ObjectTypes.Vector
 
-
-
-
+        return vect as IVect
+    }
+}
 
 
 

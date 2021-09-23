@@ -1,5 +1,5 @@
 import { DatasetType } from "../Data/DatasetType"
-import { Vect } from "../Data/Vect"
+import { IVectUtil, IVect } from "../Data/Vect"
 import { Loader } from "./Loader"
 import { CSVLoader } from "./CSVLoader"
 import * as backend_utils from "../../../utils/backend-connect";
@@ -9,12 +9,12 @@ var d3v5 = require('d3')
 
 function convertFromCSV(vectors) {
     return vectors.map(vector => {
-        return new Vect(vector)
+        return IVectUtil.create(vector)
     })
 }
 
 export class SDFLoader implements Loader {
-    vectors: Vect[]
+    vectors: IVect[]
     datasetType: DatasetType
 
     loading_area = "global_loading_indicator";

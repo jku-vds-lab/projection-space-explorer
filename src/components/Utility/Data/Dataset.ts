@@ -3,7 +3,7 @@ import { ICluster } from "./Cluster";
 import { FeatureType } from "./FeatureType";
 import { DatasetType } from "./DatasetType";
 import { DataLine } from "./DataLine";
-import { Vect } from "./Vect";
+import { IVect } from "./Vect";
 import { mean, std } from "../../NumTs/NumTs";
 
 
@@ -152,7 +152,7 @@ export class DatasetUtil {
  * Dataset class that holds all data, the ranges and additional stuff
  */
 export class Dataset {
-    vectors: Vect[];
+    vectors: IVect[];
     segments: DataLine[];
     bounds: { x; y; scaleBase; scaleFactor; };
     info: { path: string; type: DatasetType; };

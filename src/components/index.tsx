@@ -67,7 +67,7 @@ import { HoverStateOrientation } from "./Ducks/HoverStateOrientationDuck";
 import { PSEContextProvider } from "./Store/PSEContext";
 import { API } from "./Store/PluginScript";
 import { RootState } from "./Store/Store";
-import { Vect } from "./Utility/Data/Vect";
+import { IVect } from "./Utility/Data/Vect";
 
 
 /**
@@ -581,6 +581,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
 const onClick = async (content: string) => {
+  // @ts-ignore
   const handle = await window.showSaveFilePicker({
     suggestedName: 'session.pse',
     types: [{
@@ -600,6 +601,7 @@ const onClick = async (content: string) => {
 
 
 const loo = async () => {
+  // @ts-ignore
   const [fileHandle] = await window.showOpenFilePicker();
   const file = await fileHandle.getFile();
   const contents = await file.text();
@@ -612,7 +614,7 @@ interface PSEPlugin {
   type: string;
 
   hasFileLayout(header: string[]);
-  createFingerprint(vectors: Vect[]): Promise<React.Component>;
+  createFingerprint(vectors: IVect[]): Promise<React.Component>;
 }
 
 class RubikPlugin implements PSEPlugin {
@@ -622,7 +624,7 @@ class RubikPlugin implements PSEPlugin {
     throw new Error("Method not implemented.");
   }
 
-  createFingerprint(vectors: Vect[]): Promise<React.Component> {
+  createFingerprint(vectors: IVect[]): Promise<React.Component> {
     return new Promise(() => <div></div>)
   }
 }
@@ -652,8 +654,6 @@ const EntryPoint = () => {
     <PSEContextProvider
       context={context}
       onStateChanged={(values, keys) => {
-        //console.log(values)
-        console.log(keys)
       }}>
 
       <Application />

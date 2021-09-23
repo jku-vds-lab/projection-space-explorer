@@ -2,16 +2,38 @@ import * as React from 'react'
 import { Box, Card, Typography } from '@material-ui/core'
 import { GenericLegend } from '../../legends/Generic'
 import './SelectionClusters.scss'
-import { connect } from 'react-redux'
-import { Vect } from '../../Utility/Data/Vect'
+import { connect, ConnectedProps } from 'react-redux'
+import { IVect } from '../../Utility/Data/Vect'
 import ReactDOM = require('react-dom')
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck'
 
 import { MyWindowPortal } from '../WindowPortal/WindowPortal'
+import { isVector } from '../../Utility/Data/Cluster'
+import { RootState } from '../../Store/Store'
 
 
 function HoverItemPortal(props) {
     return ReactDOM.createPortal(props.children, document.getElementById("HoverItemDiv"))
+}
+
+
+const mapStateToProps = (state: RootState) => ({
+    currentAggregation: state.currentAggregation,
+    hoverState: state.hoverState,
+    dataset: state.dataset,
+    hoverSettings: state.hoverSettings,
+})
+
+const mapDispatchToProps = dispatch => ({
+    setHoverWindowMode: value => dispatch(setHoverWindowMode(value)),
+})
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+    hoverUpdate: any
 }
 
 
@@ -22,13 +44,13 @@ const SelectionClustersFull = function ({
     hoverSettings,
     hoverUpdate,
     setHoverWindowMode
-}) {
+}: Props) {
     if (!dataset) {
         return null
     }
 
     const genericAggregateLegend = currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? 
-                <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation.aggregation} hoverUpdate={hoverUpdate}></GenericLegend> : 
+                <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation.aggregation.map(i => dataset.vectors[i])} hoverUpdate={hoverUpdate}></GenericLegend> : 
                 <Box paddingLeft={2}>
                     <Typography color={"textSecondary"}>
                         Select Points in the Embedding Space to show a Summary Visualization.
@@ -37,7 +59,7 @@ const SelectionClustersFull = function ({
 
     return <div className={"Parent"}>
 
-        {hoverState && hoverState.data && hoverState.data instanceof Vect && <HoverItemPortal>
+        {hoverState && hoverState.data && isVector(hoverState.data) && <HoverItemPortal>
             <Card elevation={24} style={{
                 width: 300,
                 maxHeight: '50vh',
@@ -68,17 +90,7 @@ const SelectionClustersFull = function ({
     </div>
 }
 
-const mapStateToProps = state => ({
-    currentAggregation: state.currentAggregation,
-    hoverState: state.hoverState,
-    dataset: state.dataset,
-    hoverSettings: state.hoverSettings,
-})
-const mapDispatchToProps = dispatch => ({
-    setHoverWindowMode: value => dispatch(setHoverWindowMode(value)),
-})
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
 
 export const SelectionClusters = connector(SelectionClustersFull)
 

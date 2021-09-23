@@ -1,5 +1,5 @@
 import { DatasetType } from "../../Utility/Data/DatasetType";
-import { Vect } from "../../Utility/Data/Vect";
+import { IVect } from "../../Utility/Data/Vect";
 import { Dataset } from "../../Utility/Data/Dataset";
 import { connect } from 'react-redux'
 import { RubikChanges } from "../RubikChanges/RubikChanges";
@@ -10,8 +10,8 @@ import { ChemLegendParent } from "../ChemDetail/ChemDetail";
 
 
 type GenericChangesType = {
-    vectorsA: Array<Vect>
-    vectorsB: Array<Vect>
+    vectorsA: Array<IVect>
+    vectorsB: Array<IVect>
     dataset: Dataset
     scale: number
 }

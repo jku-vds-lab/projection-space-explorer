@@ -1,5 +1,5 @@
 import { isNumber } from "lodash";
-import { Vect } from "./Vect";
+import { IVect } from "./Vect";
 
 /**
  * Class that preprocesses the data set and checks for validity.
@@ -11,7 +11,7 @@ const DEFAULT_ALGO = "all"
 
 
 export class Preprocessor {
-    vectors: Vect[];
+    vectors: IVect[];
 
     constructor(vectors) {
         this.vectors = vectors;

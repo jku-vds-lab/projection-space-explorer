@@ -2,9 +2,10 @@
  * Directed graph library for javascript.
  */
 
-import { ICluster } from "./Data/Cluster"
+import { ICluster, TypedObject } from "./Data/Cluster"
 import { Dataset } from "./Data/Dataset"
-import { Vect } from "./Data/Vect"
+import { ObjectTypes } from "./Data/ObjectType"
+import { IVect } from "./Data/Vect"
 
 
 /**
@@ -24,7 +25,7 @@ export class Graph {
  * Node class holding the vectors that are in this node.
  */
 export class Node {
-    vectors: Vect[]
+    vectors: IVect[]
 
     constructor(vectors) {
         this.vectors = vectors
@@ -34,7 +35,7 @@ export class Node {
 /**
  * Edge class that is a connection between 2 nodes.
  */
-export class Edge {
+export class Edge implements TypedObject {
     source: ICluster
     destination: ICluster
     bundle: number[]
@@ -44,7 +45,9 @@ export class Edge {
         this.source = source
         this.destination = destination
         this.bundle = bundle
+        this.objectType = ObjectTypes.Edge
     }
+    objectType: string
 }
 
 

@@ -2,7 +2,8 @@ import { AnyAction } from "redux";
 import { ThunkAction } from "redux-thunk";
 import { RootState } from "../Store/Store";
 import { ICluster } from "../Utility/Data/Cluster";
-import { Vect } from "../Utility/Data/Vect";
+import { IVect } from "../Utility/Data/Vect";
+import { StoriesUtil } from "./StoriesDuck";
 
 
 
@@ -15,7 +16,7 @@ export const selectVectors = (selection: number[], shiftKey: boolean = false) =>
     return (dispatch, getState): ThunkAction<any, RootState, unknown, AnyAction> => {
         const state: RootState = getState()
 
-        const clusters = state.stories.active?.clusters ?? []
+        const clusters = StoriesUtil.getActive(state.stories)?.clusters ?? []
 
         let newSelection = []
 
@@ -71,18 +72,18 @@ export const selectClusters = (selection: number[], shiftKey: boolean = false) =
         return dispatch({
             type: THUNK_SET_CLUSTERS,
             clusterSelection: newSelection,
-            vectorSelection: deriveFromClusters(newSelection.map(i => state.stories.active.clusters[i]))
+            vectorSelection: deriveFromClusters(newSelection.map(i => StoriesUtil.getActive(state.stories).clusters[i]))
         })
     }
 }
 
 
-function deriveFromClusters(clusters: ICluster[]) {
-    let agg = clusters.map(cluster => cluster.vectors).flat()
+function deriveFromClusters(clusters: ICluster[]): number[] {
+    let agg = clusters.map(cluster => cluster.refactored).flat()
     return [...new Set(agg)]
 }
 
-function deriveFromSamples(samples: Vect[], clusters: ICluster[]) {
+function deriveFromSamples(samples: IVect[], clusters: ICluster[]): number[] {
     let labels = new Set()
 
     samples.forEach(sample => {
@@ -95,7 +96,7 @@ function deriveFromSamples(samples: Vect[], clusters: ICluster[]) {
 
     return clusters.filter(cluster => {
         return arr.includes(cluster.label)
-    })
+    }).map(c => clusters.indexOf(c))
 }
 
 const initialState = {

@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { Dataset } from './Dataset';
-import { Vect } from "./Vect"
+import { ObjectTypes } from './ObjectType';
+import { IVect } from "./Vect"
 
 
 
@@ -31,6 +32,7 @@ export class ClusterObject {
 
     static fromSamples(dataset: Dataset, samples: number[]): ICluster {
         return {
+            objectType: ObjectTypes.Cluster,
             refactored: samples,
             label: Math.floor(Math.random() * 1000),
             bounds: ClusterObject.calcBounds(dataset, samples)
@@ -45,7 +47,7 @@ export class ClusterObject {
      * @param vectors The vectors to relabel
      * @param clusters The clusters to take the label from
      */
-    static deriveVectorLabelsFromClusters(vectors: Vect[], clusters: ICluster[]) {
+    static deriveVectorLabelsFromClusters(vectors: IVect[], clusters: ICluster[]) {
         // Clear all cluster labels from vectors
         vectors.forEach(vector => {
             vector.groupLabel = []
@@ -99,28 +101,27 @@ export class ClusterObject {
     }
 }
 
-export type ICluster = {
+export interface TypedObject {
+    objectType: string
+}
+
+export interface ICluster extends TypedObject {
     label: any
     bounds: any
     hull?: any
     triangulation?: any
-    vectors?: Vect[]
+    vectors?: IVect[]
     name?: string
 
     refactored: number[]
 }
 
-export default class Cluster {
-    label: any
-    bounds: any
-    hull: any
-    triangulation: any
-    vectors: Vect[]
-    name: string
 
-    constructor(bounds?, hull?, triangulation?) {
-        this.bounds = bounds
-        this.hull = hull
-        this.triangulation = triangulation
-    }
+
+export function isCluster(object: TypedObject): object is ICluster {
+    return object && object.objectType === ObjectTypes.Cluster
+}
+
+export function isVector(object: TypedObject): object is IVect {
+    return object && object.objectType === ObjectTypes.Vector
 }

@@ -1,4 +1,4 @@
-import { Vect } from "./Vect";
+import { IVect } from "./Vect";
 
 /**
  * Main data class for lines
@@ -7,7 +7,7 @@ import { Vect } from "./Vect";
 
 export class DataLine {
     lineKey: any;
-    vectors: Vect[];
+    vectors: IVect[];
     __meta__: DataLineView;
 
     constructor(lineKey, vectors) {

@@ -1,30 +1,19 @@
-import { RubikLegend } from "./RubikDetail/RubikDetail";
 import { NeuralLegend } from "./NeuralDetail/NeuralDetail";
-import { ChessLegend } from "./ChessDetail/ChessDetail";
 import { CoralLegend } from "./CoralDetail/CoralDetail";
 import { TrrackLegend } from "./TrrackDetail/TrrackDetail";
 import { StoryLegend } from "./StoryDetail/StoryDetail";
 import { GoLegend } from "./GoDetail/GoDetail";
-
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
 import * as React from 'react'
 import { FunctionComponent } from "react";
 import { RubikFingerprint } from "./RubikFingerprint/RubikFingerprint";
 import { ChessFingerprint } from "./ChessFingerprint/ChessFingerprint";
 import { DatasetType } from "../Utility/Data/DatasetType";
-import { Vect } from "../Utility/Data/Vect";
-import { Dataset } from "../Utility/Data/Dataset";
+import { IVect } from "../Utility/Data/Vect";
 import { ChemLegendParent } from "./ChemDetail/ChemDetail";
 
 type GenericLegendProps = {
     type: DatasetType
-    vectors: Vect[]
+    vectors: IVect[]
     aggregate: boolean
     hoverUpdate?
     scale?: number
@@ -58,7 +47,7 @@ export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: G
 
 type GenericFingerprintProps = {
     type: DatasetType
-    vectors: Array<any>
+    vectors: Array<IVect>
     scale: number
 }
 

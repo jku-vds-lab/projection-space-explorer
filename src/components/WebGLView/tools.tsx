@@ -1,4 +1,4 @@
-import { Vect } from "../Utility/Data/Vect"
+import { IVect } from "../Utility/Data/Vect"
 import * as libtess from 'libtess'
 import * as THREE from 'three'
 import { pointInHull } from "../Utility/Geometry/Intersection"

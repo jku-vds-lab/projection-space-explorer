@@ -2,7 +2,7 @@ import { valueInRange } from './UtilityFunctions'
 import { ContinuousMapping } from "../Utility/Colors/Mapping"
 import * as THREE from 'three'
 import { DataLine } from "../Utility/Data/DataLine"
-import { Vect } from "../Utility/Data/Vect"
+import { IVect } from "../Utility/Data/Vect"
 import { Dataset } from "../Utility/Data/Dataset"
 import { LayeringSystem } from './LayeringSystem/LayeringSystem'
 import { StoriesType } from '../Ducks/StoriesDuck'
@@ -169,7 +169,7 @@ export class LineVisualization {
       
 
       let lineIndices = new Set<number>()
-      stories.active.clusters.forEach(cluster => {
+      stories.stories[stories.active].clusters.forEach(cluster => {
         cluster.refactored.forEach(i => {
           lineIndices.add(stories.vectors[i].__meta__.lineIndex)
         })
@@ -361,7 +361,7 @@ export class PointVisualization {
   showSymbols: any
   colorsChecked: any
   segments: DataLine[]
-  vectors: Vect[]
+  vectors: IVect[]
   vectorSegmentLookup: DataLine[]
   mesh: any
   sizeAttribute: any
@@ -516,7 +516,7 @@ export class PointVisualization {
       this.grayedLayerSystem.setLayerActive(3, true)
 
       let vecIndices = new Set<number>()
-      stories.active.clusters.forEach(cluster => {
+      stories.stories[stories.active].clusters.forEach(cluster => {
         cluster.refactored.forEach(sample => {
           vecIndices.add(sample)
         })
@@ -621,14 +621,9 @@ export class PointVisualization {
   }
 
   colorCat(category, scale) {
-    console.log(category)
-    console.log(scale)
-
-
     this.colorAttribute = category
 
     if (category == null) {
-      console.log("setting null")
       this.vectorColorScheme = null
     } else {
       if (category.type == 'categorical') {
@@ -881,7 +876,7 @@ export class PointVisualization {
     this.mesh.geometry.attributes.customColor.needsUpdate = true
   }
 
-  isPointVisible(vector: Vect) {
+  isPointVisible(vector: IVect) {
     const i = vector.__meta__.meshIndex
 
     return (this.vectorSegmentLookup[i] == null || this.vectorSegmentLookup[i].__meta__.detailVisible)

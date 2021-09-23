@@ -1,25 +1,22 @@
 import "./Storytelling.scss";
 import * as React from 'react'
-import Cluster, { ClusterObject } from "../../Utility/Data/Cluster";
+import { ClusterObject } from "../../Utility/Data/Cluster";
 import { GenericFingerprint } from "../../legends/Generic";
-import { Card, Typography, Tooltip, IconButton, CardHeader, CardContent } from "@material-ui/core";
-import ToggleButton from "@material-ui/lab/ToggleButton";
+import { Card, Typography, Tooltip, IconButton, CardHeader } from "@material-ui/core";
 import { connect, ConnectedProps } from 'react-redux'
 import { DatasetType } from "../../Utility/Data/DatasetType";
 import { Dataset } from "../../Utility/Data/Dataset";
 import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
 import { RootState } from "../../Store/Store";
 import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType } from "../../Ducks/StoriesDuck";
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import { DifferenceThresholdSlider } from '../../legends/CoralChanges/DifferenceThresholdSlider';
 import CloseIcon from '@material-ui/icons/Close';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import StopIcon from '@material-ui/icons/Stop';
-import { aggSelectCluster } from "../../Ducks/AggregationDuck";
 import { ResizeObserver } from 'resize-observer';
+import { selectClusters } from "../../Ducks/AggregationDuck";
 
 
 const mainColor = '#007dad'
@@ -36,7 +33,7 @@ const mapDispatch = dispatch => ({
     setActiveTraceState: cluster => dispatch(setActiveTraceState(cluster)),
     selectSideBranch: index => dispatch(selectSideBranch(index)),
     setActiveTrace: trace => dispatch(setActiveTrace(trace)),
-    setSelectedCluster: (cluster, shift) => dispatch(aggSelectCluster(cluster, shift))
+    setSelectedCluster: (cluster, shift) => dispatch(selectClusters(cluster, shift))
 })
 
 const connector = connect(mapStateToProps, mapDispatch);
@@ -310,7 +307,7 @@ export const Storytelling = connector(function ({
     setSelectedCluster
 }: Props) {
 
-    if (stories.trace == null || stories.active == null) {
+    if (stories.trace === null || stories.active === null) {
         return null
     }
 

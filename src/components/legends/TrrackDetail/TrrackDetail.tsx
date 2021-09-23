@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import TrrackScatter from './TrrackScatter.js';
-import { Vect } from "../../Utility/Data/Vect";
+import { IVect } from "../../Utility/Data/Vect";
 import { RootState } from '../../Store/Store.js';
 
 
@@ -49,7 +49,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
     aggregate: boolean
-    selection: Vect[]
+    selection: IVect[]
 }
 
 export var TrrackLegend = connector(({ selection, dataset }: Props) => {

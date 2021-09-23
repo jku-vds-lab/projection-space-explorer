@@ -15,7 +15,7 @@ const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
     dataset: state.dataset,
     hoverStateOrientation: state.hoverStateOrientation,
-    activeStorybook: state.stories?.active
+    activeStorybook: state.stories?.stories[state.stories.active]
 })
 
 const mapDispatchToProps = dispatch => ({

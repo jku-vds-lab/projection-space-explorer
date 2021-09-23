@@ -1,8 +1,8 @@
 
 import { Scene, Vector2, Vector3 } from "three";
-import Cluster, { ClusterObject, ICluster } from "../../Utility/Data/Cluster";
+import { ClusterObject, ICluster, isCluster } from "../../Utility/Data/Cluster";
 import THREE = require("three");
-import { Vect } from "../../Utility/Data/Vect";
+import { IVect } from "../../Utility/Data/Vect";
 import { DisplayMode } from "../../Ducks/DisplayModeDuck";
 import React = require("react");
 import { RootState } from "../../Store/Store";
@@ -33,7 +33,7 @@ const CLUSTER_PIXEL_SIZE = 12
 
 
 type ClusterObjectType = {
-    cluster: ICluster,
+    cluster: number,
     geometry: THREE.Geometry,
     material: THREE.MeshBasicMaterial,
     mesh: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>,
@@ -111,6 +111,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.triangulationWorker = new Worker(frontend_utils.BASE_PATH + 'tessy.js')
     }
 
+    
 
     componentDidUpdate(prevProps: Props) {
         if (prevProps.trailSettings != this.props.trailSettings) {
@@ -123,9 +124,13 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             this.destroy()
             this.disposeTriangulatedMesh()
 
-            if (this.props.stories.active && this.props.stories.active.clusters.length > 0) {
-                this.create()
-                this.createTriangulatedMesh()
+            if (this.props.stories.active !== null) {
+                const activeStory = this.props.stories.stories[this.props.stories.active]
+
+                if (activeStory.clusters.length > 0) {
+                    this.create()
+                    this.createTriangulatedMesh()
+                }
             }
         }
 
@@ -189,7 +194,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         arrowGeometry.faces = []
 
         let index = 0
-        this.props.stories.active?.edges.forEach(edge => {
+        const activeStory = this.props.stories.stories[this.props.stories.active]
+        activeStory?.edges.forEach(edge => {
             let color = new THREE.Color(DEFAULT_COLOR)
             if (this.props.stories.trace && this.props.stories.trace.mainEdges.includes(edge)) {
                 color = new THREE.Color(SELECTED_COLOR)
@@ -249,8 +255,9 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
     iterateTrail(zoom) {
+        const activeStory = this.props.stories.stories[this.props.stories.active]
         this.clusterObjects.forEach(clusterObject => {
-            let center = ClusterObject.getCenter(this.props.dataset, clusterObject.cluster)
+            let center = ClusterObject.getCenter(this.props.dataset, activeStory.clusters[clusterObject.cluster])
 
             let last = clusterObject.trailPositions[clusterObject.trailPositions.length - 1]
             if (!last || new THREE.Vector3(center.x, center.y, 0).distanceTo(last) > 0.1) {
@@ -281,9 +288,10 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         let index = 0
 
+        const activeStory = this.props.stories.stories[this.props.stories.active]
         this.clusterObjects.forEach(clusterObject => {
             let cluster = clusterObject.cluster
-            let center = ClusterObject.getCenter(this.props.dataset, cluster)
+            let center = ClusterObject.getCenter(this.props.dataset, activeStory.clusters[cluster])
             let mesh = clusterObject.mesh
 
             mesh.position.set(center.x * zoom, center.y * zoom, -0.5)
@@ -316,12 +324,12 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.lineMesh.geometry = lineGeometry
     }
 
-    getColorForClusterObject(clusterObject) {
+    getColorForClusterObject(clusterObject: ClusterObjectType) {
         if (this.props.currentAggregation.selectedClusters.includes(clusterObject.cluster) || clusterObject.sampleConnection) {
             return new THREE.Color(SELECTED_COLOR)
         }
-
-        if (this.props.stories.active?.clusters?.includes(clusterObject.cluster)) {
+        const activeStory = this.props.stories.stories[this.props.stories.active]
+        if (activeStory?.clusters?.includes(activeStory.clusters[clusterObject.cluster])) {
             return new THREE.Color(DEFAULT_COLOR)
         } else {
             return new THREE.Color(GRAYED)
@@ -347,7 +355,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         let scale = NamedCategoricalScales.DARK2()
 
-        this.props.stories.active.clusters.forEach((cluster, ci) => {
+        const activeStory = this.props.stories.stories[this.props.stories.active]
+        activeStory.clusters.forEach((cluster, ci) => {
 
             // Add circle to scene
             var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * CLUSTER_PIXEL_SIZE, this.devicePixelRatio * CLUSTER_PIXEL_SIZE);
@@ -369,7 +378,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             this.clusterScene.add(circle);
 
             var clusterObject: ClusterObjectType = {
-                cluster: cluster,
+                cluster: ci,
                 geometry: geometry,
                 material: material,
                 mesh: circle,
@@ -397,9 +406,11 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     }
 
     // Activates the lines from given samples to their corresponding clusters
-    highlightSamples(samples: Vect[]) {
+    highlightSamples(samples: IVect[]) {
         // Deactivate all lines
         this.deactivateAll()
+
+        const activeStory = this.props.stories.stories[this.props.stories.active]
 
         this.clusterObjects.forEach(clusterObject => {
             clusterObject.material.color = new THREE.Color(DEFAULT_COLOR)
@@ -407,7 +418,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         samples.forEach(sample => {
             sample.groupLabel.forEach(label => {
-                let clusterObject = this.clusterObjects.find(e => e.cluster.label == label)
+                let clusterObject = this.clusterObjects.find(e => activeStory.clusters[e.cluster].label == label)
 
                 if (clusterObject && this.props.groupVisualizationMode == GroupVisualizationMode.StarVisualization) {
                     clusterObject.sampleConnection = true
@@ -444,10 +455,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
     highlightCluster(indices?: number[]) {
-        const clusters = indices.map(i => this.props.stories.active.clusters[i])
-
         this.clusterObjects.forEach((clusterObject, index) => {
-            var visible = clusters?.includes(clusterObject.cluster) // for paper used: true
+            var visible = indices?.includes(clusterObject.cluster) // for paper used: true
 
             clusterObject.material.color = visible ? new THREE.Color(SELECTED_COLOR) : new THREE.Color(DEFAULT_COLOR)
 
@@ -476,6 +485,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 clusterObject.geometry.dispose()
                 clusterObject.material.dispose()
             })
+            this.clusterObjects = []
         }
 
         if (this.lineMesh) {
@@ -503,8 +513,10 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         var clusterMeshes = []
         var lineMeshes = []
 
-        if (this.props.stories.active) {
-            this.props.stories.active.clusters.map(cluster => {
+        if (this.props.stories.active !== null) {
+            const activeStory = this.props.stories.stories[this.props.stories.active]
+
+            activeStory.clusters.map(cluster => {
                 const bounds = ClusterObject.calcBounds(this.props.dataset, cluster.refactored)
 
                 let xAxis = d3.scaleLinear()
@@ -524,7 +536,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     .size([100, bounds.width == 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])
                     (cluster.refactored.map(i => this.props.dataset.vectors[i]).map(vect => ({ x: vect.x, y: vect.y })))
 
-                let clusterObject = this.clusterObjects.find(e => e.cluster.label == cluster.label)
+                let clusterObject = this.clusterObjects.find(e => activeStory.clusters[e.cluster].label == cluster.label)
 
                 let material = new THREE.LineBasicMaterial({ color: clusterObject.lineColor.hex })
 
@@ -582,10 +594,10 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     /**
      * Creates textual representations of the edges of the story.
      */
-    createStreetLabels(story: Storybook) {
+    createStreetLabels(story?: Storybook) {
         let labels = []
 
-        story.edges.filter(edge => edge.name && edge.name != "").map(edge => {
+        story?.edges.filter(edge => edge.name && edge.name != "").map(edge => {
             let source = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, edge.source), this.props.viewTransform)
             let dest = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, edge.destination), this.props.viewTransform)
 
@@ -623,14 +635,16 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
      * Render an empty div, so componentDidMount will get called.
      */
     render() {
+        const activeStory = this.props.stories.stories[this.props.stories.active]
+
         return <div>
 
             {
-                this.props.stories.active && this.createStreetLabels(this.props.stories.active)
+                this.props.stories.active && this.createStreetLabels(activeStory)
             }
 
             {
-                this.props.hoverState.data && this.props.hoverState.data instanceof Cluster
+                this.props.hoverState.data && isCluster(this.props.hoverState.data)
                 && this.props.hoverState.data.name && hoverLabel(this.props.hoverState.data as ICluster, this.props.viewTransform, this.props.dataset)
             }
 

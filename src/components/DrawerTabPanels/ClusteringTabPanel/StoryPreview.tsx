@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button, FormControl, Grid, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, MenuItem, Select } from '@material-ui/core';
+import { Button, FormControl, Grid, IconButton, InputLabel, ListItem, ListItemSecondaryAction, ListItemText, Select } from '@material-ui/core';
 import { connect, ConnectedProps } from 'react-redux'
 import './StoryPreview.scss'
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -48,9 +48,9 @@ export const StoryPreview = connector(({
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={stories.active ? stories.active.uuid : ''}
+                value={stories.active ?? ''}
                 onChange={(event) => {
-                    setActiveStory(stories.stories.find(story => story.uuid == event.target.value))
+                    setActiveStory(event.target.value)
                 }}
             >
                 <ListItem
@@ -65,7 +65,7 @@ export const StoryPreview = connector(({
                         return <ListItem
                             key={key}
                             button
-                            {...{ value: story.uuid }}
+                            {...{ value: key }}
                         >
                             <ListItemText primary={"Story Book"} secondary={`${story.clusters.length} nodes`} />
                             <ListItemSecondaryAction>

@@ -1,4 +1,4 @@
-import { Vect } from "../../Utility/Data/Vect";
+import { IVect } from "../../Utility/Data/Vect";
 
 /**
  * Helper class for cases where cross interaction could occur, one example would be that in the storytelling

@@ -54,7 +54,6 @@ export class ChiSquareTest {
   
         score = cramerV;
         pValue = 1 - jStat.jStat.chisquare.cdf(chiSquare, df);
-        // console.log('ChiSquare - table: ', {setA,setB,allCategories,table,chiSquare,df,pValue});
       }
   
       return {

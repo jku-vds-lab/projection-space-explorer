@@ -3,7 +3,7 @@ import { Dataset } from "../../../Utility/Data/Dataset";
 import { EmbeddingController } from "./EmbeddingController"
 
 import * as frontend_utils from "../../../../utils/frontend-connect";
-import { Vect } from "../../../Utility/Data/Vect";
+import { IVect } from "../../../Utility/Data/Vect";
 
 const Graph = require('graphology');
 
@@ -11,12 +11,12 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
     nodes: any
 
     buildGraph(segments: DataLine[], reuse) {
-        let nodes: Vect[] = []
+        let nodes: IVect[] = []
         let edges = []
 
         let dups = []
         segments.forEach(segment => {
-            let prev: Vect = null
+            let prev: IVect = null
             let prevWasDuplicate = false
 
             segment.vectors.forEach((sample, i) => {

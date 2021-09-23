@@ -1,4 +1,4 @@
-import { Vect } from "./Vect";
+import { IVect } from "./Vect";
 
 type PositionType = {
     x: number
@@ -14,7 +14,7 @@ export class Embedding {
     name: string
     hash: string
     
-    constructor(vectors: Vect[], name) {
+    constructor(vectors: IVect[], name) {
         this.positions = new Array(vectors.length)
         this.name = name
         this.hash = Math.random().toString(36).substring(7)

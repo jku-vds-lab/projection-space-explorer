@@ -1,6 +1,6 @@
 import { Box, Typography } from "@material-ui/core";
 import React = require("react");
-import { Vect } from "../../Utility/Data/Vect";
+import { IVectUtil, IVect } from "../../Utility/Data/Vect";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
 import { LoadingIndicatorDialog } from "../../Utility/Loaders/LoadingIndicator";
@@ -18,7 +18,7 @@ var d3v5 = require('d3')
 
 function convertFromCSV(vectors) {
     return vectors.map(vector => {
-        return new Vect(vector)
+        return IVectUtil.create(vector)
     })
 }
 

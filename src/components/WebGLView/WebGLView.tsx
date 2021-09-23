@@ -3,9 +3,9 @@ import { LassoSelection } from './tools'
 import * as React from "react";
 import * as THREE from 'three'
 import { LassoLayer } from './LassoLayer/LassoLayer';
-import Cluster, { ClusterObject, ICluster } from '../Utility/Data/Cluster';
+import { ClusterObject, ICluster, isCluster, isVector, TypedObject } from '../Utility/Data/Cluster';
 import { connect, ConnectedProps } from 'react-redux'
-import { Vect } from "../Utility/Data/Vect";
+import { IVect } from "../Utility/Data/Vect";
 import { setClusterEdgesAction } from "../Ducks/ClusterEdgesDuck";
 import { setViewTransform } from "../Ducks/ViewTransformDuck";
 import { selectClusters, selectVectors } from "../Ducks/AggregationDuck";
@@ -33,16 +33,17 @@ import { Embedding } from '../Utility/Data/Embedding';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
-import { Dataset, DatasetUtil } from '../Utility/Data/Dataset';
+import { DatasetUtil } from '../Utility/Data/Dataset';
 import { DataLine } from '../Utility/Data/DataLine';
 import { NamedCategoricalScales } from '../Utility/Colors/NamedCategoricalScales';
+import { ObjectTypes } from '../Utility/Data/ObjectType';
 
 type ViewState = {
     displayClusters: any
     camera: Camera
     menuX: number
     menuY: number
-    menuTarget: any
+    menuTarget: TypedObject
 }
 
 const mapStateToProps = (state: RootState) => ({
@@ -108,9 +109,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     mouse: any
     mouseDownPosition: any
     initialMousePosition: any;
-    currentHover: any;
+    currentHover: TypedObject;
     camera: any;
-    vectors: Vect[];
+    vectors: IVect[];
     renderer: any;
     lines: LineVisualization;
     scene: THREE.Scene;
@@ -312,21 +313,22 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         let target = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
 
                         if (target) {
+                            const activeStory = this.props.stories.stories[this.props.stories.active]
                             // We want to select a trace between 2 clusters
-                            let paths = Storybook.depthFirstSearch(this.props.stories.active.toGraph(), this.traceSelect.cluster.label, target.label)
+                            let paths = Storybook.depthFirstSearch(activeStory.toGraph(), this.traceSelect.cluster.label, target.label)
 
                             if (paths.length > 0) {
-                                let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                                let mainPath = paths[0].map(id => activeStory.clusters.find(e => e.label == id))
                                 let mainEdges = mainPath.slice(1).map((item, index) => {
-                                    return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
+                                    return activeStory.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
                                 })
                                 this.props.setActiveTrace({
                                     mainPath: mainPath,
                                     mainEdges: mainEdges,
                                     sidePaths: paths.slice(1).map(ids => {
-                                        let path = ids.map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                                        let path = ids.map(id => activeStory.clusters.find(e => e.label == id))
                                         let edges = path.slice(1).map((item, index) => {
-                                            return this.props.stories.active.edges.find(edge => edge.source == path[index] && edge.destination == item)
+                                            return activeStory.edges.find(edge => edge.source == path[index] && edge.destination == item)
                                         })
                                         return {
                                             nodes: path,
@@ -339,11 +341,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         }
 
                         this.traceSelect = null
-                    } else if (this.currentHover && this.currentHover instanceof Vect) {
+                    } else if (this.currentHover && isVector(this.currentHover)) {
+
                         // We click on a hover target
                             this.props.selectVectors([this.currentHover.__meta__.meshIndex], event.ctrlKey)
-                    } else if (this.currentHover && this.currentHover instanceof Cluster) {
-                        this.props.setSelectedCluster([this.props.stories.active.clusters.indexOf(this.currentHover)], event.ctrlKey)
+                    } else if (this.currentHover && this.currentHover.objectType === ObjectTypes.Cluster) {
+                        const activeStory = this.props.stories.stories[this.props.stories.active]
+                        this.props.setSelectedCluster([activeStory.clusters.indexOf(this.currentHover as ICluster)], event.ctrlKey)
                     }
 
 
@@ -402,6 +406,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                 let cluster = this.chooseCluster(this.mouseController.currentMousePosition)
                 if (cluster) {
+                    console.log(cluster)
                     if (this.currentHover != cluster) {
                         this.currentHover = cluster
                         this.props.setHoverState(cluster, UPDATER)
@@ -512,7 +517,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         let nearest = null
         let min = Number.MAX_SAFE_INTEGER
 
-        this.props.stories.active?.clusters.forEach(cluster => {
+        const activeStory = this.props.stories.stories[this.props.stories.active]
+
+        activeStory?.clusters.forEach(cluster => {
             let clusterScreen = CameraTransformations.worldToScreen(new THREE.Vector2(ClusterObject.getCenter(this.props.dataset, cluster).x, ClusterObject.getCenter(this.props.dataset, cluster).y), this.createTransform())
             let dist = nt.euclideanDistance(screenPosition.x, screenPosition.y, clusterScreen.x, clusterScreen.y)
 
@@ -532,10 +539,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             return null
         }
 
+        const activeStory = this.props.stories.stories[this.props.stories.active]
+
         position = CameraTransformations.screenToWorld(position, this.createTransform())
 
-        for (let i = 0; i < this.props.stories.active.edges.length; i++) {
-            const edge = this.props.stories.active.edges[i]
+        for (let i = 0; i < activeStory.edges.length; i++) {
+            const edge = activeStory.edges[i]
 
             const a = ClusterObject.getCenterAsVector2(this.props.dataset, edge.source)
             const b = ClusterObject.getCenterAsVector2(this.props.dataset, edge.destination)
@@ -1017,7 +1026,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
     onClusterClicked(cluster: ICluster, shiftKey: boolean = false) {
-        this.props.setSelectedCluster([this.props.stories.active.clusters.indexOf(cluster)], shiftKey)
+        const activeStory = this.props.stories.stories[this.props.stories.active]
+        this.props.setSelectedCluster([activeStory.clusters.indexOf(cluster)], shiftKey)
     }
 
 
@@ -1066,6 +1076,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }
             }
         } catch (e) {
+            console.log(e)
         }
     }
 
@@ -1384,7 +1395,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
             <Menu
                 keepMounted
-                open={this.state.menuY !== null && this.state.menuTarget instanceof Cluster}
+                open={this.state.menuY !== null && isCluster(this.state.menuTarget)}
                 onClose={handleClose}
                 anchorReference="anchorPosition"
                 anchorPosition={
@@ -1401,22 +1412,29 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }}>{'Delete Group'}</MenuItem>
 
                 <MenuItem onClick={() => {
-                    let paths = this.props.stories.active.getAllStoriesFromSource(this.state.menuTarget.label)
+                    if (!isCluster(this.state.menuTarget)) {
+                        handleClose()
+                        return;
+                    }
+
+                    const activeStory = this.props.stories.stories[this.props.stories.active]
+
+                    let paths = activeStory.getAllStoriesFromSource(this.state.menuTarget.label)
 
 
 
                     if (paths.length > 0) {
-                        let mainPath = paths[0].map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                        let mainPath = paths[0].map(id => activeStory.clusters.find(e => e.label == id))
                         let mainEdges = mainPath.slice(1).map((item, index) => {
-                            return this.props.stories.active.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
+                            return activeStory.edges.find(edge => edge.source == mainPath[index] && edge.destination == item)
                         })
                         this.props.setActiveTrace({
                             mainPath: mainPath,
                             mainEdges: mainEdges,
                             sidePaths: paths.slice(1).map(ids => {
-                                let path = ids.map(id => this.props.stories.active.clusters.find(e => e.label == id))
+                                let path = ids.map(id => activeStory.clusters.find(e => e.label == id))
                                 let edges = path.slice(1).map((item, index) => {
-                                    return this.props.stories.active.edges.find(edge => edge.source == path[index] && edge.destination == item)
+                                    return activeStory.edges.find(edge => edge.source == path[index] && edge.destination == item)
                                 })
                                 return {
                                     nodes: path,
@@ -1431,8 +1449,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 }}>{"Stories ... Starting from this Group"}</MenuItem>
 
                 <MenuItem onClick={() => {
-                    this.traceSelect = new TraceSelectTool(this.state.menuTarget)
+                    if (!isCluster(this.state.menuTarget)) {
+                        handleClose()
+                        return;
+                    }
 
+                    this.traceSelect = new TraceSelectTool(this.props.dataset, this.state.menuTarget)
                     handleClose()
                 }}>{"Stories ... Between 2 Groups"}</MenuItem>
 

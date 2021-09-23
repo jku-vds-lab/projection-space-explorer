@@ -1,7 +1,7 @@
 import { Box, Button, FormControlLabel, Switch, Typography } from "@material-ui/core";
 import React = require("react");
 import { connect, ConnectedProps, useSelector } from "react-redux";
-import { setAggregationAction } from "../../Ducks/AggregationDuck";
+import { selectVectors } from "../../Ducks/AggregationDuck";
 import { setHoverWindowMode, WindowMode } from "../../Ducks/HoverSettingsDuck";
 import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClusters";
 import { RootState } from "../../Store/Store";
@@ -14,7 +14,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = dispatch => ({
     setHoverWindowMode: value => dispatch(setHoverWindowMode(value)),
-    setAggregation: value => dispatch(setAggregationAction(value))
+    setAggregation: value => dispatch(selectVectors(value))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

@@ -1,5 +1,5 @@
-import Cluster, { ICluster } from "../Utility/Data/Cluster";
-import { Vect } from "../Utility/Data/Vect";
+import { ICluster } from "../Utility/Data/Cluster";
+import { IVect } from "../Utility/Data/Vect";
 
 const SET = "ducks/hoverState/SET"
 
@@ -15,7 +15,7 @@ const initialState: HoverStateType = {
 }
 
 export type HoverStateType = {
-    data: Vect | ICluster,
+    data: IVect | ICluster,
     updater: String
 }
 

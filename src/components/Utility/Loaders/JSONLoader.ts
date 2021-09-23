@@ -2,15 +2,16 @@ import { Loader } from "./Loader";
 import * as hdf5 from 'jsfive';
 import { FeatureType } from "../Data/FeatureType";
 import { DatasetType } from "../Data/DatasetType";
-import { Vect } from "../Data/Vect";
+import { IVectUtil, IVect } from "../Data/Vect";
 import { InferCategory } from "../Data/InferCategory";
 import { Preprocessor } from "../Data/Preprocessor";
 import { Dataset } from "../Data/Dataset";
-import Cluster, { ICluster } from "../Data/Cluster";
+import { ClusterObject, ICluster } from "../Data/Cluster";
 import { Edge } from "../graphs";
+import { ObjectTypes } from "../Data/ObjectType";
 
 export class JSONLoader implements Loader {
-    vectors: Vect[]
+    vectors: IVect[]
     datasetType: DatasetType
 
     resolvePath(entry: any, finished: any) {
@@ -81,7 +82,7 @@ export class JSONLoader implements Loader {
             fileSamples.columns.forEach((column, ci) => {
                 data[column] = row[ci]
             })
-            this.vectors.push(new Vect(data))
+            this.vectors.push(IVectUtil.create(data))
         })
 
         var header = Object.keys(this.vectors[0])
@@ -149,20 +150,13 @@ export class JSONLoader implements Loader {
         content.clusters[0].data.forEach(row => {
             let nameIndex = content.clusters[0].columns.indexOf("name")
 
-            let points = []
-            row[1].forEach(i => {
-                points.push(this.vectors[i])
+            clusters.push({
+                objectType: ObjectTypes.Cluster,
+                label: row[0],
+                name: nameIndex >= 0 ? row[nameIndex] : undefined,
+                refactored: row[1],
+                bounds: null
             })
-            let cluster = new Cluster(points)
-
-            cluster.vectors = points
-            if (nameIndex >= 0) {
-                cluster.name = row[nameIndex]
-            }
-            
-            cluster.label = row[0]
-
-            clusters.push(cluster)
         })
 
         let edges = []

@@ -1,11 +1,11 @@
-import { Vect } from "../../Utility/Data/Vect";
+import { IVect } from "../../Utility/Data/Vect";
 import React = require("react")
 import { arraysEqual } from "../../WebGLView/UtilityFunctions";
 import { stringify } from "querystring";
 
 type RubikChangesProps = {
-    vectorsA: Array<Vect>
-    vectorsB: Array<Vect>
+    vectorsA: Array<IVect>
+    vectorsB: Array<IVect>
     width?: number
     height?: number
 }
@@ -162,7 +162,7 @@ function getProminent(aggregation, key) {
     return [opacity, col]
 }
 
-function getOccurences(vectors: Array<Vect>) {
+function getOccurences(vectors: Array<IVect>) {
     var aggregation = {}
     var keys = [
         "up00", "up01", "up02", "up10", "up11", "up12", "up20", "up21", "up22",

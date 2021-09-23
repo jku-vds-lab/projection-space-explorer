@@ -416,7 +416,6 @@ self.addEventListener('message', function (e) {
         context.tsne.initDataSeeded(e.data.input, e.data.params.seeded ? e.data.seed : undefined)
         context.tsne.step()
         context.postMessage(context.tsne.getSolution())
-        console.log(context.tsne.getSolution())
     } else if (context.tsne != null) {
         context.tsne.step()
         context.postMessage(context.tsne.getSolution())

@@ -74,8 +74,4 @@ export class API {
     createCluster(cluster) {
         this.store.dispatch(addClusterToStory(cluster))
     }
-
-    getClusters() {
-        return this.store.getState().stories.active.clusters
-    }
 }

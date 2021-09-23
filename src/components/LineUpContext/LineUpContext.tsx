@@ -3,7 +3,6 @@ import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../Store/Store";
 import * as LineUpJS from 'lineupjs'
 import './LineUpContext.scss';
-import { setAggregationAction } from "../Ducks/AggregationDuck";
 import { StringColumn, IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM, ICategoricalColumn, isCategoricalColumn, isCategoricalLikeColumn, CategoricalColumn } from "lineupjs";
 
 import * as backend_utils from "../../utils/backend-connect";
@@ -15,7 +14,8 @@ import * as _ from 'lodash';
 import BarCellRenderer from "./BarCellRenderer";
 import { DiscreteMapping } from "../Utility/Colors/Mapping";
 import { ShallowSet } from "../Utility/ShallowSet";
-import Cluster, { ClusterObject } from "../Utility/Data/Cluster";
+import { ClusterObject } from "../Utility/Data/Cluster";
+import { selectVectors } from "../Ducks/AggregationDuck";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -40,7 +40,7 @@ const mapStateToProps = (state: RootState) => ({
  * @param dispatch The generic dispatch function declared in redux
  */
 const mapDispatchToProps = dispatch => ({
-    setCurrentAggregation: samples => dispatch(setAggregationAction(samples)),
+    setCurrentAggregation: samples => dispatch(selectVectors(samples)),
     setLineUpInput_visibility: visibility => dispatch(setLineUpInput_visibility(visibility)),
     setLineUpInput_lineup: input => dispatch(setLineUpInput_lineup(input)),
 })

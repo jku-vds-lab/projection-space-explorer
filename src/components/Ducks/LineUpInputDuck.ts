@@ -3,7 +3,7 @@
  */
 
 import { filter } from "lodash";
-import { Vect } from "../Utility/Data/Vect";
+import { IVect } from "../Utility/Data/Vect";
 
 // const SET_DATA = "ducks/lineUpInput/SET_DATA"
 // const SET_COLUMNS = "ducks/lineUpInput/SET_COLUMNS"

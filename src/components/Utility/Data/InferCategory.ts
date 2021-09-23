@@ -2,7 +2,7 @@ import { requiredChessColumns } from "../../legends/ChessFingerprint/ChessFinger
 import { requiredRubikColumns } from "../../legends/RubikFingerprint/RubikFingerprint";
 import { PrebuiltFeatures } from "./Dataset";
 import { DatasetType } from "./DatasetType";
-import { Vect } from "./Vect";
+import { IVect } from "./Vect";
 
 /**
  * Object responsible for infering things from the data structure of a csv file.
@@ -11,7 +11,7 @@ import { Vect } from "./Vect";
  * - type of data file (rubik, story...)
  */
 export class InferCategory {
-    vectors: Vect[];
+    vectors: IVect[];
 
     constructor(vectors) {
         this.vectors = vectors;

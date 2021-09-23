@@ -1,8 +1,8 @@
 import { getSyncNodesAlt } from "../NumTs/NumTs";
-import Cluster, { ClusterObject, ICluster } from "../Utility/Data/Cluster";
+import { ClusterObject, ICluster } from "../Utility/Data/Cluster";
 import { Edge } from "../Utility/graphs";
 import { Storybook } from "../Utility/Data/Storybook";
-import { Vect } from "../Utility/Data/Vect";
+import { IVect } from "../Utility/Data/Vect";
 
 const ADD_STORY_BOOK = "ducks/stories/ADD"
 const DELETE = "ducks/stories/DELETE"
@@ -48,7 +48,7 @@ export function setActiveStory(activeStory: Storybook) {
     }
 }
 
-export function removeClusterFromStories(cluster: Cluster) {
+export function removeClusterFromStories(cluster: ICluster) {
     return {
         type: REMOVE_CLUSTER_FROM_STORIES,
         cluster: cluster
@@ -80,7 +80,7 @@ export const addClusterToTrace = cluster => ({
 })
 
 
-export function setActiveTraceState(cluster: Cluster) {
+export function setActiveTraceState(cluster: ICluster) {
     return {
         type: SET_ACTIVE_TRACE_STATE,
         cluster: cluster
@@ -94,7 +94,7 @@ export function selectSideBranch(i: number) {
     }
 }
 
-export function setVectors(vectors: Vect[]) {
+export function setVectors(vectors: IVect[]) {
     return {
         type: SET_VECTORS,
         vectors: vectors
@@ -109,12 +109,22 @@ const initialState = {
     activeTraceState: null
 }
 
+
+
+export class StoriesUtil {
+    static getActive(stories: StoriesType): Storybook {
+        return stories.stories[stories.active]
+    }
+}
+
+
+
 export type StoriesType = {
-    vectors: Vect[]
+    vectors: IVect[]
 
     stories: Storybook[]
 
-    active: Storybook
+    active: number
 
     trace: { mainPath: ICluster[], mainEdges: any[], sidePaths: { nodes: ICluster[], edges: Edge[], syncNodes: number[] }[] }
 
@@ -164,19 +174,20 @@ export default function stories(state: StoriesType = initialState, action): Stor
             let cluster = action.cluster
 
             // Add cluster to active story book
-            state.active.clusters.push(cluster)
+            const activeStorybook = StoriesUtil.getActive(state)
+            activeStorybook.clusters.push(cluster)
 
             // Add edge that connects the active trace state with the current cluster
             if (state.trace.mainPath.length > 0) {
                 let edge = new Edge(state.trace.mainPath[state.trace.mainPath.length - 1], cluster, null)
-                state.active.edges.push(edge)
+                activeStorybook.edges.push(edge)
                 state.trace.mainEdges.push(edge)
             }
 
             // Add cluster to current trace
             state.trace.mainPath.push(cluster)
 
-            ClusterObject.deriveVectorLabelsFromClusters(state.vectors, state.active.clusters)
+            ClusterObject.deriveVectorLabelsFromClusters(state.vectors, activeStorybook.clusters)
 
             return {
                 vectors: state.vectors,
@@ -196,8 +207,8 @@ export default function stories(state: StoriesType = initialState, action): Stor
             }
         }
         case SET:
-            if (state.active) {
-                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, state.active.clusters)
+            if (state.active !== null) {
+                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, StoriesUtil.getActive(state).clusters)
             }
 
             return {
@@ -248,12 +259,12 @@ export default function stories(state: StoriesType = initialState, action): Stor
 
             if (state && state.stories.length > 0) {
                 const newState = state.stories.slice(0)
-                newState.push(storyBook)
+                const i = newState.push(storyBook) - 1
 
                 return {
                     vectors: state.vectors,
                     stories: newState,
-                    active: storyBook,
+                    active: i,
                     trace: trace,
                     activeTraceState: activeTraceState
                 }
@@ -261,14 +272,14 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 return {
                     vectors: state.vectors,
                     stories: [storyBook],
-                    active: storyBook,
+                    active: 0,
                     trace: trace,
                     activeTraceState: activeTraceState
                 }
             }
         }
         case SET_ACTIVE_STORY_BOOK: {
-            let storyBook = action.activeStory as Storybook
+            let storyBook = state.stories[action.activeStory] as Storybook
 
             let trace = state.trace
             let activeTraceState = state.activeTraceState
@@ -332,7 +343,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             }
         }
         case ADD_EDGE_TO_ACTIVE: {
-            state.active.edges.push(action.edge)
+            StoriesUtil.getActive(state).edges.push(action.edge)
 
             return {
                 vectors: state.vectors,
@@ -345,7 +356,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
         case ADD_CLUSTER_TO_ACTIVE: {
             let cluster = action.cluster
 
-            state.active.clusters.push(cluster)
+            StoriesUtil.getActive(state).clusters.push(cluster)
 
             // Add cluster labels to samples
             // TODO: check if this is ok in a reducer
@@ -366,7 +377,8 @@ export default function stories(state: StoriesType = initialState, action): Stor
             }
         }
         case REMOVE_EDGE_FROM_ACTIVE: {
-            state.active.edges.splice(state.active.edges.indexOf(action.edge), 1)
+            const activeStorybook = StoriesUtil.getActive(state)
+            activeStorybook.edges.splice(activeStorybook.edges.indexOf(action.edge), 1)
 
             return { ... state }
         }

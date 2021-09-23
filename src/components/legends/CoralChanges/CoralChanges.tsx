@@ -15,7 +15,7 @@ import { ChiSquareTest } from './ChiSquare'
 import BarChanges from './VegaBarChanges.js';
 import Boxplot from './VegaBoxplot.js';
 import { Dataset } from '../../Utility/Data/Dataset';
-import { Vect } from '../../Utility/Data/Vect';
+import { IVect } from '../../Utility/Data/Vect';
 import { FeatureType } from '../../Utility/Data/FeatureType';
 import { setDifferenceThreshold } from "../../Ducks/DifferenceThresholdDuck";
 import { cloneDeep } from "../../Utility/CloneDeep";
@@ -416,8 +416,8 @@ type Props = PropsFromRedux & {
 
   width?: number
   height?: number
-  vectorsA: Array<Vect>
-  vectorsB: Array<Vect>
+  vectorsA: Array<IVect>
+  vectorsB: Array<IVect>
   dataset: Dataset
   scale: number
 }

@@ -18,7 +18,7 @@ import Paper from '@material-ui/core/Paper';
 import './coral.scss';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { FeatureType } from "../../Utility/Data/FeatureType";
-import { Vect } from "../../Utility/Data/Vect";
+import { IVect } from "../../Utility/Data/Vect";
 import { RootState } from '../../Store/Store.js';
 
 const useStyles = makeStyles({
@@ -268,7 +268,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
     aggregate: boolean
-    selection: Vect[]
+    selection: IVect[]
 }
 
 export var CoralLegend = connector(({ selection, aggregate, legendAttributes, dataset }: Props) => {

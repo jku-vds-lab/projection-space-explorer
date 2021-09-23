@@ -1,20 +1,18 @@
 import React = require("react")
-import { Avatar, Box, Button, Checkbox, FormControl, FormGroup, IconButton, InputAdornment, InputLabel, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Typography } from "@material-ui/core"
+import { Box, Button, Checkbox, FormControl, FormGroup, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Typography } from "@material-ui/core"
 import { connect, ConnectedProps } from 'react-redux'
-import Cluster, { ClusterObject } from "../../Utility/Data/Cluster"
+import { ClusterObject, ICluster } from "../../Utility/Data/Cluster"
 import { Storybook } from "../../Utility/Data/Storybook"
 import { graphLayout, Edge } from "../../Utility/graphs"
 import SettingsIcon from '@material-ui/icons/Settings';
 import SaveIcon from '@material-ui/icons/Save';
 import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
-import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories } from "../../Ducks/StoriesDuck"
+import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories, StoriesType } from "../../Ducks/StoriesDuck"
 import { RootState } from "../../Store/Store"
-import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { StoryPreview } from "./StoryPreview"
 import * as backend_utils from "../../../utils/backend-connect";
-import * as frontend_utils from "../../../utils/frontend-connect";
 import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
 import useCancellablePromise from "../../../utils/promise-helpers"
@@ -24,9 +22,8 @@ import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
-import { selectClusters, selectVectors } from "../../Ducks/AggregationDuck"
+import { selectClusters } from "../../Ducks/AggregationDuck"
 import { CategoryOptionsAPI } from "../../WebGLView/CategoryOptions"
-const d3 = require("d3")
 
 const mapStateToProps = (state: RootState) => ({
     stories: state.stories,
@@ -133,87 +130,31 @@ export const ClusteringTabPanel = connector(({
     }
 
     function toggleClusters() {
-        if (null == null) {
-            if (dataset.clusters && dataset.clusters.length > 0) {
-                let clusters = dataset.clusters
+        if (dataset.clusters && dataset.clusters.length > 0) {
+            let clusters = dataset.clusters
 
-                if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
-                    setClusterEdges(dataset.clusterEdges)
+            if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
+                setClusterEdges(dataset.clusterEdges)
 
-                    //let stories = storyLayout(dataset.clusterEdges)
+                //let stories = storyLayout(dataset.clusterEdges)
 
-                    //setStories(stories)
-                    setStories([new Storybook(dataset.clusters, dataset.clusterEdges)])
+                //setStories(stories)
+                setStories([new Storybook(dataset.clusters, dataset.clusterEdges)])
 
-                    //setActiveStory(stories[0])
-                } else {
-                    if (dataset.isSequential) {
-                        const [edges] = graphLayout(dataset, clusters)
-
-                        setClusterEdges(edges)
-
-                        if (edges.length > 0) {
-                            let stories = storyLayout(edges)
-
-                            setStories(stories)
-                            //setActiveStory(stories[0])
-                        }
-                    }
-                }
+                //setActiveStory(stories[0])
             } else {
-                let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js') //dist/
+                if (dataset.isSequential) {
+                    const [edges] = graphLayout(dataset, clusters)
 
-                worker.onmessage = (e) => {
-                    // Point clusteruing
-                    let clusters = []
-                    Object.keys(e.data).forEach(k => {
-                        console.log(e.data[k])
-                        let t = e.data[k]
-                        let f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
-                        f.label = k
-                        clusters.push(f)
-                    })
+                    setClusterEdges(edges)
 
-
-                    // Inject cluster attributes
-                    clusters.forEach(cluster => {
-                        let vecs = []
-                        cluster.points.forEach(point => {
-                            vecs.push(dataset.vectors[point.meshIndex])
-                        })
-                        cluster.vectors = vecs
-                        cluster.points = cluster.vectors
-                    })
-
-                    if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
-                        setClusterEdges(dataset.clusterEdges)
-
-                        let stories = storyLayout(dataset.clusterEdges)
+                    if (edges.length > 0) {
+                        let stories = storyLayout(edges)
 
                         setStories(stories)
-
-
                         //setActiveStory(stories[0])
-                    } else {
-                        if (dataset.isSequential) {
-                            const [edges] = graphLayout(dataset, clusters)
-
-                            setClusterEdges(edges)
-
-                            if (edges.length > 0) {
-                                let stories = storyLayout(edges)
-
-                                setStories(stories)
-                                //setActiveStory(stories[0])
-                            }
-                        }
                     }
                 }
-
-                worker.postMessage({
-                    type: 'extract',
-                    message: dataset.vectors.map(vector => [vector.x, vector.y, vector.groupLabel])
-                })
             }
         }
     }
@@ -228,7 +169,7 @@ export const ClusteringTabPanel = connector(({
                 const cluster_labels = data["result"];
                 const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
-                if(dist_cluster_labels.length <= 1){ //if there are no clusters found, return and give error message
+                if (dist_cluster_labels.length <= 1) { //if there are no clusters found, return and give error message
                     alert("No Cluster could be derived. Please, adjust the Clustering Cettings and try again.")
                     return;
                 }
@@ -237,7 +178,7 @@ export const ClusteringTabPanel = connector(({
                 let story = addClusterToCurrentStory && stories.active ? stories.active : new Storybook([], []);
                 // let clusters = []
 
-                
+
                 dist_cluster_labels.forEach(cluster_label => {
                     if (cluster_label >= 0) {
                         const current_cluster_vects = data_points.filter((x, i) => cluster_labels[i] == cluster_label);
@@ -251,6 +192,7 @@ export const ClusteringTabPanel = connector(({
                     }
                 });
 
+                console.log("HHHHH")
                 // if(!addClusterToCurrentStory){
                 addStory(story)
                 setActiveStory(story)
@@ -399,14 +341,14 @@ export const ClusteringTabPanel = connector(({
         </Box>
 
         <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
-            <Button variant="outlined" fullWidth ref={anchorRef} onClick={ () => setOpenClusterPanel(true) }>
+            <Button variant="outlined" fullWidth ref={anchorRef} onClick={() => setOpenClusterPanel(true)}>
                 Define Groups by Clustering <ChevronRightIcon></ChevronRightIcon>
             </Button>
         </Box>
         <Popover
             open={openClusterPanel}
             anchorEl={anchorRef.current}
-            onClose={ ()=> setOpenClusterPanel(false) }
+            onClose={() => setOpenClusterPanel(false)}
             anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'right',
@@ -419,12 +361,12 @@ export const ClusteringTabPanel = connector(({
             <Box paddingLeft={2} paddingTop={2} width={300}>
                 <Typography variant="subtitle2" gutterBottom>Clustering Settings</Typography>
             </Box>
-            
+
             <Box paddingLeft={2}>
                 <FormControlLabel
                     control={
                         <Switch
-                            color="primary" 
+                            color="primary"
                             checked={clusterAdvancedMode}
                             onChange={(event, newValue) => { setClusterAdvancedMode(newValue) }}
                             name="advancedClustering"
@@ -439,7 +381,7 @@ export const ClusteringTabPanel = connector(({
                         <FormControlLabel
                             control={
                                 <Switch
-                                    color="primary" 
+                                    color="primary"
                                     checked={clusterSelectionOnly}
                                     onChange={(event, newValue) => { setClusterSelectionOnly(newValue) }}
                                     name="selectionClustering"
@@ -452,7 +394,7 @@ export const ClusteringTabPanel = connector(({
                         <FormControlLabel
                             control={
                                 <Switch
-                                    color="primary" 
+                                    color="primary"
                                     checked={addClusterToCurrentStory}
                                     onChange={(event, newValue) => { setAddClusterToCurrentStory(newValue) }}
                                     name="addClusterToCurrentStory"
@@ -513,12 +455,12 @@ export const ClusteringTabPanel = connector(({
                         calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory);
                         setOpenClusterPanel(false);
                     }}>
-                        Run Clustering{/* Projection-based Clustering */}
-                    </Button>
+                    Run Clustering{/* Projection-based Clustering */}
+                </Button>
             </Box>
         </Popover>
 
-        
+
 
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Groups and Stories'}</Typography>
@@ -548,7 +490,7 @@ export const ClusteringTabPanel = connector(({
 type ClusterPopoverProps = {
     anchorEl: any
     setAnchorEl: any
-    cluster: Cluster
+    cluster: ICluster
     removeClusterFromStories: any
     // setLineUpInput_data: any
     updateLineUpInput_filter: any
@@ -614,9 +556,9 @@ function ClusterPopover({
         setLineUpInput_visibility(true)
         setLineUpInput_filter({ 'groupLabel': cluster.label });
         setSelectedCluster([cluster])
-        
+
         const curr_sizes = splitRef.current.split.getSizes();
-        if(curr_sizes[1] < 2){
+        if (curr_sizes[1] < 2) {
             splitRef.current.split.setSizes([curr_sizes[0], 70])
         }
     }
@@ -667,8 +609,8 @@ function ClusterPopover({
                             className={classes.button}
                             onClick={onSave}
                             startIcon={<SaveIcon />}
-                        >Save 
-                        {/* Name */}
+                        >Save
+                            {/* Name */}
                         </Button>
                         <Button
                             className={classes.button}
@@ -687,6 +629,21 @@ function ClusterPopover({
     </Popover>
 }
 
+
+type ClusterListProps = {
+    selectedClusters: number[]
+    stories: StoriesType
+    removeClusterFromStories
+    updateLineUpInput_filter
+    setLineUpInput_update
+    setLineUpInput_visibility
+    setLineUpInput_filter
+    splitRef
+    setSelectedCluster
+}
+
+
+
 function ClusterList({
     selectedClusters,
     stories,
@@ -698,14 +655,11 @@ function ClusterList({
     setLineUpInput_filter,
     splitRef,
     setSelectedCluster
-}) {
+}: ClusterListProps) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [popoverCluster, setPopoverCluster] = React.useState(null)
 
-    const handleClick = event => {
-        setAnchorEl(event.currentTarget);
-    };
-
+    const activeStory = stories.stories[stories.active]
 
     return <div>
         <ClusterPopover
@@ -723,8 +677,8 @@ function ClusterList({
         ></ClusterPopover>
 
         <List>
-            {stories.active?.clusters.map((cluster, key) => {
-                return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={(event) => {
+            {activeStory?.clusters.map((cluster, key) => {
+                return <ListItem key={key} button selected={selectedClusters.includes(key)} onClick={(event) => {
                     setSelectedCluster([key], event.ctrlKey)
                 }}>
                     <ListItemText

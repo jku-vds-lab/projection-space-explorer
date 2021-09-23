@@ -31,10 +31,6 @@ export default function dataset(state = initialState, action): Dataset {
     switch (action.type) {
         case SET:
             return action.dataset
-        // case SET_VECT:
-        //     console.log(action.input)
-        //     const dataset = {...state, vectors: action.input};
-        //     return dataset;
         default:
             return state
     }
