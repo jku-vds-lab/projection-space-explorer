@@ -8,7 +8,7 @@ import { StringColumn, NumbersColumn, NumberColumn, NumberMapColumn, IStringFilt
 
 import * as backend_utils from "../../utils/backend-connect";
 import { FeatureType } from "../Utility/Data/FeatureType";
-import { PrebuiltFeatures } from "../Utility/Data/Dataset";
+import { EXCLUDED_COLUMNS, PrebuiltFeatures } from "../Utility/Data/Dataset";
 import { setLineUpInput_lineup, setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 import * as _ from 'lodash';
@@ -81,7 +81,6 @@ function arrayEquals(a, b) {
 }
 
 
-const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "clusterProbability"];
 // let lineup = null;
 const UPDATER = "lineup";
 const UNIQUE_ID = "unique_ID";
@@ -150,8 +149,18 @@ export const LineUpContext = connector(function ({
                             }else{
                                 row[group_name] = {};
                                 row[group_name][var_name] = [element[i]];
+
+                            }
+
+                            // update column metaInformation
+                            if(Object.keys(columns).includes(group_name)){
+                                columns[group_name].metaInformation.globalMin = Math.min(columns[group_name].metaInformation.globalMin, element[i]);
+                                columns[group_name].metaInformation.globalMax = Math.max(columns[group_name].metaInformation.globalMax, element[i]);
+                            }else{
                                 columns[group_name] = col;
                                 columns[group_name].metaInformation.customLineChart = true;
+                                columns[group_name].metaInformation.globalMin = element[i];
+                                columns[group_name].metaInformation.globalMax = element[i];
                             }
                         }
                     }else{
@@ -228,7 +237,8 @@ export const LineUpContext = connector(function ({
 
         lineUpInput.lineup?.destroy();
         let lineup = null;
-        lineup = builder.build(lineup_ref.current);
+        lineup = builder.buildTaggle(lineup_ref.current);
+        console.log(lineup)
         if(dump){
             lineup.restore(dump);
         }
@@ -289,7 +299,16 @@ export const LineUpContext = connector(function ({
         });
 
         // update lineup when smiles_column width changes
-        if (smiles_structure_columns && smiles_structure_columns.length > 0) {
+        if (smiles_structure_columns.length > 0 || custom_chart_columns.length > 0) {
+            const custom_chart_cols = ranking.children.filter(x => custom_chart_columns.includes(x.label));
+            for (const i in custom_chart_cols) {
+                let custom_chart_col = custom_chart_cols[i];
+                custom_chart_col.on("widthChanged", (prev, current) => {
+                    lineup.update()
+                });
+            }
+
+
             const lineup_smiles_cols = ranking.children.filter(x => smiles_structure_columns.includes(x.label));
             for (const i in lineup_smiles_cols) {
                 let lineup_smiles_col = lineup_smiles_cols[i];
@@ -435,29 +454,36 @@ export const LineUpContext = connector(function ({
 })
 
 
-
+const WIDTH_HEIGHT_RATIO = 2;
 let smiles_structure_columns = [];
+let custom_chart_columns = [];
 function myDynamicHeight(data: IGroupItem[], ranking: Ranking): IDynamicHeight {
     if (smiles_structure_columns.length > 0) {
-        const cols = ranking.children.filter(x => smiles_structure_columns.includes(x.label));
+        const cols = ranking.children.filter(x => smiles_structure_columns.includes(x.label) || custom_chart_columns.includes(x.label));
+        
         if (!cols || cols.length == 0)
-            return null;
+            return { defaultHeight: 25, height:() => 25, padding: () => 0};
 
-        const col_widths = cols.map(x => x.getWidth());
-        const col_width = Math.max(Math.max(...col_widths), 25);//col.getWidth();
+        const col_heights = cols.map(x => { 
+            if(custom_chart_columns.includes(x.label))
+                return x.getWidth()/WIDTH_HEIGHT_RATIO; // for chart, the width should be bigger than the height
+            return x.getWidth(); // for images it is square
+        });
+        const col_height = Math.max(Math.max(...col_heights), 25);//col.getWidth();
 
         let height = function (item: IGroupItem | Readonly<IOrderedGroup>): number {
-            return col_width;
+            return col_height;
         }
         let padding = function (item: IGroupItem | Readonly<IOrderedGroup>): number {
             return 0;
         }
-        return { defaultHeight: col_width, height: height, padding: padding };
+        return { defaultHeight: col_height, height: height, padding: padding };
     }
     return { defaultHeight: 25, height:() => 25, padding: () => 0};
 }
 
-const base_color = undefined;
+// const base_color = undefined;
+const base_color = "#c1c1c1";
 // const base_color = "#1f77b4";
 function buildLineup(cols, data, pointColorScale, channelColor) {
     // console.log(channelColor) //TODO: update lineup colorscale, if sth changes; TODO: do this for all columns, not just groupLabel
@@ -486,7 +512,8 @@ function buildLineup(cols, data, pointColorScale, channelColor) {
                 builder.column(LineUpJS.buildStringColumn(i).width(50).custom("visible", show).color(base_color));
             } else if(col.metaInformation.customLineChart){
                 // builder.column(LineUpJS.buildNumberColumn(i).label(i).asMap().renderer("myLineChartRenderer", "myLineChartRenderer").width(50).build([]));
-                builder.column(LineUpJS.buildColumn("myLineChartColumn", i).label(i).renderer("myLineChartRenderer", "myLineChartRenderer").width(120).build([]));
+                builder.column(LineUpJS.buildColumn("myLineChartColumn", i).label(i).custom("min", col.metaInformation.globalMin).custom("max", col.metaInformation.globalMax).renderer("myLineChartRenderer", "myLineChartRenderer").width(150).build([]));
+                custom_chart_columns.push(i);
             } else if(i == PrebuiltFeatures.ClusterLabel){
                 const clust_col = LineUpJS.buildCategoricalColumn(i, groupLabel_cat_color).custom("visible", show).width(70) // .asSet(',')
                 builder.column(clust_col);
@@ -586,44 +613,77 @@ export class MyLineChartRenderer implements ICellRendererFactory {
         return mode === ERenderMode.CELL;
     }
 
+    
+
     create(col: TestColumn): ICellRenderer {
         return {
-            template: `<div class="svg-container"><svg class="svg-content" preserveAspectRatio="none meet"><g><g><circle class="focus-circle"></circle></g><g><text class="focus-text"></text></g><path class="lineChart" fill="none" stroke="steelblue" stroke-width="1%"></path><rect class="hover-rect"></rect></g></svg></div>`,
+            template: `<div class="svg-container"><svg class="svg-content" preserveAspectRatio="xMidYMid meet"><g><path class="areaChart"></path><path class="lineChart" fill="none" stroke="${base_color}" stroke-width="0.02px"></path><g><line class="focus-line"></line></g><g><text style="font-size:0.2px;" class="focus-text"></text></g><rect class="hover-rect"></rect></g></svg></div>`,
             update: (n: HTMLImageElement, d: IDataRow) => {
                 if (renderMissingDOM(n, col, d)) {
                     return;
                 }
 
                 var d3 = require('d3');
+                // get data
                 let row = col.getMap(d);
-                const data = row[0]["value"];
-                //@ts-ignore
-                const data_list = data.map(item => item); // cast to list
-                const data_max = d3.max(data_list, function(d) { return +d; })
+                const data_mean_list = row[0]["value"];
+                const data_var_list = row[1]["value"];
+                // const data_max = col.getMax();
+                const data_max = d3.max(data_mean_list, function(d) { return +d; })+1;
+                // const data_min = col.getMin();
+                const data_min = d3.min(data_mean_list, function(d) { return +d; })-1;
+
+                // this is the ratio that the chart should have
+                const rel_width = WIDTH_HEIGHT_RATIO; //data_mean_list.length/4;
+                const rel_height = 1;
 
                 var div = d3.select(n);
                 var svg = div.select("svg");
-                svg.attr("viewBox", `0 0 ${data_list.length - 1} 1`);
+                svg.attr("viewBox", `0 0 ${rel_width} ${rel_height}`);
 
-                console.log(n.height);
-                console.log(svg.style("width"))
+                // define x and y scales
+                var x = d3.scaleTime()
+                    .domain([0, data_mean_list.length])
+                    .range([ 0, rel_width ]);
 
+                var y = d3.scaleLinear()
+                    .domain([data_min, data_max])
+                    .range([ rel_height, 0 ]);
+
+
+                // Show confidence interval
+                svg.select(".areaChart")
+                    .datum(data_var_list)
+                    .attr("fill", "#c1c1c14d")
+                    .attr("stroke", "none")
+                    .attr("d", d3.area()
+                        .x(function(d, i) { return x(i) })
+                        .y0(function(d, i) { return y(data_mean_list[i] - d) })
+                        .y1(function(d, i) { return y(data_mean_list[i] + d) })
+                    )
+
+
+                // draw the line chart
                 var path = svg.select(".lineChart");
-
-                path.datum(data_list).attr("d", d3.line()
-                    .x(function(d, i) { return i })
-                    .y(function(d) { return (d)/(data_max) })
+                path.datum(data_mean_list).attr("d", d3.line()
+                    .x(function(d, i) { return x(i) }) // i/data_list.length
+                    .y(function(d) { return y(d) }) // 1-(d/data_max)
                 )
 
+                // add tooltips
                 // https://www.d3-graph-gallery.com/graph/line_cursor.html
                 // This allows to find the closest X index of the mouse:
-                var bisect = d3.bisector(function(d) { return d.x; }).left;
+                // var bisect = d3.bisector(function(d, i) { return i; }).left;
 
-                // Create the circle that travels along the curve of chart
-                var focus = svg.select(".focus-circle")
+                // Create the line that travels along the x-axis of chart
+                var focus = svg.select(".focus-line")
                     .style("fill", "none")
                     .attr("stroke", "black")
-                    .attr('r', 0.5)
+                    .attr('stroke-width', "1%")
+                    .attr("y1", "0")
+                    .attr("y2", rel_height)
+                    .attr("x1", "0")
+                    .attr("x2", "0")
                     .style("opacity", 0);
 
                 // Create the text that travels along the curve of chart
@@ -631,6 +691,7 @@ export class MyLineChartRenderer implements ICellRendererFactory {
                     .style("opacity", 0)
                     .attr("text-anchor", "left")
                     .attr("alignment-baseline", "middle")
+                    .attr("letter-spacing", "0px")
 
                 // Create a rect on top of the svg area: this rectangle recovers mouse position
                 svg.select(".hover-rect")
@@ -651,17 +712,27 @@ export class MyLineChartRenderer implements ICellRendererFactory {
 
                 function mousemove() {
                     // recover coordinate we need
-                    // var x0 = x.invert(d3.mouse(this)[0]);
                     var x0 = d3.mouse(this)[0];
-                    var i = bisect(data, x0, 1);
-                    let selectedData = data[i];
-                    focus
-                        .attr("cx", i)
-                        .attr("cy", selectedData);
+                    // var y0 = d3.mouse(this)[1];
+                    // var i = bisect(data, x0, 1);
+                    // var x0 = x.invert(d3.mouse(this)[0]);
+                    var i = Math.round(x.invert(x0)); // x0*data_list.length
+
+                    i = Math.max(i, 0);
+                    i = Math.min(data_mean_list.length-1, i);
+
+                    focus.attr("x1", x(i)) // i/data_list.length
+                        .attr("x2", x(i)); // i/data_list.length
+
+                    // // position the text in a way that it is always readable
+                    // if(x0 > rel_width/2){
+                    //     x0 = x0-rel_width/2;
+                    // }
                     focusText
-                        .html("x:" + i + "  -  " + "y:" + selectedData)
-                        .attr("x", i)
-                        .attr("y", selectedData);
+                        .html("<tspan x='0' dy='1.2em'>step: " + i + "</tspan><tspan x='0' dy='1.2em'>mean: " + Math.round(data_mean_list[i]*100)/100 + "</tspan><tspan x='0' dy='1.2em'>var: " + Math.round(data_var_list[i]*100)/100 + "</tspan>")
+                        .attr("x", 0) //x0
+                        .attr("y", 0); //y0
+                    
                 }
 
                 function mouseout() {

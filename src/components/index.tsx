@@ -81,6 +81,7 @@ import { HoverStateOrientation } from "./Ducks/HoverStateOrientationDuck";
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
+import { DatasetType } from "./Utility/Data/DatasetType";
 
 
 /**
@@ -144,7 +145,7 @@ const mapDispatchToProps = dispatch => ({
   setLineByOptions: options => dispatch(setLineByOptions(options)),
   setSplitRef: splitRef => dispatch(setSplitRef(splitRef)),
   setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
-  setGenericFingerprintAttriutes: value => dispatch(setGenericFingerprintAttributes(value)),
+  setGenericFingerprintAttributes: value => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value))
 })
 
@@ -212,7 +213,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
   componentDidMount() {
     const mangleURL = (url: string) => {
-      if (url.endsWith('csv') || url.endsWith('json') || url.endsWith('sdf')) {
+      if (url.endsWith('csv') || url.endsWith('json')) {
         return `datasets/${url}`
       }
 
@@ -241,7 +242,16 @@ var Application = connector(class extends React.Component<Props, any> {
         preselect = "datasets/chemvis/domain_5000_all_predictions.csv";
         loader = new CSVLoader();
       } else {
-        preselect = mangleURL(set)
+        if(set.endsWith("sdf")){
+          loader.resolvePath({
+            display: set,
+            path: set,
+            type: DatasetType.Chem,
+            uploaded: true
+          }, (dataset, json) => { this.onDataSelected(dataset, json) })
+          return;
+        }
+        preselect = mangleURL(set);
       }
       loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset, json) => { this.onDataSelected(dataset, json) })
     } else {
@@ -308,6 +318,7 @@ var Application = connector(class extends React.Component<Props, any> {
       this.props.setActiveStory(null)
       // this.props.setActiveStory(story) // TODO: should we set the new story active?
     }
+
   }
 
 
@@ -325,7 +336,7 @@ var Application = connector(class extends React.Component<Props, any> {
     this.props.setPathLengthMaximum(dataset.getMaxPathLength())
     this.props.setPathLengthRange([0, dataset.getMaxPathLength()])
     this.props.saveProjection(new Embedding(dataset.vectors, "Initial Projection"))
-    this.props.setGenericFingerprintAttriutes(dataset.getColumns(true).map(column => ({
+    this.props.setGenericFingerprintAttributes(dataset.getColumns(true).map(column => ({
       feature: column,
       show: dataset.columns[column].project
     })))

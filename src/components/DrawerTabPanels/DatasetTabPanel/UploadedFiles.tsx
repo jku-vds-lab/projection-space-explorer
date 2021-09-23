@@ -4,6 +4,7 @@ import { BiRefresh } from "react-icons/bi";
 import React = require("react")
 
 import * as backend_utils from '../../../utils/backend-connect';
+import * as frontend_utils from '../../../utils/frontend-connect';
 import { DatasetType } from "../../Utility/Data/DatasetType";
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
@@ -49,7 +50,8 @@ export const UploadedFiles = ({ onChange, refresh }) => {
         <Grid item style={{ overflowY: 'auto', flex: '1 1 auto', maxHeight: '400px' }}>
 
         <List subheader={<li />} style={{ backgroundColor: 'white' }}>
-            <ListSubheader>Uploaded Files <Button onClick={() => update_files()}><BiRefresh/></Button></ListSubheader>
+            {!frontend_utils.DEMO && <ListSubheader>Uploaded Files <Button onClick={() => update_files()}><BiRefresh/></Button></ListSubheader>}
+            {frontend_utils.DEMO && <ListSubheader>Select Dataset</ListSubheader>}
             {
             files.map(file_name => (
                 <ListItem style={{ maxWidth:'270px', }} key={file_name} button onClick={() => {
@@ -62,11 +64,11 @@ export const UploadedFiles = ({ onChange, refresh }) => {
                 }
                 }>
                     <ListItemText primary={file_name}></ListItemText>
-                    <ListItemSecondaryAction onClick={() => {handleDelete(file_name)}}>
+                    {!frontend_utils.DEMO && <ListItemSecondaryAction onClick={() => {handleDelete(file_name)}}>
                         <IconButton edge="end" aria-label="delete">
                             <DeleteIcon />
                         </IconButton>
-                    </ListItemSecondaryAction>
+                    </ListItemSecondaryAction>}
                 </ListItem>
             ))
             }
