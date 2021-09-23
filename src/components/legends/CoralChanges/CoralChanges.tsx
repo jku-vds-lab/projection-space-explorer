@@ -380,7 +380,11 @@ function genRows(vectorsA, vectorsB, legendAttributes, dataset) {
     var vis = getVis(valuesA, valuesB, type, key)
 
     // append to rows: key, most differing category, dif score, vis, difVal
-    rows.push([key, mostDifCat, difScore, vis, difVal])
+    if(dataset.columns[key]?.metaInformation.noLineUp){
+      //dont do anything, if column should not be shown
+    } else{
+      rows.push([key, mostDifCat, difScore, vis, difVal])
+    }
     
   });
 

@@ -68,6 +68,10 @@ import { PSEContextProvider } from "./Store/PSEContext";
 import { API } from "./Store/PluginScript";
 import { RootState } from "./Store/Store";
 import { IVect } from "./Utility/Data/Vect";
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import { DatasetType } from "./Utility/Data/DatasetType";
 
 
 /**
@@ -127,7 +131,7 @@ const mapDispatchToProps = dispatch => ({
   setVectors: vectors => dispatch(setVectors(vectors)),
   setLineByOptions: options => dispatch(setLineByOptions(options)),
   setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
-  setGenericFingerprintAttriutes: value => dispatch(setGenericFingerprintAttributes(value)),
+  setGenericFingerprintAttributes: value => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value))
 })
 
@@ -183,7 +187,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
   componentDidMount() {
     const mangleURL = (url: string) => {
-      if (url.endsWith('csv') || url.endsWith('json') || url.endsWith('sdf')) {
+      if (url.endsWith('csv') || url.endsWith('json')) {
         return `datasets/${url}`
       }
 
@@ -208,8 +212,20 @@ var Application = connector(class extends React.Component<Props, any> {
       } else if (set == "cime") {
         preselect = "test.sdf";
         loader = new SDFLoader();
+      } else if (set == "reaction") {
+        preselect = "datasets/chemvis/domain_5000_all_predictions.csv";
+        loader = new CSVLoader();
       } else {
-        preselect = mangleURL(set)
+        if(set.endsWith("sdf")){
+          loader.resolvePath({
+            display: set,
+            path: set,
+            type: DatasetType.Chem,
+            uploaded: true
+          }, (dataset) => { this.onDataSelected(dataset) })
+          return;
+        }
+        preselect = mangleURL(set);
       }
       loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
     } else {
@@ -262,6 +278,7 @@ var Application = connector(class extends React.Component<Props, any> {
       this.props.setActiveStory(null)
       // this.props.setActiveStory(story) // TODO: should we set the new story active?
     }
+
   }
 
 
@@ -280,7 +297,7 @@ var Application = connector(class extends React.Component<Props, any> {
     this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
     this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
     this.props.saveProjection(new Embedding(dataset.vectors, "Initial Projection"))
-    this.props.setGenericFingerprintAttriutes(DatasetUtil.getColumns(dataset, true).map(column => ({
+    this.props.setGenericFingerprintAttributes(DatasetUtil.getColumns(dataset, true).map(column => ({
       feature: column,
       show: dataset.columns[column].project
     })))
@@ -296,7 +313,7 @@ var Application = connector(class extends React.Component<Props, any> {
     this.props.setProjectionColumns(DatasetUtil.getColumns(dataset, true).map(column => ({
       name: column,
       checked: dataset.columns[column].project,
-      normalized: true,
+      normalized: true, //TODO: after benchmarking, reverse this to true,
       range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
       featureLabel: dataset.columns[column].featureLabel
     })))

@@ -208,6 +208,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                             props.webGLView.current.updateXY()
                             props.webGLView.current.repositionClusters()
                         }
+                        
 
                         setController(controller)
                         break;

@@ -20,10 +20,10 @@ export var PredefinedDatasets = ({ onChange }) => {
     return <Grid item style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
         <List subheader={<li />} style={{ backgroundColor: 'white' }}>
             {
-                types.map(type => (
-                    <li key={type} style={{ backgroundColor: 'inherit' }}>
+                types.map(type => {
+                    return <li key={type} style={{ backgroundColor: 'inherit' }}>
                         <ul style={{ backgroundColor: 'inherit', paddingInlineStart: '0px' }}>
-                            <ListSubheader>{Object.keys(DatasetType)[Object.values(DatasetType).indexOf(type)].replace('_', ' ')}</ListSubheader>
+                            <ListSubheader>{Object.keys(DatasetType)[Object.values(DatasetType).indexOf(type)].replaceAll('_', ' ')}</ListSubheader>
                             {
 
                                 database.data.filter(value => value.type == type).map(entry => {
@@ -38,7 +38,7 @@ export var PredefinedDatasets = ({ onChange }) => {
                             }
                         </ul>
                     </li>
-                ))
+                })
             }
 
         </List>

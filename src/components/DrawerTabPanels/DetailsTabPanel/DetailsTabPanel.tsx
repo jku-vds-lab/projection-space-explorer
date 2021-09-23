@@ -38,6 +38,7 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, h
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
 
+    
 
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
