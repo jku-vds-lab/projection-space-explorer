@@ -239,7 +239,7 @@ export class Dataset {
      * Returns the vectors in this dataset as a 2d array, which
      * can be used as input for tsne for example.
      */
-    asTensor(projectionColumns, samples?) {
+    asTensor(projectionColumns, samples?, oneHotEncode?:boolean) {
         var tensor = [];
 
         function oneHot(n, length) {
@@ -278,16 +278,50 @@ export class Dataset {
                         data.push(+vector[column]);
                     }
                 } else {
-                    // Not numeric data can be converted using one-hot encoding
-                    data = data.concat(oneHot(this.columns[column].distinct.indexOf(vector[column]), this.columns[column].distinct.length));
+                    if(oneHotEncode){ // Non numeric data can be converted using one-hot encoding
+                        let hot_encoded = oneHot(this.columns[column].distinct.indexOf(vector[column]), this.columns[column].distinct.length);
+                        data = data.concat(hot_encoded);
+                    }else{ // or just be integer encoded
+                        data.push(this.columns[column].distinct.indexOf(vector[column]));
+                    }
                 }
             });
             tensor.push(data);
         });
 
-        // console.log(this.columns)
+        
+        var featureTypes = [];
+        projectionColumns.forEach(entry => {
+            let column = entry.name;
+            switch(this.columns[column].featureType){
+                case FeatureType.Binary:
+                    featureTypes.push(FeatureType.Binary)
+                    break;
+                case FeatureType.Categorical:
+                    if(oneHotEncode){ // if the categorical attribute gets one hot encoded, we set all resulting columns to be binary
+                        featureTypes.concat(Array(this.columns[column].distinct.length).fill(FeatureType.Binary));
+                    }else{ // otherwise, it is declared as categorical column that contains integer because we can only handle integers in the distance metrics
+                        featureTypes.push(FeatureType.Categorical);
+                    }
+                    break;
+                case FeatureType.Date:
+                    // TODO: handle Date types
+                    break;
+                case FeatureType.Ordinal:
+                    // TODO: handle Ordinal types
+                    break;
+                case FeatureType.Quantitative:
+                    featureTypes.push(FeatureType.Quantitative)
+                    break;
+                case FeatureType.String:
+                    // TODO: handle String types
+                    break;
+                default:
+                    break;
+            }
+        });
 
-        return tensor;
+        return {tensor: tensor, featureTypes: featureTypes};
     }
 
     /**

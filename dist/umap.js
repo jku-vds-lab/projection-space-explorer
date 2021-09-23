@@ -12515,6 +12515,115 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./src/components/Utility/Distances/distance_functions.ts":
+/*!****************************************************************!*\
+  !*** ./src/components/Utility/Distances/distance_functions.ts ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.cosine = exports.manhattan = exports.euclidean = exports.jaccard = exports.gower = exports.get_distance_fn = void 0;
+
+function get_distance_fn(distanceMetric, e) {
+  switch (distanceMetric) {
+    case "euclidean":
+      return euclidean;
+
+    case "jaccard":
+      return jaccard;
+
+    case "manhattan":
+      return manhattan;
+
+    case "cosine":
+      return cosine;
+
+    case "gowers":
+      return gower(e.data.featureTypes);
+
+    default:
+      return euclidean;
+  }
+}
+
+exports.get_distance_fn = get_distance_fn; // for mixed datatypes
+
+function gower(featureTypes) {
+  return function (x, y) {
+    var result = 0;
+
+    for (var i = 0; i < x.length; i++) {
+      result += Math.abs(x[i] - y[i]);
+    }
+
+    return result;
+  };
+}
+
+exports.gower = gower; // https://github.com/ecto/jaccard TODO: also for tsne and other projection methods
+
+function jaccard(x, y) {
+  var jaccard_dist = __webpack_require__(/*! jaccard */ "./node_modules/jaccard/jaccard.js");
+
+  return jaccard_dist.index(x, y);
+}
+
+exports.jaccard = jaccard;
+
+function euclidean(x, y) {
+  var result = 0;
+
+  for (var i = 0; i < x.length; i++) {
+    result += Math.pow(x[i] - y[i], 2);
+  }
+
+  return Math.sqrt(result);
+}
+
+exports.euclidean = euclidean;
+
+function manhattan(x, y) {
+  var result = 0;
+
+  for (var i = 0; i < x.length; i++) {
+    result += Math.abs(x[i] - y[i]);
+  }
+
+  return result;
+}
+
+exports.manhattan = manhattan;
+
+function cosine(x, y) {
+  var result = 0.0;
+  var normX = 0.0;
+  var normY = 0.0;
+
+  for (var i = 0; i < x.length; i++) {
+    result += x[i] * y[i];
+    normX += Math.pow(x[i], 2);
+    normY += Math.pow(y[i], 2);
+  }
+
+  if (normX === 0 && normY === 0) {
+    return 0;
+  } else if (normX === 0 || normY === 0) {
+    return 1.0;
+  } else {
+    return 1.0 - result / Math.sqrt(normX * normY);
+  }
+}
+
+exports.cosine = cosine;
+
+/***/ }),
+
 /***/ "./src/components/Utility/UMAP/heap.ts":
 /*!*********************************************!*\
   !*** ./src/components/Utility/UMAP/heap.ts ***!
@@ -14178,7 +14287,7 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.initTransform = exports.resetLocalConnectivity = exports.fastIntersection = exports.findABParams = exports.cosine = exports.euclidean = exports.jaccard = exports.UMAP = void 0;
+exports.initTransform = exports.resetLocalConnectivity = exports.fastIntersection = exports.findABParams = exports.UMAP = void 0;
 /**
  * This is a JavaScript reimplementation of UMAP (original license below), from
  * the python implementation found at https://github.com/lmcinnes/umap.
@@ -14231,6 +14340,8 @@ var utils = __webpack_require__(/*! ./utils */ "./src/components/Utility/UMAP/ut
 
 var ml_levenberg_marquardt_1 = __webpack_require__(/*! ml-levenberg-marquardt */ "./node_modules/ml-levenberg-marquardt/src/index.js");
 
+var distance_functions_1 = __webpack_require__(/*! ../Distances/distance_functions */ "./src/components/Utility/Distances/distance_functions.ts");
+
 var SMOOTH_K_TOLERANCE = 1e-5;
 var MIN_K_DIST_SCALE = 1e-3;
 /**
@@ -14280,7 +14391,7 @@ var UMAP = /*#__PURE__*/function () {
     ;
     this.targetWeight = 0.5;
     this.targetNNeighbors = this.nNeighbors;
-    this.distanceFn = euclidean;
+    this.distanceFn = distance_functions_1.euclidean;
     this.isInitialized = false;
     this.rpForest = []; // Projected embedding
 
@@ -15206,49 +15317,7 @@ var UMAP = /*#__PURE__*/function () {
   return UMAP;
 }();
 
-exports.UMAP = UMAP; // https://github.com/ecto/jaccard TODO: also for tsne and other projection methods
-
-function jaccard(x, y) {
-  var jaccard_dist = __webpack_require__(/*! jaccard */ "./node_modules/jaccard/jaccard.js");
-
-  return jaccard_dist.index(x, y);
-}
-
-exports.jaccard = jaccard;
-
-function euclidean(x, y) {
-  var result = 0;
-
-  for (var i = 0; i < x.length; i++) {
-    result += Math.pow(x[i] - y[i], 2);
-  }
-
-  return Math.sqrt(result);
-}
-
-exports.euclidean = euclidean;
-
-function cosine(x, y) {
-  var result = 0.0;
-  var normX = 0.0;
-  var normY = 0.0;
-
-  for (var i = 0; i < x.length; i++) {
-    result += x[i] * y[i];
-    normX += Math.pow(x[i], 2);
-    normY += Math.pow(y[i], 2);
-  }
-
-  if (normX === 0 && normY === 0) {
-    return 0;
-  } else if (normX === 0 || normY === 0) {
-    return 1.0;
-  } else {
-    return 1.0 - result / Math.sqrt(normX * normY);
-  }
-}
-
-exports.cosine = cosine;
+exports.UMAP = UMAP;
 /**
  * An interface representing the optimization state tracked between steps of
  * the SGD optimization
@@ -15702,7 +15771,7 @@ var UMAP_1 = __webpack_require__(/*! ../../Utility/UMAP */ "./src/components/Uti
 
 __webpack_require__(/*! regenerator-runtime/runtime */ "./node_modules/regenerator-runtime/runtime.js");
 
-var umap_1 = __webpack_require__(/*! ../../Utility/UMAP/umap */ "./src/components/Utility/UMAP/umap.ts");
+var distance_functions_1 = __webpack_require__(/*! ../../Utility/Distances/distance_functions */ "./src/components/Utility/Distances/distance_functions.ts");
 /**
  * Worker thread that computes a stepwise projection
  */
@@ -15715,7 +15784,7 @@ self.addEventListener('message', function (e) {
     context.raw = e.data;
     context.umap = new UMAP_1.UMAP({
       nNeighbors: e.data.params.nNeighbors,
-      distanceFn: e.data.params.distanceMetric == 'euclidean' ? umap_1.euclidean : umap_1.jaccard
+      distanceFn: distance_functions_1.get_distance_fn(e.data.params.distanceMetric, e)
     });
     context.umap.initializeFit(e.data.input, e.data.params.seeded ? e.data.seed : undefined);
     context.umap.step();

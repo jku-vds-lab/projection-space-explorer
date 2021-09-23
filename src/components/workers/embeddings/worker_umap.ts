@@ -1,6 +1,6 @@
 import { UMAP } from '../../Utility/UMAP';
 import "regenerator-runtime/runtime";
-import { euclidean, jaccard } from '../../Utility/UMAP/umap';
+import { euclidean, get_distance_fn, jaccard } from '../../Utility/Distances/distance_functions';
 
 /**
  * Worker thread that computes a stepwise projection
@@ -11,7 +11,7 @@ self.addEventListener('message', function (e) {
         context.raw = e.data
         context.umap = new UMAP({
             nNeighbors: e.data.params.nNeighbors,
-            distanceFn: e.data.params.distanceMetric == 'euclidean' ? euclidean : jaccard
+            distanceFn: get_distance_fn(e.data.params.distanceMetric, e)
         })
         context.umap.initializeFit(e.data.input, e.data.params.seeded ? e.data.seed : undefined)
         context.umap.step()

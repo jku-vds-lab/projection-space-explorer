@@ -63,6 +63,7 @@ import * as nnDescent from './nn_descent';
 import * as tree from './tree';
 import * as utils from './utils';
 import LM from 'ml-levenberg-marquardt';
+import { euclidean } from '../Distances/distance_functions';
 
 export type DistanceFn = (x: Vector, y: Vector) => number;
 export type RandomFn = () => number;
@@ -1095,39 +1096,7 @@ export class UMAP {
   }
 }
 
-// https://github.com/ecto/jaccard TODO: also for tsne and other projection methods
-export function jaccard(x: Vector, y: Vector){
-  var jaccard_dist = require('jaccard');
-  return jaccard_dist.index(x, y);
-}
 
-export function euclidean(x: Vector, y: Vector) {
-  let result = 0;
-  for (let i = 0; i < x.length; i++) {
-    result += (x[i] - y[i]) ** 2;
-  }
-  return Math.sqrt(result);
-}
-
-export function cosine(x: Vector, y: Vector) {
-  let result = 0.0;
-  let normX = 0.0;
-  let normY = 0.0;
-
-  for (let i = 0; i < x.length; i++) {
-    result += x[i] * y[i];
-    normX += x[i] ** 2;
-    normY += y[i] ** 2;
-  }
-
-  if (normX === 0 && normY === 0) {
-    return 0;
-  } else if (normX === 0 || normY === 0) {
-    return 1.0;
-  } else {
-    return 1.0 - result / Math.sqrt(normX * normY);
-  }
-}
 
 /**
  * An interface representing the optimization state tracked between steps of
