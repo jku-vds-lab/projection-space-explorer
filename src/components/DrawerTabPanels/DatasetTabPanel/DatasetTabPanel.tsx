@@ -58,18 +58,19 @@ export function DatasetTabPanel({ onDataSelected }) {
 
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box paddingLeft={2} paddingTop={2}>
+        {!(frontend_utils.DEMO && frontend_utils.CHEM_PROJECT) && <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Custom Datasets (Drag and Drop)'}</Typography>
-        </Box>
-
+        </Box>}
+        {!(frontend_utils.DEMO && frontend_utils.CHEM_PROJECT) && 
         <DatasetDrop onChange={(var1, var2) => {
                 onDataSelected(var1, var2);
                 setRefreshUploadedFiles(refreshUploadedFiles + 1);
-            }} cancellablePromise={cancellablePromise} abort_controller={abort_controller}></DatasetDrop>
+            }} cancellablePromise={cancellablePromise} abort_controller={abort_controller}></DatasetDrop>}
 
+        {!(frontend_utils.DEMO && frontend_utils.CHEM_PROJECT) && 
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Predefined Datasets'}</Typography>
-        </Box>
+        </Box>}
         {predefined}
 
         {/* <UploadedFiles onChange={(entry)=>{

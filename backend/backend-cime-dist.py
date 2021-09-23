@@ -372,21 +372,7 @@ def get_mcs(mol_list):
     
     return patt
 
-def smiles_to_base64(smiles, highlight=False):
-#    filename = request.session.get("unique_filename", None)
-#    if filename and highlight:
-#        df = sdf_to_df(filename)
-#        mol = pickle.loads(df.set_index(smiles_col).loc[smiles][mol_col])
-#        weights = [mol.GetAtomWithIdx(i).GetDoubleProp("rep_1") for i in range(mol.GetNumAtoms())]
-#        
-#        fig = SimilarityMaps.GetSimilarityMapFromWeights(mol, weights)
-#        
-#        buffered = BytesIO()
-#        fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6, 6]]))
-#        img_str = base64.b64encode(buffered.getvalue())
-#        buffered.close()
-#        return img_str.decode("utf-8")
-#    else:
+def smiles_to_base64(smiles):
     m = Chem.MolFromSmiles(smiles)
     if m:
         return mol_to_base64(m)
@@ -525,22 +511,14 @@ def smiles_to_difference_highlight():
         return {}
 
 @bottle.route('/get_mol_img', method=['OPTIONS', 'POST'])
-def smiles_to_img_post(highlight=False):
+def smiles_to_img_post():
     if request.method == 'POST':
         smiles = request.forms.get("smiles")
-        img = smiles_to_base64(smiles, False)
+        img = smiles_to_base64(smiles)
         return {"data": img}
     else:
         return {}
         
-@bottle.route('/get_mol_img/highlight', method=['OPTIONS', 'POST'])
-def smiles_to_img_post_highlight():
-    if request.method == 'POST':
-        smiles = request.forms.get("smiles")
-        return smiles_to_base64(smiles, True)
-    else:
-        return {}
-
 
 @bottle.route('/get_mol_imgs', method=['OPTIONS', 'POST'])
 def smiles_list_to_imgs():

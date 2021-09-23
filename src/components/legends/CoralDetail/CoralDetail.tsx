@@ -173,14 +173,13 @@ function genRows(vectors, aggregation, legendAttributes, dataset) {
     return []
   }
   
-  if(!aggregation){ // if it shows the hover state, we don't need to generate all rows because we can't scroll anyway
-    return []
-  }
+  // if(!aggregation){ // TODO: if it shows the hover state, we don't need to generate all rows because we can't scroll anyway
+  //   return []
+  // }
 
   const rows = []
   const dictOfArrays = dictionary(vectors)
   const preselect = getProjectionColumns(legendAttributes)
-
 
   // loop through dict
   for (var key in dictOfArrays) {

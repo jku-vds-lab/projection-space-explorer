@@ -8,7 +8,7 @@ import { StringColumn, NumbersColumn, NumberColumn, NumberMapColumn, IStringFilt
 
 import * as backend_utils from "../../utils/backend-connect";
 import { FeatureType } from "../Utility/Data/FeatureType";
-import { PrebuiltFeatures } from "../Utility/Data/Dataset";
+import { EXCLUDED_COLUMNS, PrebuiltFeatures } from "../Utility/Data/Dataset";
 import { setLineUpInput_lineup, setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 import * as _ from 'lodash';
@@ -81,7 +81,6 @@ function arrayEquals(a, b) {
 }
 
 
-const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "clusterProbability"];
 // let lineup = null;
 const UPDATER = "lineup";
 const UNIQUE_ID = "unique_ID";

@@ -92,7 +92,10 @@ typings/
 
 # temp files
 /backend/temp-files
+/backend/session_data
 
 # large dataset
 /datasets/chemvis
 /dist/datasets/chemvis
+/datasets/reaction_optimization
+/dist/datasets/reaction_optimization
