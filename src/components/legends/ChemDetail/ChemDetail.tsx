@@ -509,7 +509,7 @@ const ImageView = connector_Img(function ({chemRef, id, hoverState, selection, c
             //@ts-ignore
             let imgList = imgContainer.childNodes;
             if(hoverState && hoverState.data){
-                const idx = selection.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["view"]["meshIndex"] == hoverState.data["__meta__"]["view"]["meshIndex"])
+                const idx = selection.findIndex((x) => x && x["__meta__"] && hoverState.data["__meta__"] && x["__meta__"]["meshIndex"] == hoverState.data["__meta__"]["meshIndex"])
                 if(idx >= 0 && imgList.length > 0){
                     for (const i in imgList) {
                         const img_div = imgList[i];

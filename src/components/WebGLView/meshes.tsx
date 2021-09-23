@@ -99,7 +99,7 @@ export class LineVisualization {
   highlightMeshes
 
   grayedLayerSystem: LayeringSystem
-  
+
   pathLengthRange: any
 
   constructor(segments, lineColorScheme) {
@@ -166,7 +166,7 @@ export class LineVisualization {
     if (stories && stories.active) {
       this.grayedLayerSystem.clearLayer(3, true)
 
-      
+
 
       let lineIndices = new Set<number>()
       stories.stories[stories.active].clusters.forEach(cluster => {
@@ -372,7 +372,7 @@ export class PointVisualization {
 
   pathLengthRange: any
 
-  constructor(vectorColorScheme, dataset, size, lineLayerSystem: LayeringSystem, segments) {
+  constructor(vectorColorScheme, dataset: Dataset, size, lineLayerSystem: LayeringSystem, segments) {
     this.highlightIndex = null
     this.particleSize = size
     this.vectorColorScheme = vectorColorScheme
@@ -397,10 +397,12 @@ export class PointVisualization {
     this.lineLayerSystem = lineLayerSystem
 
 
-
     this.vectorSegmentLookup = new Array(this.dataset.vectors.length)
-    for (const [i, v] of this.dataset.vectors.entries()) {
-      this.vectorSegmentLookup[i] = segments.find(seg => seg.lineKey === v.line)
+    if (dataset.isSequential) {
+
+      for (const [i, v] of this.dataset.vectors.entries()) {
+        this.vectorSegmentLookup[i] = segments.find(seg => seg.lineKey === v.line)
+      }
     }
   }
 
@@ -694,7 +696,7 @@ export class PointVisualization {
               } else {
                 vector.__meta__.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
               }
-             
+
             })
           })
         } else {
@@ -714,7 +716,7 @@ export class PointVisualization {
             } else {
               vector.__meta__.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
             }
-            
+
           })
         }
       }
