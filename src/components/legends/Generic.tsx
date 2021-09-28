@@ -15,12 +15,12 @@ type GenericLegendProps = {
     type: DatasetType
     vectors: IVect[]
     aggregate: boolean
-    hoverUpdate?
     scale?: number
 }
 
 //shows single and aggregated view
-export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: GenericLegendProps) => {
+export var GenericLegend = ({ type, vectors, aggregate, scale=2}: GenericLegendProps) => {
+
     switch (type) {
         case DatasetType.Story:
             return <StoryLegend selection={vectors}></StoryLegend>
@@ -37,7 +37,7 @@ export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: G
         case DatasetType.Go:
             return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
         case DatasetType.Chem:
-            return <ChemLegendParent selection={vectors} aggregate={aggregate} hoverUpdate={hoverUpdate}></ChemLegendParent>
+            return <ChemLegendParent selection={vectors} aggregate={aggregate}></ChemLegendParent>
         default:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
     }

@@ -3,10 +3,8 @@ import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../Store/Store";
 import * as LineUpJS from 'lineupjs'
 import './LineUpContext.scss';
-import { NumbersColumn, NumberColumn, NumberMapColumn, IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM, ICategoricalColumn, isCategoricalColumn, isCategoricalLikeColumn, CategoricalColumn, StringColumn } from "lineupjs";
-
+import { IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, renderMissingDOM, StringColumn } from "lineupjs";
 import * as backend_utils from "../../utils/backend-connect";
-import { FeatureType } from "../Utility/Data/FeatureType";
 import { EXCLUDED_COLUMNS, PrebuiltFeatures } from "../Utility/Data/Dataset";
 import { setLineUpInput_lineup, setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
@@ -14,11 +12,10 @@ import * as _ from 'lodash';
 import { ClusterObject } from "../Utility/Data/Cluster";
 import { selectVectors } from "../Ducks/AggregationDuck";
 import { ShallowSet } from "../Utility/ShallowSet";
-import { ISequence } from "lineupjs/build/src/internal";
-import NumbersMapColumn from "./LineUpClasses/NumbersMapColumn";
 import { TestColumn } from "./LineUpClasses/TestColumn";
 import { DiscreteMapping } from "../Utility/Colors/Mapping";
 import { StoriesUtil } from "../Ducks/StoriesDuck";
+import { setHoverState } from "../Ducks/HoverStateDuck";
 
 /**
  * Declares a function which maps application state to component properties (by name)
@@ -44,9 +41,10 @@ const mapStateToProps = (state: RootState) => ({
  * @param dispatch The generic dispatch function declared in redux
  */
 const mapDispatchToProps = dispatch => ({
-    setCurrentAggregation: samples => dispatch(selectVectors(samples)),
+    setCurrentAggregation: (samples: number[]) => dispatch(selectVectors(samples)),
     setLineUpInput_visibility: visibility => dispatch(setLineUpInput_visibility(visibility)),
     setLineUpInput_lineup: input => dispatch(setLineUpInput_lineup(input)),
+    setHoverstate: (state, updater) => dispatch(setHoverState(state, updater))
 })
 
 
@@ -71,7 +69,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 // }
 
 type Props = PropsFromRedux & {
-    onFilter, hoverUpdate
+    onFilter
 }
 
 function arrayEquals(a, b) {
@@ -101,7 +99,8 @@ export const LineUpContext = connector(function ({
     onFilter, 
     activeStory, 
     pointColorScale,
-    hoverUpdate }: Props) {
+    setHoverstate
+     }: Props) {
     // In case we have no input, dont render at all
     if (!lineUpInput || !lineUpInput_data || !lineUpInput.show) {
         //splitRef?.current?.setSizes([100, 0])
@@ -110,11 +109,11 @@ export const LineUpContext = connector(function ({
     let lineup_ref = React.useRef();
     
 
-    const debouncedHighlight = React.useCallback(_.debounce(hover_item => hoverUpdate(hover_item, UPDATER), 200), []);
+    const debouncedHighlight = React.useCallback(_.debounce(hover_item => setHoverstate(hover_item, UPDATER), 200), []);
 
     const preprocess_lineup_data = (data) => {
         if(activeStory)
-            ClusterObject.deriveVectorLabelsFromClusters(data, activeStory.clusters)
+            ClusterObject.deriveVectorLabelsFromClusters(data, Object.values(activeStory.clusters.byId))
         let lineup_data = [];
         let columns = {};
         data.forEach(element => {
@@ -282,9 +281,9 @@ export const LineUpContext = connector(function ({
             const currentSelection_scatter = lineUpInput_data.map((x,i) => {if(x.__meta__.selected) return i;}).filter(x => x !== undefined);
             
             if(!arrayEquals(currentSelection_lineup, currentSelection_scatter)){ // need to check, if the current lineup selection is already the current aggregation
-                let agg = [];
+                let agg = new Array<number>();
                 currentSelection_lineup.forEach(index => {
-                    agg.push(lineUpInput_data[index]);
+                    agg.push(lineUpInput_data[index].__meta__.meshIndex);
                 })
 
                 setCurrentAggregation(agg);
@@ -341,7 +340,7 @@ export const LineUpContext = connector(function ({
 
         setLineUpInput_lineup(lineup);
 
-    }, [lineUpInput_data, lineUpInput_columns, activeStory, activeStory?.clusters, activeStory?.clusters?.length, lineUpInput.update]);
+    }, [lineUpInput_data, lineUpInput_columns, activeStory, activeStory?.clusters, activeStory?.clusters?.allIds.length, lineUpInput.update]);
 
     // React.useEffect(() => { //TODO: not working...
     //     // update lineup, if current storybook (current cluster) changed

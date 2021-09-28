@@ -67,7 +67,7 @@ export const StoryPreview = connector(({
                             button
                             {...{ value: key }}
                         >
-                            <ListItemText primary={"Story Book"} secondary={`${story.clusters.length} nodes`} />
+                            <ListItemText primary={"Story Book"} secondary={`${Object.keys(story.clusters.byId).length} nodes`} />
                             <ListItemSecondaryAction>
                                 <IconButton edge="end" aria-label="delete" onClick={() => {
                                     deleteHandler(story)

@@ -16,7 +16,6 @@ import projectionParams from "../Ducks/ProjectionParamsDuck";
 import checkedShapes from "../Ducks/CheckedShapesDuck";
 import projectionWorker from "../Ducks/ProjectionWorkerDuck";
 import vectorByShape from "../Ducks/VectorByShapeDuck";
-import clusterEdges from "../Ducks/ClusterEdgesDuck";
 import selectedVectorByShape from "../Ducks/SelectedVectorByShapeDuck";
 import pathLengthRange from '../Ducks/PathLengthRange';
 import categoryOptions from '../Ducks/CategoryOptionsDuck';
@@ -43,7 +42,6 @@ const allReducers = {
   currentAggregation: currentAggregation,
   stories: stories,
   openTab: openTab,
-  clusterEdges: clusterEdges,
   selectedVectorByShape: selectedVectorByShape,
   vectorByShape: vectorByShape,
   checkedShapes: checkedShapes,

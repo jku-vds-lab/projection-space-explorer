@@ -12,7 +12,7 @@ import { NamedCategoricalScales } from "../../Utility/Colors/NamedCategoricalSca
 import { TrailVisualization } from "./TrailVisualization";
 import { Typography } from "@material-ui/core";
 import { CameraTransformations } from "../CameraTransformations";
-import { Storybook } from "../../Utility/Data/Storybook";
+import { IStory } from "../../Utility/Data/Storybook";
 import * as nt from '../../NumTs/NumTs'
 const d3 = require("d3")
 import * as frontend_utils from "../../../utils/frontend-connect";
@@ -20,6 +20,7 @@ import { toPlainObject } from "lodash";
 import { GroupVisualizationMode } from "../../Ducks/GroupVisualizationMode";
 import { SchemeColor } from "../../Utility/Colors/SchemeColor";
 import { ScaleUtil } from "../../Utility/Colors/ContinuosScale";
+import { StoriesUtil } from "../../Ducks/StoriesDuck";
 
 
 const SELECTED_COLOR = 0x007dad
@@ -33,7 +34,7 @@ const CLUSTER_PIXEL_SIZE = 12
 
 
 type ClusterObjectType = {
-    cluster: number,
+    cluster: string,
     geometry: THREE.Geometry,
     material: THREE.MeshBasicMaterial,
     mesh: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>,
@@ -127,7 +128,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             if (this.props.stories.active !== null) {
                 const activeStory = this.props.stories.stories[this.props.stories.active]
 
-                if (activeStory.clusters.length > 0) {
+                if (activeStory.clusters.allIds.length > 0) {
                     this.create()
                     this.createTriangulatedMesh()
                 }
@@ -168,6 +169,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
             if (this.props.currentAggregation.source == 'sample') {
+                console.log(this.props.currentAggregation)
                 this.highlightSamples(this.props.currentAggregation.aggregation.map(i => this.props.dataset.vectors[i]))
             }
 
@@ -195,51 +197,55 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         let index = 0
         const activeStory = this.props.stories.stories[this.props.stories.active]
-        activeStory?.edges.forEach(edge => {
-            let color = new THREE.Color(DEFAULT_COLOR)
-            if (this.props.stories.trace && this.props.stories.trace.mainEdges.includes(edge)) {
-                color = new THREE.Color(SELECTED_COLOR)
+        if (activeStory) {
+            for (const [key, edge] of Object.entries(activeStory.edges.byId)) {
+                let color = new THREE.Color(DEFAULT_COLOR)
+                if (this.props.stories.trace && this.props.stories.trace.mainEdges.includes(key)) {
+                    color = new THREE.Color(SELECTED_COLOR)
+                }
+    
+                const sourceCenter = ClusterObject.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.source))
+                const destCenter = ClusterObject.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.destination))
+                let start = new THREE.Vector2(sourceCenter.x, sourceCenter.y)
+                let end = new THREE.Vector2(destCenter.x, destCenter.y)
+                let middle = new THREE.Vector2().addVectors(start, new THREE.Vector2().subVectors(end, start).multiplyScalar(0.5))
+    
+                let dir = end.clone().sub(start).normalize()
+                let markerOffset = start.clone().sub(end).normalize().multiplyScalar(24)
+                let left = new Vector2(-dir.y, dir.x).multiplyScalar(LINE_WIDTH)
+                let right = new Vector2(dir.y, -dir.x).multiplyScalar(LINE_WIDTH)
+                let offset = dir.clone().multiplyScalar(this.devicePixelRatio * CLUSTER_PIXEL_SIZE)
+    
+                // line without arrow
+                arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + left.x + offset.x, start.y * zoom + left.y + offset.y, 0))
+                arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + right.x + offset.x, start.y * zoom + right.y + offset.y, 0))
+                arrowGeometry.vertices.push(new THREE.Vector3(end.x * zoom + left.x - offset.x, end.y * zoom + left.y - offset.y, 0))
+                arrowGeometry.vertices.push(new THREE.Vector3(end.x * zoom + right.x - offset.x, end.y * zoom + right.y - offset.y, 0))
+    
+                // left wing
+                arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x - offset.x, middle.y * zoom + left.y - offset.y, 0))
+                arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x + offset.x, middle.y * zoom + left.y + offset.y, 0))
+                arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x * WING_SIZE - offset.x, middle.y * zoom + left.y * WING_SIZE - offset.y, 0))
+    
+                // Right wing
+                arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x - offset.x, middle.y * zoom + right.y - offset.y, 0))
+                arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x + offset.x, middle.y * zoom + right.y + offset.y, 0))
+                arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x * WING_SIZE - offset.x, middle.y * zoom + right.y * WING_SIZE - offset.y, 0))
+    
+                let i = index * 10
+                // line without arrow
+                arrowGeometry.faces.push(new THREE.Face3(i, i + 1, i + 2, new Vector3(0, 0, -1), color))
+                arrowGeometry.faces.push(new THREE.Face3(i + 1, i + 3, i + 2, new Vector3(0, 0, -1), color))
+    
+                // left wing
+                arrowGeometry.faces.push(new THREE.Face3(i + 4, i + 6, i + 5, new Vector3(0, 0, -1), color))
+    
+                // Right wing
+                arrowGeometry.faces.push(new THREE.Face3(i + 7, i + 9, i + 8, new Vector3(0, 0, -1), color))
+    
+                index = index + 1
             }
-
-            let start = new THREE.Vector2(ClusterObject.getCenter(this.props.dataset, edge.source).x, ClusterObject.getCenter(this.props.dataset, edge.source).y)
-            let end = new THREE.Vector2(ClusterObject.getCenter(this.props.dataset, edge.destination).x, ClusterObject.getCenter(this.props.dataset, edge.destination).y)
-            let middle = new THREE.Vector2().addVectors(start, new THREE.Vector2().subVectors(end, start).multiplyScalar(0.5))
-
-            let dir = end.clone().sub(start).normalize()
-            let markerOffset = start.clone().sub(end).normalize().multiplyScalar(24)
-            let left = new Vector2(-dir.y, dir.x).multiplyScalar(LINE_WIDTH)
-            let right = new Vector2(dir.y, -dir.x).multiplyScalar(LINE_WIDTH)
-            let offset = dir.clone().multiplyScalar(this.devicePixelRatio * CLUSTER_PIXEL_SIZE)
-
-            // line without arrow
-            arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + left.x + offset.x, start.y * zoom + left.y + offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + right.x + offset.x, start.y * zoom + right.y + offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(end.x * zoom + left.x - offset.x, end.y * zoom + left.y - offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(end.x * zoom + right.x - offset.x, end.y * zoom + right.y - offset.y, 0))
-
-            // left wing
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x - offset.x, middle.y * zoom + left.y - offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x + offset.x, middle.y * zoom + left.y + offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x * WING_SIZE - offset.x, middle.y * zoom + left.y * WING_SIZE - offset.y, 0))
-
-            // Right wing
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x - offset.x, middle.y * zoom + right.y - offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x + offset.x, middle.y * zoom + right.y + offset.y, 0))
-            arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x * WING_SIZE - offset.x, middle.y * zoom + right.y * WING_SIZE - offset.y, 0))
-
-            let i = index * 10
-            // line without arrow
-            arrowGeometry.faces.push(new THREE.Face3(i, i + 1, i + 2, new Vector3(0, 0, -1), color))
-            arrowGeometry.faces.push(new THREE.Face3(i + 1, i + 3, i + 2, new Vector3(0, 0, -1), color))
-
-            // left wing
-            arrowGeometry.faces.push(new THREE.Face3(i + 4, i + 6, i + 5, new Vector3(0, 0, -1), color))
-
-            // Right wing
-            arrowGeometry.faces.push(new THREE.Face3(i + 7, i + 9, i + 8, new Vector3(0, 0, -1), color))
-
-            index = index + 1
-        })
+        }
 
         this.arrowMesh.geometry = arrowGeometry
     }
@@ -257,7 +263,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     iterateTrail(zoom) {
         const activeStory = this.props.stories.stories[this.props.stories.active]
         this.clusterObjects.forEach(clusterObject => {
-            let center = ClusterObject.getCenter(this.props.dataset, activeStory.clusters[clusterObject.cluster])
+            let center = ClusterObject.getCenter(this.props.dataset, activeStory.clusters.byId[clusterObject.cluster])
 
             let last = clusterObject.trailPositions[clusterObject.trailPositions.length - 1]
             if (!last || new THREE.Vector3(center.x, center.y, 0).distanceTo(last) > 0.1) {
@@ -291,7 +297,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         const activeStory = this.props.stories.stories[this.props.stories.active]
         this.clusterObjects.forEach(clusterObject => {
             let cluster = clusterObject.cluster
-            let center = ClusterObject.getCenter(this.props.dataset, activeStory.clusters[cluster])
+            let center = ClusterObject.getCenter(this.props.dataset, activeStory.clusters.byId[cluster])
             let mesh = clusterObject.mesh
 
             mesh.position.set(center.x * zoom, center.y * zoom, -0.5)
@@ -329,7 +335,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             return new THREE.Color(SELECTED_COLOR)
         }
         const activeStory = this.props.stories.stories[this.props.stories.active]
-        if (activeStory?.clusters?.includes(activeStory.clusters[clusterObject.cluster])) {
+        if (activeStory?.clusters?.allIds.includes(clusterObject.cluster)) {
             return new THREE.Color(DEFAULT_COLOR)
         } else {
             return new THREE.Color(GRAYED)
@@ -355,8 +361,11 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         let scale = NamedCategoricalScales.DARK2()
 
+
         const activeStory = this.props.stories.stories[this.props.stories.active]
-        activeStory.clusters.forEach((cluster, ci) => {
+        let scaleI = 0
+
+        for (const [ci, cluster] of Object.entries(activeStory.clusters.byId)) {
 
             // Add circle to scene
             var geometry = new THREE.PlaneGeometry(this.devicePixelRatio * CLUSTER_PIXEL_SIZE, this.devicePixelRatio * CLUSTER_PIXEL_SIZE);
@@ -384,7 +393,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 mesh: circle,
                 children: [],
                 trailPositions: [],
-                lineColor: ScaleUtil.mapScale(scale, ci),//for paper used: new SchemeColor(DEFAULT_COLOR),
+                lineColor: ScaleUtil.mapScale(scale, scaleI),//for paper used: new SchemeColor(DEFAULT_COLOR),
                 triangulatedMesh: {
 
                 },
@@ -402,7 +411,9 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     visible: false
                 })
             })
-        })
+
+            scaleI = scaleI + 1
+        }
     }
 
     // Activates the lines from given samples to their corresponding clusters
@@ -418,7 +429,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
         samples.forEach(sample => {
             sample.groupLabel.forEach(label => {
-                let clusterObject = this.clusterObjects.find(e => activeStory.clusters[e.cluster].label == label)
+                let clusterObject = this.clusterObjects.find(e => activeStory.clusters.byId[e.cluster].label == label)
 
                 if (clusterObject && this.props.groupVisualizationMode == GroupVisualizationMode.StarVisualization) {
                     clusterObject.sampleConnection = true
@@ -454,7 +465,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     }
 
 
-    highlightCluster(indices?: number[]) {
+    highlightCluster(indices?: string[]) {
         this.clusterObjects.forEach((clusterObject, index) => {
             var visible = indices?.includes(clusterObject.cluster) // for paper used: true
 
@@ -516,7 +527,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         if (this.props.stories.active !== null) {
             const activeStory = this.props.stories.stories[this.props.stories.active]
 
-            activeStory.clusters.map(cluster => {
+            for (const [ci, cluster] of Object.entries(activeStory.clusters.byId)) {
                 const bounds = ClusterObject.calcBounds(this.props.dataset, cluster.refactored)
 
                 let xAxis = d3.scaleLinear()
@@ -536,7 +547,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     .size([100, bounds.width == 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])
                     (cluster.refactored.map(i => this.props.dataset.vectors[i]).map(vect => ({ x: vect.x, y: vect.y })))
 
-                let clusterObject = this.clusterObjects.find(e => activeStory.clusters[e.cluster].label == cluster.label)
+                let clusterObject = this.clusterObjects.find(e => activeStory.clusters.byId[e.cluster].label == cluster.label)
 
                 let material = new THREE.LineBasicMaterial({ color: clusterObject.lineColor.hex })
 
@@ -560,7 +571,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
                 lineMeshes.push(line)
                 clusterMeshes.push(line)
-            })
+            }
         }
 
         this.clusterVis = { clusterMeshes: clusterMeshes, lineMeshes: lineMeshes }
@@ -594,12 +605,16 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     /**
      * Creates textual representations of the edges of the story.
      */
-    createStreetLabels(story?: Storybook) {
+    createStreetLabels(story?: IStory) {
+        if (!story) {
+            return []
+        }
+
         let labels = []
 
-        story?.edges.filter(edge => edge.name && edge.name != "").map(edge => {
-            let source = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, edge.source), this.props.viewTransform)
-            let dest = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, edge.destination), this.props.viewTransform)
+        Object.values(story.edges.byId).filter(edge => edge.name && edge.name != "").map(edge => {
+            let source = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.source)), this.props.viewTransform)
+            let dest = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.destination)), this.props.viewTransform)
 
             let angle = new nt.VectBase(dest.x - source.x, dest.y - source.y).angle()
             if (angle > Math.PI * 0.5 && angle < Math.PI * 1.5) {
@@ -650,7 +665,9 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             {
                 this.props.stories.trace && this.props.stories.trace.mainPath.map((cluster, index) => {
-                    let screen = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, cluster), this.props.viewTransform)
+                    let clusterInstance = StoriesUtil.retrieveCluster(this.props.stories, cluster)
+
+                    let screen = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, clusterInstance), this.props.viewTransform)
 
                     return <Typography style={{
                         textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',
@@ -662,7 +679,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                         fontWeight: "bold",
                         transform: 'translate(-50%, -50%)',
                         pointerEvents: 'none'
-                    }}>{cluster.label}</Typography>
+                    }}>{clusterInstance.label}</Typography>
                 })
             }
         </div>

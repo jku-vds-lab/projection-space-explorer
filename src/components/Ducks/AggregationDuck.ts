@@ -1,3 +1,4 @@
+import { result } from "lodash";
 import { AnyAction } from "redux";
 import { ThunkAction } from "redux-thunk";
 import { RootState } from "../Store/Store";
@@ -16,7 +17,7 @@ export const selectVectors = (selection: number[], shiftKey: boolean = false) =>
     return (dispatch, getState): ThunkAction<any, RootState, unknown, AnyAction> => {
         const state: RootState = getState()
 
-        const clusters = StoriesUtil.getActive(state.stories)?.clusters ?? []
+        const clusters = StoriesUtil.getActive(state.stories)?.clusters.byId
 
         let newSelection = []
 
@@ -44,7 +45,7 @@ export const selectVectors = (selection: number[], shiftKey: boolean = false) =>
     }
 }
 
-export const selectClusters = (selection: number[], shiftKey: boolean = false) => {
+export const selectClusters = (selection: string[], shiftKey: boolean = false) => {
     return (dispatch, getState): ThunkAction<any, RootState, unknown, AnyAction> => {
         const state: RootState = getState()
 
@@ -53,7 +54,7 @@ export const selectClusters = (selection: number[], shiftKey: boolean = false) =
         let newSelection = []
 
         if (shiftKey) {
-            const selectionSet = new Set(state.currentAggregation.selectedClusters)
+            const selectionSet = new Set<string>(state.currentAggregation.selectedClusters)
 
             selection.forEach(index => {
                 if (selectionSet.has(index)) {
@@ -72,7 +73,7 @@ export const selectClusters = (selection: number[], shiftKey: boolean = false) =
         return dispatch({
             type: THUNK_SET_CLUSTERS,
             clusterSelection: newSelection,
-            vectorSelection: deriveFromClusters(newSelection.map(i => StoriesUtil.getActive(state.stories).clusters[i]))
+            vectorSelection: deriveFromClusters(newSelection.map(i => StoriesUtil.getActive(state.stories).clusters.byId[i]))
         })
     }
 }
@@ -83,7 +84,11 @@ function deriveFromClusters(clusters: ICluster[]): number[] {
     return [...new Set(agg)]
 }
 
-function deriveFromSamples(samples: IVect[], clusters: ICluster[]): number[] {
+function deriveFromSamples(samples: IVect[], clusters: { [id: string]: ICluster }): number[] {
+    if (!clusters) {
+        return []
+    }
+
     let labels = new Set()
 
     samples.forEach(sample => {
@@ -93,15 +98,20 @@ function deriveFromSamples(samples: IVect[], clusters: ICluster[]): number[] {
     })
 
     let arr = Array.from(labels)
+    const result = []
 
-    return clusters.filter(cluster => {
-        return arr.includes(cluster.label)
-    }).map(c => clusters.indexOf(c))
+    for (const [key, cluster] of Object.entries(clusters)) {
+        if (arr.includes(cluster.label)) {
+            result.push(key)
+        }
+    }
+
+    return result
 }
 
 const initialState = {
     aggregation: [] as number[],
-    selectedClusters: [] as number[],
+    selectedClusters: [] as string[],
     source: 'sample' as ('sample' | 'cluster')
 }
 
@@ -116,6 +126,7 @@ const currentAggregation = (state = initialState, action): typeof initialState =
             }
         }
         case THUNK_SET_CLUSTERS: {
+
             return {
                 aggregation: action.vectorSelection,
                 selectedClusters: action.clusterSelection,

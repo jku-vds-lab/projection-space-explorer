@@ -19,6 +19,7 @@ import { WindowMode } from '../../Ducks/HoverSettingsDuck';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { setChannelColor } from '../../Ducks/ChannelColorDuck';
 import { selectVectors } from '../../Ducks/AggregationDuck';
+import { setHoverState } from '../../Ducks/HoverStateDuck';
 
 
 /**
@@ -32,7 +33,8 @@ import { selectVectors } from '../../Ducks/AggregationDuck';
     columns: state.dataset?.columns,
 })
 const mapDispatchToProps_Chem = dispatch => ({
-    setCurrentAggregation: samples => dispatch(selectVectors(samples, false))
+    setCurrentAggregation: (samples: number[]) => dispatch(selectVectors(samples, false)),
+    setHoverstate: (state, updater) => dispatch(setHoverState(state, updater))
 })
 const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
 
@@ -44,8 +46,7 @@ const connector_Chem = connect(mapStateToProps_Chem, mapDispatchToProps_Chem);
 
  type Props_Chem_Parent = PropsFromRedux_Chem & {
      selection: any, 
-     aggregate: boolean, 
-     hoverUpdate?: any,
+     aggregate: boolean,
      mcs_only?: boolean,
      diff?: boolean,
      selection_ref?: any,
@@ -63,7 +64,6 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
 
         React.useEffect(() => {
             cancelPromises();
-
             
             if(smiles_col in props.columns){
                 const controller = new AbortController();
@@ -190,7 +190,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                     <div style={{width:(props.rdkitSettings.width+20)*chemComponents.length}}>
                         {chemComponents.map((x, i) => {
                             return <div key={x} style={{width: (props.rdkitSettings.width+20), float:'left'}}>
-                                <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, x)} currentRep={chemComponentsCurrentRep[i]} removeComponent={() => removeComponent(x)} id={x} rep_list={repList} selection={props.selection} aggregate={props.aggregate} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                                <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, x)} currentRep={chemComponentsCurrentRep[i]} removeComponent={() => removeComponent(x)} id={x} rep_list={repList} selection={props.selection} aggregate={props.aggregate}></ChemLegend>
                             </div>
                         })}
                     </div>
@@ -198,7 +198,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
                 {chemComponents.length <= 1 &&
                     <div>
                         <div style={{minWidth: props.rdkitSettings.width}} key={chemComponents[0]}>
-                            <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, chemComponents[0])} currentRep={chemComponentsCurrentRep[0]} id={chemComponents[0]} rep_list={repList} selection={props.selection} aggregate={props.aggregate} hoverUpdate={props.hoverUpdate}></ChemLegend>
+                            <ChemLegend chemRef={chemRef} setCurrentRep={(value)=>setCurrentRep(value, chemComponents[0])} currentRep={chemComponentsCurrentRep[0]} id={chemComponents[0]} rep_list={repList} selection={props.selection} aggregate={props.aggregate}></ChemLegend>
                         </div>
                     </div>
                 }
@@ -206,7 +206,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
             
         </Box>;
     }else{
-        return <ChemLegend id={-1} rep_list={repList} selection={props.selection} aggregate={props.aggregate} hoverUpdate={props.hoverUpdate}></ChemLegend>
+        return <ChemLegend id={-1} rep_list={repList} selection={props.selection} aggregate={props.aggregate}></ChemLegend>
     }
 
 });
@@ -214,8 +214,7 @@ export const ChemLegendParent = connector_Chem(function (props: Props_Chem_Paren
 type Props_Chem = PropsFromRedux_Chem & {
     selection: any, 
     columns: any, 
-    aggregate: boolean, 
-    hoverUpdate,
+    aggregate: boolean,
     rep_list: string[],
     id: any,
     removeComponent?: any,
@@ -242,12 +241,12 @@ const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {che
             if(i >= 0){
                 hover_item = this.props.selection[i];
             }
-            this.props.hoverUpdate(hover_item, UPDATER);
+            this.props.setHoverstate(hover_item, UPDATER);
         };
 
         const handleMouseOut = () => {
             let hover_item = null;
-            this.props.hoverUpdate(hover_item, UPDATER);
+            this.props.setHoverstate(hover_item, UPDATER);
         };
 
         const setCheckedList = (value) => {
@@ -259,7 +258,7 @@ const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {che
             const filter_instances = this.props.selection.filter((x, i) => this.state.checkedList[i]);
             if(filter_instances.length > 0){
                 setCheckedList([]);
-                this.props.setCurrentAggregation(filter_instances);
+                this.props.setCurrentAggregation(filter_instances.map(e => e.__meta__.meshIndex));
             }else{
                 alert("Please, select at least one Compound in the Summary View to filter.")
             }
@@ -532,7 +531,7 @@ const ImageView = connector_Img(function ({chemRef, id, hoverState, selection, c
                 }
             }
         }
-    }, [hoverState]);
+    }, [hoverState.data, hoverState.updater]);
 
 
 

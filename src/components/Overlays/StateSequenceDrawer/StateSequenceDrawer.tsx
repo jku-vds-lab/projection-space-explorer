@@ -308,7 +308,7 @@ const StateSequenceDrawer = ({
                                             display: 'flex'
                                         }}
                                     >
-                                        <GenericLegend aggregate={false} type={dataset.type} vectors={[vector]} hoverUpdate={null} scale={1}></GenericLegend>
+                                        <GenericLegend aggregate={false} type={dataset.type} vectors={[vector]} scale={1}></GenericLegend>
                                     </div>
                                 </div>
                             })

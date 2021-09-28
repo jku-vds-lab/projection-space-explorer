@@ -5,65 +5,42 @@
 import { ICluster, TypedObject } from "./Data/Cluster"
 import { Dataset } from "./Data/Dataset"
 import { ObjectTypes } from "./Data/ObjectType"
-import { IVect } from "./Data/Vect"
+import { IStory } from "./Data/Storybook"
 
-
-/**
- * Graph class which holds the nodes and edges of the graph.
- */
-export class Graph {
-    nodes: any
-    edges: any
-
-    constructor(nodes, edges) {
-        this.nodes = nodes
-        this.edges = edges
-    }
-}
-
-/**
- * Node class holding the vectors that are in this node.
- */
-export class Node {
-    vectors: IVect[]
-
-    constructor(vectors) {
-        this.vectors = vectors
-    }
-}
 
 /**
  * Edge class that is a connection between 2 nodes.
  */
-export class Edge implements TypedObject {
-    source: ICluster
-    destination: ICluster
-    bundle: number[]
-    name: string
-
-    constructor(source, destination, bundle) {
-        this.source = source
-        this.destination = destination
-        this.bundle = bundle
-        this.objectType = ObjectTypes.Edge
-    }
+export interface Edge extends TypedObject {
+    source: string
+    destination: string
+    bundle?: number[]
+    name?: string
     objectType: string
 }
 
 
 
+
+export function isEdge(value: TypedObject): value is Edge {
+    return value && value.objectType === ObjectTypes.Edge
+}
+
+
 /**
- * Performs the graphing algorithm.
- * @param {*} clusters 
- * @param {*} vectors 
+ * Performs a basic path bundling algorithm and tries to extract
+ * the most prominent edges between clusters.
+ * 
+ * @param {Dataset} dataset the current dataset
+ * @param {ICluster[]} clusters a list of clusters to perform the edge extraction
  */
 export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
     var edges: Edge[] = []
 
     // For each cluster,
-    Object.keys(clusters).forEach(srcKey => {
+    clusters.forEach((_, srcKey) => {
         var srcCluster = clusters[srcKey] as ICluster
-        Object.keys(clusters).forEach(dstKey => {
+        clusters.forEach((_, dstKey) => {
             var dstCluster = clusters[dstKey] as ICluster
             if (dstCluster != srcCluster) {
                 var bundle = []
@@ -76,7 +53,13 @@ export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
                 })
 
                 if (bundle.length > 10) {
-                    var edge = new Edge(srcCluster, dstCluster, [...new Set(bundle)])
+                    const edge: Edge = {
+                        objectType: ObjectTypes.Edge,
+                        source: srcKey.toString(),
+                        destination: dstKey.toString(),
+                        bundle: [...new Set(bundle)],
+                        name: null
+                    }
                     edges.push(edge)
                 }
             }
@@ -85,4 +68,97 @@ export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
     })
 
     return [edges]
+}
+
+
+
+export function storyLayout(clusterInstances: ICluster[], edges: Edge[]): IStory[] {
+    const stories: IStory[] = []
+    const copy = edges.slice(0)
+
+    while (copy.length > 0) {
+        const toProcess = [copy.splice(0, 1)[0]]
+
+        const clusterSet = new Set<ICluster>()
+        const edgeSet = new Set<Edge>()
+
+
+
+        while (toProcess.length > 0) {
+            var edge = toProcess.splice(0, 1)[0]
+            do {
+                clusterSet.add(clusterInstances[edge.source])
+                clusterSet.add(clusterInstances[edge.destination])
+
+                edgeSet.add(edge)
+
+                var idx = copy.findIndex(value => value.destination == edge.source || value.source == edge.destination)
+                if (idx >= 0) {
+                    var removed = copy.splice(idx, 1)[0]
+                    clusterSet.add(clusterInstances[removed.source])
+                    clusterSet.add(clusterInstances[removed.destination])
+                    
+                    edgeSet.add(removed)
+                    toProcess.push(removed)
+                }
+            } while (idx >= 0)
+        }
+
+        const clusterResult = [...clusterSet];
+        const edgeResult: Edge[] = ([...edgeSet]).map(edge => {
+            return {
+                source: clusterResult.indexOf(clusterInstances[edge.source]).toString(),
+                destination: clusterResult.indexOf(clusterInstances[edge.destination]).toString(),
+                objectType: ObjectTypes.Edge,
+                bundle: edge.bundle
+            }
+        })
+
+        const story = transformIndicesToHandles(clusterResult, edgeResult)
+
+        stories.push(story)
+    }
+
+    return stories
+}
+
+
+
+export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult: Edge[]) {
+    const story: IStory = {
+        clusters: {
+            byId: {},
+            allIds: []
+        },
+        edges: {
+            byId: {},
+            allIds: []
+        }
+    }
+
+    clusterResult.forEach((cluster, clusterIndex) => {
+        const handle = clusterIndex.toString()
+
+        story.clusters.byId[handle] = cluster
+
+        edgeResult.forEach(edge => {
+            if (edge.source === clusterIndex.toString()) {
+                edge.source = handle
+            }
+            if (edge.destination === clusterIndex.toString()) {
+                edge.destination = handle
+            }
+        })
+    })
+
+    edgeResult.forEach((edge, i) => {
+        const handle = i
+
+        story.edges.byId[handle] = edge
+    })
+
+    story.clusters.allIds = Object.keys(story.clusters.byId)
+    story.edges.allIds = Object.keys(story.edges.byId)
+
+    return story
 }

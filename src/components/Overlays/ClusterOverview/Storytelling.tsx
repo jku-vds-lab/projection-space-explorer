@@ -8,7 +8,7 @@ import { DatasetType } from "../../Utility/Data/DatasetType";
 import { Dataset } from "../../Utility/Data/Dataset";
 import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
 import { RootState } from "../../Store/Store";
-import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType } from "../../Ducks/StoriesDuck";
+import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType, StoriesUtil } from "../../Ducks/StoriesDuck";
 import { DifferenceThresholdSlider } from '../../legends/CoralChanges/DifferenceThresholdSlider';
 import CloseIcon from '@material-ui/icons/Close';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
@@ -17,6 +17,7 @@ import SkipNextIcon from '@material-ui/icons/SkipNext';
 import StopIcon from '@material-ui/icons/Stop';
 import { ResizeObserver } from 'resize-observer';
 import { selectClusters } from "../../Ducks/AggregationDuck";
+import { Edge } from "../../Utility/graphs";
 
 
 const mainColor = '#007dad'
@@ -30,10 +31,10 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatch = dispatch => ({
     addClusterToTrace: cluster => dispatch(addClusterToTrace(cluster)),
-    setActiveTraceState: cluster => dispatch(setActiveTraceState(cluster)),
-    selectSideBranch: index => dispatch(selectSideBranch(index)),
-    setActiveTrace: trace => dispatch(setActiveTrace(trace)),
-    setSelectedCluster: (cluster, shift) => dispatch(selectClusters(cluster, shift))
+    setActiveTraceState: (cluster: string) => dispatch(setActiveTraceState(cluster)),
+    selectSideBranch: (index: number) => dispatch(selectSideBranch(index)),
+    setActiveTrace: (trace: number) => dispatch(setActiveTrace(trace)),
+    setSelectedCluster: (clusters: string[], shift) => dispatch(selectClusters(clusters, shift))
 })
 
 const connector = connect(mapStateToProps, mapDispatch);
@@ -291,7 +292,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
 type InputType = {
     stories: StoriesType,
-    position: { y: number, height: number, textY: number, mainEdge: any }[],
+    position: { y: number, height: number, textY: number, mainEdge: string }[],
     elementHeight: number
     firstDiv: number
 }
@@ -375,7 +376,7 @@ export const Storytelling = connector(function ({
     React.useEffect(() => {
         if (stories.trace && stories.trace.mainPath.length > 0) {
             setActiveTraceState(stories.trace.mainPath[0])
-            setSelectedCluster(stories.trace.mainPath[0], false)
+            setSelectedCluster([stories.trace.mainPath[0]], false)
         }
     }, [stories.trace])
 
@@ -409,17 +410,17 @@ export const Storytelling = connector(function ({
                 <IconButton aria-label="previous" onClick={() => {
                     if (stories.activeTraceState) {
                         let i = stories.trace.mainPath.indexOf(stories.activeTraceState)
-                        let c = null
+                        let c: string = null
                         if (i == 0) {
                             c = stories.trace.mainPath[stories.trace.mainPath.length - 1]
                         } else {
                             c = stories.trace.mainPath[(i - 1) % stories.trace.mainPath.length]
                         }
                         setActiveTraceState(c)
-                        setSelectedCluster(c, false)
+                        setSelectedCluster([c], false)
                     } else {
                         setActiveTraceState(stories.trace.mainPath[0])
-                        setSelectedCluster(stories.trace.mainPath[0], false)
+                        setSelectedCluster([stories.trace.mainPath[0]], false)
                     }
                 }}>
                     <SkipPreviousIcon />
@@ -449,10 +450,10 @@ export const Storytelling = connector(function ({
                         let i = stories.trace.mainPath.indexOf(stories.activeTraceState)
                         let c = stories.trace.mainPath[(i + 1) % stories.trace.mainPath.length]
                         setActiveTraceState(c)
-                        setSelectedCluster(c, false)
+                        setSelectedCluster([c], false)
                     } else {
                         setActiveTraceState(stories.trace.mainPath[0])
-                        setSelectedCluster(stories.trace.mainPath[0], false)
+                        setSelectedCluster([stories.trace.mainPath[0]], false)
                     }
                 }}>
                     <SkipNextIcon />
@@ -475,7 +476,7 @@ export const Storytelling = connector(function ({
                         dataset={dataset}
                         onClusterClicked={(cluster) => {
                             setActiveTraceState(cluster)
-                            setSelectedCluster(cluster, false)
+                            setSelectedCluster([cluster], false)
                         }}
                     ></ProvenanceGraph>
 
@@ -497,9 +498,9 @@ export const Storytelling = connector(function ({
                                     }}
                                     onClick={() => {
                                         setActiveTraceState(cluster)
-                                        setSelectedCluster(cluster, false)
+                                        setSelectedCluster([cluster], false)
                                     }}>
-                                    <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{ClusterObject.getTextRepresentation(cluster)}</Typography>
+                                    <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{ClusterObject.getTextRepresentation(StoriesUtil.retrieveCluster(stories, cluster))}</Typography>
 
                                     <div className="ClusterItem"
                                         style={{
@@ -511,7 +512,7 @@ export const Storytelling = connector(function ({
                                     >
                                         <GenericFingerprint
                                             type={dataset.type}
-                                            vectors={cluster.refactored.map(i => dataset.vectors[i])}
+                                            vectors={StoriesUtil.retrieveCluster(stories, cluster).refactored.map(i => dataset.vectors[i])}
                                             scale={1}
                                         />
                                     </div>
@@ -535,7 +536,7 @@ export const Storytelling = connector(function ({
                         }
                         {
                             input && input.position.slice(0, input.position.length - 1).map((elem, index) => {
-                                let edge = elem.mainEdge
+                                let edge = StoriesUtil.retreiveEdge(stories, elem.mainEdge)
                                 return <div
                                     key={index}
                                     className=""
@@ -560,8 +561,8 @@ export const Storytelling = connector(function ({
                                         <GenericChanges
 
                                             scale={1}
-                                            vectorsA={edge.source.vectors}
-                                            vectorsB={edge.destination.vectors}
+                                            vectorsA={StoriesUtil.retrieveCluster(stories, edge.source).refactored.map(i => dataset.vectors[i])}
+                                            vectorsB={StoriesUtil.retrieveCluster(stories, edge.destination).refactored.map(i => dataset.vectors[i])}
                                         />
                                     </div>
                                 </div>

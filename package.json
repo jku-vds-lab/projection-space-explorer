@@ -25,6 +25,7 @@
     "graphology": "^0.17.1",
     "graphology-layout-forceatlas2": "^0.4.4",
     "graphology-shortest-path": "^1.3.4",
+    "graphology-types": "^0.19.5",
     "jaccard": "^0.4.0",
     "jsfive": "^0.2.1",
     "jstat": "^1.9.4",

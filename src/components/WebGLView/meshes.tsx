@@ -5,7 +5,7 @@ import { DataLine } from "../Utility/Data/DataLine"
 import { IVect } from "../Utility/Data/Vect"
 import { Dataset } from "../Utility/Data/Dataset"
 import { LayeringSystem } from './LayeringSystem/LayeringSystem'
-import { StoriesType } from '../Ducks/StoriesDuck'
+import { StoriesType, StoriesUtil } from '../Ducks/StoriesDuck'
 import { DiscreteMapping, Mapping } from '../Utility/Colors/Mapping'
 
 /**
@@ -166,14 +166,13 @@ export class LineVisualization {
     if (stories && stories.active) {
       this.grayedLayerSystem.clearLayer(3, true)
 
-
-
       let lineIndices = new Set<number>()
-      stories.stories[stories.active].clusters.forEach(cluster => {
+
+      for (const [key, cluster] of Object.entries(stories.stories[stories.active].clusters.byId)) { 
         cluster.refactored.forEach(i => {
           lineIndices.add(stories.vectors[i].__meta__.lineIndex)
         })
-      })
+      }
 
       lineIndices.forEach(lineIndex => {
         this.grayedLayerSystem.setValue(lineIndex, 3, false)
@@ -191,7 +190,7 @@ export class LineVisualization {
 
       let lineIndices = new Set<number>()
       stories.trace.mainPath.forEach(cluster => {
-        cluster.refactored.forEach(i => {
+        StoriesUtil.retrieveCluster(stories, cluster).refactored.forEach(i => {
           lineIndices.add(stories.vectors[i].__meta__.lineIndex)
         })
       })
@@ -518,11 +517,11 @@ export class PointVisualization {
       this.grayedLayerSystem.setLayerActive(3, true)
 
       let vecIndices = new Set<number>()
-      stories.stories[stories.active].clusters.forEach(cluster => {
+      for (const [key, cluster] of Object.entries(stories.stories[stories.active].clusters.byId)) {
         cluster.refactored.forEach(sample => {
           vecIndices.add(sample)
         })
-      })
+      }
 
       vecIndices.forEach(value => {
         this.grayedLayerSystem.setValue(value, 3, false)
@@ -538,7 +537,7 @@ export class PointVisualization {
 
       let vecIndices = new Set<number>()
       stories.trace.mainPath.forEach(cluster => {
-        cluster.refactored.forEach(i => {
+        StoriesUtil.retrieveCluster(stories, cluster).refactored.forEach(i => {
           vecIndices.add(i)
         })
       })

@@ -29,11 +29,10 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    hoverUpdate
 }
 
 
-export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook }: Props) => {
+export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
@@ -44,7 +43,7 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, h
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
         <Box paddingX={2} paddingTop={1}>
             {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ? 
-            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.selectedClusters.length}</b> out of <b>{activeStorybook.clusters.length}</b> groups</Typography>
+            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.selectedClusters.length}</b> out of <b>{activeStorybook.clusters.allIds.length}</b> groups</Typography>
             :<Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> items</Typography>
         }
             
@@ -91,7 +90,7 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, h
         </Box>
 
 
-        <SelectionClusters hoverUpdate={hoverUpdate}></SelectionClusters>
+        <SelectionClusters></SelectionClusters>
     </div>
 })
 

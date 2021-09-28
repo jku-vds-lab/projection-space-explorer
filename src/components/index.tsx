@@ -58,7 +58,7 @@ import './index.scss'
 import Split from 'react-split'
 import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
-import { Storybook } from "./Utility/Data/Storybook";
+import { IStory } from "./Utility/Data/Storybook";
 import { setGlobalPointBrightness } from "./Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
 import { setGenericFingerprintAttributes } from "./Ducks/GenericFingerprintAttributesDuck";
@@ -68,9 +68,6 @@ import { PSEContextProvider } from "./Store/PSEContext";
 import { API } from "./Store/PluginScript";
 import { RootState } from "./Store/Store";
 import { IVect } from "./Utility/Data/Vect";
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
 import { DatasetType } from "./Utility/Data/DatasetType";
 
 
@@ -110,7 +107,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = dispatch => ({
   addStory: story => dispatch(addStory(story)),
-  setActiveStory: (activeStory: Storybook) => dispatch(setActiveStory(activeStory)),
+  setActiveStory: (activeStory: IStory) => dispatch(setActiveStory(activeStory)),
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
@@ -273,9 +270,9 @@ var Application = connector(class extends React.Component<Props, any> {
 
     // set default storybook that contains all clusters and no arrows
     if (dataset.clusters.length > 0) {
-      let story = new Storybook(dataset.clusters, []);
-      this.props.addStory(story)
-      this.props.setActiveStory(null)
+      //let story = new Storybook(dataset.clusters, []);
+      //this.props.addStory(story)
+      //this.props.setActiveStory(null)
       // this.props.setActiveStory(story) // TODO: should we set the new story active?
     }
 
@@ -500,7 +497,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
               <FixedHeightTabPanel value={this.props.openTab} index={4}>
-                <DetailsTabPanel hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></DetailsTabPanel>
+                <DetailsTabPanel></DetailsTabPanel>
               </FixedHeightTabPanel>
 
               {/* {frontend_utils.CHEM_PROJECT && 
@@ -561,7 +558,7 @@ var Application = connector(class extends React.Component<Props, any> {
             </div>
             <div style={{ flexGrow: 0.1 }}>
               {/* TODO: lineupFilter is not used anymore... */}
-              <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }} hoverUpdate={(hover_item, updater) => { this.threeRef.current.hoverUpdate(hover_item, updater) }}></LineUpContext>
+              <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }}></LineUpContext>
             </div>
           </Split>
         </div>

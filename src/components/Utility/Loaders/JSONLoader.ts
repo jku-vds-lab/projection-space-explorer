@@ -162,10 +162,17 @@ export class JSONLoader implements Loader {
         let edges = []
         content.edges[0].data.forEach(row => {
             let nameIndex = content.edges[0].columns.indexOf("name")
-            let edge = new Edge(clusters.find(cluster => cluster.label == row[1]), clusters.find(cluster => cluster.label == row[2]), null)
+
+            let edge: Edge = {
+                source: clusters.findIndex(cluster => cluster.label == row[1]).toString(),
+                destination: clusters.findIndex(cluster => cluster.label == row[2]).toString(),
+                objectType: ObjectTypes.Edge
+            }
+
             if (nameIndex >= 0) {
                 edge.name = row[nameIndex]
             }
+            
             edges.push(edge)
         })
 
@@ -175,7 +182,7 @@ export class JSONLoader implements Loader {
             preselection = content.preselection[0].data.flat()
 
             metaInformation = {}
-            
+
             header.forEach(column => {
                 metaInformation[column] = {
                     project: preselection.includes(column)
@@ -186,7 +193,7 @@ export class JSONLoader implements Loader {
 
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
 
-        
+
         let dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation)
         dataset.clusters = clusters
         dataset.clusterEdges = edges

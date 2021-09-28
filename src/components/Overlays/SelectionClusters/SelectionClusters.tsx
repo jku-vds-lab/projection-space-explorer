@@ -1,9 +1,7 @@
 import * as React from 'react'
 import { Box, Card, Typography } from '@material-ui/core'
 import { GenericLegend } from '../../legends/Generic'
-import './SelectionClusters.scss'
 import { connect, ConnectedProps } from 'react-redux'
-import { IVect } from '../../Utility/Data/Vect'
 import ReactDOM = require('react-dom')
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck'
 
@@ -33,7 +31,6 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    hoverUpdate: any
 }
 
 
@@ -42,22 +39,31 @@ const SelectionClustersFull = function ({
     currentAggregation,
     hoverState,
     hoverSettings,
-    hoverUpdate,
     setHoverWindowMode
 }: Props) {
     if (!dataset) {
         return null
     }
 
+    const [vectors, setVectors] = React.useState(currentAggregation.aggregation.map(i => dataset.vectors[i]))
+
+    React.useEffect(() => {
+        setVectors(currentAggregation.aggregation.map(i => dataset.vectors[i]))
+    }, [currentAggregation])
+
     const genericAggregateLegend = currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? 
-                <GenericLegend aggregate={true} type={dataset.type} vectors={currentAggregation.aggregation.map(i => dataset.vectors[i])} hoverUpdate={hoverUpdate}></GenericLegend> : 
+                <GenericLegend aggregate={true} type={dataset.type} vectors={vectors}></GenericLegend> : 
                 <Box paddingLeft={2}>
                     <Typography color={"textSecondary"}>
                         Select Points in the Embedding Space to show a Summary Visualization.
                     </Typography>
                 </Box>
 
-    return <div className={"Parent"}>
+    return <div style={{
+        width: '18rem',
+        height: '100px',
+        flex: '1 1 auto'
+    }}>
 
         {hoverState && hoverState.data && isVector(hoverState.data) && <HoverItemPortal>
             <Card elevation={24} style={{
@@ -68,7 +74,7 @@ const SelectionClustersFull = function ({
                 alignItems: 'center',
                 justifyContent: 'center'
             }}>
-                <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState.data]} hoverUpdate={hoverUpdate}></GenericLegend>
+                <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState.data]}></GenericLegend>
             </Card>
         </HoverItemPortal>}
 
@@ -83,7 +89,12 @@ const SelectionClustersFull = function ({
                     </div>
                 </MyWindowPortal>
                 :
-                <div className={"Cluster"}>
+                <div style={{
+                    display: 'flex',
+                    flexShrink: 0,
+                    justifyContent: 'center',
+                    height: '100%'
+                }}>
                     {genericAggregateLegend}
                 </div>
         }
