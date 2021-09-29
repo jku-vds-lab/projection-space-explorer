@@ -7080,6 +7080,37 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./src/components/Utility/Data/FeatureType.ts":
+/*!****************************************************!*\
+  !*** ./src/components/Utility/Data/FeatureType.ts ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.FeatureType = void 0;
+/**
+ * The data type of a feature
+ */
+
+var FeatureType;
+
+(function (FeatureType) {
+  FeatureType[FeatureType["String"] = 0] = "String";
+  FeatureType[FeatureType["Quantitative"] = 1] = "Quantitative";
+  FeatureType[FeatureType["Categorical"] = 2] = "Categorical";
+  FeatureType[FeatureType["Date"] = 3] = "Date";
+  FeatureType[FeatureType["Binary"] = 4] = "Binary";
+  FeatureType[FeatureType["Ordinal"] = 5] = "Ordinal";
+})(FeatureType = exports.FeatureType || (exports.FeatureType = {}));
+
+/***/ }),
+
 /***/ "./src/components/Utility/Distances/distance_functions.ts":
 /*!****************************************************************!*\
   !*** ./src/components/Utility/Distances/distance_functions.ts ***!
@@ -7095,6 +7126,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.cosine = exports.manhattan = exports.euclidean = exports.jaccard = exports.gower = exports.get_distance_fn = void 0;
 
+var FeatureType_1 = __webpack_require__(/*! ../Data/FeatureType */ "./src/components/Utility/Data/FeatureType.ts");
+
 function get_distance_fn(distanceMetric, e) {
   switch (distanceMetric) {
     case "euclidean":
@@ -7109,7 +7142,7 @@ function get_distance_fn(distanceMetric, e) {
     case "cosine":
       return cosine;
 
-    case "gowers":
+    case "gower":
       return gower(e.data.featureTypes);
 
     default:
@@ -7124,7 +7157,28 @@ function gower(featureTypes) {
     var result = 0;
 
     for (var i = 0; i < x.length; i++) {
-      result += Math.abs(x[i] - y[i]);
+      switch (featureTypes[i]) {
+        case FeatureType_1.FeatureType.Quantitative:
+          result += Math.abs(x[i] - y[i]);
+          break;
+
+        case FeatureType_1.FeatureType.Binary:
+          result += x[i] === y[i] ? 0 : 1; // this is equivalent to the formular for quantititive features when having binary data
+
+          break;
+
+        case FeatureType_1.FeatureType.Categorical:
+          result += x[i] === y[i] ? 0 : 1; // see binary
+
+          break;
+
+        case FeatureType_1.FeatureType.Ordinal:
+          // TODO: handle ordinal data
+          break;
+
+        default:
+          break;
+      }
     }
 
     return result;

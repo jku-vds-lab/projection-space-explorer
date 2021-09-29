@@ -148,6 +148,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                     >
                                         <MenuItem value={'euclidean'}>Euclidean</MenuItem>
                                         <MenuItem value={'jaccard'}>Jaccard</MenuItem>
+                                        <MenuItem value={'gower'}>Gower</MenuItem>
                                     </Select>
                                 </FormControl>}
                             </FormGroup>

@@ -273,6 +273,9 @@ export class Dataset {
                             }
                         }
 
+                        if(s <= 0) // when all values are equal in a column, the standard deviation can be 0, which would lead to an error
+                            s = 1
+
                         data.push((+vector[column] - m) / s);
                     } else {
                         data.push(+vector[column]);
