@@ -3,9 +3,10 @@ import { LassoSelection } from './tools'
 import * as React from "react";
 import * as THREE from 'three'
 import { LassoLayer } from './LassoLayer/LassoLayer';
-import { ClusterObject, ICluster, isCluster, isVector, TypedObject } from '../Utility/Data/Cluster';
+import { ACluster, ICluster, isCluster } from '../../model/Cluster';
+import { TypedObject } from "../../model/TypedObject";
 import { connect, ConnectedProps } from 'react-redux'
-import { IVect } from "../Utility/Data/Vect";
+import { isVector, IVector } from "../../model/Vector";
 import { setViewTransform } from "../Ducks/ViewTransformDuck";
 import { selectClusters, selectVectors } from "../Ducks/AggregationDuck";
 import { CameraTransformations } from './CameraTransformations'
@@ -20,22 +21,21 @@ import { RootState } from '../Store/Store';
 import { Menu, MenuItem } from '@material-ui/core';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
-import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, removeEdgeFromActive, setActiveStory, setActiveTrace, StoriesUtil } from '../Ducks/StoriesDuck';
-import { setLineUpInput_visibility, setLineUpInput_dump, setLineUpInput_filter } from '../Ducks/LineUpInputDuck';
-import { IStory, Storybook, StorybookUtil } from '../Utility/Data/Storybook';
+import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, removeEdgeFromActive, setActiveTrace, StoriesUtil } from '../Ducks/StoriesDuck';
+import { IBook, ABook } from '../../model/Book';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
-import { Edge, isEdge } from '../Utility/graphs';
+import { Edge, isEdge } from "../../model/Edge";
 import { getSyncNodesAlt } from '../NumTs/NumTs';
 import { ClusterDragTool } from './Tools/ClusterDragTool';
 import { TraceSelectTool } from './Tools/TraceSelectTool';
-import { Embedding } from '../Utility/Data/Embedding';
+import { Embedding } from '../../model/Embedding';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
-import { DatasetUtil } from '../Utility/Data/Dataset';
-import { DataLine } from '../Utility/Data/DataLine';
+import { DatasetUtil } from '../../model/Dataset';
+import { DataLine } from '../../model/DataLine';
 import { NamedCategoricalScales } from '../Utility/Colors/NamedCategoricalScales';
-import { ObjectTypes } from '../Utility/Data/ObjectType';
+import { ObjectTypes } from '../../model/ObjectType';
 import { v4 as uuidv4 } from 'uuid';
 
 type ViewState = {
@@ -76,12 +76,8 @@ const mapDispatchToProps = dispatch => ({
     setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
     setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping)),
     removeClusterFromStories: (cluster: ICluster) => dispatch(removeClusterFromStories(cluster)),
-    setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
-    setLineUpInput_dump: input => dispatch(setLineUpInput_dump(input)),
-    setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
-    addStory: (story: IStory, activate: boolean) => dispatch(addStory(story, activate)),
+    addStory: (story: IBook, activate: boolean) => dispatch(addStory(story, activate)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
-    setActiveStory: story => dispatch(setActiveStory(story)),
     addEdgeToActive: (edge: Edge) => dispatch(addEdgeToActive(edge)),
     setActiveTrace: trace => dispatch(setActiveTrace(trace)),
     setOpenTab: tab => dispatch(setOpenTabAction(tab)),
@@ -111,7 +107,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     initialMousePosition: any;
     currentHover: TypedObject;
     camera: any;
-    vectors: IVect[];
+    vectors: IVector[];
     renderer: any;
     lines: LineVisualization;
     scene: THREE.Scene;
@@ -292,7 +288,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         if (target) {
                             const activeStory = StoriesUtil.getActive(this.props.stories)
                             // We want to select a trace between 2 clusters
-                            let paths = StorybookUtil.depthFirstSearch(StorybookUtil.toGraph(activeStory), this.traceSelect.cluster.label, target.label)
+                            let paths = ABook.depthFirstSearch(ABook.toGraph(activeStory),
+                                Object.entries(activeStory.clusters.byId).find(([key, value]) => value === this.traceSelect.cluster)[0],
+                                Object.entries(activeStory.clusters.byId).find(([key, value]) => value === target)[0])
 
                             if (paths.length > 0) {
                                 let mainPath = paths[0]
@@ -323,7 +321,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     } else if (this.currentHover && isVector(this.currentHover)) {
 
                         // We click on a hover target
-                            this.props.selectVectors([this.currentHover.__meta__.meshIndex], event.ctrlKey)
+                        this.props.selectVectors([this.currentHover.__meta__.meshIndex], event.ctrlKey)
                     } else if (this.currentHover && isCluster(this.currentHover)) {
                         const activeStory = this.props.stories.stories[this.props.stories.active]
                         this.props.setSelectedCluster([Object.keys(activeStory.clusters.byId).find(key => activeStory.clusters.byId[key] === this.currentHover)], event.ctrlKey)
@@ -446,54 +444,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
 
-    /**
-     * Creates the line visualization for given attribute key, e. g. line or algo
-     * 
-     * @param attribute The attribute key
-     */
-    /**recreateLines(attribute: string) {
-        const dataset = this.props.dataset
-        const segments = dataset.getSegs(attribute)
-
-        dataset.segments = segments
-
-
-        this.lines?.dispose(this.scene)
-        this.lines = null
-
-        this.lines = new LineVisualization(segments, this.lineColorScheme)
-        this.lines.createMesh(this.props.lineBrightness)
-        this.lines.setZoom(this.camera.zoom)
-
-        // First add lines, then particles
-        this.lines.meshes.forEach(line => this.scene.add(line.line))
-
-        this.pointScene.remove(this.particles?.mesh)
-        this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 8, this.lines?.grayedLayerSystem, segments)
-        this.particles.createMesh(this.props.dataset.vectors, segments)
-        this.particles.zoom(this.camera.zoom)
-        this.particles.updateColor()
-        this.particles.update()
-
-
-        //this.scene.add(this.particles.mesh);
-        this.pointScene.add(this.particles.mesh)
-
-        this.requestRender()
-    }**/
-
-
-
-
-
-
-
-
-
-
-
-
-
     chooseCluster(screenPosition: { x: number, y: number }): ICluster {
         let nearest: ICluster = null
         let min = Number.MAX_SAFE_INTEGER
@@ -505,7 +455,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         for (const [key, cluster] of Object.entries(activeStory.clusters.byId)) {
-            let clusterScreen = CameraTransformations.worldToScreen(new THREE.Vector2(ClusterObject.getCenter(this.props.dataset, cluster).x, ClusterObject.getCenter(this.props.dataset, cluster).y), this.createTransform())
+            let clusterScreen = CameraTransformations.worldToScreen(new THREE.Vector2(ACluster.getCenter(this.props.dataset, cluster).x, ACluster.getCenter(this.props.dataset, cluster).y), this.createTransform())
             let dist = nt.euclideanDistance(screenPosition.x, screenPosition.y, clusterScreen.x, clusterScreen.y)
 
             if (dist < min && dist < 16) {
@@ -529,8 +479,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         position = CameraTransformations.screenToWorld(position, this.createTransform())
 
         for (const edge of Object.values(activeStory.edges.byId)) {
-            const a = ClusterObject.getCenterAsVector2(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.source))
-            const b = ClusterObject.getCenterAsVector2(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.destination))
+            const a = ACluster.getCenterAsVector2(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.source))
+            const b = ACluster.getCenterAsVector2(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.destination))
             const dir = b.clone().sub(a.clone()).normalize()
             const l = new THREE.Vector2(-dir.y, dir.x).multiplyScalar(0.5)
             const r = new THREE.Vector2(dir.y, -dir.x).multiplyScalar(0.5)
@@ -994,7 +944,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.renderLasso(ctx)
 
         if (this.clusterDrag) {
-            this.clusterDrag.renderToContext(extended, CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, this.clusterDrag.cluster), this.createTransform()), this.mouseController.currentMousePosition)
+            this.clusterDrag.renderToContext(extended, CameraTransformations.worldToScreen(ACluster.getCenter(this.props.dataset, this.clusterDrag.cluster), this.createTransform()), this.mouseController.currentMousePosition)
         }
 
         if (this.traceSelect) {
@@ -1199,16 +1149,11 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         }
 
-
-
         // Path length range has changed, update view accordingly
         if (this.props.dataset && this.props.dataset.isSequential && prevProps.pathLengthRange !== this.props.pathLengthRange) {
             // Set path length range on all segment views, and update them
             this.lines.pathLengthRange = this.props.pathLengthRange.range
             this.particles.pathLengthRange = this.props.pathLengthRange.range
-            /**this.segments.forEach(segment => {
-                segment.view.pathLengthRange = this.props.pathLengthRange.range
-            })**/
 
             this.lines.update()
             this.particles.update()
@@ -1311,10 +1256,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
     onClusterZoom(cluster) {
         this.props.setSelectedCluster(cluster, false)
-        //this.props.setCurrentAggregation(cluster.vectors)
-        //this.props.setSelectedClusters([cluster])
     }
-
 
     render() {
         const handleClose = () => {
@@ -1373,16 +1315,16 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             >
                 <MenuItem onClick={() => {
                     if (this.props.currentAggregation.aggregation.length > 0) {
-                        let cluster = ClusterObject.fromSamples(this.props.dataset, this.props.currentAggregation.aggregation)
+                        let cluster = ACluster.fromSamples(this.props.dataset, this.props.currentAggregation.aggregation)
 
-                        if (!this.props.stories.active) {
+                        if (this.props.stories.active === null) {
                             const handle = uuidv4()
-                            const story: IStory = {
+                            const story: IBook = {
                                 clusters: {
                                     byId: {
                                         [handle]: cluster
                                     },
-                                    allIds: [ handle ]
+                                    allIds: [handle]
                                 },
                                 edges: {
                                     byId: {},
@@ -1443,7 +1385,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                     const activeStory = this.props.stories.stories[this.props.stories.active]
 
-                    let paths = StorybookUtil.getAllStoriesFromSource(activeStory, this.state.menuTarget.label)
+                    let paths = ABook.getAllStoriesFromSource(activeStory, this.state.menuTarget.label)
 
                     if (paths.length > 0) {
                         let mainPath = paths[0]
@@ -1505,7 +1447,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     handleClose()
                 }}>{'Delete Edge'}</MenuItem>
             </Menu>
-
         </div>
     }
 })

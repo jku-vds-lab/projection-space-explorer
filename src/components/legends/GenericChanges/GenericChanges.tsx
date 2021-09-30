@@ -1,6 +1,6 @@
-import { DatasetType } from "../../Utility/Data/DatasetType";
-import { IVect } from "../../Utility/Data/Vect";
-import { Dataset } from "../../Utility/Data/Dataset";
+import { DatasetType } from "../../../model/DatasetType";
+import { IVector } from "../../../model/Vector";
+import { Dataset } from "../../../model/Dataset";
 import { connect } from 'react-redux'
 import { RubikChanges } from "../RubikChanges/RubikChanges";
 import React = require("react");
@@ -10,8 +10,8 @@ import { ChemLegendParent } from "../ChemDetail/ChemDetail";
 
 
 type GenericChangesType = {
-    vectorsA: Array<IVect>
-    vectorsB: Array<IVect>
+    vectorsA: Array<IVector>
+    vectorsB: Array<IVector>
     dataset: Dataset
     scale: number
 }

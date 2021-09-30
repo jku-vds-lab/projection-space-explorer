@@ -1,7 +1,7 @@
 import { Grid, List, ListItem, ListItemText, ListSubheader } from "@material-ui/core"
 import React = require("react")
 import { TypeIcon } from "../../Icons/TypeIcon"
-import { DatasetType } from "../../Utility/Data/DatasetType"
+import { DatasetType } from "../../../model/DatasetType"
 import { DatasetDatabase } from "../../Utility/Data/DatasetDatabase"
 
 export var PredefinedDatasets = ({ onChange }) => {

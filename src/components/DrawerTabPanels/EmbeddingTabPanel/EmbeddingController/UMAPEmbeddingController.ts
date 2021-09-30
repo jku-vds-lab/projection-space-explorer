@@ -1,5 +1,5 @@
-import { IVect } from "../../../Utility/Data/Vect"
-import { Dataset, DatasetUtil } from "../../../Utility/Data/Dataset"
+import { IVector } from "../../../../model/Vector"
+import { Dataset, DatasetUtil } from "../../../../model/Dataset"
 import { EmbeddingController } from "./EmbeddingController"
 
 import * as frontend_utils from "../../../../utils/frontend-connect";
@@ -52,7 +52,7 @@ export class UMAPEmbeddingController extends EmbeddingController {
 
 
 
-    bounds(samples: IVect[]) {
+    bounds(samples: IVector[]) {
         // Get rectangle that fits around data set
         var minX = 1000, maxX = -1000, minY = 1000, maxY = -1000;
         samples.forEach(sample => {

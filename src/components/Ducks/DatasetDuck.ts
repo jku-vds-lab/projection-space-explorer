@@ -1,4 +1,4 @@
-import { Dataset } from "../Utility/Data/Dataset";
+import { Dataset } from "../../model/Dataset";
 
 const SET = "ducks/database/SET"
 const SET_VECT = "ducks/database/SET_VECT"

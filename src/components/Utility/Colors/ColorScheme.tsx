@@ -1,12 +1,3 @@
-import { QualitativeScaleMapping } from "./QualitativeScaleMapping";
-
-
-
-
-
-
-
-
 export class ColorScheme {
   colors: any;
   mapping: any;

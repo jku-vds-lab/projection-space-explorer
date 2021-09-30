@@ -1,4 +1,4 @@
-import { Dataset, DefaultFeatureLabel } from "../../../Utility/Data/Dataset";
+import { Dataset, DefaultFeatureLabel } from "../../../../model/Dataset";
 import { makeStyles, Modal, Box, Grid, Card, Checkbox, Button, withStyles, Paper } from "@material-ui/core";
 import { connect, ConnectedProps } from 'react-redux'
 import React = require("react");

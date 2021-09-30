@@ -5,11 +5,11 @@ import * as LineUpJS from 'lineupjs'
 import './LineUpContext.scss';
 import { IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, renderMissingDOM, StringColumn } from "lineupjs";
 import * as backend_utils from "../../utils/backend-connect";
-import { EXCLUDED_COLUMNS, PrebuiltFeatures } from "../Utility/Data/Dataset";
+import { EXCLUDED_COLUMNS, PrebuiltFeatures } from "../../model/Dataset";
 import { setLineUpInput_lineup, setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
 import * as _ from 'lodash';
-import { ClusterObject } from "../Utility/Data/Cluster";
+import { ACluster } from "../../model/Cluster";
 import { selectVectors } from "../Ducks/AggregationDuck";
 import { ShallowSet } from "../Utility/ShallowSet";
 import { TestColumn } from "./LineUpClasses/TestColumn";
@@ -113,7 +113,7 @@ export const LineUpContext = connector(function ({
 
     const preprocess_lineup_data = (data) => {
         if(activeStory)
-            ClusterObject.deriveVectorLabelsFromClusters(data, Object.values(activeStory.clusters.byId))
+            ACluster.deriveVectorLabelsFromClusters(data, Object.values(activeStory.clusters.byId))
         let lineup_data = [];
         let columns = {};
         data.forEach(element => {

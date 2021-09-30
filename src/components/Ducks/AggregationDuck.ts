@@ -2,8 +2,8 @@ import { result } from "lodash";
 import { AnyAction } from "redux";
 import { ThunkAction } from "redux-thunk";
 import { RootState } from "../Store/Store";
-import { ICluster } from "../Utility/Data/Cluster";
-import { IVect } from "../Utility/Data/Vect";
+import { ICluster } from "../../model/Cluster";
+import { IVector } from "../../model/Vector";
 import { StoriesUtil } from "./StoriesDuck";
 
 
@@ -80,11 +80,11 @@ export const selectClusters = (selection: string[], shiftKey: boolean = false) =
 
 
 function deriveFromClusters(clusters: ICluster[]): number[] {
-    let agg = clusters.map(cluster => cluster.refactored).flat()
+    let agg = clusters.map(cluster => cluster.indices).flat()
     return [...new Set(agg)]
 }
 
-function deriveFromSamples(samples: IVect[], clusters: { [id: string]: ICluster }): number[] {
+function deriveFromSamples(samples: IVector[], clusters: { [id: string]: ICluster }): number[] {
     if (!clusters) {
         return []
     }

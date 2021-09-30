@@ -5,7 +5,7 @@ import { ContinuousMapping } from "./Mapping";
 import { NamedScales } from "./NamedScales";
 import { NamedCategoricalScales } from "./NamedCategoricalScales";
 import { ShallowSet } from "../ShallowSet";
-import { Dataset } from "../Data/Dataset";
+import { Dataset } from "../../../model/Dataset";
 import { LinearColorScale } from "./LinearColorScale";
 
 export const mappingFromScale = (scale: LinearColorScale, attribute, dataset: Dataset) => {

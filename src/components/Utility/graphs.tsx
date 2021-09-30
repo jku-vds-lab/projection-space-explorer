@@ -2,29 +2,14 @@
  * Directed graph library for javascript.
  */
 
-import { ICluster, TypedObject } from "./Data/Cluster"
-import { Dataset } from "./Data/Dataset"
-import { ObjectTypes } from "./Data/ObjectType"
-import { IStory } from "./Data/Storybook"
+import { ICluster } from "../../model/Cluster"
+import { TypedObject } from "../../model/TypedObject"
+import { Dataset } from "../../model/Dataset"
+import { ObjectTypes } from "../../model/ObjectType"
+import { IBook } from "../../model/Book"
+import { Edge } from "../../model/Edge"
 
 
-/**
- * Edge class that is a connection between 2 nodes.
- */
-export interface Edge extends TypedObject {
-    source: string
-    destination: string
-    bundle?: number[]
-    name?: string
-    objectType: string
-}
-
-
-
-
-export function isEdge(value: TypedObject): value is Edge {
-    return value && value.objectType === ObjectTypes.Edge
-}
 
 
 /**
@@ -46,8 +31,8 @@ export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
                 var bundle = []
 
                 // For each vector in source cluster, check if the direct ancestor is in the destination cluster
-                srcCluster.refactored.map(i => dataset.vectors[i]).forEach(srcVec => {
-                    if (dstCluster.refactored.map(i => dataset.vectors[i]).find(dstVec => srcVec.line == dstVec.line && srcVec.__meta__.sequenceIndex + 1 == dstVec.__meta__.sequenceIndex)) {
+                srcCluster.indices.map(i => dataset.vectors[i]).forEach(srcVec => {
+                    if (dstCluster.indices.map(i => dataset.vectors[i]).find(dstVec => srcVec.line == dstVec.line && srcVec.__meta__.sequenceIndex + 1 == dstVec.__meta__.sequenceIndex)) {
                         bundle.push(srcVec.line)
                     }
                 })
@@ -72,8 +57,8 @@ export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
 
 
 
-export function storyLayout(clusterInstances: ICluster[], edges: Edge[]): IStory[] {
-    const stories: IStory[] = []
+export function storyLayout(clusterInstances: ICluster[], edges: Edge[]): IBook[] {
+    const stories: IBook[] = []
     const copy = edges.slice(0)
 
     while (copy.length > 0) {
@@ -125,7 +110,7 @@ export function storyLayout(clusterInstances: ICluster[], edges: Edge[]): IStory
 
 
 export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult: Edge[]) {
-    const story: IStory = {
+    const story: IBook = {
         clusters: {
             byId: {},
             allIds: []

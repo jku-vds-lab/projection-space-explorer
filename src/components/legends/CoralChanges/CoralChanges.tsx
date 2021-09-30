@@ -14,9 +14,9 @@ import './coral.scss';
 import { ChiSquareTest } from './ChiSquare'
 import BarChanges from './VegaBarChanges.js';
 import Boxplot from './VegaBoxplot.js';
-import { Dataset } from '../../Utility/Data/Dataset';
-import { IVect } from '../../Utility/Data/Vect';
-import { FeatureType } from '../../Utility/Data/FeatureType';
+import { Dataset } from '../../../model/Dataset';
+import { IVector } from '../../../model/Vector';
+import { FeatureType } from '../../../model/FeatureType';
 import { setDifferenceThreshold } from "../../Ducks/DifferenceThresholdDuck";
 import { cloneDeep } from "../../Utility/CloneDeep";
 import { RootState } from '../../Store/Store.js';
@@ -420,8 +420,8 @@ type Props = PropsFromRedux & {
 
   width?: number
   height?: number
-  vectorsA: Array<IVect>
-  vectorsB: Array<IVect>
+  vectorsA: Array<IVector>
+  vectorsB: Array<IVector>
   dataset: Dataset
   scale: number
 }

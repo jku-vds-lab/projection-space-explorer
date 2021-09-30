@@ -1,17 +1,17 @@
 import { Loader } from "./Loader";
 import * as hdf5 from 'jsfive';
-import { FeatureType } from "../Data/FeatureType";
-import { DatasetType } from "../Data/DatasetType";
-import { IVectUtil, IVect } from "../Data/Vect";
+import { FeatureType } from "../../../model/FeatureType";
+import { DatasetType } from "../../../model/DatasetType";
+import { AVector, IVector } from "../../../model/Vector";
 import { InferCategory } from "../Data/InferCategory";
 import { Preprocessor } from "../Data/Preprocessor";
-import { Dataset } from "../Data/Dataset";
-import { ClusterObject, ICluster } from "../Data/Cluster";
-import { Edge } from "../graphs";
-import { ObjectTypes } from "../Data/ObjectType";
+import { Dataset } from "../../../model/Dataset";
+import { ACluster, ICluster } from "../../../model/Cluster";
+import { Edge } from "../../../model/Edge";
+import { ObjectTypes } from "../../../model/ObjectType";
 
 export class JSONLoader implements Loader {
-    vectors: IVect[]
+    vectors: IVector[]
     datasetType: DatasetType
 
     resolvePath(entry: any, finished: any) {
@@ -82,7 +82,7 @@ export class JSONLoader implements Loader {
             fileSamples.columns.forEach((column, ci) => {
                 data[column] = row[ci]
             })
-            this.vectors.push(IVectUtil.create(data))
+            this.vectors.push(AVector.create(data))
         })
 
         var header = Object.keys(this.vectors[0])
@@ -154,8 +154,7 @@ export class JSONLoader implements Loader {
                 objectType: ObjectTypes.Cluster,
                 label: row[0],
                 name: nameIndex >= 0 ? row[nameIndex] : undefined,
-                refactored: row[1],
-                bounds: null
+                indices: row[1]
             })
         })
 

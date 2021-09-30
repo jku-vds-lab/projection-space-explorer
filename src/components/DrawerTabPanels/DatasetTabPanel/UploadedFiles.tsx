@@ -5,7 +5,7 @@ import React = require("react")
 
 import * as backend_utils from '../../../utils/backend-connect';
 import * as frontend_utils from '../../../utils/frontend-connect';
-import { DatasetType } from "../../Utility/Data/DatasetType";
+import { DatasetType } from "../../../model/DatasetType";
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 import useCancellablePromise from "../../../utils/promise-helpers";

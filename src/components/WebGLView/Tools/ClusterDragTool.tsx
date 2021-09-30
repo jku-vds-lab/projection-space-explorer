@@ -1,5 +1,5 @@
 
-import { ICluster } from "../../Utility/Data/Cluster";
+import { ICluster } from "../../../model/Cluster";
 import { RenderingContextEx } from "../../Utility/RenderingContextEx";
 import { Tool } from "./Tool";
 

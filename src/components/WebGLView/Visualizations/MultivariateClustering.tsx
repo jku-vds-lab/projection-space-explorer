@@ -1,24 +1,21 @@
 
 import { Scene, Vector2, Vector3 } from "three";
-import { ClusterObject, ICluster, isCluster } from "../../Utility/Data/Cluster";
+import { ACluster, ICluster, isCluster } from "../../../model/Cluster";
 import THREE = require("three");
-import { IVect } from "../../Utility/Data/Vect";
+import { IVector } from "../../../model/Vector";
 import { DisplayMode } from "../../Ducks/DisplayModeDuck";
 import React = require("react");
 import { RootState } from "../../Store/Store";
 import { connect, ConnectedProps } from "react-redux";
-import { arraysEqual } from "../UtilityFunctions";
 import { NamedCategoricalScales } from "../../Utility/Colors/NamedCategoricalScales";
 import { TrailVisualization } from "./TrailVisualization";
 import { Typography } from "@material-ui/core";
 import { CameraTransformations } from "../CameraTransformations";
-import { IStory } from "../../Utility/Data/Storybook";
+import { IBook } from "../../../model/Book";
 import * as nt from '../../NumTs/NumTs'
 const d3 = require("d3")
 import * as frontend_utils from "../../../utils/frontend-connect";
-import { toPlainObject } from "lodash";
 import { GroupVisualizationMode } from "../../Ducks/GroupVisualizationMode";
-import { SchemeColor } from "../../Utility/Colors/SchemeColor";
 import { ScaleUtil } from "../../Utility/Colors/ContinuosScale";
 import { StoriesUtil } from "../../Ducks/StoriesDuck";
 
@@ -125,6 +122,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             this.destroy()
             this.disposeTriangulatedMesh()
 
+            console.log(this.props.stories.active)
             if (this.props.stories.active !== null) {
                 const activeStory = this.props.stories.stories[this.props.stories.active]
 
@@ -204,8 +202,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     color = new THREE.Color(SELECTED_COLOR)
                 }
     
-                const sourceCenter = ClusterObject.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.source))
-                const destCenter = ClusterObject.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.destination))
+                const sourceCenter = ACluster.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.source))
+                const destCenter = ACluster.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.destination))
                 let start = new THREE.Vector2(sourceCenter.x, sourceCenter.y)
                 let end = new THREE.Vector2(destCenter.x, destCenter.y)
                 let middle = new THREE.Vector2().addVectors(start, new THREE.Vector2().subVectors(end, start).multiplyScalar(0.5))
@@ -263,7 +261,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     iterateTrail(zoom) {
         const activeStory = this.props.stories.stories[this.props.stories.active]
         this.clusterObjects.forEach(clusterObject => {
-            let center = ClusterObject.getCenter(this.props.dataset, activeStory.clusters.byId[clusterObject.cluster])
+            let center = ACluster.getCenter(this.props.dataset, activeStory.clusters.byId[clusterObject.cluster])
 
             let last = clusterObject.trailPositions[clusterObject.trailPositions.length - 1]
             if (!last || new THREE.Vector3(center.x, center.y, 0).distanceTo(last) > 0.1) {
@@ -297,7 +295,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         const activeStory = this.props.stories.stories[this.props.stories.active]
         this.clusterObjects.forEach(clusterObject => {
             let cluster = clusterObject.cluster
-            let center = ClusterObject.getCenter(this.props.dataset, activeStory.clusters.byId[cluster])
+            let center = ACluster.getCenter(this.props.dataset, activeStory.clusters.byId[cluster])
             let mesh = clusterObject.mesh
 
             mesh.position.set(center.x * zoom, center.y * zoom, -0.5)
@@ -382,7 +380,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
             material.transparent = true
 
-            var center = ClusterObject.getCenter(this.props.dataset, cluster)
+            var center = ACluster.getCenter(this.props.dataset, cluster)
             circle.position.set(center.x, center.y, 0)
             this.clusterScene.add(circle);
 
@@ -405,7 +403,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             this.clusterObjects.push(clusterObject)
 
             // Create line geometry
-            cluster.refactored.map(i => this.props.dataset.vectors[i]).forEach(vector => {
+            cluster.indices.map(i => this.props.dataset.vectors[i]).forEach(vector => {
                 clusterObject.children.push({
                     sample: vector,
                     visible: false
@@ -417,7 +415,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     }
 
     // Activates the lines from given samples to their corresponding clusters
-    highlightSamples(samples: IVect[]) {
+    highlightSamples(samples: IVector[]) {
         // Deactivate all lines
         this.deactivateAll()
 
@@ -528,7 +526,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             const activeStory = this.props.stories.stories[this.props.stories.active]
 
             for (const [ci, cluster] of Object.entries(activeStory.clusters.byId)) {
-                const bounds = ClusterObject.calcBounds(this.props.dataset, cluster.refactored)
+                const bounds = ACluster.calcBounds(this.props.dataset, cluster.indices)
 
                 let xAxis = d3.scaleLinear()
                     .range([0, 100])
@@ -545,7 +543,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                     .bandwidth(10)
                     .thresholds(10)
                     .size([100, bounds.width == 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])
-                    (cluster.refactored.map(i => this.props.dataset.vectors[i]).map(vect => ({ x: vect.x, y: vect.y })))
+                    (cluster.indices.map(i => this.props.dataset.vectors[i]).map(vect => ({ x: vect.x, y: vect.y })))
 
                 let clusterObject = this.clusterObjects.find(e => activeStory.clusters.byId[e.cluster].label == cluster.label)
 
@@ -605,7 +603,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     /**
      * Creates textual representations of the edges of the story.
      */
-    createStreetLabels(story?: IStory) {
+    createStreetLabels(story?: IBook) {
         if (!story) {
             return []
         }
@@ -613,8 +611,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         let labels = []
 
         Object.values(story.edges.byId).filter(edge => edge.name && edge.name != "").map(edge => {
-            let source = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.source)), this.props.viewTransform)
-            let dest = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.destination)), this.props.viewTransform)
+            let source = CameraTransformations.worldToScreen(ACluster.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.source)), this.props.viewTransform)
+            let dest = CameraTransformations.worldToScreen(ACluster.getCenter(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.destination)), this.props.viewTransform)
 
             let angle = new nt.VectBase(dest.x - source.x, dest.y - source.y).angle()
             if (angle > Math.PI * 0.5 && angle < Math.PI * 1.5) {
@@ -667,7 +665,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 this.props.stories.trace && this.props.stories.trace.mainPath.map((cluster, index) => {
                     let clusterInstance = StoriesUtil.retrieveCluster(this.props.stories, cluster)
 
-                    let screen = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.props.dataset, clusterInstance), this.props.viewTransform)
+                    let screen = CameraTransformations.worldToScreen(ACluster.getCenter(this.props.dataset, clusterInstance), this.props.viewTransform)
 
                     return <Typography style={{
                         textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',
@@ -687,7 +685,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 })
 
 const hoverLabel = (hoverState: ICluster, viewTransform, dataset) => {
-    let screen = CameraTransformations.worldToScreen(ClusterObject.getCenter(dataset, hoverState), viewTransform)
+    let screen = CameraTransformations.worldToScreen(ACluster.getCenter(dataset, hoverState), viewTransform)
 
     return <Typography style={{
         textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',

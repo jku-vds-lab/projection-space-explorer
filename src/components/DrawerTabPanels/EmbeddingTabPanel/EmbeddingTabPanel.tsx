@@ -5,7 +5,7 @@ import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, 
 import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
 import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
-import { Dataset } from "../../Utility/Data/Dataset"
+import { Dataset } from "../../../model/Dataset"
 import { GenericSettings } from './GenericSettings/GenericSettings'
 import { RootState } from '../../Store/Store'
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck'
@@ -15,7 +15,7 @@ import { UMAPEmbeddingController } from './EmbeddingController/UMAPEmbeddingCont
 import { ClusterTrailSettings } from './ClusterTrailSettings/ClusterTrailSettings'
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck'
 import { ForceAtlas2EmbeddingController } from './EmbeddingController/ForceAtlas2EmbeddingController'
-import { Embedding } from '../../Utility/Data/Embedding'
+import { Embedding } from '../../../model/Embedding'
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionsDuck'

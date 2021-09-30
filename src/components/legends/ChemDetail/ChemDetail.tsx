@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './chem.scss';
 import * as backend_utils from '../../../utils/backend-connect';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, Input, InputAdornment, InputLabel, makeStyles, MenuItem, Paper, Popover, Select, Slider, Switch, TextField, Tooltip, Typography } from '@material-ui/core';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, Input, InputLabel, Paper, Popover, Slider, Switch, TextField, Tooltip, Typography } from '@material-ui/core';
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
 import { RootState } from '../../Store/Store';
@@ -9,15 +9,14 @@ import { connect, ConnectedProps } from 'react-redux';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SettingsIcon from '@material-ui/icons/Settings';
 import InfoIcon from '@material-ui/icons/Info';
-import useCancellablePromise, { makeCancelable } from '../../../utils/promise-helpers';
+import useCancellablePromise from '../../../utils/promise-helpers';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { isFunction } from 'lodash';
-import rdkitSettings, { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma, setRDKit_width, setRDKit_doAlignment } from '../../Ducks/RDKitSettingsDuck';
+import { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma, setRDKit_width, setRDKit_doAlignment } from '../../Ducks/RDKitSettingsDuck';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { WindowMode } from '../../Ducks/HoverSettingsDuck';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { setChannelColor } from '../../Ducks/ChannelColorDuck';
 import { selectVectors } from '../../Ducks/AggregationDuck';
 import { setHoverState } from '../../Ducks/HoverStateDuck';
 

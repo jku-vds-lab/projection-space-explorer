@@ -1,4 +1,4 @@
-import { Dataset, DatasetUtil } from "../../../Utility/Data/Dataset";
+import { Dataset, DatasetUtil } from "../../../../model/Dataset";
 import { EmbeddingController } from "./EmbeddingController"
 
 import * as frontend_utils from "../../../../utils/frontend-connect";

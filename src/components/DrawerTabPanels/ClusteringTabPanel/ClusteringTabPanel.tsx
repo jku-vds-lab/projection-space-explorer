@@ -1,13 +1,13 @@
 import React = require("react")
 import { Box, Button, Checkbox, FormControl, FormGroup, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Typography } from "@material-ui/core"
 import { connect, ConnectedProps } from 'react-redux'
-import { ClusterObject, ICluster } from "../../Utility/Data/Cluster"
-import { IStory, Storybook } from "../../Utility/Data/Storybook"
+import { ACluster, ICluster } from "../../../model/Cluster"
+import { IBook, ABook } from "../../../model/Book"
 import { graphLayout, storyLayout, transformIndicesToHandles } from "../../Utility/graphs"
 import SettingsIcon from '@material-ui/icons/Settings';
 import SaveIcon from '@material-ui/icons/Save';
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
-import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories, StoriesType, StoriesUtil } from "../../Ducks/StoriesDuck"
+import { addStory, removeClusterFromStories, setActiveStory, setStories, StoriesType, StoriesUtil } from "../../Ducks/StoriesDuck"
 import { RootState } from "../../Store/Store"
 import DeleteIcon from '@material-ui/icons/Delete';
 import { StoryPreview } from "./StoryPreview"
@@ -23,7 +23,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
 import { selectClusters } from "../../Ducks/AggregationDuck"
 import { CategoryOptionsAPI } from "../../WebGLView/CategoryOptions"
-import { v4 as uuidv4 } from 'uuid';
+import { Dataset } from "../../../model/Dataset"
 
 const mapStateToProps = (state: RootState) => ({
     stories: state.stories,
@@ -35,10 +35,9 @@ const mapStateToProps = (state: RootState) => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    setStories: (stories: IStory[]) => dispatch(setStories(stories)),
-    setActiveStory: (activeStory: IStory) => dispatch(setActiveStory(activeStory)),
+    setStories: (stories: IBook[]) => dispatch(setStories(stories)),
+    setActiveStory: (activeStory: IBook) => dispatch(setActiveStory(activeStory)),
     setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode)),
-    addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
     addStory: story => dispatch(addStory(story, true)),
     removeClusterFromStories: (cluster: ICluster) => dispatch(removeClusterFromStories(cluster)),
     setChannelColor: col => dispatch(setChannelColor(col)),
@@ -55,8 +54,6 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    open,
-    clusteringWorker,
     splitRef
 }
 
@@ -71,13 +68,11 @@ export const ClusteringTabPanel = connector(({
     categoryOptions,
     setChannelColor,
     setStories,
-    setActiveStory,
     dataset,
     stories,
     setDisplayMode,
     displayMode,
     addStory,
-    addClusterToStory,
     removeClusterFromStories,
     // selectedClusters,
     // setLineUpInput_data,
@@ -98,17 +93,8 @@ export const ClusteringTabPanel = connector(({
             let clusters = dataset.clusters
 
             if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
-
-                //let stories = storyLayout(dataset.clusterEdges)
-
-                //setStories(stories)
-                
                 setStories([transformIndicesToHandles(dataset.clusters, dataset.clusterEdges)])
-
-                //setActiveStory(stories[0])
             } else {
-                
-            
                 if (dataset.isSequential) {
                     const [edges] = graphLayout(dataset, clusters)
 
@@ -130,6 +116,8 @@ export const ClusteringTabPanel = connector(({
         const points = data_points.map(point => [point.x, point.y]);
         trackPromise(
             cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster)).then(data => {
+                console.log(data)
+
                 const cluster_labels = data["result"];
                 const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
@@ -139,7 +127,7 @@ export const ClusteringTabPanel = connector(({
                 }
 
 
-                let story: IStory = null
+                let story: IBook = null
                 if (stories.active !== null) {
                     story = StoriesUtil.getActive(stories)
                 } else {
@@ -151,16 +139,14 @@ export const ClusteringTabPanel = connector(({
                 dist_cluster_labels.forEach(cluster_label => {
                     if (cluster_label >= 0) {
                         const current_cluster_vects = data_points.filter((x, i) => cluster_labels[i] == cluster_label);
-                        const cluster = ClusterObject.fromSamples(dataset, current_cluster_vects.map(i => i.__meta__.meshIndex));
+                        const cluster = ACluster.fromSamples(dataset, current_cluster_vects.map(i => i.__meta__.meshIndex));
 
                         // Set correct label for cluster
                         cluster.label = cluster_label
                         // clusters.push(cluster)
 
-                        const handle = uuidv4()
 
-                        story.clusters.byId[handle] = cluster
-                        story.clusters.allIds.push(handle)
+                        ABook.addCluster(story, cluster)
                     }
                 });
 
@@ -442,6 +428,7 @@ export const ClusteringTabPanel = connector(({
 
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
             <ClusterList
+                dataset={dataset}
                 removeClusterFromStories={removeClusterFromStories}
                 selectedClusters={currentAggregation.selectedClusters}
                 stories={stories}
@@ -469,12 +456,14 @@ type ClusterPopoverProps = {
     setLineUpInput_filter: any
     splitRef: any
     setSelectedCluster: any
+    dataset: Dataset
 }
 
 function ClusterPopover({
     anchorEl,
     setAnchorEl,
     cluster,
+    dataset,
     removeClusterFromStories,
     updateLineUpInput_filter,
     setLineUpInput_visibility,
@@ -509,7 +498,7 @@ function ClusterPopover({
         updateLineUpInput_filter({ "key": 'groupLabel', 'val_old': cluster.label, 'val_new': name });
         cluster.label = name
         // Rename cluster labels in dataset
-        replaceClusterLabels(cluster.vectors, cluster.label, name)
+        replaceClusterLabels(cluster.indices.map(i => dataset.vectors[i]), cluster.label, name)
         setAnchorEl(null)
 
         setLineUpInput_update();
@@ -610,6 +599,7 @@ type ClusterListProps = {
     setLineUpInput_filter
     splitRef
     setSelectedCluster
+    dataset
 }
 
 
@@ -617,6 +607,7 @@ type ClusterListProps = {
 function ClusterList({
     selectedClusters,
     stories,
+    dataset,
     removeClusterFromStories,
     // setLineUpInput_data,
     updateLineUpInput_filter,
@@ -639,8 +630,8 @@ function ClusterList({
                 setSelectedCluster([key], event.ctrlKey)
             }}>
                 <ListItemText
-                    primary={ClusterObject.getTextRepresentation(cluster)}
-                    secondary={`${cluster.refactored.length} Items`}
+                    primary={ACluster.getTextRepresentation(cluster)}
+                    secondary={`${cluster.indices.length} Items`}
                 />
                 <ListItemSecondaryAction>
                     <IconButton edge="end" aria-label="delete" onClick={(event) => {
@@ -658,6 +649,7 @@ function ClusterList({
     return <div>
         <ClusterPopover
             anchorEl={anchorEl}
+            dataset={dataset}
             setAnchorEl={setAnchorEl}
             cluster={popoverCluster}
             removeClusterFromStories={removeClusterFromStories}

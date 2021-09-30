@@ -1,6 +1,5 @@
 import { SchemeColor } from "./SchemeColor";
 import { LinearColorScale } from "./LinearColorScale";
-import { exception } from "console";
 import { ContinuousMapping, DiscreteMapping } from "./Mapping";
 var d3v5 = require('d3');
 

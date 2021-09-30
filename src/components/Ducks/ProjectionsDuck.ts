@@ -1,5 +1,5 @@
 import { Delete } from "@material-ui/icons"
-import { Embedding } from "../Utility/Data/Embedding"
+import { Embedding } from "../../model/Embedding"
 
 const ADD = "ducks/projections/ADD"
 const DELETE = "ducks/projections/DELETE"

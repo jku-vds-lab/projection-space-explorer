@@ -1,10 +1,9 @@
 import * as React from 'react'
 import { Button, FormControl, Grid, IconButton, InputLabel, ListItem, ListItemSecondaryAction, ListItemText, Select } from '@material-ui/core';
 import { connect, ConnectedProps } from 'react-redux'
-import './StoryPreview.scss'
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Storybook } from '../../Utility/Data/Storybook';
-import { addStory, deleteStory, setActiveStory } from '../../Ducks/StoriesDuck';
+import { IBook, ABook } from '../../../model/Book';
+import { addStory, deleteStory, setActiveStory, StoriesUtil } from '../../Ducks/StoriesDuck';
 import { RootState } from '../../Store/Store';
 
 const mapStateToProps = (state: RootState) => ({
@@ -14,7 +13,7 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = dispatch => ({
     setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
     deleteStory: story => dispatch(deleteStory(story)),
-    addStory: story => dispatch(addStory(story))
+    addStory: (story: IBook) => dispatch(addStory(story, true))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -22,7 +21,6 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    addStory: any
 }
 
 export const StoryPreview = connector(({
@@ -39,10 +37,14 @@ export const StoryPreview = connector(({
     }
 
     const addHandler = () => {
-        addStory(new Storybook([], []))
+        addStory(ABook.createEmpty())
     }
     
-    return <div className="StoryPreviewContent">
+    return <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignContent: 'stretch'
+    }}>
         <FormControl>
             <InputLabel id="demo-simple-select-label">Active Story Book</InputLabel>
             <Select
@@ -55,7 +57,7 @@ export const StoryPreview = connector(({
             >
                 <ListItem
                     key={-1}
-                    {...{ value: '' }}
+                    {...{ value: null }}
                     button
                 >
                     <ListItemText primary={"None"} />

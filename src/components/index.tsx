@@ -5,7 +5,7 @@ import { WebGLView } from './WebGLView/WebGLView'
 import Grid from '@material-ui/core/Grid';
 import { AppBar, Button, Divider, Drawer, Paper, SvgIcon, Toolbar, Tooltip } from "@material-ui/core";
 import { DatasetDatabase } from "./Utility/Data/DatasetDatabase";
-import { Dataset, DatasetUtil, SegmentFN } from "./Utility/Data/Dataset";
+import { Dataset, DatasetUtil, SegmentFN } from "../model/Dataset";
 import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
@@ -40,7 +40,7 @@ import { SDFLoader } from "./Utility/Loaders/SDFLoader";
 import * as frontend_utils from "../utils/frontend-connect";
 import { DetailsTabPanel } from "./DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
 import { addProjectionAction } from "./Ducks/ProjectionsDuck";
-import { Embedding } from "./Utility/Data/Embedding";
+import { Embedding } from "../model/Embedding";
 import { setActiveStory, setVectors, addStory } from "./Ducks/StoriesDuck";
 // @ts-ignore
 import PseDataset from './Icons/pse-icon-dataset.svg'
@@ -54,11 +54,10 @@ import PseEncoding from './Icons/pse-icon-encoding.svg'
 import PseProject from './Icons/pse-icon-project.svg'
 // @ts-ignore
 import PseLineup from './Icons/pse-icon-lineup.svg'
-import './index.scss'
 import Split from 'react-split'
 import { setLineByOptions } from "./Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
-import { IStory } from "./Utility/Data/Storybook";
+import { IBook } from "../model/Book";
 import { setGlobalPointBrightness } from "./Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./Ducks/ChannelBrightnessDuck";
 import { setGenericFingerprintAttributes } from "./Ducks/GenericFingerprintAttributesDuck";
@@ -67,8 +66,7 @@ import { HoverStateOrientation } from "./Ducks/HoverStateOrientationDuck";
 import { PSEContextProvider } from "./Store/PSEContext";
 import { API } from "./Store/PluginScript";
 import { RootState } from "./Store/Store";
-import { IVect } from "./Utility/Data/Vect";
-import { DatasetType } from "./Utility/Data/DatasetType";
+import { DatasetType } from "../model/DatasetType";
 
 
 /**
@@ -107,7 +105,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = dispatch => ({
   addStory: story => dispatch(addStory(story)),
-  setActiveStory: (activeStory: IStory) => dispatch(setActiveStory(activeStory)),
+  setActiveStory: (activeStory: IBook) => dispatch(setActiveStory(activeStory)),
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
@@ -150,7 +148,12 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
  */
 type PropsFromRedux = ConnectedProps<typeof connector>
 
+export interface ApplicationConfig {
+  
+}
+
 type Props = PropsFromRedux & {
+  config: ApplicationConfig
 }
 
 
@@ -168,11 +171,6 @@ var Application = connector(class extends React.Component<Props, any> {
 
   constructor(props) {
     super(props)
-
-    this.state = {
-      fileDialogOpen: true
-    }
-
 
     this.threeRef = React.createRef()
     this.splitRef = React.createRef()
@@ -321,8 +319,6 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
   initializeEncodings(dataset) {
-    var state = {} as any
-
     this.threeRef.current.particles.shapeCat(null)
 
     var defaultSizeAttribute = CategoryOptionsAPI.getAttribute(this.props.categoryOptions, 'size', 'multiplicity', 'sequential')
@@ -359,8 +355,6 @@ var Application = connector(class extends React.Component<Props, any> {
       this.props.setChannelBrightness(null)
       this.threeRef.current.particles.transparencyCat(defaultBrightnessAttribute, [1])
     }
-
-    this.setState(state)
   }
 
   onLineSelect(algo, show) {
@@ -412,22 +406,22 @@ var Application = connector(class extends React.Component<Props, any> {
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Embedding and Projection</Typography>
               <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
-            </React.Fragment>}><Tab className="pse-tab" value={1} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            </React.Fragment>}><Tab value={1} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Point and Line Channels</Typography>
               <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
-            </React.Fragment>}><Tab className="pse-tab" value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            </React.Fragment>}><Tab value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Groups</Typography>
               <Typography variant="body2">Contains options for displaying and navigating groups in the dataset.</Typography>
-            </React.Fragment>}><Tab className="pse-tab" value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            </React.Fragment>}><Tab value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
-            </React.Fragment>}><Tab className="pse-tab" value={4} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            </React.Fragment>}><Tab value={4} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             {/* {frontend_utils.CHEM_PROJECT && <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Backend Settings</Typography>
@@ -437,7 +431,7 @@ var Application = connector(class extends React.Component<Props, any> {
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">LineUp Integration</Typography>
               <Typography variant="body2">Settings for LineUp Integration</Typography>
-            </React.Fragment>}><Tab className="pse-tab" value={5} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+            </React.Fragment>}><Tab value={5} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
           </Tabs>
         </Drawer>
 
@@ -479,18 +473,14 @@ var Application = connector(class extends React.Component<Props, any> {
               <FixedHeightTabPanel value={this.props.openTab} index={2}>
                 <StatesTabPanel
                   webGLView={this.threeRef}
-                  lineColorScheme={this.state.lineColorScheme}
                 ></StatesTabPanel>
               </FixedHeightTabPanel>
 
 
               <FixedHeightTabPanel value={this.props.openTab} index={3}>
-
                 {this.props.dataset != null ?
                   <ClusteringTabPanel
                     splitRef={this.splitRef}
-                    open={this.props.openTab == 2}
-                    clusteringWorker={this.state.clusteringWorker}
                   ></ClusteringTabPanel> : <div></div>
                 }
               </FixedHeightTabPanel>
@@ -624,24 +614,7 @@ const loo = async () => {
 }
 
 
-interface PSEPlugin {
-  type: string;
 
-  hasFileLayout(header: string[]);
-  createFingerprint(vectors: IVect[]): Promise<React.Component>;
-}
-
-class RubikPlugin implements PSEPlugin {
-  type: string;
-
-  hasFileLayout(header: string[]) {
-    throw new Error("Method not implemented.");
-  }
-
-  createFingerprint(vectors: IVect[]): Promise<React.Component> {
-    return new Promise(() => <div></div>)
-  }
-}
 
 
 
@@ -658,6 +631,7 @@ const EntryPoint = () => {
   return <div>
     <Button style={{ zIndex: 10000, position: 'absolute' }
     } onClick={() => {
+      console.log(context.store.getState().lineUpInput)
       onClick(context.serialize())
     }}>store</Button>
 
@@ -668,9 +642,11 @@ const EntryPoint = () => {
     <PSEContextProvider
       context={context}
       onStateChanged={(values, keys) => {
-      }}>
+      }}
+      
+      >
 
-      <Application />
+      <Application config={{}} />
     </PSEContextProvider>
   </div>
 }

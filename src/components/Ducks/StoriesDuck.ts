@@ -1,10 +1,10 @@
 import { getSyncNodesAlt } from "../NumTs/NumTs";
-import { ClusterObject, ICluster } from "../Utility/Data/Cluster";
-import { Edge } from "../Utility/graphs";
-import { IStory } from "../Utility/Data/Storybook";
-import { IVect } from "../Utility/Data/Vect";
+import { ACluster, ICluster } from "../../model/Cluster";
+import { Edge } from "../../model/Edge";
+import { IBook, ABook } from "../../model/Book";
+import { IVector } from "../../model/Vector";
 import { v4 as uuidv4 } from 'uuid';
-import { ObjectTypes } from "../Utility/Data/ObjectType";
+import { ObjectTypes } from "../../model/ObjectType";
 
 const ADD_STORY_BOOK = "ducks/stories/ADD"
 const DELETE = "ducks/stories/DELETE"
@@ -31,7 +31,7 @@ export const deleteStory = story => ({
     story: story
 });
 
-export function setStories(stories: IStory[]) {
+export function setStories(stories: IBook[]) {
     return {
         type: SET,
         stories: stories
@@ -44,7 +44,7 @@ export const addClusterToStory = cluster => ({
     cluster: cluster
 })
 
-export function setActiveStory(activeStory: IStory) {
+export function setActiveStory(activeStory: IBook) {
     return {
         type: SET_ACTIVE_STORY_BOOK,
         activeStory: activeStory
@@ -97,7 +97,7 @@ export function selectSideBranch(i: number) {
     }
 }
 
-export function setVectors(vectors: IVect[]) {
+export function setVectors(vectors: IVector[]) {
     return {
         type: SET_VECTORS,
         vectors: vectors
@@ -118,8 +118,8 @@ export class StoriesUtil {
         }
     }
 
-    static emptyStory(): IStory {
-        const story: IStory = {
+    static emptyStory(): IBook {
+        const story: IBook = {
             clusters: {
                 byId: {},
                 allIds: []
@@ -133,7 +133,7 @@ export class StoriesUtil {
         return story
     }
 
-    static getActive(stories: StoriesType): IStory {
+    static getActive(stories: StoriesType): IBook {
         return stories.stories[stories.active]
     }
 
@@ -144,30 +144,17 @@ export class StoriesUtil {
     static retreiveEdge(stories: StoriesType, edgeIndex: string): Edge {
         return stories.stories[stories.active].edges.byId[edgeIndex]
     }
-
-    static addCluster(stories: StoriesType, cluster: ICluster): string {
-        const activeStory = StoriesUtil.getActive(stories)
-
-        const handle = uuidv4()
-
-        activeStory.clusters.byId[handle] = cluster
-        activeStory.clusters.allIds.push(handle)
-
-        return handle
-    }
-
-    static deleteCluster(handle: string) {
-
-    }
 }
 
 const initialState = StoriesUtil.createEmpty()
 
-
+/**
+ * Type interface for stories slace of the redux store.
+ */
 export type StoriesType = {
-    vectors: IVect[]
+    vectors: IVector[]
 
-    stories: IStory[]
+    stories: IBook[]
 
     active: number
 
@@ -226,10 +213,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             // Add cluster to active story book
             const activeStory = StoriesUtil.getActive(state)
 
-            const clusterHandle = uuidv4()
-
-            activeStory.clusters.byId[clusterHandle] = cluster
-            activeStory.clusters.allIds.push(clusterHandle)
+            ABook.addCluster(activeStory, cluster)
 
             // Add edge that connects the active trace state with the current cluster
             if (state.trace.mainPath.length > 0) {
@@ -250,7 +234,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             // Add cluster to current trace
             state.trace.mainPath.push(cluster)
 
-            ClusterObject.deriveVectorLabelsFromClusters(state.vectors, Object.values(activeStory.clusters.byId))
+            ACluster.deriveVectorLabelsFromClusters(state.vectors, Object.values(activeStory.clusters.byId))
 
             return {
                 vectors: state.vectors,
@@ -271,7 +255,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
         }
         case SET:
             if (state.active !== null) {
-                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, Object.values(StoriesUtil.getActive(state).clusters.byId))
+                ACluster.deriveVectorLabelsFromClusters(state.vectors, Object.values(StoriesUtil.getActive(state).clusters.byId))
             }
 
             return {
@@ -286,7 +270,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
             newState.splice(newState.indexOf(action.story), 1)
 
             if (state.active == action.story) {
-                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, [])
+                ACluster.deriveVectorLabelsFromClusters(state.vectors, [])
 
                 return {
                     vectors: state.vectors,
@@ -305,7 +289,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 activeTraceState: state.activeTraceState
             }
         case ADD_STORY_BOOK: {
-            let storyBook = action.story as IStory
+            let storyBook = action.story as IBook
             let trace = state.trace
             let activeTraceState = state.activeTraceState
 
@@ -319,7 +303,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 activeTraceState = null
             }
 
-            ClusterObject.deriveVectorLabelsFromClusters(state.vectors, Object.values(storyBook.clusters.byId))
+            ACluster.deriveVectorLabelsFromClusters(state.vectors, Object.values(storyBook.clusters.byId))
 
             if (state && state.stories.length > 0) {
                 const newState = state.stories.slice(0)
@@ -359,9 +343,9 @@ export default function stories(state: StoriesType = initialState, action): Stor
             }
 
             if (storyBook && storyBook.clusters) {
-                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, Object.values(storyBook.clusters.byId))
+                ACluster.deriveVectorLabelsFromClusters(state.vectors, Object.values(storyBook.clusters.byId))
             } else {
-                ClusterObject.deriveVectorLabelsFromClusters(state.vectors, [])
+                ACluster.deriveVectorLabelsFromClusters(state.vectors, [])
             }
 
             return {
@@ -392,7 +376,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
 
             // Remove cluster labels from samples
             // TODO: check if this is ok in a reducer
-            cluster.refactored.map(i => state.vectors[i]).forEach(sample => {
+            cluster.indices.map(i => state.vectors[i]).forEach(sample => {
                 if (Array.isArray(sample.groupLabel)) {
                     sample.groupLabel.splice(sample.groupLabel.indexOf(cluster.label), 1)
                 } else {
@@ -427,19 +411,27 @@ export default function stories(state: StoriesType = initialState, action): Stor
 
             const story = StoriesUtil.getActive(state)
 
-            const handle = uuidv4()
-            story.clusters.byId[handle] = cluster
-            story.clusters.allIds.push(handle)
+            ABook.addCluster(story, cluster)
+
+
 
             // Add cluster labels to samples
             // TODO: check if this is ok in a reducer
-            cluster.refactored.forEach(i => {
+            cluster.indices.forEach(i => {
                 const sample = state.vectors[i]
                 if (Array.isArray(sample.groupLabel)) {
                     sample.groupLabel.push(cluster.label)
                 } else {
                     sample.groupLabel = [cluster.label]
                 }
+            })
+
+            console.log({
+                vectors: state.vectors,
+                stories: state.stories,
+                active: state.active,
+                trace: state.trace,
+                activeTraceState: state.activeTraceState
             })
 
             return {

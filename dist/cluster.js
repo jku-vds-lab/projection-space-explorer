@@ -3173,7 +3173,6 @@ self.addEventListener('message', function (e) {
             minY: 10000,
             maxY: -10000
           };
-          cluster.bounds = bounds;
           var pts = cluster.points.filter(function (e) {
             return e.probability > 0.7;
           }).map(function (e) {
@@ -3242,7 +3241,6 @@ self.addEventListener('message', function (e) {
         minY: 10000,
         maxY: -10000
       };
-      cluster.bounds = bounds;
       var pts = cluster.points.map(function (point) {
         var x = point.x;
         var y = point.y;

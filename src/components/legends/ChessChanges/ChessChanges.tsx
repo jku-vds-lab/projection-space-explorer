@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { arraysEqual } from '../../WebGLView/UtilityFunctions'
-import { IVect } from "../../Utility/Data/Vect"
+import { IVector } from "../../../model/Vector"
 import { CHESS_TILE_BLACK, CHESS_TILE_WHITE } from "../ChessFingerprint/ChessFingerprint"
 
 const CHESS_TILE_CHANGES = '#007dad'
@@ -32,13 +32,13 @@ Object.keys(symbols).filter(key => key != '').forEach(key => {
 
 
 type ChessChangesProps = {
-    vectorsA: Array<IVect>
-    vectorsB: Array<IVect>
+    vectorsA: Array<IVector>
+    vectorsB: Array<IVector>
     width?: number
     height?: number
 }
 
-function getOccurences(vectors: Array<IVect>) {
+function getOccurences(vectors: Array<IVector>) {
     var aggregation = {}
     var keys = []
 

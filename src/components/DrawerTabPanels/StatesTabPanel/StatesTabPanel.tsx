@@ -55,7 +55,6 @@ const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRe
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    lineColorScheme
     webGLView: any
 }
 
@@ -126,21 +125,13 @@ export const StatesTabPanelFull = ({
     setGlobalPointSize,
     channelColor,
     setChannelColor,
-    setAdvancedColoringSelection,
-    lineColorScheme
+    setAdvancedColoringSelection
 }: Props) => {
     if (dataset == null) {
         return null;
     }
 
     const classes = useStyles();
-
-
-
-
-
-
-
 
     const [expanded, setExpanded] = React.useState<boolean | string>(false);
 

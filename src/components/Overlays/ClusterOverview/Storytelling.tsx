@@ -1,11 +1,11 @@
 import "./Storytelling.scss";
 import * as React from 'react'
-import { ClusterObject } from "../../Utility/Data/Cluster";
+import { ACluster } from "../../../model/Cluster";
 import { GenericFingerprint } from "../../legends/Generic";
 import { Card, Typography, Tooltip, IconButton, CardHeader } from "@material-ui/core";
 import { connect, ConnectedProps } from 'react-redux'
-import { DatasetType } from "../../Utility/Data/DatasetType";
-import { Dataset } from "../../Utility/Data/Dataset";
+import { DatasetType } from "../../../model/DatasetType";
+import { Dataset } from "../../../model/Dataset";
 import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
 import { RootState } from "../../Store/Store";
 import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType, StoriesUtil } from "../../Ducks/StoriesDuck";
@@ -17,7 +17,6 @@ import SkipNextIcon from '@material-ui/icons/SkipNext';
 import StopIcon from '@material-ui/icons/Stop';
 import { ResizeObserver } from 'resize-observer';
 import { selectClusters } from "../../Ducks/AggregationDuck";
-import { Edge } from "../../Utility/graphs";
 
 
 const mainColor = '#007dad'
@@ -244,7 +243,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                                 return <g key={`${p.x}${p.y}`}>
                                     <line x1={midX} y1={p1.y} x2={midX} y2={p2.y} stroke={mainColor} strokeWidth="2"></line>
                                     <Plus x={midX} y={p2.y} r={10} onClick={() => {
-                                        let cluster = ClusterObject.fromSamples(this.props.dataset, currentAggregation.aggregation)
+                                        let cluster = ACluster.fromSamples(this.props.dataset, currentAggregation.aggregation)
 
                                         addClusterToTrace(cluster)
 
@@ -259,7 +258,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                             <line x1={midX} y1={0} x2={midX} y2={100} stroke={mainColor} strokeWidth="2"></line>
                             <Plus x={midX} y={100} r={10} onClick={() => {
                                 if (currentAggregation.aggregation.length > 0) {
-                                    let cluster = ClusterObject.fromSamples(this.props.dataset, this.props.currentAggregation.aggregation)
+                                    let cluster = ACluster.fromSamples(this.props.dataset, this.props.currentAggregation.aggregation)
 
                                     addClusterToTrace(cluster)
                                 }
@@ -500,7 +499,7 @@ export const Storytelling = connector(function ({
                                         setActiveTraceState(cluster)
                                         setSelectedCluster([cluster], false)
                                     }}>
-                                    <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{ClusterObject.getTextRepresentation(StoriesUtil.retrieveCluster(stories, cluster))}</Typography>
+                                    <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{ACluster.getTextRepresentation(StoriesUtil.retrieveCluster(stories, cluster))}</Typography>
 
                                     <div className="ClusterItem"
                                         style={{
@@ -512,7 +511,7 @@ export const Storytelling = connector(function ({
                                     >
                                         <GenericFingerprint
                                             type={dataset.type}
-                                            vectors={StoriesUtil.retrieveCluster(stories, cluster).refactored.map(i => dataset.vectors[i])}
+                                            vectors={StoriesUtil.retrieveCluster(stories, cluster).indices.map(i => dataset.vectors[i])}
                                             scale={1}
                                         />
                                     </div>
@@ -561,8 +560,8 @@ export const Storytelling = connector(function ({
                                         <GenericChanges
 
                                             scale={1}
-                                            vectorsA={StoriesUtil.retrieveCluster(stories, edge.source).refactored.map(i => dataset.vectors[i])}
-                                            vectorsB={StoriesUtil.retrieveCluster(stories, edge.destination).refactored.map(i => dataset.vectors[i])}
+                                            vectorsA={StoriesUtil.retrieveCluster(stories, edge.source).indices.map(i => dataset.vectors[i])}
+                                            vectorsB={StoriesUtil.retrieveCluster(stories, edge.destination).indices.map(i => dataset.vectors[i])}
                                         />
                                     </div>
                                 </div>

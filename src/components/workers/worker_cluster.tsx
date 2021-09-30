@@ -149,8 +149,6 @@ self.addEventListener('message', function (e) {
                         maxY: -10000
                     }
 
-                    cluster.bounds = bounds
-
                     var pts = cluster.points.filter(e => e.probability > 0.7).map(e => {
                         var x = xy[e.meshIndex][0]
                         var y = xy[e.meshIndex][1]
@@ -223,8 +221,6 @@ self.addEventListener('message', function (e) {
                 minY: 10000,
                 maxY: -10000
             }
-
-            cluster.bounds = bounds
 
             var pts = cluster.points.map(point => {
                 var x = point.x

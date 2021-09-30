@@ -1,9 +1,9 @@
 import { valueInRange } from './UtilityFunctions'
 import { ContinuousMapping } from "../Utility/Colors/Mapping"
 import * as THREE from 'three'
-import { DataLine } from "../Utility/Data/DataLine"
-import { IVect } from "../Utility/Data/Vect"
-import { Dataset } from "../Utility/Data/Dataset"
+import { DataLine } from "../../model/DataLine"
+import { IVector } from "../../model/Vector"
+import { Dataset } from "../../model/Dataset"
 import { LayeringSystem } from './LayeringSystem/LayeringSystem'
 import { StoriesType, StoriesUtil } from '../Ducks/StoriesDuck'
 import { DiscreteMapping, Mapping } from '../Utility/Colors/Mapping'
@@ -169,7 +169,7 @@ export class LineVisualization {
       let lineIndices = new Set<number>()
 
       for (const [key, cluster] of Object.entries(stories.stories[stories.active].clusters.byId)) { 
-        cluster.refactored.forEach(i => {
+        cluster.indices.forEach(i => {
           lineIndices.add(stories.vectors[i].__meta__.lineIndex)
         })
       }
@@ -190,7 +190,7 @@ export class LineVisualization {
 
       let lineIndices = new Set<number>()
       stories.trace.mainPath.forEach(cluster => {
-        StoriesUtil.retrieveCluster(stories, cluster).refactored.forEach(i => {
+        StoriesUtil.retrieveCluster(stories, cluster).indices.forEach(i => {
           lineIndices.add(stories.vectors[i].__meta__.lineIndex)
         })
       })
@@ -360,7 +360,7 @@ export class PointVisualization {
   showSymbols: any
   colorsChecked: any
   segments: DataLine[]
-  vectors: IVect[]
+  vectors: IVector[]
   vectorSegmentLookup: DataLine[]
   mesh: any
   sizeAttribute: any
@@ -518,7 +518,7 @@ export class PointVisualization {
 
       let vecIndices = new Set<number>()
       for (const [key, cluster] of Object.entries(stories.stories[stories.active].clusters.byId)) {
-        cluster.refactored.forEach(sample => {
+        cluster.indices.forEach(sample => {
           vecIndices.add(sample)
         })
       }
@@ -537,7 +537,7 @@ export class PointVisualization {
 
       let vecIndices = new Set<number>()
       stories.trace.mainPath.forEach(cluster => {
-        StoriesUtil.retrieveCluster(stories, cluster).refactored.forEach(i => {
+        StoriesUtil.retrieveCluster(stories, cluster).indices.forEach(i => {
           vecIndices.add(i)
         })
       })
@@ -877,7 +877,7 @@ export class PointVisualization {
     this.mesh.geometry.attributes.customColor.needsUpdate = true
   }
 
-  isPointVisible(vector: IVect) {
+  isPointVisible(vector: IVector) {
     const i = vector.__meta__.meshIndex
 
     return (this.vectorSegmentLookup[i] == null || this.vectorSegmentLookup[i].__meta__.detailVisible)

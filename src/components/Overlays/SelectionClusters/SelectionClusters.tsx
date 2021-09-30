@@ -1,3 +1,4 @@
+
 import * as React from 'react'
 import { Box, Card, Typography } from '@material-ui/core'
 import { GenericLegend } from '../../legends/Generic'
@@ -6,7 +7,7 @@ import ReactDOM = require('react-dom')
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck'
 
 import { MyWindowPortal } from '../WindowPortal/WindowPortal'
-import { isVector } from '../../Utility/Data/Cluster'
+import { isVector } from '../../../model/Vector'
 import { RootState } from '../../Store/Store'
 
 

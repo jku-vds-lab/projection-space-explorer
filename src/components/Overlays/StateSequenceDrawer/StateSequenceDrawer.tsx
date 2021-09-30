@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import * as React from 'react'
 import { Typography, IconButton, Card, CardHeader } from "@material-ui/core";
 import './StateSequenceDrawer.scss';
-import { Dataset } from "../../Utility/Data/Dataset";
+import { Dataset } from "../../../model/Dataset";
 import { setHighlightedSequenceAction } from "../../Ducks/HighlightedSequenceDuck";
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -13,7 +13,7 @@ import StopIcon from '@material-ui/icons/Stop';
 import { setActiveLine } from '../../Ducks/ActiveLineDuck';
 import { GenericLegend } from '../../legends/Generic';
 import { GenericChanges } from '../../legends/GenericChanges/GenericChanges';
-import { DatasetType } from '../../Utility/Data/DatasetType';
+import { DatasetType } from '../../../model/DatasetType';
 import { ResizeObserver } from 'resize-observer';
 import { selectVectors } from '../../Ducks/AggregationDuck';
 

@@ -1,9 +1,9 @@
-import { DataLine } from "../../../Utility/Data/DataLine";
-import { Dataset } from "../../../Utility/Data/Dataset";
+import { DataLine } from "../../../../model/DataLine";
+import { Dataset } from "../../../../model/Dataset";
 import { EmbeddingController } from "./EmbeddingController"
 
 import * as frontend_utils from "../../../../utils/frontend-connect";
-import { IVect } from "../../../Utility/Data/Vect";
+import { IVector } from "../../../../model/Vector";
 
 const Graph = require('graphology');
 
@@ -11,12 +11,12 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
     nodes: any
 
     buildGraph(segments: DataLine[], reuse) {
-        let nodes: IVect[] = []
+        let nodes: IVector[] = []
         let edges = []
 
         let dups = []
         segments.forEach(segment => {
-            let prev: IVect = null
+            let prev: IVector = null
             let prevWasDuplicate = false
 
             segment.vectors.forEach((sample, i) => {

@@ -12,8 +12,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import './coral.scss';
-import { FeatureType } from "../../Utility/Data/FeatureType";
-import { IVect } from "../../Utility/Data/Vect";
+import { FeatureType } from "../../../model/FeatureType";
+import { IVector } from "../../../model/Vector";
 import { RootState } from '../../Store/Store.js';
 
 const useStyles = makeStyles({
@@ -269,7 +269,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
     aggregate: boolean
-    selection: IVect[]
+    selection: IVector[]
 }
 
 export var CoralLegend = connector(({ selection, aggregate, legendAttributes, dataset }: Props) => {

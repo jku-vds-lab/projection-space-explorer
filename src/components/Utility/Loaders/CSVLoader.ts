@@ -1,26 +1,26 @@
-import { FeatureType } from "../Data/FeatureType"
-import { DatasetType } from "../Data/DatasetType"
-import { IVectUtil, IVect } from "../Data/Vect"
+import { FeatureType } from "../../../model/FeatureType"
+import { DatasetType } from "../../../model/DatasetType"
+import { AVector, IVector } from "../../../model/Vector"
 import { InferCategory } from "../Data/InferCategory"
 import { Preprocessor } from "../Data/Preprocessor"
-import { Dataset, DefaultFeatureLabel } from "../Data/Dataset"
+import { Dataset, DefaultFeatureLabel } from "../../../model/Dataset"
 import { Loader } from "./Loader"
 import { DatasetEntry } from "../Data/DatasetDatabase"
-import { ICluster } from "../Data/Cluster"
+import { ICluster } from "../../../model/Cluster"
 import * as frontend_utils from "../../../utils/frontend-connect"
-import { ObjectTypes } from "../Data/ObjectType"
+import { ObjectTypes } from "../../../model/ObjectType"
 
 
 var d3v5 = require('d3')
 
 function convertFromCSV(vectors) {
     return vectors.map(vector => {
-        return IVectUtil.create(vector)
+        return AVector.create(vector)
     })
 }
 
 export class CSVLoader implements Loader {
-    vectors: IVect[]
+    vectors: IVector[]
     datasetType: DatasetType
 
     constructor() {
@@ -59,7 +59,7 @@ export class CSVLoader implements Loader {
     }
 
 
-    getClusters(vectors: IVect[], callback) {
+    getClusters(vectors: IVector[], callback) {
         let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js')
 
         worker.onmessage = (e) => {
@@ -67,15 +67,12 @@ export class CSVLoader implements Loader {
             let clusters = new Array<ICluster>()
             Object.keys(e.data).forEach(k => {
                 let t = e.data[k]
-
                 clusters.push({
                     objectType: ObjectTypes.Cluster,
-                    refactored: t.points.map(i => i.meshIndex),
+                    indices: t.points.map(i => i.meshIndex),
                     hull: t.hull,
                     triangulation: t.triangulation,
-                    label: k,
-                    bounds: t.bounds,
-                    vectors: null
+                    label: k
                 })
             })
 

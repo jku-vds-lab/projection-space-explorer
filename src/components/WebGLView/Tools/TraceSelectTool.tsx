@@ -1,5 +1,5 @@
-import { ClusterObject, ICluster } from "../../Utility/Data/Cluster";
-import { Dataset } from "../../Utility/Data/Dataset";
+import { ACluster, ICluster } from "../../../model/Cluster";
+import { Dataset } from "../../../model/Dataset";
 import { RenderingContextEx } from "../../Utility/RenderingContextEx";
 import { CameraTransformations } from "../CameraTransformations";
 import { Tool } from "./Tool";
@@ -19,7 +19,7 @@ export class TraceSelectTool implements Tool {
         if (!this.cluster || !this.viewTransform) {
             return;
         }
-        let start = CameraTransformations.worldToScreen(ClusterObject.getCenter(this.dataset, this.cluster), this.viewTransform)
+        let start = CameraTransformations.worldToScreen(ACluster.getCenter(this.dataset, this.cluster), this.viewTransform)
 
         context.lineWidth = "2"
 
