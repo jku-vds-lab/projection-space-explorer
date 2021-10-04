@@ -39,8 +39,6 @@
     "lineupjsx": "^4.0.0",
     "lodash": "^4.17.20",
     "ml-conrec": "^3.2.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "react-draggable": "^4.4.3",
     "react-icons": "^4.1.0",
     "react-loader-spinner": "^3.1.14",
@@ -86,7 +84,13 @@
     "typescript": "^3.7.5",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
-    "webpack-glsl-loader": "^1.0.1"
+    "webpack-glsl-loader": "^1.0.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "scripts": {
     "webpack:dev": "npx webpack --config webpack.config.js",
