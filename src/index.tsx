@@ -588,7 +588,7 @@ var Application = connector(class extends React.Component<Props, any> {
 
 
 
-const onClick = async (content: string) => {
+/**const onClick = async (content: string) => {
   // @ts-ignore
   const handle = await window.showSaveFilePicker({
     suggestedName: 'session.pse',
@@ -666,4 +666,4 @@ const EntryPoint = () => {
 }
 
 // Render the application into our 'mountingPoint' div that is declared in 'index.html'.
-ReactDOM.render(<EntryPoint></EntryPoint>, document.getElementById("mountingPoint"))
+ReactDOM.render(<EntryPoint></EntryPoint>, document.getElementById("mountingPoint"))**/

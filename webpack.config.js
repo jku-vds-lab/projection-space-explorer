@@ -2,7 +2,7 @@ const webpack = require('webpack');
 
 module.exports = {
   mode: "development",
-  watch: true,
+  watch: false,
   entry: {
     index: "./src/index.tsx",
     tsne: './src/components/workers/embeddings/worker_tsne.ts',
