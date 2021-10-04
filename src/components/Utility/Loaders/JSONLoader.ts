@@ -7,7 +7,7 @@ import { InferCategory } from "../Data/InferCategory";
 import { Preprocessor } from "../Data/Preprocessor";
 import { Dataset } from "../../../model/Dataset";
 import { ACluster, ICluster } from "../../../model/Cluster";
-import { Edge } from "../../../model/Edge";
+import { IEdge } from "../../../model/Edge";
 import { ObjectTypes } from "../../../model/ObjectType";
 
 export class JSONLoader implements Loader {
@@ -162,7 +162,7 @@ export class JSONLoader implements Loader {
         content.edges[0].data.forEach(row => {
             let nameIndex = content.edges[0].columns.indexOf("name")
 
-            let edge: Edge = {
+            let edge: IEdge = {
                 source: clusters.findIndex(cluster => cluster.label == row[1]).toString(),
                 destination: clusters.findIndex(cluster => cluster.label == row[2]).toString(),
                 objectType: ObjectTypes.Edge

@@ -1,6 +1,6 @@
 import { getSyncNodesAlt } from "../NumTs/NumTs";
 import { ACluster, ICluster } from "../../model/Cluster";
-import { Edge } from "../../model/Edge";
+import { IEdge } from "../../model/Edge";
 import { IBook, ABook } from "../../model/Book";
 import { IVector } from "../../model/Vector";
 import { v4 as uuidv4 } from 'uuid';
@@ -141,7 +141,7 @@ export class StoriesUtil {
         return stories.stories[stories.active].clusters.byId[clusterIndex]
     }
 
-    static retreiveEdge(stories: StoriesType, edgeIndex: string): Edge {
+    static retreiveEdge(stories: StoriesType, edgeIndex: string): IEdge {
         return stories.stories[stories.active].edges.byId[edgeIndex]
     }
 }
@@ -217,16 +217,13 @@ export default function stories(state: StoriesType = initialState, action): Stor
 
             // Add edge that connects the active trace state with the current cluster
             if (state.trace.mainPath.length > 0) {
-                let edge: Edge = {
+                let edge: IEdge = {
                     source: state.trace.mainPath[state.trace.mainPath.length - 1],
                     destination: cluster,
                     objectType: ObjectTypes.Edge
                 }
 
-                const handle = uuidv4()
-
-                activeStory.edges.byId[handle] = edge
-                activeStory.edges.allIds.push(handle)
+                const handle = ABook.addEdge(activeStory, edge)
 
                 state.trace.mainEdges.push(handle)
             }
@@ -331,6 +328,7 @@ export default function stories(state: StoriesType = initialState, action): Stor
 
             let trace = state.trace
             let activeTraceState = state.activeTraceState
+
             if (storyBook && storyBook.clusters.allIds.length == 0) {
                 trace = {
                     mainPath: [],
@@ -360,18 +358,15 @@ export default function stories(state: StoriesType = initialState, action): Stor
             const cluster = action.cluster as ICluster
 
             const activeStory = StoriesUtil.getActive(state)
-            const handle = Object.keys(activeStory.clusters.byId).find(handle => activeStory.clusters.byId[handle] === cluster)
 
-            delete activeStory.clusters.byId[handle]
-            activeStory.clusters.allIds.splice(activeStory.clusters.allIds.indexOf(handle), 1)
+            const handle = ABook.deleteCluster(activeStory, cluster)
 
             const entries = Object.entries(activeStory.edges.byId).filter(([edgeHandle, edge]) => {
                 return edge.source === handle || edge.destination === handle
             })
 
             for (const [handle, edge] of entries) {
-                delete activeStory.edges.byId[handle]
-                activeStory.edges.allIds.splice(activeStory.edges.allIds.indexOf(handle), 1)
+                ABook.deleteEdge(activeStory, edge)
             }
 
             // Remove cluster labels from samples
@@ -382,6 +377,14 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 } else {
                     sample.groupLabel = []
                 }
+            })
+
+            console.log({
+                vectors: state.vectors,
+                stories: state.stories,
+                active: state.active,
+                trace: state.trace,
+                activeTraceState: state.activeTraceState
             })
 
             return {
@@ -413,8 +416,6 @@ export default function stories(state: StoriesType = initialState, action): Stor
 
             ABook.addCluster(story, cluster)
 
-
-
             // Add cluster labels to samples
             // TODO: check if this is ok in a reducer
             cluster.indices.forEach(i => {
@@ -424,14 +425,6 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 } else {
                     sample.groupLabel = [cluster.label]
                 }
-            })
-
-            console.log({
-                vectors: state.vectors,
-                stories: state.stories,
-                active: state.active,
-                trace: state.trace,
-                activeTraceState: state.activeTraceState
             })
 
             return {

@@ -2,17 +2,36 @@ import { ObjectTypes } from "./ObjectType";
 import { TypedObject } from "./TypedObject";
 
 /**
- * Edge class that is a connection between 2 nodes.
+ * Edge type.
  */
-export interface Edge extends TypedObject {
-    source: string;
-    destination: string;
-    bundle?: number[];
-    name?: string;
+export interface IEdge extends TypedObject {
+    /**
+     * Object type.
+     */
     objectType: string;
+
+    /**
+     * Handle to source cluster.
+     */
+    source: string;
+
+    /**
+     * Handle to destination cluster.
+     */
+    destination: string;
+
+    /**
+     * Optional name for this edge (will be displayed like a street name).
+     */
+    name?: string;
 }
 
 
-export function isEdge(value: TypedObject): value is Edge {
+
+
+/**
+ * Edge type guard.
+ */
+export function isEdge(value: TypedObject): value is IEdge {
     return value && value.objectType === ObjectTypes.Edge
 }

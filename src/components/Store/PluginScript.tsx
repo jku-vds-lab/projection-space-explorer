@@ -3,14 +3,9 @@ import { addClusterToStory } from "../Ducks/StoriesDuck";
 import { rootReducer, RootState } from "../Store/Store";
 import thunk from 'redux-thunk';
 import { IVector } from "../../model/Vector";
-import React = require("react");
 import { connect } from "react-redux";
-import { DatasetType } from "../../model/DatasetType";
-import { RubikFingerprint } from "../legends/RubikFingerprint/RubikFingerprint";
-import { ChessFingerprint } from "../legends/ChessFingerprint/ChessFingerprint";
-import { CoralLegend } from "../legends/CoralDetail/CoralDetail";
-import { ChemLegendParent } from "../legends/ChemDetail/ChemDetail";
 
+import { v4 as uuidv4 } from 'uuid';
 
 function getStoreDiff(storeA, storeB) {
     const diff = {}
@@ -25,17 +20,6 @@ function getStoreDiff(storeA, storeB) {
     }
 
     return diff
-}
-
-
-
-
-
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
 }
 
 
@@ -127,7 +111,7 @@ export class PluginRegistry {
 
 
 
-abstract class PSEPlugin {
+export abstract class PSEPlugin {
     type: string;
 
     hasFileLayout(header: string[]) {
@@ -152,70 +136,3 @@ abstract class PSEPlugin {
 
 
 
-
-
-
-class RubikPlugin extends PSEPlugin {
-    type = DatasetType.Rubik;
-
-    hasFileLayout(header: string[]) {
-        const requiredRubikColumns = [
-            "up00", "up01", "up02", "up10", "up11", "up12", "up20", "up21", "up22",
-            "front00", "front01", "front02", "front10", "front11", "front12", "front20", "front21", "front22",
-            "right00", "right01", "right02", "right10", "right11", "right12", "right20", "right21", "right22",
-            "left00", "left01", "left02", "left10", "left11", "left12", "left20", "left21", "left22",
-            "down00", "down01", "down02", "down10", "down11", "down12", "down20", "down21", "down22",
-            "back00", "back01", "back02", "back10", "back11", "back12", "back20", "back21", "back22"]
-
-
-        return this.hasLayout(header, requiredRubikColumns)
-    }
-
-    createFingerprint(vectors: IVector[], scale: number = 1, aggregate: boolean): JSX.Element {
-        return <RubikFingerprint vectors={vectors} width={81 * scale} height={108 * scale}></RubikFingerprint>
-    }
-}
-
-
-class ChessPlugin extends PSEPlugin {
-    type = DatasetType.Chess;
-
-    hasFileLayout(header: string[]) {
-        const requiredChessColumns = [];
-
-        ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].forEach(c => {
-            [1, 2, 3, 4, 5, 6, 7, 8].forEach(n => {
-                requiredChessColumns.push(`${c}${n}`)
-            })
-        })
-
-        return this.hasLayout(header, requiredChessColumns)
-    }
-
-    createFingerprint(vectors: IVector[], scale: number, aggregate: boolean): JSX.Element {
-        return <ChessFingerprint vectors={vectors} width={144 * scale} height={144 * scale}></ChessFingerprint>
-    }
-}
-
-class CoralPlugin extends PSEPlugin {
-    type = DatasetType.Cohort_Analysis;
-
-    createFingerprint(vectors: IVector[], scale: number, aggregate: boolean): JSX.Element {
-        return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
-    }
-}
-class ChemPlugin extends PSEPlugin {
-    type = DatasetType.Chem;
-
-    createFingerprint(vectors: IVector[], scale: number, aggregate: boolean): JSX.Element {
-        return <ChemLegendParent selection={vectors} aggregate={aggregate}></ChemLegendParent>
-    }
-}
-
-
-
-
-PluginRegistry.getInstance().registerPlugin(new RubikPlugin())
-PluginRegistry.getInstance().registerPlugin(new ChessPlugin())
-PluginRegistry.getInstance().registerPlugin(new CoralPlugin())
-PluginRegistry.getInstance().registerPlugin(new ChemPlugin())

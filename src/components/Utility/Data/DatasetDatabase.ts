@@ -298,26 +298,6 @@ export class DatasetDatabase {
                     type: DatasetType.Rubik
                 },
                 {
-                    display: "NN: Rnd Weights",
-                    path: "datasets/neural/random_weights.csv",
-                    type: DatasetType.Neural
-                },
-                {
-                    display: "NN: Rnd Confusion Matrix",
-                    path: "datasets/neural/random_confmat.csv",
-                    type: DatasetType.Neural
-                },
-                {
-                    display: "NN: Weights",
-                    path: "datasets/neural/learning_weights.csv",
-                    type: DatasetType.Neural
-                },
-                {
-                    display: "NN: Confusion Matrix",
-                    path: "datasets/neural/learning_confmat.csv",
-                    type: DatasetType.Neural
-                },
-                {
                     display: "Story: With Names",
                     path: "datasets/story/withnames.csv",
                     type: DatasetType.Story

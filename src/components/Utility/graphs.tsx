@@ -7,7 +7,7 @@ import { TypedObject } from "../../model/TypedObject"
 import { Dataset } from "../../model/Dataset"
 import { ObjectTypes } from "../../model/ObjectType"
 import { IBook } from "../../model/Book"
-import { Edge } from "../../model/Edge"
+import { IEdge } from "../../model/Edge"
 
 
 
@@ -20,7 +20,7 @@ import { Edge } from "../../model/Edge"
  * @param {ICluster[]} clusters a list of clusters to perform the edge extraction
  */
 export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
-    var edges: Edge[] = []
+    var edges: IEdge[] = []
 
     // For each cluster,
     clusters.forEach((_, srcKey) => {
@@ -38,11 +38,10 @@ export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
                 })
 
                 if (bundle.length > 10) {
-                    const edge: Edge = {
+                    const edge: IEdge = {
                         objectType: ObjectTypes.Edge,
                         source: srcKey.toString(),
                         destination: dstKey.toString(),
-                        bundle: [...new Set(bundle)],
                         name: null
                     }
                     edges.push(edge)
@@ -57,7 +56,7 @@ export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
 
 
 
-export function storyLayout(clusterInstances: ICluster[], edges: Edge[]): IBook[] {
+export function storyLayout(clusterInstances: ICluster[], edges: IEdge[]): IBook[] {
     const stories: IBook[] = []
     const copy = edges.slice(0)
 
@@ -65,7 +64,7 @@ export function storyLayout(clusterInstances: ICluster[], edges: Edge[]): IBook[
         const toProcess = [copy.splice(0, 1)[0]]
 
         const clusterSet = new Set<ICluster>()
-        const edgeSet = new Set<Edge>()
+        const edgeSet = new Set<IEdge>()
 
 
 
@@ -90,12 +89,11 @@ export function storyLayout(clusterInstances: ICluster[], edges: Edge[]): IBook[
         }
 
         const clusterResult = [...clusterSet];
-        const edgeResult: Edge[] = ([...edgeSet]).map(edge => {
+        const edgeResult: IEdge[] = ([...edgeSet]).map(edge => {
             return {
                 source: clusterResult.indexOf(clusterInstances[edge.source]).toString(),
                 destination: clusterResult.indexOf(clusterInstances[edge.destination]).toString(),
-                objectType: ObjectTypes.Edge,
-                bundle: edge.bundle
+                objectType: ObjectTypes.Edge
             }
         })
 
@@ -109,7 +107,7 @@ export function storyLayout(clusterInstances: ICluster[], edges: Edge[]): IBook[
 
 
 
-export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult: Edge[]) {
+export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult: IEdge[]) {
     const story: IBook = {
         clusters: {
             byId: {},

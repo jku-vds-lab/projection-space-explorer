@@ -1,6 +1,5 @@
 import { connect, ConnectedProps } from 'react-redux'
 import React = require('react')
-import { FlexParent } from '../../Utility/FlexParent'
 import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@material-ui/core'
 import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"

@@ -1,9 +1,10 @@
 {
-  "name": "projection-path-explorer",
+  "name": "projection-space-explorer",
+  "description": "insert description here",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "bundle.js",
   "author": "Moritz Schöfl",
-  "license": "MIT",
+  "license": "BSD 3-Clause License",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@fortawesome/react-fontawesome": "^0.1.14",

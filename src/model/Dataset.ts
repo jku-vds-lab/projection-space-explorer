@@ -1,4 +1,4 @@
-import { Edge } from "./Edge";
+import { IEdge } from "./Edge";
 import { ICluster } from "./Cluster";
 import { FeatureType } from "./FeatureType";
 import { DatasetType } from "./DatasetType";
@@ -170,7 +170,7 @@ export class Dataset {
     clusters: ICluster[];
 
     // The edges between clusters.
-    clusterEdges: Edge[];
+    clusterEdges: IEdge[];
 
     // Dictionary containing the key/value pairs for each column
     metaInformation

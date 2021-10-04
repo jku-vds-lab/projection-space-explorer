@@ -12,7 +12,7 @@ import SkipNextIcon from '@material-ui/icons/SkipNext';
 import StopIcon from '@material-ui/icons/Stop';
 import { setActiveLine } from '../../Ducks/ActiveLineDuck';
 import { GenericLegend } from '../../legends/Generic';
-import { GenericChanges } from '../../legends/GenericChanges/GenericChanges';
+import { GenericChanges } from '../../legends/GenericChanges';
 import { DatasetType } from '../../../model/DatasetType';
 import { ResizeObserver } from 'resize-observer';
 import { selectVectors } from '../../Ducks/AggregationDuck';

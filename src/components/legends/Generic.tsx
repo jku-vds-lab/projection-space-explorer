@@ -1,16 +1,15 @@
-import { NeuralLegend } from "./NeuralDetail/NeuralDetail";
-import { CoralLegend } from "./CoralDetail/CoralDetail";
-import { TrrackLegend } from "./TrrackDetail/TrrackDetail";
-import { StoryLegend } from "./StoryDetail/StoryDetail";
-import { GoLegend } from "./GoDetail/GoDetail";
+import { CoralLegend } from "../../plugins/Coral/CoralDetail/CoralDetail";
+import { TrrackLegend } from "../../plugins/Trrack/TrrackDetail/TrrackDetail";
+import { StoryLegend } from "../../plugins/Story/StoryDetail/StoryDetail";
 import * as React from 'react'
 import { FunctionComponent } from "react";
-import { RubikFingerprint } from "./RubikFingerprint/RubikFingerprint";
-import { ChessFingerprint } from "./ChessFingerprint/ChessFingerprint";
+import { RubikFingerprint } from "../../plugins/Rubik/RubikFingerprint/RubikFingerprint";
+import { ChessFingerprint } from "../../plugins/Chess/ChessFingerprint/ChessFingerprint";
 import { IVector } from "../../model/Vector";
-import { ChemLegendParent } from "./ChemDetail/ChemDetail";
+import { ChemLegendParent } from "../../plugins/Cime/ChemDetail/ChemDetail";
 import { PluginRegistry } from "../Store/PluginScript";
 import { DatasetType } from "../../model/DatasetType";
+import { GoLegend } from "../../plugins/Go/GoLegend";
 
 type GenericLegendProps = {
     type: DatasetType
@@ -27,14 +26,12 @@ export var GenericLegend = ({ type, vectors, aggregate, scale=2}: GenericLegendP
         // use plugin before defaults
         return plugin.createFingerprint(vectors, scale, aggregate)
     } else {
-        // defaults...
+        // defaults... in case no plugin is specific
         switch (type) {
             case DatasetType.Story:
                 return <StoryLegend selection={vectors}></StoryLegend>
             case DatasetType.Rubik:
                 return <RubikFingerprint vectors={vectors} width={81 * scale} height={108 * scale}></RubikFingerprint>
-            case DatasetType.Neural:
-                return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
             case DatasetType.Chess:
                 return <ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint>
             case DatasetType.Cohort_Analysis:
@@ -48,35 +45,5 @@ export var GenericLegend = ({ type, vectors, aggregate, scale=2}: GenericLegendP
             default:
                 return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         }
-    }
-}
-
-
-
-type GenericFingerprintProps = {
-    type: DatasetType
-    vectors: Array<IVector>
-    scale: number
-}
-
-//for storytelling?
-export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({ type, vectors, scale }: GenericFingerprintProps) => {
-    switch (type) {
-        case DatasetType.Rubik:
-            return <RubikFingerprint width={81 * scale} height={108 * scale} vectors={vectors}></RubikFingerprint>
-        case DatasetType.Chess:
-            return <ChessFingerprint width={150 * scale} height={150 * scale} vectors={vectors}></ChessFingerprint>
-        case DatasetType.Neural:
-            return <NeuralLegend selection={vectors} aggregate={true}></NeuralLegend>
-        case DatasetType.Story:
-            return <StoryLegend selection={vectors}></StoryLegend>
-        case DatasetType.Cohort_Analysis:
-            return <CoralLegend selection={vectors} aggregate={true}></CoralLegend>
-        case DatasetType.Go:
-            return <GoLegend selection={vectors} aggregate={true}></GoLegend>
-        case DatasetType.Chem:
-            return <ChemLegendParent selection={vectors} aggregate={true} mcs_only={true}></ChemLegendParent>
-        default:
-            return <CoralLegend selection={vectors} aggregate={true}></CoralLegend>
     }
 }

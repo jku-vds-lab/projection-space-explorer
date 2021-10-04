@@ -1,15 +1,15 @@
 import "./Storytelling.scss";
 import * as React from 'react'
 import { ACluster } from "../../../model/Cluster";
-import { GenericFingerprint } from "../../legends/Generic";
+import { GenericLegend } from "../../legends/Generic";
 import { Card, Typography, Tooltip, IconButton, CardHeader } from "@material-ui/core";
 import { connect, ConnectedProps } from 'react-redux'
 import { DatasetType } from "../../../model/DatasetType";
 import { Dataset } from "../../../model/Dataset";
-import { GenericChanges } from "../../legends/GenericChanges/GenericChanges";
+import { GenericChanges } from "../../legends/GenericChanges";
 import { RootState } from "../../Store/Store";
 import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType, StoriesUtil } from "../../Ducks/StoriesDuck";
-import { DifferenceThresholdSlider } from '../../legends/CoralChanges/DifferenceThresholdSlider';
+import { DifferenceThresholdSlider } from '../../../plugins/Coral/CoralChanges/DifferenceThresholdSlider';
 import CloseIcon from '@material-ui/icons/Close';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
@@ -64,11 +64,12 @@ const SidePath = ({ dataset, syncPart, width, stroke, fill, x, y, height }) => {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             {
                 syncPart.map(node => {
-                    return <GenericFingerprint
+                    return <GenericLegend
                         type={dataset.type}
                         vectors={node.vectors}
                         scale={1}
-                    ></GenericFingerprint>
+                        aggregate={true}
+                    ></GenericLegend>
                 })
             }
         </div>
@@ -509,10 +510,11 @@ export const Storytelling = connector(function ({
                                             display: 'flex'
                                         }}
                                     >
-                                        <GenericFingerprint
+                                        <GenericLegend
                                             type={dataset.type}
                                             vectors={StoriesUtil.retrieveCluster(stories, cluster).indices.map(i => dataset.vectors[i])}
                                             scale={1}
+                                            aggregate={true}
                                         />
                                     </div>
                                 </div>

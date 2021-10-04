@@ -24,7 +24,7 @@ import { MouseController } from './MouseController';
 import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, removeEdgeFromActive, setActiveTrace, StoriesUtil } from '../Ducks/StoriesDuck';
 import { IBook, ABook } from '../../model/Book';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
-import { Edge, isEdge } from "../../model/Edge";
+import { IEdge, isEdge } from "../../model/Edge";
 import { getSyncNodesAlt } from '../NumTs/NumTs';
 import { ClusterDragTool } from './Tools/ClusterDragTool';
 import { TraceSelectTool } from './Tools/TraceSelectTool';
@@ -78,7 +78,7 @@ const mapDispatchToProps = dispatch => ({
     removeClusterFromStories: (cluster: ICluster) => dispatch(removeClusterFromStories(cluster)),
     addStory: (story: IBook, activate: boolean) => dispatch(addStory(story, activate)),
     addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
-    addEdgeToActive: (edge: Edge) => dispatch(addEdgeToActive(edge)),
+    addEdgeToActive: (edge: IEdge) => dispatch(addEdgeToActive(edge)),
     setActiveTrace: trace => dispatch(setActiveTrace(trace)),
     setOpenTab: tab => dispatch(setOpenTabAction(tab)),
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => dispatch(selectClusters(clusters, shiftKey)),
@@ -1385,7 +1385,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                     const activeStory = this.props.stories.stories[this.props.stories.active]
 
-                    let paths = ABook.getAllStoriesFromSource(activeStory, this.state.menuTarget.label)
+                    let paths = ABook.getAllStoriesFromSource(activeStory, Object.entries(activeStory.clusters.byId).find(([key, val]) => val === this.state.menuTarget)[0])
 
                     if (paths.length > 0) {
                         let mainPath = paths[0]

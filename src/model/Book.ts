@@ -1,5 +1,5 @@
 // import { Edge, Graph } from "../graphs";
-import { Edge } from "./Edge";
+import { IEdge } from "./Edge";
 import { ICluster } from "./Cluster";
 const Graph = require('graphology');
 import { v4 as uuidv4 } from 'uuid';
@@ -34,7 +34,9 @@ function* labelGenerator() {
 
 
 
-
+/**
+ * Book methods.
+ */
 export class ABook {
     /**
      * Performs depth first search between a source cluster and a target cluster,
@@ -134,8 +136,8 @@ export class ABook {
     }
 
 
-    static getCluster(storybook: IBook, index: string) {
-        return storybook.clusters.byId[index]
+    static getCluster(book: IBook, index: string) {
+        return book.clusters.byId[index]
     }
 
     static createEmpty(): IBook {
@@ -151,25 +153,54 @@ export class ABook {
         }
     }
 
-    static addCluster(story: IBook, cluster: ICluster) {
+    static addCluster(book: IBook, cluster: ICluster) {
         const handle = uuidv4()
 
-        story.clusters.byId[handle] = cluster
-        story.clusters.allIds.push(handle)
+        book.clusters.byId[handle] = cluster
+        book.clusters.allIds.push(handle)
 
         return handle
     }
 
+    static deleteEdge(book: IBook, edge: IEdge) {
+        const handle = Object.entries(book.edges.byId).find(([key, val]) => val === edge)[0]
+
+        delete book.edges.byId[handle]
+        book.edges.allIds.splice(book.edges.allIds.indexOf(handle), 1)
+
+        return handle
+    }
+
+    static addEdge(book: IBook, edge: IEdge) {
+        const handle = uuidv4()
+
+        book.edges.byId[handle] = edge
+        book.edges.allIds.push(handle)
+
+        return handle
+    }
+
+    static deleteCluster(book: IBook, cluster: ICluster) {
+        const handle = Object.entries(book.clusters.byId).find(([key, val]) => val === cluster)[0]
+
+        delete book.clusters.byId[handle]
+        book.clusters.allIds.splice(book.clusters.allIds.indexOf(handle), 1)
+
+        return handle
+    }
 }
 
 
+/**
+ * Book type.
+ */
 export interface IBook {
     clusters: {
         byId: { [id: string]: ICluster; }
         allIds: string[]
     }
     edges: {
-        byId: { [id: string]: Edge; }
+        byId: { [id: string]: IEdge; }
         allIds: string[]
     }
 }
