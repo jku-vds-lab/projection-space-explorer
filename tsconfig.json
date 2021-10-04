@@ -6,7 +6,8 @@
     "module": "commonjs",
     "target": "es2016",
     "jsx": "react",
-    "lib": ["ESNext","DOM"]
+    "lib": ["ESNext","DOM"],
+    "declaration": true
   },
   "include": [
     "./src/**/*"
