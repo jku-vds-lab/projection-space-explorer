@@ -127,14 +127,7 @@ export const ClusteringTabPanel = connector(({
                 }
 
 
-                let story: IBook = null
-                if (stories.active !== null) {
-                    story = StoriesUtil.getActive(stories)
-                } else {
-                    story = StoriesUtil.emptyStory()
-                }
-                // let clusters = []
-
+                const story: IBook = stories.active !== null ? StoriesUtil.getActive(stories) : StoriesUtil.emptyStory()
 
                 dist_cluster_labels.forEach(cluster_label => {
                     if (cluster_label >= 0) {
@@ -618,11 +611,11 @@ function ClusterList({
     setSelectedCluster
 }: ClusterListProps) {
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [popoverCluster, setPopoverCluster] = React.useState(null)
+    const [popoverCluster, setPopoverCluster] = React.useState<ICluster>(null)
 
     const activeStory = stories.stories[stories.active]
 
-    const storyItems = []
+    const storyItems = new Array<JSX.Element>()
 
     if (activeStory) {
         for (const [key, cluster] of Object.entries(activeStory.clusters.byId)) {

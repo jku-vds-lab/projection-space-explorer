@@ -169,7 +169,6 @@ type Props = PropsFromRedux & {
  * Main application that contains all other components.
  */
 var Application = connector(class extends React.Component<Props, any> {
-  dataset: Dataset;
   threeRef: any;
   splitRef: any;
 
