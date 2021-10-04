@@ -2,13 +2,10 @@
   "name": "projection-space-explorer",
   "description": "insert description here",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
   "author": "Moritz Schöfl",
   "license": "BSD 3-Clause License",
-  "files": [
-    "/dist"
-  ],
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@fortawesome/react-fontawesome": "^0.1.14",

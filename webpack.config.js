@@ -4,7 +4,7 @@ module.exports = {
   mode: "development",
   watch: false,
   entry: {
-    index: "./src/index.tsx",
+    bundle: "./src/index.tsx",
     tsne: './src/components/workers/embeddings/worker_tsne.ts',
     umap: './src/components/workers/embeddings/worker_umap.ts',
     cluster: './src/components/workers/worker_cluster.tsx',
@@ -13,7 +13,10 @@ module.exports = {
   },
   output: {
     filename: "[name].js",
-    path: __dirname + "/dist"
+    path: __dirname + "/dist",
+    publicPath: '',
+    library: 'testlib',
+    libraryTarget: 'umd'
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]
