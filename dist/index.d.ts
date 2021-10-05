@@ -50,6 +50,7 @@ export interface ApplicationConfig {
 declare type Props = PropsFromRedux & {
     config: ApplicationConfig;
 };
+export declare var Test: number;
 /**
  * Main application that contains all other components.
  */

@@ -163,7 +163,7 @@ type Props = PropsFromRedux & {
 
 
 
-
+export var Test = 3;
 
 /**
  * Main application that contains all other components.
