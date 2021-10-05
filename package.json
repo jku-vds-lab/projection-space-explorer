@@ -3,7 +3,7 @@
   "description": "insert description here",
   "version": "1.0.0",
   "main": "dist/bundle.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/exports.d.ts",
   "author": "Moritz Schöfl",
   "license": "BSD 3-Clause License",
   "dependencies": {

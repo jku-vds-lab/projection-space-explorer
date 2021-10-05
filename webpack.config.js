@@ -15,7 +15,7 @@ module.exports = {
     filename: "[name].js",
     path: __dirname + "/dist",
     publicPath: '',
-    library: 'testlib',
+    library: 'PSE',
     libraryTarget: 'umd'
   },
   resolve: {

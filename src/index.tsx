@@ -168,7 +168,7 @@ type Props = PropsFromRedux & {
 /**
  * Main application that contains all other components.
  */
-var Application = connector(class extends React.Component<Props, any> {
+export var Application = connector(class extends React.Component<Props, any> {
   threeRef: any;
   splitRef: any;
 
