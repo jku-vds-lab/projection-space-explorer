@@ -31,7 +31,7 @@
     "libtess": "^1.2.2",
     "lineupjs": "^4.1.2",
     "lineupjsx": "^4.0.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "ml-conrec": "^3.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
