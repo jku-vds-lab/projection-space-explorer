@@ -65,8 +65,6 @@
     "@babel/preset-react": "^7.8.3",
     "@babel/preset-typescript": "^7.8.3",
     "@svgr/webpack": "^5.5.0",
-    "@types/react": "^16.9.19",
-    "@types/react-dom": "^16.9.5",
     "babel-loader": "^8.0.6",
     "css-loader": "^3.4.2",
     "jest": "^26.6.3",
@@ -81,12 +79,12 @@
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-glsl-loader": "^1.0.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "peerDependencies": {
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "scripts": {
     "webpack:dev": "npx webpack --config webpack.config.js",
