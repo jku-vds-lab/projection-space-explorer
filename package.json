@@ -33,7 +33,6 @@
     "jstat": "^1.9.4",
     "libtess": "^1.2.2",
     "lineupjs": "^4.2.0",
-    "lineupjsx": "^4.0.0",
     "lodash": "^4.17.20",
     "ml-conrec": "^3.2.0",
     "react-draggable": "^4.4.3",
