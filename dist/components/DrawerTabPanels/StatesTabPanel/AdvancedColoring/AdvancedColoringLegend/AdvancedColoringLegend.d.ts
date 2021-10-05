@@ -1,4 +1,3 @@
-/// <reference types="react" />
 declare type ShowColorLegendProps = {
     mapping: any;
     advancedColoringSelection: boolean[];

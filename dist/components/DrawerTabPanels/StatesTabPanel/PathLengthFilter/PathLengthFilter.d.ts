@@ -1,4 +1,3 @@
-/// <reference types="react" />
 export declare var PathLengthFilterFull: ({ pathLengthRange, setPathLengthRange }: {
     pathLengthRange: any;
     setPathLengthRange: any;

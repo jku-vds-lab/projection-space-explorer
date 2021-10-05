@@ -16,7 +16,7 @@ import { TestColumn } from "./LineUpClasses/TestColumn";
 import { DiscreteMapping } from "../Utility/Colors/Mapping";
 import { StoriesUtil } from "../Ducks/StoriesDuck";
 import { setHoverState } from "../Ducks/HoverStateDuck";
-
+console.log(equal)
 /**
  * Declares a function which maps application state to component properties (by name)
  * 

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import './ShapeLegend.scss';
 /**
  * Simple shape legend

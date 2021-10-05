@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import "./Storytelling.scss";
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from "../../../model/Dataset";

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 export declare const UploadedFiles: ({ onChange, refresh }: {
     onChange: any;
     refresh: any;

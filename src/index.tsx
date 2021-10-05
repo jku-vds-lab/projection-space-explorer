@@ -73,7 +73,6 @@ import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { ChemPlugin } from "./plugins/Cime/ChemPlugin";
 import { GoPlugin } from "./plugins/Go/GoPlugin";
 
-
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
  */
@@ -168,7 +167,7 @@ export var Test = 3;
 /**
  * Main application that contains all other components.
  */
-export var Application = connector(class extends React.Component<Props, any> {
+export const Application = connector(class extends React.Component<Props, any> {
   threeRef: any;
   splitRef: any;
 
@@ -522,6 +521,7 @@ export var Application = connector(class extends React.Component<Props, any> {
             </Toolbar>
           </AppBar>
 
+          {/** @ts-ignore */ }
           <Split
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
             ref={this.splitRef}

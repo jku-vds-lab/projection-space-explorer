@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { ConnectedProps } from 'react-redux';
 import './coral.scss';
 import { IVector } from "../../../model/Vector";
@@ -11,5 +10,5 @@ declare type Props = PropsFromRedux & {
     aggregate: boolean;
     selection: IVector[];
 };
-export declare var CoralLegend: import("react-redux").ConnectedComponent<({ selection, aggregate, legendAttributes, dataset }: Props) => JSX.Element, Pick<Props, "aggregate" | "selection">>;
+export declare var CoralLegend: import("react-redux").ConnectedComponent<({ selection, aggregate, legendAttributes, dataset }: Props) => JSX.Element, Pick<Props, "selection" | "aggregate">>;
 export {};

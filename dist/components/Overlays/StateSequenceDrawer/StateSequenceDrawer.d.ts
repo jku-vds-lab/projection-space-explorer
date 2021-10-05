@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import './StateSequenceDrawer.scss';
 import { Dataset } from "../../../model/Dataset";
 declare type StateSequenceDrawerProps = {

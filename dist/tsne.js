@@ -96,28 +96,118 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./node_modules/async/dist/async.js":
-/*!******************************************!*\
-  !*** ./node_modules/async/dist/async.js ***!
-  \******************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ "./node_modules/async/dist/async.mjs":
+/*!*******************************************!*\
+  !*** ./node_modules/async/dist/async.mjs ***!
+  \*******************************************/
+/*! exports provided: default, apply, applyEach, applyEachSeries, asyncify, auto, autoInject, cargo, cargoQueue, compose, concat, concatLimit, concatSeries, constant, detect, detectLimit, detectSeries, dir, doUntil, doWhilst, each, eachLimit, eachOf, eachOfLimit, eachOfSeries, eachSeries, ensureAsync, every, everyLimit, everySeries, filter, filterLimit, filterSeries, forever, groupBy, groupByLimit, groupBySeries, log, map, mapLimit, mapSeries, mapValues, mapValuesLimit, mapValuesSeries, memoize, nextTick, parallel, parallelLimit, priorityQueue, queue, race, reduce, reduceRight, reflect, reflectAll, reject, rejectLimit, rejectSeries, retry, retryable, seq, series, setImmediate, some, someLimit, someSeries, sortBy, timeout, times, timesLimit, timesSeries, transform, tryEach, unmemoize, until, waterfall, whilst, all, allLimit, allSeries, any, anyLimit, anySeries, find, findLimit, findSeries, flatMap, flatMapLimit, flatMapSeries, forEach, forEachSeries, forEachLimit, forEachOf, forEachOfSeries, forEachOfLimit, inject, foldl, foldr, select, selectLimit, selectSeries, wrapSync, during, doDuring */
+/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(setImmediate, process, global, module) {(function (global, factory) {
-   true ? factory(exports) :
-  undefined;
-}(this, (function (exports) { 'use strict';
-
-function slice(arrayLike, start) {
-    start = start|0;
-    var newLen = Math.max(arrayLike.length - start, 0);
-    var newArr = Array(newLen);
-    for(var idx = 0; idx < newLen; idx++)  {
-        newArr[idx] = arrayLike[start + idx];
-    }
-    return newArr;
-}
-
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "apply", function() { return apply; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyEach", function() { return applyEach$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyEachSeries", function() { return applyEachSeries; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "asyncify", function() { return asyncify; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "auto", function() { return auto; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "autoInject", function() { return autoInject; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cargo", function() { return cargo; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cargoQueue", function() { return cargo$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "compose", function() { return compose; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "concat", function() { return concat$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "concatLimit", function() { return concatLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "concatSeries", function() { return concatSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "constant", function() { return constant; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "detect", function() { return detect$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "detectLimit", function() { return detectLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "detectSeries", function() { return detectSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dir", function() { return dir; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "doUntil", function() { return doUntil; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "doWhilst", function() { return doWhilst$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "each", function() { return each; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "eachLimit", function() { return eachLimit$2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "eachOf", function() { return eachOf$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "eachOfLimit", function() { return eachOfLimit$2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "eachOfSeries", function() { return eachOfSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "eachSeries", function() { return eachSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ensureAsync", function() { return ensureAsync; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "every", function() { return every$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "everyLimit", function() { return everyLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "everySeries", function() { return everySeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "filter", function() { return filter$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "filterLimit", function() { return filterLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "filterSeries", function() { return filterSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forever", function() { return forever$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "groupBy", function() { return groupBy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "groupByLimit", function() { return groupByLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "groupBySeries", function() { return groupBySeries; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "log", function() { return log; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "map", function() { return map$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapLimit", function() { return mapLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapSeries", function() { return mapSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapValues", function() { return mapValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapValuesLimit", function() { return mapValuesLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapValuesSeries", function() { return mapValuesSeries; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "memoize", function() { return memoize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "nextTick", function() { return nextTick; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parallel", function() { return parallel; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parallelLimit", function() { return parallelLimit; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "priorityQueue", function() { return priorityQueue; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "queue", function() { return queue$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "race", function() { return race$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "reduce", function() { return reduce$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "reduceRight", function() { return reduceRight; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "reflect", function() { return reflect; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "reflectAll", function() { return reflectAll; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "reject", function() { return reject$2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rejectLimit", function() { return rejectLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "rejectSeries", function() { return rejectSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "retry", function() { return retry; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "retryable", function() { return retryable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "seq", function() { return seq; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "series", function() { return series; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setImmediate", function() { return setImmediate$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "some", function() { return some$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "someLimit", function() { return someLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "someSeries", function() { return someSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sortBy", function() { return sortBy$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "timeout", function() { return timeout; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "times", function() { return times; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "timesLimit", function() { return timesLimit; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "timesSeries", function() { return timesSeries; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transform", function() { return transform; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "tryEach", function() { return tryEach$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unmemoize", function() { return unmemoize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "until", function() { return until; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "waterfall", function() { return waterfall$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "whilst", function() { return whilst$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "all", function() { return every$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "allLimit", function() { return everyLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "allSeries", function() { return everySeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "any", function() { return some$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "anyLimit", function() { return someLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "anySeries", function() { return someSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "find", function() { return detect$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findLimit", function() { return detectLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findSeries", function() { return detectSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "flatMap", function() { return concat$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "flatMapLimit", function() { return concatLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "flatMapSeries", function() { return concatSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEach", function() { return each; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEachSeries", function() { return eachSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEachLimit", function() { return eachLimit$2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEachOf", function() { return eachOf$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEachOfSeries", function() { return eachOfSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "forEachOfLimit", function() { return eachOfLimit$2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "inject", function() { return reduce$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "foldl", function() { return reduce$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "foldr", function() { return reduceRight; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "select", function() { return filter$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "selectLimit", function() { return filterLimit$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "selectSeries", function() { return filterSeries$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wrapSync", function() { return asyncify; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "during", function() { return whilst$1; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "doDuring", function() { return doWhilst$1; });
 /**
  * Creates a continuation function with some arguments already applied.
  *
@@ -163,52 +253,20 @@ function slice(arrayLike, start) {
  * two
  * three
  */
-var apply = function(fn/*, ...args*/) {
-    var args = slice(arguments, 1);
-    return function(/*callArgs*/) {
-        var callArgs = slice(arguments);
-        return fn.apply(null, args.concat(callArgs));
-    };
-};
-
-var initialParams = function (fn) {
-    return function (/*...args, callback*/) {
-        var args = slice(arguments);
-        var callback = args.pop();
-        fn.call(this, args, callback);
-    };
-};
-
-/**
- * Checks if `value` is the
- * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
- * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an object, else `false`.
- * @example
- *
- * _.isObject({});
- * // => true
- *
- * _.isObject([1, 2, 3]);
- * // => true
- *
- * _.isObject(_.noop);
- * // => true
- *
- * _.isObject(null);
- * // => false
- */
-function isObject(value) {
-  var type = typeof value;
-  return value != null && (type == 'object' || type == 'function');
+function apply(fn, ...args) {
+    return (...callArgs) => fn(...args,...callArgs);
 }
 
+function initialParams (fn) {
+    return function (...args/*, callback*/) {
+        var callback = args.pop();
+        return fn.call(this, args, callback);
+    };
+}
+
+/* istanbul ignore file */
+
+var hasQueueMicrotask = typeof queueMicrotask === 'function' && queueMicrotask;
 var hasSetImmediate = typeof setImmediate === 'function' && setImmediate;
 var hasNextTick = typeof process === 'object' && typeof process.nextTick === 'function';
 
@@ -217,17 +275,14 @@ function fallback(fn) {
 }
 
 function wrap(defer) {
-    return function (fn/*, ...args*/) {
-        var args = slice(arguments, 1);
-        defer(function () {
-            fn.apply(null, args);
-        });
-    };
+    return (fn, ...args) => defer(() => fn(...args));
 }
 
 var _defer;
 
-if (hasSetImmediate) {
+if (hasQueueMicrotask) {
+    _defer = queueMicrotask;
+} else if (hasSetImmediate) {
     _defer = setImmediate;
 } else if (hasNextTick) {
     _defer = process.nextTick;
@@ -294,6 +349,14 @@ var setImmediate$1 = wrap(_defer);
  * q.push(files);
  */
 function asyncify(func) {
+    if (isAsync(func)) {
+        return function (...args/*, callback*/) {
+            const callback = args.pop();
+            const promise = func.apply(this, args);
+            return handlePromise(promise, callback)
+        }
+    }
+
     return initialParams(function (args, callback) {
         var result;
         try {
@@ -302,729 +365,121 @@ function asyncify(func) {
             return callback(e);
         }
         // if result is Promise object
-        if (isObject(result) && typeof result.then === 'function') {
-            result.then(function(value) {
-                invokeCallback(callback, null, value);
-            }, function(err) {
-                invokeCallback(callback, err.message ? err : new Error(err));
-            });
+        if (result && typeof result.then === 'function') {
+            return handlePromise(result, callback)
         } else {
             callback(null, result);
         }
     });
 }
 
+function handlePromise(promise, callback) {
+    return promise.then(value => {
+        invokeCallback(callback, null, value);
+    }, err => {
+        invokeCallback(callback, err && err.message ? err : new Error(err));
+    });
+}
+
 function invokeCallback(callback, error, value) {
     try {
         callback(error, value);
-    } catch (e) {
-        setImmediate$1(rethrow, e);
+    } catch (err) {
+        setImmediate$1(e => { throw e }, err);
     }
 }
 
-function rethrow(error) {
-    throw error;
+function isAsync(fn) {
+    return fn[Symbol.toStringTag] === 'AsyncFunction';
 }
 
-var supportsSymbol = typeof Symbol === 'function';
+function isAsyncGenerator(fn) {
+    return fn[Symbol.toStringTag] === 'AsyncGenerator';
+}
 
-function isAsync(fn) {
-    return supportsSymbol && fn[Symbol.toStringTag] === 'AsyncFunction';
+function isAsyncIterable(obj) {
+    return typeof obj[Symbol.asyncIterator] === 'function';
 }
 
 function wrapAsync(asyncFn) {
+    if (typeof asyncFn !== 'function') throw new Error('expected a function')
     return isAsync(asyncFn) ? asyncify(asyncFn) : asyncFn;
 }
 
-function applyEach$1(eachfn) {
-    return function(fns/*, ...args*/) {
-        var args = slice(arguments, 1);
-        var go = initialParams(function(args, callback) {
+// conditionally promisify a function.
+// only return a promise if a callback is omitted
+function awaitify (asyncFn, arity = asyncFn.length) {
+    if (!arity) throw new Error('arity is undefined')
+    function awaitable (...args) {
+        if (typeof args[arity - 1] === 'function') {
+            return asyncFn.apply(this, args)
+        }
+
+        return new Promise((resolve, reject) => {
+            args[arity - 1] = (err, ...cbArgs) => {
+                if (err) return reject(err)
+                resolve(cbArgs.length > 1 ? cbArgs : cbArgs[0]);
+            };
+            asyncFn.apply(this, args);
+        })
+    }
+
+    return awaitable
+}
+
+function applyEach (eachfn) {
+    return function applyEach(fns, ...callArgs) {
+        const go = awaitify(function (callback) {
             var that = this;
-            return eachfn(fns, function (fn, cb) {
-                wrapAsync(fn).apply(that, args.concat(cb));
+            return eachfn(fns, (fn, cb) => {
+                wrapAsync(fn).apply(that, callArgs.concat(cb));
             }, callback);
         });
-        if (args.length) {
-            return go.apply(this, args);
-        }
-        else {
-            return go;
-        }
+        return go;
     };
 }
 
-/** Detect free variable `global` from Node.js. */
-var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
+function _asyncMap(eachfn, arr, iteratee, callback) {
+    arr = arr || [];
+    var results = [];
+    var counter = 0;
+    var _iteratee = wrapAsync(iteratee);
 
-/** Detect free variable `self`. */
-var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-/** Used as a reference to the global object. */
-var root = freeGlobal || freeSelf || Function('return this')();
-
-/** Built-in value references. */
-var Symbol$1 = root.Symbol;
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty = objectProto.hasOwnProperty;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var nativeObjectToString = objectProto.toString;
-
-/** Built-in value references. */
-var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
-
-/**
- * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
- *
- * @private
- * @param {*} value The value to query.
- * @returns {string} Returns the raw `toStringTag`.
- */
-function getRawTag(value) {
-  var isOwn = hasOwnProperty.call(value, symToStringTag$1),
-      tag = value[symToStringTag$1];
-
-  try {
-    value[symToStringTag$1] = undefined;
-    var unmasked = true;
-  } catch (e) {}
-
-  var result = nativeObjectToString.call(value);
-  if (unmasked) {
-    if (isOwn) {
-      value[symToStringTag$1] = tag;
-    } else {
-      delete value[symToStringTag$1];
-    }
-  }
-  return result;
+    return eachfn(arr, (value, _, iterCb) => {
+        var index = counter++;
+        _iteratee(value, (err, v) => {
+            results[index] = v;
+            iterCb(err);
+        });
+    }, err => {
+        callback(err, results);
+    });
 }
 
-/** Used for built-in method references. */
-var objectProto$1 = Object.prototype;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var nativeObjectToString$1 = objectProto$1.toString;
-
-/**
- * Converts `value` to a string using `Object.prototype.toString`.
- *
- * @private
- * @param {*} value The value to convert.
- * @returns {string} Returns the converted string.
- */
-function objectToString(value) {
-  return nativeObjectToString$1.call(value);
-}
-
-/** `Object#toString` result references. */
-var nullTag = '[object Null]';
-var undefinedTag = '[object Undefined]';
-
-/** Built-in value references. */
-var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : undefined;
-
-/**
- * The base implementation of `getTag` without fallbacks for buggy environments.
- *
- * @private
- * @param {*} value The value to query.
- * @returns {string} Returns the `toStringTag`.
- */
-function baseGetTag(value) {
-  if (value == null) {
-    return value === undefined ? undefinedTag : nullTag;
-  }
-  return (symToStringTag && symToStringTag in Object(value))
-    ? getRawTag(value)
-    : objectToString(value);
-}
-
-/** `Object#toString` result references. */
-var asyncTag = '[object AsyncFunction]';
-var funcTag = '[object Function]';
-var genTag = '[object GeneratorFunction]';
-var proxyTag = '[object Proxy]';
-
-/**
- * Checks if `value` is classified as a `Function` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a function, else `false`.
- * @example
- *
- * _.isFunction(_);
- * // => true
- *
- * _.isFunction(/abc/);
- * // => false
- */
-function isFunction(value) {
-  if (!isObject(value)) {
-    return false;
-  }
-  // The use of `Object#toString` avoids issues with the `typeof` operator
-  // in Safari 9 which returns 'object' for typed arrays and other constructors.
-  var tag = baseGetTag(value);
-  return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
-}
-
-/** Used as references for various `Number` constants. */
-var MAX_SAFE_INTEGER = 9007199254740991;
-
-/**
- * Checks if `value` is a valid array-like length.
- *
- * **Note:** This method is loosely based on
- * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
- * @example
- *
- * _.isLength(3);
- * // => true
- *
- * _.isLength(Number.MIN_VALUE);
- * // => false
- *
- * _.isLength(Infinity);
- * // => false
- *
- * _.isLength('3');
- * // => false
- */
-function isLength(value) {
-  return typeof value == 'number' &&
-    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
-}
-
-/**
- * Checks if `value` is array-like. A value is considered array-like if it's
- * not a function and has a `value.length` that's an integer greater than or
- * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
- * @example
- *
- * _.isArrayLike([1, 2, 3]);
- * // => true
- *
- * _.isArrayLike(document.body.children);
- * // => true
- *
- * _.isArrayLike('abc');
- * // => true
- *
- * _.isArrayLike(_.noop);
- * // => false
- */
 function isArrayLike(value) {
-  return value != null && isLength(value.length) && !isFunction(value);
+    return value &&
+        typeof value.length === 'number' &&
+        value.length >= 0 &&
+        value.length % 1 === 0;
 }
 
 // A temporary value used to identify if the loop should be broken.
 // See #1064, #1293
-var breakLoop = {};
-
-/**
- * This method returns `undefined`.
- *
- * @static
- * @memberOf _
- * @since 2.3.0
- * @category Util
- * @example
- *
- * _.times(2, _.noop);
- * // => [undefined, undefined]
- */
-function noop() {
-  // No operation performed.
-}
+const breakLoop = {};
 
 function once(fn) {
-    return function () {
+    function wrapper (...args) {
         if (fn === null) return;
         var callFn = fn;
         fn = null;
-        callFn.apply(this, arguments);
-    };
-}
-
-var iteratorSymbol = typeof Symbol === 'function' && Symbol.iterator;
-
-var getIterator = function (coll) {
-    return iteratorSymbol && coll[iteratorSymbol] && coll[iteratorSymbol]();
-};
-
-/**
- * The base implementation of `_.times` without support for iteratee shorthands
- * or max array length checks.
- *
- * @private
- * @param {number} n The number of times to invoke `iteratee`.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the array of results.
- */
-function baseTimes(n, iteratee) {
-  var index = -1,
-      result = Array(n);
-
-  while (++index < n) {
-    result[index] = iteratee(index);
-  }
-  return result;
-}
-
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-function isObjectLike(value) {
-  return value != null && typeof value == 'object';
-}
-
-/** `Object#toString` result references. */
-var argsTag = '[object Arguments]';
-
-/**
- * The base implementation of `_.isArguments`.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an `arguments` object,
- */
-function baseIsArguments(value) {
-  return isObjectLike(value) && baseGetTag(value) == argsTag;
-}
-
-/** Used for built-in method references. */
-var objectProto$3 = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty$2 = objectProto$3.hasOwnProperty;
-
-/** Built-in value references. */
-var propertyIsEnumerable = objectProto$3.propertyIsEnumerable;
-
-/**
- * Checks if `value` is likely an `arguments` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an `arguments` object,
- *  else `false`.
- * @example
- *
- * _.isArguments(function() { return arguments; }());
- * // => true
- *
- * _.isArguments([1, 2, 3]);
- * // => false
- */
-var isArguments = baseIsArguments(function() { return arguments; }()) ? baseIsArguments : function(value) {
-  return isObjectLike(value) && hasOwnProperty$2.call(value, 'callee') &&
-    !propertyIsEnumerable.call(value, 'callee');
-};
-
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
-var isArray = Array.isArray;
-
-/**
- * This method returns `false`.
- *
- * @static
- * @memberOf _
- * @since 4.13.0
- * @category Util
- * @returns {boolean} Returns `false`.
- * @example
- *
- * _.times(2, _.stubFalse);
- * // => [false, false]
- */
-function stubFalse() {
-  return false;
-}
-
-/** Detect free variable `exports`. */
-var freeExports = typeof exports == 'object' && exports && !exports.nodeType && exports;
-
-/** Detect free variable `module`. */
-var freeModule = freeExports && typeof module == 'object' && module && !module.nodeType && module;
-
-/** Detect the popular CommonJS extension `module.exports`. */
-var moduleExports = freeModule && freeModule.exports === freeExports;
-
-/** Built-in value references. */
-var Buffer = moduleExports ? root.Buffer : undefined;
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeIsBuffer = Buffer ? Buffer.isBuffer : undefined;
-
-/**
- * Checks if `value` is a buffer.
- *
- * @static
- * @memberOf _
- * @since 4.3.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a buffer, else `false`.
- * @example
- *
- * _.isBuffer(new Buffer(2));
- * // => true
- *
- * _.isBuffer(new Uint8Array(2));
- * // => false
- */
-var isBuffer = nativeIsBuffer || stubFalse;
-
-/** Used as references for various `Number` constants. */
-var MAX_SAFE_INTEGER$1 = 9007199254740991;
-
-/** Used to detect unsigned integer values. */
-var reIsUint = /^(?:0|[1-9]\d*)$/;
-
-/**
- * Checks if `value` is a valid array-like index.
- *
- * @private
- * @param {*} value The value to check.
- * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
- * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
- */
-function isIndex(value, length) {
-  var type = typeof value;
-  length = length == null ? MAX_SAFE_INTEGER$1 : length;
-
-  return !!length &&
-    (type == 'number' ||
-      (type != 'symbol' && reIsUint.test(value))) &&
-        (value > -1 && value % 1 == 0 && value < length);
-}
-
-/** `Object#toString` result references. */
-var argsTag$1 = '[object Arguments]';
-var arrayTag = '[object Array]';
-var boolTag = '[object Boolean]';
-var dateTag = '[object Date]';
-var errorTag = '[object Error]';
-var funcTag$1 = '[object Function]';
-var mapTag = '[object Map]';
-var numberTag = '[object Number]';
-var objectTag = '[object Object]';
-var regexpTag = '[object RegExp]';
-var setTag = '[object Set]';
-var stringTag = '[object String]';
-var weakMapTag = '[object WeakMap]';
-
-var arrayBufferTag = '[object ArrayBuffer]';
-var dataViewTag = '[object DataView]';
-var float32Tag = '[object Float32Array]';
-var float64Tag = '[object Float64Array]';
-var int8Tag = '[object Int8Array]';
-var int16Tag = '[object Int16Array]';
-var int32Tag = '[object Int32Array]';
-var uint8Tag = '[object Uint8Array]';
-var uint8ClampedTag = '[object Uint8ClampedArray]';
-var uint16Tag = '[object Uint16Array]';
-var uint32Tag = '[object Uint32Array]';
-
-/** Used to identify `toStringTag` values of typed arrays. */
-var typedArrayTags = {};
-typedArrayTags[float32Tag] = typedArrayTags[float64Tag] =
-typedArrayTags[int8Tag] = typedArrayTags[int16Tag] =
-typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] =
-typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] =
-typedArrayTags[uint32Tag] = true;
-typedArrayTags[argsTag$1] = typedArrayTags[arrayTag] =
-typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] =
-typedArrayTags[dataViewTag] = typedArrayTags[dateTag] =
-typedArrayTags[errorTag] = typedArrayTags[funcTag$1] =
-typedArrayTags[mapTag] = typedArrayTags[numberTag] =
-typedArrayTags[objectTag] = typedArrayTags[regexpTag] =
-typedArrayTags[setTag] = typedArrayTags[stringTag] =
-typedArrayTags[weakMapTag] = false;
-
-/**
- * The base implementation of `_.isTypedArray` without Node.js optimizations.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
- */
-function baseIsTypedArray(value) {
-  return isObjectLike(value) &&
-    isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
-}
-
-/**
- * The base implementation of `_.unary` without support for storing metadata.
- *
- * @private
- * @param {Function} func The function to cap arguments for.
- * @returns {Function} Returns the new capped function.
- */
-function baseUnary(func) {
-  return function(value) {
-    return func(value);
-  };
-}
-
-/** Detect free variable `exports`. */
-var freeExports$1 = typeof exports == 'object' && exports && !exports.nodeType && exports;
-
-/** Detect free variable `module`. */
-var freeModule$1 = freeExports$1 && typeof module == 'object' && module && !module.nodeType && module;
-
-/** Detect the popular CommonJS extension `module.exports`. */
-var moduleExports$1 = freeModule$1 && freeModule$1.exports === freeExports$1;
-
-/** Detect free variable `process` from Node.js. */
-var freeProcess = moduleExports$1 && freeGlobal.process;
-
-/** Used to access faster Node.js helpers. */
-var nodeUtil = (function() {
-  try {
-    // Use `util.types` for Node.js 10+.
-    var types = freeModule$1 && freeModule$1.require && freeModule$1.require('util').types;
-
-    if (types) {
-      return types;
+        callFn.apply(this, args);
     }
-
-    // Legacy `process.binding('util')` for Node.js < 10.
-    return freeProcess && freeProcess.binding && freeProcess.binding('util');
-  } catch (e) {}
-}());
-
-/* Node.js helper references. */
-var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
-
-/**
- * Checks if `value` is classified as a typed array.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a typed array, else `false`.
- * @example
- *
- * _.isTypedArray(new Uint8Array);
- * // => true
- *
- * _.isTypedArray([]);
- * // => false
- */
-var isTypedArray = nodeIsTypedArray ? baseUnary(nodeIsTypedArray) : baseIsTypedArray;
-
-/** Used for built-in method references. */
-var objectProto$2 = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty$1 = objectProto$2.hasOwnProperty;
-
-/**
- * Creates an array of the enumerable property names of the array-like `value`.
- *
- * @private
- * @param {*} value The value to query.
- * @param {boolean} inherited Specify returning inherited property names.
- * @returns {Array} Returns the array of property names.
- */
-function arrayLikeKeys(value, inherited) {
-  var isArr = isArray(value),
-      isArg = !isArr && isArguments(value),
-      isBuff = !isArr && !isArg && isBuffer(value),
-      isType = !isArr && !isArg && !isBuff && isTypedArray(value),
-      skipIndexes = isArr || isArg || isBuff || isType,
-      result = skipIndexes ? baseTimes(value.length, String) : [],
-      length = result.length;
-
-  for (var key in value) {
-    if ((inherited || hasOwnProperty$1.call(value, key)) &&
-        !(skipIndexes && (
-           // Safari 9 has enumerable `arguments.length` in strict mode.
-           key == 'length' ||
-           // Node.js 0.10 has enumerable non-index properties on buffers.
-           (isBuff && (key == 'offset' || key == 'parent')) ||
-           // PhantomJS 2 has enumerable non-index properties on typed arrays.
-           (isType && (key == 'buffer' || key == 'byteLength' || key == 'byteOffset')) ||
-           // Skip index properties.
-           isIndex(key, length)
-        ))) {
-      result.push(key);
-    }
-  }
-  return result;
+    Object.assign(wrapper, fn);
+    return wrapper
 }
 
-/** Used for built-in method references. */
-var objectProto$5 = Object.prototype;
-
-/**
- * Checks if `value` is likely a prototype object.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
- */
-function isPrototype(value) {
-  var Ctor = value && value.constructor,
-      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto$5;
-
-  return value === proto;
-}
-
-/**
- * Creates a unary function that invokes `func` with its argument transformed.
- *
- * @private
- * @param {Function} func The function to wrap.
- * @param {Function} transform The argument transform.
- * @returns {Function} Returns the new function.
- */
-function overArg(func, transform) {
-  return function(arg) {
-    return func(transform(arg));
-  };
-}
-
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeKeys = overArg(Object.keys, Object);
-
-/** Used for built-in method references. */
-var objectProto$4 = Object.prototype;
-
-/** Used to check objects for own properties. */
-var hasOwnProperty$3 = objectProto$4.hasOwnProperty;
-
-/**
- * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- */
-function baseKeys(object) {
-  if (!isPrototype(object)) {
-    return nativeKeys(object);
-  }
-  var result = [];
-  for (var key in Object(object)) {
-    if (hasOwnProperty$3.call(object, key) && key != 'constructor') {
-      result.push(key);
-    }
-  }
-  return result;
-}
-
-/**
- * Creates an array of the own enumerable property names of `object`.
- *
- * **Note:** Non-object values are coerced to objects. See the
- * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
- * for more details.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Object
- * @param {Object} object The object to query.
- * @returns {Array} Returns the array of property names.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- *   this.b = 2;
- * }
- *
- * Foo.prototype.c = 3;
- *
- * _.keys(new Foo);
- * // => ['a', 'b'] (iteration order is not guaranteed)
- *
- * _.keys('hi');
- * // => ['0', '1']
- */
-function keys(object) {
-  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+function getIterator (coll) {
+    return coll[Symbol.iterator] && coll[Symbol.iterator]();
 }
 
 function createArrayIterator(coll) {
@@ -1047,16 +502,16 @@ function createES2015Iterator(iterator) {
 }
 
 function createObjectIterator(obj) {
-    var okeys = keys(obj);
+    var okeys = obj ? Object.keys(obj) : [];
     var i = -1;
     var len = okeys.length;
     return function next() {
         var key = okeys[++i];
-        return i < len ? {value: obj[key], key: key} : null;
+        return i < len ? {value: obj[key], key} : null;
     };
 }
 
-function iterator(coll) {
+function createIterator(coll) {
     if (isArrayLike(coll)) {
         return createArrayIterator(coll);
     }
@@ -1066,30 +521,107 @@ function iterator(coll) {
 }
 
 function onlyOnce(fn) {
-    return function() {
+    return function (...args) {
         if (fn === null) throw new Error("Callback was already called.");
         var callFn = fn;
         fn = null;
-        callFn.apply(this, arguments);
+        callFn.apply(this, args);
     };
 }
 
-function _eachOfLimit(limit) {
-    return function (obj, iteratee, callback) {
-        callback = once(callback || noop);
-        if (limit <= 0 || !obj) {
+// for async generators
+function asyncEachOfLimit(generator, limit, iteratee, callback) {
+    let done = false;
+    let canceled = false;
+    let awaiting = false;
+    let running = 0;
+    let idx = 0;
+
+    function replenish() {
+        //console.log('replenish')
+        if (running >= limit || awaiting || done) return
+        //console.log('replenish awaiting')
+        awaiting = true;
+        generator.next().then(({value, done: iterDone}) => {
+            //console.log('got value', value)
+            if (canceled || done) return
+            awaiting = false;
+            if (iterDone) {
+                done = true;
+                if (running <= 0) {
+                    //console.log('done nextCb')
+                    callback(null);
+                }
+                return;
+            }
+            running++;
+            iteratee(value, idx, iterateeCallback);
+            idx++;
+            replenish();
+        }).catch(handleError);
+    }
+
+    function iterateeCallback(err, result) {
+        //console.log('iterateeCallback')
+        running -= 1;
+        if (canceled) return
+        if (err) return handleError(err)
+
+        if (err === false) {
+            done = true;
+            canceled = true;
+            return
+        }
+
+        if (result === breakLoop || (done && running <= 0)) {
+            done = true;
+            //console.log('done iterCb')
             return callback(null);
         }
-        var nextElem = iterator(obj);
+        replenish();
+    }
+
+    function handleError(err) {
+        if (canceled) return
+        awaiting = false;
+        done = true;
+        callback(err);
+    }
+
+    replenish();
+}
+
+var eachOfLimit = (limit) => {
+    return (obj, iteratee, callback) => {
+        callback = once(callback);
+        if (limit <= 0) {
+            throw new RangeError('concurrency limit cannot be less than 1')
+        }
+        if (!obj) {
+            return callback(null);
+        }
+        if (isAsyncGenerator(obj)) {
+            return asyncEachOfLimit(obj, limit, iteratee, callback)
+        }
+        if (isAsyncIterable(obj)) {
+            return asyncEachOfLimit(obj[Symbol.asyncIterator](), limit, iteratee, callback)
+        }
+        var nextElem = createIterator(obj);
         var done = false;
+        var canceled = false;
         var running = 0;
         var looping = false;
 
         function iterateeCallback(err, value) {
+            if (canceled) return
             running -= 1;
             if (err) {
                 done = true;
                 callback(err);
+            }
+            else if (err === false) {
+                done = true;
+                canceled = true;
             }
             else if (value === breakLoop || (done && running <= 0)) {
                 done = true;
@@ -1119,7 +651,7 @@ function _eachOfLimit(limit) {
 
         replenish();
     };
-}
+};
 
 /**
  * The same as [`eachOf`]{@link module:Collections.eachOf} but runs a maximum of `limit` async operations at a
@@ -1132,7 +664,7 @@ function _eachOfLimit(limit) {
  * @see [async.eachOf]{@link module:Collections.eachOf}
  * @alias forEachOfLimit
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {number} limit - The maximum number of async operations at a time.
  * @param {AsyncFunction} iteratee - An async function to apply to each
  * item in `coll`. The `key` is the item's key, or index in the case of an
@@ -1140,28 +672,30 @@ function _eachOfLimit(limit) {
  * Invoked with (item, key, callback).
  * @param {Function} [callback] - A callback which is called when all
  * `iteratee` functions have finished, or an error occurs. Invoked with (err).
+ * @returns {Promise} a promise, if a callback is omitted
  */
-function eachOfLimit(coll, limit, iteratee, callback) {
-    _eachOfLimit(limit)(coll, wrapAsync(iteratee), callback);
+function eachOfLimit$1(coll, limit, iteratee, callback) {
+    return eachOfLimit(limit)(coll, wrapAsync(iteratee), callback);
 }
 
-function doLimit(fn, limit) {
-    return function (iterable, iteratee, callback) {
-        return fn(iterable, limit, iteratee, callback);
-    };
-}
+var eachOfLimit$2 = awaitify(eachOfLimit$1, 4);
 
 // eachOf implementation optimized for array-likes
 function eachOfArrayLike(coll, iteratee, callback) {
-    callback = once(callback || noop);
+    callback = once(callback);
     var index = 0,
         completed = 0,
-        length = coll.length;
+        {length} = coll,
+        canceled = false;
     if (length === 0) {
         callback(null);
     }
 
     function iteratorCallback(err, value) {
+        if (err === false) {
+            canceled = true;
+        }
+        if (canceled === true) return
         if (err) {
             callback(err);
         } else if ((++completed === length) || value === breakLoop) {
@@ -1175,7 +709,9 @@ function eachOfArrayLike(coll, iteratee, callback) {
 }
 
 // a generic version of eachOf which can handle array, object, and iterator cases.
-var eachOfGeneric = doLimit(eachOfLimit, Infinity);
+function eachOfGeneric (coll, iteratee, callback) {
+    return eachOfLimit$2(coll, Infinity, iteratee, callback);
+}
 
 /**
  * Like [`each`]{@link module:Collections.each}, except that it passes the key (or index) as the second argument
@@ -1188,21 +724,29 @@ var eachOfGeneric = doLimit(eachOfLimit, Infinity);
  * @alias forEachOf
  * @category Collection
  * @see [async.each]{@link module:Collections.each}
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - A function to apply to each
  * item in `coll`.
  * The `key` is the item's key, or index in the case of an array.
  * Invoked with (item, key, callback).
  * @param {Function} [callback] - A callback which is called when all
  * `iteratee` functions have finished, or an error occurs. Invoked with (err).
+ * @returns {Promise} a promise, if a callback is omitted
  * @example
  *
- * var obj = {dev: "/dev.json", test: "/test.json", prod: "/prod.json"};
- * var configs = {};
+ * // dev.json is a file containing a valid json object config for dev environment
+ * // dev.json is a file containing a valid json object config for test environment
+ * // prod.json is a file containing a valid json object config for prod environment
+ * // invalid.json is a file with a malformed json object
  *
- * async.forEachOf(obj, function (value, key, callback) {
- *     fs.readFile(__dirname + value, "utf8", function (err, data) {
- *         if (err) return callback(err);
+ * let configs = {}; //global variable
+ * let validConfigFileMap = {dev: 'dev.json', test: 'test.json', prod: 'prod.json'};
+ * let invalidConfigFileMap = {dev: 'dev.json', test: 'test.json', invalid: 'invalid.json'};
+ *
+ * // asynchronous function that reads a json file and parses the contents as json object
+ * function parseFile(file, key, callback) {
+ *     fs.readFile(file, "utf8", function(err, data) {
+ *         if (err) return calback(err);
  *         try {
  *             configs[key] = JSON.parse(data);
  *         } catch (e) {
@@ -1210,40 +754,80 @@ var eachOfGeneric = doLimit(eachOfLimit, Infinity);
  *         }
  *         callback();
  *     });
- * }, function (err) {
- *     if (err) console.error(err.message);
- *     // configs is now a map of JSON data
- *     doSomethingWith(configs);
+ * }
+ *
+ * // Using callbacks
+ * async.forEachOf(validConfigFileMap, parseFile, function (err) {
+ *     if (err) {
+ *         console.error(err);
+ *     } else {
+ *         console.log(configs);
+ *         // configs is now a map of JSON data, e.g.
+ *         // { dev: //parsed dev.json, test: //parsed test.json, prod: //parsed prod.json}
+ *     }
  * });
+ *
+ * //Error handing
+ * async.forEachOf(invalidConfigFileMap, parseFile, function (err) {
+ *     if (err) {
+ *         console.error(err);
+ *         // JSON parse error exception
+ *     } else {
+ *         console.log(configs);
+ *     }
+ * });
+ *
+ * // Using Promises
+ * async.forEachOf(validConfigFileMap, parseFile)
+ * .then( () => {
+ *     console.log(configs);
+ *     // configs is now a map of JSON data, e.g.
+ *     // { dev: //parsed dev.json, test: //parsed test.json, prod: //parsed prod.json}
+ * }).catch( err => {
+ *     console.error(err);
+ * });
+ *
+ * //Error handing
+ * async.forEachOf(invalidConfigFileMap, parseFile)
+ * .then( () => {
+ *     console.log(configs);
+ * }).catch( err => {
+ *     console.error(err);
+ *     // JSON parse error exception
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let result = await async.forEachOf(validConfigFileMap, parseFile);
+ *         console.log(configs);
+ *         // configs is now a map of JSON data, e.g.
+ *         // { dev: //parsed dev.json, test: //parsed test.json, prod: //parsed prod.json}
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * //Error handing
+ * async () => {
+ *     try {
+ *         let result = await async.forEachOf(invalidConfigFileMap, parseFile);
+ *         console.log(configs);
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *         // JSON parse error exception
+ *     }
+ * }
+ *
  */
-var eachOf = function(coll, iteratee, callback) {
+function eachOf(coll, iteratee, callback) {
     var eachOfImplementation = isArrayLike(coll) ? eachOfArrayLike : eachOfGeneric;
-    eachOfImplementation(coll, wrapAsync(iteratee), callback);
-};
-
-function doParallel(fn) {
-    return function (obj, iteratee, callback) {
-        return fn(eachOf, obj, wrapAsync(iteratee), callback);
-    };
+    return eachOfImplementation(coll, wrapAsync(iteratee), callback);
 }
 
-function _asyncMap(eachfn, arr, iteratee, callback) {
-    callback = callback || noop;
-    arr = arr || [];
-    var results = [];
-    var counter = 0;
-    var _iteratee = wrapAsync(iteratee);
-
-    eachfn(arr, function (value, _, callback) {
-        var index = counter++;
-        _iteratee(value, function (err, v) {
-            results[index] = v;
-            callback(err);
-        });
-    }, function (err) {
-        callback(err, results);
-    });
-}
+var eachOf$1 = awaitify(eachOf, 3);
 
 /**
  * Produces a new collection of values by mapping each value in `coll` through
@@ -1267,7 +851,7 @@ function _asyncMap(eachfn, arr, iteratee, callback) {
  * @memberOf module:Collections
  * @method
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async function to apply to each item in
  * `coll`.
  * The iteratee should complete with the transformed item.
@@ -1275,75 +859,161 @@ function _asyncMap(eachfn, arr, iteratee, callback) {
  * @param {Function} [callback] - A callback which is called when all `iteratee`
  * functions have finished, or an error occurs. Results is an Array of the
  * transformed items from the `coll`. Invoked with (err, results).
+ * @returns {Promise} a promise, if no callback is passed
  * @example
  *
- * async.map(['file1','file2','file3'], fs.stat, function(err, results) {
- *     // results is now an array of stats for each file
+ * // file1.txt is a file that is 1000 bytes in size
+ * // file2.txt is a file that is 2000 bytes in size
+ * // file3.txt is a file that is 3000 bytes in size
+ * // file4.txt does not exist
+ *
+ * const fileList = ['file1.txt','file2.txt','file3.txt'];
+ * const withMissingFileList = ['file1.txt','file2.txt','file4.txt'];
+ *
+ * // asynchronous function that returns the file size in bytes
+ * function getFileSizeInBytes(file, callback) {
+ *     fs.stat(file, function(err, stat) {
+ *         if (err) {
+ *             return callback(err);
+ *         }
+ *         callback(null, stat.size);
+ *     });
+ * }
+ *
+ * // Using callbacks
+ * async.map(fileList, getFileSizeInBytes, function(err, results) {
+ *     if (err) {
+ *         console.log(err);
+ *     } else {
+ *         console.log(results);
+ *         // results is now an array of the file size in bytes for each file, e.g.
+ *         // [ 1000, 2000, 3000]
+ *     }
  * });
+ *
+ * // Error Handling
+ * async.map(withMissingFileList, getFileSizeInBytes, function(err, results) {
+ *     if (err) {
+ *         console.log(err);
+ *         // [ Error: ENOENT: no such file or directory ]
+ *     } else {
+ *         console.log(results);
+ *     }
+ * });
+ *
+ * // Using Promises
+ * async.map(fileList, getFileSizeInBytes)
+ * .then( results => {
+ *     console.log(results);
+ *     // results is now an array of the file size in bytes for each file, e.g.
+ *     // [ 1000, 2000, 3000]
+ * }).catch( err => {
+ *     console.log(err);
+ * });
+ *
+ * // Error Handling
+ * async.map(withMissingFileList, getFileSizeInBytes)
+ * .then( results => {
+ *     console.log(results);
+ * }).catch( err => {
+ *     console.log(err);
+ *     // [ Error: ENOENT: no such file or directory ]
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let results = await async.map(fileList, getFileSizeInBytes);
+ *         console.log(results);
+ *         // results is now an array of the file size in bytes for each file, e.g.
+ *         // [ 1000, 2000, 3000]
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * // Error Handling
+ * async () => {
+ *     try {
+ *         let results = await async.map(withMissingFileList, getFileSizeInBytes);
+ *         console.log(results);
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *         // [ Error: ENOENT: no such file or directory ]
+ *     }
+ * }
+ *
  */
-var map = doParallel(_asyncMap);
+function map (coll, iteratee, callback) {
+    return _asyncMap(eachOf$1, coll, iteratee, callback)
+}
+var map$1 = awaitify(map, 3);
 
 /**
  * Applies the provided arguments to each function in the array, calling
  * `callback` after all functions have completed. If you only provide the first
  * argument, `fns`, then it will return a function which lets you pass in the
  * arguments as if it were a single function call. If more arguments are
- * provided, `callback` is required while `args` is still optional.
+ * provided, `callback` is required while `args` is still optional. The results
+ * for each of the applied async functions are passed to the final callback
+ * as an array.
  *
  * @name applyEach
  * @static
  * @memberOf module:ControlFlow
  * @method
  * @category Control Flow
- * @param {Array|Iterable|Object} fns - A collection of {@link AsyncFunction}s
+ * @param {Array|Iterable|AsyncIterable|Object} fns - A collection of {@link AsyncFunction}s
  * to all call with the same arguments
  * @param {...*} [args] - any number of separate arguments to pass to the
  * function.
  * @param {Function} [callback] - the final argument should be the callback,
  * called when all functions have completed processing.
- * @returns {Function} - If only the first argument, `fns`, is provided, it will
- * return a function which lets you pass in the arguments as if it were a single
- * function call. The signature is `(..args, callback)`. If invoked with any
- * arguments, `callback` is required.
+ * @returns {AsyncFunction} - Returns a function that takes no args other than
+ * an optional callback, that is the result of applying the `args` to each
+ * of the functions.
  * @example
  *
- * async.applyEach([enableSearch, updateSchema], 'bucket', callback);
+ * const appliedFn = async.applyEach([enableSearch, updateSchema], 'bucket')
+ *
+ * appliedFn((err, results) => {
+ *     // results[0] is the results for `enableSearch`
+ *     // results[1] is the results for `updateSchema`
+ * });
  *
  * // partial application example:
  * async.each(
  *     buckets,
- *     async.applyEach([enableSearch, updateSchema]),
+ *     async (bucket) => async.applyEach([enableSearch, updateSchema], bucket)(),
  *     callback
  * );
  */
-var applyEach = applyEach$1(map);
-
-function doParallelLimit(fn) {
-    return function (obj, limit, iteratee, callback) {
-        return fn(_eachOfLimit(limit), obj, wrapAsync(iteratee), callback);
-    };
-}
+var applyEach$1 = applyEach(map$1);
 
 /**
- * The same as [`map`]{@link module:Collections.map} but runs a maximum of `limit` async operations at a time.
+ * The same as [`eachOf`]{@link module:Collections.eachOf} but runs only a single async operation at a time.
  *
- * @name mapLimit
+ * @name eachOfSeries
  * @static
  * @memberOf module:Collections
  * @method
- * @see [async.map]{@link module:Collections.map}
+ * @see [async.eachOf]{@link module:Collections.eachOf}
+ * @alias forEachOfSeries
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
- * @param {number} limit - The maximum number of async operations at a time.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async function to apply to each item in
  * `coll`.
- * The iteratee should complete with the transformed item.
- * Invoked with (item, callback).
+ * Invoked with (item, key, callback).
  * @param {Function} [callback] - A callback which is called when all `iteratee`
- * functions have finished, or an error occurs. Results is an array of the
- * transformed items from the `coll`. Invoked with (err, results).
+ * functions have finished, or an error occurs. Invoked with (err).
+ * @returns {Promise} a promise, if a callback is omitted
  */
-var mapLimit = doParallelLimit(_asyncMap);
+function eachOfSeries(coll, iteratee, callback) {
+    return eachOfLimit$2(coll, 1, iteratee, callback)
+}
+var eachOfSeries$1 = awaitify(eachOfSeries, 3);
 
 /**
  * The same as [`map`]{@link module:Collections.map} but runs only a single async operation at a time.
@@ -1354,7 +1024,7 @@ var mapLimit = doParallelLimit(_asyncMap);
  * @method
  * @see [async.map]{@link module:Collections.map}
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async function to apply to each item in
  * `coll`.
  * The iteratee should complete with the transformed item.
@@ -1362,8 +1032,12 @@ var mapLimit = doParallelLimit(_asyncMap);
  * @param {Function} [callback] - A callback which is called when all `iteratee`
  * functions have finished, or an error occurs. Results is an array of the
  * transformed items from the `coll`. Invoked with (err, results).
+ * @returns {Promise} a promise, if no callback is passed
  */
-var mapSeries = doLimit(mapLimit, 1);
+function mapSeries (coll, iteratee, callback) {
+    return _asyncMap(eachOfSeries$1, coll, iteratee, callback)
+}
+var mapSeries$1 = awaitify(mapSeries, 3);
 
 /**
  * The same as [`applyEach`]{@link module:ControlFlow.applyEach} but runs only a single async operation at a time.
@@ -1374,157 +1048,33 @@ var mapSeries = doLimit(mapLimit, 1);
  * @method
  * @see [async.applyEach]{@link module:ControlFlow.applyEach}
  * @category Control Flow
- * @param {Array|Iterable|Object} fns - A collection of {@link AsyncFunction}s to all
+ * @param {Array|Iterable|AsyncIterable|Object} fns - A collection of {@link AsyncFunction}s to all
  * call with the same arguments
  * @param {...*} [args] - any number of separate arguments to pass to the
  * function.
  * @param {Function} [callback] - the final argument should be the callback,
  * called when all functions have completed processing.
- * @returns {Function} - If only the first argument is provided, it will return
- * a function which lets you pass in the arguments as if it were a single
- * function call.
+ * @returns {AsyncFunction} - A function, that when called, is the result of
+ * appling the `args` to the list of functions.  It takes no args, other than
+ * a callback.
  */
-var applyEachSeries = applyEach$1(mapSeries);
+var applyEachSeries = applyEach(mapSeries$1);
 
-/**
- * A specialized version of `_.forEach` for arrays without support for
- * iteratee shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns `array`.
- */
-function arrayEach(array, iteratee) {
-  var index = -1,
-      length = array == null ? 0 : array.length;
+const PROMISE_SYMBOL = Symbol('promiseCallback');
 
-  while (++index < length) {
-    if (iteratee(array[index], index, array) === false) {
-      break;
+function promiseCallback () {
+    let resolve, reject;
+    function callback (err, ...args) {
+        if (err) return reject(err)
+        resolve(args.length > 1 ? args : args[0]);
     }
-  }
-  return array;
-}
 
-/**
- * Creates a base function for methods like `_.forIn` and `_.forOwn`.
- *
- * @private
- * @param {boolean} [fromRight] Specify iterating from right to left.
- * @returns {Function} Returns the new base function.
- */
-function createBaseFor(fromRight) {
-  return function(object, iteratee, keysFunc) {
-    var index = -1,
-        iterable = Object(object),
-        props = keysFunc(object),
-        length = props.length;
+    callback[PROMISE_SYMBOL] = new Promise((res, rej) => {
+        resolve = res,
+        reject = rej;
+    });
 
-    while (length--) {
-      var key = props[fromRight ? length : ++index];
-      if (iteratee(iterable[key], key, iterable) === false) {
-        break;
-      }
-    }
-    return object;
-  };
-}
-
-/**
- * The base implementation of `baseForOwn` which iterates over `object`
- * properties returned by `keysFunc` and invokes `iteratee` for each property.
- * Iteratee functions may exit iteration early by explicitly returning `false`.
- *
- * @private
- * @param {Object} object The object to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @param {Function} keysFunc The function to get the keys of `object`.
- * @returns {Object} Returns `object`.
- */
-var baseFor = createBaseFor();
-
-/**
- * The base implementation of `_.forOwn` without support for iteratee shorthands.
- *
- * @private
- * @param {Object} object The object to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Object} Returns `object`.
- */
-function baseForOwn(object, iteratee) {
-  return object && baseFor(object, iteratee, keys);
-}
-
-/**
- * The base implementation of `_.findIndex` and `_.findLastIndex` without
- * support for iteratee shorthands.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {Function} predicate The function invoked per iteration.
- * @param {number} fromIndex The index to search from.
- * @param {boolean} [fromRight] Specify iterating from right to left.
- * @returns {number} Returns the index of the matched value, else `-1`.
- */
-function baseFindIndex(array, predicate, fromIndex, fromRight) {
-  var length = array.length,
-      index = fromIndex + (fromRight ? 1 : -1);
-
-  while ((fromRight ? index-- : ++index < length)) {
-    if (predicate(array[index], index, array)) {
-      return index;
-    }
-  }
-  return -1;
-}
-
-/**
- * The base implementation of `_.isNaN` without support for number objects.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is `NaN`, else `false`.
- */
-function baseIsNaN(value) {
-  return value !== value;
-}
-
-/**
- * A specialized version of `_.indexOf` which performs strict equality
- * comparisons of values, i.e. `===`.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {*} value The value to search for.
- * @param {number} fromIndex The index to search from.
- * @returns {number} Returns the index of the matched value, else `-1`.
- */
-function strictIndexOf(array, value, fromIndex) {
-  var index = fromIndex - 1,
-      length = array.length;
-
-  while (++index < length) {
-    if (array[index] === value) {
-      return index;
-    }
-  }
-  return -1;
-}
-
-/**
- * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {*} value The value to search for.
- * @param {number} fromIndex The index to search from.
- * @returns {number} Returns the index of the matched value, else `-1`.
- */
-function baseIndexOf(array, value, fromIndex) {
-  return value === value
-    ? strictIndexOf(array, value, fromIndex)
-    : baseFindIndex(array, baseIsNaN, fromIndex);
+    return callback
 }
 
 /**
@@ -1565,18 +1115,43 @@ function baseIndexOf(array, value, fromIndex) {
  * pass an error to their callback. Results are always returned; however, if an
  * error occurs, no further `tasks` will be performed, and the results object
  * will only contain partial results. Invoked with (err, results).
- * @returns undefined
+ * @returns {Promise} a promise, if a callback is not passed
  * @example
  *
+ * //Using Callbacks
  * async.auto({
- *     // this function will just be passed a callback
- *     readData: async.apply(fs.readFile, 'data.txt', 'utf-8'),
- *     showData: ['readData', function(results, cb) {
- *         // results.readData is the file's contents
- *         // ...
+ *     get_data: function(callback) {
+ *         // async code to get some data
+ *         callback(null, 'data', 'converted to array');
+ *     },
+ *     make_folder: function(callback) {
+ *         // async code to create a directory to store a file in
+ *         // this is run at the same time as getting the data
+ *         callback(null, 'folder');
+ *     },
+ *     write_file: ['get_data', 'make_folder', function(results, callback) {
+ *         // once there is some data and the directory exists,
+ *         // write the data to a file in the directory
+ *         callback(null, 'filename');
+ *     }],
+ *     email_link: ['write_file', function(results, callback) {
+ *         // once the file is written let's email a link to it...
+ *         callback(null, {'file':results.write_file, 'email':'user@example.com'});
  *     }]
- * }, callback);
+ * }, function(err, results) {
+ *     if (err) {
+ *         console.log('err = ', err);
+ *     }
+ *     console.log('results = ', results);
+ *     // results = {
+ *     //     get_data: ['data', 'converted to array']
+ *     //     make_folder; 'folder',
+ *     //     write_file: 'filename'
+ *     //     email_link: { file: 'filename', email: 'user@example.com' }
+ *     // }
+ * });
  *
+ * //Using Promises
  * async.auto({
  *     get_data: function(callback) {
  *         console.log('in get_data');
@@ -1590,31 +1165,71 @@ function baseIndexOf(array, value, fromIndex) {
  *         callback(null, 'folder');
  *     },
  *     write_file: ['get_data', 'make_folder', function(results, callback) {
- *         console.log('in write_file', JSON.stringify(results));
  *         // once there is some data and the directory exists,
  *         // write the data to a file in the directory
  *         callback(null, 'filename');
  *     }],
  *     email_link: ['write_file', function(results, callback) {
- *         console.log('in email_link', JSON.stringify(results));
  *         // once the file is written let's email a link to it...
- *         // results.write_file contains the filename returned by write_file.
  *         callback(null, {'file':results.write_file, 'email':'user@example.com'});
  *     }]
- * }, function(err, results) {
- *     console.log('err = ', err);
+ * }).then(results => {
  *     console.log('results = ', results);
+ *     // results = {
+ *     //     get_data: ['data', 'converted to array']
+ *     //     make_folder; 'folder',
+ *     //     write_file: 'filename'
+ *     //     email_link: { file: 'filename', email: 'user@example.com' }
+ *     // }
+ * }).catch(err => {
+ *     console.log('err = ', err);
  * });
+ *
+ * //Using async/await
+ * async () => {
+ *     try {
+ *         let results = await async.auto({
+ *             get_data: function(callback) {
+ *                 // async code to get some data
+ *                 callback(null, 'data', 'converted to array');
+ *             },
+ *             make_folder: function(callback) {
+ *                 // async code to create a directory to store a file in
+ *                 // this is run at the same time as getting the data
+ *                 callback(null, 'folder');
+ *             },
+ *             write_file: ['get_data', 'make_folder', function(results, callback) {
+ *                 // once there is some data and the directory exists,
+ *                 // write the data to a file in the directory
+ *                 callback(null, 'filename');
+ *             }],
+ *             email_link: ['write_file', function(results, callback) {
+ *                 // once the file is written let's email a link to it...
+ *                 callback(null, {'file':results.write_file, 'email':'user@example.com'});
+ *             }]
+ *         });
+ *         console.log('results = ', results);
+ *         // results = {
+ *         //     get_data: ['data', 'converted to array']
+ *         //     make_folder; 'folder',
+ *         //     write_file: 'filename'
+ *         //     email_link: { file: 'filename', email: 'user@example.com' }
+ *         // }
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
-var auto = function (tasks, concurrency, callback) {
-    if (typeof concurrency === 'function') {
+function auto(tasks, concurrency, callback) {
+    if (typeof concurrency !== 'number') {
         // concurrency is optional, shift the args.
         callback = concurrency;
         concurrency = null;
     }
-    callback = once(callback || noop);
-    var keys$$1 = keys(tasks);
-    var numTasks = keys$$1.length;
+    callback = once(callback || promiseCallback());
+    var numTasks = Object.keys(tasks).length;
     if (!numTasks) {
         return callback(null);
     }
@@ -1624,6 +1239,7 @@ var auto = function (tasks, concurrency, callback) {
 
     var results = {};
     var runningTasks = 0;
+    var canceled = false;
     var hasError = false;
 
     var listeners = Object.create(null);
@@ -1635,8 +1251,9 @@ var auto = function (tasks, concurrency, callback) {
     // without the possibility of returning to an ancestor task
     var uncheckedDependencies = {};
 
-    baseForOwn(tasks, function (task, key) {
-        if (!isArray(task)) {
+    Object.keys(tasks).forEach(key => {
+        var task = tasks[key];
+        if (!Array.isArray(task)) {
             // no dependencies
             enqueueTask(key, [task]);
             readyToCheck.push(key);
@@ -1652,14 +1269,14 @@ var auto = function (tasks, concurrency, callback) {
         }
         uncheckedDependencies[key] = remainingDependencies;
 
-        arrayEach(dependencies, function (dependencyName) {
+        dependencies.forEach(dependencyName => {
             if (!tasks[dependencyName]) {
                 throw new Error('async.auto task `' + key +
                     '` has a non-existent dependency `' +
                     dependencyName + '` in ' +
                     dependencies.join(', '));
             }
-            addListener(dependencyName, function () {
+            addListener(dependencyName, () => {
                 remainingDependencies--;
                 if (remainingDependencies === 0) {
                     enqueueTask(key, task);
@@ -1672,12 +1289,11 @@ var auto = function (tasks, concurrency, callback) {
     processQueue();
 
     function enqueueTask(key, task) {
-        readyTasks.push(function () {
-            runTask(key, task);
-        });
+        readyTasks.push(() => runTask(key, task));
     }
 
     function processQueue() {
+        if (canceled) return
         if (readyTasks.length === 0 && runningTasks === 0) {
             return callback(null, results);
         }
@@ -1699,9 +1315,7 @@ var auto = function (tasks, concurrency, callback) {
 
     function taskComplete(taskName) {
         var taskListeners = listeners[taskName] || [];
-        arrayEach(taskListeners, function (fn) {
-            fn();
-        });
+        taskListeners.forEach(fn => fn());
         processQueue();
     }
 
@@ -1709,20 +1323,24 @@ var auto = function (tasks, concurrency, callback) {
     function runTask(key, task) {
         if (hasError) return;
 
-        var taskCallback = onlyOnce(function(err, result) {
+        var taskCallback = onlyOnce((err, ...result) => {
             runningTasks--;
-            if (arguments.length > 2) {
-                result = slice(arguments, 1);
+            if (err === false) {
+                canceled = true;
+                return
+            }
+            if (result.length < 2) {
+                [result] = result;
             }
             if (err) {
                 var safeResults = {};
-                baseForOwn(results, function(val, rkey) {
-                    safeResults[rkey] = val;
+                Object.keys(results).forEach(rkey => {
+                    safeResults[rkey] = results[rkey];
                 });
                 safeResults[key] = result;
                 hasError = true;
                 listeners = Object.create(null);
-
+                if (canceled) return
                 callback(err, safeResults);
             } else {
                 results[key] = result;
@@ -1748,7 +1366,7 @@ var auto = function (tasks, concurrency, callback) {
         while (readyToCheck.length) {
             currentTask = readyToCheck.pop();
             counter++;
-            arrayEach(getDependents(currentTask), function (dependent) {
+            getDependents(currentTask).forEach(dependent => {
                 if (--uncheckedDependencies[dependent] === 0) {
                     readyToCheck.push(dependent);
                 }
@@ -1764,336 +1382,36 @@ var auto = function (tasks, concurrency, callback) {
 
     function getDependents(taskName) {
         var result = [];
-        baseForOwn(tasks, function (task, key) {
-            if (isArray(task) && baseIndexOf(task, taskName, 0) >= 0) {
+        Object.keys(tasks).forEach(key => {
+            const task = tasks[key];
+            if (Array.isArray(task) && task.indexOf(taskName) >= 0) {
                 result.push(key);
             }
         });
         return result;
     }
-};
 
-/**
- * A specialized version of `_.map` for arrays without support for iteratee
- * shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @returns {Array} Returns the new mapped array.
- */
-function arrayMap(array, iteratee) {
-  var index = -1,
-      length = array == null ? 0 : array.length,
-      result = Array(length);
-
-  while (++index < length) {
-    result[index] = iteratee(array[index], index, array);
-  }
-  return result;
+    return callback[PROMISE_SYMBOL]
 }
 
-/** `Object#toString` result references. */
-var symbolTag = '[object Symbol]';
-
-/**
- * Checks if `value` is classified as a `Symbol` primitive or object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
- * @example
- *
- * _.isSymbol(Symbol.iterator);
- * // => true
- *
- * _.isSymbol('abc');
- * // => false
- */
-function isSymbol(value) {
-  return typeof value == 'symbol' ||
-    (isObjectLike(value) && baseGetTag(value) == symbolTag);
-}
-
-/** Used as references for various `Number` constants. */
-var INFINITY = 1 / 0;
-
-/** Used to convert symbols to primitives and strings. */
-var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined;
-var symbolToString = symbolProto ? symbolProto.toString : undefined;
-
-/**
- * The base implementation of `_.toString` which doesn't convert nullish
- * values to empty strings.
- *
- * @private
- * @param {*} value The value to process.
- * @returns {string} Returns the string.
- */
-function baseToString(value) {
-  // Exit early for strings to avoid a performance hit in some environments.
-  if (typeof value == 'string') {
-    return value;
-  }
-  if (isArray(value)) {
-    // Recursively convert values (susceptible to call stack limits).
-    return arrayMap(value, baseToString) + '';
-  }
-  if (isSymbol(value)) {
-    return symbolToString ? symbolToString.call(value) : '';
-  }
-  var result = (value + '');
-  return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
-}
-
-/**
- * The base implementation of `_.slice` without an iteratee call guard.
- *
- * @private
- * @param {Array} array The array to slice.
- * @param {number} [start=0] The start position.
- * @param {number} [end=array.length] The end position.
- * @returns {Array} Returns the slice of `array`.
- */
-function baseSlice(array, start, end) {
-  var index = -1,
-      length = array.length;
-
-  if (start < 0) {
-    start = -start > length ? 0 : (length + start);
-  }
-  end = end > length ? length : end;
-  if (end < 0) {
-    end += length;
-  }
-  length = start > end ? 0 : ((end - start) >>> 0);
-  start >>>= 0;
-
-  var result = Array(length);
-  while (++index < length) {
-    result[index] = array[index + start];
-  }
-  return result;
-}
-
-/**
- * Casts `array` to a slice if it's needed.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {number} start The start position.
- * @param {number} [end=array.length] The end position.
- * @returns {Array} Returns the cast slice.
- */
-function castSlice(array, start, end) {
-  var length = array.length;
-  end = end === undefined ? length : end;
-  return (!start && end >= length) ? array : baseSlice(array, start, end);
-}
-
-/**
- * Used by `_.trim` and `_.trimEnd` to get the index of the last string symbol
- * that is not found in the character symbols.
- *
- * @private
- * @param {Array} strSymbols The string symbols to inspect.
- * @param {Array} chrSymbols The character symbols to find.
- * @returns {number} Returns the index of the last unmatched string symbol.
- */
-function charsEndIndex(strSymbols, chrSymbols) {
-  var index = strSymbols.length;
-
-  while (index-- && baseIndexOf(chrSymbols, strSymbols[index], 0) > -1) {}
-  return index;
-}
-
-/**
- * Used by `_.trim` and `_.trimStart` to get the index of the first string symbol
- * that is not found in the character symbols.
- *
- * @private
- * @param {Array} strSymbols The string symbols to inspect.
- * @param {Array} chrSymbols The character symbols to find.
- * @returns {number} Returns the index of the first unmatched string symbol.
- */
-function charsStartIndex(strSymbols, chrSymbols) {
-  var index = -1,
-      length = strSymbols.length;
-
-  while (++index < length && baseIndexOf(chrSymbols, strSymbols[index], 0) > -1) {}
-  return index;
-}
-
-/**
- * Converts an ASCII `string` to an array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the converted array.
- */
-function asciiToArray(string) {
-  return string.split('');
-}
-
-/** Used to compose unicode character classes. */
-var rsAstralRange = '\\ud800-\\udfff';
-var rsComboMarksRange = '\\u0300-\\u036f';
-var reComboHalfMarksRange = '\\ufe20-\\ufe2f';
-var rsComboSymbolsRange = '\\u20d0-\\u20ff';
-var rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange;
-var rsVarRange = '\\ufe0e\\ufe0f';
-
-/** Used to compose unicode capture groups. */
-var rsZWJ = '\\u200d';
-
-/** Used to detect strings with [zero-width joiners or code points from the astral planes](http://eev.ee/blog/2015/09/12/dark-corners-of-unicode/). */
-var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboRange + rsVarRange + ']');
-
-/**
- * Checks if `string` contains Unicode symbols.
- *
- * @private
- * @param {string} string The string to inspect.
- * @returns {boolean} Returns `true` if a symbol is found, else `false`.
- */
-function hasUnicode(string) {
-  return reHasUnicode.test(string);
-}
-
-/** Used to compose unicode character classes. */
-var rsAstralRange$1 = '\\ud800-\\udfff';
-var rsComboMarksRange$1 = '\\u0300-\\u036f';
-var reComboHalfMarksRange$1 = '\\ufe20-\\ufe2f';
-var rsComboSymbolsRange$1 = '\\u20d0-\\u20ff';
-var rsComboRange$1 = rsComboMarksRange$1 + reComboHalfMarksRange$1 + rsComboSymbolsRange$1;
-var rsVarRange$1 = '\\ufe0e\\ufe0f';
-
-/** Used to compose unicode capture groups. */
-var rsAstral = '[' + rsAstralRange$1 + ']';
-var rsCombo = '[' + rsComboRange$1 + ']';
-var rsFitz = '\\ud83c[\\udffb-\\udfff]';
-var rsModifier = '(?:' + rsCombo + '|' + rsFitz + ')';
-var rsNonAstral = '[^' + rsAstralRange$1 + ']';
-var rsRegional = '(?:\\ud83c[\\udde6-\\uddff]){2}';
-var rsSurrPair = '[\\ud800-\\udbff][\\udc00-\\udfff]';
-var rsZWJ$1 = '\\u200d';
-
-/** Used to compose unicode regexes. */
-var reOptMod = rsModifier + '?';
-var rsOptVar = '[' + rsVarRange$1 + ']?';
-var rsOptJoin = '(?:' + rsZWJ$1 + '(?:' + [rsNonAstral, rsRegional, rsSurrPair].join('|') + ')' + rsOptVar + reOptMod + ')*';
-var rsSeq = rsOptVar + reOptMod + rsOptJoin;
-var rsSymbol = '(?:' + [rsNonAstral + rsCombo + '?', rsCombo, rsRegional, rsSurrPair, rsAstral].join('|') + ')';
-
-/** Used to match [string symbols](https://mathiasbynens.be/notes/javascript-unicode). */
-var reUnicode = RegExp(rsFitz + '(?=' + rsFitz + ')|' + rsSymbol + rsSeq, 'g');
-
-/**
- * Converts a Unicode `string` to an array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the converted array.
- */
-function unicodeToArray(string) {
-  return string.match(reUnicode) || [];
-}
-
-/**
- * Converts `string` to an array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the converted array.
- */
-function stringToArray(string) {
-  return hasUnicode(string)
-    ? unicodeToArray(string)
-    : asciiToArray(string);
-}
-
-/**
- * Converts `value` to a string. An empty string is returned for `null`
- * and `undefined` values. The sign of `-0` is preserved.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to convert.
- * @returns {string} Returns the converted string.
- * @example
- *
- * _.toString(null);
- * // => ''
- *
- * _.toString(-0);
- * // => '-0'
- *
- * _.toString([1, 2, 3]);
- * // => '1,2,3'
- */
-function toString(value) {
-  return value == null ? '' : baseToString(value);
-}
-
-/** Used to match leading and trailing whitespace. */
-var reTrim = /^\s+|\s+$/g;
-
-/**
- * Removes leading and trailing whitespace or specified characters from `string`.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to trim.
- * @param {string} [chars=whitespace] The characters to trim.
- * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
- * @returns {string} Returns the trimmed string.
- * @example
- *
- * _.trim('  abc  ');
- * // => 'abc'
- *
- * _.trim('-_-abc-_-', '_-');
- * // => 'abc'
- *
- * _.map(['  foo  ', '  bar  '], _.trim);
- * // => ['foo', 'bar']
- */
-function trim(string, chars, guard) {
-  string = toString(string);
-  if (string && (guard || chars === undefined)) {
-    return string.replace(reTrim, '');
-  }
-  if (!string || !(chars = baseToString(chars))) {
-    return string;
-  }
-  var strSymbols = stringToArray(string),
-      chrSymbols = stringToArray(chars),
-      start = charsStartIndex(strSymbols, chrSymbols),
-      end = charsEndIndex(strSymbols, chrSymbols) + 1;
-
-  return castSlice(strSymbols, start, end).join('');
-}
-
-var FN_ARGS = /^(?:async\s+)?(function)?\s*[^\(]*\(\s*([^\)]*)\)/m;
+var FN_ARGS = /^(?:async\s+)?(?:function)?\s*\w*\s*\(\s*([^)]+)\s*\)(?:\s*{)/;
+var ARROW_FN_ARGS = /^(?:async\s+)?\(?\s*([^)=]+)\s*\)?(?:\s*=>)/;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /(=.+)?(\s*)$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 
 function parseParams(func) {
-    func = func.toString().replace(STRIP_COMMENTS, '');
-    func = func.match(FN_ARGS)[2].replace(' ', '');
-    func = func ? func.split(FN_ARG_SPLIT) : [];
-    func = func.map(function (arg){
-        return trim(arg.replace(FN_ARG, ''));
-    });
-    return func;
+    const src = func.toString().replace(STRIP_COMMENTS, '');
+    let match = src.match(FN_ARGS);
+    if (!match) {
+        match = src.match(ARROW_FN_ARGS);
+    }
+    if (!match) throw new Error('could not parse args in autoInject\nSource:\n' + src)
+    let [, args] = match;
+    return args
+        .replace(/\s/g, '')
+        .split(FN_ARG_SPLIT)
+        .map((arg) => arg.replace(FN_ARG, '').trim());
 }
 
 /**
@@ -2128,6 +1446,7 @@ function parseParams(func) {
  * the tasks have been completed. It receives the `err` argument if any `tasks`
  * pass an error to their callback, and a `results` object with any completed
  * task results, similar to `auto`.
+ * @returns {Promise} a promise, if no callback is passed
  * @example
  *
  * //  The example from `auto` can be rewritten as follows:
@@ -2181,16 +1500,17 @@ function parseParams(func) {
 function autoInject(tasks, callback) {
     var newTasks = {};
 
-    baseForOwn(tasks, function (taskFn, key) {
+    Object.keys(tasks).forEach(key => {
+        var taskFn = tasks[key];
         var params;
         var fnIsAsync = isAsync(taskFn);
         var hasNoDeps =
             (!fnIsAsync && taskFn.length === 1) ||
             (fnIsAsync && taskFn.length === 0);
 
-        if (isArray(taskFn)) {
-            params = taskFn.slice(0, -1);
-            taskFn = taskFn[taskFn.length - 1];
+        if (Array.isArray(taskFn)) {
+            params = [...taskFn];
+            taskFn = params.pop();
 
             newTasks[key] = params.concat(params.length > 0 ? newTask : taskFn);
         } else if (hasNoDeps) {
@@ -2198,7 +1518,7 @@ function autoInject(tasks, callback) {
             newTasks[key] = taskFn;
         } else {
             params = parseParams(taskFn);
-            if (taskFn.length === 0 && !fnIsAsync && params.length === 0) {
+            if ((taskFn.length === 0 && !fnIsAsync) && params.length === 0) {
                 throw new Error("autoInject task functions require explicit parameters.");
             }
 
@@ -2209,24 +1529,100 @@ function autoInject(tasks, callback) {
         }
 
         function newTask(results, taskCb) {
-            var newArgs = arrayMap(params, function (name) {
-                return results[name];
-            });
+            var newArgs = params.map(name => results[name]);
             newArgs.push(taskCb);
-            wrapAsync(taskFn).apply(null, newArgs);
+            wrapAsync(taskFn)(...newArgs);
         }
     });
 
-    auto(newTasks, callback);
+    return auto(newTasks, callback);
 }
 
 // Simple doubly linked list (https://en.wikipedia.org/wiki/Doubly_linked_list) implementation
 // used for queues. This implementation assumes that the node provided by the user can be modified
 // to adjust the next and last properties. We implement only the minimal functionality
 // for queue support.
-function DLL() {
-    this.head = this.tail = null;
-    this.length = 0;
+class DLL {
+    constructor() {
+        this.head = this.tail = null;
+        this.length = 0;
+    }
+
+    removeLink(node) {
+        if (node.prev) node.prev.next = node.next;
+        else this.head = node.next;
+        if (node.next) node.next.prev = node.prev;
+        else this.tail = node.prev;
+
+        node.prev = node.next = null;
+        this.length -= 1;
+        return node;
+    }
+
+    empty () {
+        while(this.head) this.shift();
+        return this;
+    }
+
+    insertAfter(node, newNode) {
+        newNode.prev = node;
+        newNode.next = node.next;
+        if (node.next) node.next.prev = newNode;
+        else this.tail = newNode;
+        node.next = newNode;
+        this.length += 1;
+    }
+
+    insertBefore(node, newNode) {
+        newNode.prev = node.prev;
+        newNode.next = node;
+        if (node.prev) node.prev.next = newNode;
+        else this.head = newNode;
+        node.prev = newNode;
+        this.length += 1;
+    }
+
+    unshift(node) {
+        if (this.head) this.insertBefore(this.head, node);
+        else setInitial(this, node);
+    }
+
+    push(node) {
+        if (this.tail) this.insertAfter(this.tail, node);
+        else setInitial(this, node);
+    }
+
+    shift() {
+        return this.head && this.removeLink(this.head);
+    }
+
+    pop() {
+        return this.tail && this.removeLink(this.tail);
+    }
+
+    toArray() {
+        return [...this]
+    }
+
+    *[Symbol.iterator] () {
+        var cur = this.head;
+        while (cur) {
+            yield cur.data;
+            cur = cur.next;
+        }
+    }
+
+    remove (testFn) {
+        var curr = this.head;
+        while(curr) {
+            var {next} = curr;
+            if (testFn(curr)) {
+                this.removeLink(curr);
+            }
+            curr = next;
+        }
+        return this;
+    }
 }
 
 function setInitial(dll, node) {
@@ -2234,189 +1630,194 @@ function setInitial(dll, node) {
     dll.head = dll.tail = node;
 }
 
-DLL.prototype.removeLink = function(node) {
-    if (node.prev) node.prev.next = node.next;
-    else this.head = node.next;
-    if (node.next) node.next.prev = node.prev;
-    else this.tail = node.prev;
-
-    node.prev = node.next = null;
-    this.length -= 1;
-    return node;
-};
-
-DLL.prototype.empty = function () {
-    while(this.head) this.shift();
-    return this;
-};
-
-DLL.prototype.insertAfter = function(node, newNode) {
-    newNode.prev = node;
-    newNode.next = node.next;
-    if (node.next) node.next.prev = newNode;
-    else this.tail = newNode;
-    node.next = newNode;
-    this.length += 1;
-};
-
-DLL.prototype.insertBefore = function(node, newNode) {
-    newNode.prev = node.prev;
-    newNode.next = node;
-    if (node.prev) node.prev.next = newNode;
-    else this.head = newNode;
-    node.prev = newNode;
-    this.length += 1;
-};
-
-DLL.prototype.unshift = function(node) {
-    if (this.head) this.insertBefore(this.head, node);
-    else setInitial(this, node);
-};
-
-DLL.prototype.push = function(node) {
-    if (this.tail) this.insertAfter(this.tail, node);
-    else setInitial(this, node);
-};
-
-DLL.prototype.shift = function() {
-    return this.head && this.removeLink(this.head);
-};
-
-DLL.prototype.pop = function() {
-    return this.tail && this.removeLink(this.tail);
-};
-
-DLL.prototype.toArray = function () {
-    var arr = Array(this.length);
-    var curr = this.head;
-    for(var idx = 0; idx < this.length; idx++) {
-        arr[idx] = curr.data;
-        curr = curr.next;
-    }
-    return arr;
-};
-
-DLL.prototype.remove = function (testFn) {
-    var curr = this.head;
-    while(!!curr) {
-        var next = curr.next;
-        if (testFn(curr)) {
-            this.removeLink(curr);
-        }
-        curr = next;
-    }
-    return this;
-};
-
 function queue(worker, concurrency, payload) {
     if (concurrency == null) {
         concurrency = 1;
     }
     else if(concurrency === 0) {
-        throw new Error('Concurrency must not be zero');
+        throw new RangeError('Concurrency must not be zero');
     }
 
     var _worker = wrapAsync(worker);
     var numRunning = 0;
     var workersList = [];
+    const events = {
+        error: [],
+        drain: [],
+        saturated: [],
+        unsaturated: [],
+        empty: []
+    };
+
+    function on (event, handler) {
+        events[event].push(handler);
+    }
+
+    function once (event, handler) {
+        const handleAndRemove = (...args) => {
+            off(event, handleAndRemove);
+            handler(...args);
+        };
+        events[event].push(handleAndRemove);
+    }
+
+    function off (event, handler) {
+        if (!event) return Object.keys(events).forEach(ev => events[ev] = [])
+        if (!handler) return events[event] = []
+        events[event] = events[event].filter(ev => ev !== handler);
+    }
+
+    function trigger (event, ...args) {
+        events[event].forEach(handler => handler(...args));
+    }
 
     var processingScheduled = false;
-    function _insert(data, insertAtFront, callback) {
+    function _insert(data, insertAtFront, rejectOnError, callback) {
         if (callback != null && typeof callback !== 'function') {
             throw new Error('task callback must be a function');
         }
         q.started = true;
-        if (!isArray(data)) {
-            data = [data];
-        }
-        if (data.length === 0 && q.idle()) {
-            // call drain immediately if there are no tasks
-            return setImmediate$1(function() {
-                q.drain();
-            });
+
+        var res, rej;
+        function promiseCallback (err, ...args) {
+            // we don't care about the error, let the global error handler
+            // deal with it
+            if (err) return rejectOnError ? rej(err) : res()
+            if (args.length <= 1) return res(args[0])
+            res(args);
         }
 
-        for (var i = 0, l = data.length; i < l; i++) {
-            var item = {
-                data: data[i],
-                callback: callback || noop
-            };
+        var item = {
+            data,
+            callback: rejectOnError ?
+                promiseCallback :
+                (callback || promiseCallback)
+        };
 
-            if (insertAtFront) {
-                q._tasks.unshift(item);
-            } else {
-                q._tasks.push(item);
-            }
+        if (insertAtFront) {
+            q._tasks.unshift(item);
+        } else {
+            q._tasks.push(item);
         }
 
         if (!processingScheduled) {
             processingScheduled = true;
-            setImmediate$1(function() {
+            setImmediate$1(() => {
                 processingScheduled = false;
                 q.process();
             });
         }
+
+        if (rejectOnError || !callback) {
+            return new Promise((resolve, reject) => {
+                res = resolve;
+                rej = reject;
+            })
+        }
     }
 
-    function _next(tasks) {
-        return function(err){
+    function _createCB(tasks) {
+        return function (err, ...args) {
             numRunning -= 1;
 
             for (var i = 0, l = tasks.length; i < l; i++) {
                 var task = tasks[i];
 
-                var index = baseIndexOf(workersList, task, 0);
+                var index = workersList.indexOf(task);
                 if (index === 0) {
                     workersList.shift();
                 } else if (index > 0) {
                     workersList.splice(index, 1);
                 }
 
-                task.callback.apply(task, arguments);
+                task.callback(err, ...args);
 
                 if (err != null) {
-                    q.error(err, task.data);
+                    trigger('error', err, task.data);
                 }
             }
 
             if (numRunning <= (q.concurrency - q.buffer) ) {
-                q.unsaturated();
+                trigger('unsaturated');
             }
 
             if (q.idle()) {
-                q.drain();
+                trigger('drain');
             }
             q.process();
         };
     }
 
+    function _maybeDrain(data) {
+        if (data.length === 0 && q.idle()) {
+            // call drain immediately if there are no tasks
+            setImmediate$1(() => trigger('drain'));
+            return true
+        }
+        return false
+    }
+
+    const eventMethod = (name) => (handler) => {
+        if (!handler) {
+            return new Promise((resolve, reject) => {
+                once(name, (err, data) => {
+                    if (err) return reject(err)
+                    resolve(data);
+                });
+            })
+        }
+        off(name);
+        on(name, handler);
+
+    };
+
     var isProcessing = false;
     var q = {
         _tasks: new DLL(),
-        concurrency: concurrency,
-        payload: payload,
-        saturated: noop,
-        unsaturated:noop,
+        *[Symbol.iterator] () {
+            yield* q._tasks[Symbol.iterator]();
+        },
+        concurrency,
+        payload,
         buffer: concurrency / 4,
-        empty: noop,
-        drain: noop,
-        error: noop,
         started: false,
         paused: false,
-        push: function (data, callback) {
-            _insert(data, false, callback);
+        push (data, callback) {
+            if (Array.isArray(data)) {
+                if (_maybeDrain(data)) return
+                return data.map(datum => _insert(datum, false, false, callback))
+            }
+            return _insert(data, false, false, callback);
         },
-        kill: function () {
-            q.drain = noop;
+        pushAsync (data, callback) {
+            if (Array.isArray(data)) {
+                if (_maybeDrain(data)) return
+                return data.map(datum => _insert(datum, false, true, callback))
+            }
+            return _insert(data, false, true, callback);
+        },
+        kill () {
+            off();
             q._tasks.empty();
         },
-        unshift: function (data, callback) {
-            _insert(data, true, callback);
+        unshift (data, callback) {
+            if (Array.isArray(data)) {
+                if (_maybeDrain(data)) return
+                return data.map(datum => _insert(datum, true, false, callback))
+            }
+            return _insert(data, true, false, callback);
         },
-        remove: function (testFn) {
+        unshiftAsync (data, callback) {
+            if (Array.isArray(data)) {
+                if (_maybeDrain(data)) return
+                return data.map(datum => _insert(datum, true, true, callback))
+            }
+            return _insert(data, true, true, callback);
+        },
+        remove (testFn) {
             q._tasks.remove(testFn);
         },
-        process: function () {
+        process () {
             // Avoid trying to start too many processing operations. This can occur
             // when callbacks resolve synchronously (#1267).
             if (isProcessing) {
@@ -2437,71 +1838,64 @@ function queue(worker, concurrency, payload) {
                 numRunning += 1;
 
                 if (q._tasks.length === 0) {
-                    q.empty();
+                    trigger('empty');
                 }
 
                 if (numRunning === q.concurrency) {
-                    q.saturated();
+                    trigger('saturated');
                 }
 
-                var cb = onlyOnce(_next(tasks));
+                var cb = onlyOnce(_createCB(tasks));
                 _worker(data, cb);
             }
             isProcessing = false;
         },
-        length: function () {
+        length () {
             return q._tasks.length;
         },
-        running: function () {
+        running () {
             return numRunning;
         },
-        workersList: function () {
+        workersList () {
             return workersList;
         },
-        idle: function() {
+        idle() {
             return q._tasks.length + numRunning === 0;
         },
-        pause: function () {
+        pause () {
             q.paused = true;
         },
-        resume: function () {
+        resume () {
             if (q.paused === false) { return; }
             q.paused = false;
             setImmediate$1(q.process);
         }
     };
+    // define these as fixed properties, so people get useful errors when updating
+    Object.defineProperties(q, {
+        saturated: {
+            writable: false,
+            value: eventMethod('saturated')
+        },
+        unsaturated: {
+            writable: false,
+            value: eventMethod('unsaturated')
+        },
+        empty: {
+            writable: false,
+            value: eventMethod('empty')
+        },
+        drain: {
+            writable: false,
+            value: eventMethod('drain')
+        },
+        error: {
+            writable: false,
+            value: eventMethod('error')
+        },
+    });
     return q;
 }
-
-/**
- * A cargo of tasks for the worker function to complete. Cargo inherits all of
- * the same methods and event callbacks as [`queue`]{@link module:ControlFlow.queue}.
- * @typedef {Object} CargoObject
- * @memberOf module:ControlFlow
- * @property {Function} length - A function returning the number of items
- * waiting to be processed. Invoke like `cargo.length()`.
- * @property {number} payload - An `integer` for determining how many tasks
- * should be process per round. This property can be changed after a `cargo` is
- * created to alter the payload on-the-fly.
- * @property {Function} push - Adds `task` to the `queue`. The callback is
- * called once the `worker` has finished processing the task. Instead of a
- * single task, an array of `tasks` can be submitted. The respective callback is
- * used for every task in the list. Invoke like `cargo.push(task, [callback])`.
- * @property {Function} saturated - A callback that is called when the
- * `queue.length()` hits the concurrency and further tasks will be queued.
- * @property {Function} empty - A callback that is called when the last item
- * from the `queue` is given to a `worker`.
- * @property {Function} drain - A callback that is called when the last item
- * from the `queue` has returned from the `worker`.
- * @property {Function} idle - a function returning false if there are items
- * waiting or being processed, or true if not. Invoke like `cargo.idle()`.
- * @property {Function} pause - a function that pauses the processing of tasks
- * until `resume()` is called. Invoke like `cargo.pause()`.
- * @property {Function} resume - a function that resumes the processing of
- * queued tasks when the queue is paused. Invoke like `cargo.resume()`.
- * @property {Function} kill - a function that removes the `drain` callback and
- * empties remaining tasks from the queue forcing it to go idle. Invoke like `cargo.kill()`.
- */
 
 /**
  * Creates a `cargo` object with the specified payload. Tasks added to the
@@ -2526,7 +1920,7 @@ function queue(worker, concurrency, payload) {
  * @param {number} [payload=Infinity] - An optional `integer` for determining
  * how many tasks should be processed per round; if omitted, the default is
  * unlimited.
- * @returns {module:ControlFlow.CargoObject} A cargo object to manage the tasks. Callbacks can
+ * @returns {module:ControlFlow.QueueObject} A cargo object to manage the tasks. Callbacks can
  * attached as certain properties to listen for specific events during the
  * lifecycle of the cargo and inner queue.
  * @example
@@ -2546,32 +1940,70 @@ function queue(worker, concurrency, payload) {
  * cargo.push({name: 'bar'}, function(err) {
  *     console.log('finished processing bar');
  * });
- * cargo.push({name: 'baz'}, function(err) {
- *     console.log('finished processing baz');
- * });
+ * await cargo.push({name: 'baz'});
+ * console.log('finished processing baz');
  */
 function cargo(worker, payload) {
     return queue(worker, 1, payload);
 }
 
 /**
- * The same as [`eachOf`]{@link module:Collections.eachOf} but runs only a single async operation at a time.
+ * Creates a `cargoQueue` object with the specified payload. Tasks added to the
+ * cargoQueue will be processed together (up to the `payload` limit) in `concurrency` parallel workers.
+ * If the all `workers` are in progress, the task is queued until one becomes available. Once
+ * a `worker` has completed some tasks, each callback of those tasks is
+ * called. Check out [these](https://camo.githubusercontent.com/6bbd36f4cf5b35a0f11a96dcd2e97711ffc2fb37/68747470733a2f2f662e636c6f75642e6769746875622e636f6d2f6173736574732f313637363837312f36383130382f62626330636662302d356632392d313165322d393734662d3333393763363464633835382e676966) [animations](https://camo.githubusercontent.com/f4810e00e1c5f5f8addbe3e9f49064fd5d102699/68747470733a2f2f662e636c6f75642e6769746875622e636f6d2f6173736574732f313637363837312f36383130312f38346339323036362d356632392d313165322d383134662d3964336430323431336266642e676966)
+ * for how `cargo` and `queue` work.
  *
- * @name eachOfSeries
+ * While [`queue`]{@link module:ControlFlow.queue} passes only one task to one of a group of workers
+ * at a time, and [`cargo`]{@link module:ControlFlow.cargo} passes an array of tasks to a single worker,
+ * the cargoQueue passes an array of tasks to multiple parallel workers.
+ *
+ * @name cargoQueue
  * @static
- * @memberOf module:Collections
+ * @memberOf module:ControlFlow
  * @method
- * @see [async.eachOf]{@link module:Collections.eachOf}
- * @alias forEachOfSeries
- * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
- * @param {AsyncFunction} iteratee - An async function to apply to each item in
- * `coll`.
- * Invoked with (item, key, callback).
- * @param {Function} [callback] - A callback which is called when all `iteratee`
- * functions have finished, or an error occurs. Invoked with (err).
+ * @see [async.queue]{@link module:ControlFlow.queue}
+ * @see [async.cargo]{@link module:ControlFLow.cargo}
+ * @category Control Flow
+ * @param {AsyncFunction} worker - An asynchronous function for processing an array
+ * of queued tasks. Invoked with `(tasks, callback)`.
+ * @param {number} [concurrency=1] - An `integer` for determining how many
+ * `worker` functions should be run in parallel.  If omitted, the concurrency
+ * defaults to `1`.  If the concurrency is `0`, an error is thrown.
+ * @param {number} [payload=Infinity] - An optional `integer` for determining
+ * how many tasks should be processed per round; if omitted, the default is
+ * unlimited.
+ * @returns {module:ControlFlow.QueueObject} A cargoQueue object to manage the tasks. Callbacks can
+ * attached as certain properties to listen for specific events during the
+ * lifecycle of the cargoQueue and inner queue.
+ * @example
+ *
+ * // create a cargoQueue object with payload 2 and concurrency 2
+ * var cargoQueue = async.cargoQueue(function(tasks, callback) {
+ *     for (var i=0; i<tasks.length; i++) {
+ *         console.log('hello ' + tasks[i].name);
+ *     }
+ *     callback();
+ * }, 2, 2);
+ *
+ * // add some items
+ * cargoQueue.push({name: 'foo'}, function(err) {
+ *     console.log('finished processing foo');
+ * });
+ * cargoQueue.push({name: 'bar'}, function(err) {
+ *     console.log('finished processing bar');
+ * });
+ * cargoQueue.push({name: 'baz'}, function(err) {
+ *     console.log('finished processing baz');
+ * });
+ * cargoQueue.push({name: 'boo'}, function(err) {
+ *     console.log('finished processing boo');
+ * });
  */
-var eachOfSeries = doLimit(eachOfLimit, 1);
+function cargo$1(worker, concurrency, payload) {
+    return queue(worker, concurrency, payload);
+}
 
 /**
  * Reduces `coll` into a single value using an async `iteratee` to return each
@@ -2591,40 +2023,116 @@ var eachOfSeries = doLimit(eachOfLimit, 1);
  * @alias inject
  * @alias foldl
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {*} memo - The initial state of the reduction.
  * @param {AsyncFunction} iteratee - A function applied to each item in the
  * array to produce the next step in the reduction.
  * The `iteratee` should complete with the next state of the reduction.
- * If the iteratee complete with an error, the reduction is stopped and the
+ * If the iteratee completes with an error, the reduction is stopped and the
  * main `callback` is immediately called with the error.
  * Invoked with (memo, item, callback).
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Result is the reduced value. Invoked with
  * (err, result).
+ * @returns {Promise} a promise, if no callback is passed
  * @example
  *
- * async.reduce([1,2,3], 0, function(memo, item, callback) {
- *     // pointless async:
- *     process.nextTick(function() {
- *         callback(null, memo + item)
+ * // file1.txt is a file that is 1000 bytes in size
+ * // file2.txt is a file that is 2000 bytes in size
+ * // file3.txt is a file that is 3000 bytes in size
+ * // file4.txt does not exist
+ *
+ * const fileList = ['file1.txt','file2.txt','file3.txt'];
+ * const withMissingFileList = ['file1.txt','file2.txt','file3.txt', 'file4.txt'];
+ *
+ * // asynchronous function that computes the file size in bytes
+ * // file size is added to the memoized value, then returned
+ * function getFileSizeInBytes(memo, file, callback) {
+ *     fs.stat(file, function(err, stat) {
+ *         if (err) {
+ *             return callback(err);
+ *         }
+ *         callback(null, memo + stat.size);
  *     });
- * }, function(err, result) {
- *     // result is now equal to the last value of memo, which is 6
+ * }
+ *
+ * // Using callbacks
+ * async.reduce(fileList, 0, getFileSizeInBytes, function(err, result) {
+ *     if (err) {
+ *         console.log(err);
+ *     } else {
+ *         console.log(result);
+ *         // 6000
+ *         // which is the sum of the file sizes of the three files
+ *     }
  * });
+ *
+ * // Error Handling
+ * async.reduce(withMissingFileList, 0, getFileSizeInBytes, function(err, result) {
+ *     if (err) {
+ *         console.log(err);
+ *         // [ Error: ENOENT: no such file or directory ]
+ *     } else {
+ *         console.log(result);
+ *     }
+ * });
+ *
+ * // Using Promises
+ * async.reduce(fileList, 0, getFileSizeInBytes)
+ * .then( result => {
+ *     console.log(result);
+ *     // 6000
+ *     // which is the sum of the file sizes of the three files
+ * }).catch( err => {
+ *     console.log(err);
+ * });
+ *
+ * // Error Handling
+ * async.reduce(withMissingFileList, 0, getFileSizeInBytes)
+ * .then( result => {
+ *     console.log(result);
+ * }).catch( err => {
+ *     console.log(err);
+ *     // [ Error: ENOENT: no such file or directory ]
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let result = await async.reduce(fileList, 0, getFileSizeInBytes);
+ *         console.log(result);
+ *         // 6000
+ *         // which is the sum of the file sizes of the three files
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * // Error Handling
+ * async () => {
+ *     try {
+ *         let result = await async.reduce(withMissingFileList, 0, getFileSizeInBytes);
+ *         console.log(result);
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *         // [ Error: ENOENT: no such file or directory ]
+ *     }
+ * }
+ *
  */
 function reduce(coll, memo, iteratee, callback) {
-    callback = once(callback || noop);
+    callback = once(callback);
     var _iteratee = wrapAsync(iteratee);
-    eachOfSeries(coll, function(x, i, callback) {
-        _iteratee(memo, x, function(err, v) {
+    return eachOfSeries$1(coll, (x, i, iterCb) => {
+        _iteratee(memo, x, (err, v) => {
             memo = v;
-            callback(err);
+            iterCb(err);
         });
-    }, function(err) {
-        callback(err, memo);
-    });
+    }, err => callback(err, memo));
 }
+var reduce$1 = awaitify(reduce, 4);
 
 /**
  * Version of the compose function that is more natural to read. Each function
@@ -2664,28 +2172,26 @@ function reduce(coll, memo, iteratee, callback) {
  *     });
  * });
  */
-function seq(/*...functions*/) {
-    var _functions = arrayMap(arguments, wrapAsync);
-    return function(/*...args*/) {
-        var args = slice(arguments);
+function seq(...functions) {
+    var _functions = functions.map(wrapAsync);
+    return function (...args) {
         var that = this;
 
         var cb = args[args.length - 1];
         if (typeof cb == 'function') {
             args.pop();
         } else {
-            cb = noop;
+            cb = promiseCallback();
         }
 
-        reduce(_functions, args, function(newargs, fn, cb) {
-            fn.apply(that, newargs.concat(function(err/*, ...nextargs*/) {
-                var nextargs = slice(arguments, 1);
-                cb(err, nextargs);
+        reduce$1(_functions, args, (newargs, fn, iterCb) => {
+            fn.apply(that, newargs.concat((err, ...nextargs) => {
+                iterCb(err, nextargs);
             }));
         },
-        function(err, results) {
-            cb.apply(that, [err].concat(results));
-        });
+        (err, results) => cb(err, ...results));
+
+        return cb[PROMISE_SYMBOL]
     };
 }
 
@@ -2694,6 +2200,9 @@ function seq(/*...functions*/) {
  * functions. Each function consumes the return value of the function that
  * follows. Composing functions `f()`, `g()`, and `h()` would produce the result
  * of `f(g(h()))`, only this version uses callbacks to obtain the return values.
+ *
+ * If the last argument to the composed function is not a function, a promise
+ * is returned when you call it.
  *
  * Each function is executed with the `this` binding of the composed function.
  *
@@ -2724,11 +2233,34 @@ function seq(/*...functions*/) {
  *     // result now equals 15
  * });
  */
-var compose = function(/*...args*/) {
-    return seq.apply(null, slice(arguments).reverse());
-};
+function compose(...args) {
+    return seq(...args.reverse());
+}
 
-var _concat = Array.prototype.concat;
+/**
+ * The same as [`map`]{@link module:Collections.map} but runs a maximum of `limit` async operations at a time.
+ *
+ * @name mapLimit
+ * @static
+ * @memberOf module:Collections
+ * @method
+ * @see [async.map]{@link module:Collections.map}
+ * @category Collection
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
+ * @param {number} limit - The maximum number of async operations at a time.
+ * @param {AsyncFunction} iteratee - An async function to apply to each item in
+ * `coll`.
+ * The iteratee should complete with the transformed item.
+ * Invoked with (item, callback).
+ * @param {Function} [callback] - A callback which is called when all `iteratee`
+ * functions have finished, or an error occurs. Results is an array of the
+ * transformed items from the `coll`. Invoked with (err, results).
+ * @returns {Promise} a promise, if no callback is passed
+ */
+function mapLimit (coll, limit, iteratee, callback) {
+    return _asyncMap(eachOfLimit(limit), coll, iteratee, callback)
+}
+var mapLimit$1 = awaitify(mapLimit, 4);
 
 /**
  * The same as [`concat`]{@link module:Collections.concat} but runs a maximum of `limit` async operations at a time.
@@ -2739,7 +2271,8 @@ var _concat = Array.prototype.concat;
  * @method
  * @see [async.concat]{@link module:Collections.concat}
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @alias flatMapLimit
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {number} limit - The maximum number of async operations at a time.
  * @param {AsyncFunction} iteratee - A function to apply to each item in `coll`,
  * which should use an array as its result. Invoked with (item, callback).
@@ -2747,53 +2280,126 @@ var _concat = Array.prototype.concat;
  * `iteratee` functions have finished, or an error occurs. Results is an array
  * containing the concatenated results of the `iteratee` function. Invoked with
  * (err, results).
+ * @returns A Promise, if no callback is passed
  */
-var concatLimit = function(coll, limit, iteratee, callback) {
-    callback = callback || noop;
+function concatLimit(coll, limit, iteratee, callback) {
     var _iteratee = wrapAsync(iteratee);
-    mapLimit(coll, limit, function(val, callback) {
-        _iteratee(val, function(err /*, ...args*/) {
-            if (err) return callback(err);
-            return callback(null, slice(arguments, 1));
+    return mapLimit$1(coll, limit, (val, iterCb) => {
+        _iteratee(val, (err, ...args) => {
+            if (err) return iterCb(err);
+            return iterCb(err, args);
         });
-    }, function(err, mapResults) {
+    }, (err, mapResults) => {
         var result = [];
         for (var i = 0; i < mapResults.length; i++) {
             if (mapResults[i]) {
-                result = _concat.apply(result, mapResults[i]);
+                result = result.concat(...mapResults[i]);
             }
         }
 
         return callback(err, result);
     });
-};
+}
+var concatLimit$1 = awaitify(concatLimit, 4);
 
 /**
  * Applies `iteratee` to each item in `coll`, concatenating the results. Returns
  * the concatenated list. The `iteratee`s are called in parallel, and the
- * results are concatenated as they return. There is no guarantee that the
- * results array will be returned in the original order of `coll` passed to the
- * `iteratee` function.
+ * results are concatenated as they return. The results array will be returned in
+ * the original order of `coll` passed to the `iteratee` function.
  *
  * @name concat
  * @static
  * @memberOf module:Collections
  * @method
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @alias flatMap
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - A function to apply to each item in `coll`,
  * which should use an array as its result. Invoked with (item, callback).
- * @param {Function} [callback(err)] - A callback which is called after all the
+ * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished, or an error occurs. Results is an array
  * containing the concatenated results of the `iteratee` function. Invoked with
  * (err, results).
+ * @returns A Promise, if no callback is passed
  * @example
  *
- * async.concat(['dir1','dir2','dir3'], fs.readdir, function(err, files) {
- *     // files is now a list of filenames that exist in the 3 directories
+ * // dir1 is a directory that contains file1.txt, file2.txt
+ * // dir2 is a directory that contains file3.txt, file4.txt
+ * // dir3 is a directory that contains file5.txt
+ * // dir4 does not exist
+ *
+ * let directoryList = ['dir1','dir2','dir3'];
+ * let withMissingDirectoryList = ['dir1','dir2','dir3', 'dir4'];
+ *
+ * // Using callbacks
+ * async.concat(directoryList, fs.readdir, function(err, results) {
+ *    if (err) {
+ *        console.log(err);
+ *    } else {
+ *        console.log(results);
+ *        // [ 'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', file5.txt ]
+ *    }
  * });
+ *
+ * // Error Handling
+ * async.concat(withMissingDirectoryList, fs.readdir, function(err, results) {
+ *    if (err) {
+ *        console.log(err);
+ *        // [ Error: ENOENT: no such file or directory ]
+ *        // since dir4 does not exist
+ *    } else {
+ *        console.log(results);
+ *    }
+ * });
+ *
+ * // Using Promises
+ * async.concat(directoryList, fs.readdir)
+ * .then(results => {
+ *     console.log(results);
+ *     // [ 'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', file5.txt ]
+ * }).catch(err => {
+ *      console.log(err);
+ * });
+ *
+ * // Error Handling
+ * async.concat(withMissingDirectoryList, fs.readdir)
+ * .then(results => {
+ *     console.log(results);
+ * }).catch(err => {
+ *     console.log(err);
+ *     // [ Error: ENOENT: no such file or directory ]
+ *     // since dir4 does not exist
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let results = await async.concat(directoryList, fs.readdir);
+ *         console.log(results);
+ *         // [ 'file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', file5.txt ]
+ *     } catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * // Error Handling
+ * async () => {
+ *     try {
+ *         let results = await async.concat(withMissingDirectoryList, fs.readdir);
+ *         console.log(results);
+ *     } catch (err) {
+ *         console.log(err);
+ *         // [ Error: ENOENT: no such file or directory ]
+ *         // since dir4 does not exist
+ *     }
+ * }
+ *
  */
-var concat = doLimit(concatLimit, Infinity);
+function concat(coll, iteratee, callback) {
+    return concatLimit$1(coll, Infinity, iteratee, callback)
+}
+var concat$1 = awaitify(concat, 3);
 
 /**
  * The same as [`concat`]{@link module:Collections.concat} but runs only a single async operation at a time.
@@ -2804,16 +2410,21 @@ var concat = doLimit(concatLimit, Infinity);
  * @method
  * @see [async.concat]{@link module:Collections.concat}
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @alias flatMapSeries
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - A function to apply to each item in `coll`.
  * The iteratee should complete with an array an array of results.
  * Invoked with (item, callback).
- * @param {Function} [callback(err)] - A callback which is called after all the
+ * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished, or an error occurs. Results is an array
  * containing the concatenated results of the `iteratee` function. Invoked with
  * (err, results).
+ * @returns A Promise, if no callback is passed
  */
-var concatSeries = doLimit(concatLimit, 1);
+function concatSeries(coll, iteratee, callback) {
+    return concatLimit$1(coll, 1, iteratee, callback)
+}
+var concatSeries$1 = awaitify(concatSeries, 3);
 
 /**
  * Returns a function that when called, calls-back with the values provided.
@@ -2857,64 +2468,34 @@ var concatSeries = doLimit(concatLimit, 1);
  *     //...
  * }, callback);
  */
-var constant = function(/*...values*/) {
-    var values = slice(arguments);
-    var args = [null].concat(values);
-    return function (/*...ignoredArgs, callback*/) {
-        var callback = arguments[arguments.length - 1];
-        return callback.apply(this, args);
+function constant(...args) {
+    return function (...ignoredArgs/*, callback*/) {
+        var callback = ignoredArgs.pop();
+        return callback(null, ...args);
     };
-};
-
-/**
- * This method returns the first argument it receives.
- *
- * @static
- * @since 0.1.0
- * @memberOf _
- * @category Util
- * @param {*} value Any value.
- * @returns {*} Returns `value`.
- * @example
- *
- * var object = { 'a': 1 };
- *
- * console.log(_.identity(object) === object);
- * // => true
- */
-function identity(value) {
-  return value;
 }
 
 function _createTester(check, getResult) {
-    return function(eachfn, arr, iteratee, cb) {
-        cb = cb || noop;
+    return (eachfn, arr, _iteratee, cb) => {
         var testPassed = false;
         var testResult;
-        eachfn(arr, function(value, _, callback) {
-            iteratee(value, function(err, result) {
-                if (err) {
-                    callback(err);
-                } else if (check(result) && !testResult) {
+        const iteratee = wrapAsync(_iteratee);
+        eachfn(arr, (value, _, callback) => {
+            iteratee(value, (err, result) => {
+                if (err || err === false) return callback(err);
+
+                if (check(result) && !testResult) {
                     testPassed = true;
                     testResult = getResult(true, value);
-                    callback(null, breakLoop);
-                } else {
-                    callback();
+                    return callback(null, breakLoop);
                 }
+                callback();
             });
-        }, function(err) {
-            if (err) {
-                cb(err);
-            } else {
-                cb(null, testPassed ? testResult : getResult(false));
-            }
+        }, err => {
+            if (err) return cb(err);
+            cb(null, testPassed ? testResult : getResult(false));
         });
     };
-}
-
-function _findGetResult(v, x) {
-    return x;
 }
 
 /**
@@ -2933,7 +2514,7 @@ function _findGetResult(v, x) {
  * @method
  * @alias find
  * @category Collections
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - A truth test to apply to each item in `coll`.
  * The iteratee must complete with a boolean value as its result.
  * Invoked with (item, callback).
@@ -2942,17 +2523,56 @@ function _findGetResult(v, x) {
  * Result will be the first item in the array that passes the truth test
  * (iteratee) or the value `undefined` if none passed. Invoked with
  * (err, result).
+ * @returns A Promise, if no callback is passed
  * @example
  *
- * async.detect(['file1','file2','file3'], function(filePath, callback) {
- *     fs.access(filePath, function(err) {
- *         callback(null, !err)
- *     });
- * }, function(err, result) {
+ * // dir1 is a directory that contains file1.txt, file2.txt
+ * // dir2 is a directory that contains file3.txt, file4.txt
+ * // dir3 is a directory that contains file5.txt
+ *
+ * // asynchronous function that checks if a file exists
+ * function fileExists(file, callback) {
+ *    fs.access(file, fs.constants.F_OK, (err) => {
+ *        callback(null, !err);
+ *    });
+ * }
+ *
+ * async.detect(['file3.txt','file2.txt','dir1/file1.txt'], fileExists,
+ *    function(err, result) {
+ *        console.log(result);
+ *        // dir1/file1.txt
+ *        // result now equals the first file in the list that exists
+ *    }
+ *);
+ *
+ * // Using Promises
+ * async.detect(['file3.txt','file2.txt','dir1/file1.txt'], fileExists)
+ * .then(result => {
+ *     console.log(result);
+ *     // dir1/file1.txt
  *     // result now equals the first file in the list that exists
+ * }).catch(err => {
+ *     console.log(err);
  * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let result = await async.detect(['file3.txt','file2.txt','dir1/file1.txt'], fileExists);
+ *         console.log(result);
+ *         // dir1/file1.txt
+ *         // result now equals the file in the list that exists
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
-var detect = doParallel(_createTester(identity, _findGetResult));
+function detect(coll, iteratee, callback) {
+    return _createTester(bool => bool, (res, item) => item)(eachOf$1, coll, iteratee, callback)
+}
+var detect$1 = awaitify(detect, 3);
 
 /**
  * The same as [`detect`]{@link module:Collections.detect} but runs a maximum of `limit` async operations at a
@@ -2965,7 +2585,7 @@ var detect = doParallel(_createTester(identity, _findGetResult));
  * @see [async.detect]{@link module:Collections.detect}
  * @alias findLimit
  * @category Collections
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {number} limit - The maximum number of async operations at a time.
  * @param {AsyncFunction} iteratee - A truth test to apply to each item in `coll`.
  * The iteratee must complete with a boolean value as its result.
@@ -2975,8 +2595,12 @@ var detect = doParallel(_createTester(identity, _findGetResult));
  * Result will be the first item in the array that passes the truth test
  * (iteratee) or the value `undefined` if none passed. Invoked with
  * (err, result).
+ * @returns a Promise if no callback is passed
  */
-var detectLimit = doParallelLimit(_createTester(identity, _findGetResult));
+function detectLimit(coll, limit, iteratee, callback) {
+    return _createTester(bool => bool, (res, item) => item)(eachOfLimit(limit), coll, iteratee, callback)
+}
+var detectLimit$1 = awaitify(detectLimit, 4);
 
 /**
  * The same as [`detect`]{@link module:Collections.detect} but runs only a single async operation at a time.
@@ -2988,7 +2612,7 @@ var detectLimit = doParallelLimit(_createTester(identity, _findGetResult));
  * @see [async.detect]{@link module:Collections.detect}
  * @alias findSeries
  * @category Collections
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - A truth test to apply to each item in `coll`.
  * The iteratee must complete with a boolean value as its result.
  * Invoked with (item, callback).
@@ -2997,28 +2621,29 @@ var detectLimit = doParallelLimit(_createTester(identity, _findGetResult));
  * Result will be the first item in the array that passes the truth test
  * (iteratee) or the value `undefined` if none passed. Invoked with
  * (err, result).
+ * @returns a Promise if no callback is passed
  */
-var detectSeries = doLimit(detectLimit, 1);
+function detectSeries(coll, iteratee, callback) {
+    return _createTester(bool => bool, (res, item) => item)(eachOfLimit(1), coll, iteratee, callback)
+}
+
+var detectSeries$1 = awaitify(detectSeries, 3);
 
 function consoleFunc(name) {
-    return function (fn/*, ...args*/) {
-        var args = slice(arguments, 1);
-        args.push(function (err/*, ...args*/) {
-            var args = slice(arguments, 1);
-            if (typeof console === 'object') {
-                if (err) {
-                    if (console.error) {
-                        console.error(err);
-                    }
-                } else if (console[name]) {
-                    arrayEach(args, function (x) {
-                        console[name](x);
-                    });
+    return (fn, ...args) => wrapAsync(fn)(...args, (err, ...resultArgs) => {
+        /* istanbul ignore else */
+        if (typeof console === 'object') {
+            /* istanbul ignore else */
+            if (err) {
+                /* istanbul ignore else */
+                if (console.error) {
+                    console.error(err);
                 }
+            } else if (console[name]) { /* istanbul ignore else */
+                resultArgs.forEach(x => console[name](x));
             }
-        });
-        wrapAsync(fn).apply(null, args);
-    };
+        }
+    })
 }
 
 /**
@@ -3053,48 +2678,6 @@ function consoleFunc(name) {
 var dir = consoleFunc('dir');
 
 /**
- * The post-check version of [`during`]{@link module:ControlFlow.during}. To reflect the difference in
- * the order of operations, the arguments `test` and `fn` are switched.
- *
- * Also a version of [`doWhilst`]{@link module:ControlFlow.doWhilst} with asynchronous `test` function.
- * @name doDuring
- * @static
- * @memberOf module:ControlFlow
- * @method
- * @see [async.during]{@link module:ControlFlow.during}
- * @category Control Flow
- * @param {AsyncFunction} fn - An async function which is called each time
- * `test` passes. Invoked with (callback).
- * @param {AsyncFunction} test - asynchronous truth test to perform before each
- * execution of `fn`. Invoked with (...args, callback), where `...args` are the
- * non-error args from the previous callback of `fn`.
- * @param {Function} [callback] - A callback which is called after the test
- * function has failed and repeated execution of `fn` has stopped. `callback`
- * will be passed an error if one occurred, otherwise `null`.
- */
-function doDuring(fn, test, callback) {
-    callback = onlyOnce(callback || noop);
-    var _fn = wrapAsync(fn);
-    var _test = wrapAsync(test);
-
-    function next(err/*, ...args*/) {
-        if (err) return callback(err);
-        var args = slice(arguments, 1);
-        args.push(check);
-        _test.apply(this, args);
-    }
-
-    function check(err, truth) {
-        if (err) return callback(err);
-        if (!truth) return callback(null);
-        _fn(next);
-    }
-
-    check(null, true);
-
-}
-
-/**
  * The post-check version of [`whilst`]{@link module:ControlFlow.whilst}. To reflect the difference in
  * the order of operations, the arguments `test` and `iteratee` are switched.
  *
@@ -3108,25 +2691,39 @@ function doDuring(fn, test, callback) {
  * @category Control Flow
  * @param {AsyncFunction} iteratee - A function which is called each time `test`
  * passes. Invoked with (callback).
- * @param {Function} test - synchronous truth test to perform after each
- * execution of `iteratee`. Invoked with any non-error callback results of
- * `iteratee`.
+ * @param {AsyncFunction} test - asynchronous truth test to perform after each
+ * execution of `iteratee`. Invoked with (...args, callback), where `...args` are the
+ * non-error args from the previous callback of `iteratee`.
  * @param {Function} [callback] - A callback which is called after the test
  * function has failed and repeated execution of `iteratee` has stopped.
  * `callback` will be passed an error and any arguments passed to the final
  * `iteratee`'s callback. Invoked with (err, [results]);
+ * @returns {Promise} a promise, if no callback is passed
  */
 function doWhilst(iteratee, test, callback) {
-    callback = onlyOnce(callback || noop);
-    var _iteratee = wrapAsync(iteratee);
-    var next = function(err/*, ...args*/) {
+    callback = onlyOnce(callback);
+    var _fn = wrapAsync(iteratee);
+    var _test = wrapAsync(test);
+    var results;
+
+    function next(err, ...args) {
         if (err) return callback(err);
-        var args = slice(arguments, 1);
-        if (test.apply(this, args)) return _iteratee(next);
-        callback.apply(null, [null].concat(args));
-    };
-    _iteratee(next);
+        if (err === false) return;
+        results = args;
+        _test(...args, check);
+    }
+
+    function check(err, truth) {
+        if (err) return callback(err);
+        if (err === false) return;
+        if (!truth) return callback(null, ...results);
+        _fn(next);
+    }
+
+    return check(null, true);
 }
+
+var doWhilst$1 = awaitify(doWhilst, 3);
 
 /**
  * Like ['doWhilst']{@link module:ControlFlow.doWhilst}, except the `test` is inverted. Note the
@@ -3140,79 +2737,25 @@ function doWhilst(iteratee, test, callback) {
  * @category Control Flow
  * @param {AsyncFunction} iteratee - An async function which is called each time
  * `test` fails. Invoked with (callback).
- * @param {Function} test - synchronous truth test to perform after each
- * execution of `iteratee`. Invoked with any non-error callback results of
- * `iteratee`.
+ * @param {AsyncFunction} test - asynchronous truth test to perform after each
+ * execution of `iteratee`. Invoked with (...args, callback), where `...args` are the
+ * non-error args from the previous callback of `iteratee`
  * @param {Function} [callback] - A callback which is called after the test
  * function has passed and repeated execution of `iteratee` has stopped. `callback`
  * will be passed an error and any arguments passed to the final `iteratee`'s
  * callback. Invoked with (err, [results]);
+ * @returns {Promise} a promise, if no callback is passed
  */
 function doUntil(iteratee, test, callback) {
-    doWhilst(iteratee, function() {
-        return !test.apply(this, arguments);
+    const _test = wrapAsync(test);
+    return doWhilst$1(iteratee, (...args) => {
+        const cb = args.pop();
+        _test(...args, (err, truth) => cb (err, !truth));
     }, callback);
 }
 
-/**
- * Like [`whilst`]{@link module:ControlFlow.whilst}, except the `test` is an asynchronous function that
- * is passed a callback in the form of `function (err, truth)`. If error is
- * passed to `test` or `fn`, the main callback is immediately called with the
- * value of the error.
- *
- * @name during
- * @static
- * @memberOf module:ControlFlow
- * @method
- * @see [async.whilst]{@link module:ControlFlow.whilst}
- * @category Control Flow
- * @param {AsyncFunction} test - asynchronous truth test to perform before each
- * execution of `fn`. Invoked with (callback).
- * @param {AsyncFunction} fn - An async function which is called each time
- * `test` passes. Invoked with (callback).
- * @param {Function} [callback] - A callback which is called after the test
- * function has failed and repeated execution of `fn` has stopped. `callback`
- * will be passed an error, if one occurred, otherwise `null`.
- * @example
- *
- * var count = 0;
- *
- * async.during(
- *     function (callback) {
- *         return callback(null, count < 5);
- *     },
- *     function (callback) {
- *         count++;
- *         setTimeout(callback, 1000);
- *     },
- *     function (err) {
- *         // 5 seconds have passed
- *     }
- * );
- */
-function during(test, fn, callback) {
-    callback = onlyOnce(callback || noop);
-    var _fn = wrapAsync(fn);
-    var _test = wrapAsync(test);
-
-    function next(err) {
-        if (err) return callback(err);
-        _test(check);
-    }
-
-    function check(err, truth) {
-        if (err) return callback(err);
-        if (!truth) return callback(null);
-        _fn(next);
-    }
-
-    _test(check);
-}
-
 function _withoutIndex(iteratee) {
-    return function (value, index, callback) {
-        return iteratee(value, callback);
-    };
+    return (value, index, callback) => iteratee(value, callback);
 }
 
 /**
@@ -3231,50 +2774,94 @@ function _withoutIndex(iteratee) {
  * @method
  * @alias forEach
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async function to apply to
  * each item in `coll`. Invoked with (item, callback).
  * The array index is not passed to the iteratee.
  * If you need the index, use `eachOf`.
  * @param {Function} [callback] - A callback which is called when all
  * `iteratee` functions have finished, or an error occurs. Invoked with (err).
+ * @returns {Promise} a promise, if a callback is omitted
  * @example
  *
- * // assuming openFiles is an array of file names and saveFile is a function
- * // to save the modified contents of that file:
+ * // dir1 is a directory that contains file1.txt, file2.txt
+ * // dir2 is a directory that contains file3.txt, file4.txt
+ * // dir3 is a directory that contains file5.txt
+ * // dir4 does not exist
  *
- * async.each(openFiles, saveFile, function(err){
- *   // if any of the saves produced an error, err would equal that error
- * });
+ * const fileList = [ 'dir1/file2.txt', 'dir2/file3.txt', 'dir/file5.txt'];
+ * const withMissingFileList = ['dir1/file1.txt', 'dir4/file2.txt'];
  *
- * // assuming openFiles is an array of file names
- * async.each(openFiles, function(file, callback) {
+ * // asynchronous function that deletes a file
+ * const deleteFile = function(file, callback) {
+ *     fs.unlink(file, callback);
+ * };
  *
- *     // Perform operation on file here.
- *     console.log('Processing file ' + file);
- *
- *     if( file.length > 32 ) {
- *       console.log('This file name is too long');
- *       callback('File name too long');
- *     } else {
- *       // Do work to process file here
- *       console.log('File processed');
- *       callback();
- *     }
- * }, function(err) {
- *     // if any of the file processing produced an error, err would equal that error
+ * // Using callbacks
+ * async.each(fileList, deleteFile, function(err) {
  *     if( err ) {
- *       // One of the iterations produced an error.
- *       // All processing will now stop.
- *       console.log('A file failed to process');
+ *         console.log(err);
  *     } else {
- *       console.log('All files have been processed successfully');
+ *         console.log('All files have been deleted successfully');
  *     }
  * });
+ *
+ * // Error Handling
+ * async.each(withMissingFileList, deleteFile, function(err){
+ *     console.log(err);
+ *     // [ Error: ENOENT: no such file or directory ]
+ *     // since dir4/file2.txt does not exist
+ *     // dir1/file1.txt could have been deleted
+ * });
+ *
+ * // Using Promises
+ * async.each(fileList, deleteFile)
+ * .then( () => {
+ *     console.log('All files have been deleted successfully');
+ * }).catch( err => {
+ *     console.log(err);
+ * });
+ *
+ * // Error Handling
+ * async.each(fileList, deleteFile)
+ * .then( () => {
+ *     console.log('All files have been deleted successfully');
+ * }).catch( err => {
+ *     console.log(err);
+ *     // [ Error: ENOENT: no such file or directory ]
+ *     // since dir4/file2.txt does not exist
+ *     // dir1/file1.txt could have been deleted
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         await async.each(files, deleteFile);
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * // Error Handling
+ * async () => {
+ *     try {
+ *         await async.each(withMissingFileList, deleteFile);
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *         // [ Error: ENOENT: no such file or directory ]
+ *         // since dir4/file2.txt does not exist
+ *         // dir1/file1.txt could have been deleted
+ *     }
+ * }
+ *
  */
 function eachLimit(coll, iteratee, callback) {
-    eachOf(coll, _withoutIndex(wrapAsync(iteratee)), callback);
+    return eachOf$1(coll, _withoutIndex(wrapAsync(iteratee)), callback);
 }
+
+var each = awaitify(eachLimit, 3);
 
 /**
  * The same as [`each`]{@link module:Collections.each} but runs a maximum of `limit` async operations at a time.
@@ -3286,7 +2873,7 @@ function eachLimit(coll, iteratee, callback) {
  * @see [async.each]{@link module:Collections.each}
  * @alias forEachLimit
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {number} limit - The maximum number of async operations at a time.
  * @param {AsyncFunction} iteratee - An async function to apply to each item in
  * `coll`.
@@ -3295,14 +2882,19 @@ function eachLimit(coll, iteratee, callback) {
  * Invoked with (item, callback).
  * @param {Function} [callback] - A callback which is called when all
  * `iteratee` functions have finished, or an error occurs. Invoked with (err).
+ * @returns {Promise} a promise, if a callback is omitted
  */
 function eachLimit$1(coll, limit, iteratee, callback) {
-    _eachOfLimit(limit)(coll, _withoutIndex(wrapAsync(iteratee)), callback);
+    return eachOfLimit(limit)(coll, _withoutIndex(wrapAsync(iteratee)), callback);
 }
+var eachLimit$2 = awaitify(eachLimit$1, 4);
 
 /**
  * The same as [`each`]{@link module:Collections.each} but runs only a single async operation at a time.
  *
+ * Note, that unlike [`each`]{@link module:Collections.each}, this function applies iteratee to each item
+ * in series and therefore the iteratee functions will complete in order.
+
  * @name eachSeries
  * @static
  * @memberOf module:Collections
@@ -3310,7 +2902,7 @@ function eachLimit$1(coll, limit, iteratee, callback) {
  * @see [async.each]{@link module:Collections.each}
  * @alias forEachSeries
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async function to apply to each
  * item in `coll`.
  * The array index is not passed to the iteratee.
@@ -3318,8 +2910,12 @@ function eachLimit$1(coll, limit, iteratee, callback) {
  * Invoked with (item, callback).
  * @param {Function} [callback] - A callback which is called when all
  * `iteratee` functions have finished, or an error occurs. Invoked with (err).
+ * @returns {Promise} a promise, if a callback is omitted
  */
-var eachSeries = doLimit(eachLimit$1, 1);
+function eachSeries(coll, iteratee, callback) {
+    return eachLimit$2(coll, 1, iteratee, callback)
+}
+var eachSeries$1 = awaitify(eachSeries, 3);
 
 /**
  * Wrap an async function and ensure it calls its callback on a later tick of
@@ -3358,25 +2954,19 @@ var eachSeries = doLimit(eachLimit$1, 1);
  */
 function ensureAsync(fn) {
     if (isAsync(fn)) return fn;
-    return initialParams(function (args, callback) {
+    return function (...args/*, callback*/) {
+        var callback = args.pop();
         var sync = true;
-        args.push(function () {
-            var innerArgs = arguments;
+        args.push((...innerArgs) => {
             if (sync) {
-                setImmediate$1(function () {
-                    callback.apply(null, innerArgs);
-                });
+                setImmediate$1(() => callback(...innerArgs));
             } else {
-                callback.apply(null, innerArgs);
+                callback(...innerArgs);
             }
         });
         fn.apply(this, args);
         sync = false;
-    });
-}
-
-function notId(v) {
-    return !v;
+    };
 }
 
 /**
@@ -3389,7 +2979,7 @@ function notId(v) {
  * @method
  * @alias all
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async truth test to apply to each item
  * in the collection in parallel.
  * The iteratee must complete with a boolean result value.
@@ -3397,17 +2987,86 @@ function notId(v) {
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Result will be either `true` or `false`
  * depending on the values of the async tests. Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback provided
  * @example
  *
- * async.every(['file1','file2','file3'], function(filePath, callback) {
- *     fs.access(filePath, function(err) {
- *         callback(null, !err)
- *     });
- * }, function(err, result) {
- *     // if result is true then every file exists
+ * // dir1 is a directory that contains file1.txt, file2.txt
+ * // dir2 is a directory that contains file3.txt, file4.txt
+ * // dir3 is a directory that contains file5.txt
+ * // dir4 does not exist
+ *
+ * const fileList = ['dir1/file1.txt','dir2/file3.txt','dir3/file5.txt'];
+ * const withMissingFileList = ['file1.txt','file2.txt','file4.txt'];
+ *
+ * // asynchronous function that checks if a file exists
+ * function fileExists(file, callback) {
+ *    fs.access(file, fs.constants.F_OK, (err) => {
+ *        callback(null, !err);
+ *    });
+ * }
+ *
+ * // Using callbacks
+ * async.every(fileList, fileExists, function(err, result) {
+ *     console.log(result);
+ *     // true
+ *     // result is true since every file exists
  * });
+ *
+ * async.every(withMissingFileList, fileExists, function(err, result) {
+ *     console.log(result);
+ *     // false
+ *     // result is false since NOT every file exists
+ * });
+ *
+ * // Using Promises
+ * async.every(fileList, fileExists)
+ * .then( result => {
+ *     console.log(result);
+ *     // true
+ *     // result is true since every file exists
+ * }).catch( err => {
+ *     console.log(err);
+ * });
+ *
+ * async.every(withMissingFileList, fileExists)
+ * .then( result => {
+ *     console.log(result);
+ *     // false
+ *     // result is false since NOT every file exists
+ * }).catch( err => {
+ *     console.log(err);
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let result = await async.every(fileList, fileExists);
+ *         console.log(result);
+ *         // true
+ *         // result is true since every file exists
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * async () => {
+ *     try {
+ *         let result = await async.every(withMissingFileList, fileExists);
+ *         console.log(result);
+ *         // false
+ *         // result is false since NOT every file exists
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
-var every = doParallel(_createTester(notId, notId));
+function every(coll, iteratee, callback) {
+    return _createTester(bool => !bool, res => !res)(eachOf$1, coll, iteratee, callback)
+}
+var every$1 = awaitify(every, 3);
 
 /**
  * The same as [`every`]{@link module:Collections.every} but runs a maximum of `limit` async operations at a time.
@@ -3419,7 +3078,7 @@ var every = doParallel(_createTester(notId, notId));
  * @see [async.every]{@link module:Collections.every}
  * @alias allLimit
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {number} limit - The maximum number of async operations at a time.
  * @param {AsyncFunction} iteratee - An async truth test to apply to each item
  * in the collection in parallel.
@@ -3428,8 +3087,12 @@ var every = doParallel(_createTester(notId, notId));
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Result will be either `true` or `false`
  * depending on the values of the async tests. Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback provided
  */
-var everyLimit = doParallelLimit(_createTester(notId, notId));
+function everyLimit(coll, limit, iteratee, callback) {
+    return _createTester(bool => !bool, res => !res)(eachOfLimit(limit), coll, iteratee, callback)
+}
+var everyLimit$1 = awaitify(everyLimit, 4);
 
 /**
  * The same as [`every`]{@link module:Collections.every} but runs only a single async operation at a time.
@@ -3441,7 +3104,7 @@ var everyLimit = doParallelLimit(_createTester(notId, notId));
  * @see [async.every]{@link module:Collections.every}
  * @alias allSeries
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async truth test to apply to each item
  * in the collection in series.
  * The iteratee must complete with a boolean result value.
@@ -3449,30 +3112,21 @@ var everyLimit = doParallelLimit(_createTester(notId, notId));
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Result will be either `true` or `false`
  * depending on the values of the async tests. Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback provided
  */
-var everySeries = doLimit(everyLimit, 1);
-
-/**
- * The base implementation of `_.property` without support for deep paths.
- *
- * @private
- * @param {string} key The key of the property to get.
- * @returns {Function} Returns the new accessor function.
- */
-function baseProperty(key) {
-  return function(object) {
-    return object == null ? undefined : object[key];
-  };
+function everySeries(coll, iteratee, callback) {
+    return _createTester(bool => !bool, res => !res)(eachOfSeries$1, coll, iteratee, callback)
 }
+var everySeries$1 = awaitify(everySeries, 3);
 
 function filterArray(eachfn, arr, iteratee, callback) {
     var truthValues = new Array(arr.length);
-    eachfn(arr, function (x, index, callback) {
-        iteratee(x, function (err, v) {
+    eachfn(arr, (x, index, iterCb) => {
+        iteratee(x, (err, v) => {
             truthValues[index] = !!v;
-            callback(err);
+            iterCb(err);
         });
-    }, function (err) {
+    }, err => {
         if (err) return callback(err);
         var results = [];
         for (var i = 0; i < arr.length; i++) {
@@ -3484,31 +3138,25 @@ function filterArray(eachfn, arr, iteratee, callback) {
 
 function filterGeneric(eachfn, coll, iteratee, callback) {
     var results = [];
-    eachfn(coll, function (x, index, callback) {
-        iteratee(x, function (err, v) {
-            if (err) {
-                callback(err);
-            } else {
-                if (v) {
-                    results.push({index: index, value: x});
-                }
-                callback();
+    eachfn(coll, (x, index, iterCb) => {
+        iteratee(x, (err, v) => {
+            if (err) return iterCb(err);
+            if (v) {
+                results.push({index, value: x});
             }
+            iterCb(err);
         });
-    }, function (err) {
-        if (err) {
-            callback(err);
-        } else {
-            callback(null, arrayMap(results.sort(function (a, b) {
-                return a.index - b.index;
-            }), baseProperty('value')));
-        }
+    }, err => {
+        if (err) return callback(err);
+        callback(null, results
+            .sort((a, b) => a.index - b.index)
+            .map(v => v.value));
     });
 }
 
 function _filter(eachfn, coll, iteratee, callback) {
     var filter = isArrayLike(coll) ? filterArray : filterGeneric;
-    filter(eachfn, coll, wrapAsync(iteratee), callback || noop);
+    return filter(eachfn, coll, wrapAsync(iteratee), callback);
 }
 
 /**
@@ -3522,23 +3170,67 @@ function _filter(eachfn, coll, iteratee, callback) {
  * @method
  * @alias select
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {Function} iteratee - A truth test to apply to each item in `coll`.
  * The `iteratee` is passed a `callback(err, truthValue)`, which must be called
  * with a boolean argument once it has completed. Invoked with (item, callback).
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Invoked with (err, results).
+ * @returns {Promise} a promise, if no callback provided
  * @example
  *
- * async.filter(['file1','file2','file3'], function(filePath, callback) {
- *     fs.access(filePath, function(err) {
- *         callback(null, !err)
- *     });
- * }, function(err, results) {
- *     // results now equals an array of the existing files
+ * // dir1 is a directory that contains file1.txt, file2.txt
+ * // dir2 is a directory that contains file3.txt, file4.txt
+ * // dir3 is a directory that contains file5.txt
+ *
+ * const files = ['dir1/file1.txt','dir2/file3.txt','dir3/file6.txt'];
+ *
+ * // asynchronous function that checks if a file exists
+ * function fileExists(file, callback) {
+ *    fs.access(file, fs.constants.F_OK, (err) => {
+ *        callback(null, !err);
+ *    });
+ * }
+ *
+ * // Using callbacks
+ * async.filter(files, fileExists, function(err, results) {
+ *    if(err) {
+ *        console.log(err);
+ *    } else {
+ *        console.log(results);
+ *        // [ 'dir1/file1.txt', 'dir2/file3.txt' ]
+ *        // results is now an array of the existing files
+ *    }
  * });
+ *
+ * // Using Promises
+ * async.filter(files, fileExists)
+ * .then(results => {
+ *     console.log(results);
+ *     // [ 'dir1/file1.txt', 'dir2/file3.txt' ]
+ *     // results is now an array of the existing files
+ * }).catch(err => {
+ *     console.log(err);
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let results = await async.filter(files, fileExists);
+ *         console.log(results);
+ *         // [ 'dir1/file1.txt', 'dir2/file3.txt' ]
+ *         // results is now an array of the existing files
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
-var filter = doParallel(_filter);
+function filter (coll, iteratee, callback) {
+    return _filter(eachOf$1, coll, iteratee, callback)
+}
+var filter$1 = awaitify(filter, 3);
 
 /**
  * The same as [`filter`]{@link module:Collections.filter} but runs a maximum of `limit` async operations at a
@@ -3551,15 +3243,19 @@ var filter = doParallel(_filter);
  * @see [async.filter]{@link module:Collections.filter}
  * @alias selectLimit
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {number} limit - The maximum number of async operations at a time.
  * @param {Function} iteratee - A truth test to apply to each item in `coll`.
  * The `iteratee` is passed a `callback(err, truthValue)`, which must be called
  * with a boolean argument once it has completed. Invoked with (item, callback).
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Invoked with (err, results).
+ * @returns {Promise} a promise, if no callback provided
  */
-var filterLimit = doParallelLimit(_filter);
+function filterLimit (coll, limit, iteratee, callback) {
+    return _filter(eachOfLimit(limit), coll, iteratee, callback)
+}
+var filterLimit$1 = awaitify(filterLimit, 4);
 
 /**
  * The same as [`filter`]{@link module:Collections.filter} but runs only a single async operation at a time.
@@ -3571,14 +3267,18 @@ var filterLimit = doParallelLimit(_filter);
  * @see [async.filter]{@link module:Collections.filter}
  * @alias selectSeries
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {Function} iteratee - A truth test to apply to each item in `coll`.
  * The `iteratee` is passed a `callback(err, truthValue)`, which must be called
  * with a boolean argument once it has completed. Invoked with (item, callback).
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Invoked with (err, results)
+ * @returns {Promise} a promise, if no callback provided
  */
-var filterSeries = doLimit(filterLimit, 1);
+function filterSeries (coll, iteratee, callback) {
+    return _filter(eachOfSeries$1, coll, iteratee, callback)
+}
+var filterSeries$1 = awaitify(filterSeries, 3);
 
 /**
  * Calls the asynchronous function `fn` with a callback parameter that allows it
@@ -3596,6 +3296,8 @@ var filterSeries = doLimit(filterLimit, 1);
  * Invoked with (next).
  * @param {Function} [errback] - when `fn` passes an error to it's callback,
  * this function will be called, and execution stops. Invoked with (err).
+ * @returns {Promise} a promise that rejects if an error occurs and an errback
+ * is not passed
  * @example
  *
  * async.forever(
@@ -3610,15 +3312,17 @@ var filterSeries = doLimit(filterLimit, 1);
  * );
  */
 function forever(fn, errback) {
-    var done = onlyOnce(errback || noop);
+    var done = onlyOnce(errback);
     var task = wrapAsync(ensureAsync(fn));
 
     function next(err) {
         if (err) return done(err);
+        if (err === false) return;
         task(next);
     }
-    next();
+    return next();
 }
+var forever$1 = awaitify(forever, 2);
 
 /**
  * The same as [`groupBy`]{@link module:Collections.groupBy} but runs a maximum of `limit` async operations at a time.
@@ -3629,7 +3333,7 @@ function forever(fn, errback) {
  * @method
  * @see [async.groupBy]{@link module:Collections.groupBy}
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {number} limit - The maximum number of async operations at a time.
  * @param {AsyncFunction} iteratee - An async function to apply to each item in
  * `coll`.
@@ -3638,24 +3342,24 @@ function forever(fn, errback) {
  * @param {Function} [callback] - A callback which is called when all `iteratee`
  * functions have finished, or an error occurs. Result is an `Object` whoses
  * properties are arrays of values which returned the corresponding key.
+ * @returns {Promise} a promise, if no callback is passed
  */
-var groupByLimit = function(coll, limit, iteratee, callback) {
-    callback = callback || noop;
+function groupByLimit(coll, limit, iteratee, callback) {
     var _iteratee = wrapAsync(iteratee);
-    mapLimit(coll, limit, function(val, callback) {
-        _iteratee(val, function(err, key) {
-            if (err) return callback(err);
-            return callback(null, {key: key, val: val});
+    return mapLimit$1(coll, limit, (val, iterCb) => {
+        _iteratee(val, (err, key) => {
+            if (err) return iterCb(err);
+            return iterCb(err, {key, val});
         });
-    }, function(err, mapResults) {
+    }, (err, mapResults) => {
         var result = {};
         // from MDN, handle object having an `hasOwnProperty` prop
-        var hasOwnProperty = Object.prototype.hasOwnProperty;
+        var {hasOwnProperty} = Object.prototype;
 
         for (var i = 0; i < mapResults.length; i++) {
             if (mapResults[i]) {
-                var key = mapResults[i].key;
-                var val = mapResults[i].val;
+                var {key} = mapResults[i];
+                var {val} = mapResults[i];
 
                 if (hasOwnProperty.call(result, key)) {
                     result[key].push(val);
@@ -3667,7 +3371,9 @@ var groupByLimit = function(coll, limit, iteratee, callback) {
 
         return callback(err, result);
     });
-};
+}
+
+var groupByLimit$1 = awaitify(groupByLimit, 4);
 
 /**
  * Returns a new object, where each value corresponds to an array of items, from
@@ -3685,7 +3391,7 @@ var groupByLimit = function(coll, limit, iteratee, callback) {
  * @memberOf module:Collections
  * @method
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async function to apply to each item in
  * `coll`.
  * The iteratee should complete with a `key` to group the value under.
@@ -3693,19 +3399,76 @@ var groupByLimit = function(coll, limit, iteratee, callback) {
  * @param {Function} [callback] - A callback which is called when all `iteratee`
  * functions have finished, or an error occurs. Result is an `Object` whoses
  * properties are arrays of values which returned the corresponding key.
+ * @returns {Promise} a promise, if no callback is passed
  * @example
  *
- * async.groupBy(['userId1', 'userId2', 'userId3'], function(userId, callback) {
- *     db.findById(userId, function(err, user) {
- *         if (err) return callback(err);
- *         return callback(null, user.age);
+ * // dir1 is a directory that contains file1.txt, file2.txt
+ * // dir2 is a directory that contains file3.txt, file4.txt
+ * // dir3 is a directory that contains file5.txt
+ * // dir4 does not exist
+ *
+ * const files = ['dir1/file1.txt','dir2','dir4']
+ *
+ * // asynchronous function that detects file type as none, file, or directory
+ * function detectFile(file, callback) {
+ *     fs.stat(file, function(err, stat) {
+ *         if (err) {
+ *             return callback(null, 'none');
+ *         }
+ *         callback(null, stat.isDirectory() ? 'directory' : 'file');
  *     });
- * }, function(err, result) {
- *     // result is object containing the userIds grouped by age
- *     // e.g. { 30: ['userId1', 'userId3'], 42: ['userId2']};
+ * }
+ *
+ * //Using callbacks
+ * async.groupBy(files, detectFile, function(err, result) {
+ *     if(err) {
+ *         console.log(err);
+ *     } else {
+ *	       console.log(result);
+ *         // {
+ *         //     file: [ 'dir1/file1.txt' ],
+ *         //     none: [ 'dir4' ],
+ *         //     directory: [ 'dir2']
+ *         // }
+ *         // result is object containing the files grouped by type
+ *     }
  * });
+ *
+ * // Using Promises
+ * async.groupBy(files, detectFile)
+ * .then( result => {
+ *     console.log(result);
+ *     // {
+ *     //     file: [ 'dir1/file1.txt' ],
+ *     //     none: [ 'dir4' ],
+ *     //     directory: [ 'dir2']
+ *     // }
+ *     // result is object containing the files grouped by type
+ * }).catch( err => {
+ *     console.log(err);
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let result = await async.groupBy(files, detectFile);
+ *         console.log(result);
+ *         // {
+ *         //     file: [ 'dir1/file1.txt' ],
+ *         //     none: [ 'dir4' ],
+ *         //     directory: [ 'dir2']
+ *         // }
+ *         // result is object containing the files grouped by type
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
-var groupBy = doLimit(groupByLimit, Infinity);
+function groupBy (coll, iteratee, callback) {
+    return groupByLimit$1(coll, Infinity, iteratee, callback)
+}
 
 /**
  * The same as [`groupBy`]{@link module:Collections.groupBy} but runs only a single async operation at a time.
@@ -3716,17 +3479,19 @@ var groupBy = doLimit(groupByLimit, Infinity);
  * @method
  * @see [async.groupBy]{@link module:Collections.groupBy}
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
- * @param {number} limit - The maximum number of async operations at a time.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async function to apply to each item in
  * `coll`.
  * The iteratee should complete with a `key` to group the value under.
  * Invoked with (value, callback).
  * @param {Function} [callback] - A callback which is called when all `iteratee`
- * functions have finished, or an error occurs. Result is an `Object` whoses
+ * functions have finished, or an error occurs. Result is an `Object` whose
  * properties are arrays of values which returned the corresponding key.
+ * @returns {Promise} a promise, if no callback is passed
  */
-var groupBySeries = doLimit(groupByLimit, 1);
+function groupBySeries (coll, iteratee, callback) {
+    return groupByLimit$1(coll, 1, iteratee, callback)
+}
 
 /**
  * Logs the result of an `async` function to the `console`. Only works in
@@ -3777,21 +3542,22 @@ var log = consoleFunc('log');
  * functions have finished, or an error occurs. `result` is a new object consisting
  * of each key from `obj`, with each transformed value on the right-hand side.
  * Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback is passed
  */
 function mapValuesLimit(obj, limit, iteratee, callback) {
-    callback = once(callback || noop);
+    callback = once(callback);
     var newObj = {};
     var _iteratee = wrapAsync(iteratee);
-    eachOfLimit(obj, limit, function(val, key, next) {
-        _iteratee(val, key, function (err, result) {
+    return eachOfLimit(limit)(obj, (val, key, next) => {
+        _iteratee(val, key, (err, result) => {
             if (err) return next(err);
             newObj[key] = result;
-            next();
+            next(err);
         });
-    }, function (err) {
-        callback(err, newObj);
-    });
+    }, err => callback(err, newObj));
 }
+
+var mapValuesLimit$1 = awaitify(mapValuesLimit, 4);
 
 /**
  * A relative of [`map`]{@link module:Collections.map}, designed for use with objects.
@@ -3820,25 +3586,117 @@ function mapValuesLimit(obj, limit, iteratee, callback) {
  * functions have finished, or an error occurs. `result` is a new object consisting
  * of each key from `obj`, with each transformed value on the right-hand side.
  * Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback is passed
  * @example
  *
- * async.mapValues({
- *     f1: 'file1',
- *     f2: 'file2',
- *     f3: 'file3'
- * }, function (file, key, callback) {
- *   fs.stat(file, callback);
- * }, function(err, result) {
- *     // result is now a map of stats for each file, e.g.
- *     // {
- *     //     f1: [stats for file1],
- *     //     f2: [stats for file2],
- *     //     f3: [stats for file3]
- *     // }
+ * // file1.txt is a file that is 1000 bytes in size
+ * // file2.txt is a file that is 2000 bytes in size
+ * // file3.txt is a file that is 3000 bytes in size
+ * // file4.txt does not exist
+ *
+ * const fileMap = {
+ *     f1: 'file1.txt',
+ *     f2: 'file2.txt',
+ *     f3: 'file3.txt'
+ * };
+ *
+ * const withMissingFileMap = {
+ *     f1: 'file1.txt',
+ *     f2: 'file2.txt',
+ *     f3: 'file4.txt'
+ * };
+ *
+ * // asynchronous function that returns the file size in bytes
+ * function getFileSizeInBytes(file, key, callback) {
+ *     fs.stat(file, function(err, stat) {
+ *         if (err) {
+ *             return callback(err);
+ *         }
+ *         callback(null, stat.size);
+ *     });
+ * }
+ *
+ * // Using callbacks
+ * async.mapValues(fileMap, getFileSizeInBytes, function(err, result) {
+ *     if (err) {
+ *         console.log(err);
+ *     } else {
+ *         console.log(result);
+ *         // result is now a map of file size in bytes for each file, e.g.
+ *         // {
+ *         //     f1: 1000,
+ *         //     f2: 2000,
+ *         //     f3: 3000
+ *         // }
+ *     }
  * });
+ *
+ * // Error handling
+ * async.mapValues(withMissingFileMap, getFileSizeInBytes, function(err, result) {
+ *     if (err) {
+ *         console.log(err);
+ *         // [ Error: ENOENT: no such file or directory ]
+ *     } else {
+ *         console.log(result);
+ *     }
+ * });
+ *
+ * // Using Promises
+ * async.mapValues(fileMap, getFileSizeInBytes)
+ * .then( result => {
+ *     console.log(result);
+ *     // result is now a map of file size in bytes for each file, e.g.
+ *     // {
+ *     //     f1: 1000,
+ *     //     f2: 2000,
+ *     //     f3: 3000
+ *     // }
+ * }).catch (err => {
+ *     console.log(err);
+ * });
+ *
+ * // Error Handling
+ * async.mapValues(withMissingFileMap, getFileSizeInBytes)
+ * .then( result => {
+ *     console.log(result);
+ * }).catch (err => {
+ *     console.log(err);
+ *     // [ Error: ENOENT: no such file or directory ]
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let result = await async.mapValues(fileMap, getFileSizeInBytes);
+ *         console.log(result);
+ *         // result is now a map of file size in bytes for each file, e.g.
+ *         // {
+ *         //     f1: 1000,
+ *         //     f2: 2000,
+ *         //     f3: 3000
+ *         // }
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * // Error Handling
+ * async () => {
+ *     try {
+ *         let result = await async.mapValues(withMissingFileMap, getFileSizeInBytes);
+ *         console.log(result);
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *         // [ Error: ENOENT: no such file or directory ]
+ *     }
+ * }
+ *
  */
-
-var mapValues = doLimit(mapValuesLimit, Infinity);
+function mapValues(obj, iteratee, callback) {
+    return mapValuesLimit$1(obj, Infinity, iteratee, callback)
+}
 
 /**
  * The same as [`mapValues`]{@link module:Collections.mapValues} but runs only a single async operation at a time.
@@ -3858,17 +3716,19 @@ var mapValues = doLimit(mapValuesLimit, Infinity);
  * functions have finished, or an error occurs. `result` is a new object consisting
  * of each key from `obj`, with each transformed value on the right-hand side.
  * Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback is passed
  */
-var mapValuesSeries = doLimit(mapValuesLimit, 1);
-
-function has(obj, key) {
-    return key in obj;
+function mapValuesSeries(obj, iteratee, callback) {
+    return mapValuesLimit$1(obj, 1, iteratee, callback)
 }
 
 /**
  * Caches the results of an async function. When creating a hash to store
  * function results against, the callback is omitted from the hash and an
  * optional hash function can be used.
+ *
+ * **Note: if the async function errs, the result will not be cached and
+ * subsequent calls will call the wrapped function.**
  *
  * If no hash function is specified, the first argument is used as a hash key,
  * which may work reasonably if it is a string or a data type that converts to a
@@ -3902,30 +3762,29 @@ function has(obj, key) {
  *     // callback
  * });
  */
-function memoize(fn, hasher) {
+function memoize(fn, hasher = v => v) {
     var memo = Object.create(null);
     var queues = Object.create(null);
-    hasher = hasher || identity;
     var _fn = wrapAsync(fn);
-    var memoized = initialParams(function memoized(args, callback) {
-        var key = hasher.apply(null, args);
-        if (has(memo, key)) {
-            setImmediate$1(function() {
-                callback.apply(null, memo[key]);
-            });
-        } else if (has(queues, key)) {
+    var memoized = initialParams((args, callback) => {
+        var key = hasher(...args);
+        if (key in memo) {
+            setImmediate$1(() => callback(null, ...memo[key]));
+        } else if (key in queues) {
             queues[key].push(callback);
         } else {
             queues[key] = [callback];
-            _fn.apply(null, args.concat(function(/*args*/) {
-                var args = slice(arguments);
-                memo[key] = args;
+            _fn(...args, (err, ...resultArgs) => {
+                // #1465 don't memoize if an error occurred
+                if (!err) {
+                    memo[key] = resultArgs;
+                }
                 var q = queues[key];
                 delete queues[key];
                 for (var i = 0, l = q.length; i < l; i++) {
-                    q[i].apply(null, args);
+                    q[i](err, ...resultArgs);
                 }
-            }));
+            });
         }
     });
     memoized.memo = memo;
@@ -3976,22 +3835,19 @@ if (hasNextTick) {
 
 var nextTick = wrap(_defer$1);
 
-function _parallel(eachfn, tasks, callback) {
-    callback = callback || noop;
+var _parallel = awaitify((eachfn, tasks, callback) => {
     var results = isArrayLike(tasks) ? [] : {};
 
-    eachfn(tasks, function (task, key, callback) {
-        wrapAsync(task)(function (err, result) {
-            if (arguments.length > 2) {
-                result = slice(arguments, 1);
+    eachfn(tasks, (task, key, taskCb) => {
+        wrapAsync(task)((err, ...result) => {
+            if (result.length < 2) {
+                [result] = result;
             }
             results[key] = result;
-            callback(err);
+            taskCb(err);
         });
-    }, function (err) {
-        callback(err, results);
-    });
-}
+    }, err => callback(err, results));
+}, 3);
 
 /**
  * Run the `tasks` collection of functions in parallel, without waiting until
@@ -4019,15 +3875,18 @@ function _parallel(eachfn, tasks, callback) {
  * @memberOf module:ControlFlow
  * @method
  * @category Control Flow
- * @param {Array|Iterable|Object} tasks - A collection of
+ * @param {Array|Iterable|AsyncIterable|Object} tasks - A collection of
  * [async functions]{@link AsyncFunction} to run.
  * Each async function can complete with any number of optional `result` values.
  * @param {Function} [callback] - An optional callback to run once all the
  * functions have completed successfully. This function gets a results array
  * (or object) containing all the result arguments passed to the task callbacks.
  * Invoked with (err, results).
+ * @returns {Promise} a promise, if a callback is not passed
  *
  * @example
+ *
+ * //Using Callbacks
  * async.parallel([
  *     function(callback) {
  *         setTimeout(function() {
@@ -4039,10 +3898,9 @@ function _parallel(eachfn, tasks, callback) {
  *             callback(null, 'two');
  *         }, 100);
  *     }
- * ],
- * // optional callback
- * function(err, results) {
- *     // the results array will equal ['one','two'] even though
+ * ], function(err, results) {
+ *     console.log(results);
+ *     // results is equal to ['one','two'] even though
  *     // the second function had a shorter timeout.
  * });
  *
@@ -4059,11 +3917,99 @@ function _parallel(eachfn, tasks, callback) {
  *         }, 100);
  *     }
  * }, function(err, results) {
- *     // results is now equals to: {one: 1, two: 2}
+ *     console.log(results);
+ *     // results is equal to: { one: 1, two: 2 }
  * });
+ *
+ * //Using Promises
+ * async.parallel([
+ *     function(callback) {
+ *         setTimeout(function() {
+ *             callback(null, 'one');
+ *         }, 200);
+ *     },
+ *     function(callback) {
+ *         setTimeout(function() {
+ *             callback(null, 'two');
+ *         }, 100);
+ *     }
+ * ]).then(results => {
+ *     console.log(results);
+ *     // results is equal to ['one','two'] even though
+ *     // the second function had a shorter timeout.
+ * }).catch(err => {
+ *     console.log(err);
+ * });
+ *
+ * // an example using an object instead of an array
+ * async.parallel({
+ *     one: function(callback) {
+ *         setTimeout(function() {
+ *             callback(null, 1);
+ *         }, 200);
+ *     },
+ *     two: function(callback) {
+ *         setTimeout(function() {
+ *             callback(null, 2);
+ *         }, 100);
+ *     }
+ * }).then(results => {
+ *     console.log(results);
+ *     // results is equal to: { one: 1, two: 2 }
+ * }).catch(err => {
+ *     console.log(err);
+ * });
+ *
+ * //Using async/await
+ * async () => {
+ *     try {
+ *         let results = await async.parallel([
+ *             function(callback) {
+ *                 setTimeout(function() {
+ *                     callback(null, 'one');
+ *                 }, 200);
+ *             },
+ *             function(callback) {
+ *                 setTimeout(function() {
+ *                     callback(null, 'two');
+ *                 }, 100);
+ *             }
+ *         ]);
+ *         console.log(results);
+ *         // results is equal to ['one','two'] even though
+ *         // the second function had a shorter timeout.
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * // an example using an object instead of an array
+ * async () => {
+ *     try {
+ *         let results = await async.parallel({
+ *             one: function(callback) {
+ *                 setTimeout(function() {
+ *                     callback(null, 1);
+ *                 }, 200);
+ *             },
+ *            two: function(callback) {
+ *                 setTimeout(function() {
+ *                     callback(null, 2);
+ *                 }, 100);
+ *            }
+ *         });
+ *         console.log(results);
+ *         // results is equal to: { one: 1, two: 2 }
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
-function parallelLimit(tasks, callback) {
-    _parallel(eachOf, tasks, callback);
+function parallel(tasks, callback) {
+    return _parallel(eachOf$1, tasks, callback);
 }
 
 /**
@@ -4076,7 +4022,7 @@ function parallelLimit(tasks, callback) {
  * @method
  * @see [async.parallel]{@link module:ControlFlow.parallel}
  * @category Control Flow
- * @param {Array|Iterable|Object} tasks - A collection of
+ * @param {Array|Iterable|AsyncIterable|Object} tasks - A collection of
  * [async functions]{@link AsyncFunction} to run.
  * Each async function can complete with any number of optional `result` values.
  * @param {number} limit - The maximum number of async operations at a time.
@@ -4084,14 +4030,15 @@ function parallelLimit(tasks, callback) {
  * functions have completed successfully. This function gets a results array
  * (or object) containing all the result arguments passed to the task callbacks.
  * Invoked with (err, results).
+ * @returns {Promise} a promise, if a callback is not passed
  */
-function parallelLimit$1(tasks, limit, callback) {
-    _parallel(_eachOfLimit(limit), tasks, callback);
+function parallelLimit(tasks, limit, callback) {
+    return _parallel(eachOfLimit(limit), tasks, callback);
 }
 
 /**
  * A queue of tasks for the worker function to complete.
- * @typedef {Object} QueueObject
+ * @typedef {Iterable} QueueObject
  * @memberOf module:ControlFlow
  * @property {Function} length - a function returning the number of items
  * waiting to be processed. Invoke with `queue.length()`.
@@ -4106,32 +4053,45 @@ function parallelLimit$1(tasks, limit, callback) {
  * @property {number} concurrency - an integer for determining how many `worker`
  * functions should be run in parallel. This property can be changed after a
  * `queue` is created to alter the concurrency on-the-fly.
- * @property {Function} push - add a new task to the `queue`. Calls `callback`
+ * @property {number} payload - an integer that specifies how many items are
+ * passed to the worker function at a time. only applies if this is a
+ * [cargo]{@link module:ControlFlow.cargo} object
+ * @property {AsyncFunction} push - add a new task to the `queue`. Calls `callback`
  * once the `worker` has finished processing the task. Instead of a single task,
  * a `tasks` array can be submitted. The respective callback is used for every
  * task in the list. Invoke with `queue.push(task, [callback])`,
- * @property {Function} unshift - add a new task to the front of the `queue`.
+ * @property {AsyncFunction} unshift - add a new task to the front of the `queue`.
  * Invoke with `queue.unshift(task, [callback])`.
+ * @property {AsyncFunction} pushAsync - the same as `q.push`, except this returns
+ * a promise that rejects if an error occurs.
+ * @property {AsyncFunction} unshiftAsync - the same as `q.unshift`, except this returns
+ * a promise that rejects if an error occurs.
  * @property {Function} remove - remove items from the queue that match a test
  * function.  The test function will be passed an object with a `data` property,
  * and a `priority` property, if this is a
  * [priorityQueue]{@link module:ControlFlow.priorityQueue} object.
  * Invoked with `queue.remove(testFn)`, where `testFn` is of the form
  * `function ({data, priority}) {}` and returns a Boolean.
- * @property {Function} saturated - a callback that is called when the number of
- * running workers hits the `concurrency` limit, and further tasks will be
- * queued.
- * @property {Function} unsaturated - a callback that is called when the number
- * of running workers is less than the `concurrency` & `buffer` limits, and
- * further tasks will not be queued.
+ * @property {Function} saturated - a function that sets a callback that is
+ * called when the number of running workers hits the `concurrency` limit, and
+ * further tasks will be queued.  If the callback is omitted, `q.saturated()`
+ * returns a promise for the next occurrence.
+ * @property {Function} unsaturated - a function that sets a callback that is
+ * called when the number of running workers is less than the `concurrency` &
+ * `buffer` limits, and further tasks will not be queued. If the callback is
+ * omitted, `q.unsaturated()` returns a promise for the next occurrence.
  * @property {number} buffer - A minimum threshold buffer in order to say that
  * the `queue` is `unsaturated`.
- * @property {Function} empty - a callback that is called when the last item
- * from the `queue` is given to a `worker`.
- * @property {Function} drain - a callback that is called when the last item
- * from the `queue` has returned from the `worker`.
- * @property {Function} error - a callback that is called when a task errors.
- * Has the signature `function(error, task)`.
+ * @property {Function} empty - a function that sets a callback that is called
+ * when the last item from the `queue` is given to a `worker`. If the callback
+ * is omitted, `q.empty()` returns a promise for the next occurrence.
+ * @property {Function} drain - a function that sets a callback that is called
+ * when the last item from the `queue` has returned from the `worker`. If the
+ * callback is omitted, `q.drain()` returns a promise for the next occurrence.
+ * @property {Function} error - a function that sets a callback that is called
+ * when a task errors. Has the signature `function(error, task)`. If the
+ * callback is omitted, `error()` returns a promise that rejects on the next
+ * error.
  * @property {boolean} paused - a boolean for determining whether the queue is
  * in a paused state.
  * @property {Function} pause - a function that pauses the processing of tasks
@@ -4141,6 +4101,24 @@ function parallelLimit$1(tasks, limit, callback) {
  * @property {Function} kill - a function that removes the `drain` callback and
  * empties remaining tasks from the queue forcing it to go idle. No more tasks
  * should be pushed to the queue after calling this function. Invoke with `queue.kill()`.
+ *
+ * @example
+ * const q = async.queue(worker, 2)
+ * q.push(item1)
+ * q.push(item2)
+ * q.push(item3)
+ * // queues are iterable, spread into an array to inspect
+ * const items = [...q] // [item1, item2, item3]
+ * // or use for of
+ * for (let item of q) {
+ *     console.log(item)
+ * }
+ *
+ * q.drain(() => {
+ *     console.log('all done')
+ * })
+ * // or
+ * await q.drain()
  */
 
 /**
@@ -4160,7 +4138,7 @@ function parallelLimit$1(tasks, limit, callback) {
  * @param {number} [concurrency=1] - An `integer` for determining how many
  * `worker` functions should be run in parallel.  If omitted, the concurrency
  * defaults to `1`.  If the concurrency is `0`, an error is thrown.
- * @returns {module:ControlFlow.QueueObject} A queue object to manage the tasks. Callbacks can
+ * @returns {module:ControlFlow.QueueObject} A queue object to manage the tasks. Callbacks can be
  * attached as certain properties to listen for specific events during the
  * lifecycle of the queue.
  * @example
@@ -4172,17 +4150,23 @@ function parallelLimit$1(tasks, limit, callback) {
  * }, 2);
  *
  * // assign a callback
- * q.drain = function() {
+ * q.drain(function() {
  *     console.log('all items have been processed');
- * };
+ * });
+ * // or await the end
+ * await q.drain()
+ *
+ * // assign an error callback
+ * q.error(function(err, task) {
+ *     console.error('task experienced an error');
+ * });
  *
  * // add some items to the queue
  * q.push({name: 'foo'}, function(err) {
  *     console.log('finished processing foo');
  * });
- * q.push({name: 'bar'}, function (err) {
- *     console.log('finished processing bar');
- * });
+ * // callback is optional
+ * q.push({name: 'bar'});
  *
  * // add some items to the queue (batch-wise)
  * q.push([{name: 'baz'},{name: 'bay'},{name: 'bax'}], function(err) {
@@ -4194,12 +4178,127 @@ function parallelLimit$1(tasks, limit, callback) {
  *     console.log('finished processing bar');
  * });
  */
-var queue$1 = function (worker, concurrency) {
+function queue$1 (worker, concurrency) {
     var _worker = wrapAsync(worker);
-    return queue(function (items, cb) {
+    return queue((items, cb) => {
         _worker(items[0], cb);
     }, concurrency, 1);
-};
+}
+
+// Binary min-heap implementation used for priority queue.
+// Implementation is stable, i.e. push time is considered for equal priorities
+class Heap {
+    constructor() {
+        this.heap = [];
+        this.pushCount = Number.MIN_SAFE_INTEGER;
+    }
+
+    get length() {
+        return this.heap.length;
+    }
+
+    empty () {
+        this.heap = [];
+        return this;
+    }
+
+    percUp(index) {
+        let p;
+
+        while (index > 0 && smaller(this.heap[index], this.heap[p=parent(index)])) {
+            let t = this.heap[index];
+            this.heap[index] = this.heap[p];
+            this.heap[p] = t;
+
+            index = p;
+        }
+    }
+
+    percDown(index) {
+        let l;
+
+        while ((l=leftChi(index)) < this.heap.length) {
+            if (l+1 < this.heap.length && smaller(this.heap[l+1], this.heap[l])) {
+                l = l+1;
+            }
+
+            if (smaller(this.heap[index], this.heap[l])) {
+                break;
+            }
+
+            let t = this.heap[index];
+            this.heap[index] = this.heap[l];
+            this.heap[l] = t;
+
+            index = l;
+        }
+    }
+
+    push(node) {
+        node.pushCount = ++this.pushCount;
+        this.heap.push(node);
+        this.percUp(this.heap.length-1);
+    }
+
+    unshift(node) {
+        return this.heap.push(node);
+    }
+
+    shift() {
+        let [top] = this.heap;
+
+        this.heap[0] = this.heap[this.heap.length-1];
+        this.heap.pop();
+        this.percDown(0);
+
+        return top;
+    }
+
+    toArray() {
+        return [...this];
+    }
+
+    *[Symbol.iterator] () {
+        for (let i = 0; i < this.heap.length; i++) {
+            yield this.heap[i].data;
+        }
+    }
+
+    remove (testFn) {
+        let j = 0;
+        for (let i = 0; i < this.heap.length; i++) {
+            if (!testFn(this.heap[i])) {
+                this.heap[j] = this.heap[i];
+                j++;
+            }
+        }
+
+        this.heap.splice(j);
+
+        for (let i = parent(this.heap.length-1); i >= 0; i--) {
+            this.percDown(i);
+        }
+
+        return this;
+    }
+}
+
+function leftChi(i) {
+    return (i<<1)+1;
+}
+
+function parent(i) {
+    return ((i+1)>>1)-1;
+}
+
+function smaller(x, y) {
+    if (x.priority !== y.priority) {
+        return x.priority < y.priority;
+    }
+    else {
+        return x.pushCount < y.pushCount;
+    }
+}
 
 /**
  * The same as [async.queue]{@link module:ControlFlow.queue} only tasks are assigned a priority and
@@ -4224,54 +4323,51 @@ var queue$1 = function (worker, concurrency) {
  *   array of `tasks` is given, all tasks will be assigned the same priority.
  * * The `unshift` method was removed.
  */
-var priorityQueue = function(worker, concurrency) {
+function priorityQueue(worker, concurrency) {
     // Start with a normal queue
     var q = queue$1(worker, concurrency);
+    var processingScheduled = false;
+
+    q._tasks = new Heap();
 
     // Override push to accept second parameter representing priority
-    q.push = function(data, priority, callback) {
-        if (callback == null) callback = noop;
+    q.push = function(data, priority = 0, callback = () => {}) {
         if (typeof callback !== 'function') {
             throw new Error('task callback must be a function');
         }
         q.started = true;
-        if (!isArray(data)) {
+        if (!Array.isArray(data)) {
             data = [data];
         }
-        if (data.length === 0) {
+        if (data.length === 0 && q.idle()) {
             // call drain immediately if there are no tasks
-            return setImmediate$1(function() {
-                q.drain();
-            });
-        }
-
-        priority = priority || 0;
-        var nextNode = q._tasks.head;
-        while (nextNode && priority >= nextNode.priority) {
-            nextNode = nextNode.next;
+            return setImmediate$1(() => q.drain());
         }
 
         for (var i = 0, l = data.length; i < l; i++) {
             var item = {
                 data: data[i],
-                priority: priority,
-                callback: callback
+                priority,
+                callback
             };
 
-            if (nextNode) {
-                q._tasks.insertBefore(nextNode, item);
-            } else {
-                q._tasks.push(item);
-            }
+            q._tasks.push(item);
         }
-        setImmediate$1(q.process);
+
+        if (!processingScheduled) {
+            processingScheduled = true;
+            setImmediate$1(() => {
+                processingScheduled = false;
+                q.process();
+            });
+        }
     };
 
     // Remove unshift function
     delete q.unshift;
 
     return q;
-};
+}
 
 /**
  * Runs the `tasks` array of functions in parallel, without waiting until the
@@ -4310,13 +4406,15 @@ var priorityQueue = function(worker, concurrency) {
  * });
  */
 function race(tasks, callback) {
-    callback = once(callback || noop);
-    if (!isArray(tasks)) return callback(new TypeError('First argument to race must be an array of functions'));
+    callback = once(callback);
+    if (!Array.isArray(tasks)) return callback(new TypeError('First argument to race must be an array of functions'));
     if (!tasks.length) return callback();
     for (var i = 0, l = tasks.length; i < l; i++) {
         wrapAsync(tasks[i])(callback);
     }
 }
+
+var race$1 = awaitify(race, 2);
 
 /**
  * Same as [`reduce`]{@link module:Collections.reduce}, only operates on `array` in reverse order.
@@ -4333,16 +4431,17 @@ function race(tasks, callback) {
  * @param {AsyncFunction} iteratee - A function applied to each item in the
  * array to produce the next step in the reduction.
  * The `iteratee` should complete with the next state of the reduction.
- * If the iteratee complete with an error, the reduction is stopped and the
+ * If the iteratee completes with an error, the reduction is stopped and the
  * main `callback` is immediately called with the error.
  * Invoked with (memo, item, callback).
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Result is the reduced value. Invoked with
  * (err, result).
+ * @returns {Promise} a promise, if no callback is passed
  */
 function reduceRight (array, memo, iteratee, callback) {
-    var reversed = slice(array).reverse();
-    reduce(reversed, memo, iteratee, callback);
+    var reversed = [...array].reverse();
+    return reduce$1(reversed, memo, iteratee, callback);
 }
 
 /**
@@ -4387,18 +4486,19 @@ function reduceRight (array, memo, iteratee, callback) {
 function reflect(fn) {
     var _fn = wrapAsync(fn);
     return initialParams(function reflectOn(args, reflectCallback) {
-        args.push(function callback(error, cbArg) {
+        args.push((error, ...cbArgs) => {
+            let retVal = {};
             if (error) {
-                reflectCallback(null, { error: error });
-            } else {
-                var value;
-                if (arguments.length <= 2) {
-                    value = cbArg;
-                } else {
-                    value = slice(arguments, 1);
-                }
-                reflectCallback(null, { value: value });
+                retVal.error = error;
             }
+            if (cbArgs.length > 0){
+                var value = cbArgs;
+                if (cbArgs.length <= 1) {
+                    [value] = cbArgs;
+                }
+                retVal.value = value;
+            }
+            reflectCallback(null, retVal);
         });
 
         return _fn.apply(this, args);
@@ -4474,20 +4574,21 @@ function reflect(fn) {
  */
 function reflectAll(tasks) {
     var results;
-    if (isArray(tasks)) {
-        results = arrayMap(tasks, reflect);
+    if (Array.isArray(tasks)) {
+        results = tasks.map(reflect);
     } else {
         results = {};
-        baseForOwn(tasks, function(task, key) {
-            results[key] = reflect.call(this, task);
+        Object.keys(tasks).forEach(key => {
+            results[key] = reflect.call(this, tasks[key]);
         });
     }
     return results;
 }
 
-function reject$1(eachfn, arr, iteratee, callback) {
-    _filter(eachfn, arr, function(value, cb) {
-        iteratee(value, function(err, v) {
+function reject(eachfn, arr, _iteratee, callback) {
+    const iteratee = wrapAsync(_iteratee);
+    return _filter(eachfn, arr, (value, cb) => {
+        iteratee(value, (err, v) => {
             cb(err, !v);
         });
     }, callback);
@@ -4502,25 +4603,63 @@ function reject$1(eachfn, arr, iteratee, callback) {
  * @method
  * @see [async.filter]{@link module:Collections.filter}
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {Function} iteratee - An async truth test to apply to each item in
  * `coll`.
  * The should complete with a boolean value as its `result`.
  * Invoked with (item, callback).
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Invoked with (err, results).
+ * @returns {Promise} a promise, if no callback is passed
  * @example
  *
- * async.reject(['file1','file2','file3'], function(filePath, callback) {
- *     fs.access(filePath, function(err) {
- *         callback(null, !err)
- *     });
- * }, function(err, results) {
- *     // results now equals an array of missing files
- *     createFiles(results);
+ * // dir1 is a directory that contains file1.txt, file2.txt
+ * // dir2 is a directory that contains file3.txt, file4.txt
+ * // dir3 is a directory that contains file5.txt
+ *
+ * const fileList = ['dir1/file1.txt','dir2/file3.txt','dir3/file6.txt'];
+ *
+ * // asynchronous function that checks if a file exists
+ * function fileExists(file, callback) {
+ *    fs.access(file, fs.constants.F_OK, (err) => {
+ *        callback(null, !err);
+ *    });
+ * }
+ *
+ * // Using callbacks
+ * async.reject(fileList, fileExists, function(err, results) {
+ *    // [ 'dir3/file6.txt' ]
+ *    // results now equals an array of the non-existing files
  * });
+ *
+ * // Using Promises
+ * async.reject(fileList, fileExists)
+ * .then( results => {
+ *     console.log(results);
+ *     // [ 'dir3/file6.txt' ]
+ *     // results now equals an array of the non-existing files
+ * }).catch( err => {
+ *     console.log(err);
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let results = await async.reject(fileList, fileExists);
+ *         console.log(results);
+ *         // [ 'dir3/file6.txt' ]
+ *         // results now equals an array of the non-existing files
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
-var reject = doParallel(reject$1);
+function reject$1 (coll, iteratee, callback) {
+    return reject(eachOf$1, coll, iteratee, callback)
+}
+var reject$2 = awaitify(reject$1, 3);
 
 /**
  * The same as [`reject`]{@link module:Collections.reject} but runs a maximum of `limit` async operations at a
@@ -4532,7 +4671,7 @@ var reject = doParallel(reject$1);
  * @method
  * @see [async.reject]{@link module:Collections.reject}
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {number} limit - The maximum number of async operations at a time.
  * @param {Function} iteratee - An async truth test to apply to each item in
  * `coll`.
@@ -4540,8 +4679,12 @@ var reject = doParallel(reject$1);
  * Invoked with (item, callback).
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Invoked with (err, results).
+ * @returns {Promise} a promise, if no callback is passed
  */
-var rejectLimit = doParallelLimit(reject$1);
+function rejectLimit (coll, limit, iteratee, callback) {
+    return reject(eachOfLimit(limit), coll, iteratee, callback)
+}
+var rejectLimit$1 = awaitify(rejectLimit, 4);
 
 /**
  * The same as [`reject`]{@link module:Collections.reject} but runs only a single async operation at a time.
@@ -4552,39 +4695,24 @@ var rejectLimit = doParallelLimit(reject$1);
  * @method
  * @see [async.reject]{@link module:Collections.reject}
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {Function} iteratee - An async truth test to apply to each item in
  * `coll`.
  * The should complete with a boolean value as its `result`.
  * Invoked with (item, callback).
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Invoked with (err, results).
+ * @returns {Promise} a promise, if no callback is passed
  */
-var rejectSeries = doLimit(rejectLimit, 1);
+function rejectSeries (coll, iteratee, callback) {
+    return reject(eachOfSeries$1, coll, iteratee, callback)
+}
+var rejectSeries$1 = awaitify(rejectSeries, 3);
 
-/**
- * Creates a function that returns `value`.
- *
- * @static
- * @memberOf _
- * @since 2.4.0
- * @category Util
- * @param {*} value The value to return from the new function.
- * @returns {Function} Returns the new constant function.
- * @example
- *
- * var objects = _.times(2, _.constant({ 'a': 1 }));
- *
- * console.log(objects);
- * // => [{ 'a': 1 }, { 'a': 1 }]
- *
- * console.log(objects[0] === objects[1]);
- * // => true
- */
 function constant$1(value) {
-  return function() {
-    return value;
-  };
+    return function () {
+        return value;
+    }
 }
 
 /**
@@ -4619,6 +4747,7 @@ function constant$1(value) {
  * task has succeeded, or after the final failed attempt. It receives the `err`
  * and `result` arguments of the last attempt at completing the `task`. Invoked
  * with (err, results).
+ * @returns {Promise} a promise if no callback provided
  *
  * @example
  *
@@ -4671,37 +4800,21 @@ function constant$1(value) {
  * });
  *
  */
-function retry(opts, task, callback) {
-    var DEFAULT_TIMES = 5;
-    var DEFAULT_INTERVAL = 0;
+const DEFAULT_TIMES = 5;
+const DEFAULT_INTERVAL = 0;
 
+function retry(opts, task, callback) {
     var options = {
         times: DEFAULT_TIMES,
         intervalFunc: constant$1(DEFAULT_INTERVAL)
     };
 
-    function parseTimes(acc, t) {
-        if (typeof t === 'object') {
-            acc.times = +t.times || DEFAULT_TIMES;
-
-            acc.intervalFunc = typeof t.interval === 'function' ?
-                t.interval :
-                constant$1(+t.interval || DEFAULT_INTERVAL);
-
-            acc.errorFilter = t.errorFilter;
-        } else if (typeof t === 'number' || typeof t === 'string') {
-            acc.times = +t || DEFAULT_TIMES;
-        } else {
-            throw new Error("Invalid arguments for async.retry");
-        }
-    }
-
     if (arguments.length < 3 && typeof opts === 'function') {
-        callback = task || noop;
+        callback = task || promiseCallback();
         task = opts;
     } else {
         parseTimes(options, opts);
-        callback = callback || noop;
+        callback = callback || promiseCallback();
     }
 
     if (typeof task !== 'function') {
@@ -4712,18 +4825,36 @@ function retry(opts, task, callback) {
 
     var attempt = 1;
     function retryAttempt() {
-        _task(function(err) {
+        _task((err, ...args) => {
+            if (err === false) return
             if (err && attempt++ < options.times &&
                 (typeof options.errorFilter != 'function' ||
                     options.errorFilter(err))) {
-                setTimeout(retryAttempt, options.intervalFunc(attempt));
+                setTimeout(retryAttempt, options.intervalFunc(attempt - 1));
             } else {
-                callback.apply(null, arguments);
+                callback(err, ...args);
             }
         });
     }
 
     retryAttempt();
+    return callback[PROMISE_SYMBOL]
+}
+
+function parseTimes(acc, t) {
+    if (typeof t === 'object') {
+        acc.times = +t.times || DEFAULT_TIMES;
+
+        acc.intervalFunc = typeof t.interval === 'function' ?
+            t.interval :
+            constant$1(+t.interval || DEFAULT_INTERVAL);
+
+        acc.errorFilter = t.errorFilter;
+    } else if (typeof t === 'number' || typeof t === 'string') {
+        acc.times = +t || DEFAULT_TIMES;
+    } else {
+        throw new Error("Invalid arguments for async.retry");
+    }
 }
 
 /**
@@ -4738,7 +4869,8 @@ function retry(opts, task, callback) {
  * @see [async.retry]{@link module:ControlFlow.retry}
  * @category Control Flow
  * @param {Object|number} [opts = {times: 5, interval: 0}| 5] - optional
- * options, exactly the same as from `retry`
+ * options, exactly the same as from `retry`, except for a `opts.arity` that
+ * is the arity of the `task` function, defaulting to `task.length`
  * @param {AsyncFunction} task - the asynchronous function to wrap.
  * This function will be passed any arguments passed to the returned wrapper.
  * Invoked with (...args, callback).
@@ -4754,22 +4886,31 @@ function retry(opts, task, callback) {
  *     })]
  * }, callback);
  */
-var retryable = function (opts, task) {
+function retryable (opts, task) {
     if (!task) {
         task = opts;
         opts = null;
     }
+    let arity = (opts && opts.arity) || task.length;
+    if (isAsync(task)) {
+        arity += 1;
+    }
     var _task = wrapAsync(task);
-    return initialParams(function (args, callback) {
+    return initialParams((args, callback) => {
+        if (args.length < arity - 1 || callback == null) {
+            args.push(callback);
+            callback = promiseCallback();
+        }
         function taskFn(cb) {
-            _task.apply(null, args.concat(cb));
+            _task(...args, cb);
         }
 
         if (opts) retry(opts, taskFn, callback);
         else retry(taskFn, callback);
 
+        return callback[PROMISE_SYMBOL]
     });
-};
+}
 
 /**
  * Run the functions in the `tasks` collection in series, each one running once
@@ -4797,46 +4938,147 @@ var retryable = function (opts, task) {
  * @memberOf module:ControlFlow
  * @method
  * @category Control Flow
- * @param {Array|Iterable|Object} tasks - A collection containing
+ * @param {Array|Iterable|AsyncIterable|Object} tasks - A collection containing
  * [async functions]{@link AsyncFunction} to run in series.
  * Each function can complete with any number of optional `result` values.
  * @param {Function} [callback] - An optional callback to run once all the
  * functions have completed. This function gets a results array (or object)
  * containing all the result arguments passed to the `task` callbacks. Invoked
  * with (err, result).
+ * @return {Promise} a promise, if no callback is passed
  * @example
+ *
+ * //Using Callbacks
  * async.series([
  *     function(callback) {
- *         // do some stuff ...
- *         callback(null, 'one');
+ *         setTimeout(function() {
+ *             // do some async task
+ *             callback(null, 'one');
+ *         }, 200);
  *     },
  *     function(callback) {
- *         // do some more stuff ...
- *         callback(null, 'two');
+ *         setTimeout(function() {
+ *             // then do another async task
+ *             callback(null, 'two');
+ *         }, 100);
  *     }
- * ],
- * // optional callback
- * function(err, results) {
- *     // results is now equal to ['one', 'two']
+ * ], function(err, results) {
+ *     console.log(results);
+ *     // results is equal to ['one','two']
  * });
  *
+ * // an example using objects instead of arrays
  * async.series({
  *     one: function(callback) {
  *         setTimeout(function() {
+ *             // do some async task
  *             callback(null, 1);
  *         }, 200);
  *     },
- *     two: function(callback){
+ *     two: function(callback) {
  *         setTimeout(function() {
+ *             // then do another async task
  *             callback(null, 2);
  *         }, 100);
  *     }
  * }, function(err, results) {
- *     // results is now equal to: {one: 1, two: 2}
+ *     console.log(results);
+ *     // results is equal to: { one: 1, two: 2 }
  * });
+ *
+ * //Using Promises
+ * async.series([
+ *     function(callback) {
+ *         setTimeout(function() {
+ *             callback(null, 'one');
+ *         }, 200);
+ *     },
+ *     function(callback) {
+ *         setTimeout(function() {
+ *             callback(null, 'two');
+ *         }, 100);
+ *     }
+ * ]).then(results => {
+ *     console.log(results);
+ *     // results is equal to ['one','two']
+ * }).catch(err => {
+ *     console.log(err);
+ * });
+ *
+ * // an example using an object instead of an array
+ * async.series({
+ *     one: function(callback) {
+ *         setTimeout(function() {
+ *             // do some async task
+ *             callback(null, 1);
+ *         }, 200);
+ *     },
+ *     two: function(callback) {
+ *         setTimeout(function() {
+ *             // then do another async task
+ *             callback(null, 2);
+ *         }, 100);
+ *     }
+ * }).then(results => {
+ *     console.log(results);
+ *     // results is equal to: { one: 1, two: 2 }
+ * }).catch(err => {
+ *     console.log(err);
+ * });
+ *
+ * //Using async/await
+ * async () => {
+ *     try {
+ *         let results = await async.series([
+ *             function(callback) {
+ *                 setTimeout(function() {
+ *                     // do some async task
+ *                     callback(null, 'one');
+ *                 }, 200);
+ *             },
+ *             function(callback) {
+ *                 setTimeout(function() {
+ *                     // then do another async task
+ *                     callback(null, 'two');
+ *                 }, 100);
+ *             }
+ *         ]);
+ *         console.log(results);
+ *         // results is equal to ['one','two']
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * // an example using an object instead of an array
+ * async () => {
+ *     try {
+ *         let results = await async.parallel({
+ *             one: function(callback) {
+ *                 setTimeout(function() {
+ *                     // do some async task
+ *                     callback(null, 1);
+ *                 }, 200);
+ *             },
+ *            two: function(callback) {
+ *                 setTimeout(function() {
+ *                     // then do another async task
+ *                     callback(null, 2);
+ *                 }, 100);
+ *            }
+ *         });
+ *         console.log(results);
+ *         // results is equal to: { one: 1, two: 2 }
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
 function series(tasks, callback) {
-    _parallel(eachOfSeries, tasks, callback);
+    return _parallel(eachOfSeries$1, tasks, callback);
 }
 
 /**
@@ -4850,7 +5092,7 @@ function series(tasks, callback) {
  * @method
  * @alias any
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async truth test to apply to each item
  * in the collections in parallel.
  * The iteratee should complete with a boolean `result` value.
@@ -4859,17 +5101,87 @@ function series(tasks, callback) {
  * iteratee returns `true`, or after all the iteratee functions have finished.
  * Result will be either `true` or `false` depending on the values of the async
  * tests. Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback provided
  * @example
  *
- * async.some(['file1','file2','file3'], function(filePath, callback) {
- *     fs.access(filePath, function(err) {
- *         callback(null, !err)
- *     });
- * }, function(err, result) {
- *     // if result is true then at least one of the files exists
+ * // dir1 is a directory that contains file1.txt, file2.txt
+ * // dir2 is a directory that contains file3.txt, file4.txt
+ * // dir3 is a directory that contains file5.txt
+ * // dir4 does not exist
+ *
+ * // asynchronous function that checks if a file exists
+ * function fileExists(file, callback) {
+ *    fs.access(file, fs.constants.F_OK, (err) => {
+ *        callback(null, !err);
+ *    });
+ * }
+ *
+ * // Using callbacks
+ * async.some(['dir1/missing.txt','dir2/missing.txt','dir3/file5.txt'], fileExists,
+ *    function(err, result) {
+ *        console.log(result);
+ *        // true
+ *        // result is true since some file in the list exists
+ *    }
+ *);
+ *
+ * async.some(['dir1/missing.txt','dir2/missing.txt','dir4/missing.txt'], fileExists,
+ *    function(err, result) {
+ *        console.log(result);
+ *        // false
+ *        // result is false since none of the files exists
+ *    }
+ *);
+ *
+ * // Using Promises
+ * async.some(['dir1/missing.txt','dir2/missing.txt','dir3/file5.txt'], fileExists)
+ * .then( result => {
+ *     console.log(result);
+ *     // true
+ *     // result is true since some file in the list exists
+ * }).catch( err => {
+ *     console.log(err);
  * });
+ *
+ * async.some(['dir1/missing.txt','dir2/missing.txt','dir4/missing.txt'], fileExists)
+ * .then( result => {
+ *     console.log(result);
+ *     // false
+ *     // result is false since none of the files exists
+ * }).catch( err => {
+ *     console.log(err);
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let result = await async.some(['dir1/missing.txt','dir2/missing.txt','dir3/file5.txt'], fileExists);
+ *         console.log(result);
+ *         // true
+ *         // result is true since some file in the list exists
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
+ * async () => {
+ *     try {
+ *         let result = await async.some(['dir1/missing.txt','dir2/missing.txt','dir4/missing.txt'], fileExists);
+ *         console.log(result);
+ *         // false
+ *         // result is false since none of the files exists
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
-var some = doParallel(_createTester(Boolean, identity));
+function some(coll, iteratee, callback) {
+    return _createTester(Boolean, res => res)(eachOf$1, coll, iteratee, callback)
+}
+var some$1 = awaitify(some, 3);
 
 /**
  * The same as [`some`]{@link module:Collections.some} but runs a maximum of `limit` async operations at a time.
@@ -4881,7 +5193,7 @@ var some = doParallel(_createTester(Boolean, identity));
  * @see [async.some]{@link module:Collections.some}
  * @alias anyLimit
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {number} limit - The maximum number of async operations at a time.
  * @param {AsyncFunction} iteratee - An async truth test to apply to each item
  * in the collections in parallel.
@@ -4891,8 +5203,12 @@ var some = doParallel(_createTester(Boolean, identity));
  * iteratee returns `true`, or after all the iteratee functions have finished.
  * Result will be either `true` or `false` depending on the values of the async
  * tests. Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback provided
  */
-var someLimit = doParallelLimit(_createTester(Boolean, identity));
+function someLimit(coll, limit, iteratee, callback) {
+    return _createTester(Boolean, res => res)(eachOfLimit(limit), coll, iteratee, callback)
+}
+var someLimit$1 = awaitify(someLimit, 4);
 
 /**
  * The same as [`some`]{@link module:Collections.some} but runs only a single async operation at a time.
@@ -4904,7 +5220,7 @@ var someLimit = doParallelLimit(_createTester(Boolean, identity));
  * @see [async.some]{@link module:Collections.some}
  * @alias anySeries
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async truth test to apply to each item
  * in the collections in series.
  * The iteratee should complete with a boolean `result` value.
@@ -4913,8 +5229,12 @@ var someLimit = doParallelLimit(_createTester(Boolean, identity));
  * iteratee returns `true`, or after all the iteratee functions have finished.
  * Result will be either `true` or `false` depending on the values of the async
  * tests. Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback provided
  */
-var someSeries = doLimit(someLimit, 1);
+function someSeries(coll, iteratee, callback) {
+    return _createTester(Boolean, res => res)(eachOfSeries$1, coll, iteratee, callback)
+}
+var someSeries$1 = awaitify(someSeries, 3);
 
 /**
  * Sorts a list by the results of running each `coll` value through an async
@@ -4925,7 +5245,7 @@ var someSeries = doLimit(someLimit, 1);
  * @memberOf module:Collections
  * @method
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {AsyncFunction} iteratee - An async function to apply to each item in
  * `coll`.
  * The iteratee should complete with a value to use as the sort criteria as
@@ -4935,44 +5255,147 @@ var someSeries = doLimit(someLimit, 1);
  * `iteratee` functions have finished, or an error occurs. Results is the items
  * from the original `coll` sorted by the values returned by the `iteratee`
  * calls. Invoked with (err, results).
+ * @returns {Promise} a promise, if no callback passed
  * @example
  *
- * async.sortBy(['file1','file2','file3'], function(file, callback) {
- *     fs.stat(file, function(err, stats) {
- *         callback(err, stats.mtime);
+ * // bigfile.txt is a file that is 251100 bytes in size
+ * // mediumfile.txt is a file that is 11000 bytes in size
+ * // smallfile.txt is a file that is 121 bytes in size
+ *
+ * // asynchronous function that returns the file size in bytes
+ * function getFileSizeInBytes(file, callback) {
+ *     fs.stat(file, function(err, stat) {
+ *         if (err) {
+ *             return callback(err);
+ *         }
+ *         callback(null, stat.size);
  *     });
- * }, function(err, results) {
- *     // results is now the original array of files sorted by
- *     // modified date
- * });
+ * }
+ *
+ * // Using callbacks
+ * async.sortBy(['mediumfile.txt','smallfile.txt','bigfile.txt'], getFileSizeInBytes,
+ *     function(err, results) {
+ *         if (err) {
+ *             console.log(err);
+ *         } else {
+ *             console.log(results);
+ *             // results is now the original array of files sorted by
+ *             // file size (ascending by default), e.g.
+ *             // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
+ *         }
+ *     }
+ * );
  *
  * // By modifying the callback parameter the
  * // sorting order can be influenced:
  *
  * // ascending order
- * async.sortBy([1,9,3,5], function(x, callback) {
- *     callback(null, x);
- * }, function(err,result) {
- *     // result callback
- * });
+ * async.sortBy(['mediumfile.txt','smallfile.txt','bigfile.txt'], function(file, callback) {
+ *     getFileSizeInBytes(file, function(getFileSizeErr, fileSize) {
+ *         if (getFileSizeErr) return callback(getFileSizeErr);
+ *         callback(null, fileSize);
+ *     });
+ * }, function(err, results) {
+ *         if (err) {
+ *             console.log(err);
+ *         } else {
+ *             console.log(results);
+ *             // results is now the original array of files sorted by
+ *             // file size (ascending by default), e.g.
+ *             // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
+ *         }
+ *     }
+ * );
  *
  * // descending order
- * async.sortBy([1,9,3,5], function(x, callback) {
- *     callback(null, x*-1);    //<- x*-1 instead of x, turns the order around
- * }, function(err,result) {
- *     // result callback
+ * async.sortBy(['bigfile.txt','mediumfile.txt','smallfile.txt'], function(file, callback) {
+ *     getFileSizeInBytes(file, function(getFileSizeErr, fileSize) {
+ *         if (getFileSizeErr) {
+ *             return callback(getFileSizeErr);
+ *         }
+ *         callback(null, fileSize * -1);
+ *     });
+ * }, function(err, results) {
+ *         if (err) {
+ *             console.log(err);
+ *         } else {
+ *             console.log(results);
+ *             // results is now the original array of files sorted by
+ *             // file size (ascending by default), e.g.
+ *             // [ 'bigfile.txt', 'mediumfile.txt', 'smallfile.txt']
+ *         }
+ *     }
+ * );
+ *
+ * // Error handling
+ * async.sortBy(['mediumfile.txt','smallfile.txt','missingfile.txt'], getFileSizeInBytes,
+ *     function(err, results) {
+ *         if (err) {
+ *             console.log(err);
+ *             // [ Error: ENOENT: no such file or directory ]
+ *         } else {
+ *             console.log(results);
+ *         }
+ *     }
+ * );
+ *
+ * // Using Promises
+ * async.sortBy(['mediumfile.txt','smallfile.txt','bigfile.txt'], getFileSizeInBytes)
+ * .then( results => {
+ *     console.log(results);
+ *     // results is now the original array of files sorted by
+ *     // file size (ascending by default), e.g.
+ *     // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
+ * }).catch( err => {
+ *     console.log(err);
  * });
+ *
+ * // Error handling
+ * async.sortBy(['mediumfile.txt','smallfile.txt','missingfile.txt'], getFileSizeInBytes)
+ * .then( results => {
+ *     console.log(results);
+ * }).catch( err => {
+ *     console.log(err);
+ *     // [ Error: ENOENT: no such file or directory ]
+ * });
+ *
+ * // Using async/await
+ * (async () => {
+ *     try {
+ *         let results = await async.sortBy(['bigfile.txt','mediumfile.txt','smallfile.txt'], getFileSizeInBytes);
+ *         console.log(results);
+ *         // results is now the original array of files sorted by
+ *         // file size (ascending by default), e.g.
+ *         // [ 'smallfile.txt', 'mediumfile.txt', 'bigfile.txt']
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * })();
+ *
+ * // Error handling
+ * async () => {
+ *     try {
+ *         let results = await async.sortBy(['missingfile.txt','mediumfile.txt','smallfile.txt'], getFileSizeInBytes);
+ *         console.log(results);
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *         // [ Error: ENOENT: no such file or directory ]
+ *     }
+ * }
+ *
  */
 function sortBy (coll, iteratee, callback) {
     var _iteratee = wrapAsync(iteratee);
-    map(coll, function (x, callback) {
-        _iteratee(x, function (err, criteria) {
-            if (err) return callback(err);
-            callback(null, {value: x, criteria: criteria});
+    return map$1(coll, (x, iterCb) => {
+        _iteratee(x, (err, criteria) => {
+            if (err) return iterCb(err);
+            iterCb(err, {value: x, criteria});
         });
-    }, function (err, results) {
+    }, (err, results) => {
         if (err) return callback(err);
-        callback(null, arrayMap(results.sort(comparator), baseProperty('value')));
+        callback(null, results.sort(comparator).map(v => v.value));
     });
 
     function comparator(left, right) {
@@ -4980,6 +5403,7 @@ function sortBy (coll, iteratee, callback) {
         return a < b ? -1 : a > b ? 1 : 0;
     }
 }
+var sortBy$1 = awaitify(sortBy, 3);
 
 /**
  * Sets a time limit on an asynchronous function. If the function does not call
@@ -5025,7 +5449,7 @@ function sortBy (coll, iteratee, callback) {
 function timeout(asyncFn, milliseconds, info) {
     var fn = wrapAsync(asyncFn);
 
-    return initialParams(function (args, callback) {
+    return initialParams((args, callback) => {
         var timedOut = false;
         var timer;
 
@@ -5040,44 +5464,25 @@ function timeout(asyncFn, milliseconds, info) {
             callback(error);
         }
 
-        args.push(function () {
+        args.push((...cbArgs) => {
             if (!timedOut) {
-                callback.apply(null, arguments);
+                callback(...cbArgs);
                 clearTimeout(timer);
             }
         });
 
         // setup timer and call original function
         timer = setTimeout(timeoutCallback, milliseconds);
-        fn.apply(null, args);
+        fn(...args);
     });
 }
 
-/* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeCeil = Math.ceil;
-var nativeMax = Math.max;
-
-/**
- * The base implementation of `_.range` and `_.rangeRight` which doesn't
- * coerce arguments.
- *
- * @private
- * @param {number} start The start of the range.
- * @param {number} end The end of the range.
- * @param {number} step The value to increment or decrement by.
- * @param {boolean} [fromRight] Specify iterating from right to left.
- * @returns {Array} Returns the range of numbers.
- */
-function baseRange(start, end, step, fromRight) {
-  var index = -1,
-      length = nativeMax(nativeCeil((end - start) / (step || 1)), 0),
-      result = Array(length);
-
-  while (length--) {
-    result[fromRight ? length : ++index] = start;
-    start += step;
-  }
-  return result;
+function range(size) {
+    var result = Array(size);
+    while (size--) {
+        result[size] = size;
+    }
+    return result;
 }
 
 /**
@@ -5095,10 +5500,11 @@ function baseRange(start, end, step, fromRight) {
  * @param {AsyncFunction} iteratee - The async function to call `n` times.
  * Invoked with the iteration index and a callback: (n, next).
  * @param {Function} callback - see [async.map]{@link module:Collections.map}.
+ * @returns {Promise} a promise, if no callback is provided
  */
-function timeLimit(count, limit, iteratee, callback) {
+function timesLimit(count, limit, iteratee, callback) {
     var _iteratee = wrapAsync(iteratee);
-    mapLimit(baseRange(0, count, 1), limit, _iteratee, callback);
+    return mapLimit$1(range(count), limit, _iteratee, callback);
 }
 
 /**
@@ -5115,6 +5521,7 @@ function timeLimit(count, limit, iteratee, callback) {
  * @param {AsyncFunction} iteratee - The async function to call `n` times.
  * Invoked with the iteration index and a callback: (n, next).
  * @param {Function} callback - see {@link module:Collections.map}.
+ * @returns {Promise} a promise, if no callback is provided
  * @example
  *
  * // Pretend this is some complicated async factory
@@ -5133,7 +5540,9 @@ function timeLimit(count, limit, iteratee, callback) {
  *     // we should now have 5 users
  * });
  */
-var times = doLimit(timeLimit, Infinity);
+function times (n, iteratee, callback) {
+    return timesLimit(n, Infinity, iteratee, callback)
+}
 
 /**
  * The same as [times]{@link module:ControlFlow.times} but runs only a single async operation at a time.
@@ -5148,12 +5557,15 @@ var times = doLimit(timeLimit, Infinity);
  * @param {AsyncFunction} iteratee - The async function to call `n` times.
  * Invoked with the iteration index and a callback: (n, next).
  * @param {Function} callback - see {@link module:Collections.map}.
+ * @returns {Promise} a promise, if no callback is provided
  */
-var timesSeries = doLimit(timeLimit, 1);
+function timesSeries (n, iteratee, callback) {
+    return timesLimit(n, 1, iteratee, callback)
+}
 
 /**
  * A relative of `reduce`.  Takes an Object or Array, and iterates over each
- * element in series, each step potentially mutating an `accumulator` value.
+ * element in parallel, each step potentially mutating an `accumulator` value.
  * The type of the accumulator defaults to the type of collection passed in.
  *
  * @name transform
@@ -5161,7 +5573,7 @@ var timesSeries = doLimit(timeLimit, 1);
  * @memberOf module:Collections
  * @method
  * @category Collection
- * @param {Array|Iterable|Object} coll - A collection to iterate over.
+ * @param {Array|Iterable|AsyncIterable|Object} coll - A collection to iterate over.
  * @param {*} [accumulator] - The initial state of the transform.  If omitted,
  * it will default to an empty Object or Array, depending on the type of `coll`
  * @param {AsyncFunction} iteratee - A function applied to each item in the
@@ -5170,43 +5582,135 @@ var timesSeries = doLimit(timeLimit, 1);
  * @param {Function} [callback] - A callback which is called after all the
  * `iteratee` functions have finished. Result is the transformed accumulator.
  * Invoked with (err, result).
+ * @returns {Promise} a promise, if no callback provided
  * @example
  *
- * async.transform([1,2,3], function(acc, item, index, callback) {
- *     // pointless async:
- *     process.nextTick(function() {
- *         acc.push(item * 2)
- *         callback(null)
+ * // file1.txt is a file that is 1000 bytes in size
+ * // file2.txt is a file that is 2000 bytes in size
+ * // file3.txt is a file that is 3000 bytes in size
+ *
+ * // helper function that returns human-readable size format from bytes
+ * function formatBytes(bytes, decimals = 2) {
+ *   // implementation not included for brevity
+ *   return humanReadbleFilesize;
+ * }
+ *
+ * const fileList = ['file1.txt','file2.txt','file3.txt'];
+ *
+ * // asynchronous function that returns the file size, transformed to human-readable format
+ * // e.g. 1024 bytes = 1KB, 1234 bytes = 1.21 KB, 1048576 bytes = 1MB, etc.
+ * function transformFileSize(acc, value, key, callback) {
+ *     fs.stat(value, function(err, stat) {
+ *         if (err) {
+ *             return callback(err);
+ *         }
+ *         acc[key] = formatBytes(stat.size);
+ *         callback(null);
  *     });
- * }, function(err, result) {
- *     // result is now equal to [2, 4, 6]
+ * }
+ *
+ * // Using callbacks
+ * async.transform(fileList, transformFileSize, function(err, result) {
+ *     if(err) {
+ *         console.log(err);
+ *     } else {
+ *         console.log(result);
+ *         // [ '1000 Bytes', '1.95 KB', '2.93 KB' ]
+ *     }
  * });
  *
+ * // Using Promises
+ * async.transform(fileList, transformFileSize)
+ * .then(result => {
+ *     console.log(result);
+ *     // [ '1000 Bytes', '1.95 KB', '2.93 KB' ]
+ * }).catch(err => {
+ *     console.log(err);
+ * });
+ *
+ * // Using async/await
+ * (async () => {
+ *     try {
+ *         let result = await async.transform(fileList, transformFileSize);
+ *         console.log(result);
+ *         // [ '1000 Bytes', '1.95 KB', '2.93 KB' ]
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * })();
+ *
  * @example
  *
- * async.transform({a: 1, b: 2, c: 3}, function (obj, val, key, callback) {
- *     setImmediate(function () {
- *         obj[key] = val * 2;
- *         callback();
- *     })
- * }, function (err, result) {
- *     // result is equal to {a: 2, b: 4, c: 6}
- * })
+ * // file1.txt is a file that is 1000 bytes in size
+ * // file2.txt is a file that is 2000 bytes in size
+ * // file3.txt is a file that is 3000 bytes in size
+ *
+ * // helper function that returns human-readable size format from bytes
+ * function formatBytes(bytes, decimals = 2) {
+ *   // implementation not included for brevity
+ *   return humanReadbleFilesize;
+ * }
+ *
+ * const fileMap = { f1: 'file1.txt', f2: 'file2.txt', f3: 'file3.txt' };
+ *
+ * // asynchronous function that returns the file size, transformed to human-readable format
+ * // e.g. 1024 bytes = 1KB, 1234 bytes = 1.21 KB, 1048576 bytes = 1MB, etc.
+ * function transformFileSize(acc, value, key, callback) {
+ *     fs.stat(value, function(err, stat) {
+ *         if (err) {
+ *             return callback(err);
+ *         }
+ *         acc[key] = formatBytes(stat.size);
+ *         callback(null);
+ *     });
+ * }
+ *
+ * // Using callbacks
+ * async.transform(fileMap, transformFileSize, function(err, result) {
+ *     if(err) {
+ *         console.log(err);
+ *     } else {
+ *         console.log(result);
+ *         // { f1: '1000 Bytes', f2: '1.95 KB', f3: '2.93 KB' }
+ *     }
+ * });
+ *
+ * // Using Promises
+ * async.transform(fileMap, transformFileSize)
+ * .then(result => {
+ *     console.log(result);
+ *     // { f1: '1000 Bytes', f2: '1.95 KB', f3: '2.93 KB' }
+ * }).catch(err => {
+ *     console.log(err);
+ * });
+ *
+ * // Using async/await
+ * async () => {
+ *     try {
+ *         let result = await async.transform(fileMap, transformFileSize);
+ *         console.log(result);
+ *         // { f1: '1000 Bytes', f2: '1.95 KB', f3: '2.93 KB' }
+ *     }
+ *     catch (err) {
+ *         console.log(err);
+ *     }
+ * }
+ *
  */
 function transform (coll, accumulator, iteratee, callback) {
-    if (arguments.length <= 3) {
+    if (arguments.length <= 3 && typeof accumulator === 'function') {
         callback = iteratee;
         iteratee = accumulator;
-        accumulator = isArray(coll) ? [] : {};
+        accumulator = Array.isArray(coll) ? [] : {};
     }
-    callback = once(callback || noop);
+    callback = once(callback || promiseCallback());
     var _iteratee = wrapAsync(iteratee);
 
-    eachOf(coll, function(v, k, cb) {
+    eachOf$1(coll, (v, k, cb) => {
         _iteratee(accumulator, v, k, cb);
-    }, function(err) {
-        callback(err, accumulator);
-    });
+    }, err => callback(err, accumulator));
+    return callback[PROMISE_SYMBOL]
 }
 
 /**
@@ -5220,7 +5724,7 @@ function transform (coll, accumulator, iteratee, callback) {
  * @memberOf module:ControlFlow
  * @method
  * @category Control Flow
- * @param {Array|Iterable|Object} tasks - A collection containing functions to
+ * @param {Array|Iterable|AsyncIterable|Object} tasks - A collection containing functions to
  * run, each function is passed a `callback(err, result)` it must call on
  * completion with an error `err` (which can be `null`) and an optional `result`
  * value.
@@ -5228,6 +5732,7 @@ function transform (coll, accumulator, iteratee, callback) {
  * of the tasks has succeeded, or all have failed. It receives the `err` and
  * `result` arguments of the last attempt at completing the `task`. Invoked with
  * (err, results).
+ * @returns {Promise} a promise, if no callback is passed
  * @example
  * async.tryEach([
  *     function getDataFromFirstWebsite(callback) {
@@ -5249,21 +5754,22 @@ function transform (coll, accumulator, iteratee, callback) {
 function tryEach(tasks, callback) {
     var error = null;
     var result;
-    callback = callback || noop;
-    eachSeries(tasks, function(task, callback) {
-        wrapAsync(task)(function (err, res/*, ...args*/) {
-            if (arguments.length > 2) {
-                result = slice(arguments, 1);
+    return eachSeries$1(tasks, (task, taskCb) => {
+        wrapAsync(task)((err, ...args) => {
+            if (err === false) return taskCb(err);
+
+            if (args.length < 2) {
+                [result] = args;
             } else {
-                result = res;
+                result = args;
             }
             error = err;
-            callback(!err);
+            taskCb(err ? null : {});
         });
-    }, function () {
-        callback(error, result);
-    });
+    }, () => callback(error, result));
 }
+
+var tryEach$1 = awaitify(tryEach);
 
 /**
  * Undoes a [memoize]{@link module:Utils.memoize}d function, reverting it to the original,
@@ -5279,8 +5785,8 @@ function tryEach(tasks, callback) {
  * @returns {AsyncFunction} a function that calls the original unmemoized function
  */
 function unmemoize(fn) {
-    return function () {
-        return (fn.unmemoized || fn).apply(null, arguments);
+    return (...args) => {
+        return (fn.unmemoized || fn)(...args);
     };
 }
 
@@ -5293,7 +5799,7 @@ function unmemoize(fn) {
  * @memberOf module:ControlFlow
  * @method
  * @category Control Flow
- * @param {Function} test - synchronous truth test to perform before each
+ * @param {AsyncFunction} test - asynchronous truth test to perform before each
  * execution of `iteratee`. Invoked with ().
  * @param {AsyncFunction} iteratee - An async function which is called each time
  * `test` passes. Invoked with (callback).
@@ -5301,13 +5807,13 @@ function unmemoize(fn) {
  * function has failed and repeated execution of `iteratee` has stopped. `callback`
  * will be passed an error and any arguments passed to the final `iteratee`'s
  * callback. Invoked with (err, [results]);
- * @returns undefined
+ * @returns {Promise} a promise, if no callback is passed
  * @example
  *
  * var count = 0;
  * async.whilst(
- *     function() { return count < 5; },
- *     function(callback) {
+ *     function test(cb) { cb(null, count < 5); },
+ *     function iter(callback) {
  *         count++;
  *         setTimeout(function() {
  *             callback(null, count);
@@ -5319,17 +5825,28 @@ function unmemoize(fn) {
  * );
  */
 function whilst(test, iteratee, callback) {
-    callback = onlyOnce(callback || noop);
-    var _iteratee = wrapAsync(iteratee);
-    if (!test()) return callback(null);
-    var next = function(err/*, ...args*/) {
+    callback = onlyOnce(callback);
+    var _fn = wrapAsync(iteratee);
+    var _test = wrapAsync(test);
+    var results = [];
+
+    function next(err, ...rest) {
         if (err) return callback(err);
-        if (test()) return _iteratee(next);
-        var args = slice(arguments, 1);
-        callback.apply(null, [null].concat(args));
-    };
-    _iteratee(next);
+        results = rest;
+        if (err === false) return;
+        _test(check);
+    }
+
+    function check(err, truth) {
+        if (err) return callback(err);
+        if (err === false) return;
+        if (!truth) return callback(null, ...results);
+        _fn(next);
+    }
+
+    return _test(check);
 }
+var whilst$1 = awaitify(whilst, 3);
 
 /**
  * Repeatedly call `iteratee` until `test` returns `true`. Calls `callback` when
@@ -5344,19 +5861,35 @@ function whilst(test, iteratee, callback) {
  * @method
  * @see [async.whilst]{@link module:ControlFlow.whilst}
  * @category Control Flow
- * @param {Function} test - synchronous truth test to perform before each
- * execution of `iteratee`. Invoked with ().
+ * @param {AsyncFunction} test - asynchronous truth test to perform before each
+ * execution of `iteratee`. Invoked with (callback).
  * @param {AsyncFunction} iteratee - An async function which is called each time
  * `test` fails. Invoked with (callback).
  * @param {Function} [callback] - A callback which is called after the test
  * function has passed and repeated execution of `iteratee` has stopped. `callback`
  * will be passed an error and any arguments passed to the final `iteratee`'s
  * callback. Invoked with (err, [results]);
+ * @returns {Promise} a promise, if a callback is not passed
+ *
+ * @example
+ * const results = []
+ * let finished = false
+ * async.until(function test(cb) {
+ *     cb(null, finished)
+ * }, function iter(next) {
+ *     fetchPage(url, (err, body) => {
+ *         if (err) return next(err)
+ *         results = results.concat(body.objects)
+ *         finished = !!body.next
+ *         next(err)
+ *     })
+ * }, function done (err) {
+ *     // all pages have been fetched
+ * })
  */
 function until(test, iteratee, callback) {
-    whilst(function() {
-        return !test.apply(this, arguments);
-    }, iteratee, callback);
+    const _test = wrapAsync(test);
+    return whilst$1((cb) => _test((err, truth) => cb (err, !truth)), iteratee, callback);
 }
 
 /**
@@ -5416,27 +5949,29 @@ function until(test, iteratee, callback) {
  *     callback(null, 'done');
  * }
  */
-var waterfall = function(tasks, callback) {
-    callback = once(callback || noop);
-    if (!isArray(tasks)) return callback(new Error('First argument to waterfall must be an array of functions'));
+function waterfall (tasks, callback) {
+    callback = once(callback);
+    if (!Array.isArray(tasks)) return callback(new Error('First argument to waterfall must be an array of functions'));
     if (!tasks.length) return callback();
     var taskIndex = 0;
 
     function nextTask(args) {
         var task = wrapAsync(tasks[taskIndex++]);
-        args.push(onlyOnce(next));
-        task.apply(null, args);
+        task(...args, onlyOnce(next));
     }
 
-    function next(err/*, ...args*/) {
+    function next(err, ...args) {
+        if (err === false) return
         if (err || taskIndex === tasks.length) {
-            return callback.apply(null, arguments);
+            return callback(err, ...args);
         }
-        nextTask(slice(arguments, 1));
+        nextTask(args);
     }
 
     nextTask([]);
-};
+}
+
+var waterfall$1 = awaitify(waterfall);
 
 /**
  * An "async function" in the context of Async is an asynchronous function with
@@ -5477,242 +6012,117 @@ var waterfall = function(tasks, callback) {
  * @static
  */
 
-/**
- * Async is a utility module which provides straight-forward, powerful functions
- * for working with asynchronous JavaScript. Although originally designed for
- * use with [Node.js](http://nodejs.org) and installable via
- * `npm install --save async`, it can also be used directly in the browser.
- * @module async
- * @see AsyncFunction
- */
-
-
-/**
- * A collection of `async` functions for manipulating collections, such as
- * arrays and objects.
- * @module Collections
- */
-
-/**
- * A collection of `async` functions for controlling the flow through a script.
- * @module ControlFlow
- */
-
-/**
- * A collection of `async` utility functions.
- * @module Utils
- */
-
 var index = {
-    apply: apply,
-    applyEach: applyEach,
-    applyEachSeries: applyEachSeries,
-    asyncify: asyncify,
-    auto: auto,
-    autoInject: autoInject,
-    cargo: cargo,
-    compose: compose,
-    concat: concat,
-    concatLimit: concatLimit,
-    concatSeries: concatSeries,
-    constant: constant,
-    detect: detect,
-    detectLimit: detectLimit,
-    detectSeries: detectSeries,
-    dir: dir,
-    doDuring: doDuring,
-    doUntil: doUntil,
-    doWhilst: doWhilst,
-    during: during,
-    each: eachLimit,
-    eachLimit: eachLimit$1,
-    eachOf: eachOf,
-    eachOfLimit: eachOfLimit,
-    eachOfSeries: eachOfSeries,
-    eachSeries: eachSeries,
-    ensureAsync: ensureAsync,
-    every: every,
-    everyLimit: everyLimit,
-    everySeries: everySeries,
-    filter: filter,
-    filterLimit: filterLimit,
-    filterSeries: filterSeries,
-    forever: forever,
-    groupBy: groupBy,
-    groupByLimit: groupByLimit,
-    groupBySeries: groupBySeries,
-    log: log,
-    map: map,
-    mapLimit: mapLimit,
-    mapSeries: mapSeries,
-    mapValues: mapValues,
-    mapValuesLimit: mapValuesLimit,
-    mapValuesSeries: mapValuesSeries,
-    memoize: memoize,
-    nextTick: nextTick,
-    parallel: parallelLimit,
-    parallelLimit: parallelLimit$1,
-    priorityQueue: priorityQueue,
+    apply,
+    applyEach: applyEach$1,
+    applyEachSeries,
+    asyncify,
+    auto,
+    autoInject,
+    cargo,
+    cargoQueue: cargo$1,
+    compose,
+    concat: concat$1,
+    concatLimit: concatLimit$1,
+    concatSeries: concatSeries$1,
+    constant,
+    detect: detect$1,
+    detectLimit: detectLimit$1,
+    detectSeries: detectSeries$1,
+    dir,
+    doUntil,
+    doWhilst: doWhilst$1,
+    each,
+    eachLimit: eachLimit$2,
+    eachOf: eachOf$1,
+    eachOfLimit: eachOfLimit$2,
+    eachOfSeries: eachOfSeries$1,
+    eachSeries: eachSeries$1,
+    ensureAsync,
+    every: every$1,
+    everyLimit: everyLimit$1,
+    everySeries: everySeries$1,
+    filter: filter$1,
+    filterLimit: filterLimit$1,
+    filterSeries: filterSeries$1,
+    forever: forever$1,
+    groupBy,
+    groupByLimit: groupByLimit$1,
+    groupBySeries,
+    log,
+    map: map$1,
+    mapLimit: mapLimit$1,
+    mapSeries: mapSeries$1,
+    mapValues,
+    mapValuesLimit: mapValuesLimit$1,
+    mapValuesSeries,
+    memoize,
+    nextTick,
+    parallel,
+    parallelLimit,
+    priorityQueue,
     queue: queue$1,
-    race: race,
-    reduce: reduce,
-    reduceRight: reduceRight,
-    reflect: reflect,
-    reflectAll: reflectAll,
-    reject: reject,
-    rejectLimit: rejectLimit,
-    rejectSeries: rejectSeries,
-    retry: retry,
-    retryable: retryable,
-    seq: seq,
-    series: series,
+    race: race$1,
+    reduce: reduce$1,
+    reduceRight,
+    reflect,
+    reflectAll,
+    reject: reject$2,
+    rejectLimit: rejectLimit$1,
+    rejectSeries: rejectSeries$1,
+    retry,
+    retryable,
+    seq,
+    series,
     setImmediate: setImmediate$1,
-    some: some,
-    someLimit: someLimit,
-    someSeries: someSeries,
-    sortBy: sortBy,
-    timeout: timeout,
-    times: times,
-    timesLimit: timeLimit,
-    timesSeries: timesSeries,
-    transform: transform,
-    tryEach: tryEach,
-    unmemoize: unmemoize,
-    until: until,
-    waterfall: waterfall,
-    whilst: whilst,
+    some: some$1,
+    someLimit: someLimit$1,
+    someSeries: someSeries$1,
+    sortBy: sortBy$1,
+    timeout,
+    times,
+    timesLimit,
+    timesSeries,
+    transform,
+    tryEach: tryEach$1,
+    unmemoize,
+    until,
+    waterfall: waterfall$1,
+    whilst: whilst$1,
 
     // aliases
-    all: every,
-    allLimit: everyLimit,
-    allSeries: everySeries,
-    any: some,
-    anyLimit: someLimit,
-    anySeries: someSeries,
-    find: detect,
-    findLimit: detectLimit,
-    findSeries: detectSeries,
-    forEach: eachLimit,
-    forEachSeries: eachSeries,
-    forEachLimit: eachLimit$1,
-    forEachOf: eachOf,
-    forEachOfSeries: eachOfSeries,
-    forEachOfLimit: eachOfLimit,
-    inject: reduce,
-    foldl: reduce,
+    all: every$1,
+    allLimit: everyLimit$1,
+    allSeries: everySeries$1,
+    any: some$1,
+    anyLimit: someLimit$1,
+    anySeries: someSeries$1,
+    find: detect$1,
+    findLimit: detectLimit$1,
+    findSeries: detectSeries$1,
+    flatMap: concat$1,
+    flatMapLimit: concatLimit$1,
+    flatMapSeries: concatSeries$1,
+    forEach: each,
+    forEachSeries: eachSeries$1,
+    forEachLimit: eachLimit$2,
+    forEachOf: eachOf$1,
+    forEachOfSeries: eachOfSeries$1,
+    forEachOfLimit: eachOfLimit$2,
+    inject: reduce$1,
+    foldl: reduce$1,
     foldr: reduceRight,
-    select: filter,
-    selectLimit: filterLimit,
-    selectSeries: filterSeries,
-    wrapSync: asyncify
+    select: filter$1,
+    selectLimit: filterLimit$1,
+    selectSeries: filterSeries$1,
+    wrapSync: asyncify,
+    during: whilst$1,
+    doDuring: doWhilst$1
 };
 
-exports['default'] = index;
-exports.apply = apply;
-exports.applyEach = applyEach;
-exports.applyEachSeries = applyEachSeries;
-exports.asyncify = asyncify;
-exports.auto = auto;
-exports.autoInject = autoInject;
-exports.cargo = cargo;
-exports.compose = compose;
-exports.concat = concat;
-exports.concatLimit = concatLimit;
-exports.concatSeries = concatSeries;
-exports.constant = constant;
-exports.detect = detect;
-exports.detectLimit = detectLimit;
-exports.detectSeries = detectSeries;
-exports.dir = dir;
-exports.doDuring = doDuring;
-exports.doUntil = doUntil;
-exports.doWhilst = doWhilst;
-exports.during = during;
-exports.each = eachLimit;
-exports.eachLimit = eachLimit$1;
-exports.eachOf = eachOf;
-exports.eachOfLimit = eachOfLimit;
-exports.eachOfSeries = eachOfSeries;
-exports.eachSeries = eachSeries;
-exports.ensureAsync = ensureAsync;
-exports.every = every;
-exports.everyLimit = everyLimit;
-exports.everySeries = everySeries;
-exports.filter = filter;
-exports.filterLimit = filterLimit;
-exports.filterSeries = filterSeries;
-exports.forever = forever;
-exports.groupBy = groupBy;
-exports.groupByLimit = groupByLimit;
-exports.groupBySeries = groupBySeries;
-exports.log = log;
-exports.map = map;
-exports.mapLimit = mapLimit;
-exports.mapSeries = mapSeries;
-exports.mapValues = mapValues;
-exports.mapValuesLimit = mapValuesLimit;
-exports.mapValuesSeries = mapValuesSeries;
-exports.memoize = memoize;
-exports.nextTick = nextTick;
-exports.parallel = parallelLimit;
-exports.parallelLimit = parallelLimit$1;
-exports.priorityQueue = priorityQueue;
-exports.queue = queue$1;
-exports.race = race;
-exports.reduce = reduce;
-exports.reduceRight = reduceRight;
-exports.reflect = reflect;
-exports.reflectAll = reflectAll;
-exports.reject = reject;
-exports.rejectLimit = rejectLimit;
-exports.rejectSeries = rejectSeries;
-exports.retry = retry;
-exports.retryable = retryable;
-exports.seq = seq;
-exports.series = series;
-exports.setImmediate = setImmediate$1;
-exports.some = some;
-exports.someLimit = someLimit;
-exports.someSeries = someSeries;
-exports.sortBy = sortBy;
-exports.timeout = timeout;
-exports.times = times;
-exports.timesLimit = timeLimit;
-exports.timesSeries = timesSeries;
-exports.transform = transform;
-exports.tryEach = tryEach;
-exports.unmemoize = unmemoize;
-exports.until = until;
-exports.waterfall = waterfall;
-exports.whilst = whilst;
-exports.all = every;
-exports.allLimit = everyLimit;
-exports.allSeries = everySeries;
-exports.any = some;
-exports.anyLimit = someLimit;
-exports.anySeries = someSeries;
-exports.find = detect;
-exports.findLimit = detectLimit;
-exports.findSeries = detectSeries;
-exports.forEach = eachLimit;
-exports.forEachSeries = eachSeries;
-exports.forEachLimit = eachLimit$1;
-exports.forEachOf = eachOf;
-exports.forEachOfSeries = eachOfSeries;
-exports.forEachOfLimit = eachOfLimit;
-exports.inject = reduce;
-exports.foldl = reduce;
-exports.foldr = reduceRight;
-exports.select = filter;
-exports.selectLimit = filterLimit;
-exports.selectSeries = filterSeries;
-exports.wrapSync = asyncify;
+/* harmony default export */ __webpack_exports__["default"] = (index);
 
-Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../timers-browserify/main.js */ "./node_modules/timers-browserify/main.js").setImmediate, __webpack_require__(/*! ./../../process/browser.js */ "./node_modules/process/browser.js"), __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
@@ -5720,19 +6130,17 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /*!************************************************!*\
   !*** ./node_modules/is-any-array/src/index.js ***!
   \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isAnyArray; });
 const toString = Object.prototype.toString;
 
 function isAnyArray(object) {
   return toString.call(object).endsWith('Array]');
 }
-
-module.exports = isAnyArray;
 
 
 /***/ }),
@@ -5749,7 +6157,7 @@ module.exports = isAnyArray;
  * <cam@campedersen.com>
  */
 
-var async = __webpack_require__(/*! async */ "./node_modules/async/dist/async.js");
+var async = __webpack_require__(/*! async */ "./node_modules/async/dist/async.mjs");
 
 /*
  * Return mutual elements in the input sets
@@ -5848,18 +6256,13 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! is-any-array */ "./node_modules/is-any-array/src/index.js");
-/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(is_any_array__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! is-any-array */ "./node_modules/ml-array-max/node_modules/is-any-array/src/index.js");
 
-
-/**
- * Computes the maximum of the given values
- * @param {Array<number>} input
- * @return {number}
- */
 
 function max(input) {
-  if (!is_any_array__WEBPACK_IMPORTED_MODULE_0___default()(input)) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  if (!Object(is_any_array__WEBPACK_IMPORTED_MODULE_0__["default"])(input)) {
     throw new TypeError('input must be an array');
   }
 
@@ -5867,9 +6270,22 @@ function max(input) {
     throw new TypeError('input must not be empty');
   }
 
-  var maxValue = input[0];
+  var _options$fromIndex = options.fromIndex,
+      fromIndex = _options$fromIndex === void 0 ? 0 : _options$fromIndex,
+      _options$toIndex = options.toIndex,
+      toIndex = _options$toIndex === void 0 ? input.length : _options$toIndex;
 
-  for (var i = 1; i < input.length; i++) {
+  if (fromIndex < 0 || fromIndex >= input.length || !Number.isInteger(fromIndex)) {
+    throw new Error('fromIndex must be a positive integer smaller than length');
+  }
+
+  if (toIndex <= fromIndex || toIndex > input.length || !Number.isInteger(toIndex)) {
+    throw new Error('toIndex must be an integer greater than fromIndex and at most equal to length');
+  }
+
+  var maxValue = input[fromIndex];
+
+  for (var i = fromIndex + 1; i < toIndex; i++) {
     if (input[i] > maxValue) maxValue = input[i];
   }
 
@@ -5877,6 +6293,25 @@ function max(input) {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (max);
+
+
+/***/ }),
+
+/***/ "./node_modules/ml-array-max/node_modules/is-any-array/src/index.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/ml-array-max/node_modules/is-any-array/src/index.js ***!
+  \**************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isAnyArray; });
+const toString = Object.prototype.toString;
+
+function isAnyArray(object) {
+  return toString.call(object).endsWith('Array]');
+}
 
 
 /***/ }),
@@ -5890,18 +6325,13 @@ function max(input) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! is-any-array */ "./node_modules/is-any-array/src/index.js");
-/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(is_any_array__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! is-any-array */ "./node_modules/ml-array-min/node_modules/is-any-array/src/index.js");
 
-
-/**
- * Computes the minimum of the given values
- * @param {Array<number>} input
- * @return {number}
- */
 
 function min(input) {
-  if (!is_any_array__WEBPACK_IMPORTED_MODULE_0___default()(input)) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  if (!Object(is_any_array__WEBPACK_IMPORTED_MODULE_0__["default"])(input)) {
     throw new TypeError('input must be an array');
   }
 
@@ -5909,9 +6339,22 @@ function min(input) {
     throw new TypeError('input must not be empty');
   }
 
-  var minValue = input[0];
+  var _options$fromIndex = options.fromIndex,
+      fromIndex = _options$fromIndex === void 0 ? 0 : _options$fromIndex,
+      _options$toIndex = options.toIndex,
+      toIndex = _options$toIndex === void 0 ? input.length : _options$toIndex;
 
-  for (var i = 1; i < input.length; i++) {
+  if (fromIndex < 0 || fromIndex >= input.length || !Number.isInteger(fromIndex)) {
+    throw new Error('fromIndex must be a positive integer smaller than length');
+  }
+
+  if (toIndex <= fromIndex || toIndex > input.length || !Number.isInteger(toIndex)) {
+    throw new Error('toIndex must be an integer greater than fromIndex and at most equal to length');
+  }
+
+  var minValue = input[fromIndex];
+
+  for (var i = fromIndex + 1; i < toIndex; i++) {
     if (input[i] < minValue) minValue = input[i];
   }
 
@@ -5919,6 +6362,25 @@ function min(input) {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (min);
+
+
+/***/ }),
+
+/***/ "./node_modules/ml-array-min/node_modules/is-any-array/src/index.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/ml-array-min/node_modules/is-any-array/src/index.js ***!
+  \**************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isAnyArray; });
+const toString = Object.prototype.toString;
+
+function isAnyArray(object) {
+  return toString.call(object).endsWith('Array]');
+}
 
 
 /***/ }),
@@ -5932,25 +6394,18 @@ function min(input) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! is-any-array */ "./node_modules/is-any-array/src/index.js");
-/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(is_any_array__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return rescale; });
+/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! is-any-array */ "./node_modules/ml-array-rescale/node_modules/is-any-array/src/index.js");
 /* harmony import */ var ml_array_max__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ml-array-max */ "./node_modules/ml-array-max/lib-es6/index.js");
 /* harmony import */ var ml_array_min__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ml-array-min */ "./node_modules/ml-array-min/lib-es6/index.js");
 
 
 
 
-/**
- *
- * @param {Array} input
- * @param {object} [options={}]
- * @param {Array} [options.output=[]] specify the output array, can be the input array for in place modification
- */
-
 function rescale(input) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  if (!is_any_array__WEBPACK_IMPORTED_MODULE_0___default()(input)) {
+  if (!Object(is_any_array__WEBPACK_IMPORTED_MODULE_0__["default"])(input)) {
     throw new TypeError('input must be an array');
   } else if (input.length === 0) {
     throw new TypeError('input must not be empty');
@@ -5959,7 +6414,7 @@ function rescale(input) {
   var output;
 
   if (options.output !== undefined) {
-    if (!is_any_array__WEBPACK_IMPORTED_MODULE_0___default()(options.output)) {
+    if (!Object(is_any_array__WEBPACK_IMPORTED_MODULE_0__["default"])(options.output)) {
       throw new TypeError('output option must be an array if specified');
     }
 
@@ -5993,7 +6448,26 @@ function rescale(input) {
   return output;
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (rescale);
+
+
+
+/***/ }),
+
+/***/ "./node_modules/ml-array-rescale/node_modules/is-any-array/src/index.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/ml-array-rescale/node_modules/is-any-array/src/index.js ***!
+  \******************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isAnyArray; });
+const toString = Object.prototype.toString;
+
+function isAnyArray(object) {
+  return toString.call(object).endsWith('Array]');
+}
 
 
 /***/ }),
@@ -6019,12 +6493,12 @@ __webpack_require__.r(__webpack_exports__);
 function errorCalculation(
   data,
   parameters,
-  parameterizedFunction
+  parameterizedFunction,
 ) {
-  var error = 0;
+  let error = 0;
   const func = parameterizedFunction(parameters);
 
-  for (var i = 0; i < data.x.length; i++) {
+  for (let i = 0; i < data.x.length; i++) {
     error += Math.abs(data.y[i] - func(data.x[i]));
   }
 
@@ -6044,8 +6518,11 @@ function errorCalculation(
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return levenbergMarquardt; });
-/* harmony import */ var _errorCalculation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./errorCalculation */ "./node_modules/ml-levenberg-marquardt/src/errorCalculation.js");
-/* harmony import */ var _step__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./step */ "./node_modules/ml-levenberg-marquardt/src/step.js");
+/* harmony import */ var is_any_array__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! is-any-array */ "./node_modules/is-any-array/src/index.js");
+/* harmony import */ var _errorCalculation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./errorCalculation */ "./node_modules/ml-levenberg-marquardt/src/errorCalculation.js");
+/* harmony import */ var _step__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./step */ "./node_modules/ml-levenberg-marquardt/src/step.js");
+
+
 
 
 
@@ -6066,7 +6543,7 @@ __webpack_require__.r(__webpack_exports__);
 function levenbergMarquardt(
   data,
   parameterizedFunction,
-  options = {}
+  options = {},
 ) {
   let {
     maxIterations = 100,
@@ -6075,7 +6552,7 @@ function levenbergMarquardt(
     errorTolerance = 10e-3,
     minValues,
     maxValues,
-    initialValues
+    initialValues,
   } = options;
 
   if (damping <= 0) {
@@ -6083,19 +6560,19 @@ function levenbergMarquardt(
   } else if (!data.x || !data.y) {
     throw new Error('The data parameter must have x and y elements');
   } else if (
-    !Array.isArray(data.x) ||
+    !Object(is_any_array__WEBPACK_IMPORTED_MODULE_0__["default"])(data.x) ||
     data.x.length < 2 ||
-    !Array.isArray(data.y) ||
+    !Object(is_any_array__WEBPACK_IMPORTED_MODULE_0__["default"])(data.y) ||
     data.y.length < 2
   ) {
     throw new Error(
-      'The data parameter elements must be an array with more than 2 points'
+      'The data parameter elements must be an array with more than 2 points',
     );
   } else if (data.x.length !== data.y.length) {
     throw new Error('The data parameter elements must have the same size');
   }
 
-  var parameters =
+  let parameters =
     initialValues || new Array(parameterizedFunction.length).fill(1);
   let parLen = parameters.length;
   maxValues = maxValues || new Array(parLen).fill(Number.MAX_SAFE_INTEGER);
@@ -6105,35 +6582,32 @@ function levenbergMarquardt(
     throw new Error('minValues and maxValues must be the same size');
   }
 
-  if (!Array.isArray(parameters)) {
+  if (!Object(is_any_array__WEBPACK_IMPORTED_MODULE_0__["default"])(parameters)) {
     throw new Error('initialValues must be an array');
   }
 
-  var error = Object(_errorCalculation__WEBPACK_IMPORTED_MODULE_0__["default"])(data, parameters, parameterizedFunction);
+  let error = Object(_errorCalculation__WEBPACK_IMPORTED_MODULE_1__["default"])(data, parameters, parameterizedFunction);
 
-  var converged = error <= errorTolerance;
+  let converged = error <= errorTolerance;
 
-  for (
-    var iteration = 0;
-    iteration < maxIterations && !converged;
-    iteration++
-  ) {
-    parameters = Object(_step__WEBPACK_IMPORTED_MODULE_1__["default"])(
+  let iteration;
+  for (iteration = 0; iteration < maxIterations && !converged; iteration++) {
+    parameters = Object(_step__WEBPACK_IMPORTED_MODULE_2__["default"])(
       data,
       parameters,
       damping,
       gradientDifference,
-      parameterizedFunction
+      parameterizedFunction,
     );
 
     for (let k = 0; k < parLen; k++) {
       parameters[k] = Math.min(
         Math.max(minValues[k], parameters[k]),
-        maxValues[k]
+        maxValues[k],
       );
     }
 
-    error = Object(_errorCalculation__WEBPACK_IMPORTED_MODULE_0__["default"])(data, parameters, parameterizedFunction);
+    error = Object(_errorCalculation__WEBPACK_IMPORTED_MODULE_1__["default"])(data, parameters, parameterizedFunction);
     if (isNaN(error)) break;
     converged = error <= errorTolerance;
   }
@@ -6141,7 +6615,7 @@ function levenbergMarquardt(
   return {
     parameterValues: parameters,
     parameterError: error,
-    iterations: iteration
+    iterations: iteration,
   };
 }
 
@@ -6176,20 +6650,20 @@ function gradientFunction(
   evaluatedData,
   params,
   gradientDifference,
-  paramFunction
+  paramFunction,
 ) {
   const n = params.length;
   const m = data.x.length;
 
-  var ans = new Array(n);
+  let ans = new Array(n);
 
-  for (var param = 0; param < n; param++) {
+  for (let param = 0; param < n; param++) {
     ans[param] = new Array(m);
-    var auxParams = params.concat();
+    let auxParams = params.slice();
     auxParams[param] += gradientDifference;
-    var funcParam = paramFunction(auxParams);
+    let funcParam = paramFunction(auxParams);
 
-    for (var point = 0; point < m; point++) {
+    for (let point = 0; point < m; point++) {
       ans[param][point] = evaluatedData[point] - funcParam(data.x[point]);
     }
   }
@@ -6206,9 +6680,9 @@ function gradientFunction(
 function matrixFunction(data, evaluatedData) {
   const m = data.x.length;
 
-  var ans = new Array(m);
+  let ans = new Array(m);
 
-  for (var point = 0; point < m; point++) {
+  for (let point = 0; point < m; point++) {
     ans[point] = [data.y[point] - evaluatedData[point]];
   }
 
@@ -6230,24 +6704,28 @@ function step(
   params,
   damping,
   gradientDifference,
-  parameterizedFunction
+  parameterizedFunction,
 ) {
-  var value = damping * gradientDifference * gradientDifference;
-  var identity = ml_matrix__WEBPACK_IMPORTED_MODULE_0__["Matrix"].eye(params.length, params.length, value);
+  let value = damping * gradientDifference * gradientDifference;
+  let identity = ml_matrix__WEBPACK_IMPORTED_MODULE_0__["Matrix"].eye(params.length, params.length, value);
 
   const func = parameterizedFunction(params);
-  var evaluatedData = data.x.map((e) => func(e));
 
-  var gradientFunc = gradientFunction(
+  let evaluatedData = new Float64Array(data.x.length);
+  for (let i = 0; i < data.x.length; i++) {
+    evaluatedData[i] = func(data.x[i]);
+  }
+
+  let gradientFunc = gradientFunction(
     data,
     evaluatedData,
     params,
     gradientDifference,
-    parameterizedFunction
+    parameterizedFunction,
   );
-  var matrixFunc = matrixFunction(data, evaluatedData);
-  var inverseMatrix = Object(ml_matrix__WEBPACK_IMPORTED_MODULE_0__["inverse"])(
-    identity.add(gradientFunc.mmul(gradientFunc.transpose()))
+  let matrixFunc = matrixFunction(data, evaluatedData);
+  let inverseMatrix = Object(ml_matrix__WEBPACK_IMPORTED_MODULE_0__["inverse"])(
+    identity.add(gradientFunc.mmul(gradientFunc.transpose())),
   );
 
   params = new ml_matrix__WEBPACK_IMPORTED_MODULE_0__["Matrix"]([params]);
@@ -6256,7 +6734,7 @@ function step(
       .mmul(gradientFunc)
       .mmul(matrixFunc)
       .mul(gradientDifference)
-      .transpose()
+      .transpose(),
   );
 
   return params.to1DArray();
@@ -6265,1953 +6743,116 @@ function step(
 
 /***/ }),
 
-/***/ "./node_modules/ml-matrix/src/abstractMatrix.js":
-/*!******************************************************!*\
-  !*** ./node_modules/ml-matrix/src/abstractMatrix.js ***!
-  \******************************************************/
-/*! exports provided: default */
+/***/ "./node_modules/ml-matrix/src/correlation.js":
+/*!***************************************************!*\
+  !*** ./node_modules/ml-matrix/src/correlation.js ***!
+  \***************************************************/
+/*! exports provided: correlation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractMatrix; });
-/* harmony import */ var ml_array_rescale__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ml-array-rescale */ "./node_modules/ml-array-rescale/lib-es6/index.js");
-/* harmony import */ var _dc_lu__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./dc/lu */ "./node_modules/ml-matrix/src/dc/lu.js");
-/* harmony import */ var _dc_svd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dc/svd */ "./node_modules/ml-matrix/src/dc/svd.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/util.js");
-/* harmony import */ var _views_transpose__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./views/transpose */ "./node_modules/ml-matrix/src/views/transpose.js");
-/* harmony import */ var _views_row__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./views/row */ "./node_modules/ml-matrix/src/views/row.js");
-/* harmony import */ var _views_sub__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./views/sub */ "./node_modules/ml-matrix/src/views/sub.js");
-/* harmony import */ var _views_selection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./views/selection */ "./node_modules/ml-matrix/src/views/selection.js");
-/* harmony import */ var _views_rowSelection__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./views/rowSelection */ "./node_modules/ml-matrix/src/views/rowSelection.js");
-/* harmony import */ var _views_columnSelection__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./views/columnSelection */ "./node_modules/ml-matrix/src/views/columnSelection.js");
-/* harmony import */ var _views_column__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./views/column */ "./node_modules/ml-matrix/src/views/column.js");
-/* harmony import */ var _views_flipRow__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./views/flipRow */ "./node_modules/ml-matrix/src/views/flipRow.js");
-/* harmony import */ var _views_flipColumn__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./views/flipColumn */ "./node_modules/ml-matrix/src/views/flipColumn.js");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function AbstractMatrix(superCtor) {
-  if (superCtor === undefined) superCtor = Object;
-
-  /**
-   * Real matrix
-   * @class Matrix
-   * @param {number|Array|Matrix} nRows - Number of rows of the new matrix,
-   * 2D array containing the data or Matrix instance to clone
-   * @param {number} [nColumns] - Number of columns of the new matrix
-   */
-  class Matrix extends superCtor {
-    static get [Symbol.species]() {
-      return this;
-    }
-
-    /**
-     * Constructs a Matrix with the chosen dimensions from a 1D array
-     * @param {number} newRows - Number of rows
-     * @param {number} newColumns - Number of columns
-     * @param {Array} newData - A 1D array containing data for the matrix
-     * @return {Matrix} - The new matrix
-     */
-    static from1DArray(newRows, newColumns, newData) {
-      var length = newRows * newColumns;
-      if (length !== newData.length) {
-        throw new RangeError('Data length does not match given dimensions');
-      }
-      var newMatrix = new this(newRows, newColumns);
-      for (var row = 0; row < newRows; row++) {
-        for (var column = 0; column < newColumns; column++) {
-          newMatrix.set(row, column, newData[row * newColumns + column]);
-        }
-      }
-      return newMatrix;
-    }
-
-    /**
-         * Creates a row vector, a matrix with only one row.
-         * @param {Array} newData - A 1D array containing data for the vector
-         * @return {Matrix} - The new matrix
-         */
-    static rowVector(newData) {
-      var vector = new this(1, newData.length);
-      for (var i = 0; i < newData.length; i++) {
-        vector.set(0, i, newData[i]);
-      }
-      return vector;
-    }
-
-    /**
-         * Creates a column vector, a matrix with only one column.
-         * @param {Array} newData - A 1D array containing data for the vector
-         * @return {Matrix} - The new matrix
-         */
-    static columnVector(newData) {
-      var vector = new this(newData.length, 1);
-      for (var i = 0; i < newData.length; i++) {
-        vector.set(i, 0, newData[i]);
-      }
-      return vector;
-    }
-
-    /**
-         * Creates an empty matrix with the given dimensions. Values will be undefined. Same as using new Matrix(rows, columns).
-         * @param {number} rows - Number of rows
-         * @param {number} columns - Number of columns
-         * @return {Matrix} - The new matrix
-         */
-    static empty(rows, columns) {
-      return new this(rows, columns);
-    }
-
-    /**
-         * Creates a matrix with the given dimensions. Values will be set to zero.
-         * @param {number} rows - Number of rows
-         * @param {number} columns - Number of columns
-         * @return {Matrix} - The new matrix
-         */
-    static zeros(rows, columns) {
-      return this.empty(rows, columns).fill(0);
-    }
-
-    /**
-         * Creates a matrix with the given dimensions. Values will be set to one.
-         * @param {number} rows - Number of rows
-         * @param {number} columns - Number of columns
-         * @return {Matrix} - The new matrix
-         */
-    static ones(rows, columns) {
-      return this.empty(rows, columns).fill(1);
-    }
-
-    /**
-         * Creates a matrix with the given dimensions. Values will be randomly set.
-         * @param {number} rows - Number of rows
-         * @param {number} columns - Number of columns
-         * @param {function} [rng=Math.random] - Random number generator
-         * @return {Matrix} The new matrix
-         */
-    static rand(rows, columns, rng) {
-      if (rng === undefined) rng = Math.random;
-      var matrix = this.empty(rows, columns);
-      for (var i = 0; i < rows; i++) {
-        for (var j = 0; j < columns; j++) {
-          matrix.set(i, j, rng());
-        }
-      }
-      return matrix;
-    }
-
-    /**
-         * Creates a matrix with the given dimensions. Values will be random integers.
-         * @param {number} rows - Number of rows
-         * @param {number} columns - Number of columns
-         * @param {number} [maxValue=1000] - Maximum value
-         * @param {function} [rng=Math.random] - Random number generator
-         * @return {Matrix} The new matrix
-         */
-    static randInt(rows, columns, maxValue, rng) {
-      if (maxValue === undefined) maxValue = 1000;
-      if (rng === undefined) rng = Math.random;
-      var matrix = this.empty(rows, columns);
-      for (var i = 0; i < rows; i++) {
-        for (var j = 0; j < columns; j++) {
-          var value = Math.floor(rng() * maxValue);
-          matrix.set(i, j, value);
-        }
-      }
-      return matrix;
-    }
-
-    /**
-         * Creates an identity matrix with the given dimension. Values of the diagonal will be 1 and others will be 0.
-         * @param {number} rows - Number of rows
-         * @param {number} [columns=rows] - Number of columns
-         * @param {number} [value=1] - Value to fill the diagonal with
-         * @return {Matrix} - The new identity matrix
-         */
-    static eye(rows, columns, value) {
-      if (columns === undefined) columns = rows;
-      if (value === undefined) value = 1;
-      var min = Math.min(rows, columns);
-      var matrix = this.zeros(rows, columns);
-      for (var i = 0; i < min; i++) {
-        matrix.set(i, i, value);
-      }
-      return matrix;
-    }
-
-    /**
-         * Creates a diagonal matrix based on the given array.
-         * @param {Array} data - Array containing the data for the diagonal
-         * @param {number} [rows] - Number of rows (Default: data.length)
-         * @param {number} [columns] - Number of columns (Default: rows)
-         * @return {Matrix} - The new diagonal matrix
-         */
-    static diag(data, rows, columns) {
-      var l = data.length;
-      if (rows === undefined) rows = l;
-      if (columns === undefined) columns = rows;
-      var min = Math.min(l, rows, columns);
-      var matrix = this.zeros(rows, columns);
-      for (var i = 0; i < min; i++) {
-        matrix.set(i, i, data[i]);
-      }
-      return matrix;
-    }
-
-    /**
-         * Returns a matrix whose elements are the minimum between matrix1 and matrix2
-         * @param {Matrix} matrix1
-         * @param {Matrix} matrix2
-         * @return {Matrix}
-         */
-    static min(matrix1, matrix2) {
-      matrix1 = this.checkMatrix(matrix1);
-      matrix2 = this.checkMatrix(matrix2);
-      var rows = matrix1.rows;
-      var columns = matrix1.columns;
-      var result = new this(rows, columns);
-      for (var i = 0; i < rows; i++) {
-        for (var j = 0; j < columns; j++) {
-          result.set(i, j, Math.min(matrix1.get(i, j), matrix2.get(i, j)));
-        }
-      }
-      return result;
-    }
-
-    /**
-         * Returns a matrix whose elements are the maximum between matrix1 and matrix2
-         * @param {Matrix} matrix1
-         * @param {Matrix} matrix2
-         * @return {Matrix}
-         */
-    static max(matrix1, matrix2) {
-      matrix1 = this.checkMatrix(matrix1);
-      matrix2 = this.checkMatrix(matrix2);
-      var rows = matrix1.rows;
-      var columns = matrix1.columns;
-      var result = new this(rows, columns);
-      for (var i = 0; i < rows; i++) {
-        for (var j = 0; j < columns; j++) {
-          result.set(i, j, Math.max(matrix1.get(i, j), matrix2.get(i, j)));
-        }
-      }
-      return result;
-    }
-
-    /**
-         * Check that the provided value is a Matrix and tries to instantiate one if not
-         * @param {*} value - The value to check
-         * @return {Matrix}
-         */
-    static checkMatrix(value) {
-      return Matrix.isMatrix(value) ? value : new this(value);
-    }
-
-    /**
-         * Returns true if the argument is a Matrix, false otherwise
-         * @param {*} value - The value to check
-         * @return {boolean}
-         */
-    static isMatrix(value) {
-      return (value != null) && (value.klass === 'Matrix');
-    }
-
-    /**
-         * @prop {number} size - The number of elements in the matrix.
-         */
-    get size() {
-      return this.rows * this.columns;
-    }
-
-    /**
-         * Applies a callback for each element of the matrix. The function is called in the matrix (this) context.
-         * @param {function} callback - Function that will be called with two parameters : i (row) and j (column)
-         * @return {Matrix} this
-         */
-    apply(callback) {
-      if (typeof callback !== 'function') {
-        throw new TypeError('callback must be a function');
-      }
-      var ii = this.rows;
-      var jj = this.columns;
-      for (var i = 0; i < ii; i++) {
-        for (var j = 0; j < jj; j++) {
-          callback.call(this, i, j);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Returns a new 1D array filled row by row with the matrix values
-         * @return {Array}
-         */
-    to1DArray() {
-      var array = new Array(this.size);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          array[i * this.columns + j] = this.get(i, j);
-        }
-      }
-      return array;
-    }
-
-    /**
-         * Returns a 2D array containing a copy of the data
-         * @return {Array}
-         */
-    to2DArray() {
-      var copy = new Array(this.rows);
-      for (var i = 0; i < this.rows; i++) {
-        copy[i] = new Array(this.columns);
-        for (var j = 0; j < this.columns; j++) {
-          copy[i][j] = this.get(i, j);
-        }
-      }
-      return copy;
-    }
-
-    /**
-         * @return {boolean} true if the matrix has one row
-         */
-    isRowVector() {
-      return this.rows === 1;
-    }
-
-    /**
-         * @return {boolean} true if the matrix has one column
-         */
-    isColumnVector() {
-      return this.columns === 1;
-    }
-
-    /**
-         * @return {boolean} true if the matrix has one row or one column
-         */
-    isVector() {
-      return (this.rows === 1) || (this.columns === 1);
-    }
-
-    /**
-         * @return {boolean} true if the matrix has the same number of rows and columns
-         */
-    isSquare() {
-      return this.rows === this.columns;
-    }
-
-    /**
-         * @return {boolean} true if the matrix is square and has the same values on both sides of the diagonal
-         */
-    isSymmetric() {
-      if (this.isSquare()) {
-        for (var i = 0; i < this.rows; i++) {
-          for (var j = 0; j <= i; j++) {
-            if (this.get(i, j) !== this.get(j, i)) {
-              return false;
-            }
-          }
-        }
-        return true;
-      }
-      return false;
-    }
-
-    /**
-          * @return true if the matrix is in echelon form
-          */
-    isEchelonForm() {
-      let i = 0;
-      let j = 0;
-      let previousColumn = -1;
-      let isEchelonForm = true;
-      let checked = false;
-      while ((i < this.rows) && (isEchelonForm)) {
-        j = 0;
-        checked = false;
-        while ((j < this.columns) && (checked === false)) {
-          if (this.get(i, j) === 0) {
-            j++;
-          } else if ((this.get(i, j) === 1) && (j > previousColumn)) {
-            checked = true;
-            previousColumn = j;
-          } else {
-            isEchelonForm = false;
-            checked = true;
-          }
-        }
-        i++;
-      }
-      return isEchelonForm;
-    }
-
-    /**
-             * @return true if the matrix is in reduced echelon form
-             */
-    isReducedEchelonForm() {
-      let i = 0;
-      let j = 0;
-      let previousColumn = -1;
-      let isReducedEchelonForm = true;
-      let checked = false;
-      while ((i < this.rows) && (isReducedEchelonForm)) {
-        j = 0;
-        checked = false;
-        while ((j < this.columns) && (checked === false)) {
-          if (this.get(i, j) === 0) {
-            j++;
-          } else if ((this.get(i, j) === 1) && (j > previousColumn)) {
-            checked = true;
-            previousColumn = j;
-          } else {
-            isReducedEchelonForm = false;
-            checked = true;
-          }
-        }
-        for (let k = j + 1; k < this.rows; k++) {
-          if (this.get(i, k) !== 0) {
-            isReducedEchelonForm = false;
-          }
-        }
-        i++;
-      }
-      return isReducedEchelonForm;
-    }
-
-    /**
-         * Sets a given element of the matrix. mat.set(3,4,1) is equivalent to mat[3][4]=1
-         * @abstract
-         * @param {number} rowIndex - Index of the row
-         * @param {number} columnIndex - Index of the column
-         * @param {number} value - The new value for the element
-         * @return {Matrix} this
-         */
-    set(rowIndex, columnIndex, value) { // eslint-disable-line no-unused-vars
-      throw new Error('set method is unimplemented');
-    }
-
-    /**
-         * Returns the given element of the matrix. mat.get(3,4) is equivalent to matrix[3][4]
-         * @abstract
-         * @param {number} rowIndex - Index of the row
-         * @param {number} columnIndex - Index of the column
-         * @return {number}
-         */
-    get(rowIndex, columnIndex) { // eslint-disable-line no-unused-vars
-      throw new Error('get method is unimplemented');
-    }
-
-    /**
-         * Creates a new matrix that is a repetition of the current matrix. New matrix has rowRep times the number of
-         * rows of the matrix, and colRep times the number of columns of the matrix
-         * @param {number} rowRep - Number of times the rows should be repeated
-         * @param {number} colRep - Number of times the columns should be re
-         * @return {Matrix}
-         * @example
-         * var matrix = new Matrix([[1,2]]);
-         * matrix.repeat(2); // [[1,2],[1,2]]
-         */
-    repeat(rowRep, colRep) {
-      rowRep = rowRep || 1;
-      colRep = colRep || 1;
-      var matrix = new this.constructor[Symbol.species](this.rows * rowRep, this.columns * colRep);
-      for (var i = 0; i < rowRep; i++) {
-        for (var j = 0; j < colRep; j++) {
-          matrix.setSubMatrix(this, this.rows * i, this.columns * j);
-        }
-      }
-      return matrix;
-    }
-
-    /**
-         * Fills the matrix with a given value. All elements will be set to this value.
-         * @param {number} value - New value
-         * @return {Matrix} this
-         */
-    fill(value) {
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          this.set(i, j, value);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Negates the matrix. All elements will be multiplied by (-1)
-         * @return {Matrix} this
-         */
-    neg() {
-      return this.mulS(-1);
-    }
-
-    /**
-         * Returns a new array from the given row index
-         * @param {number} index - Row index
-         * @return {Array}
-         */
-    getRow(index) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, index);
-      var row = new Array(this.columns);
-      for (var i = 0; i < this.columns; i++) {
-        row[i] = this.get(index, i);
-      }
-      return row;
-    }
-
-    /**
-         * Returns a new row vector from the given row index
-         * @param {number} index - Row index
-         * @return {Matrix}
-         */
-    getRowVector(index) {
-      return this.constructor.rowVector(this.getRow(index));
-    }
-
-    /**
-         * Sets a row at the given index
-         * @param {number} index - Row index
-         * @param {Array|Matrix} array - Array or vector
-         * @return {Matrix} this
-         */
-    setRow(index, array) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, index);
-      array = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowVector"])(this, array);
-      for (var i = 0; i < this.columns; i++) {
-        this.set(index, i, array[i]);
-      }
-      return this;
-    }
-
-    /**
-         * Swaps two rows
-         * @param {number} row1 - First row index
-         * @param {number} row2 - Second row index
-         * @return {Matrix} this
-         */
-    swapRows(row1, row2) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, row1);
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, row2);
-      for (var i = 0; i < this.columns; i++) {
-        var temp = this.get(row1, i);
-        this.set(row1, i, this.get(row2, i));
-        this.set(row2, i, temp);
-      }
-      return this;
-    }
-
-    /**
-         * Returns a new array from the given column index
-         * @param {number} index - Column index
-         * @return {Array}
-         */
-    getColumn(index) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, index);
-      var column = new Array(this.rows);
-      for (var i = 0; i < this.rows; i++) {
-        column[i] = this.get(i, index);
-      }
-      return column;
-    }
-
-    /**
-         * Returns a new column vector from the given column index
-         * @param {number} index - Column index
-         * @return {Matrix}
-         */
-    getColumnVector(index) {
-      return this.constructor.columnVector(this.getColumn(index));
-    }
-
-    /**
-         * Sets a column at the given index
-         * @param {number} index - Column index
-         * @param {Array|Matrix} array - Array or vector
-         * @return {Matrix} this
-         */
-    setColumn(index, array) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, index);
-      array = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnVector"])(this, array);
-      for (var i = 0; i < this.rows; i++) {
-        this.set(i, index, array[i]);
-      }
-      return this;
-    }
-
-    /**
-         * Swaps two columns
-         * @param {number} column1 - First column index
-         * @param {number} column2 - Second column index
-         * @return {Matrix} this
-         */
-    swapColumns(column1, column2) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, column1);
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, column2);
-      for (var i = 0; i < this.rows; i++) {
-        var temp = this.get(i, column1);
-        this.set(i, column1, this.get(i, column2));
-        this.set(i, column2, temp);
-      }
-      return this;
-    }
-
-    /**
-         * Adds the values of a vector to each row
-         * @param {Array|Matrix} vector - Array or vector
-         * @return {Matrix} this
-         */
-    addRowVector(vector) {
-      vector = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowVector"])(this, vector);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          this.set(i, j, this.get(i, j) + vector[j]);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Subtracts the values of a vector from each row
-         * @param {Array|Matrix} vector - Array or vector
-         * @return {Matrix} this
-         */
-    subRowVector(vector) {
-      vector = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowVector"])(this, vector);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          this.set(i, j, this.get(i, j) - vector[j]);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Multiplies the values of a vector with each row
-         * @param {Array|Matrix} vector - Array or vector
-         * @return {Matrix} this
-         */
-    mulRowVector(vector) {
-      vector = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowVector"])(this, vector);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          this.set(i, j, this.get(i, j) * vector[j]);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Divides the values of each row by those of a vector
-         * @param {Array|Matrix} vector - Array or vector
-         * @return {Matrix} this
-         */
-    divRowVector(vector) {
-      vector = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowVector"])(this, vector);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          this.set(i, j, this.get(i, j) / vector[j]);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Adds the values of a vector to each column
-         * @param {Array|Matrix} vector - Array or vector
-         * @return {Matrix} this
-         */
-    addColumnVector(vector) {
-      vector = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnVector"])(this, vector);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          this.set(i, j, this.get(i, j) + vector[i]);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Subtracts the values of a vector from each column
-         * @param {Array|Matrix} vector - Array or vector
-         * @return {Matrix} this
-         */
-    subColumnVector(vector) {
-      vector = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnVector"])(this, vector);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          this.set(i, j, this.get(i, j) - vector[i]);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Multiplies the values of a vector with each column
-         * @param {Array|Matrix} vector - Array or vector
-         * @return {Matrix} this
-         */
-    mulColumnVector(vector) {
-      vector = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnVector"])(this, vector);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          this.set(i, j, this.get(i, j) * vector[i]);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Divides the values of each column by those of a vector
-         * @param {Array|Matrix} vector - Array or vector
-         * @return {Matrix} this
-         */
-    divColumnVector(vector) {
-      vector = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnVector"])(this, vector);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          this.set(i, j, this.get(i, j) / vector[i]);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Multiplies the values of a row with a scalar
-         * @param {number} index - Row index
-         * @param {number} value
-         * @return {Matrix} this
-         */
-    mulRow(index, value) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, index);
-      for (var i = 0; i < this.columns; i++) {
-        this.set(index, i, this.get(index, i) * value);
-      }
-      return this;
-    }
-
-    /**
-         * Multiplies the values of a column with a scalar
-         * @param {number} index - Column index
-         * @param {number} value
-         * @return {Matrix} this
-         */
-    mulColumn(index, value) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, index);
-      for (var i = 0; i < this.rows; i++) {
-        this.set(i, index, this.get(i, index) * value);
-      }
-      return this;
-    }
-
-    /**
-         * Returns the maximum value of the matrix
-         * @return {number}
-         */
-    max() {
-      var v = this.get(0, 0);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          if (this.get(i, j) > v) {
-            v = this.get(i, j);
-          }
-        }
-      }
-      return v;
-    }
-
-    /**
-         * Returns the index of the maximum value
-         * @return {Array}
-         */
-    maxIndex() {
-      var v = this.get(0, 0);
-      var idx = [0, 0];
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          if (this.get(i, j) > v) {
-            v = this.get(i, j);
-            idx[0] = i;
-            idx[1] = j;
-          }
-        }
-      }
-      return idx;
-    }
-
-    /**
-         * Returns the minimum value of the matrix
-         * @return {number}
-         */
-    min() {
-      var v = this.get(0, 0);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          if (this.get(i, j) < v) {
-            v = this.get(i, j);
-          }
-        }
-      }
-      return v;
-    }
-
-    /**
-         * Returns the index of the minimum value
-         * @return {Array}
-         */
-    minIndex() {
-      var v = this.get(0, 0);
-      var idx = [0, 0];
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          if (this.get(i, j) < v) {
-            v = this.get(i, j);
-            idx[0] = i;
-            idx[1] = j;
-          }
-        }
-      }
-      return idx;
-    }
-
-    /**
-         * Returns the maximum value of one row
-         * @param {number} row - Row index
-         * @return {number}
-         */
-    maxRow(row) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, row);
-      var v = this.get(row, 0);
-      for (var i = 1; i < this.columns; i++) {
-        if (this.get(row, i) > v) {
-          v = this.get(row, i);
-        }
-      }
-      return v;
-    }
-
-    /**
-         * Returns the index of the maximum value of one row
-         * @param {number} row - Row index
-         * @return {Array}
-         */
-    maxRowIndex(row) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, row);
-      var v = this.get(row, 0);
-      var idx = [row, 0];
-      for (var i = 1; i < this.columns; i++) {
-        if (this.get(row, i) > v) {
-          v = this.get(row, i);
-          idx[1] = i;
-        }
-      }
-      return idx;
-    }
-
-    /**
-         * Returns the minimum value of one row
-         * @param {number} row - Row index
-         * @return {number}
-         */
-    minRow(row) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, row);
-      var v = this.get(row, 0);
-      for (var i = 1; i < this.columns; i++) {
-        if (this.get(row, i) < v) {
-          v = this.get(row, i);
-        }
-      }
-      return v;
-    }
-
-    /**
-         * Returns the index of the maximum value of one row
-         * @param {number} row - Row index
-         * @return {Array}
-         */
-    minRowIndex(row) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, row);
-      var v = this.get(row, 0);
-      var idx = [row, 0];
-      for (var i = 1; i < this.columns; i++) {
-        if (this.get(row, i) < v) {
-          v = this.get(row, i);
-          idx[1] = i;
-        }
-      }
-      return idx;
-    }
-
-    /**
-         * Returns the maximum value of one column
-         * @param {number} column - Column index
-         * @return {number}
-         */
-    maxColumn(column) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, column);
-      var v = this.get(0, column);
-      for (var i = 1; i < this.rows; i++) {
-        if (this.get(i, column) > v) {
-          v = this.get(i, column);
-        }
-      }
-      return v;
-    }
-
-    /**
-         * Returns the index of the maximum value of one column
-         * @param {number} column - Column index
-         * @return {Array}
-         */
-    maxColumnIndex(column) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, column);
-      var v = this.get(0, column);
-      var idx = [0, column];
-      for (var i = 1; i < this.rows; i++) {
-        if (this.get(i, column) > v) {
-          v = this.get(i, column);
-          idx[0] = i;
-        }
-      }
-      return idx;
-    }
-
-    /**
-         * Returns the minimum value of one column
-         * @param {number} column - Column index
-         * @return {number}
-         */
-    minColumn(column) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, column);
-      var v = this.get(0, column);
-      for (var i = 1; i < this.rows; i++) {
-        if (this.get(i, column) < v) {
-          v = this.get(i, column);
-        }
-      }
-      return v;
-    }
-
-    /**
-         * Returns the index of the minimum value of one column
-         * @param {number} column - Column index
-         * @return {Array}
-         */
-    minColumnIndex(column) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, column);
-      var v = this.get(0, column);
-      var idx = [0, column];
-      for (var i = 1; i < this.rows; i++) {
-        if (this.get(i, column) < v) {
-          v = this.get(i, column);
-          idx[0] = i;
-        }
-      }
-      return idx;
-    }
-
-    /**
-         * Returns an array containing the diagonal values of the matrix
-         * @return {Array}
-         */
-    diag() {
-      var min = Math.min(this.rows, this.columns);
-      var diag = new Array(min);
-      for (var i = 0; i < min; i++) {
-        diag[i] = this.get(i, i);
-      }
-      return diag;
-    }
-
-    /**
-         * Returns the sum by the argument given, if no argument given,
-         * it returns the sum of all elements of the matrix.
-         * @param {string} by - sum by 'row' or 'column'.
-         * @return {Matrix|number}
-         */
-    sum(by) {
-      switch (by) {
-        case 'row':
-          return Object(_util__WEBPACK_IMPORTED_MODULE_3__["sumByRow"])(this);
-        case 'column':
-          return Object(_util__WEBPACK_IMPORTED_MODULE_3__["sumByColumn"])(this);
-        default:
-          return Object(_util__WEBPACK_IMPORTED_MODULE_3__["sumAll"])(this);
-      }
-    }
-
-    /**
-         * Returns the mean of all elements of the matrix
-         * @return {number}
-         */
-    mean() {
-      return this.sum() / this.size;
-    }
-
-    /**
-         * Returns the product of all elements of the matrix
-         * @return {number}
-         */
-    prod() {
-      var prod = 1;
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          prod *= this.get(i, j);
-        }
-      }
-      return prod;
-    }
-
-    /**
-         * Returns the norm of a matrix.
-         * @param {string} type - "frobenius" (default) or "max" return resp. the Frobenius norm and the max norm.
-         * @return {number}
-         */
-    norm(type = 'frobenius') {
-      var result = 0;
-      if (type === 'max') {
-        return this.max();
-      } else if (type === 'frobenius') {
-        for (var i = 0; i < this.rows; i++) {
-          for (var j = 0; j < this.columns; j++) {
-            result = result + this.get(i, j) * this.get(i, j);
-          }
-        }
-        return Math.sqrt(result);
-      } else {
-        throw new RangeError(`unknown norm type: ${type}`);
-      }
-    }
-
-    /**
-         * Computes the cumulative sum of the matrix elements (in place, row by row)
-         * @return {Matrix} this
-         */
-    cumulativeSum() {
-      var sum = 0;
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          sum += this.get(i, j);
-          this.set(i, j, sum);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Computes the dot (scalar) product between the matrix and another
-         * @param {Matrix} vector2 vector
-         * @return {number}
-         */
-    dot(vector2) {
-      if (Matrix.isMatrix(vector2)) vector2 = vector2.to1DArray();
-      var vector1 = this.to1DArray();
-      if (vector1.length !== vector2.length) {
-        throw new RangeError('vectors do not have the same size');
-      }
-      var dot = 0;
-      for (var i = 0; i < vector1.length; i++) {
-        dot += vector1[i] * vector2[i];
-      }
-      return dot;
-    }
-
-    /**
-         * Returns the matrix product between this and other
-         * @param {Matrix} other
-         * @return {Matrix}
-         */
-    mmul(other) {
-      other = this.constructor.checkMatrix(other);
-      if (this.columns !== other.rows) {
-        // eslint-disable-next-line no-console
-        console.warn('Number of columns of left matrix are not equal to number of rows of right matrix.');
-      }
-
-      var m = this.rows;
-      var n = this.columns;
-      var p = other.columns;
-
-      var result = new this.constructor[Symbol.species](m, p);
-
-      var Bcolj = new Array(n);
-      for (var j = 0; j < p; j++) {
-        for (var k = 0; k < n; k++) {
-          Bcolj[k] = other.get(k, j);
-        }
-
-        for (var i = 0; i < m; i++) {
-          var s = 0;
-          for (k = 0; k < n; k++) {
-            s += this.get(i, k) * Bcolj[k];
-          }
-
-          result.set(i, j, s);
-        }
-      }
-      return result;
-    }
-
-    strassen2x2(other) {
-      var result = new this.constructor[Symbol.species](2, 2);
-      const a11 = this.get(0, 0);
-      const b11 = other.get(0, 0);
-      const a12 = this.get(0, 1);
-      const b12 = other.get(0, 1);
-      const a21 = this.get(1, 0);
-      const b21 = other.get(1, 0);
-      const a22 = this.get(1, 1);
-      const b22 = other.get(1, 1);
-
-      // Compute intermediate values.
-      const m1 = (a11 + a22) * (b11 + b22);
-      const m2 = (a21 + a22) * b11;
-      const m3 = a11 * (b12 - b22);
-      const m4 = a22 * (b21 - b11);
-      const m5 = (a11 + a12) * b22;
-      const m6 = (a21 - a11) * (b11 + b12);
-      const m7 = (a12 - a22) * (b21 + b22);
-
-      // Combine intermediate values into the output.
-      const c00 = m1 + m4 - m5 + m7;
-      const c01 = m3 + m5;
-      const c10 = m2 + m4;
-      const c11 = m1 - m2 + m3 + m6;
-
-      result.set(0, 0, c00);
-      result.set(0, 1, c01);
-      result.set(1, 0, c10);
-      result.set(1, 1, c11);
-      return result;
-    }
-
-    strassen3x3(other) {
-      var result = new this.constructor[Symbol.species](3, 3);
-
-      const a00 = this.get(0, 0);
-      const a01 = this.get(0, 1);
-      const a02 = this.get(0, 2);
-      const a10 = this.get(1, 0);
-      const a11 = this.get(1, 1);
-      const a12 = this.get(1, 2);
-      const a20 = this.get(2, 0);
-      const a21 = this.get(2, 1);
-      const a22 = this.get(2, 2);
-
-      const b00 = other.get(0, 0);
-      const b01 = other.get(0, 1);
-      const b02 = other.get(0, 2);
-      const b10 = other.get(1, 0);
-      const b11 = other.get(1, 1);
-      const b12 = other.get(1, 2);
-      const b20 = other.get(2, 0);
-      const b21 = other.get(2, 1);
-      const b22 = other.get(2, 2);
-
-      const m1 = (a00 + a01 + a02 - a10 - a11 - a21 - a22) * b11;
-      const m2 = (a00 - a10) * (-b01 + b11);
-      const m3 = a11 * (-b00 + b01 + b10 - b11 - b12 - b20 + b22);
-      const m4 = (-a00 + a10 + a11) * (b00 - b01 + b11);
-      const m5 = (a10 + a11) * (-b00 + b01);
-      const m6 = a00 * b00;
-      const m7 = (-a00 + a20 + a21) * (b00 - b02 + b12);
-      const m8 = (-a00 + a20) * (b02 - b12);
-      const m9 = (a20 + a21) * (-b00 + b02);
-      const m10 = (a00 + a01 + a02 - a11 - a12 - a20 - a21) * b12;
-      const m11 = a21 * (-b00 + b02 + b10 - b11 - b12 - b20 + b21);
-      const m12 = (-a02 + a21 + a22) * (b11 + b20 - b21);
-      const m13 = (a02 - a22) * (b11 - b21);
-      const m14 = a02 * b20;
-      const m15 = (a21 + a22) * (-b20 + b21);
-      const m16 = (-a02 + a11 + a12) * (b12 + b20 - b22);
-      const m17 = (a02 - a12) * (b12 - b22);
-      const m18 = (a11 + a12) * (-b20 + b22);
-      const m19 = a01 * b10;
-      const m20 = a12 * b21;
-      const m21 = a10 * b02;
-      const m22 = a20 * b01;
-      const m23 = a22 * b22;
-
-      const c00 = m6 + m14 + m19;
-      const c01 = m1 + m4 + m5 + m6 + m12 + m14 + m15;
-      const c02 = m6 + m7 + m9 + m10 + m14 + m16 + m18;
-      const c10 = m2 + m3 + m4 + m6 + m14 + m16 + m17;
-      const c11 = m2 + m4 + m5 + m6 + m20;
-      const c12 = m14 + m16 + m17 + m18 + m21;
-      const c20 = m6 + m7 + m8 + m11 + m12 + m13 + m14;
-      const c21 = m12 + m13 + m14 + m15 + m22;
-      const c22 = m6 + m7 + m8 + m9 + m23;
-
-      result.set(0, 0, c00);
-      result.set(0, 1, c01);
-      result.set(0, 2, c02);
-      result.set(1, 0, c10);
-      result.set(1, 1, c11);
-      result.set(1, 2, c12);
-      result.set(2, 0, c20);
-      result.set(2, 1, c21);
-      result.set(2, 2, c22);
-      return result;
-    }
-
-    /**
-         * Returns the matrix product between x and y. More efficient than mmul(other) only when we multiply squared matrix and when the size of the matrix is > 1000.
-         * @param {Matrix} y
-         * @return {Matrix}
-         */
-    mmulStrassen(y) {
-      var x = this.clone();
-      var r1 = x.rows;
-      var c1 = x.columns;
-      var r2 = y.rows;
-      var c2 = y.columns;
-      if (c1 !== r2) {
-        // eslint-disable-next-line no-console
-        console.warn(`Multiplying ${r1} x ${c1} and ${r2} x ${c2} matrix: dimensions do not match.`);
-      }
-
-      // Put a matrix into the top left of a matrix of zeros.
-      // `rows` and `cols` are the dimensions of the output matrix.
-      function embed(mat, rows, cols) {
-        var r = mat.rows;
-        var c = mat.columns;
-        if ((r === rows) && (c === cols)) {
-          return mat;
-        } else {
-          var resultat = Matrix.zeros(rows, cols);
-          resultat = resultat.setSubMatrix(mat, 0, 0);
-          return resultat;
-        }
-      }
-
-
-      // Make sure both matrices are the same size.
-      // This is exclusively for simplicity:
-      // this algorithm can be implemented with matrices of different sizes.
-
-      var r = Math.max(r1, r2);
-      var c = Math.max(c1, c2);
-      x = embed(x, r, c);
-      y = embed(y, r, c);
-
-      // Our recursive multiplication function.
-      function blockMult(a, b, rows, cols) {
-        // For small matrices, resort to naive multiplication.
-        if (rows <= 512 || cols <= 512) {
-          return a.mmul(b); // a is equivalent to this
-        }
-
-        // Apply dynamic padding.
-        if ((rows % 2 === 1) && (cols % 2 === 1)) {
-          a = embed(a, rows + 1, cols + 1);
-          b = embed(b, rows + 1, cols + 1);
-        } else if (rows % 2 === 1) {
-          a = embed(a, rows + 1, cols);
-          b = embed(b, rows + 1, cols);
-        } else if (cols % 2 === 1) {
-          a = embed(a, rows, cols + 1);
-          b = embed(b, rows, cols + 1);
-        }
-
-        var halfRows = parseInt(a.rows / 2, 10);
-        var halfCols = parseInt(a.columns / 2, 10);
-        // Subdivide input matrices.
-        var a11 = a.subMatrix(0, halfRows - 1, 0, halfCols - 1);
-        var b11 = b.subMatrix(0, halfRows - 1, 0, halfCols - 1);
-
-        var a12 = a.subMatrix(0, halfRows - 1, halfCols, a.columns - 1);
-        var b12 = b.subMatrix(0, halfRows - 1, halfCols, b.columns - 1);
-
-        var a21 = a.subMatrix(halfRows, a.rows - 1, 0, halfCols - 1);
-        var b21 = b.subMatrix(halfRows, b.rows - 1, 0, halfCols - 1);
-
-        var a22 = a.subMatrix(halfRows, a.rows - 1, halfCols, a.columns - 1);
-        var b22 = b.subMatrix(halfRows, b.rows - 1, halfCols, b.columns - 1);
-
-        // Compute intermediate values.
-        var m1 = blockMult(Matrix.add(a11, a22), Matrix.add(b11, b22), halfRows, halfCols);
-        var m2 = blockMult(Matrix.add(a21, a22), b11, halfRows, halfCols);
-        var m3 = blockMult(a11, Matrix.sub(b12, b22), halfRows, halfCols);
-        var m4 = blockMult(a22, Matrix.sub(b21, b11), halfRows, halfCols);
-        var m5 = blockMult(Matrix.add(a11, a12), b22, halfRows, halfCols);
-        var m6 = blockMult(Matrix.sub(a21, a11), Matrix.add(b11, b12), halfRows, halfCols);
-        var m7 = blockMult(Matrix.sub(a12, a22), Matrix.add(b21, b22), halfRows, halfCols);
-
-        // Combine intermediate values into the output.
-        var c11 = Matrix.add(m1, m4);
-        c11.sub(m5);
-        c11.add(m7);
-        var c12 = Matrix.add(m3, m5);
-        var c21 = Matrix.add(m2, m4);
-        var c22 = Matrix.sub(m1, m2);
-        c22.add(m3);
-        c22.add(m6);
-
-        // Crop output to the desired size (undo dynamic padding).
-        var resultat = Matrix.zeros(2 * c11.rows, 2 * c11.columns);
-        resultat = resultat.setSubMatrix(c11, 0, 0);
-        resultat = resultat.setSubMatrix(c12, c11.rows, 0);
-        resultat = resultat.setSubMatrix(c21, 0, c11.columns);
-        resultat = resultat.setSubMatrix(c22, c11.rows, c11.columns);
-        return resultat.subMatrix(0, rows - 1, 0, cols - 1);
-      }
-      return blockMult(x, y, r, c);
-    }
-
-    /**
-         * Returns a row-by-row scaled matrix
-         * @param {number} [min=0] - Minimum scaled value
-         * @param {number} [max=1] - Maximum scaled value
-         * @return {Matrix} - The scaled matrix
-         */
-    scaleRows(min, max) {
-      min = min === undefined ? 0 : min;
-      max = max === undefined ? 1 : max;
-      if (min >= max) {
-        throw new RangeError('min should be strictly smaller than max');
-      }
-      var newMatrix = this.constructor.empty(this.rows, this.columns);
-      for (var i = 0; i < this.rows; i++) {
-        var scaled = Object(ml_array_rescale__WEBPACK_IMPORTED_MODULE_0__["default"])(this.getRow(i), { min, max });
-        newMatrix.setRow(i, scaled);
-      }
-      return newMatrix;
-    }
-
-    /**
-         * Returns a new column-by-column scaled matrix
-         * @param {number} [min=0] - Minimum scaled value
-         * @param {number} [max=1] - Maximum scaled value
-         * @return {Matrix} - The new scaled matrix
-         * @example
-         * var matrix = new Matrix([[1,2],[-1,0]]);
-         * var scaledMatrix = matrix.scaleColumns(); // [[1,1],[0,0]]
-         */
-    scaleColumns(min, max) {
-      min = min === undefined ? 0 : min;
-      max = max === undefined ? 1 : max;
-      if (min >= max) {
-        throw new RangeError('min should be strictly smaller than max');
-      }
-      var newMatrix = this.constructor.empty(this.rows, this.columns);
-      for (var i = 0; i < this.columns; i++) {
-        var scaled = Object(ml_array_rescale__WEBPACK_IMPORTED_MODULE_0__["default"])(this.getColumn(i), {
-          min: min,
-          max: max
-        });
-        newMatrix.setColumn(i, scaled);
-      }
-      return newMatrix;
-    }
-
-
-    /**
-         * Returns the Kronecker product (also known as tensor product) between this and other
-         * See https://en.wikipedia.org/wiki/Kronecker_product
-         * @param {Matrix} other
-         * @return {Matrix}
-         */
-    kroneckerProduct(other) {
-      other = this.constructor.checkMatrix(other);
-
-      var m = this.rows;
-      var n = this.columns;
-      var p = other.rows;
-      var q = other.columns;
-
-      var result = new this.constructor[Symbol.species](m * p, n * q);
-      for (var i = 0; i < m; i++) {
-        for (var j = 0; j < n; j++) {
-          for (var k = 0; k < p; k++) {
-            for (var l = 0; l < q; l++) {
-              result[p * i + k][q * j + l] = this.get(i, j) * other.get(k, l);
-            }
-          }
-        }
-      }
-      return result;
-    }
-
-    /**
-         * Transposes the matrix and returns a new one containing the result
-         * @return {Matrix}
-         */
-    transpose() {
-      var result = new this.constructor[Symbol.species](this.columns, this.rows);
-      for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-          result.set(j, i, this.get(i, j));
-        }
-      }
-      return result;
-    }
-
-    /**
-         * Sorts the rows (in place)
-         * @param {function} compareFunction - usual Array.prototype.sort comparison function
-         * @return {Matrix} this
-         */
-    sortRows(compareFunction) {
-      if (compareFunction === undefined) compareFunction = compareNumbers;
-      for (var i = 0; i < this.rows; i++) {
-        this.setRow(i, this.getRow(i).sort(compareFunction));
-      }
-      return this;
-    }
-
-    /**
-         * Sorts the columns (in place)
-         * @param {function} compareFunction - usual Array.prototype.sort comparison function
-         * @return {Matrix} this
-         */
-    sortColumns(compareFunction) {
-      if (compareFunction === undefined) compareFunction = compareNumbers;
-      for (var i = 0; i < this.columns; i++) {
-        this.setColumn(i, this.getColumn(i).sort(compareFunction));
-      }
-      return this;
-    }
-
-    /**
-         * Returns a subset of the matrix
-         * @param {number} startRow - First row index
-         * @param {number} endRow - Last row index
-         * @param {number} startColumn - First column index
-         * @param {number} endColumn - Last column index
-         * @return {Matrix}
-         */
-    subMatrix(startRow, endRow, startColumn, endColumn) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRange"])(this, startRow, endRow, startColumn, endColumn);
-      var newMatrix = new this.constructor[Symbol.species](endRow - startRow + 1, endColumn - startColumn + 1);
-      for (var i = startRow; i <= endRow; i++) {
-        for (var j = startColumn; j <= endColumn; j++) {
-          newMatrix[i - startRow][j - startColumn] = this.get(i, j);
-        }
-      }
-      return newMatrix;
-    }
-
-    /**
-         * Returns a subset of the matrix based on an array of row indices
-         * @param {Array} indices - Array containing the row indices
-         * @param {number} [startColumn = 0] - First column index
-         * @param {number} [endColumn = this.columns-1] - Last column index
-         * @return {Matrix}
-         */
-    subMatrixRow(indices, startColumn, endColumn) {
-      if (startColumn === undefined) startColumn = 0;
-      if (endColumn === undefined) endColumn = this.columns - 1;
-      if ((startColumn > endColumn) || (startColumn < 0) || (startColumn >= this.columns) || (endColumn < 0) || (endColumn >= this.columns)) {
-        throw new RangeError('Argument out of range');
-      }
-
-      var newMatrix = new this.constructor[Symbol.species](indices.length, endColumn - startColumn + 1);
-      for (var i = 0; i < indices.length; i++) {
-        for (var j = startColumn; j <= endColumn; j++) {
-          if (indices[i] < 0 || indices[i] >= this.rows) {
-            throw new RangeError(`Row index out of range: ${indices[i]}`);
-          }
-          newMatrix.set(i, j - startColumn, this.get(indices[i], j));
-        }
-      }
-      return newMatrix;
-    }
-
-    /**
-         * Returns a subset of the matrix based on an array of column indices
-         * @param {Array} indices - Array containing the column indices
-         * @param {number} [startRow = 0] - First row index
-         * @param {number} [endRow = this.rows-1] - Last row index
-         * @return {Matrix}
-         */
-    subMatrixColumn(indices, startRow, endRow) {
-      if (startRow === undefined) startRow = 0;
-      if (endRow === undefined) endRow = this.rows - 1;
-      if ((startRow > endRow) || (startRow < 0) || (startRow >= this.rows) || (endRow < 0) || (endRow >= this.rows)) {
-        throw new RangeError('Argument out of range');
-      }
-
-      var newMatrix = new this.constructor[Symbol.species](endRow - startRow + 1, indices.length);
-      for (var i = 0; i < indices.length; i++) {
-        for (var j = startRow; j <= endRow; j++) {
-          if (indices[i] < 0 || indices[i] >= this.columns) {
-            throw new RangeError(`Column index out of range: ${indices[i]}`);
-          }
-          newMatrix.set(j - startRow, i, this.get(j, indices[i]));
-        }
-      }
-      return newMatrix;
-    }
-
-    /**
-         * Set a part of the matrix to the given sub-matrix
-         * @param {Matrix|Array< Array >} matrix - The source matrix from which to extract values.
-         * @param {number} startRow - The index of the first row to set
-         * @param {number} startColumn - The index of the first column to set
-         * @return {Matrix}
-         */
-    setSubMatrix(matrix, startRow, startColumn) {
-      matrix = this.constructor.checkMatrix(matrix);
-      var endRow = startRow + matrix.rows - 1;
-      var endColumn = startColumn + matrix.columns - 1;
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRange"])(this, startRow, endRow, startColumn, endColumn);
-      for (var i = 0; i < matrix.rows; i++) {
-        for (var j = 0; j < matrix.columns; j++) {
-          this[startRow + i][startColumn + j] = matrix.get(i, j);
-        }
-      }
-      return this;
-    }
-
-    /**
-         * Return a new matrix based on a selection of rows and columns
-         * @param {Array<number>} rowIndices - The row indices to select. Order matters and an index can be more than once.
-         * @param {Array<number>} columnIndices - The column indices to select. Order matters and an index can be use more than once.
-         * @return {Matrix} The new matrix
-         */
-    selection(rowIndices, columnIndices) {
-      var indices = Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkIndices"])(this, rowIndices, columnIndices);
-      var newMatrix = new this.constructor[Symbol.species](rowIndices.length, columnIndices.length);
-      for (var i = 0; i < indices.row.length; i++) {
-        var rowIndex = indices.row[i];
-        for (var j = 0; j < indices.column.length; j++) {
-          var columnIndex = indices.column[j];
-          newMatrix[i][j] = this.get(rowIndex, columnIndex);
-        }
-      }
-      return newMatrix;
-    }
-
-    /**
-         * Returns the trace of the matrix (sum of the diagonal elements)
-         * @return {number}
-         */
-    trace() {
-      var min = Math.min(this.rows, this.columns);
-      var trace = 0;
-      for (var i = 0; i < min; i++) {
-        trace += this.get(i, i);
-      }
-      return trace;
-    }
-
-    /*
-         Matrix views
-         */
-
-    /**
-         * Returns a view of the transposition of the matrix
-         * @return {MatrixTransposeView}
-         */
-    transposeView() {
-      return new _views_transpose__WEBPACK_IMPORTED_MODULE_4__["default"](this);
-    }
-
-    /**
-         * Returns a view of the row vector with the given index
-         * @param {number} row - row index of the vector
-         * @return {MatrixRowView}
-         */
-    rowView(row) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkRowIndex"])(this, row);
-      return new _views_row__WEBPACK_IMPORTED_MODULE_5__["default"](this, row);
-    }
-
-    /**
-         * Returns a view of the column vector with the given index
-         * @param {number} column - column index of the vector
-         * @return {MatrixColumnView}
-         */
-    columnView(column) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_3__["checkColumnIndex"])(this, column);
-      return new _views_column__WEBPACK_IMPORTED_MODULE_10__["default"](this, column);
-    }
-
-    /**
-         * Returns a view of the matrix flipped in the row axis
-         * @return {MatrixFlipRowView}
-         */
-    flipRowView() {
-      return new _views_flipRow__WEBPACK_IMPORTED_MODULE_11__["default"](this);
-    }
-
-    /**
-         * Returns a view of the matrix flipped in the column axis
-         * @return {MatrixFlipColumnView}
-         */
-    flipColumnView() {
-      return new _views_flipColumn__WEBPACK_IMPORTED_MODULE_12__["default"](this);
-    }
-
-    /**
-         * Returns a view of a submatrix giving the index boundaries
-         * @param {number} startRow - first row index of the submatrix
-         * @param {number} endRow - last row index of the submatrix
-         * @param {number} startColumn - first column index of the submatrix
-         * @param {number} endColumn - last column index of the submatrix
-         * @return {MatrixSubView}
-         */
-    subMatrixView(startRow, endRow, startColumn, endColumn) {
-      return new _views_sub__WEBPACK_IMPORTED_MODULE_6__["default"](this, startRow, endRow, startColumn, endColumn);
-    }
-
-    /**
-         * Returns a view of the cross of the row indices and the column indices
-         * @example
-         * // resulting vector is [[2], [2]]
-         * var matrix = new Matrix([[1,2,3], [4,5,6]]).selectionView([0, 0], [1])
-         * @param {Array<number>} rowIndices
-         * @param {Array<number>} columnIndices
-         * @return {MatrixSelectionView}
-         */
-    selectionView(rowIndices, columnIndices) {
-      return new _views_selection__WEBPACK_IMPORTED_MODULE_7__["default"](this, rowIndices, columnIndices);
-    }
-
-    /**
-         * Returns a view of the row indices
-         * @example
-         * // resulting vector is [[1,2,3], [1,2,3]]
-         * var matrix = new Matrix([[1,2,3], [4,5,6]]).rowSelectionView([0, 0])
-         * @param {Array<number>} rowIndices
-         * @return {MatrixRowSelectionView}
-         */
-    rowSelectionView(rowIndices) {
-      return new _views_rowSelection__WEBPACK_IMPORTED_MODULE_8__["default"](this, rowIndices);
-    }
-
-    /**
-         * Returns a view of the column indices
-         * @example
-         * // resulting vector is [[2, 2], [5, 5]]
-         * var matrix = new Matrix([[1,2,3], [4,5,6]]).columnSelectionView([1, 1])
-         * @param {Array<number>} columnIndices
-         * @return {MatrixColumnSelectionView}
-         */
-    columnSelectionView(columnIndices) {
-      return new _views_columnSelection__WEBPACK_IMPORTED_MODULE_9__["default"](this, columnIndices);
-    }
-
-
-    /**
-        * Calculates and returns the determinant of a matrix as a Number
-        * @example
-        *   new Matrix([[1,2,3], [4,5,6]]).det()
-        * @return {number}
-        */
-    det() {
-      if (this.isSquare()) {
-        var a, b, c, d;
-        if (this.columns === 2) {
-          // 2 x 2 matrix
-          a = this.get(0, 0);
-          b = this.get(0, 1);
-          c = this.get(1, 0);
-          d = this.get(1, 1);
-
-          return a * d - (b * c);
-        } else if (this.columns === 3) {
-          // 3 x 3 matrix
-          var subMatrix0, subMatrix1, subMatrix2;
-          subMatrix0 = this.selectionView([1, 2], [1, 2]);
-          subMatrix1 = this.selectionView([1, 2], [0, 2]);
-          subMatrix2 = this.selectionView([1, 2], [0, 1]);
-          a = this.get(0, 0);
-          b = this.get(0, 1);
-          c = this.get(0, 2);
-
-          return a * subMatrix0.det() - b * subMatrix1.det() + c * subMatrix2.det();
-        } else {
-          // general purpose determinant using the LU decomposition
-          return new _dc_lu__WEBPACK_IMPORTED_MODULE_1__["default"](this).determinant;
-        }
-      } else {
-        throw Error('Determinant can only be calculated for a square matrix.');
-      }
-    }
-
-    /**
-         * Returns inverse of a matrix if it exists or the pseudoinverse
-         * @param {number} threshold - threshold for taking inverse of singular values (default = 1e-15)
-         * @return {Matrix} the (pseudo)inverted matrix.
-         */
-    pseudoInverse(threshold) {
-      if (threshold === undefined) threshold = Number.EPSILON;
-      var svdSolution = new _dc_svd__WEBPACK_IMPORTED_MODULE_2__["default"](this, { autoTranspose: true });
-
-      var U = svdSolution.leftSingularVectors;
-      var V = svdSolution.rightSingularVectors;
-      var s = svdSolution.diagonal;
-
-      for (var i = 0; i < s.length; i++) {
-        if (Math.abs(s[i]) > threshold) {
-          s[i] = 1.0 / s[i];
-        } else {
-          s[i] = 0.0;
-        }
-      }
-
-      // convert list to diagonal
-      s = this.constructor[Symbol.species].diag(s);
-      return V.mmul(s.mmul(U.transposeView()));
-    }
-
-    /**
-         * Creates an exact and independent copy of the matrix
-         * @return {Matrix}
-         */
-    clone() {
-      var newMatrix = new this.constructor[Symbol.species](this.rows, this.columns);
-      for (var row = 0; row < this.rows; row++) {
-        for (var column = 0; column < this.columns; column++) {
-          newMatrix.set(row, column, this.get(row, column));
-        }
-      }
-      return newMatrix;
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "correlation", function() { return correlation; });
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./matrix */ "./node_modules/ml-matrix/src/matrix.js");
+
+
+function correlation(xMatrix, yMatrix = xMatrix, options = {}) {
+  xMatrix = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](xMatrix);
+  let yIsSame = false;
+  if (
+    typeof yMatrix === 'object' &&
+    !_matrix__WEBPACK_IMPORTED_MODULE_0__["default"].isMatrix(yMatrix) &&
+    !Array.isArray(yMatrix)
+  ) {
+    options = yMatrix;
+    yMatrix = xMatrix;
+    yIsSame = true;
+  } else {
+    yMatrix = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](yMatrix);
+  }
+  if (xMatrix.rows !== yMatrix.rows) {
+    throw new TypeError('Both matrices must have the same number of rows');
+  }
+
+  const { center = true, scale = true } = options;
+  if (center) {
+    xMatrix.center('column');
+    if (!yIsSame) {
+      yMatrix.center('column');
+    }
+  }
+  if (scale) {
+    xMatrix.scale('column');
+    if (!yIsSame) {
+      yMatrix.scale('column');
     }
   }
 
-  Matrix.prototype.klass = 'Matrix';
+  const sdx = xMatrix.standardDeviation('column', { unbiased: true });
+  const sdy = yIsSame
+    ? sdx
+    : yMatrix.standardDeviation('column', { unbiased: true });
 
-  function compareNumbers(a, b) {
-    return a - b;
-  }
-
-  /*
-     Synonyms
-     */
-
-  Matrix.random = Matrix.rand;
-  Matrix.diagonal = Matrix.diag;
-  Matrix.prototype.diagonal = Matrix.prototype.diag;
-  Matrix.identity = Matrix.eye;
-  Matrix.prototype.negate = Matrix.prototype.neg;
-  Matrix.prototype.tensorProduct = Matrix.prototype.kroneckerProduct;
-  Matrix.prototype.determinant = Matrix.prototype.det;
-
-  /*
-     Add dynamically instance and static methods for mathematical operations
-     */
-
-  var inplaceOperator = `
-(function %name%(value) {
-    if (typeof value === 'number') return this.%name%S(value);
-    return this.%name%M(value);
-})
-`;
-
-  var inplaceOperatorScalar = `
-(function %name%S(value) {
-    for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-            this.set(i, j, this.get(i, j) %op% value);
-        }
-    }
-    return this;
-})
-`;
-
-  var inplaceOperatorMatrix = `
-(function %name%M(matrix) {
-    matrix = this.constructor.checkMatrix(matrix);
-    if (this.rows !== matrix.rows ||
-        this.columns !== matrix.columns) {
-        throw new RangeError('Matrices dimensions must be equal');
-    }
-    for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-            this.set(i, j, this.get(i, j) %op% matrix.get(i, j));
-        }
-    }
-    return this;
-})
-`;
-
-  var staticOperator = `
-(function %name%(matrix, value) {
-    var newMatrix = new this[Symbol.species](matrix);
-    return newMatrix.%name%(value);
-})
-`;
-
-  var inplaceMethod = `
-(function %name%() {
-    for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-            this.set(i, j, %method%(this.get(i, j)));
-        }
-    }
-    return this;
-})
-`;
-
-  var staticMethod = `
-(function %name%(matrix) {
-    var newMatrix = new this[Symbol.species](matrix);
-    return newMatrix.%name%();
-})
-`;
-
-  var inplaceMethodWithArgs = `
-(function %name%(%args%) {
-    for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-            this.set(i, j, %method%(this.get(i, j), %args%));
-        }
-    }
-    return this;
-})
-`;
-
-  var staticMethodWithArgs = `
-(function %name%(matrix, %args%) {
-    var newMatrix = new this[Symbol.species](matrix);
-    return newMatrix.%name%(%args%);
-})
-`;
-
-
-  var inplaceMethodWithOneArgScalar = `
-(function %name%S(value) {
-    for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-            this.set(i, j, %method%(this.get(i, j), value));
-        }
-    }
-    return this;
-})
-`;
-  var inplaceMethodWithOneArgMatrix = `
-(function %name%M(matrix) {
-    matrix = this.constructor.checkMatrix(matrix);
-    if (this.rows !== matrix.rows ||
-        this.columns !== matrix.columns) {
-        throw new RangeError('Matrices dimensions must be equal');
-    }
-    for (var i = 0; i < this.rows; i++) {
-        for (var j = 0; j < this.columns; j++) {
-            this.set(i, j, %method%(this.get(i, j), matrix.get(i, j)));
-        }
-    }
-    return this;
-})
-`;
-
-  var inplaceMethodWithOneArg = `
-(function %name%(value) {
-    if (typeof value === 'number') return this.%name%S(value);
-    return this.%name%M(value);
-})
-`;
-
-  var staticMethodWithOneArg = staticMethodWithArgs;
-
-  var operators = [
-    // Arithmetic operators
-    ['+', 'add'],
-    ['-', 'sub', 'subtract'],
-    ['*', 'mul', 'multiply'],
-    ['/', 'div', 'divide'],
-    ['%', 'mod', 'modulus'],
-    // Bitwise operators
-    ['&', 'and'],
-    ['|', 'or'],
-    ['^', 'xor'],
-    ['<<', 'leftShift'],
-    ['>>', 'signPropagatingRightShift'],
-    ['>>>', 'rightShift', 'zeroFillRightShift']
-  ];
-
-  var i;
-  var eval2 = eval; // eslint-disable-line no-eval
-  for (var operator of operators) {
-    var inplaceOp = eval2(fillTemplateFunction(inplaceOperator, { name: operator[1], op: operator[0] }));
-    var inplaceOpS = eval2(fillTemplateFunction(inplaceOperatorScalar, { name: `${operator[1]}S`, op: operator[0] }));
-    var inplaceOpM = eval2(fillTemplateFunction(inplaceOperatorMatrix, { name: `${operator[1]}M`, op: operator[0] }));
-    var staticOp = eval2(fillTemplateFunction(staticOperator, { name: operator[1] }));
-    for (i = 1; i < operator.length; i++) {
-      Matrix.prototype[operator[i]] = inplaceOp;
-      Matrix.prototype[`${operator[i]}S`] = inplaceOpS;
-      Matrix.prototype[`${operator[i]}M`] = inplaceOpM;
-      Matrix[operator[i]] = staticOp;
+  const corr = xMatrix.transpose().mmul(yMatrix);
+  for (let i = 0; i < corr.rows; i++) {
+    for (let j = 0; j < corr.columns; j++) {
+      corr.set(
+        i,
+        j,
+        corr.get(i, j) * (1 / (sdx[i] * sdy[j])) * (1 / (xMatrix.rows - 1)),
+      );
     }
   }
+  return corr;
+}
 
-  var methods = [['~', 'not']];
 
-  [
-    'abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh', 'cbrt', 'ceil',
-    'clz32', 'cos', 'cosh', 'exp', 'expm1', 'floor', 'fround', 'log', 'log1p',
-    'log10', 'log2', 'round', 'sign', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'trunc'
-  ].forEach(function (mathMethod) {
-    methods.push([`Math.${mathMethod}`, mathMethod]);
-  });
+/***/ }),
 
-  for (var method of methods) {
-    var inplaceMeth = eval2(fillTemplateFunction(inplaceMethod, { name: method[1], method: method[0] }));
-    var staticMeth = eval2(fillTemplateFunction(staticMethod, { name: method[1] }));
-    for (i = 1; i < method.length; i++) {
-      Matrix.prototype[method[i]] = inplaceMeth;
-      Matrix[method[i]] = staticMeth;
+/***/ "./node_modules/ml-matrix/src/covariance.js":
+/*!**************************************************!*\
+  !*** ./node_modules/ml-matrix/src/covariance.js ***!
+  \**************************************************/
+/*! exports provided: covariance */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "covariance", function() { return covariance; });
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./matrix */ "./node_modules/ml-matrix/src/matrix.js");
+
+
+function covariance(xMatrix, yMatrix = xMatrix, options = {}) {
+  xMatrix = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](xMatrix);
+  let yIsSame = false;
+  if (
+    typeof yMatrix === 'object' &&
+    !_matrix__WEBPACK_IMPORTED_MODULE_0__["default"].isMatrix(yMatrix) &&
+    !Array.isArray(yMatrix)
+  ) {
+    options = yMatrix;
+    yMatrix = xMatrix;
+    yIsSame = true;
+  } else {
+    yMatrix = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](yMatrix);
+  }
+  if (xMatrix.rows !== yMatrix.rows) {
+    throw new TypeError('Both matrices must have the same number of rows');
+  }
+  const { center = true } = options;
+  if (center) {
+    xMatrix = xMatrix.center('column');
+    if (!yIsSame) {
+      yMatrix = yMatrix.center('column');
     }
   }
-
-  var methodsWithArgs = [['Math.pow', 1, 'pow']];
-
-  for (var methodWithArg of methodsWithArgs) {
-    var args = 'arg0';
-    for (i = 1; i < methodWithArg[1]; i++) {
-      args += `, arg${i}`;
-    }
-    if (methodWithArg[1] !== 1) {
-      var inplaceMethWithArgs = eval2(fillTemplateFunction(inplaceMethodWithArgs, {
-        name: methodWithArg[2],
-        method: methodWithArg[0],
-        args: args
-      }));
-      var staticMethWithArgs = eval2(fillTemplateFunction(staticMethodWithArgs, { name: methodWithArg[2], args: args }));
-      for (i = 2; i < methodWithArg.length; i++) {
-        Matrix.prototype[methodWithArg[i]] = inplaceMethWithArgs;
-        Matrix[methodWithArg[i]] = staticMethWithArgs;
-      }
-    } else {
-      var tmplVar = {
-        name: methodWithArg[2],
-        args: args,
-        method: methodWithArg[0]
-      };
-      var inplaceMethod2 = eval2(fillTemplateFunction(inplaceMethodWithOneArg, tmplVar));
-      var inplaceMethodS = eval2(fillTemplateFunction(inplaceMethodWithOneArgScalar, tmplVar));
-      var inplaceMethodM = eval2(fillTemplateFunction(inplaceMethodWithOneArgMatrix, tmplVar));
-      var staticMethod2 = eval2(fillTemplateFunction(staticMethodWithOneArg, tmplVar));
-      for (i = 2; i < methodWithArg.length; i++) {
-        Matrix.prototype[methodWithArg[i]] = inplaceMethod2;
-        Matrix.prototype[`${methodWithArg[i]}M`] = inplaceMethodM;
-        Matrix.prototype[`${methodWithArg[i]}S`] = inplaceMethodS;
-        Matrix[methodWithArg[i]] = staticMethod2;
-      }
+  const cov = xMatrix.transpose().mmul(yMatrix);
+  for (let i = 0; i < cov.rows; i++) {
+    for (let j = 0; j < cov.columns; j++) {
+      cov.set(i, j, cov.get(i, j) * (1 / (xMatrix.rows - 1)));
     }
   }
-
-  function fillTemplateFunction(template, values) {
-    for (var value in values) {
-      template = template.replace(new RegExp(`%${value}%`, 'g'), values[value]);
-    }
-    return template;
-  }
-
-  return Matrix;
+  return cov;
 }
 
 
@@ -8227,100 +6868,91 @@ function AbstractMatrix(superCtor) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CholeskyDecomposition; });
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./node_modules/ml-matrix/src/index.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../wrap/WrapperMatrix2D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix2D.js");
 
 
-/**
- * @class CholeskyDecomposition
- * @link https://github.com/lutzroeder/Mapack/blob/master/Source/CholeskyDecomposition.cs
- * @param {Matrix} value
- */
+
 class CholeskyDecomposition {
   constructor(value) {
-    value = _index__WEBPACK_IMPORTED_MODULE_0__["WrapperMatrix2D"].checkMatrix(value);
+    value = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(value);
     if (!value.isSymmetric()) {
       throw new Error('Matrix is not symmetric');
     }
 
-    var a = value;
-    var dimension = a.rows;
-    var l = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](dimension, dimension);
-    var positiveDefinite = true;
-    var i, j, k;
+    let a = value;
+    let dimension = a.rows;
+    let l = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](dimension, dimension);
+    let positiveDefinite = true;
+    let i, j, k;
 
     for (j = 0; j < dimension; j++) {
-      var Lrowj = l[j];
-      var d = 0;
+      let d = 0;
       for (k = 0; k < j; k++) {
-        var Lrowk = l[k];
-        var s = 0;
+        let s = 0;
         for (i = 0; i < k; i++) {
-          s += Lrowk[i] * Lrowj[i];
+          s += l.get(k, i) * l.get(j, i);
         }
-        Lrowj[k] = s = (a.get(j, k) - s) / l[k][k];
+        s = (a.get(j, k) - s) / l.get(k, k);
+        l.set(j, k, s);
         d = d + s * s;
       }
 
       d = a.get(j, j) - d;
 
       positiveDefinite &= d > 0;
-      l[j][j] = Math.sqrt(Math.max(d, 0));
+      l.set(j, j, Math.sqrt(Math.max(d, 0)));
       for (k = j + 1; k < dimension; k++) {
-        l[j][k] = 0;
+        l.set(j, k, 0);
       }
     }
 
-    if (!positiveDefinite) {
-      throw new Error('Matrix is not positive definite');
-    }
-
     this.L = l;
+    this.positiveDefinite = Boolean(positiveDefinite);
   }
 
-  /**
-   *
-   * @param {Matrix} value
-   * @return {Matrix}
-   */
-  solve(value) {
-    value = _index__WEBPACK_IMPORTED_MODULE_0__["WrapperMatrix2D"].checkMatrix(value);
+  isPositiveDefinite() {
+    return this.positiveDefinite;
+  }
 
-    var l = this.L;
-    var dimension = l.rows;
+  solve(value) {
+    value = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(value);
+
+    let l = this.L;
+    let dimension = l.rows;
 
     if (value.rows !== dimension) {
       throw new Error('Matrix dimensions do not match');
     }
+    if (this.isPositiveDefinite() === false) {
+      throw new Error('Matrix is not positive definite');
+    }
 
-    var count = value.columns;
-    var B = value.clone();
-    var i, j, k;
+    let count = value.columns;
+    let B = value.clone();
+    let i, j, k;
 
     for (k = 0; k < dimension; k++) {
       for (j = 0; j < count; j++) {
         for (i = 0; i < k; i++) {
-          B[k][j] -= B[i][j] * l[k][i];
+          B.set(k, j, B.get(k, j) - B.get(i, j) * l.get(k, i));
         }
-        B[k][j] /= l[k][k];
+        B.set(k, j, B.get(k, j) / l.get(k, k));
       }
     }
 
     for (k = dimension - 1; k >= 0; k--) {
       for (j = 0; j < count; j++) {
         for (i = k + 1; i < dimension; i++) {
-          B[k][j] -= B[i][j] * l[i][k];
+          B.set(k, j, B.get(k, j) - B.get(i, j) * l.get(i, k));
         }
-        B[k][j] /= l[k][k];
+        B.set(k, j, B.get(k, j) / l.get(k, k));
       }
     }
 
     return B;
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get lowerTriangularMatrix() {
     return this.L;
   }
@@ -8339,36 +6971,35 @@ class CholeskyDecomposition {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return EigenvalueDecomposition; });
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./node_modules/ml-matrix/src/index.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/dc/util.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../wrap/WrapperMatrix2D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix2D.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/dc/util.js");
 
 
 
 
-/**
- * @class EigenvalueDecomposition
- * @link https://github.com/lutzroeder/Mapack/blob/master/Source/EigenvalueDecomposition.cs
- * @param {Matrix} matrix
- * @param {object} [options]
- * @param {boolean} [options.assumeSymmetric=false]
- */
+
 class EigenvalueDecomposition {
   constructor(matrix, options = {}) {
     const { assumeSymmetric = false } = options;
 
-    matrix = _index__WEBPACK_IMPORTED_MODULE_0__["WrapperMatrix2D"].checkMatrix(matrix);
+    matrix = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(matrix);
     if (!matrix.isSquare()) {
       throw new Error('Matrix is not a square matrix');
     }
 
-    var n = matrix.columns;
-    var V = Object(_util__WEBPACK_IMPORTED_MODULE_1__["getFilled2DArray"])(n, n, 0);
-    var d = new Array(n);
-    var e = new Array(n);
-    var value = matrix;
-    var i, j;
+    if (matrix.isEmpty()) {
+      throw new Error('Matrix must be non-empty');
+    }
 
-    var isSymmetric = false;
+    let n = matrix.columns;
+    let V = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](n, n);
+    let d = new Float64Array(n);
+    let e = new Float64Array(n);
+    let value = matrix;
+    let i, j;
+
+    let isSymmetric = false;
     if (assumeSymmetric) {
       isSymmetric = true;
     } else {
@@ -8378,17 +7009,17 @@ class EigenvalueDecomposition {
     if (isSymmetric) {
       for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
-          V[i][j] = value.get(i, j);
+          V.set(i, j, value.get(i, j));
         }
       }
       tred2(n, e, d, V);
       tql2(n, e, d, V);
     } else {
-      var H = Object(_util__WEBPACK_IMPORTED_MODULE_1__["getFilled2DArray"])(n, n, 0);
-      var ort = new Array(n);
+      let H = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](n, n);
+      let ort = new Float64Array(n);
       for (j = 0; j < n; j++) {
         for (i = 0; i < n; i++) {
-          H[i][j] = value.get(i, j);
+          H.set(i, j, value.get(i, j));
         }
       }
       orthes(n, H, ort, V);
@@ -8401,52 +7032,33 @@ class EigenvalueDecomposition {
     this.V = V;
   }
 
-  /**
-   *
-   * @return {Array<number>}
-   */
   get realEigenvalues() {
-    return this.d;
+    return Array.from(this.d);
   }
 
-  /**
-   *
-   * @return {Array<number>}
-   */
   get imaginaryEigenvalues() {
-    return this.e;
+    return Array.from(this.e);
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get eigenvectorMatrix() {
-    if (!_index__WEBPACK_IMPORTED_MODULE_0__["Matrix"].isMatrix(this.V)) {
-      this.V = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](this.V);
-    }
     return this.V;
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get diagonalMatrix() {
-    var n = this.n;
-    var e = this.e;
-    var d = this.d;
-    var X = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](n, n);
-    var i, j;
+    let n = this.n;
+    let e = this.e;
+    let d = this.d;
+    let X = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](n, n);
+    let i, j;
     for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
-        X[i][j] = 0;
+        X.set(i, j, 0);
       }
-      X[i][i] = d[i];
+      X.set(i, i, d[i]);
       if (e[i] > 0) {
-        X[i][i + 1] = e[i];
+        X.set(i, i + 1, e[i]);
       } else if (e[i] < 0) {
-        X[i][i - 1] = e[i];
+        X.set(i, i - 1, e[i]);
       }
     }
     return X;
@@ -8454,10 +7066,10 @@ class EigenvalueDecomposition {
 }
 
 function tred2(n, e, d, V) {
-  var f, g, h, i, j, k, hh, scale;
+  let f, g, h, i, j, k, hh, scale;
 
   for (j = 0; j < n; j++) {
-    d[j] = V[n - 1][j];
+    d[j] = V.get(n - 1, j);
   }
 
   for (i = n - 1; i > 0; i--) {
@@ -8470,9 +7082,9 @@ function tred2(n, e, d, V) {
     if (scale === 0) {
       e[i] = d[i - 1];
       for (j = 0; j < i; j++) {
-        d[j] = V[i - 1][j];
-        V[i][j] = 0;
-        V[j][i] = 0;
+        d[j] = V.get(i - 1, j);
+        V.set(i, j, 0);
+        V.set(j, i, 0);
       }
     } else {
       for (k = 0; k < i; k++) {
@@ -8495,11 +7107,11 @@ function tred2(n, e, d, V) {
 
       for (j = 0; j < i; j++) {
         f = d[j];
-        V[j][i] = f;
-        g = e[j] + V[j][j] * f;
+        V.set(j, i, f);
+        g = e[j] + V.get(j, j) * f;
         for (k = j + 1; k <= i - 1; k++) {
-          g += V[k][j] * d[k];
-          e[k] += V[k][j] * f;
+          g += V.get(k, j) * d[k];
+          e[k] += V.get(k, j) * f;
         }
         e[j] = g;
       }
@@ -8519,51 +7131,51 @@ function tred2(n, e, d, V) {
         f = d[j];
         g = e[j];
         for (k = j; k <= i - 1; k++) {
-          V[k][j] -= f * e[k] + g * d[k];
+          V.set(k, j, V.get(k, j) - (f * e[k] + g * d[k]));
         }
-        d[j] = V[i - 1][j];
-        V[i][j] = 0;
+        d[j] = V.get(i - 1, j);
+        V.set(i, j, 0);
       }
     }
     d[i] = h;
   }
 
   for (i = 0; i < n - 1; i++) {
-    V[n - 1][i] = V[i][i];
-    V[i][i] = 1;
+    V.set(n - 1, i, V.get(i, i));
+    V.set(i, i, 1);
     h = d[i + 1];
     if (h !== 0) {
       for (k = 0; k <= i; k++) {
-        d[k] = V[k][i + 1] / h;
+        d[k] = V.get(k, i + 1) / h;
       }
 
       for (j = 0; j <= i; j++) {
         g = 0;
         for (k = 0; k <= i; k++) {
-          g += V[k][i + 1] * V[k][j];
+          g += V.get(k, i + 1) * V.get(k, j);
         }
         for (k = 0; k <= i; k++) {
-          V[k][j] -= g * d[k];
+          V.set(k, j, V.get(k, j) - g * d[k]);
         }
       }
     }
 
     for (k = 0; k <= i; k++) {
-      V[k][i + 1] = 0;
+      V.set(k, i + 1, 0);
     }
   }
 
   for (j = 0; j < n; j++) {
-    d[j] = V[n - 1][j];
-    V[n - 1][j] = 0;
+    d[j] = V.get(n - 1, j);
+    V.set(n - 1, j, 0);
   }
 
-  V[n - 1][n - 1] = 1;
+  V.set(n - 1, n - 1, 1);
   e[0] = 0;
 }
 
 function tql2(n, e, d, V) {
-  var g, h, i, j, k, l, m, p, r, dl1, c, c2, c3, el1, s, s2, iter;
+  let g, h, i, j, k, l, m, p, r, dl1, c, c2, c3, el1, s, s2, iter;
 
   for (i = 1; i < n; i++) {
     e[i - 1] = e[i];
@@ -8571,9 +7183,9 @@ function tql2(n, e, d, V) {
 
   e[n - 1] = 0;
 
-  var f = 0;
-  var tst1 = 0;
-  var eps = Number.EPSILON;
+  let f = 0;
+  let tst1 = 0;
+  let eps = Number.EPSILON;
 
   for (l = 0; l < n; l++) {
     tst1 = Math.max(tst1, Math.abs(d[l]) + Math.abs(e[l]));
@@ -8592,7 +7204,7 @@ function tql2(n, e, d, V) {
 
         g = d[l];
         p = (d[l + 1] - g) / (2 * e[l]);
-        r = Object(_util__WEBPACK_IMPORTED_MODULE_1__["hypotenuse"])(p, 1);
+        r = Object(_util__WEBPACK_IMPORTED_MODULE_2__["hypotenuse"])(p, 1);
         if (p < 0) {
           r = -r;
         }
@@ -8620,7 +7232,7 @@ function tql2(n, e, d, V) {
           s2 = s;
           g = c * e[i];
           h = c * p;
-          r = Object(_util__WEBPACK_IMPORTED_MODULE_1__["hypotenuse"])(p, e[i]);
+          r = Object(_util__WEBPACK_IMPORTED_MODULE_2__["hypotenuse"])(p, e[i]);
           e[i + 1] = s * r;
           s = e[i] / r;
           c = p / r;
@@ -8628,13 +7240,13 @@ function tql2(n, e, d, V) {
           d[i + 1] = h + s * (c * g + s * d[i]);
 
           for (k = 0; k < n; k++) {
-            h = V[k][i + 1];
-            V[k][i + 1] = s * V[k][i] + c * h;
-            V[k][i] = c * V[k][i] - s * h;
+            h = V.get(k, i + 1);
+            V.set(k, i + 1, s * V.get(k, i) + c * h);
+            V.set(k, i, c * V.get(k, i) - s * h);
           }
         }
 
-        p = -s * s2 * c3 * el1 * e[l] / dl1;
+        p = (-s * s2 * c3 * el1 * e[l]) / dl1;
         e[l] = s * p;
         d[l] = c * p;
       } while (Math.abs(e[l]) > eps * tst1);
@@ -8657,30 +7269,30 @@ function tql2(n, e, d, V) {
       d[k] = d[i];
       d[i] = p;
       for (j = 0; j < n; j++) {
-        p = V[j][i];
-        V[j][i] = V[j][k];
-        V[j][k] = p;
+        p = V.get(j, i);
+        V.set(j, i, V.get(j, k));
+        V.set(j, k, p);
       }
     }
   }
 }
 
 function orthes(n, H, ort, V) {
-  var low = 0;
-  var high = n - 1;
-  var f, g, h, i, j, m;
-  var scale;
+  let low = 0;
+  let high = n - 1;
+  let f, g, h, i, j, m;
+  let scale;
 
   for (m = low + 1; m <= high - 1; m++) {
     scale = 0;
     for (i = m; i <= high; i++) {
-      scale = scale + Math.abs(H[i][m - 1]);
+      scale = scale + Math.abs(H.get(i, m - 1));
     }
 
     if (scale !== 0) {
       h = 0;
       for (i = high; i >= m; i--) {
-        ort[i] = H[i][m - 1] / scale;
+        ort[i] = H.get(i, m - 1) / scale;
         h += ort[i] * ort[i];
       }
 
@@ -8695,53 +7307,53 @@ function orthes(n, H, ort, V) {
       for (j = m; j < n; j++) {
         f = 0;
         for (i = high; i >= m; i--) {
-          f += ort[i] * H[i][j];
+          f += ort[i] * H.get(i, j);
         }
 
         f = f / h;
         for (i = m; i <= high; i++) {
-          H[i][j] -= f * ort[i];
+          H.set(i, j, H.get(i, j) - f * ort[i]);
         }
       }
 
       for (i = 0; i <= high; i++) {
         f = 0;
         for (j = high; j >= m; j--) {
-          f += ort[j] * H[i][j];
+          f += ort[j] * H.get(i, j);
         }
 
         f = f / h;
         for (j = m; j <= high; j++) {
-          H[i][j] -= f * ort[j];
+          H.set(i, j, H.get(i, j) - f * ort[j]);
         }
       }
 
       ort[m] = scale * ort[m];
-      H[m][m - 1] = scale * g;
+      H.set(m, m - 1, scale * g);
     }
   }
 
   for (i = 0; i < n; i++) {
     for (j = 0; j < n; j++) {
-      V[i][j] = i === j ? 1 : 0;
+      V.set(i, j, i === j ? 1 : 0);
     }
   }
 
   for (m = high - 1; m >= low + 1; m--) {
-    if (H[m][m - 1] !== 0) {
+    if (H.get(m, m - 1) !== 0) {
       for (i = m + 1; i <= high; i++) {
-        ort[i] = H[i][m - 1];
+        ort[i] = H.get(i, m - 1);
       }
 
       for (j = m; j <= high; j++) {
         g = 0;
         for (i = m; i <= high; i++) {
-          g += ort[i] * V[i][j];
+          g += ort[i] * V.get(i, j);
         }
 
-        g = g / ort[m] / H[m][m - 1];
+        g = g / ort[m] / H.get(m, m - 1);
         for (i = m; i <= high; i++) {
-          V[i][j] += g * ort[i];
+          V.set(i, j, V.get(i, j) + g * ort[i]);
         }
       }
     }
@@ -8749,60 +7361,60 @@ function orthes(n, H, ort, V) {
 }
 
 function hqr2(nn, e, d, V, H) {
-  var n = nn - 1;
-  var low = 0;
-  var high = nn - 1;
-  var eps = Number.EPSILON;
-  var exshift = 0;
-  var norm = 0;
-  var p = 0;
-  var q = 0;
-  var r = 0;
-  var s = 0;
-  var z = 0;
-  var iter = 0;
-  var i, j, k, l, m, t, w, x, y;
-  var ra, sa, vr, vi;
-  var notlast, cdivres;
+  let n = nn - 1;
+  let low = 0;
+  let high = nn - 1;
+  let eps = Number.EPSILON;
+  let exshift = 0;
+  let norm = 0;
+  let p = 0;
+  let q = 0;
+  let r = 0;
+  let s = 0;
+  let z = 0;
+  let iter = 0;
+  let i, j, k, l, m, t, w, x, y;
+  let ra, sa, vr, vi;
+  let notlast, cdivres;
 
   for (i = 0; i < nn; i++) {
     if (i < low || i > high) {
-      d[i] = H[i][i];
+      d[i] = H.get(i, i);
       e[i] = 0;
     }
 
     for (j = Math.max(i - 1, 0); j < nn; j++) {
-      norm = norm + Math.abs(H[i][j]);
+      norm = norm + Math.abs(H.get(i, j));
     }
   }
 
   while (n >= low) {
     l = n;
     while (l > low) {
-      s = Math.abs(H[l - 1][l - 1]) + Math.abs(H[l][l]);
+      s = Math.abs(H.get(l - 1, l - 1)) + Math.abs(H.get(l, l));
       if (s === 0) {
         s = norm;
       }
-      if (Math.abs(H[l][l - 1]) < eps * s) {
+      if (Math.abs(H.get(l, l - 1)) < eps * s) {
         break;
       }
       l--;
     }
 
     if (l === n) {
-      H[n][n] = H[n][n] + exshift;
-      d[n] = H[n][n];
+      H.set(n, n, H.get(n, n) + exshift);
+      d[n] = H.get(n, n);
       e[n] = 0;
       n--;
       iter = 0;
     } else if (l === n - 1) {
-      w = H[n][n - 1] * H[n - 1][n];
-      p = (H[n - 1][n - 1] - H[n][n]) / 2;
+      w = H.get(n, n - 1) * H.get(n - 1, n);
+      p = (H.get(n - 1, n - 1) - H.get(n, n)) / 2;
       q = p * p + w;
       z = Math.sqrt(Math.abs(q));
-      H[n][n] = H[n][n] + exshift;
-      H[n - 1][n - 1] = H[n - 1][n - 1] + exshift;
-      x = H[n][n];
+      H.set(n, n, H.get(n, n) + exshift);
+      H.set(n - 1, n - 1, H.get(n - 1, n - 1) + exshift);
+      x = H.get(n, n);
 
       if (q >= 0) {
         z = p >= 0 ? p + z : p - z;
@@ -8813,7 +7425,7 @@ function hqr2(nn, e, d, V, H) {
         }
         e[n - 1] = 0;
         e[n] = 0;
-        x = H[n][n - 1];
+        x = H.get(n, n - 1);
         s = Math.abs(x) + Math.abs(z);
         p = x / s;
         q = z / s;
@@ -8822,21 +7434,21 @@ function hqr2(nn, e, d, V, H) {
         q = q / r;
 
         for (j = n - 1; j < nn; j++) {
-          z = H[n - 1][j];
-          H[n - 1][j] = q * z + p * H[n][j];
-          H[n][j] = q * H[n][j] - p * z;
+          z = H.get(n - 1, j);
+          H.set(n - 1, j, q * z + p * H.get(n, j));
+          H.set(n, j, q * H.get(n, j) - p * z);
         }
 
         for (i = 0; i <= n; i++) {
-          z = H[i][n - 1];
-          H[i][n - 1] = q * z + p * H[i][n];
-          H[i][n] = q * H[i][n] - p * z;
+          z = H.get(i, n - 1);
+          H.set(i, n - 1, q * z + p * H.get(i, n));
+          H.set(i, n, q * H.get(i, n) - p * z);
         }
 
         for (i = low; i <= high; i++) {
-          z = V[i][n - 1];
-          V[i][n - 1] = q * z + p * V[i][n];
-          V[i][n] = q * V[i][n] - p * z;
+          z = V.get(i, n - 1);
+          V.set(i, n - 1, q * z + p * V.get(i, n));
+          V.set(i, n, q * V.get(i, n) - p * z);
         }
       } else {
         d[n - 1] = x + p;
@@ -8848,20 +7460,20 @@ function hqr2(nn, e, d, V, H) {
       n = n - 2;
       iter = 0;
     } else {
-      x = H[n][n];
+      x = H.get(n, n);
       y = 0;
       w = 0;
       if (l < n) {
-        y = H[n - 1][n - 1];
-        w = H[n][n - 1] * H[n - 1][n];
+        y = H.get(n - 1, n - 1);
+        w = H.get(n, n - 1) * H.get(n - 1, n);
       }
 
       if (iter === 10) {
         exshift += x;
         for (i = low; i <= n; i++) {
-          H[i][i] -= x;
+          H.set(i, i, H.get(i, i) - x);
         }
-        s = Math.abs(H[n][n - 1]) + Math.abs(H[n - 1][n - 2]);
+        s = Math.abs(H.get(n, n - 1)) + Math.abs(H.get(n - 1, n - 2));
         x = y = 0.75 * s;
         w = -0.4375 * s * s;
       }
@@ -8876,7 +7488,7 @@ function hqr2(nn, e, d, V, H) {
           }
           s = x - w / ((y - x) / 2 + s);
           for (i = low; i <= n; i++) {
-            H[i][i] -= s;
+            H.set(i, i, H.get(i, i) - s);
           }
           exshift += s;
           x = y = w = 0.964;
@@ -8887,12 +7499,12 @@ function hqr2(nn, e, d, V, H) {
 
       m = n - 2;
       while (m >= l) {
-        z = H[m][m];
+        z = H.get(m, m);
         r = x - z;
         s = y - z;
-        p = (r * s - w) / H[m + 1][m] + H[m][m + 1];
-        q = H[m + 1][m + 1] - z - r - s;
-        r = H[m + 2][m + 1];
+        p = (r * s - w) / H.get(m + 1, m) + H.get(m, m + 1);
+        q = H.get(m + 1, m + 1) - z - r - s;
+        r = H.get(m + 2, m + 1);
         s = Math.abs(p) + Math.abs(q) + Math.abs(r);
         p = p / s;
         q = q / s;
@@ -8901,12 +7513,12 @@ function hqr2(nn, e, d, V, H) {
           break;
         }
         if (
-          Math.abs(H[m][m - 1]) * (Math.abs(q) + Math.abs(r)) <
+          Math.abs(H.get(m, m - 1)) * (Math.abs(q) + Math.abs(r)) <
           eps *
             (Math.abs(p) *
-              (Math.abs(H[m - 1][m - 1]) +
+              (Math.abs(H.get(m - 1, m - 1)) +
                 Math.abs(z) +
-                Math.abs(H[m + 1][m + 1])))
+                Math.abs(H.get(m + 1, m + 1))))
         ) {
           break;
         }
@@ -8914,18 +7526,18 @@ function hqr2(nn, e, d, V, H) {
       }
 
       for (i = m + 2; i <= n; i++) {
-        H[i][i - 2] = 0;
+        H.set(i, i - 2, 0);
         if (i > m + 2) {
-          H[i][i - 3] = 0;
+          H.set(i, i - 3, 0);
         }
       }
 
       for (k = m; k <= n - 1; k++) {
         notlast = k !== n - 1;
         if (k !== m) {
-          p = H[k][k - 1];
-          q = H[k + 1][k - 1];
-          r = notlast ? H[k + 2][k - 1] : 0;
+          p = H.get(k, k - 1);
+          q = H.get(k + 1, k - 1);
+          r = notlast ? H.get(k + 2, k - 1) : 0;
           x = Math.abs(p) + Math.abs(q) + Math.abs(r);
           if (x !== 0) {
             p = p / x;
@@ -8945,9 +7557,9 @@ function hqr2(nn, e, d, V, H) {
 
         if (s !== 0) {
           if (k !== m) {
-            H[k][k - 1] = -s * x;
+            H.set(k, k - 1, -s * x);
           } else if (l !== m) {
-            H[k][k - 1] = -H[k][k - 1];
+            H.set(k, k - 1, -H.get(k, k - 1));
           }
 
           p = p + s;
@@ -8958,36 +7570,36 @@ function hqr2(nn, e, d, V, H) {
           r = r / p;
 
           for (j = k; j < nn; j++) {
-            p = H[k][j] + q * H[k + 1][j];
+            p = H.get(k, j) + q * H.get(k + 1, j);
             if (notlast) {
-              p = p + r * H[k + 2][j];
-              H[k + 2][j] = H[k + 2][j] - p * z;
+              p = p + r * H.get(k + 2, j);
+              H.set(k + 2, j, H.get(k + 2, j) - p * z);
             }
 
-            H[k][j] = H[k][j] - p * x;
-            H[k + 1][j] = H[k + 1][j] - p * y;
+            H.set(k, j, H.get(k, j) - p * x);
+            H.set(k + 1, j, H.get(k + 1, j) - p * y);
           }
 
           for (i = 0; i <= Math.min(n, k + 3); i++) {
-            p = x * H[i][k] + y * H[i][k + 1];
+            p = x * H.get(i, k) + y * H.get(i, k + 1);
             if (notlast) {
-              p = p + z * H[i][k + 2];
-              H[i][k + 2] = H[i][k + 2] - p * r;
+              p = p + z * H.get(i, k + 2);
+              H.set(i, k + 2, H.get(i, k + 2) - p * r);
             }
 
-            H[i][k] = H[i][k] - p;
-            H[i][k + 1] = H[i][k + 1] - p * q;
+            H.set(i, k, H.get(i, k) - p);
+            H.set(i, k + 1, H.get(i, k + 1) - p * q);
           }
 
           for (i = low; i <= high; i++) {
-            p = x * V[i][k] + y * V[i][k + 1];
+            p = x * V.get(i, k) + y * V.get(i, k + 1);
             if (notlast) {
-              p = p + z * V[i][k + 2];
-              V[i][k + 2] = V[i][k + 2] - p * r;
+              p = p + z * V.get(i, k + 2);
+              V.set(i, k + 2, V.get(i, k + 2) - p * r);
             }
 
-            V[i][k] = V[i][k] - p;
-            V[i][k + 1] = V[i][k + 1] - p * q;
+            V.set(i, k, V.get(i, k) - p);
+            V.set(i, k + 1, V.get(i, k + 1) - p * q);
           }
         }
       }
@@ -9004,12 +7616,12 @@ function hqr2(nn, e, d, V, H) {
 
     if (q === 0) {
       l = n;
-      H[n][n] = 1;
+      H.set(n, n, 1);
       for (i = n - 1; i >= 0; i--) {
-        w = H[i][i] - p;
+        w = H.get(i, i) - p;
         r = 0;
         for (j = l; j <= n; j++) {
-          r = r + H[i][j] * H[j][n];
+          r = r + H.get(i, j) * H.get(j, n);
         }
 
         if (e[i] < 0) {
@@ -9018,21 +7630,24 @@ function hqr2(nn, e, d, V, H) {
         } else {
           l = i;
           if (e[i] === 0) {
-            H[i][n] = w !== 0 ? -r / w : -r / (eps * norm);
+            H.set(i, n, w !== 0 ? -r / w : -r / (eps * norm));
           } else {
-            x = H[i][i + 1];
-            y = H[i + 1][i];
+            x = H.get(i, i + 1);
+            y = H.get(i + 1, i);
             q = (d[i] - p) * (d[i] - p) + e[i] * e[i];
             t = (x * s - z * r) / q;
-            H[i][n] = t;
-            H[i + 1][n] =
-              Math.abs(x) > Math.abs(z) ? (-r - w * t) / x : (-s - y * t) / z;
+            H.set(i, n, t);
+            H.set(
+              i + 1,
+              n,
+              Math.abs(x) > Math.abs(z) ? (-r - w * t) / x : (-s - y * t) / z,
+            );
           }
 
-          t = Math.abs(H[i][n]);
+          t = Math.abs(H.get(i, n));
           if (eps * t * t > 1) {
             for (j = i; j <= n; j++) {
-              H[j][n] = H[j][n] / t;
+              H.set(j, n, H.get(j, n) / t);
             }
           }
         }
@@ -9040,26 +7655,26 @@ function hqr2(nn, e, d, V, H) {
     } else if (q < 0) {
       l = n - 1;
 
-      if (Math.abs(H[n][n - 1]) > Math.abs(H[n - 1][n])) {
-        H[n - 1][n - 1] = q / H[n][n - 1];
-        H[n - 1][n] = -(H[n][n] - p) / H[n][n - 1];
+      if (Math.abs(H.get(n, n - 1)) > Math.abs(H.get(n - 1, n))) {
+        H.set(n - 1, n - 1, q / H.get(n, n - 1));
+        H.set(n - 1, n, -(H.get(n, n) - p) / H.get(n, n - 1));
       } else {
-        cdivres = cdiv(0, -H[n - 1][n], H[n - 1][n - 1] - p, q);
-        H[n - 1][n - 1] = cdivres[0];
-        H[n - 1][n] = cdivres[1];
+        cdivres = cdiv(0, -H.get(n - 1, n), H.get(n - 1, n - 1) - p, q);
+        H.set(n - 1, n - 1, cdivres[0]);
+        H.set(n - 1, n, cdivres[1]);
       }
 
-      H[n][n - 1] = 0;
-      H[n][n] = 1;
+      H.set(n, n - 1, 0);
+      H.set(n, n, 1);
       for (i = n - 2; i >= 0; i--) {
         ra = 0;
         sa = 0;
         for (j = l; j <= n; j++) {
-          ra = ra + H[i][j] * H[j][n - 1];
-          sa = sa + H[i][j] * H[j][n];
+          ra = ra + H.get(i, j) * H.get(j, n - 1);
+          sa = sa + H.get(i, j) * H.get(j, n);
         }
 
-        w = H[i][i] - p;
+        w = H.get(i, i) - p;
 
         if (e[i] < 0) {
           z = w;
@@ -9069,11 +7684,11 @@ function hqr2(nn, e, d, V, H) {
           l = i;
           if (e[i] === 0) {
             cdivres = cdiv(-ra, -sa, w, q);
-            H[i][n - 1] = cdivres[0];
-            H[i][n] = cdivres[1];
+            H.set(i, n - 1, cdivres[0]);
+            H.set(i, n, cdivres[1]);
           } else {
-            x = H[i][i + 1];
-            y = H[i + 1][i];
+            x = H.get(i, i + 1);
+            y = H.get(i + 1, i);
             vr = (d[i] - p) * (d[i] - p) + e[i] * e[i] - q * q;
             vi = (d[i] - p) * 2 * q;
             if (vr === 0 && vi === 0) {
@@ -9090,25 +7705,38 @@ function hqr2(nn, e, d, V, H) {
               x * r - z * ra + q * sa,
               x * s - z * sa - q * ra,
               vr,
-              vi
+              vi,
             );
-            H[i][n - 1] = cdivres[0];
-            H[i][n] = cdivres[1];
+            H.set(i, n - 1, cdivres[0]);
+            H.set(i, n, cdivres[1]);
             if (Math.abs(x) > Math.abs(z) + Math.abs(q)) {
-              H[i + 1][n - 1] = (-ra - w * H[i][n - 1] + q * H[i][n]) / x;
-              H[i + 1][n] = (-sa - w * H[i][n] - q * H[i][n - 1]) / x;
+              H.set(
+                i + 1,
+                n - 1,
+                (-ra - w * H.get(i, n - 1) + q * H.get(i, n)) / x,
+              );
+              H.set(
+                i + 1,
+                n,
+                (-sa - w * H.get(i, n) - q * H.get(i, n - 1)) / x,
+              );
             } else {
-              cdivres = cdiv(-r - y * H[i][n - 1], -s - y * H[i][n], z, q);
-              H[i + 1][n - 1] = cdivres[0];
-              H[i + 1][n] = cdivres[1];
+              cdivres = cdiv(
+                -r - y * H.get(i, n - 1),
+                -s - y * H.get(i, n),
+                z,
+                q,
+              );
+              H.set(i + 1, n - 1, cdivres[0]);
+              H.set(i + 1, n, cdivres[1]);
             }
           }
 
-          t = Math.max(Math.abs(H[i][n - 1]), Math.abs(H[i][n]));
+          t = Math.max(Math.abs(H.get(i, n - 1)), Math.abs(H.get(i, n)));
           if (eps * t * t > 1) {
             for (j = i; j <= n; j++) {
-              H[j][n - 1] = H[j][n - 1] / t;
-              H[j][n] = H[j][n] / t;
+              H.set(j, n - 1, H.get(j, n - 1) / t);
+              H.set(j, n, H.get(j, n) / t);
             }
           }
         }
@@ -9119,7 +7747,7 @@ function hqr2(nn, e, d, V, H) {
   for (i = 0; i < nn; i++) {
     if (i < low || i > high) {
       for (j = i; j < nn; j++) {
-        V[i][j] = H[i][j];
+        V.set(i, j, H.get(i, j));
       }
     }
   }
@@ -9128,15 +7756,15 @@ function hqr2(nn, e, d, V, H) {
     for (i = low; i <= high; i++) {
       z = 0;
       for (k = low; k <= Math.min(j, high); k++) {
-        z = z + V[i][k] * H[k][j];
+        z = z + V.get(i, k) * H.get(k, j);
       }
-      V[i][j] = z;
+      V.set(i, j, z);
     }
   }
 }
 
 function cdiv(xr, xi, yr, yi) {
-  var r, d;
+  let r, d;
   if (Math.abs(yr) > Math.abs(yi)) {
     r = yi / yr;
     d = yr + r * yi;
@@ -9161,31 +7789,28 @@ function cdiv(xr, xi, yr, yi) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LuDecomposition; });
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./node_modules/ml-matrix/src/index.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../wrap/WrapperMatrix2D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix2D.js");
 
 
-/**
- * @class LuDecomposition
- * @link https://github.com/lutzroeder/Mapack/blob/master/Source/LuDecomposition.cs
- * @param {Matrix} matrix
- */
+
 class LuDecomposition {
   constructor(matrix) {
-    matrix = _index__WEBPACK_IMPORTED_MODULE_0__["WrapperMatrix2D"].checkMatrix(matrix);
+    matrix = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(matrix);
 
-    var lu = matrix.clone();
-    var rows = lu.rows;
-    var columns = lu.columns;
-    var pivotVector = new Array(rows);
-    var pivotSign = 1;
-    var i, j, k, p, s, t, v;
-    var LUcolj, kmax;
+    let lu = matrix.clone();
+    let rows = lu.rows;
+    let columns = lu.columns;
+    let pivotVector = new Float64Array(rows);
+    let pivotSign = 1;
+    let i, j, k, p, s, t, v;
+    let LUcolj, kmax;
 
     for (i = 0; i < rows; i++) {
       pivotVector[i] = i;
     }
 
-    LUcolj = new Array(rows);
+    LUcolj = new Float64Array(rows);
 
     for (j = 0; j < columns; j++) {
       for (i = 0; i < rows; i++) {
@@ -9235,31 +7860,22 @@ class LuDecomposition {
     this.pivotSign = pivotSign;
   }
 
-  /**
-   *
-   * @return {boolean}
-   */
   isSingular() {
-    var data = this.LU;
-    var col = data.columns;
-    for (var j = 0; j < col; j++) {
-      if (data[j][j] === 0) {
+    let data = this.LU;
+    let col = data.columns;
+    for (let j = 0; j < col; j++) {
+      if (data.get(j, j) === 0) {
         return true;
       }
     }
     return false;
   }
 
-  /**
-   *
-   * @param {Matrix} value
-   * @return {Matrix}
-   */
   solve(value) {
-    value = _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"].checkMatrix(value);
+    value = _matrix__WEBPACK_IMPORTED_MODULE_0__["default"].checkMatrix(value);
 
-    var lu = this.LU;
-    var rows = lu.rows;
+    let lu = this.LU;
+    let rows = lu.rows;
 
     if (rows !== value.rows) {
       throw new Error('Invalid matrix dimensions');
@@ -9268,98 +7884,184 @@ class LuDecomposition {
       throw new Error('LU matrix is singular');
     }
 
-    var count = value.columns;
-    var X = value.subMatrixRow(this.pivotVector, 0, count - 1);
-    var columns = lu.columns;
-    var i, j, k;
+    let count = value.columns;
+    let X = value.subMatrixRow(this.pivotVector, 0, count - 1);
+    let columns = lu.columns;
+    let i, j, k;
 
     for (k = 0; k < columns; k++) {
       for (i = k + 1; i < columns; i++) {
         for (j = 0; j < count; j++) {
-          X[i][j] -= X[k][j] * lu[i][k];
+          X.set(i, j, X.get(i, j) - X.get(k, j) * lu.get(i, k));
         }
       }
     }
     for (k = columns - 1; k >= 0; k--) {
       for (j = 0; j < count; j++) {
-        X[k][j] /= lu[k][k];
+        X.set(k, j, X.get(k, j) / lu.get(k, k));
       }
       for (i = 0; i < k; i++) {
         for (j = 0; j < count; j++) {
-          X[i][j] -= X[k][j] * lu[i][k];
+          X.set(i, j, X.get(i, j) - X.get(k, j) * lu.get(i, k));
         }
       }
     }
     return X;
   }
 
-  /**
-   *
-   * @return {number}
-   */
   get determinant() {
-    var data = this.LU;
+    let data = this.LU;
     if (!data.isSquare()) {
       throw new Error('Matrix must be square');
     }
-    var determinant = this.pivotSign;
-    var col = data.columns;
-    for (var j = 0; j < col; j++) {
-      determinant *= data[j][j];
+    let determinant = this.pivotSign;
+    let col = data.columns;
+    for (let j = 0; j < col; j++) {
+      determinant *= data.get(j, j);
     }
     return determinant;
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get lowerTriangularMatrix() {
-    var data = this.LU;
-    var rows = data.rows;
-    var columns = data.columns;
-    var X = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](rows, columns);
-    for (var i = 0; i < rows; i++) {
-      for (var j = 0; j < columns; j++) {
+    let data = this.LU;
+    let rows = data.rows;
+    let columns = data.columns;
+    let X = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](rows, columns);
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
         if (i > j) {
-          X[i][j] = data[i][j];
+          X.set(i, j, data.get(i, j));
         } else if (i === j) {
-          X[i][j] = 1;
+          X.set(i, j, 1);
         } else {
-          X[i][j] = 0;
+          X.set(i, j, 0);
         }
       }
     }
     return X;
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get upperTriangularMatrix() {
-    var data = this.LU;
-    var rows = data.rows;
-    var columns = data.columns;
-    var X = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](rows, columns);
-    for (var i = 0; i < rows; i++) {
-      for (var j = 0; j < columns; j++) {
+    let data = this.LU;
+    let rows = data.rows;
+    let columns = data.columns;
+    let X = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](rows, columns);
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
         if (i <= j) {
-          X[i][j] = data[i][j];
+          X.set(i, j, data.get(i, j));
         } else {
-          X[i][j] = 0;
+          X.set(i, j, 0);
         }
       }
     }
     return X;
   }
 
-  /**
-   *
-   * @return {Array<number>}
-   */
   get pivotPermutationVector() {
-    return this.pivotVector.slice();
+    return Array.from(this.pivotVector);
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/ml-matrix/src/dc/nipals.js":
+/*!*************************************************!*\
+  !*** ./node_modules/ml-matrix/src/dc/nipals.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return nipals; });
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../wrap/WrapperMatrix2D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix2D.js");
+
+
+
+class nipals {
+  constructor(X, options = {}) {
+    X = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(X);
+    let { Y } = options;
+    const {
+      scaleScores = false,
+      maxIterations = 1000,
+      terminationCriteria = 1e-10,
+    } = options;
+
+    let u;
+    if (Y) {
+      if (Array.isArray(Y) && typeof Y[0] === 'number') {
+        Y = _matrix__WEBPACK_IMPORTED_MODULE_0__["default"].columnVector(Y);
+      } else {
+        Y = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(Y);
+      }
+      if (Y.rows !== X.rows) {
+        throw new Error('Y should have the same number of rows as X');
+      }
+      u = Y.getColumnVector(0);
+    } else {
+      u = X.getColumnVector(0);
+    }
+
+    let diff = 1;
+    let t, q, w, tOld;
+
+    for (
+      let counter = 0;
+      counter < maxIterations && diff > terminationCriteria;
+      counter++
+    ) {
+      w = X.transpose().mmul(u).div(u.transpose().mmul(u).get(0, 0));
+      w = w.div(w.norm());
+
+      t = X.mmul(w).div(w.transpose().mmul(w).get(0, 0));
+
+      if (counter > 0) {
+        diff = t.clone().sub(tOld).pow(2).sum();
+      }
+      tOld = t.clone();
+
+      if (Y) {
+        q = Y.transpose().mmul(t).div(t.transpose().mmul(t).get(0, 0));
+        q = q.div(q.norm());
+
+        u = Y.mmul(q).div(q.transpose().mmul(q).get(0, 0));
+      } else {
+        u = t;
+      }
+    }
+
+    if (Y) {
+      let p = X.transpose().mmul(t).div(t.transpose().mmul(t).get(0, 0));
+      p = p.div(p.norm());
+      let xResidual = X.clone().sub(t.clone().mmul(p.transpose()));
+      let residual = u.transpose().mmul(t).div(t.transpose().mmul(t).get(0, 0));
+      let yResidual = Y.clone().sub(
+        t.clone().mulS(residual.get(0, 0)).mmul(q.transpose()),
+      );
+
+      this.t = t;
+      this.p = p.transpose();
+      this.w = w.transpose();
+      this.q = q;
+      this.u = u;
+      this.s = t.transpose().mmul(t);
+      this.xResidual = xResidual;
+      this.yResidual = yResidual;
+      this.betas = residual;
+    } else {
+      this.w = w.transpose();
+      this.s = t.transpose().mmul(t).sqrt();
+      if (scaleScores) {
+        this.t = t.clone().div(this.s.get(0, 0));
+      } else {
+        this.t = t;
+      }
+      this.xResidual = X.sub(t.mmul(w.transpose()));
+    }
   }
 }
 
@@ -9376,31 +8078,28 @@ class LuDecomposition {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return QrDecomposition; });
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./node_modules/ml-matrix/src/index.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/dc/util.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../wrap/WrapperMatrix2D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix2D.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/dc/util.js");
 
 
 
 
-/**
- * @class QrDecomposition
- * @link https://github.com/lutzroeder/Mapack/blob/master/Source/QrDecomposition.cs
- * @param {Matrix} value
- */
+
 class QrDecomposition {
   constructor(value) {
-    value = _index__WEBPACK_IMPORTED_MODULE_0__["WrapperMatrix2D"].checkMatrix(value);
+    value = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(value);
 
-    var qr = value.clone();
-    var m = value.rows;
-    var n = value.columns;
-    var rdiag = new Array(n);
-    var i, j, k, s;
+    let qr = value.clone();
+    let m = value.rows;
+    let n = value.columns;
+    let rdiag = new Float64Array(n);
+    let i, j, k, s;
 
     for (k = 0; k < n; k++) {
-      var nrm = 0;
+      let nrm = 0;
       for (i = k; i < m; i++) {
-        nrm = Object(_util__WEBPACK_IMPORTED_MODULE_1__["hypotenuse"])(nrm, qr.get(i, k));
+        nrm = Object(_util__WEBPACK_IMPORTED_MODULE_2__["hypotenuse"])(nrm, qr.get(i, k));
       }
       if (nrm !== 0) {
         if (qr.get(k, k) < 0) {
@@ -9428,19 +8127,11 @@ class QrDecomposition {
     this.Rdiag = rdiag;
   }
 
-  /**
-   * Solve a problem of least square (Ax=b) by using the QR decomposition. Useful when A is rectangular, but not working when A is singular.
-   * Example : We search to approximate x, with A matrix shape m*n, x vector size n, b vector size m (m > n). We will use :
-   * var qr = QrDecomposition(A);
-   * var x = qr.solve(b);
-   * @param {Matrix} value - Matrix 1D which is the vector b (in the equation Ax = b)
-   * @return {Matrix} - The vector x
-   */
   solve(value) {
-    value = _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"].checkMatrix(value);
+    value = _matrix__WEBPACK_IMPORTED_MODULE_0__["default"].checkMatrix(value);
 
-    var qr = this.QR;
-    var m = qr.rows;
+    let qr = this.QR;
+    let m = qr.rows;
 
     if (value.rows !== m) {
       throw new Error('Matrix row dimensions must agree');
@@ -9449,30 +8140,30 @@ class QrDecomposition {
       throw new Error('Matrix is rank deficient');
     }
 
-    var count = value.columns;
-    var X = value.clone();
-    var n = qr.columns;
-    var i, j, k, s;
+    let count = value.columns;
+    let X = value.clone();
+    let n = qr.columns;
+    let i, j, k, s;
 
     for (k = 0; k < n; k++) {
       for (j = 0; j < count; j++) {
         s = 0;
         for (i = k; i < m; i++) {
-          s += qr[i][k] * X[i][j];
+          s += qr.get(i, k) * X.get(i, j);
         }
-        s = -s / qr[k][k];
+        s = -s / qr.get(k, k);
         for (i = k; i < m; i++) {
-          X[i][j] += s * qr[i][k];
+          X.set(i, j, X.get(i, j) + s * qr.get(i, k));
         }
       }
     }
     for (k = n - 1; k >= 0; k--) {
       for (j = 0; j < count; j++) {
-        X[k][j] /= this.Rdiag[k];
+        X.set(k, j, X.get(k, j) / this.Rdiag[k]);
       }
       for (i = 0; i < k; i++) {
         for (j = 0; j < count; j++) {
-          X[i][j] -= X[k][j] * qr[i][k];
+          X.set(i, j, X.get(i, j) - X.get(k, j) * qr.get(i, k));
         }
       }
     }
@@ -9480,13 +8171,9 @@ class QrDecomposition {
     return X.subMatrix(0, n - 1, 0, count - 1);
   }
 
-  /**
-   *
-   * @return {boolean}
-   */
   isFullRank() {
-    var columns = this.QR.columns;
-    for (var i = 0; i < columns; i++) {
+    let columns = this.QR.columns;
+    for (let i = 0; i < columns; i++) {
       if (this.Rdiag[i] === 0) {
         return false;
       }
@@ -9494,56 +8181,48 @@ class QrDecomposition {
     return true;
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get upperTriangularMatrix() {
-    var qr = this.QR;
-    var n = qr.columns;
-    var X = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](n, n);
-    var i, j;
+    let qr = this.QR;
+    let n = qr.columns;
+    let X = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](n, n);
+    let i, j;
     for (i = 0; i < n; i++) {
       for (j = 0; j < n; j++) {
         if (i < j) {
-          X[i][j] = qr[i][j];
+          X.set(i, j, qr.get(i, j));
         } else if (i === j) {
-          X[i][j] = this.Rdiag[i];
+          X.set(i, j, this.Rdiag[i]);
         } else {
-          X[i][j] = 0;
+          X.set(i, j, 0);
         }
       }
     }
     return X;
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get orthogonalMatrix() {
-    var qr = this.QR;
-    var rows = qr.rows;
-    var columns = qr.columns;
-    var X = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](rows, columns);
-    var i, j, k, s;
+    let qr = this.QR;
+    let rows = qr.rows;
+    let columns = qr.columns;
+    let X = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](rows, columns);
+    let i, j, k, s;
 
     for (k = columns - 1; k >= 0; k--) {
       for (i = 0; i < rows; i++) {
-        X[i][k] = 0;
+        X.set(i, k, 0);
       }
-      X[k][k] = 1;
+      X.set(k, k, 1);
       for (j = k; j < columns; j++) {
-        if (qr[k][k] !== 0) {
+        if (qr.get(k, k) !== 0) {
           s = 0;
           for (i = k; i < rows; i++) {
-            s += qr[i][k] * X[i][j];
+            s += qr.get(i, k) * X.get(i, j);
           }
 
-          s = -s / qr[k][k];
+          s = -s / qr.get(k, k);
 
           for (i = k; i < rows; i++) {
-            X[i][j] += s * qr[i][k];
+            X.set(i, j, X.get(i, j) + s * qr.get(i, k));
           }
         }
       }
@@ -9565,52 +8244,49 @@ class QrDecomposition {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SingularValueDecomposition; });
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../index */ "./node_modules/ml-matrix/src/index.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/dc/util.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../wrap/WrapperMatrix2D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix2D.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/dc/util.js");
 
 
 
 
-/**
- * @class SingularValueDecomposition
- * @see https://github.com/accord-net/framework/blob/development/Sources/Accord.Math/Decompositions/SingularValueDecomposition.cs
- * @param {Matrix} value
- * @param {object} [options]
- * @param {boolean} [options.computeLeftSingularVectors=true]
- * @param {boolean} [options.computeRightSingularVectors=true]
- * @param {boolean} [options.autoTranspose=false]
- */
+
 class SingularValueDecomposition {
   constructor(value, options = {}) {
-    value = _index__WEBPACK_IMPORTED_MODULE_0__["WrapperMatrix2D"].checkMatrix(value);
+    value = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(value);
 
-    var m = value.rows;
-    var n = value.columns;
+    if (value.isEmpty()) {
+      throw new Error('Matrix must be non-empty');
+    }
+
+    let m = value.rows;
+    let n = value.columns;
 
     const {
       computeLeftSingularVectors = true,
       computeRightSingularVectors = true,
-      autoTranspose = false
+      autoTranspose = false,
     } = options;
 
-    var wantu = Boolean(computeLeftSingularVectors);
-    var wantv = Boolean(computeRightSingularVectors);
+    let wantu = Boolean(computeLeftSingularVectors);
+    let wantv = Boolean(computeRightSingularVectors);
 
-    var swapped = false;
-    var a;
+    let swapped = false;
+    let a;
     if (m < n) {
       if (!autoTranspose) {
         a = value.clone();
         // eslint-disable-next-line no-console
         console.warn(
-          'Computing SVD on a matrix with more columns than rows. Consider enabling autoTranspose'
+          'Computing SVD on a matrix with more columns than rows. Consider enabling autoTranspose',
         );
       } else {
         a = value.transpose();
         m = a.rows;
         n = a.columns;
         swapped = true;
-        var aux = wantu;
+        let aux = wantu;
         wantu = wantv;
         wantv = aux;
       }
@@ -9618,36 +8294,36 @@ class SingularValueDecomposition {
       a = value.clone();
     }
 
-    var nu = Math.min(m, n);
-    var ni = Math.min(m + 1, n);
-    var s = new Array(ni);
-    var U = Object(_util__WEBPACK_IMPORTED_MODULE_1__["getFilled2DArray"])(m, nu, 0);
-    var V = Object(_util__WEBPACK_IMPORTED_MODULE_1__["getFilled2DArray"])(n, n, 0);
+    let nu = Math.min(m, n);
+    let ni = Math.min(m + 1, n);
+    let s = new Float64Array(ni);
+    let U = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](m, nu);
+    let V = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](n, n);
 
-    var e = new Array(n);
-    var work = new Array(m);
+    let e = new Float64Array(n);
+    let work = new Float64Array(m);
 
-    var si = new Array(ni);
+    let si = new Float64Array(ni);
     for (let i = 0; i < ni; i++) si[i] = i;
 
-    var nct = Math.min(m - 1, n);
-    var nrt = Math.max(0, Math.min(n - 2, m));
-    var mrc = Math.max(nct, nrt);
+    let nct = Math.min(m - 1, n);
+    let nrt = Math.max(0, Math.min(n - 2, m));
+    let mrc = Math.max(nct, nrt);
 
     for (let k = 0; k < mrc; k++) {
       if (k < nct) {
         s[k] = 0;
         for (let i = k; i < m; i++) {
-          s[k] = Object(_util__WEBPACK_IMPORTED_MODULE_1__["hypotenuse"])(s[k], a[i][k]);
+          s[k] = Object(_util__WEBPACK_IMPORTED_MODULE_2__["hypotenuse"])(s[k], a.get(i, k));
         }
         if (s[k] !== 0) {
-          if (a[k][k] < 0) {
+          if (a.get(k, k) < 0) {
             s[k] = -s[k];
           }
           for (let i = k; i < m; i++) {
-            a[i][k] /= s[k];
+            a.set(i, k, a.get(i, k) / s[k]);
           }
-          a[k][k] += 1;
+          a.set(k, k, a.get(k, k) + 1);
         }
         s[k] = -s[k];
       }
@@ -9656,26 +8332,26 @@ class SingularValueDecomposition {
         if (k < nct && s[k] !== 0) {
           let t = 0;
           for (let i = k; i < m; i++) {
-            t += a[i][k] * a[i][j];
+            t += a.get(i, k) * a.get(i, j);
           }
-          t = -t / a[k][k];
+          t = -t / a.get(k, k);
           for (let i = k; i < m; i++) {
-            a[i][j] += t * a[i][k];
+            a.set(i, j, a.get(i, j) + t * a.get(i, k));
           }
         }
-        e[j] = a[k][j];
+        e[j] = a.get(k, j);
       }
 
       if (wantu && k < nct) {
         for (let i = k; i < m; i++) {
-          U[i][k] = a[i][k];
+          U.set(i, k, a.get(i, k));
         }
       }
 
       if (k < nrt) {
         e[k] = 0;
         for (let i = k + 1; i < n; i++) {
-          e[k] = Object(_util__WEBPACK_IMPORTED_MODULE_1__["hypotenuse"])(e[k], e[i]);
+          e[k] = Object(_util__WEBPACK_IMPORTED_MODULE_2__["hypotenuse"])(e[k], e[i]);
         }
         if (e[k] !== 0) {
           if (e[k + 1] < 0) {
@@ -9693,19 +8369,19 @@ class SingularValueDecomposition {
           }
           for (let i = k + 1; i < m; i++) {
             for (let j = k + 1; j < n; j++) {
-              work[i] += e[j] * a[i][j];
+              work[i] += e[j] * a.get(i, j);
             }
           }
           for (let j = k + 1; j < n; j++) {
             let t = -e[j] / e[k + 1];
             for (let i = k + 1; i < m; i++) {
-              a[i][j] += t * work[i];
+              a.set(i, j, a.get(i, j) + t * work[i]);
             }
           }
         }
         if (wantv) {
           for (let i = k + 1; i < n; i++) {
-            V[i][k] = e[i];
+            V.set(i, k, e[i]);
           }
         }
       }
@@ -9713,47 +8389,47 @@ class SingularValueDecomposition {
 
     let p = Math.min(n, m + 1);
     if (nct < n) {
-      s[nct] = a[nct][nct];
+      s[nct] = a.get(nct, nct);
     }
     if (m < p) {
       s[p - 1] = 0;
     }
     if (nrt + 1 < p) {
-      e[nrt] = a[nrt][p - 1];
+      e[nrt] = a.get(nrt, p - 1);
     }
     e[p - 1] = 0;
 
     if (wantu) {
       for (let j = nct; j < nu; j++) {
         for (let i = 0; i < m; i++) {
-          U[i][j] = 0;
+          U.set(i, j, 0);
         }
-        U[j][j] = 1;
+        U.set(j, j, 1);
       }
       for (let k = nct - 1; k >= 0; k--) {
         if (s[k] !== 0) {
           for (let j = k + 1; j < nu; j++) {
             let t = 0;
             for (let i = k; i < m; i++) {
-              t += U[i][k] * U[i][j];
+              t += U.get(i, k) * U.get(i, j);
             }
-            t = -t / U[k][k];
+            t = -t / U.get(k, k);
             for (let i = k; i < m; i++) {
-              U[i][j] += t * U[i][k];
+              U.set(i, j, U.get(i, j) + t * U.get(i, k));
             }
           }
           for (let i = k; i < m; i++) {
-            U[i][k] = -U[i][k];
+            U.set(i, k, -U.get(i, k));
           }
-          U[k][k] = 1 + U[k][k];
+          U.set(k, k, 1 + U.get(k, k));
           for (let i = 0; i < k - 1; i++) {
-            U[i][k] = 0;
+            U.set(i, k, 0);
           }
         } else {
           for (let i = 0; i < m; i++) {
-            U[i][k] = 0;
+            U.set(i, k, 0);
           }
-          U[k][k] = 1;
+          U.set(k, k, 1);
         }
       }
     }
@@ -9764,24 +8440,24 @@ class SingularValueDecomposition {
           for (let j = k + 1; j < n; j++) {
             let t = 0;
             for (let i = k + 1; i < n; i++) {
-              t += V[i][k] * V[i][j];
+              t += V.get(i, k) * V.get(i, j);
             }
-            t = -t / V[k + 1][k];
+            t = -t / V.get(k + 1, k);
             for (let i = k + 1; i < n; i++) {
-              V[i][j] += t * V[i][k];
+              V.set(i, j, V.get(i, j) + t * V.get(i, k));
             }
           }
         }
         for (let i = 0; i < n; i++) {
-          V[i][k] = 0;
+          V.set(i, k, 0);
         }
-        V[k][k] = 1;
+        V.set(k, k, 1);
       }
     }
 
-    var pp = p - 1;
-    var iter = 0;
-    var eps = Number.EPSILON;
+    let pp = p - 1;
+    let iter = 0;
+    let eps = Number.EPSILON;
     while (p > 0) {
       let k, kase;
       for (k = p - 2; k >= -1; k--) {
@@ -9828,7 +8504,7 @@ class SingularValueDecomposition {
           let f = e[p - 2];
           e[p - 2] = 0;
           for (let j = p - 2; j >= k; j--) {
-            let t = Object(_util__WEBPACK_IMPORTED_MODULE_1__["hypotenuse"])(s[j], f);
+            let t = Object(_util__WEBPACK_IMPORTED_MODULE_2__["hypotenuse"])(s[j], f);
             let cs = s[j] / t;
             let sn = f / t;
             s[j] = t;
@@ -9838,9 +8514,9 @@ class SingularValueDecomposition {
             }
             if (wantv) {
               for (let i = 0; i < n; i++) {
-                t = cs * V[i][j] + sn * V[i][p - 1];
-                V[i][p - 1] = -sn * V[i][j] + cs * V[i][p - 1];
-                V[i][j] = t;
+                t = cs * V.get(i, j) + sn * V.get(i, p - 1);
+                V.set(i, p - 1, -sn * V.get(i, j) + cs * V.get(i, p - 1));
+                V.set(i, j, t);
               }
             }
           }
@@ -9850,7 +8526,7 @@ class SingularValueDecomposition {
           let f = e[k - 1];
           e[k - 1] = 0;
           for (let j = k; j < p; j++) {
-            let t = Object(_util__WEBPACK_IMPORTED_MODULE_1__["hypotenuse"])(s[j], f);
+            let t = Object(_util__WEBPACK_IMPORTED_MODULE_2__["hypotenuse"])(s[j], f);
             let cs = s[j] / t;
             let sn = f / t;
             s[j] = t;
@@ -9858,9 +8534,9 @@ class SingularValueDecomposition {
             e[j] = cs * e[j];
             if (wantu) {
               for (let i = 0; i < m; i++) {
-                t = cs * U[i][j] + sn * U[i][k - 1];
-                U[i][k - 1] = -sn * U[i][j] + cs * U[i][k - 1];
-                U[i][j] = t;
+                t = cs * U.get(i, j) + sn * U.get(i, k - 1);
+                U.set(i, k - 1, -sn * U.get(i, j) + cs * U.get(i, k - 1));
+                U.set(i, j, t);
               }
             }
           }
@@ -9872,7 +8548,7 @@ class SingularValueDecomposition {
             Math.abs(s[p - 2]),
             Math.abs(e[p - 2]),
             Math.abs(s[k]),
-            Math.abs(e[k])
+            Math.abs(e[k]),
           );
           const sp = s[p - 1] / scale;
           const spm1 = s[p - 2] / scale;
@@ -9893,7 +8569,7 @@ class SingularValueDecomposition {
           let f = (sk + sp) * (sk - sp) + shift;
           let g = sk * ek;
           for (let j = k; j < p - 1; j++) {
-            let t = Object(_util__WEBPACK_IMPORTED_MODULE_1__["hypotenuse"])(f, g);
+            let t = Object(_util__WEBPACK_IMPORTED_MODULE_2__["hypotenuse"])(f, g);
             if (t === 0) t = Number.MIN_VALUE;
             let cs = f / t;
             let sn = g / t;
@@ -9906,12 +8582,12 @@ class SingularValueDecomposition {
             s[j + 1] = cs * s[j + 1];
             if (wantv) {
               for (let i = 0; i < n; i++) {
-                t = cs * V[i][j] + sn * V[i][j + 1];
-                V[i][j + 1] = -sn * V[i][j] + cs * V[i][j + 1];
-                V[i][j] = t;
+                t = cs * V.get(i, j) + sn * V.get(i, j + 1);
+                V.set(i, j + 1, -sn * V.get(i, j) + cs * V.get(i, j + 1));
+                V.set(i, j, t);
               }
             }
-            t = Object(_util__WEBPACK_IMPORTED_MODULE_1__["hypotenuse"])(f, g);
+            t = Object(_util__WEBPACK_IMPORTED_MODULE_2__["hypotenuse"])(f, g);
             if (t === 0) t = Number.MIN_VALUE;
             cs = f / t;
             sn = g / t;
@@ -9922,9 +8598,9 @@ class SingularValueDecomposition {
             e[j + 1] = cs * e[j + 1];
             if (wantu && j < m - 1) {
               for (let i = 0; i < m; i++) {
-                t = cs * U[i][j] + sn * U[i][j + 1];
-                U[i][j + 1] = -sn * U[i][j] + cs * U[i][j + 1];
-                U[i][j] = t;
+                t = cs * U.get(i, j) + sn * U.get(i, j + 1);
+                U.set(i, j + 1, -sn * U.get(i, j) + cs * U.get(i, j + 1));
+                U.set(i, j, t);
               }
             }
           }
@@ -9937,7 +8613,7 @@ class SingularValueDecomposition {
             s[k] = s[k] < 0 ? -s[k] : 0;
             if (wantv) {
               for (let i = 0; i <= pp; i++) {
-                V[i][k] = -V[i][k];
+                V.set(i, k, -V.get(i, k));
               }
             }
           }
@@ -9950,16 +8626,16 @@ class SingularValueDecomposition {
             s[k + 1] = t;
             if (wantv && k < n - 1) {
               for (let i = 0; i < n; i++) {
-                t = V[i][k + 1];
-                V[i][k + 1] = V[i][k];
-                V[i][k] = t;
+                t = V.get(i, k + 1);
+                V.set(i, k + 1, V.get(i, k));
+                V.set(i, k, t);
               }
             }
             if (wantu && k < m - 1) {
               for (let i = 0; i < m; i++) {
-                t = U[i][k + 1];
-                U[i][k + 1] = U[i][k];
-                U[i][k] = t;
+                t = U.get(i, k + 1);
+                U.set(i, k + 1, U.get(i, k));
+                U.set(i, k, t);
               }
             }
             k++;
@@ -9973,7 +8649,7 @@ class SingularValueDecomposition {
     }
 
     if (swapped) {
-      var tmp = V;
+      let tmp = V;
       V = U;
       U = tmp;
     }
@@ -9985,125 +8661,92 @@ class SingularValueDecomposition {
     this.V = V;
   }
 
-  /**
-   * Solve a problem of least square (Ax=b) by using the SVD. Useful when A is singular. When A is not singular, it would be better to use qr.solve(value).
-   * Example : We search to approximate x, with A matrix shape m*n, x vector size n, b vector size m (m > n). We will use :
-   * var svd = SingularValueDecomposition(A);
-   * var x = svd.solve(b);
-   * @param {Matrix} value - Matrix 1D which is the vector b (in the equation Ax = b)
-   * @return {Matrix} - The vector x
-   */
   solve(value) {
-    var Y = value;
-    var e = this.threshold;
-    var scols = this.s.length;
-    var Ls = _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"].zeros(scols, scols);
+    let Y = value;
+    let e = this.threshold;
+    let scols = this.s.length;
+    let Ls = _matrix__WEBPACK_IMPORTED_MODULE_0__["default"].zeros(scols, scols);
 
     for (let i = 0; i < scols; i++) {
       if (Math.abs(this.s[i]) <= e) {
-        Ls[i][i] = 0;
+        Ls.set(i, i, 0);
       } else {
-        Ls[i][i] = 1 / this.s[i];
+        Ls.set(i, i, 1 / this.s[i]);
       }
     }
 
-    var U = this.U;
-    var V = this.rightSingularVectors;
+    let U = this.U;
+    let V = this.rightSingularVectors;
 
-    var VL = V.mmul(Ls);
-    var vrows = V.rows;
-    var urows = U.length;
-    var VLU = _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"].zeros(vrows, urows);
+    let VL = V.mmul(Ls);
+    let vrows = V.rows;
+    let urows = U.rows;
+    let VLU = _matrix__WEBPACK_IMPORTED_MODULE_0__["default"].zeros(vrows, urows);
 
     for (let i = 0; i < vrows; i++) {
       for (let j = 0; j < urows; j++) {
         let sum = 0;
         for (let k = 0; k < scols; k++) {
-          sum += VL[i][k] * U[j][k];
+          sum += VL.get(i, k) * U.get(j, k);
         }
-        VLU[i][j] = sum;
+        VLU.set(i, j, sum);
       }
     }
 
     return VLU.mmul(Y);
   }
 
-  /**
-   *
-   * @param {Array<number>} value
-   * @return {Matrix}
-   */
   solveForDiagonal(value) {
-    return this.solve(_index__WEBPACK_IMPORTED_MODULE_0__["Matrix"].diag(value));
+    return this.solve(_matrix__WEBPACK_IMPORTED_MODULE_0__["default"].diag(value));
   }
 
-  /**
-   * Get the inverse of the matrix. We compute the inverse of a matrix using SVD when this matrix is singular or ill-conditioned. Example :
-   * var svd = SingularValueDecomposition(A);
-   * var inverseA = svd.inverse();
-   * @return {Matrix} - The approximation of the inverse of the matrix
-   */
   inverse() {
-    var V = this.V;
-    var e = this.threshold;
-    var vrows = V.length;
-    var vcols = V[0].length;
-    var X = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](vrows, this.s.length);
+    let V = this.V;
+    let e = this.threshold;
+    let vrows = V.rows;
+    let vcols = V.columns;
+    let X = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](vrows, this.s.length);
 
     for (let i = 0; i < vrows; i++) {
       for (let j = 0; j < vcols; j++) {
         if (Math.abs(this.s[j]) > e) {
-          X[i][j] = V[i][j] / this.s[j];
-        } else {
-          X[i][j] = 0;
+          X.set(i, j, V.get(i, j) / this.s[j]);
         }
       }
     }
 
-    var U = this.U;
+    let U = this.U;
 
-    var urows = U.length;
-    var ucols = U[0].length;
-    var Y = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](vrows, urows);
+    let urows = U.rows;
+    let ucols = U.columns;
+    let Y = new _matrix__WEBPACK_IMPORTED_MODULE_0__["default"](vrows, urows);
 
     for (let i = 0; i < vrows; i++) {
       for (let j = 0; j < urows; j++) {
         let sum = 0;
         for (let k = 0; k < ucols; k++) {
-          sum += X[i][k] * U[j][k];
+          sum += X.get(i, k) * U.get(j, k);
         }
-        Y[i][j] = sum;
+        Y.set(i, j, sum);
       }
     }
 
     return Y;
   }
 
-  /**
-   *
-   * @return {number}
-   */
   get condition() {
     return this.s[0] / this.s[Math.min(this.m, this.n) - 1];
   }
 
-  /**
-   *
-   * @return {number}
-   */
   get norm2() {
     return this.s[0];
   }
 
-  /**
-   *
-   * @return {number}
-   */
   get rank() {
-    var tol = Math.max(this.m, this.n) * this.s[0] * Number.EPSILON;
-    var r = 0;
-    var s = this.s;
-    for (var i = 0, ii = s.length; i < ii; i++) {
+    let tol = Math.max(this.m, this.n) * this.s[0] * Number.EPSILON;
+    let r = 0;
+    let s = this.s;
+    for (let i = 0, ii = s.length; i < ii; i++) {
       if (s[i] > tol) {
         r++;
       }
@@ -10111,50 +8754,24 @@ class SingularValueDecomposition {
     return r;
   }
 
-  /**
-   *
-   * @return {Array<number>}
-   */
   get diagonal() {
-    return this.s;
+    return Array.from(this.s);
   }
 
-  /**
-   *
-   * @return {number}
-   */
   get threshold() {
-    return Number.EPSILON / 2 * Math.max(this.m, this.n) * this.s[0];
+    return (Number.EPSILON / 2) * Math.max(this.m, this.n) * this.s[0];
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get leftSingularVectors() {
-    if (!_index__WEBPACK_IMPORTED_MODULE_0__["Matrix"].isMatrix(this.U)) {
-      this.U = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](this.U);
-    }
     return this.U;
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get rightSingularVectors() {
-    if (!_index__WEBPACK_IMPORTED_MODULE_0__["Matrix"].isMatrix(this.V)) {
-      this.V = new _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"](this.V);
-    }
     return this.V;
   }
 
-  /**
-   *
-   * @return {Matrix}
-   */
   get diagonalMatrix() {
-    return _index__WEBPACK_IMPORTED_MODULE_0__["Matrix"].diag(this.s);
+    return _matrix__WEBPACK_IMPORTED_MODULE_0__["default"].diag(this.s);
   }
 }
 
@@ -10165,15 +8782,14 @@ class SingularValueDecomposition {
 /*!***********************************************!*\
   !*** ./node_modules/ml-matrix/src/dc/util.js ***!
   \***********************************************/
-/*! exports provided: hypotenuse, getFilled2DArray */
+/*! exports provided: hypotenuse */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hypotenuse", function() { return hypotenuse; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getFilled2DArray", function() { return getFilled2DArray; });
 function hypotenuse(a, b) {
-  var r = 0;
+  let r = 0;
   if (Math.abs(a) > Math.abs(b)) {
     r = b / a;
     return Math.abs(a) * Math.sqrt(1 + r * r);
@@ -10183,17 +8799,6 @@ function hypotenuse(a, b) {
     return Math.abs(b) * Math.sqrt(1 + r * r);
   }
   return 0;
-}
-
-function getFilled2DArray(rows, columns, value) {
-  var array = new Array(rows);
-  for (var i = 0; i < rows; i++) {
-    array[i] = new Array(columns);
-    for (var j = 0; j < columns; j++) {
-      array[i][j] = value;
-    }
-  }
-  return array;
 }
 
 
@@ -10213,38 +8818,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _dc_lu__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dc/lu */ "./node_modules/ml-matrix/src/dc/lu.js");
 /* harmony import */ var _dc_qr__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./dc/qr */ "./node_modules/ml-matrix/src/dc/qr.js");
 /* harmony import */ var _dc_svd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dc/svd */ "./node_modules/ml-matrix/src/dc/svd.js");
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./index */ "./node_modules/ml-matrix/src/index.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./wrap/WrapperMatrix2D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix2D.js");
 
 
 
 
 
 
-/**
- * Computes the inverse of a Matrix
- * @param {Matrix} matrix
- * @param {boolean} [useSVD=false]
- * @return {Matrix}
- */
 function inverse(matrix, useSVD = false) {
-  matrix = _index__WEBPACK_IMPORTED_MODULE_3__["WrapperMatrix2D"].checkMatrix(matrix);
+  matrix = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_4__["default"].checkMatrix(matrix);
   if (useSVD) {
     return new _dc_svd__WEBPACK_IMPORTED_MODULE_2__["default"](matrix).inverse();
   } else {
-    return solve(matrix, _index__WEBPACK_IMPORTED_MODULE_3__["Matrix"].eye(matrix.rows));
+    return solve(matrix, _matrix__WEBPACK_IMPORTED_MODULE_3__["default"].eye(matrix.rows));
   }
 }
 
-/**
- *
- * @param {Matrix} leftHandSide
- * @param {Matrix} rightHandSide
- * @param {boolean} [useSVD = false]
- * @return {Matrix}
- */
 function solve(leftHandSide, rightHandSide, useSVD = false) {
-  leftHandSide = _index__WEBPACK_IMPORTED_MODULE_3__["WrapperMatrix2D"].checkMatrix(leftHandSide);
-  rightHandSide = _index__WEBPACK_IMPORTED_MODULE_3__["WrapperMatrix2D"].checkMatrix(rightHandSide);
+  leftHandSide = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_4__["default"].checkMatrix(leftHandSide);
+  rightHandSide = _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_4__["default"].checkMatrix(rightHandSide);
   if (useSVD) {
     return new _dc_svd__WEBPACK_IMPORTED_MODULE_2__["default"](leftHandSide).solve(rightHandSide);
   } else {
@@ -10257,64 +8850,159 @@ function solve(leftHandSide, rightHandSide, useSVD = false) {
 
 /***/ }),
 
+/***/ "./node_modules/ml-matrix/src/determinant.js":
+/*!***************************************************!*\
+  !*** ./node_modules/ml-matrix/src/determinant.js ***!
+  \***************************************************/
+/*! exports provided: determinant */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "determinant", function() { return determinant; });
+/* harmony import */ var _dc_lu__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dc/lu */ "./node_modules/ml-matrix/src/dc/lu.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _views_selection__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./views/selection */ "./node_modules/ml-matrix/src/views/selection.js");
+
+
+
+
+function determinant(matrix) {
+  matrix = _matrix__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(matrix);
+  if (matrix.isSquare()) {
+    if (matrix.columns === 0) {
+      return 1;
+    }
+
+    let a, b, c, d;
+    if (matrix.columns === 2) {
+      // 2 x 2 matrix
+      a = matrix.get(0, 0);
+      b = matrix.get(0, 1);
+      c = matrix.get(1, 0);
+      d = matrix.get(1, 1);
+
+      return a * d - b * c;
+    } else if (matrix.columns === 3) {
+      // 3 x 3 matrix
+      let subMatrix0, subMatrix1, subMatrix2;
+      subMatrix0 = new _views_selection__WEBPACK_IMPORTED_MODULE_2__["default"](matrix, [1, 2], [1, 2]);
+      subMatrix1 = new _views_selection__WEBPACK_IMPORTED_MODULE_2__["default"](matrix, [1, 2], [0, 2]);
+      subMatrix2 = new _views_selection__WEBPACK_IMPORTED_MODULE_2__["default"](matrix, [1, 2], [0, 1]);
+      a = matrix.get(0, 0);
+      b = matrix.get(0, 1);
+      c = matrix.get(0, 2);
+
+      return (
+        a * determinant(subMatrix0) -
+        b * determinant(subMatrix1) +
+        c * determinant(subMatrix2)
+      );
+    } else {
+      // general purpose determinant using the LU decomposition
+      return new _dc_lu__WEBPACK_IMPORTED_MODULE_0__["default"](matrix).determinant;
+    }
+  } else {
+    throw Error('determinant can only be calculated for a square matrix');
+  }
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/ml-matrix/src/index.js":
 /*!*********************************************!*\
   !*** ./node_modules/ml-matrix/src/index.js ***!
   \*********************************************/
-/*! exports provided: default, Matrix, abstractMatrix, wrap, WrapperMatrix2D, WrapperMatrix1D, solve, inverse, linearDependencies, SingularValueDecomposition, SVD, EigenvalueDecomposition, EVD, CholeskyDecomposition, CHO, LuDecomposition, LU, QrDecomposition, QR */
+/*! exports provided: AbstractMatrix, default, Matrix, MatrixColumnView, MatrixColumnSelectionView, MatrixFlipColumnView, MatrixFlipRowView, MatrixRowView, MatrixRowSelectionView, MatrixSelectionView, MatrixSubView, MatrixTransposeView, wrap, WrapperMatrix1D, WrapperMatrix2D, solve, inverse, determinant, linearDependencies, pseudoInverse, covariance, correlation, SingularValueDecomposition, SVD, EigenvalueDecomposition, EVD, CholeskyDecomposition, CHO, LuDecomposition, LU, QrDecomposition, QR, Nipals, NIPALS */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AbstractMatrix", function() { return _matrix__WEBPACK_IMPORTED_MODULE_0__["AbstractMatrix"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "default", function() { return _matrix__WEBPACK_IMPORTED_MODULE_0__["default"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Matrix", function() { return _matrix__WEBPACK_IMPORTED_MODULE_0__["default"]; });
 
-/* harmony import */ var _abstractMatrix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./abstractMatrix */ "./node_modules/ml-matrix/src/abstractMatrix.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "abstractMatrix", function() { return _abstractMatrix__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+/* harmony import */ var _views_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./views/index */ "./node_modules/ml-matrix/src/views/index.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixColumnView", function() { return _views_index__WEBPACK_IMPORTED_MODULE_1__["MatrixColumnView"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixColumnSelectionView", function() { return _views_index__WEBPACK_IMPORTED_MODULE_1__["MatrixColumnSelectionView"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixFlipColumnView", function() { return _views_index__WEBPACK_IMPORTED_MODULE_1__["MatrixFlipColumnView"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixFlipRowView", function() { return _views_index__WEBPACK_IMPORTED_MODULE_1__["MatrixFlipRowView"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixRowView", function() { return _views_index__WEBPACK_IMPORTED_MODULE_1__["MatrixRowView"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixRowSelectionView", function() { return _views_index__WEBPACK_IMPORTED_MODULE_1__["MatrixRowSelectionView"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixSelectionView", function() { return _views_index__WEBPACK_IMPORTED_MODULE_1__["MatrixSelectionView"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixSubView", function() { return _views_index__WEBPACK_IMPORTED_MODULE_1__["MatrixSubView"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixTransposeView", function() { return _views_index__WEBPACK_IMPORTED_MODULE_1__["MatrixTransposeView"]; });
 
 /* harmony import */ var _wrap_wrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./wrap/wrap */ "./node_modules/ml-matrix/src/wrap/wrap.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "wrap", function() { return _wrap_wrap__WEBPACK_IMPORTED_MODULE_2__["wrap"]; });
 
-/* harmony import */ var _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./wrap/WrapperMatrix2D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix2D.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapperMatrix2D", function() { return _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+/* harmony import */ var _wrap_WrapperMatrix1D__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./wrap/WrapperMatrix1D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix1D.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapperMatrix1D", function() { return _wrap_WrapperMatrix1D__WEBPACK_IMPORTED_MODULE_3__["default"]; });
 
-/* harmony import */ var _wrap_WrapperMatrix1D__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./wrap/WrapperMatrix1D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix1D.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapperMatrix1D", function() { return _wrap_WrapperMatrix1D__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+/* harmony import */ var _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./wrap/WrapperMatrix2D */ "./node_modules/ml-matrix/src/wrap/WrapperMatrix2D.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WrapperMatrix2D", function() { return _wrap_WrapperMatrix2D__WEBPACK_IMPORTED_MODULE_4__["default"]; });
 
 /* harmony import */ var _decompositions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./decompositions */ "./node_modules/ml-matrix/src/decompositions.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "solve", function() { return _decompositions__WEBPACK_IMPORTED_MODULE_5__["solve"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "inverse", function() { return _decompositions__WEBPACK_IMPORTED_MODULE_5__["inverse"]; });
 
-/* harmony import */ var _linearDependencies__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./linearDependencies */ "./node_modules/ml-matrix/src/linearDependencies.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "linearDependencies", function() { return _linearDependencies__WEBPACK_IMPORTED_MODULE_6__["linearDependencies"]; });
+/* harmony import */ var _determinant__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./determinant */ "./node_modules/ml-matrix/src/determinant.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "determinant", function() { return _determinant__WEBPACK_IMPORTED_MODULE_6__["determinant"]; });
 
-/* harmony import */ var _dc_svd_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./dc/svd.js */ "./node_modules/ml-matrix/src/dc/svd.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SingularValueDecomposition", function() { return _dc_svd_js__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+/* harmony import */ var _linearDependencies__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./linearDependencies */ "./node_modules/ml-matrix/src/linearDependencies.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "linearDependencies", function() { return _linearDependencies__WEBPACK_IMPORTED_MODULE_7__["linearDependencies"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SVD", function() { return _dc_svd_js__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+/* harmony import */ var _pseudoInverse__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./pseudoInverse */ "./node_modules/ml-matrix/src/pseudoInverse.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "pseudoInverse", function() { return _pseudoInverse__WEBPACK_IMPORTED_MODULE_8__["pseudoInverse"]; });
 
-/* harmony import */ var _dc_evd_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./dc/evd.js */ "./node_modules/ml-matrix/src/dc/evd.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EigenvalueDecomposition", function() { return _dc_evd_js__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+/* harmony import */ var _covariance__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./covariance */ "./node_modules/ml-matrix/src/covariance.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "covariance", function() { return _covariance__WEBPACK_IMPORTED_MODULE_9__["covariance"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EVD", function() { return _dc_evd_js__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+/* harmony import */ var _correlation__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./correlation */ "./node_modules/ml-matrix/src/correlation.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "correlation", function() { return _correlation__WEBPACK_IMPORTED_MODULE_10__["correlation"]; });
 
-/* harmony import */ var _dc_cholesky_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./dc/cholesky.js */ "./node_modules/ml-matrix/src/dc/cholesky.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CholeskyDecomposition", function() { return _dc_cholesky_js__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+/* harmony import */ var _dc_svd_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./dc/svd.js */ "./node_modules/ml-matrix/src/dc/svd.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SingularValueDecomposition", function() { return _dc_svd_js__WEBPACK_IMPORTED_MODULE_11__["default"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CHO", function() { return _dc_cholesky_js__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SVD", function() { return _dc_svd_js__WEBPACK_IMPORTED_MODULE_11__["default"]; });
 
-/* harmony import */ var _dc_lu_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./dc/lu.js */ "./node_modules/ml-matrix/src/dc/lu.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LuDecomposition", function() { return _dc_lu_js__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+/* harmony import */ var _dc_evd_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./dc/evd.js */ "./node_modules/ml-matrix/src/dc/evd.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EigenvalueDecomposition", function() { return _dc_evd_js__WEBPACK_IMPORTED_MODULE_12__["default"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LU", function() { return _dc_lu_js__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "EVD", function() { return _dc_evd_js__WEBPACK_IMPORTED_MODULE_12__["default"]; });
 
-/* harmony import */ var _dc_qr_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./dc/qr.js */ "./node_modules/ml-matrix/src/dc/qr.js");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "QrDecomposition", function() { return _dc_qr_js__WEBPACK_IMPORTED_MODULE_11__["default"]; });
+/* harmony import */ var _dc_cholesky_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./dc/cholesky.js */ "./node_modules/ml-matrix/src/dc/cholesky.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CholeskyDecomposition", function() { return _dc_cholesky_js__WEBPACK_IMPORTED_MODULE_13__["default"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "QR", function() { return _dc_qr_js__WEBPACK_IMPORTED_MODULE_11__["default"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CHO", function() { return _dc_cholesky_js__WEBPACK_IMPORTED_MODULE_13__["default"]; });
+
+/* harmony import */ var _dc_lu_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./dc/lu.js */ "./node_modules/ml-matrix/src/dc/lu.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LuDecomposition", function() { return _dc_lu_js__WEBPACK_IMPORTED_MODULE_14__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LU", function() { return _dc_lu_js__WEBPACK_IMPORTED_MODULE_14__["default"]; });
+
+/* harmony import */ var _dc_qr_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./dc/qr.js */ "./node_modules/ml-matrix/src/dc/qr.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "QrDecomposition", function() { return _dc_qr_js__WEBPACK_IMPORTED_MODULE_15__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "QR", function() { return _dc_qr_js__WEBPACK_IMPORTED_MODULE_15__["default"]; });
+
+/* harmony import */ var _dc_nipals_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./dc/nipals.js */ "./node_modules/ml-matrix/src/dc/nipals.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Nipals", function() { return _dc_nipals_js__WEBPACK_IMPORTED_MODULE_16__["default"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "NIPALS", function() { return _dc_nipals_js__WEBPACK_IMPORTED_MODULE_16__["default"]; });
 
 
 
@@ -10330,6 +9018,80 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/ml-matrix/src/inspect.js":
+/*!***********************************************!*\
+  !*** ./node_modules/ml-matrix/src/inspect.js ***!
+  \***********************************************/
+/*! exports provided: inspectMatrix, inspectMatrixWithOptions */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "inspectMatrix", function() { return inspectMatrix; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "inspectMatrixWithOptions", function() { return inspectMatrixWithOptions; });
+const indent = ' '.repeat(2);
+const indentData = ' '.repeat(4);
+
+function inspectMatrix() {
+  return inspectMatrixWithOptions(this);
+}
+
+function inspectMatrixWithOptions(matrix, options = {}) {
+  const { maxRows = 15, maxColumns = 10, maxNumSize = 8 } = options;
+  return `${matrix.constructor.name} {
+${indent}[
+${indentData}${inspectData(matrix, maxRows, maxColumns, maxNumSize)}
+${indent}]
+${indent}rows: ${matrix.rows}
+${indent}columns: ${matrix.columns}
+}`;
+}
+
+function inspectData(matrix, maxRows, maxColumns, maxNumSize) {
+  const { rows, columns } = matrix;
+  const maxI = Math.min(rows, maxRows);
+  const maxJ = Math.min(columns, maxColumns);
+  const result = [];
+  for (let i = 0; i < maxI; i++) {
+    let line = [];
+    for (let j = 0; j < maxJ; j++) {
+      line.push(formatNumber(matrix.get(i, j), maxNumSize));
+    }
+    result.push(`${line.join(' ')}`);
+  }
+  if (maxJ !== columns) {
+    result[result.length - 1] += ` ... ${columns - maxColumns} more columns`;
+  }
+  if (maxI !== rows) {
+    result.push(`... ${rows - maxRows} more rows`);
+  }
+  return result.join(`\n${indentData}`);
+}
+
+function formatNumber(num, maxNumSize) {
+  const numStr = String(num);
+  if (numStr.length <= maxNumSize) {
+    return numStr.padEnd(maxNumSize, ' ');
+  }
+  const precise = num.toPrecision(maxNumSize - 2);
+  if (precise.length <= maxNumSize) {
+    return precise;
+  }
+  const exponential = num.toExponential(maxNumSize - 2);
+  const eIndex = exponential.indexOf('e');
+  const e = exponential.slice(eIndex);
+  return exponential.slice(0, maxNumSize - e.length) + e;
+}
 
 
 /***/ }),
@@ -10344,18 +9106,14 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "linearDependencies", function() { return linearDependencies; });
-/* harmony import */ var ml_array_max__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ml-array-max */ "./node_modules/ml-array-max/lib-es6/index.js");
+/* harmony import */ var _dc_svd__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dc/svd */ "./node_modules/ml-matrix/src/dc/svd.js");
 /* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./matrix */ "./node_modules/ml-matrix/src/matrix.js");
-/* harmony import */ var _dc_svd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dc/svd */ "./node_modules/ml-matrix/src/dc/svd.js");
 
 
 
-
-
-// function used by rowsDependencies
 function xrange(n, exception) {
-  var range = [];
-  for (var i = 0; i < n; i++) {
+  let range = [];
+  for (let i = 0; i < n; i++) {
     if (i !== exception) {
       range.push(i);
     }
@@ -10363,19 +9121,18 @@ function xrange(n, exception) {
   return range;
 }
 
-// function used by rowsDependencies
 function dependenciesOneRow(
   error,
   matrix,
   index,
   thresholdValue = 10e-10,
-  thresholdError = 10e-10
+  thresholdError = 10e-10,
 ) {
   if (error > thresholdError) {
     return new Array(matrix.rows + 1).fill(0);
   } else {
-    var returnArray = matrix.addRow(index, [0]);
-    for (var i = 0; i < returnArray.rows; i++) {
+    let returnArray = matrix.addRow(index, [0]);
+    for (let i = 0; i < returnArray.rows; i++) {
       if (Math.abs(returnArray.get(i, 0)) < thresholdValue) {
         returnArray.set(i, 0, 0);
       }
@@ -10384,39 +9141,862 @@ function dependenciesOneRow(
   }
 }
 
-/**
- * Creates a matrix which represents the dependencies between rows.
- * If a row is a linear combination of others rows, the result will be a row with the coefficients of this combination.
- * For example : for A = [[2, 0, 0, 1], [0, 1, 6, 0], [0, 3, 0, 1], [0, 0, 1, 0], [0, 1, 2, 0]], the result will be [[0, 0, 0, 0, 0], [0, 0, 0, 4, 1], [0, 0, 0, 0, 0], [0, 0.25, 0, 0, -0.25], [0, 1, 0, -4, 0]]
- * @param {Matrix} matrix
- * @param {Object} [options] includes thresholdValue and thresholdError.
- * @param {number} [options.thresholdValue = 10e-10] If an absolute value is inferior to this threshold, it will equals zero.
- * @param {number} [options.thresholdError = 10e-10] If the error is inferior to that threshold, the linear combination found is accepted and the row is dependent from other rows.
- * @return {Matrix} the matrix which represents the dependencies between rows.
- */
-
 function linearDependencies(matrix, options = {}) {
   const { thresholdValue = 10e-10, thresholdError = 10e-10 } = options;
+  matrix = _matrix__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(matrix);
 
-  var n = matrix.rows;
-  var results = new _matrix__WEBPACK_IMPORTED_MODULE_1__["default"](n, n);
+  let n = matrix.rows;
+  let results = new _matrix__WEBPACK_IMPORTED_MODULE_1__["default"](n, n);
 
-  for (var i = 0; i < n; i++) {
-    var b = _matrix__WEBPACK_IMPORTED_MODULE_1__["default"].columnVector(matrix.getRow(i));
-    var Abis = matrix.subMatrixRow(xrange(n, i)).transposeView();
-    var svd = new _dc_svd__WEBPACK_IMPORTED_MODULE_2__["default"](Abis);
-    var x = svd.solve(b);
-    var error = Object(ml_array_max__WEBPACK_IMPORTED_MODULE_0__["default"])(
-      _matrix__WEBPACK_IMPORTED_MODULE_1__["default"].sub(b, Abis.mmul(x))
-        .abs()
-        .to1DArray()
-    );
+  for (let i = 0; i < n; i++) {
+    let b = _matrix__WEBPACK_IMPORTED_MODULE_1__["default"].columnVector(matrix.getRow(i));
+    let Abis = matrix.subMatrixRow(xrange(n, i)).transpose();
+    let svd = new _dc_svd__WEBPACK_IMPORTED_MODULE_0__["default"](Abis);
+    let x = svd.solve(b);
+    let error = _matrix__WEBPACK_IMPORTED_MODULE_1__["default"].sub(b, Abis.mmul(x)).abs().max();
     results.setRow(
       i,
-      dependenciesOneRow(error, x, i, thresholdValue, thresholdError)
+      dependenciesOneRow(error, x, i, thresholdValue, thresholdError),
     );
   }
   return results;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/ml-matrix/src/mathOperations.js":
+/*!******************************************************!*\
+  !*** ./node_modules/ml-matrix/src/mathOperations.js ***!
+  \******************************************************/
+/*! exports provided: installMathOperations */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "installMathOperations", function() { return installMathOperations; });
+function installMathOperations(AbstractMatrix, Matrix) {
+  AbstractMatrix.prototype.add = function add(value) {
+    if (typeof value === 'number') return this.addS(value);
+    return this.addM(value);
+  };
+
+  AbstractMatrix.prototype.addS = function addS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) + value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.addM = function addM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) + matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.add = function add(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.add(value);
+  };
+
+  AbstractMatrix.prototype.sub = function sub(value) {
+    if (typeof value === 'number') return this.subS(value);
+    return this.subM(value);
+  };
+
+  AbstractMatrix.prototype.subS = function subS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) - value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.subM = function subM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) - matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.sub = function sub(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.sub(value);
+  };
+  AbstractMatrix.prototype.subtract = AbstractMatrix.prototype.sub;
+  AbstractMatrix.prototype.subtractS = AbstractMatrix.prototype.subS;
+  AbstractMatrix.prototype.subtractM = AbstractMatrix.prototype.subM;
+  AbstractMatrix.subtract = AbstractMatrix.sub;
+
+  AbstractMatrix.prototype.mul = function mul(value) {
+    if (typeof value === 'number') return this.mulS(value);
+    return this.mulM(value);
+  };
+
+  AbstractMatrix.prototype.mulS = function mulS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) * value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.mulM = function mulM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) * matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.mul = function mul(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.mul(value);
+  };
+  AbstractMatrix.prototype.multiply = AbstractMatrix.prototype.mul;
+  AbstractMatrix.prototype.multiplyS = AbstractMatrix.prototype.mulS;
+  AbstractMatrix.prototype.multiplyM = AbstractMatrix.prototype.mulM;
+  AbstractMatrix.multiply = AbstractMatrix.mul;
+
+  AbstractMatrix.prototype.div = function div(value) {
+    if (typeof value === 'number') return this.divS(value);
+    return this.divM(value);
+  };
+
+  AbstractMatrix.prototype.divS = function divS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) / value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.divM = function divM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) / matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.div = function div(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.div(value);
+  };
+  AbstractMatrix.prototype.divide = AbstractMatrix.prototype.div;
+  AbstractMatrix.prototype.divideS = AbstractMatrix.prototype.divS;
+  AbstractMatrix.prototype.divideM = AbstractMatrix.prototype.divM;
+  AbstractMatrix.divide = AbstractMatrix.div;
+
+  AbstractMatrix.prototype.mod = function mod(value) {
+    if (typeof value === 'number') return this.modS(value);
+    return this.modM(value);
+  };
+
+  AbstractMatrix.prototype.modS = function modS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) % value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.modM = function modM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) % matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.mod = function mod(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.mod(value);
+  };
+  AbstractMatrix.prototype.modulus = AbstractMatrix.prototype.mod;
+  AbstractMatrix.prototype.modulusS = AbstractMatrix.prototype.modS;
+  AbstractMatrix.prototype.modulusM = AbstractMatrix.prototype.modM;
+  AbstractMatrix.modulus = AbstractMatrix.mod;
+
+  AbstractMatrix.prototype.and = function and(value) {
+    if (typeof value === 'number') return this.andS(value);
+    return this.andM(value);
+  };
+
+  AbstractMatrix.prototype.andS = function andS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) & value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.andM = function andM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) & matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.and = function and(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.and(value);
+  };
+
+  AbstractMatrix.prototype.or = function or(value) {
+    if (typeof value === 'number') return this.orS(value);
+    return this.orM(value);
+  };
+
+  AbstractMatrix.prototype.orS = function orS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) | value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.orM = function orM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) | matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.or = function or(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.or(value);
+  };
+
+  AbstractMatrix.prototype.xor = function xor(value) {
+    if (typeof value === 'number') return this.xorS(value);
+    return this.xorM(value);
+  };
+
+  AbstractMatrix.prototype.xorS = function xorS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) ^ value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.xorM = function xorM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) ^ matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.xor = function xor(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.xor(value);
+  };
+
+  AbstractMatrix.prototype.leftShift = function leftShift(value) {
+    if (typeof value === 'number') return this.leftShiftS(value);
+    return this.leftShiftM(value);
+  };
+
+  AbstractMatrix.prototype.leftShiftS = function leftShiftS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) << value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.leftShiftM = function leftShiftM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) << matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.leftShift = function leftShift(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.leftShift(value);
+  };
+
+  AbstractMatrix.prototype.signPropagatingRightShift = function signPropagatingRightShift(value) {
+    if (typeof value === 'number') return this.signPropagatingRightShiftS(value);
+    return this.signPropagatingRightShiftM(value);
+  };
+
+  AbstractMatrix.prototype.signPropagatingRightShiftS = function signPropagatingRightShiftS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) >> value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.signPropagatingRightShiftM = function signPropagatingRightShiftM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) >> matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.signPropagatingRightShift = function signPropagatingRightShift(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.signPropagatingRightShift(value);
+  };
+
+  AbstractMatrix.prototype.rightShift = function rightShift(value) {
+    if (typeof value === 'number') return this.rightShiftS(value);
+    return this.rightShiftM(value);
+  };
+
+  AbstractMatrix.prototype.rightShiftS = function rightShiftS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) >>> value);
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.rightShiftM = function rightShiftM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) >>> matrix.get(i, j));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.rightShift = function rightShift(matrix, value) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.rightShift(value);
+  };
+  AbstractMatrix.prototype.zeroFillRightShift = AbstractMatrix.prototype.rightShift;
+  AbstractMatrix.prototype.zeroFillRightShiftS = AbstractMatrix.prototype.rightShiftS;
+  AbstractMatrix.prototype.zeroFillRightShiftM = AbstractMatrix.prototype.rightShiftM;
+  AbstractMatrix.zeroFillRightShift = AbstractMatrix.rightShift;
+
+  AbstractMatrix.prototype.not = function not() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, ~(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.not = function not(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.not();
+  };
+
+  AbstractMatrix.prototype.abs = function abs() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.abs(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.abs = function abs(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.abs();
+  };
+
+  AbstractMatrix.prototype.acos = function acos() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.acos(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.acos = function acos(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.acos();
+  };
+
+  AbstractMatrix.prototype.acosh = function acosh() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.acosh(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.acosh = function acosh(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.acosh();
+  };
+
+  AbstractMatrix.prototype.asin = function asin() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.asin(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.asin = function asin(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.asin();
+  };
+
+  AbstractMatrix.prototype.asinh = function asinh() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.asinh(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.asinh = function asinh(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.asinh();
+  };
+
+  AbstractMatrix.prototype.atan = function atan() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.atan(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.atan = function atan(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.atan();
+  };
+
+  AbstractMatrix.prototype.atanh = function atanh() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.atanh(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.atanh = function atanh(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.atanh();
+  };
+
+  AbstractMatrix.prototype.cbrt = function cbrt() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.cbrt(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.cbrt = function cbrt(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.cbrt();
+  };
+
+  AbstractMatrix.prototype.ceil = function ceil() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.ceil(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.ceil = function ceil(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.ceil();
+  };
+
+  AbstractMatrix.prototype.clz32 = function clz32() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.clz32(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.clz32 = function clz32(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.clz32();
+  };
+
+  AbstractMatrix.prototype.cos = function cos() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.cos(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.cos = function cos(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.cos();
+  };
+
+  AbstractMatrix.prototype.cosh = function cosh() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.cosh(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.cosh = function cosh(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.cosh();
+  };
+
+  AbstractMatrix.prototype.exp = function exp() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.exp(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.exp = function exp(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.exp();
+  };
+
+  AbstractMatrix.prototype.expm1 = function expm1() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.expm1(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.expm1 = function expm1(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.expm1();
+  };
+
+  AbstractMatrix.prototype.floor = function floor() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.floor(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.floor = function floor(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.floor();
+  };
+
+  AbstractMatrix.prototype.fround = function fround() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.fround(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.fround = function fround(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.fround();
+  };
+
+  AbstractMatrix.prototype.log = function log() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.log(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.log = function log(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.log();
+  };
+
+  AbstractMatrix.prototype.log1p = function log1p() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.log1p(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.log1p = function log1p(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.log1p();
+  };
+
+  AbstractMatrix.prototype.log10 = function log10() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.log10(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.log10 = function log10(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.log10();
+  };
+
+  AbstractMatrix.prototype.log2 = function log2() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.log2(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.log2 = function log2(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.log2();
+  };
+
+  AbstractMatrix.prototype.round = function round() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.round(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.round = function round(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.round();
+  };
+
+  AbstractMatrix.prototype.sign = function sign() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.sign(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.sign = function sign(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.sign();
+  };
+
+  AbstractMatrix.prototype.sin = function sin() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.sin(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.sin = function sin(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.sin();
+  };
+
+  AbstractMatrix.prototype.sinh = function sinh() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.sinh(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.sinh = function sinh(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.sinh();
+  };
+
+  AbstractMatrix.prototype.sqrt = function sqrt() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.sqrt(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.sqrt = function sqrt(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.sqrt();
+  };
+
+  AbstractMatrix.prototype.tan = function tan() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.tan(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.tan = function tan(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.tan();
+  };
+
+  AbstractMatrix.prototype.tanh = function tanh() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.tanh(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.tanh = function tanh(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.tanh();
+  };
+
+  AbstractMatrix.prototype.trunc = function trunc() {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.trunc(this.get(i, j)));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.trunc = function trunc(matrix) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.trunc();
+  };
+
+  AbstractMatrix.pow = function pow(matrix, arg0) {
+    const newMatrix = new Matrix(matrix);
+    return newMatrix.pow(arg0);
+  };
+
+  AbstractMatrix.prototype.pow = function pow(value) {
+    if (typeof value === 'number') return this.powS(value);
+    return this.powM(value);
+  };
+
+  AbstractMatrix.prototype.powS = function powS(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.pow(this.get(i, j), value));
+      }
+    }
+    return this;
+  };
+
+  AbstractMatrix.prototype.powM = function powM(matrix) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (this.rows !== matrix.rows ||
+      this.columns !== matrix.columns) {
+      throw new RangeError('Matrices dimensions must be equal');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, Math.pow(this.get(i, j), matrix.get(i, j)));
+      }
+    }
+    return this;
+  };
 }
 
 
@@ -10426,139 +10006,1860 @@ function linearDependencies(matrix, options = {}) {
 /*!**********************************************!*\
   !*** ./node_modules/ml-matrix/src/matrix.js ***!
   \**********************************************/
-/*! exports provided: default */
+/*! exports provided: AbstractMatrix, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AbstractMatrix", function() { return AbstractMatrix; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Matrix; });
-/* harmony import */ var _abstractMatrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./abstractMatrix */ "./node_modules/ml-matrix/src/abstractMatrix.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/util.js");
+/* harmony import */ var ml_array_rescale__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ml-array-rescale */ "./node_modules/ml-array-rescale/lib-es6/index.js");
+/* harmony import */ var _inspect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./inspect */ "./node_modules/ml-matrix/src/inspect.js");
+/* harmony import */ var _mathOperations__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mathOperations */ "./node_modules/ml-matrix/src/mathOperations.js");
+/* harmony import */ var _stat__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./stat */ "./node_modules/ml-matrix/src/stat.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/util.js");
 
 
 
-class Matrix extends Object(_abstractMatrix__WEBPACK_IMPORTED_MODULE_0__["default"])(Array) {
-  constructor(nRows, nColumns) {
-    var i;
-    if (arguments.length === 1 && typeof nRows === 'number') {
-      return new Array(nRows);
+
+
+
+
+class AbstractMatrix {
+  static from1DArray(newRows, newColumns, newData) {
+    let length = newRows * newColumns;
+    if (length !== newData.length) {
+      throw new RangeError('data length does not match given dimensions');
     }
+    let newMatrix = new Matrix(newRows, newColumns);
+    for (let row = 0; row < newRows; row++) {
+      for (let column = 0; column < newColumns; column++) {
+        newMatrix.set(row, column, newData[row * newColumns + column]);
+      }
+    }
+    return newMatrix;
+  }
+
+  static rowVector(newData) {
+    let vector = new Matrix(1, newData.length);
+    for (let i = 0; i < newData.length; i++) {
+      vector.set(0, i, newData[i]);
+    }
+    return vector;
+  }
+
+  static columnVector(newData) {
+    let vector = new Matrix(newData.length, 1);
+    for (let i = 0; i < newData.length; i++) {
+      vector.set(i, 0, newData[i]);
+    }
+    return vector;
+  }
+
+  static zeros(rows, columns) {
+    return new Matrix(rows, columns);
+  }
+
+  static ones(rows, columns) {
+    return new Matrix(rows, columns).fill(1);
+  }
+
+  static rand(rows, columns, options = {}) {
+    if (typeof options !== 'object') {
+      throw new TypeError('options must be an object');
+    }
+    const { random = Math.random } = options;
+    let matrix = new Matrix(rows, columns);
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        matrix.set(i, j, random());
+      }
+    }
+    return matrix;
+  }
+
+  static randInt(rows, columns, options = {}) {
+    if (typeof options !== 'object') {
+      throw new TypeError('options must be an object');
+    }
+    const { min = 0, max = 1000, random = Math.random } = options;
+    if (!Number.isInteger(min)) throw new TypeError('min must be an integer');
+    if (!Number.isInteger(max)) throw new TypeError('max must be an integer');
+    if (min >= max) throw new RangeError('min must be smaller than max');
+    let interval = max - min;
+    let matrix = new Matrix(rows, columns);
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        let value = min + Math.round(random() * interval);
+        matrix.set(i, j, value);
+      }
+    }
+    return matrix;
+  }
+
+  static eye(rows, columns, value) {
+    if (columns === undefined) columns = rows;
+    if (value === undefined) value = 1;
+    let min = Math.min(rows, columns);
+    let matrix = this.zeros(rows, columns);
+    for (let i = 0; i < min; i++) {
+      matrix.set(i, i, value);
+    }
+    return matrix;
+  }
+
+  static diag(data, rows, columns) {
+    let l = data.length;
+    if (rows === undefined) rows = l;
+    if (columns === undefined) columns = rows;
+    let min = Math.min(l, rows, columns);
+    let matrix = this.zeros(rows, columns);
+    for (let i = 0; i < min; i++) {
+      matrix.set(i, i, data[i]);
+    }
+    return matrix;
+  }
+
+  static min(matrix1, matrix2) {
+    matrix1 = this.checkMatrix(matrix1);
+    matrix2 = this.checkMatrix(matrix2);
+    let rows = matrix1.rows;
+    let columns = matrix1.columns;
+    let result = new Matrix(rows, columns);
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        result.set(i, j, Math.min(matrix1.get(i, j), matrix2.get(i, j)));
+      }
+    }
+    return result;
+  }
+
+  static max(matrix1, matrix2) {
+    matrix1 = this.checkMatrix(matrix1);
+    matrix2 = this.checkMatrix(matrix2);
+    let rows = matrix1.rows;
+    let columns = matrix1.columns;
+    let result = new this(rows, columns);
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        result.set(i, j, Math.max(matrix1.get(i, j), matrix2.get(i, j)));
+      }
+    }
+    return result;
+  }
+
+  static checkMatrix(value) {
+    return AbstractMatrix.isMatrix(value) ? value : new Matrix(value);
+  }
+
+  static isMatrix(value) {
+    return value != null && value.klass === 'Matrix';
+  }
+
+  get size() {
+    return this.rows * this.columns;
+  }
+
+  apply(callback) {
+    if (typeof callback !== 'function') {
+      throw new TypeError('callback must be a function');
+    }
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        callback.call(this, i, j);
+      }
+    }
+    return this;
+  }
+
+  to1DArray() {
+    let array = [];
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        array.push(this.get(i, j));
+      }
+    }
+    return array;
+  }
+
+  to2DArray() {
+    let copy = [];
+    for (let i = 0; i < this.rows; i++) {
+      copy.push([]);
+      for (let j = 0; j < this.columns; j++) {
+        copy[i].push(this.get(i, j));
+      }
+    }
+    return copy;
+  }
+
+  toJSON() {
+    return this.to2DArray();
+  }
+
+  isRowVector() {
+    return this.rows === 1;
+  }
+
+  isColumnVector() {
+    return this.columns === 1;
+  }
+
+  isVector() {
+    return this.rows === 1 || this.columns === 1;
+  }
+
+  isSquare() {
+    return this.rows === this.columns;
+  }
+
+  isEmpty() {
+    return this.rows === 0 || this.columns === 0;
+  }
+
+  isSymmetric() {
+    if (this.isSquare()) {
+      for (let i = 0; i < this.rows; i++) {
+        for (let j = 0; j <= i; j++) {
+          if (this.get(i, j) !== this.get(j, i)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  isEchelonForm() {
+    let i = 0;
+    let j = 0;
+    let previousColumn = -1;
+    let isEchelonForm = true;
+    let checked = false;
+    while (i < this.rows && isEchelonForm) {
+      j = 0;
+      checked = false;
+      while (j < this.columns && checked === false) {
+        if (this.get(i, j) === 0) {
+          j++;
+        } else if (this.get(i, j) === 1 && j > previousColumn) {
+          checked = true;
+          previousColumn = j;
+        } else {
+          isEchelonForm = false;
+          checked = true;
+        }
+      }
+      i++;
+    }
+    return isEchelonForm;
+  }
+
+  isReducedEchelonForm() {
+    let i = 0;
+    let j = 0;
+    let previousColumn = -1;
+    let isReducedEchelonForm = true;
+    let checked = false;
+    while (i < this.rows && isReducedEchelonForm) {
+      j = 0;
+      checked = false;
+      while (j < this.columns && checked === false) {
+        if (this.get(i, j) === 0) {
+          j++;
+        } else if (this.get(i, j) === 1 && j > previousColumn) {
+          checked = true;
+          previousColumn = j;
+        } else {
+          isReducedEchelonForm = false;
+          checked = true;
+        }
+      }
+      for (let k = j + 1; k < this.rows; k++) {
+        if (this.get(i, k) !== 0) {
+          isReducedEchelonForm = false;
+        }
+      }
+      i++;
+    }
+    return isReducedEchelonForm;
+  }
+
+  echelonForm() {
+    let result = this.clone();
+    let h = 0;
+    let k = 0;
+    while (h < result.rows && k < result.columns) {
+      let iMax = h;
+      for (let i = h; i < result.rows; i++) {
+        if (result.get(i, k) > result.get(iMax, k)) {
+          iMax = i;
+        }
+      }
+      if (result.get(iMax, k) === 0) {
+        k++;
+      } else {
+        result.swapRows(h, iMax);
+        let tmp = result.get(h, k);
+        for (let j = k; j < result.columns; j++) {
+          result.set(h, j, result.get(h, j) / tmp);
+        }
+        for (let i = h + 1; i < result.rows; i++) {
+          let factor = result.get(i, k) / result.get(h, k);
+          result.set(i, k, 0);
+          for (let j = k + 1; j < result.columns; j++) {
+            result.set(i, j, result.get(i, j) - result.get(h, j) * factor);
+          }
+        }
+        h++;
+        k++;
+      }
+    }
+    return result;
+  }
+
+  reducedEchelonForm() {
+    let result = this.echelonForm();
+    let m = result.columns;
+    let n = result.rows;
+    let h = n - 1;
+    while (h >= 0) {
+      if (result.maxRow(h) === 0) {
+        h--;
+      } else {
+        let p = 0;
+        let pivot = false;
+        while (p < n && pivot === false) {
+          if (result.get(h, p) === 1) {
+            pivot = true;
+          } else {
+            p++;
+          }
+        }
+        for (let i = 0; i < h; i++) {
+          let factor = result.get(i, p);
+          for (let j = p; j < m; j++) {
+            let tmp = result.get(i, j) - factor * result.get(h, j);
+            result.set(i, j, tmp);
+          }
+        }
+        h--;
+      }
+    }
+    return result;
+  }
+
+  set() {
+    throw new Error('set method is unimplemented');
+  }
+
+  get() {
+    throw new Error('get method is unimplemented');
+  }
+
+  repeat(options = {}) {
+    if (typeof options !== 'object') {
+      throw new TypeError('options must be an object');
+    }
+    const { rows = 1, columns = 1 } = options;
+    if (!Number.isInteger(rows) || rows <= 0) {
+      throw new TypeError('rows must be a positive integer');
+    }
+    if (!Number.isInteger(columns) || columns <= 0) {
+      throw new TypeError('columns must be a positive integer');
+    }
+    let matrix = new Matrix(this.rows * rows, this.columns * columns);
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < columns; j++) {
+        matrix.setSubMatrix(this, this.rows * i, this.columns * j);
+      }
+    }
+    return matrix;
+  }
+
+  fill(value) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, value);
+      }
+    }
+    return this;
+  }
+
+  neg() {
+    return this.mulS(-1);
+  }
+
+  getRow(index) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, index);
+    let row = [];
+    for (let i = 0; i < this.columns; i++) {
+      row.push(this.get(index, i));
+    }
+    return row;
+  }
+
+  getRowVector(index) {
+    return Matrix.rowVector(this.getRow(index));
+  }
+
+  setRow(index, array) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, index);
+    array = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowVector"])(this, array);
+    for (let i = 0; i < this.columns; i++) {
+      this.set(index, i, array[i]);
+    }
+    return this;
+  }
+
+  swapRows(row1, row2) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, row1);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, row2);
+    for (let i = 0; i < this.columns; i++) {
+      let temp = this.get(row1, i);
+      this.set(row1, i, this.get(row2, i));
+      this.set(row2, i, temp);
+    }
+    return this;
+  }
+
+  getColumn(index) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, index);
+    let column = [];
+    for (let i = 0; i < this.rows; i++) {
+      column.push(this.get(i, index));
+    }
+    return column;
+  }
+
+  getColumnVector(index) {
+    return Matrix.columnVector(this.getColumn(index));
+  }
+
+  setColumn(index, array) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, index);
+    array = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnVector"])(this, array);
+    for (let i = 0; i < this.rows; i++) {
+      this.set(i, index, array[i]);
+    }
+    return this;
+  }
+
+  swapColumns(column1, column2) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, column1);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, column2);
+    for (let i = 0; i < this.rows; i++) {
+      let temp = this.get(i, column1);
+      this.set(i, column1, this.get(i, column2));
+      this.set(i, column2, temp);
+    }
+    return this;
+  }
+
+  addRowVector(vector) {
+    vector = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowVector"])(this, vector);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) + vector[j]);
+      }
+    }
+    return this;
+  }
+
+  subRowVector(vector) {
+    vector = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowVector"])(this, vector);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) - vector[j]);
+      }
+    }
+    return this;
+  }
+
+  mulRowVector(vector) {
+    vector = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowVector"])(this, vector);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) * vector[j]);
+      }
+    }
+    return this;
+  }
+
+  divRowVector(vector) {
+    vector = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowVector"])(this, vector);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) / vector[j]);
+      }
+    }
+    return this;
+  }
+
+  addColumnVector(vector) {
+    vector = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnVector"])(this, vector);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) + vector[i]);
+      }
+    }
+    return this;
+  }
+
+  subColumnVector(vector) {
+    vector = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnVector"])(this, vector);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) - vector[i]);
+      }
+    }
+    return this;
+  }
+
+  mulColumnVector(vector) {
+    vector = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnVector"])(this, vector);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) * vector[i]);
+      }
+    }
+    return this;
+  }
+
+  divColumnVector(vector) {
+    vector = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnVector"])(this, vector);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        this.set(i, j, this.get(i, j) / vector[i]);
+      }
+    }
+    return this;
+  }
+
+  mulRow(index, value) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, index);
+    for (let i = 0; i < this.columns; i++) {
+      this.set(index, i, this.get(index, i) * value);
+    }
+    return this;
+  }
+
+  mulColumn(index, value) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, index);
+    for (let i = 0; i < this.rows; i++) {
+      this.set(i, index, this.get(i, index) * value);
+    }
+    return this;
+  }
+
+  max() {
+    if (this.isEmpty()) {
+      return NaN;
+    }
+    let v = this.get(0, 0);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        if (this.get(i, j) > v) {
+          v = this.get(i, j);
+        }
+      }
+    }
+    return v;
+  }
+
+  maxIndex() {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkNonEmpty"])(this);
+    let v = this.get(0, 0);
+    let idx = [0, 0];
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        if (this.get(i, j) > v) {
+          v = this.get(i, j);
+          idx[0] = i;
+          idx[1] = j;
+        }
+      }
+    }
+    return idx;
+  }
+
+  min() {
+    if (this.isEmpty()) {
+      return NaN;
+    }
+    let v = this.get(0, 0);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        if (this.get(i, j) < v) {
+          v = this.get(i, j);
+        }
+      }
+    }
+    return v;
+  }
+
+  minIndex() {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkNonEmpty"])(this);
+    let v = this.get(0, 0);
+    let idx = [0, 0];
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        if (this.get(i, j) < v) {
+          v = this.get(i, j);
+          idx[0] = i;
+          idx[1] = j;
+        }
+      }
+    }
+    return idx;
+  }
+
+  maxRow(row) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, row);
+    if (this.isEmpty()) {
+      return NaN;
+    }
+    let v = this.get(row, 0);
+    for (let i = 1; i < this.columns; i++) {
+      if (this.get(row, i) > v) {
+        v = this.get(row, i);
+      }
+    }
+    return v;
+  }
+
+  maxRowIndex(row) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, row);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkNonEmpty"])(this);
+    let v = this.get(row, 0);
+    let idx = [row, 0];
+    for (let i = 1; i < this.columns; i++) {
+      if (this.get(row, i) > v) {
+        v = this.get(row, i);
+        idx[1] = i;
+      }
+    }
+    return idx;
+  }
+
+  minRow(row) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, row);
+    if (this.isEmpty()) {
+      return NaN;
+    }
+    let v = this.get(row, 0);
+    for (let i = 1; i < this.columns; i++) {
+      if (this.get(row, i) < v) {
+        v = this.get(row, i);
+      }
+    }
+    return v;
+  }
+
+  minRowIndex(row) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, row);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkNonEmpty"])(this);
+    let v = this.get(row, 0);
+    let idx = [row, 0];
+    for (let i = 1; i < this.columns; i++) {
+      if (this.get(row, i) < v) {
+        v = this.get(row, i);
+        idx[1] = i;
+      }
+    }
+    return idx;
+  }
+
+  maxColumn(column) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, column);
+    if (this.isEmpty()) {
+      return NaN;
+    }
+    let v = this.get(0, column);
+    for (let i = 1; i < this.rows; i++) {
+      if (this.get(i, column) > v) {
+        v = this.get(i, column);
+      }
+    }
+    return v;
+  }
+
+  maxColumnIndex(column) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, column);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkNonEmpty"])(this);
+    let v = this.get(0, column);
+    let idx = [0, column];
+    for (let i = 1; i < this.rows; i++) {
+      if (this.get(i, column) > v) {
+        v = this.get(i, column);
+        idx[0] = i;
+      }
+    }
+    return idx;
+  }
+
+  minColumn(column) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, column);
+    if (this.isEmpty()) {
+      return NaN;
+    }
+    let v = this.get(0, column);
+    for (let i = 1; i < this.rows; i++) {
+      if (this.get(i, column) < v) {
+        v = this.get(i, column);
+      }
+    }
+    return v;
+  }
+
+  minColumnIndex(column) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, column);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkNonEmpty"])(this);
+    let v = this.get(0, column);
+    let idx = [0, column];
+    for (let i = 1; i < this.rows; i++) {
+      if (this.get(i, column) < v) {
+        v = this.get(i, column);
+        idx[0] = i;
+      }
+    }
+    return idx;
+  }
+
+  diag() {
+    let min = Math.min(this.rows, this.columns);
+    let diag = [];
+    for (let i = 0; i < min; i++) {
+      diag.push(this.get(i, i));
+    }
+    return diag;
+  }
+
+  norm(type = 'frobenius') {
+    let result = 0;
+    if (type === 'max') {
+      return this.max();
+    } else if (type === 'frobenius') {
+      for (let i = 0; i < this.rows; i++) {
+        for (let j = 0; j < this.columns; j++) {
+          result = result + this.get(i, j) * this.get(i, j);
+        }
+      }
+      return Math.sqrt(result);
+    } else {
+      throw new RangeError(`unknown norm type: ${type}`);
+    }
+  }
+
+  cumulativeSum() {
+    let sum = 0;
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        sum += this.get(i, j);
+        this.set(i, j, sum);
+      }
+    }
+    return this;
+  }
+
+  dot(vector2) {
+    if (AbstractMatrix.isMatrix(vector2)) vector2 = vector2.to1DArray();
+    let vector1 = this.to1DArray();
+    if (vector1.length !== vector2.length) {
+      throw new RangeError('vectors do not have the same size');
+    }
+    let dot = 0;
+    for (let i = 0; i < vector1.length; i++) {
+      dot += vector1[i] * vector2[i];
+    }
+    return dot;
+  }
+
+  mmul(other) {
+    other = Matrix.checkMatrix(other);
+
+    let m = this.rows;
+    let n = this.columns;
+    let p = other.columns;
+
+    let result = new Matrix(m, p);
+
+    let Bcolj = new Float64Array(n);
+    for (let j = 0; j < p; j++) {
+      for (let k = 0; k < n; k++) {
+        Bcolj[k] = other.get(k, j);
+      }
+
+      for (let i = 0; i < m; i++) {
+        let s = 0;
+        for (let k = 0; k < n; k++) {
+          s += this.get(i, k) * Bcolj[k];
+        }
+
+        result.set(i, j, s);
+      }
+    }
+    return result;
+  }
+
+  strassen2x2(other) {
+    other = Matrix.checkMatrix(other);
+    let result = new Matrix(2, 2);
+    const a11 = this.get(0, 0);
+    const b11 = other.get(0, 0);
+    const a12 = this.get(0, 1);
+    const b12 = other.get(0, 1);
+    const a21 = this.get(1, 0);
+    const b21 = other.get(1, 0);
+    const a22 = this.get(1, 1);
+    const b22 = other.get(1, 1);
+
+    // Compute intermediate values.
+    const m1 = (a11 + a22) * (b11 + b22);
+    const m2 = (a21 + a22) * b11;
+    const m3 = a11 * (b12 - b22);
+    const m4 = a22 * (b21 - b11);
+    const m5 = (a11 + a12) * b22;
+    const m6 = (a21 - a11) * (b11 + b12);
+    const m7 = (a12 - a22) * (b21 + b22);
+
+    // Combine intermediate values into the output.
+    const c00 = m1 + m4 - m5 + m7;
+    const c01 = m3 + m5;
+    const c10 = m2 + m4;
+    const c11 = m1 - m2 + m3 + m6;
+
+    result.set(0, 0, c00);
+    result.set(0, 1, c01);
+    result.set(1, 0, c10);
+    result.set(1, 1, c11);
+    return result;
+  }
+
+  strassen3x3(other) {
+    other = Matrix.checkMatrix(other);
+    let result = new Matrix(3, 3);
+
+    const a00 = this.get(0, 0);
+    const a01 = this.get(0, 1);
+    const a02 = this.get(0, 2);
+    const a10 = this.get(1, 0);
+    const a11 = this.get(1, 1);
+    const a12 = this.get(1, 2);
+    const a20 = this.get(2, 0);
+    const a21 = this.get(2, 1);
+    const a22 = this.get(2, 2);
+
+    const b00 = other.get(0, 0);
+    const b01 = other.get(0, 1);
+    const b02 = other.get(0, 2);
+    const b10 = other.get(1, 0);
+    const b11 = other.get(1, 1);
+    const b12 = other.get(1, 2);
+    const b20 = other.get(2, 0);
+    const b21 = other.get(2, 1);
+    const b22 = other.get(2, 2);
+
+    const m1 = (a00 + a01 + a02 - a10 - a11 - a21 - a22) * b11;
+    const m2 = (a00 - a10) * (-b01 + b11);
+    const m3 = a11 * (-b00 + b01 + b10 - b11 - b12 - b20 + b22);
+    const m4 = (-a00 + a10 + a11) * (b00 - b01 + b11);
+    const m5 = (a10 + a11) * (-b00 + b01);
+    const m6 = a00 * b00;
+    const m7 = (-a00 + a20 + a21) * (b00 - b02 + b12);
+    const m8 = (-a00 + a20) * (b02 - b12);
+    const m9 = (a20 + a21) * (-b00 + b02);
+    const m10 = (a00 + a01 + a02 - a11 - a12 - a20 - a21) * b12;
+    const m11 = a21 * (-b00 + b02 + b10 - b11 - b12 - b20 + b21);
+    const m12 = (-a02 + a21 + a22) * (b11 + b20 - b21);
+    const m13 = (a02 - a22) * (b11 - b21);
+    const m14 = a02 * b20;
+    const m15 = (a21 + a22) * (-b20 + b21);
+    const m16 = (-a02 + a11 + a12) * (b12 + b20 - b22);
+    const m17 = (a02 - a12) * (b12 - b22);
+    const m18 = (a11 + a12) * (-b20 + b22);
+    const m19 = a01 * b10;
+    const m20 = a12 * b21;
+    const m21 = a10 * b02;
+    const m22 = a20 * b01;
+    const m23 = a22 * b22;
+
+    const c00 = m6 + m14 + m19;
+    const c01 = m1 + m4 + m5 + m6 + m12 + m14 + m15;
+    const c02 = m6 + m7 + m9 + m10 + m14 + m16 + m18;
+    const c10 = m2 + m3 + m4 + m6 + m14 + m16 + m17;
+    const c11 = m2 + m4 + m5 + m6 + m20;
+    const c12 = m14 + m16 + m17 + m18 + m21;
+    const c20 = m6 + m7 + m8 + m11 + m12 + m13 + m14;
+    const c21 = m12 + m13 + m14 + m15 + m22;
+    const c22 = m6 + m7 + m8 + m9 + m23;
+
+    result.set(0, 0, c00);
+    result.set(0, 1, c01);
+    result.set(0, 2, c02);
+    result.set(1, 0, c10);
+    result.set(1, 1, c11);
+    result.set(1, 2, c12);
+    result.set(2, 0, c20);
+    result.set(2, 1, c21);
+    result.set(2, 2, c22);
+    return result;
+  }
+
+  mmulStrassen(y) {
+    y = Matrix.checkMatrix(y);
+    let x = this.clone();
+    let r1 = x.rows;
+    let c1 = x.columns;
+    let r2 = y.rows;
+    let c2 = y.columns;
+    if (c1 !== r2) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Multiplying ${r1} x ${c1} and ${r2} x ${c2} matrix: dimensions do not match.`,
+      );
+    }
+
+    // Put a matrix into the top left of a matrix of zeros.
+    // `rows` and `cols` are the dimensions of the output matrix.
+    function embed(mat, rows, cols) {
+      let r = mat.rows;
+      let c = mat.columns;
+      if (r === rows && c === cols) {
+        return mat;
+      } else {
+        let resultat = AbstractMatrix.zeros(rows, cols);
+        resultat = resultat.setSubMatrix(mat, 0, 0);
+        return resultat;
+      }
+    }
+
+    // Make sure both matrices are the same size.
+    // This is exclusively for simplicity:
+    // this algorithm can be implemented with matrices of different sizes.
+
+    let r = Math.max(r1, r2);
+    let c = Math.max(c1, c2);
+    x = embed(x, r, c);
+    y = embed(y, r, c);
+
+    // Our recursive multiplication function.
+    function blockMult(a, b, rows, cols) {
+      // For small matrices, resort to naive multiplication.
+      if (rows <= 512 || cols <= 512) {
+        return a.mmul(b); // a is equivalent to this
+      }
+
+      // Apply dynamic padding.
+      if (rows % 2 === 1 && cols % 2 === 1) {
+        a = embed(a, rows + 1, cols + 1);
+        b = embed(b, rows + 1, cols + 1);
+      } else if (rows % 2 === 1) {
+        a = embed(a, rows + 1, cols);
+        b = embed(b, rows + 1, cols);
+      } else if (cols % 2 === 1) {
+        a = embed(a, rows, cols + 1);
+        b = embed(b, rows, cols + 1);
+      }
+
+      let halfRows = parseInt(a.rows / 2, 10);
+      let halfCols = parseInt(a.columns / 2, 10);
+      // Subdivide input matrices.
+      let a11 = a.subMatrix(0, halfRows - 1, 0, halfCols - 1);
+      let b11 = b.subMatrix(0, halfRows - 1, 0, halfCols - 1);
+
+      let a12 = a.subMatrix(0, halfRows - 1, halfCols, a.columns - 1);
+      let b12 = b.subMatrix(0, halfRows - 1, halfCols, b.columns - 1);
+
+      let a21 = a.subMatrix(halfRows, a.rows - 1, 0, halfCols - 1);
+      let b21 = b.subMatrix(halfRows, b.rows - 1, 0, halfCols - 1);
+
+      let a22 = a.subMatrix(halfRows, a.rows - 1, halfCols, a.columns - 1);
+      let b22 = b.subMatrix(halfRows, b.rows - 1, halfCols, b.columns - 1);
+
+      // Compute intermediate values.
+      let m1 = blockMult(
+        AbstractMatrix.add(a11, a22),
+        AbstractMatrix.add(b11, b22),
+        halfRows,
+        halfCols,
+      );
+      let m2 = blockMult(AbstractMatrix.add(a21, a22), b11, halfRows, halfCols);
+      let m3 = blockMult(a11, AbstractMatrix.sub(b12, b22), halfRows, halfCols);
+      let m4 = blockMult(a22, AbstractMatrix.sub(b21, b11), halfRows, halfCols);
+      let m5 = blockMult(AbstractMatrix.add(a11, a12), b22, halfRows, halfCols);
+      let m6 = blockMult(
+        AbstractMatrix.sub(a21, a11),
+        AbstractMatrix.add(b11, b12),
+        halfRows,
+        halfCols,
+      );
+      let m7 = blockMult(
+        AbstractMatrix.sub(a12, a22),
+        AbstractMatrix.add(b21, b22),
+        halfRows,
+        halfCols,
+      );
+
+      // Combine intermediate values into the output.
+      let c11 = AbstractMatrix.add(m1, m4);
+      c11.sub(m5);
+      c11.add(m7);
+      let c12 = AbstractMatrix.add(m3, m5);
+      let c21 = AbstractMatrix.add(m2, m4);
+      let c22 = AbstractMatrix.sub(m1, m2);
+      c22.add(m3);
+      c22.add(m6);
+
+      // Crop output to the desired size (undo dynamic padding).
+      let resultat = AbstractMatrix.zeros(2 * c11.rows, 2 * c11.columns);
+      resultat = resultat.setSubMatrix(c11, 0, 0);
+      resultat = resultat.setSubMatrix(c12, c11.rows, 0);
+      resultat = resultat.setSubMatrix(c21, 0, c11.columns);
+      resultat = resultat.setSubMatrix(c22, c11.rows, c11.columns);
+      return resultat.subMatrix(0, rows - 1, 0, cols - 1);
+    }
+    return blockMult(x, y, r, c);
+  }
+
+  scaleRows(options = {}) {
+    if (typeof options !== 'object') {
+      throw new TypeError('options must be an object');
+    }
+    const { min = 0, max = 1 } = options;
+    if (!Number.isFinite(min)) throw new TypeError('min must be a number');
+    if (!Number.isFinite(max)) throw new TypeError('max must be a number');
+    if (min >= max) throw new RangeError('min must be smaller than max');
+    let newMatrix = new Matrix(this.rows, this.columns);
+    for (let i = 0; i < this.rows; i++) {
+      const row = this.getRow(i);
+      if (row.length > 0) {
+        Object(ml_array_rescale__WEBPACK_IMPORTED_MODULE_0__["default"])(row, { min, max, output: row });
+      }
+      newMatrix.setRow(i, row);
+    }
+    return newMatrix;
+  }
+
+  scaleColumns(options = {}) {
+    if (typeof options !== 'object') {
+      throw new TypeError('options must be an object');
+    }
+    const { min = 0, max = 1 } = options;
+    if (!Number.isFinite(min)) throw new TypeError('min must be a number');
+    if (!Number.isFinite(max)) throw new TypeError('max must be a number');
+    if (min >= max) throw new RangeError('min must be smaller than max');
+    let newMatrix = new Matrix(this.rows, this.columns);
+    for (let i = 0; i < this.columns; i++) {
+      const column = this.getColumn(i);
+      if (column.length) {
+        Object(ml_array_rescale__WEBPACK_IMPORTED_MODULE_0__["default"])(column, {
+          min: min,
+          max: max,
+          output: column,
+        });
+      }
+      newMatrix.setColumn(i, column);
+    }
+    return newMatrix;
+  }
+
+  flipRows() {
+    const middle = Math.ceil(this.columns / 2);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < middle; j++) {
+        let first = this.get(i, j);
+        let last = this.get(i, this.columns - 1 - j);
+        this.set(i, j, last);
+        this.set(i, this.columns - 1 - j, first);
+      }
+    }
+    return this;
+  }
+
+  flipColumns() {
+    const middle = Math.ceil(this.rows / 2);
+    for (let j = 0; j < this.columns; j++) {
+      for (let i = 0; i < middle; i++) {
+        let first = this.get(i, j);
+        let last = this.get(this.rows - 1 - i, j);
+        this.set(i, j, last);
+        this.set(this.rows - 1 - i, j, first);
+      }
+    }
+    return this;
+  }
+
+  kroneckerProduct(other) {
+    other = Matrix.checkMatrix(other);
+
+    let m = this.rows;
+    let n = this.columns;
+    let p = other.rows;
+    let q = other.columns;
+
+    let result = new Matrix(m * p, n * q);
+    for (let i = 0; i < m; i++) {
+      for (let j = 0; j < n; j++) {
+        for (let k = 0; k < p; k++) {
+          for (let l = 0; l < q; l++) {
+            result.set(p * i + k, q * j + l, this.get(i, j) * other.get(k, l));
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  kroneckerSum(other) {
+    other = Matrix.checkMatrix(other);
+    if (!this.isSquare() || !other.isSquare()) {
+      throw new Error('Kronecker Sum needs two Square Matrices');
+    }
+    let m = this.rows;
+    let n = other.rows;
+    let AxI = this.kroneckerProduct(Matrix.eye(n, n));
+    let IxB = Matrix.eye(m, m).kroneckerProduct(other);
+    return AxI.add(IxB);
+  }
+
+  transpose() {
+    let result = new Matrix(this.columns, this.rows);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.columns; j++) {
+        result.set(j, i, this.get(i, j));
+      }
+    }
+    return result;
+  }
+
+  sortRows(compareFunction = compareNumbers) {
+    for (let i = 0; i < this.rows; i++) {
+      this.setRow(i, this.getRow(i).sort(compareFunction));
+    }
+    return this;
+  }
+
+  sortColumns(compareFunction = compareNumbers) {
+    for (let i = 0; i < this.columns; i++) {
+      this.setColumn(i, this.getColumn(i).sort(compareFunction));
+    }
+    return this;
+  }
+
+  subMatrix(startRow, endRow, startColumn, endColumn) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRange"])(this, startRow, endRow, startColumn, endColumn);
+    let newMatrix = new Matrix(
+      endRow - startRow + 1,
+      endColumn - startColumn + 1,
+    );
+    for (let i = startRow; i <= endRow; i++) {
+      for (let j = startColumn; j <= endColumn; j++) {
+        newMatrix.set(i - startRow, j - startColumn, this.get(i, j));
+      }
+    }
+    return newMatrix;
+  }
+
+  subMatrixRow(indices, startColumn, endColumn) {
+    if (startColumn === undefined) startColumn = 0;
+    if (endColumn === undefined) endColumn = this.columns - 1;
+    if (
+      startColumn > endColumn ||
+      startColumn < 0 ||
+      startColumn >= this.columns ||
+      endColumn < 0 ||
+      endColumn >= this.columns
+    ) {
+      throw new RangeError('Argument out of range');
+    }
+
+    let newMatrix = new Matrix(indices.length, endColumn - startColumn + 1);
+    for (let i = 0; i < indices.length; i++) {
+      for (let j = startColumn; j <= endColumn; j++) {
+        if (indices[i] < 0 || indices[i] >= this.rows) {
+          throw new RangeError(`Row index out of range: ${indices[i]}`);
+        }
+        newMatrix.set(i, j - startColumn, this.get(indices[i], j));
+      }
+    }
+    return newMatrix;
+  }
+
+  subMatrixColumn(indices, startRow, endRow) {
+    if (startRow === undefined) startRow = 0;
+    if (endRow === undefined) endRow = this.rows - 1;
+    if (
+      startRow > endRow ||
+      startRow < 0 ||
+      startRow >= this.rows ||
+      endRow < 0 ||
+      endRow >= this.rows
+    ) {
+      throw new RangeError('Argument out of range');
+    }
+
+    let newMatrix = new Matrix(endRow - startRow + 1, indices.length);
+    for (let i = 0; i < indices.length; i++) {
+      for (let j = startRow; j <= endRow; j++) {
+        if (indices[i] < 0 || indices[i] >= this.columns) {
+          throw new RangeError(`Column index out of range: ${indices[i]}`);
+        }
+        newMatrix.set(j - startRow, i, this.get(j, indices[i]));
+      }
+    }
+    return newMatrix;
+  }
+
+  setSubMatrix(matrix, startRow, startColumn) {
+    matrix = Matrix.checkMatrix(matrix);
+    if (matrix.isEmpty()) {
+      return this;
+    }
+    let endRow = startRow + matrix.rows - 1;
+    let endColumn = startColumn + matrix.columns - 1;
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRange"])(this, startRow, endRow, startColumn, endColumn);
+    for (let i = 0; i < matrix.rows; i++) {
+      for (let j = 0; j < matrix.columns; j++) {
+        this.set(startRow + i, startColumn + j, matrix.get(i, j));
+      }
+    }
+    return this;
+  }
+
+  selection(rowIndices, columnIndices) {
+    let indices = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkIndices"])(this, rowIndices, columnIndices);
+    let newMatrix = new Matrix(rowIndices.length, columnIndices.length);
+    for (let i = 0; i < indices.row.length; i++) {
+      let rowIndex = indices.row[i];
+      for (let j = 0; j < indices.column.length; j++) {
+        let columnIndex = indices.column[j];
+        newMatrix.set(i, j, this.get(rowIndex, columnIndex));
+      }
+    }
+    return newMatrix;
+  }
+
+  trace() {
+    let min = Math.min(this.rows, this.columns);
+    let trace = 0;
+    for (let i = 0; i < min; i++) {
+      trace += this.get(i, i);
+    }
+    return trace;
+  }
+
+  clone() {
+    let newMatrix = new Matrix(this.rows, this.columns);
+    for (let row = 0; row < this.rows; row++) {
+      for (let column = 0; column < this.columns; column++) {
+        newMatrix.set(row, column, this.get(row, column));
+      }
+    }
+    return newMatrix;
+  }
+
+  sum(by) {
+    switch (by) {
+      case 'row':
+        return Object(_stat__WEBPACK_IMPORTED_MODULE_3__["sumByRow"])(this);
+      case 'column':
+        return Object(_stat__WEBPACK_IMPORTED_MODULE_3__["sumByColumn"])(this);
+      case undefined:
+        return Object(_stat__WEBPACK_IMPORTED_MODULE_3__["sumAll"])(this);
+      default:
+        throw new Error(`invalid option: ${by}`);
+    }
+  }
+
+  product(by) {
+    switch (by) {
+      case 'row':
+        return Object(_stat__WEBPACK_IMPORTED_MODULE_3__["productByRow"])(this);
+      case 'column':
+        return Object(_stat__WEBPACK_IMPORTED_MODULE_3__["productByColumn"])(this);
+      case undefined:
+        return Object(_stat__WEBPACK_IMPORTED_MODULE_3__["productAll"])(this);
+      default:
+        throw new Error(`invalid option: ${by}`);
+    }
+  }
+
+  mean(by) {
+    const sum = this.sum(by);
+    switch (by) {
+      case 'row': {
+        for (let i = 0; i < this.rows; i++) {
+          sum[i] /= this.columns;
+        }
+        return sum;
+      }
+      case 'column': {
+        for (let i = 0; i < this.columns; i++) {
+          sum[i] /= this.rows;
+        }
+        return sum;
+      }
+      case undefined:
+        return sum / this.size;
+      default:
+        throw new Error(`invalid option: ${by}`);
+    }
+  }
+
+  variance(by, options = {}) {
+    if (typeof by === 'object') {
+      options = by;
+      by = undefined;
+    }
+    if (typeof options !== 'object') {
+      throw new TypeError('options must be an object');
+    }
+    const { unbiased = true, mean = this.mean(by) } = options;
+    if (typeof unbiased !== 'boolean') {
+      throw new TypeError('unbiased must be a boolean');
+    }
+    switch (by) {
+      case 'row': {
+        if (!Array.isArray(mean)) {
+          throw new TypeError('mean must be an array');
+        }
+        return Object(_stat__WEBPACK_IMPORTED_MODULE_3__["varianceByRow"])(this, unbiased, mean);
+      }
+      case 'column': {
+        if (!Array.isArray(mean)) {
+          throw new TypeError('mean must be an array');
+        }
+        return Object(_stat__WEBPACK_IMPORTED_MODULE_3__["varianceByColumn"])(this, unbiased, mean);
+      }
+      case undefined: {
+        if (typeof mean !== 'number') {
+          throw new TypeError('mean must be a number');
+        }
+        return Object(_stat__WEBPACK_IMPORTED_MODULE_3__["varianceAll"])(this, unbiased, mean);
+      }
+      default:
+        throw new Error(`invalid option: ${by}`);
+    }
+  }
+
+  standardDeviation(by, options) {
+    if (typeof by === 'object') {
+      options = by;
+      by = undefined;
+    }
+    const variance = this.variance(by, options);
+    if (by === undefined) {
+      return Math.sqrt(variance);
+    } else {
+      for (let i = 0; i < variance.length; i++) {
+        variance[i] = Math.sqrt(variance[i]);
+      }
+      return variance;
+    }
+  }
+
+  center(by, options = {}) {
+    if (typeof by === 'object') {
+      options = by;
+      by = undefined;
+    }
+    if (typeof options !== 'object') {
+      throw new TypeError('options must be an object');
+    }
+    const { center = this.mean(by) } = options;
+    switch (by) {
+      case 'row': {
+        if (!Array.isArray(center)) {
+          throw new TypeError('center must be an array');
+        }
+        Object(_stat__WEBPACK_IMPORTED_MODULE_3__["centerByRow"])(this, center);
+        return this;
+      }
+      case 'column': {
+        if (!Array.isArray(center)) {
+          throw new TypeError('center must be an array');
+        }
+        Object(_stat__WEBPACK_IMPORTED_MODULE_3__["centerByColumn"])(this, center);
+        return this;
+      }
+      case undefined: {
+        if (typeof center !== 'number') {
+          throw new TypeError('center must be a number');
+        }
+        Object(_stat__WEBPACK_IMPORTED_MODULE_3__["centerAll"])(this, center);
+        return this;
+      }
+      default:
+        throw new Error(`invalid option: ${by}`);
+    }
+  }
+
+  scale(by, options = {}) {
+    if (typeof by === 'object') {
+      options = by;
+      by = undefined;
+    }
+    if (typeof options !== 'object') {
+      throw new TypeError('options must be an object');
+    }
+    let scale = options.scale;
+    switch (by) {
+      case 'row': {
+        if (scale === undefined) {
+          scale = Object(_stat__WEBPACK_IMPORTED_MODULE_3__["getScaleByRow"])(this);
+        } else if (!Array.isArray(scale)) {
+          throw new TypeError('scale must be an array');
+        }
+        Object(_stat__WEBPACK_IMPORTED_MODULE_3__["scaleByRow"])(this, scale);
+        return this;
+      }
+      case 'column': {
+        if (scale === undefined) {
+          scale = Object(_stat__WEBPACK_IMPORTED_MODULE_3__["getScaleByColumn"])(this);
+        } else if (!Array.isArray(scale)) {
+          throw new TypeError('scale must be an array');
+        }
+        Object(_stat__WEBPACK_IMPORTED_MODULE_3__["scaleByColumn"])(this, scale);
+        return this;
+      }
+      case undefined: {
+        if (scale === undefined) {
+          scale = Object(_stat__WEBPACK_IMPORTED_MODULE_3__["getScaleAll"])(this);
+        } else if (typeof scale !== 'number') {
+          throw new TypeError('scale must be a number');
+        }
+        Object(_stat__WEBPACK_IMPORTED_MODULE_3__["scaleAll"])(this, scale);
+        return this;
+      }
+      default:
+        throw new Error(`invalid option: ${by}`);
+    }
+  }
+
+  toString(options) {
+    return Object(_inspect__WEBPACK_IMPORTED_MODULE_1__["inspectMatrixWithOptions"])(this, options);
+  }
+}
+
+AbstractMatrix.prototype.klass = 'Matrix';
+if (typeof Symbol !== 'undefined') {
+  AbstractMatrix.prototype[
+    Symbol.for('nodejs.util.inspect.custom')
+  ] = _inspect__WEBPACK_IMPORTED_MODULE_1__["inspectMatrix"];
+}
+
+function compareNumbers(a, b) {
+  return a - b;
+}
+
+// Synonyms
+AbstractMatrix.random = AbstractMatrix.rand;
+AbstractMatrix.randomInt = AbstractMatrix.randInt;
+AbstractMatrix.diagonal = AbstractMatrix.diag;
+AbstractMatrix.prototype.diagonal = AbstractMatrix.prototype.diag;
+AbstractMatrix.identity = AbstractMatrix.eye;
+AbstractMatrix.prototype.negate = AbstractMatrix.prototype.neg;
+AbstractMatrix.prototype.tensorProduct =
+  AbstractMatrix.prototype.kroneckerProduct;
+
+class Matrix extends AbstractMatrix {
+  constructor(nRows, nColumns) {
+    super();
     if (Matrix.isMatrix(nRows)) {
+      // eslint-disable-next-line no-constructor-return
       return nRows.clone();
-    } else if (Number.isInteger(nRows) && nRows > 0) {
+    } else if (Number.isInteger(nRows) && nRows >= 0) {
       // Create an empty matrix
-      super(nRows);
-      if (Number.isInteger(nColumns) && nColumns > 0) {
-        for (i = 0; i < nRows; i++) {
-          this[i] = new Array(nColumns);
+      this.data = [];
+      if (Number.isInteger(nColumns) && nColumns >= 0) {
+        for (let i = 0; i < nRows; i++) {
+          this.data.push(new Float64Array(nColumns));
         }
       } else {
         throw new TypeError('nColumns must be a positive integer');
       }
     } else if (Array.isArray(nRows)) {
       // Copy the values from the 2D array
-      const matrix = nRows;
-      nRows = matrix.length;
-      nColumns = matrix[0].length;
-      if (typeof nColumns !== 'number' || nColumns === 0) {
+      const arrayData = nRows;
+      nRows = arrayData.length;
+      nColumns = nRows ? arrayData[0].length : 0;
+      if (typeof nColumns !== 'number') {
         throw new TypeError(
-          'Data must be a 2D array with at least one element'
+          'Data must be a 2D array with at least one element',
         );
       }
-      super(nRows);
-      for (i = 0; i < nRows; i++) {
-        if (matrix[i].length !== nColumns) {
+      this.data = [];
+      for (let i = 0; i < nRows; i++) {
+        if (arrayData[i].length !== nColumns) {
           throw new RangeError('Inconsistent array dimensions');
         }
-        this[i] = [].concat(matrix[i]);
+        this.data.push(Float64Array.from(arrayData[i]));
       }
     } else {
       throw new TypeError(
-        'First argument must be a positive number or an array'
+        'First argument must be a positive number or an array',
       );
     }
     this.rows = nRows;
     this.columns = nColumns;
-    return this;
   }
 
   set(rowIndex, columnIndex, value) {
-    this[rowIndex][columnIndex] = value;
+    this.data[rowIndex][columnIndex] = value;
     return this;
   }
 
   get(rowIndex, columnIndex) {
-    return this[rowIndex][columnIndex];
+    return this.data[rowIndex][columnIndex];
   }
 
-  /**
-   * Removes a row from the given index
-   * @param {number} index - Row index
-   * @return {Matrix} this
-   */
   removeRow(index) {
-    Object(_util__WEBPACK_IMPORTED_MODULE_1__["checkRowIndex"])(this, index);
-    if (this.rows === 1) {
-      throw new RangeError('A matrix cannot have less than one row');
-    }
-    this.splice(index, 1);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, index);
+    this.data.splice(index, 1);
     this.rows -= 1;
     return this;
   }
 
-  /**
-   * Adds a row at the given index
-   * @param {number} [index = this.rows] - Row index
-   * @param {Array|Matrix} array - Array or vector
-   * @return {Matrix} this
-   */
   addRow(index, array) {
     if (array === undefined) {
       array = index;
       index = this.rows;
     }
-    Object(_util__WEBPACK_IMPORTED_MODULE_1__["checkRowIndex"])(this, index, true);
-    array = Object(_util__WEBPACK_IMPORTED_MODULE_1__["checkRowVector"])(this, array, true);
-    this.splice(index, 0, array);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowIndex"])(this, index, true);
+    array = Float64Array.from(Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkRowVector"])(this, array));
+    this.data.splice(index, 0, array);
     this.rows += 1;
     return this;
   }
 
-  /**
-   * Removes a column from the given index
-   * @param {number} index - Column index
-   * @return {Matrix} this
-   */
   removeColumn(index) {
-    Object(_util__WEBPACK_IMPORTED_MODULE_1__["checkColumnIndex"])(this, index);
-    if (this.columns === 1) {
-      throw new RangeError('A matrix cannot have less than one column');
-    }
-    for (var i = 0; i < this.rows; i++) {
-      this[i].splice(index, 1);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, index);
+    for (let i = 0; i < this.rows; i++) {
+      const newRow = new Float64Array(this.columns - 1);
+      for (let j = 0; j < index; j++) {
+        newRow[j] = this.data[i][j];
+      }
+      for (let j = index + 1; j < this.columns; j++) {
+        newRow[j - 1] = this.data[i][j];
+      }
+      this.data[i] = newRow;
     }
     this.columns -= 1;
     return this;
   }
 
-  /**
-   * Adds a column at the given index
-   * @param {number} [index = this.columns] - Column index
-   * @param {Array|Matrix} array - Array or vector
-   * @return {Matrix} this
-   */
   addColumn(index, array) {
     if (typeof array === 'undefined') {
       array = index;
       index = this.columns;
     }
-    Object(_util__WEBPACK_IMPORTED_MODULE_1__["checkColumnIndex"])(this, index, true);
-    array = Object(_util__WEBPACK_IMPORTED_MODULE_1__["checkColumnVector"])(this, array);
-    for (var i = 0; i < this.rows; i++) {
-      this[i].splice(index, 0, array[i]);
+    Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnIndex"])(this, index, true);
+    array = Object(_util__WEBPACK_IMPORTED_MODULE_4__["checkColumnVector"])(this, array);
+    for (let i = 0; i < this.rows; i++) {
+      const newRow = new Float64Array(this.columns + 1);
+      let j = 0;
+      for (; j < index; j++) {
+        newRow[j] = this.data[i][j];
+      }
+      newRow[j++] = array[i];
+      for (; j < this.columns + 1; j++) {
+        newRow[j] = this.data[i][j - 1];
+      }
+      this.data[i] = newRow;
     }
     this.columns += 1;
     return this;
+  }
+}
+
+Object(_mathOperations__WEBPACK_IMPORTED_MODULE_2__["installMathOperations"])(AbstractMatrix, Matrix);
+
+
+/***/ }),
+
+/***/ "./node_modules/ml-matrix/src/pseudoInverse.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/ml-matrix/src/pseudoInverse.js ***!
+  \*****************************************************/
+/*! exports provided: pseudoInverse */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pseudoInverse", function() { return pseudoInverse; });
+/* harmony import */ var _dc_svd__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./dc/svd */ "./node_modules/ml-matrix/src/dc/svd.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./matrix */ "./node_modules/ml-matrix/src/matrix.js");
+
+
+
+function pseudoInverse(matrix, threshold = Number.EPSILON) {
+  matrix = _matrix__WEBPACK_IMPORTED_MODULE_1__["default"].checkMatrix(matrix);
+  if (matrix.isEmpty()) {
+    // with a zero dimension, the pseudo-inverse is the transpose, since all 0xn and nx0 matrices are singular
+    // (0xn)*(nx0)*(0xn) = 0xn
+    // (nx0)*(0xn)*(nx0) = nx0
+    return matrix.transpose();
+  }
+  let svdSolution = new _dc_svd__WEBPACK_IMPORTED_MODULE_0__["default"](matrix, { autoTranspose: true });
+
+  let U = svdSolution.leftSingularVectors;
+  let V = svdSolution.rightSingularVectors;
+  let s = svdSolution.diagonal;
+
+  for (let i = 0; i < s.length; i++) {
+    if (Math.abs(s[i]) > threshold) {
+      s[i] = 1.0 / s[i];
+    } else {
+      s[i] = 0.0;
+    }
+  }
+
+  return V.mmul(_matrix__WEBPACK_IMPORTED_MODULE_1__["default"].diag(s).mmul(U.transpose()));
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/ml-matrix/src/stat.js":
+/*!********************************************!*\
+  !*** ./node_modules/ml-matrix/src/stat.js ***!
+  \********************************************/
+/*! exports provided: sumByRow, sumByColumn, sumAll, productByRow, productByColumn, productAll, varianceByRow, varianceByColumn, varianceAll, centerByRow, centerByColumn, centerAll, getScaleByRow, scaleByRow, getScaleByColumn, scaleByColumn, getScaleAll, scaleAll */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sumByRow", function() { return sumByRow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sumByColumn", function() { return sumByColumn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sumAll", function() { return sumAll; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "productByRow", function() { return productByRow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "productByColumn", function() { return productByColumn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "productAll", function() { return productAll; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "varianceByRow", function() { return varianceByRow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "varianceByColumn", function() { return varianceByColumn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "varianceAll", function() { return varianceAll; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "centerByRow", function() { return centerByRow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "centerByColumn", function() { return centerByColumn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "centerAll", function() { return centerAll; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getScaleByRow", function() { return getScaleByRow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scaleByRow", function() { return scaleByRow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getScaleByColumn", function() { return getScaleByColumn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scaleByColumn", function() { return scaleByColumn; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getScaleAll", function() { return getScaleAll; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scaleAll", function() { return scaleAll; });
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./util */ "./node_modules/ml-matrix/src/util.js");
+
+
+function sumByRow(matrix) {
+  let sum = Object(_util__WEBPACK_IMPORTED_MODULE_0__["newArray"])(matrix.rows);
+  for (let i = 0; i < matrix.rows; ++i) {
+    for (let j = 0; j < matrix.columns; ++j) {
+      sum[i] += matrix.get(i, j);
+    }
+  }
+  return sum;
+}
+
+function sumByColumn(matrix) {
+  let sum = Object(_util__WEBPACK_IMPORTED_MODULE_0__["newArray"])(matrix.columns);
+  for (let i = 0; i < matrix.rows; ++i) {
+    for (let j = 0; j < matrix.columns; ++j) {
+      sum[j] += matrix.get(i, j);
+    }
+  }
+  return sum;
+}
+
+function sumAll(matrix) {
+  let v = 0;
+  for (let i = 0; i < matrix.rows; i++) {
+    for (let j = 0; j < matrix.columns; j++) {
+      v += matrix.get(i, j);
+    }
+  }
+  return v;
+}
+
+function productByRow(matrix) {
+  let sum = Object(_util__WEBPACK_IMPORTED_MODULE_0__["newArray"])(matrix.rows, 1);
+  for (let i = 0; i < matrix.rows; ++i) {
+    for (let j = 0; j < matrix.columns; ++j) {
+      sum[i] *= matrix.get(i, j);
+    }
+  }
+  return sum;
+}
+
+function productByColumn(matrix) {
+  let sum = Object(_util__WEBPACK_IMPORTED_MODULE_0__["newArray"])(matrix.columns, 1);
+  for (let i = 0; i < matrix.rows; ++i) {
+    for (let j = 0; j < matrix.columns; ++j) {
+      sum[j] *= matrix.get(i, j);
+    }
+  }
+  return sum;
+}
+
+function productAll(matrix) {
+  let v = 1;
+  for (let i = 0; i < matrix.rows; i++) {
+    for (let j = 0; j < matrix.columns; j++) {
+      v *= matrix.get(i, j);
+    }
+  }
+  return v;
+}
+
+function varianceByRow(matrix, unbiased, mean) {
+  const rows = matrix.rows;
+  const cols = matrix.columns;
+  const variance = [];
+
+  for (let i = 0; i < rows; i++) {
+    let sum1 = 0;
+    let sum2 = 0;
+    let x = 0;
+    for (let j = 0; j < cols; j++) {
+      x = matrix.get(i, j) - mean[i];
+      sum1 += x;
+      sum2 += x * x;
+    }
+    if (unbiased) {
+      variance.push((sum2 - (sum1 * sum1) / cols) / (cols - 1));
+    } else {
+      variance.push((sum2 - (sum1 * sum1) / cols) / cols);
+    }
+  }
+  return variance;
+}
+
+function varianceByColumn(matrix, unbiased, mean) {
+  const rows = matrix.rows;
+  const cols = matrix.columns;
+  const variance = [];
+
+  for (let j = 0; j < cols; j++) {
+    let sum1 = 0;
+    let sum2 = 0;
+    let x = 0;
+    for (let i = 0; i < rows; i++) {
+      x = matrix.get(i, j) - mean[j];
+      sum1 += x;
+      sum2 += x * x;
+    }
+    if (unbiased) {
+      variance.push((sum2 - (sum1 * sum1) / rows) / (rows - 1));
+    } else {
+      variance.push((sum2 - (sum1 * sum1) / rows) / rows);
+    }
+  }
+  return variance;
+}
+
+function varianceAll(matrix, unbiased, mean) {
+  const rows = matrix.rows;
+  const cols = matrix.columns;
+  const size = rows * cols;
+
+  let sum1 = 0;
+  let sum2 = 0;
+  let x = 0;
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      x = matrix.get(i, j) - mean;
+      sum1 += x;
+      sum2 += x * x;
+    }
+  }
+  if (unbiased) {
+    return (sum2 - (sum1 * sum1) / size) / (size - 1);
+  } else {
+    return (sum2 - (sum1 * sum1) / size) / size;
+  }
+}
+
+function centerByRow(matrix, mean) {
+  for (let i = 0; i < matrix.rows; i++) {
+    for (let j = 0; j < matrix.columns; j++) {
+      matrix.set(i, j, matrix.get(i, j) - mean[i]);
+    }
+  }
+}
+
+function centerByColumn(matrix, mean) {
+  for (let i = 0; i < matrix.rows; i++) {
+    for (let j = 0; j < matrix.columns; j++) {
+      matrix.set(i, j, matrix.get(i, j) - mean[j]);
+    }
+  }
+}
+
+function centerAll(matrix, mean) {
+  for (let i = 0; i < matrix.rows; i++) {
+    for (let j = 0; j < matrix.columns; j++) {
+      matrix.set(i, j, matrix.get(i, j) - mean);
+    }
+  }
+}
+
+function getScaleByRow(matrix) {
+  const scale = [];
+  for (let i = 0; i < matrix.rows; i++) {
+    let sum = 0;
+    for (let j = 0; j < matrix.columns; j++) {
+      sum += Math.pow(matrix.get(i, j), 2) / (matrix.columns - 1);
+    }
+    scale.push(Math.sqrt(sum));
+  }
+  return scale;
+}
+
+function scaleByRow(matrix, scale) {
+  for (let i = 0; i < matrix.rows; i++) {
+    for (let j = 0; j < matrix.columns; j++) {
+      matrix.set(i, j, matrix.get(i, j) / scale[i]);
+    }
+  }
+}
+
+function getScaleByColumn(matrix) {
+  const scale = [];
+  for (let j = 0; j < matrix.columns; j++) {
+    let sum = 0;
+    for (let i = 0; i < matrix.rows; i++) {
+      sum += Math.pow(matrix.get(i, j), 2) / (matrix.rows - 1);
+    }
+    scale.push(Math.sqrt(sum));
+  }
+  return scale;
+}
+
+function scaleByColumn(matrix, scale) {
+  for (let i = 0; i < matrix.rows; i++) {
+    for (let j = 0; j < matrix.columns; j++) {
+      matrix.set(i, j, matrix.get(i, j) / scale[j]);
+    }
+  }
+}
+
+function getScaleAll(matrix) {
+  const divider = matrix.size - 1;
+  let sum = 0;
+  for (let j = 0; j < matrix.columns; j++) {
+    for (let i = 0; i < matrix.rows; i++) {
+      sum += Math.pow(matrix.get(i, j), 2) / divider;
+    }
+  }
+  return Math.sqrt(sum);
+}
+
+function scaleAll(matrix, scale) {
+  for (let i = 0; i < matrix.rows; i++) {
+    for (let j = 0; j < matrix.columns; j++) {
+      matrix.set(i, j, matrix.get(i, j) / scale);
+    }
   }
 }
 
@@ -10569,7 +11870,7 @@ class Matrix extends Object(_abstractMatrix__WEBPACK_IMPORTED_MODULE_0__["defaul
 /*!********************************************!*\
   !*** ./node_modules/ml-matrix/src/util.js ***!
   \********************************************/
-/*! exports provided: checkRowIndex, checkColumnIndex, checkRowVector, checkColumnVector, checkIndices, checkRowIndices, checkColumnIndices, checkRange, getRange, sumByRow, sumByColumn, sumAll */
+/*! exports provided: checkRowIndex, checkColumnIndex, checkRowVector, checkColumnVector, checkIndices, checkRowIndices, checkColumnIndices, checkRange, newArray, checkNonEmpty */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -10582,13 +11883,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkRowIndices", function() { return checkRowIndices; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkColumnIndices", function() { return checkColumnIndices; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkRange", function() { return checkRange; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getRange", function() { return getRange; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sumByRow", function() { return sumByRow; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sumByColumn", function() { return sumByColumn; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sumAll", function() { return sumAll; });
-/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./matrix */ "./node_modules/ml-matrix/src/matrix.js");
-
-
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "newArray", function() { return newArray; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkNonEmpty", function() { return checkNonEmpty; });
 /**
  * @private
  * Check that a row index is not out of bounds
@@ -10597,7 +11893,7 @@ __webpack_require__.r(__webpack_exports__);
  * @param {boolean} [outer]
  */
 function checkRowIndex(matrix, index, outer) {
-  var max = outer ? matrix.rows : matrix.rows - 1;
+  let max = outer ? matrix.rows : matrix.rows - 1;
   if (index < 0 || index > max) {
     throw new RangeError('Row index out of range');
   }
@@ -10611,7 +11907,7 @@ function checkRowIndex(matrix, index, outer) {
  * @param {boolean} [outer]
  */
 function checkColumnIndex(matrix, index, outer) {
-  var max = outer ? matrix.columns : matrix.columns - 1;
+  let max = outer ? matrix.columns : matrix.columns - 1;
   if (index < 0 || index > max) {
     throw new RangeError('Column index out of range');
   }
@@ -10631,7 +11927,7 @@ function checkRowVector(matrix, vector) {
   }
   if (vector.length !== matrix.columns) {
     throw new RangeError(
-      'vector size must be the same as the number of columns'
+      'vector size must be the same as the number of columns',
     );
   }
   return vector;
@@ -10658,7 +11954,7 @@ function checkColumnVector(matrix, vector) {
 function checkIndices(matrix, rowIndices, columnIndices) {
   return {
     row: checkRowIndices(matrix, rowIndices),
-    column: checkColumnIndices(matrix, columnIndices)
+    column: checkColumnIndices(matrix, columnIndices),
   };
 }
 
@@ -10667,7 +11963,7 @@ function checkRowIndices(matrix, rowIndices) {
     throw new TypeError('unexpected type for row indices');
   }
 
-  var rowOut = rowIndices.some((r) => {
+  let rowOut = rowIndices.some((r) => {
     return r < 0 || r >= matrix.rows;
   });
 
@@ -10685,7 +11981,7 @@ function checkColumnIndices(matrix, columnIndices) {
     throw new TypeError('unexpected type for column indices');
   }
 
-  var columnOut = columnIndices.some((c) => {
+  let columnOut = columnIndices.some((c) => {
     return c < 0 || c >= matrix.columns;
   });
 
@@ -10721,47 +12017,23 @@ function checkRange(matrix, startRow, endRow, startColumn, endColumn) {
   }
 }
 
-function getRange(from, to) {
-  var arr = new Array(to - from + 1);
-  for (var i = 0; i < arr.length; i++) {
-    arr[i] = from + i;
+function newArray(length, value = 0) {
+  let array = [];
+  for (let i = 0; i < length; i++) {
+    array.push(value);
   }
-  return arr;
-}
-
-function sumByRow(matrix) {
-  var sum = _matrix__WEBPACK_IMPORTED_MODULE_0__["default"].zeros(matrix.rows, 1);
-  for (var i = 0; i < matrix.rows; ++i) {
-    for (var j = 0; j < matrix.columns; ++j) {
-      sum.set(i, 0, sum.get(i, 0) + matrix.get(i, j));
-    }
-  }
-  return sum;
-}
-
-function sumByColumn(matrix) {
-  var sum = _matrix__WEBPACK_IMPORTED_MODULE_0__["default"].zeros(1, matrix.columns);
-  for (var i = 0; i < matrix.rows; ++i) {
-    for (var j = 0; j < matrix.columns; ++j) {
-      sum.set(0, j, sum.get(0, j) + matrix.get(i, j));
-    }
-  }
-  return sum;
-}
-
-function sumAll(matrix) {
-  var v = 0;
-  for (var i = 0; i < matrix.rows; i++) {
-    for (var j = 0; j < matrix.columns; j++) {
-      v += matrix.get(i, j);
-    }
-  }
-  return v;
+  return array;
 }
 
 function checkNumber(name, value) {
   if (typeof value !== 'number') {
     throw new TypeError(`${name} must be a number`);
+  }
+}
+
+function checkNonEmpty(matrix) {
+  if (matrix.isEmpty()) {
+    throw new Error('Empty matrix has no elements to index');
   }
 }
 
@@ -10778,21 +12050,15 @@ function checkNumber(name, value) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BaseView; });
-/* harmony import */ var _abstractMatrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../abstractMatrix */ "./node_modules/ml-matrix/src/abstractMatrix.js");
-/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
 
 
-
-class BaseView extends Object(_abstractMatrix__WEBPACK_IMPORTED_MODULE_0__["default"])() {
+class BaseView extends _matrix__WEBPACK_IMPORTED_MODULE_0__["AbstractMatrix"] {
   constructor(matrix, rows, columns) {
     super();
     this.matrix = matrix;
     this.rows = rows;
     this.columns = columns;
-  }
-
-  static get [Symbol.species]() {
-    return _matrix__WEBPACK_IMPORTED_MODULE_1__["default"];
   }
 }
 
@@ -10809,11 +12075,15 @@ class BaseView extends Object(_abstractMatrix__WEBPACK_IMPORTED_MODULE_0__["defa
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MatrixColumnView; });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./node_modules/ml-matrix/src/views/base.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./node_modules/ml-matrix/src/util.js");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./node_modules/ml-matrix/src/views/base.js");
 
 
-class MatrixColumnView extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
+
+
+class MatrixColumnView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor(matrix, column) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_0__["checkColumnIndex"])(matrix, column);
     super(matrix, matrix.rows, 1);
     this.column = column;
   }
@@ -10929,6 +12199,55 @@ class MatrixFlipRowView extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 /***/ }),
 
+/***/ "./node_modules/ml-matrix/src/views/index.js":
+/*!***************************************************!*\
+  !*** ./node_modules/ml-matrix/src/views/index.js ***!
+  \***************************************************/
+/*! exports provided: MatrixColumnView, MatrixColumnSelectionView, MatrixFlipColumnView, MatrixFlipRowView, MatrixRowView, MatrixRowSelectionView, MatrixSelectionView, MatrixSubView, MatrixTransposeView */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _column__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./column */ "./node_modules/ml-matrix/src/views/column.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixColumnView", function() { return _column__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _columnSelection__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./columnSelection */ "./node_modules/ml-matrix/src/views/columnSelection.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixColumnSelectionView", function() { return _columnSelection__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _flipColumn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./flipColumn */ "./node_modules/ml-matrix/src/views/flipColumn.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixFlipColumnView", function() { return _flipColumn__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _flipRow__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./flipRow */ "./node_modules/ml-matrix/src/views/flipRow.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixFlipRowView", function() { return _flipRow__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _row__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./row */ "./node_modules/ml-matrix/src/views/row.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixRowView", function() { return _row__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _rowSelection__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./rowSelection */ "./node_modules/ml-matrix/src/views/rowSelection.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixRowSelectionView", function() { return _rowSelection__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./selection */ "./node_modules/ml-matrix/src/views/selection.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixSelectionView", function() { return _selection__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _sub__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./sub */ "./node_modules/ml-matrix/src/views/sub.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixSubView", function() { return _sub__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _transpose__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./transpose */ "./node_modules/ml-matrix/src/views/transpose.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MatrixTransposeView", function() { return _transpose__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
 /***/ "./node_modules/ml-matrix/src/views/row.js":
 /*!*************************************************!*\
   !*** ./node_modules/ml-matrix/src/views/row.js ***!
@@ -10939,11 +12258,15 @@ class MatrixFlipRowView extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MatrixRowView; });
-/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./node_modules/ml-matrix/src/views/base.js");
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util */ "./node_modules/ml-matrix/src/util.js");
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./base */ "./node_modules/ml-matrix/src/views/base.js");
 
 
-class MatrixRowView extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] {
+
+
+class MatrixRowView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor(matrix, row) {
+    Object(_util__WEBPACK_IMPORTED_MODULE_0__["checkRowIndex"])(matrix, row);
     super(matrix, 1, matrix.columns);
     this.row = row;
   }
@@ -11015,7 +12338,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class MatrixSelectionView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
   constructor(matrix, rowIndices, columnIndices) {
-    var indices = Object(_util__WEBPACK_IMPORTED_MODULE_0__["checkIndices"])(matrix, rowIndices, columnIndices);
+    let indices = Object(_util__WEBPACK_IMPORTED_MODULE_0__["checkIndices"])(matrix, rowIndices, columnIndices);
     super(matrix, indices.row.length, indices.column.length);
     this.rowIndices = indices.row;
     this.columnIndices = indices.column;
@@ -11025,7 +12348,7 @@ class MatrixSelectionView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] 
     this.matrix.set(
       this.rowIndices[rowIndex],
       this.columnIndices[columnIndex],
-      value
+      value,
     );
     return this;
   }
@@ -11033,7 +12356,7 @@ class MatrixSelectionView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] 
   get(rowIndex, columnIndex) {
     return this.matrix.get(
       this.rowIndices[rowIndex],
-      this.columnIndices[columnIndex]
+      this.columnIndices[columnIndex],
     );
   }
 }
@@ -11069,7 +12392,7 @@ class MatrixSubView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
     this.matrix.set(
       this.startRow + rowIndex,
       this.startColumn + columnIndex,
-      value
+      value,
     );
     return this;
   }
@@ -11077,7 +12400,7 @@ class MatrixSubView extends _base__WEBPACK_IMPORTED_MODULE_1__["default"] {
   get(rowIndex, columnIndex) {
     return this.matrix.get(
       this.startRow + rowIndex,
-      this.startColumn + columnIndex
+      this.startColumn + columnIndex,
     );
   }
 }
@@ -11126,18 +12449,10 @@ class MatrixTransposeView extends _base__WEBPACK_IMPORTED_MODULE_0__["default"] 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return WrapperMatrix1D; });
-/* harmony import */ var _abstractMatrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../abstractMatrix */ "./node_modules/ml-matrix/src/abstractMatrix.js");
-/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
 
 
-
-class WrapperMatrix1D extends Object(_abstractMatrix__WEBPACK_IMPORTED_MODULE_0__["default"])() {
-  /**
-   * @class WrapperMatrix1D
-   * @param {Array<number>} data
-   * @param {object} [options]
-   * @param {object} [options.rows = 1]
-   */
+class WrapperMatrix1D extends _matrix__WEBPACK_IMPORTED_MODULE_0__["AbstractMatrix"] {
   constructor(data, options = {}) {
     const { rows = 1 } = options;
 
@@ -11151,22 +12466,18 @@ class WrapperMatrix1D extends Object(_abstractMatrix__WEBPACK_IMPORTED_MODULE_0_
   }
 
   set(rowIndex, columnIndex, value) {
-    var index = this._calculateIndex(rowIndex, columnIndex);
+    let index = this._calculateIndex(rowIndex, columnIndex);
     this.data[index] = value;
     return this;
   }
 
   get(rowIndex, columnIndex) {
-    var index = this._calculateIndex(rowIndex, columnIndex);
+    let index = this._calculateIndex(rowIndex, columnIndex);
     return this.data[index];
   }
 
   _calculateIndex(row, column) {
     return row * this.columns + column;
-  }
-
-  static get [Symbol.species]() {
-    return _matrix__WEBPACK_IMPORTED_MODULE_1__["default"];
   }
 }
 
@@ -11183,16 +12494,10 @@ class WrapperMatrix1D extends Object(_abstractMatrix__WEBPACK_IMPORTED_MODULE_0_
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return WrapperMatrix2D; });
-/* harmony import */ var _abstractMatrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../abstractMatrix */ "./node_modules/ml-matrix/src/abstractMatrix.js");
-/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
+/* harmony import */ var _matrix__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../matrix */ "./node_modules/ml-matrix/src/matrix.js");
 
 
-
-class WrapperMatrix2D extends Object(_abstractMatrix__WEBPACK_IMPORTED_MODULE_0__["default"])() {
-  /**
-   * @class WrapperMatrix2D
-   * @param {Array<Array<number>>} data
-   */
+class WrapperMatrix2D extends _matrix__WEBPACK_IMPORTED_MODULE_0__["AbstractMatrix"] {
   constructor(data) {
     super();
     this.data = data;
@@ -11207,10 +12512,6 @@ class WrapperMatrix2D extends Object(_abstractMatrix__WEBPACK_IMPORTED_MODULE_0_
 
   get(rowIndex, columnIndex) {
     return this.data[rowIndex][columnIndex];
-  }
-
-  static get [Symbol.species]() {
-    return _matrix__WEBPACK_IMPORTED_MODULE_1__["default"];
   }
 }
 
@@ -11232,12 +12533,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-/**
- * @param {Array<Array<number>>|Array<number>} array
- * @param {object} [options]
- * @param {object} [options.rows = 1]
- * @return {WrapperMatrix1D|WrapperMatrix2D}
- */
 function wrap(array, options) {
   if (Array.isArray(array)) {
     if (array[0] && Array.isArray(array[0])) {
@@ -11249,201 +12544,6 @@ function wrap(array, options) {
     throw new Error('the argument is not an array');
   }
 }
-
-
-/***/ }),
-
-/***/ "./node_modules/process/browser.js":
-/*!*****************************************!*\
-  !*** ./node_modules/process/browser.js ***!
-  \*****************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
 
 
 /***/ }),
@@ -11472,6 +12572,24 @@ var runtime = (function (exports) {
   var iteratorSymbol = $Symbol.iterator || "@@iterator";
   var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
   var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function define(obj, key, value) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    return obj[key];
+  }
+  try {
+    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+    define({}, "");
+  } catch (err) {
+    define = function(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
 
   function wrap(innerFn, outerFn, self, tryLocsList) {
     // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
@@ -11525,9 +12643,9 @@ var runtime = (function (exports) {
   // This is a polyfill for %IteratorPrototype% for environments that
   // don't natively support it.
   var IteratorPrototype = {};
-  IteratorPrototype[iteratorSymbol] = function () {
+  define(IteratorPrototype, iteratorSymbol, function () {
     return this;
-  };
+  });
 
   var getProto = Object.getPrototypeOf;
   var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
@@ -11541,18 +12659,22 @@ var runtime = (function (exports) {
 
   var Gp = GeneratorFunctionPrototype.prototype =
     Generator.prototype = Object.create(IteratorPrototype);
-  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunctionPrototype[toStringTagSymbol] =
-    GeneratorFunction.displayName = "GeneratorFunction";
+  GeneratorFunction.prototype = GeneratorFunctionPrototype;
+  define(Gp, "constructor", GeneratorFunctionPrototype);
+  define(GeneratorFunctionPrototype, "constructor", GeneratorFunction);
+  GeneratorFunction.displayName = define(
+    GeneratorFunctionPrototype,
+    toStringTagSymbol,
+    "GeneratorFunction"
+  );
 
   // Helper for defining the .next, .throw, and .return methods of the
   // Iterator interface in terms of a single ._invoke method.
   function defineIteratorMethods(prototype) {
     ["next", "throw", "return"].forEach(function(method) {
-      prototype[method] = function(arg) {
+      define(prototype, method, function(arg) {
         return this._invoke(method, arg);
-      };
+      });
     });
   }
 
@@ -11571,9 +12693,7 @@ var runtime = (function (exports) {
       Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
     } else {
       genFun.__proto__ = GeneratorFunctionPrototype;
-      if (!(toStringTagSymbol in genFun)) {
-        genFun[toStringTagSymbol] = "GeneratorFunction";
-      }
+      define(genFun, toStringTagSymbol, "GeneratorFunction");
     }
     genFun.prototype = Object.create(Gp);
     return genFun;
@@ -11655,9 +12775,9 @@ var runtime = (function (exports) {
   }
 
   defineIteratorMethods(AsyncIterator.prototype);
-  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
     return this;
-  };
+  });
   exports.AsyncIterator = AsyncIterator;
 
   // Note that simple async functions are implemented on top of
@@ -11843,20 +12963,20 @@ var runtime = (function (exports) {
   // unified ._invoke helper method.
   defineIteratorMethods(Gp);
 
-  Gp[toStringTagSymbol] = "Generator";
+  define(Gp, toStringTagSymbol, "Generator");
 
   // A Generator should always return itself as the iterator object when the
   // @@iterator function is called on it. Some browsers' implementations of the
   // iterator prototype chain incorrectly implement this, causing the Generator
   // object to not be returned from this call. This ensures that doesn't happen.
   // See https://github.com/facebook/regenerator/issues/274 for more details.
-  Gp[iteratorSymbol] = function() {
+  define(Gp, iteratorSymbol, function() {
     return this;
-  };
+  });
 
-  Gp.toString = function() {
+  define(Gp, "toString", function() {
     return "[object Generator]";
-  };
+  });
 
   function pushTryEntry(locs) {
     var entry = { tryLoc: locs[0] };
@@ -12175,352 +13295,20 @@ try {
 } catch (accidentalStrictMode) {
   // This module should not be running in strict mode, so the above
   // assignment should always work unless something is misconfigured. Just
-  // in case runtime.js accidentally runs in strict mode, we can escape
+  // in case runtime.js accidentally runs in strict mode, in modern engines
+  // we can explicitly access globalThis. In older engines we can escape
   // strict mode using a global Function call. This could conceivably fail
   // if a Content Security Policy forbids using Function, but in that case
   // the proper solution is to fix the accidental strict mode problem. If
   // you've misconfigured your bundler to force strict mode and applied a
   // CSP to forbid Function, and you're not willing to fix either of those
   // problems, please detail your unique predicament in a GitHub issue.
-  Function("r", "regeneratorRuntime = r")(runtime);
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/setimmediate/setImmediate.js":
-/*!***************************************************!*\
-  !*** ./node_modules/setimmediate/setImmediate.js ***!
-  \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
-    "use strict";
-
-    if (global.setImmediate) {
-        return;
-    }
-
-    var nextHandle = 1; // Spec says greater than zero
-    var tasksByHandle = {};
-    var currentlyRunningATask = false;
-    var doc = global.document;
-    var registerImmediate;
-
-    function setImmediate(callback) {
-      // Callback can either be a function or a string
-      if (typeof callback !== "function") {
-        callback = new Function("" + callback);
-      }
-      // Copy function arguments
-      var args = new Array(arguments.length - 1);
-      for (var i = 0; i < args.length; i++) {
-          args[i] = arguments[i + 1];
-      }
-      // Store and register the task
-      var task = { callback: callback, args: args };
-      tasksByHandle[nextHandle] = task;
-      registerImmediate(nextHandle);
-      return nextHandle++;
-    }
-
-    function clearImmediate(handle) {
-        delete tasksByHandle[handle];
-    }
-
-    function run(task) {
-        var callback = task.callback;
-        var args = task.args;
-        switch (args.length) {
-        case 0:
-            callback();
-            break;
-        case 1:
-            callback(args[0]);
-            break;
-        case 2:
-            callback(args[0], args[1]);
-            break;
-        case 3:
-            callback(args[0], args[1], args[2]);
-            break;
-        default:
-            callback.apply(undefined, args);
-            break;
-        }
-    }
-
-    function runIfPresent(handle) {
-        // From the spec: "Wait until any invocations of this algorithm started before this one have completed."
-        // So if we're currently running a task, we'll need to delay this invocation.
-        if (currentlyRunningATask) {
-            // Delay by doing a setTimeout. setImmediate was tried instead, but in Firefox 7 it generated a
-            // "too much recursion" error.
-            setTimeout(runIfPresent, 0, handle);
-        } else {
-            var task = tasksByHandle[handle];
-            if (task) {
-                currentlyRunningATask = true;
-                try {
-                    run(task);
-                } finally {
-                    clearImmediate(handle);
-                    currentlyRunningATask = false;
-                }
-            }
-        }
-    }
-
-    function installNextTickImplementation() {
-        registerImmediate = function(handle) {
-            process.nextTick(function () { runIfPresent(handle); });
-        };
-    }
-
-    function canUsePostMessage() {
-        // The test against `importScripts` prevents this implementation from being installed inside a web worker,
-        // where `global.postMessage` means something completely different and can't be used for this purpose.
-        if (global.postMessage && !global.importScripts) {
-            var postMessageIsAsynchronous = true;
-            var oldOnMessage = global.onmessage;
-            global.onmessage = function() {
-                postMessageIsAsynchronous = false;
-            };
-            global.postMessage("", "*");
-            global.onmessage = oldOnMessage;
-            return postMessageIsAsynchronous;
-        }
-    }
-
-    function installPostMessageImplementation() {
-        // Installs an event handler on `global` for the `message` event: see
-        // * https://developer.mozilla.org/en/DOM/window.postMessage
-        // * http://www.whatwg.org/specs/web-apps/current-work/multipage/comms.html#crossDocumentMessages
-
-        var messagePrefix = "setImmediate$" + Math.random() + "$";
-        var onGlobalMessage = function(event) {
-            if (event.source === global &&
-                typeof event.data === "string" &&
-                event.data.indexOf(messagePrefix) === 0) {
-                runIfPresent(+event.data.slice(messagePrefix.length));
-            }
-        };
-
-        if (global.addEventListener) {
-            global.addEventListener("message", onGlobalMessage, false);
-        } else {
-            global.attachEvent("onmessage", onGlobalMessage);
-        }
-
-        registerImmediate = function(handle) {
-            global.postMessage(messagePrefix + handle, "*");
-        };
-    }
-
-    function installMessageChannelImplementation() {
-        var channel = new MessageChannel();
-        channel.port1.onmessage = function(event) {
-            var handle = event.data;
-            runIfPresent(handle);
-        };
-
-        registerImmediate = function(handle) {
-            channel.port2.postMessage(handle);
-        };
-    }
-
-    function installReadyStateChangeImplementation() {
-        var html = doc.documentElement;
-        registerImmediate = function(handle) {
-            // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
-            // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
-            var script = doc.createElement("script");
-            script.onreadystatechange = function () {
-                runIfPresent(handle);
-                script.onreadystatechange = null;
-                html.removeChild(script);
-                script = null;
-            };
-            html.appendChild(script);
-        };
-    }
-
-    function installSetTimeoutImplementation() {
-        registerImmediate = function(handle) {
-            setTimeout(runIfPresent, 0, handle);
-        };
-    }
-
-    // If supported, we should attach to the prototype of global, since that is where setTimeout et al. live.
-    var attachTo = Object.getPrototypeOf && Object.getPrototypeOf(global);
-    attachTo = attachTo && attachTo.setTimeout ? attachTo : global;
-
-    // Don't get fooled by e.g. browserify environments.
-    if ({}.toString.call(global.process) === "[object process]") {
-        // For Node.js before 0.9
-        installNextTickImplementation();
-
-    } else if (canUsePostMessage()) {
-        // For non-IE10 modern browsers
-        installPostMessageImplementation();
-
-    } else if (global.MessageChannel) {
-        // For web workers, where supported
-        installMessageChannelImplementation();
-
-    } else if (doc && "onreadystatechange" in doc.createElement("script")) {
-        // For IE 6–8
-        installReadyStateChangeImplementation();
-
-    } else {
-        // For older browsers
-        installSetTimeoutImplementation();
-    }
-
-    attachTo.setImmediate = setImmediate;
-    attachTo.clearImmediate = clearImmediate;
-}(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../process/browser.js */ "./node_modules/process/browser.js")))
-
-/***/ }),
-
-/***/ "./node_modules/timers-browserify/main.js":
-/*!************************************************!*\
-  !*** ./node_modules/timers-browserify/main.js ***!
-  \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
-            (typeof self !== "undefined" && self) ||
-            window;
-var apply = Function.prototype.apply;
-
-// DOM APIs, for completeness
-
-exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
-};
-exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
-};
-exports.clearTimeout =
-exports.clearInterval = function(timeout) {
-  if (timeout) {
-    timeout.close();
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
   }
-};
-
-function Timeout(id, clearFn) {
-  this._id = id;
-  this._clearFn = clearFn;
 }
-Timeout.prototype.unref = Timeout.prototype.ref = function() {};
-Timeout.prototype.close = function() {
-  this._clearFn.call(scope, this._id);
-};
-
-// Does not start the time, just sets up the members needed.
-exports.enroll = function(item, msecs) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = msecs;
-};
-
-exports.unenroll = function(item) {
-  clearTimeout(item._idleTimeoutId);
-  item._idleTimeout = -1;
-};
-
-exports._unrefActive = exports.active = function(item) {
-  clearTimeout(item._idleTimeoutId);
-
-  var msecs = item._idleTimeout;
-  if (msecs >= 0) {
-    item._idleTimeoutId = setTimeout(function onTimeout() {
-      if (item._onTimeout)
-        item._onTimeout();
-    }, msecs);
-  }
-};
-
-// setimmediate attaches itself to the global object
-__webpack_require__(/*! setimmediate */ "./node_modules/setimmediate/setImmediate.js");
-// On some exotic environments, it's not clear which object `setimmediate` was
-// able to install onto.  Search each possibility in the same order as the
-// `setimmediate` library.
-exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
-                       (typeof global !== "undefined" && global.setImmediate) ||
-                       (this && this.setImmediate);
-exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
-                         (typeof global !== "undefined" && global.clearImmediate) ||
-                         (this && this.clearImmediate);
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
-
-/***/ }),
-
-/***/ "./node_modules/webpack/buildin/global.js":
-/*!***********************************!*\
-  !*** (webpack)/buildin/global.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || new Function("return this")();
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-
-/***/ "./node_modules/webpack/buildin/module.js":
-/*!***********************************!*\
-  !*** (webpack)/buildin/module.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
 
 
 /***/ }),
@@ -12873,7 +13661,7 @@ var _normFns;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -12883,7 +13671,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -13195,9 +13983,7 @@ exports.eliminateZeros = eliminateZeros;
  * Normalization of a sparse matrix.
  */
 
-function normalize(m)
-/* l2 */
-{
+function normalize(m) {
   var normType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "l2";
   var normFn = normFns[normType];
   var colsByRow = new Map();
@@ -13404,7 +14190,7 @@ exports.getCSR = getCSR;
  * ==============================================================================
  */
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
@@ -13692,7 +14478,7 @@ exports.initializeSearch = initializeSearch;
  * ==============================================================================
  */
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -13700,7 +14486,7 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
@@ -14088,7 +14874,7 @@ function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArra
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -14098,7 +14884,7 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
@@ -14522,10 +15308,10 @@ var UMAP = /*#__PURE__*/function () {
         if (this.targetMetric === "categorical"
         /* categorical */
         ) {
-            var lt = this.targetWeight < 1.0;
-            var farDist = lt ? 2.5 * (1.0 / (1.0 - this.targetWeight)) : 1.0e12;
-            this.graph = this.categoricalSimplicialSetIntersection(this.graph, Y, farDist);
-          } // TODO (andycoenen@): add non-categorical supervised embeddings.
+          var lt = this.targetWeight < 1.0;
+          var farDist = lt ? 2.5 * (1.0 / (1.0 - this.targetWeight)) : 1.0e12;
+          this.graph = this.categoricalSimplicialSetIntersection(this.graph, Y, farDist);
+        } // TODO (andycoenen@): add non-categorical supervised embeddings.
 
       }
     }
@@ -15413,7 +16199,7 @@ exports.initTransform = initTransform;
  * ==============================================================================
  */
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
@@ -15667,7 +16453,7 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 

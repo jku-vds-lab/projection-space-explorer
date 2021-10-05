@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { ConnectedProps } from "react-redux";
 import './LineUpContext.scss';
 import { IStringFilter, ERenderMode, IRenderContext, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, StringColumn } from "lineupjs";

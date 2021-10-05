@@ -4,7 +4,7 @@ module.exports = {
   mode: "development",
   watch: false,
   entry: {
-    bundle: "./src/exports.ts",
+    bundle: "./src/index.tsx",
     tsne: './src/components/workers/embeddings/worker_tsne.ts',
     umap: './src/components/workers/embeddings/worker_umap.ts',
     cluster: './src/components/workers/worker_cluster.tsx',
