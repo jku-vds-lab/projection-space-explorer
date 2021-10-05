@@ -13,7 +13,7 @@ export declare class CSVLoader implements Loader {
         inferred: boolean;
     };
     resolveContent(content: any, finished: any): void;
-    getFeatureType(x: any): "date" | "number" | "arbitrary";
+    getFeatureType(x: any): "number" | "date" | "arbitrary";
     getClusters(vectors: IVector[], callback: any): void;
     resolve(finished: any, vectors: any, datasetType: any, entry: DatasetEntry): Promise<void>;
 }

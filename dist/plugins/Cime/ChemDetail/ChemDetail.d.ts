@@ -32,5 +32,5 @@ declare type Props_Chem_Parent = PropsFromRedux_Chem & {
     diff?: boolean;
     selection_ref?: any;
 };
-export declare const ChemLegendParent: import("react-redux").ConnectedComponent<(props: Props_Chem_Parent) => JSX.Element, Pick<Props_Chem_Parent, "selection" | "aggregate" | "mcs_only" | "diff" | "selection_ref">>;
+export declare const ChemLegendParent: import("react-redux").ConnectedComponent<(props: Props_Chem_Parent) => JSX.Element, Pick<Props_Chem_Parent, "aggregate" | "selection" | "mcs_only" | "diff" | "selection_ref">>;
 export {};

@@ -3,8 +3,12 @@ const webpack = require('webpack');
 module.exports = {
   mode: "development",
   watch: false,
+  externals: {
+    'react': 'react',
+    'react-dom': 'react-dom'
+  },
   entry: {
-    bundle: "./src/index.tsx",
+    bundle: "./src/exports.ts",
     tsne: './src/components/workers/embeddings/worker_tsne.ts',
     umap: './src/components/workers/embeddings/worker_umap.ts',
     cluster: './src/components/workers/worker_cluster.tsx',
@@ -40,11 +44,5 @@ module.exports = {
         use: ['@svgr/webpack'],
       }
     ]
-  },
-  plugins: [
-    new webpack.ProvidePlugin({
-      ReactDOM: 'react-dom',
-      React: 'react'
-    })
-  ]
+  }
 };

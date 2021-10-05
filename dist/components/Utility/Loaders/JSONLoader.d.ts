@@ -15,6 +15,6 @@ export declare class JSONLoader implements Loader {
         max: number;
         inferred: boolean;
     };
-    getFeatureType(x: any): "date" | "number" | "arbitrary";
+    getFeatureType(x: any): "number" | "date" | "arbitrary";
     resolve(content: any, finished: any, datasetType: any, entry: any): Promise<void>;
 }
