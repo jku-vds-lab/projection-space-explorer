@@ -8,9 +8,9 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    dataset: import("../../../model/Dataset").Dataset;
+    dataset: import("../../../model").Dataset;
     hoverStateOrientation: any;
-    activeStorybook: import("../../../model/Book").IBook;
+    activeStorybook: import("../../../model").IBook;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
@@ -27,9 +27,9 @@ export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<(
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    dataset: import("../../../model/Dataset").Dataset;
+    dataset: import("../../../model").Dataset;
     hoverStateOrientation: any;
-    activeStorybook: import("../../../model/Book").IBook;
+    activeStorybook: import("../../../model").IBook;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;

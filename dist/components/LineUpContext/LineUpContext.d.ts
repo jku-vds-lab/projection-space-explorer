@@ -7,13 +7,13 @@ import { TestColumn } from "./LineUpClasses/TestColumn";
  */
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     lineUpInput: import("../Ducks/LineUpInputDuck").LineUpType;
-    lineUpInput_data: import("../../model/Vector").IVector[];
+    lineUpInput_data: import("../../model").IVector[];
     lineUpInput_columns: {
         [name: string]: {
             distinct: any;
             isNumeric: boolean;
             metaInformation: any;
-            featureType: import("../../model/FeatureType").FeatureType;
+            featureType: import("../../model").FeatureType;
             range: any;
             featureLabel: string;
             project: boolean;
@@ -24,7 +24,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    activeStory: import("../../model/Book").IBook;
+    activeStory: import("../../model").IBook;
     pointColorScale: any;
     channelColor: any;
 } & {

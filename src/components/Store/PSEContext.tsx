@@ -1,4 +1,4 @@
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
+import { createTheme, MuiThemeProvider } from "@material-ui/core";
 import { PropsWithChildren } from "react";
 import React = require("react");
 import { Provider } from "react-redux";
@@ -12,7 +12,7 @@ type PSEContextProps = {
     onStateChanged?: (values: any, keys: any) => void
 }
 
-const theme = createMuiTheme({
+const theme = createTheme({
     palette: {
         primary: {
             // light: will be calculated from palette.primary.main,

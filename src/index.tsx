@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import { AppBar, Button, Divider, Drawer, Paper, SvgIcon, Toolbar, Tooltip } from "@material-ui/core";
 import { DatasetDatabase } from "./components/Utility/Data/DatasetDatabase";
 import { Dataset, DatasetUtil, SegmentFN } from "./model/Dataset";
-import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './components/DrawerTabPanels/StatesTabPanel/LineTreePopover/LineTreePopover'
+import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './components/DrawerTabPanels/StatesTabPanel/LineTreePopover'
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';

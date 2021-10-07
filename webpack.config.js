@@ -42,6 +42,17 @@ module.exports = {
       {
         test: /\.svg$/,
         use: ['@svgr/webpack'],
+      },
+      {
+        test: /\.(png|jpg)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: true,
+            },
+          },
+        ],
       }
     ]
   }

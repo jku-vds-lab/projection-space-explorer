@@ -1,7 +1,7 @@
 import './chem.scss';
 import { ConnectedProps } from 'react-redux';
 declare const connector_Chem: import("react-redux").InferableComponentEnhancerWithProps<{
-    dataset: import("../../../model/Dataset").Dataset;
+    dataset: import("../../../model").Dataset;
     hoverSettings: {
         windowMode: any;
     };
@@ -11,7 +11,7 @@ declare const connector_Chem: import("react-redux").InferableComponentEnhancerWi
             distinct: any;
             isNumeric: boolean;
             metaInformation: any;
-            featureType: import("../../../model/FeatureType").FeatureType;
+            featureType: import("../../../model").FeatureType;
             range: any;
             featureLabel: string;
             project: boolean;

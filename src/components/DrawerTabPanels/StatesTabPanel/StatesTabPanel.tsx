@@ -1,7 +1,7 @@
 import { connect, ConnectedProps } from 'react-redux'
 import * as React from 'react'
 import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, makeStyles } from '@material-ui/core'
-import { ShapeLegend } from './ShapeLegend/ShapeLegend'
+import { ShapeLegend } from './ShapeLegend'
 import { setSelectedVectorByShapeAction } from "../../Ducks/SelectedVectorByShapeDuck"
 import { setVectorByShapeAction } from "../../Ducks/VectorByShapeDuck"
 import { setCheckedShapesAction } from "../../Ducks/CheckedShapesDuck"
@@ -9,17 +9,17 @@ import { RootState } from '../../Store/Store'
 import { setSelectedLineBy } from '../../Ducks/SelectedLineByDuck'
 import { setChannelBrightnessSelection } from '../../Ducks/ChannelBrightnessDuck'
 import { setGlobalPointBrightness } from '../../Ducks/GlobalPointBrightnessDuck'
-import { BrightnessSlider } from './BrightnessSlider/BrightnessSlider'
+import { BrightnessSlider } from './BrightnessSlider'
 import { setChannelSize } from '../../Ducks/ChannelSize'
 import { setGlobalPointSize } from '../../Ducks/GlobalPointSizeDuck'
-import { SizeSlider } from './SizeSlider/SizeSlider'
-import { ColorScaleSelect } from './ColorScaleSelect/ColorScaleSelect'
-import { AdvancedColoringPopover } from './AdvancedColoring/AdvancedColoringPopover/AdvancedColoringPopover'
+import { SizeSlider } from './SizeSlider'
+import { ColorScaleSelect } from './ColorScaleSelect'
+import { AdvancedColoringPopover } from './AdvancedColoringPopover'
 import { setChannelColor } from '../../Ducks/ChannelColorDuck'
 import { setAdvancedColoringSelectionAction } from '../../Ducks/AdvancedColoringSelectionDuck'
-import { PathLengthFilter } from './PathLengthFilter/PathLengthFilter'
-import { LineTreePopover } from './LineTreePopover/LineTreePopover'
-import { PathBrightnessSlider } from './PathTransparencySlider/PathBrightnessSlider'
+import { PathLengthFilter } from './PathLengthFilter'
+import { LineTreePopover } from './LineTreePopover'
+import { PathBrightnessSlider } from './PathBrightnessSlider'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions'
 

@@ -7,11 +7,11 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { getCountryCode } from '../../../components/Utility/CountryCodes';
 import { Divider } from '@material-ui/core';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import * as React from 'react'
 
 
-const theme = createMuiTheme({
+const theme = createTheme({
     typography: {
         subtitle1: {
             fontSize: 11,

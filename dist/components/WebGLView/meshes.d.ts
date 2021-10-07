@@ -96,11 +96,3 @@ export declare class PointVisualization {
      */
     dispose(): void;
 }
-export declare class ConvexHull {
-    vectors: any;
-    geometry: any;
-    material: any;
-    mesh: any;
-    constructor(vectors: any);
-    createMesh(): any;
-}

@@ -6,7 +6,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         source: "sample" | "cluster";
     };
     hoverState: import("../../Ducks/HoverStateDuck").HoverStateType;
-    dataset: import("../../../model/Dataset").Dataset;
+    dataset: import("../../../model").Dataset;
     hoverSettings: {
         windowMode: any;
     };
@@ -22,7 +22,7 @@ export declare const SelectionClusters: import("react-redux").ConnectedComponent
         source: "sample" | "cluster";
     };
     hoverState: import("../../Ducks/HoverStateDuck").HoverStateType;
-    dataset: import("../../../model/Dataset").Dataset;
+    dataset: import("../../../model").Dataset;
     hoverSettings: {
         windowMode: any;
     };

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { arraysEqual } from '../../../components/WebGLView/UtilityFunctions'
-
+// @ts-ignore
+import WR from '../../../../textures/chess/Chess_rlt45.svg'
 
 // Lookup table for chess UNICODE symbols
 var symbols = {

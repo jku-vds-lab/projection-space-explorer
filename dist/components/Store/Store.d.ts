@@ -10,7 +10,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     vectorByShape: any;
     checkedShapes: any;
     activeLine: any;
-    dataset: import("../../model/Dataset").Dataset;
+    dataset: import("../../model").Dataset;
     highlightedSequence: any;
     viewTransform: {
         camera: import("three").Camera;
@@ -59,7 +59,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     lineUpInput: import("../Ducks/LineUpInputDuck").LineUpType;
     rdkitSettings: import("../Ducks/RDKitSettingsDuck").RDKitSettingsType;
     differenceThreshold: any;
-    projections: import("../../model/Embedding").Embedding[];
+    projections: import("../../model").Embedding[];
     hoverSettings: {
         windowMode: any;
     };

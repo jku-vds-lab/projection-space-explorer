@@ -8,10 +8,9 @@ import { LayeringSystem } from './LayeringSystem/LayeringSystem'
 import { StoriesType, StoriesUtil } from '../Ducks/StoriesDuck'
 import { DiscreteMapping, Mapping } from '../Utility/Colors/Mapping'
 
-/**
- * Generates a line mesh
- */
-var convex = require('three/examples/jsm/geometries/ConvexGeometry')
+// @ts-ignore
+import SpriteAtlas from '../../../textures/sprites/atlas.png'
+
 
 var fragmentShader = require('../../shaders/fragment.glsl')
 var vertexShader = require('../../shaders/vertex.glsl')
@@ -491,7 +490,7 @@ export class PointVisualization {
         color: { value: new THREE.Color(0xffffff) },
         scale: { value: 1.0 },
         atlas: {
-          value: new THREE.TextureLoader().load("textures/sprites/atlas.png")
+          value: new THREE.TextureLoader().load(SpriteAtlas)
         }
       },
       transparent: true,
@@ -967,33 +966,5 @@ export class PointVisualization {
     this.mesh.material.dispose()
 
     this.mesh = null
-  }
-}
-
-
-
-
-
-
-
-
-
-
-export class ConvexHull {
-  vectors: any
-  geometry: any
-  material: any
-  mesh: any
-
-  constructor(vectors) {
-    this.vectors = vectors
-  }
-
-  createMesh() {
-    this.geometry = new convex.ConvexBufferGeometry(this.vectors)
-    this.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-    this.mesh = new THREE.Mesh(this.geometry, this.material)
-
-    return this.mesh
   }
 }

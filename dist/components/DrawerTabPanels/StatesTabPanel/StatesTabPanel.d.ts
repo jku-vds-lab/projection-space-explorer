@@ -9,7 +9,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         value: string;
     };
     vectorByShape: any;
-    dataset: import("../../../model/Dataset").Dataset;
+    dataset: import("../../../model").Dataset;
     categoryOptions: import("../../WebGLView/CategoryOptions").CategoryOptions;
     channelBrightness: any;
     channelSize: any;
