@@ -3,6 +3,10 @@ import THREE = require("three");
 var fragmentShader = require('../../../shaders/trail_fragment.glsl')
 var vertexShader = require('../../../shaders/trail_vertex.glsl')
 
+
+// @ts-ignore
+import WhiteSq from '../../../../textures/sprites/white_square.png'
+
 export class TrailVisualization {
     mesh: THREE.Points<THREE.BufferGeometry, THREE.Material>
     maxLength: number = 50
@@ -33,7 +37,7 @@ export class TrailVisualization {
                 color: { value: new THREE.Color(0xffffff) },
                 scale: { value: 1.0 },
                 atlas: {
-                    value: new THREE.TextureLoader().load("textures/sprites/square_white.png")
+                    value: new THREE.TextureLoader().load(WhiteSq)
                 }
             },
             transparent: true,

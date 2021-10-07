@@ -1,14 +1,29 @@
 import * as React from 'react'
 import { arraysEqual } from '../../../components/WebGLView/UtilityFunctions'
 // @ts-ignore
-import WR from '../../../../textures/chess/Chess_rlt45.svg'
+import WR from '../../../../textures/chess/Chess_rlt45.png'
+// @ts-ignore
+import WN from '../../../../textures/chess/Chess_nlt45.png'
+// @ts-ignore
+import WB from '../../../../textures/chess/Chess_blt45.png'
+// @ts-ignore
+import WK from '../../../../textures/chess/Chess_klt45.png'
+// @ts-ignore
+import WQ from '../../../../textures/chess/Chess_rlt45.png'
+// @ts-ignore
+import WR from '../../../../textures/chess/Chess_rlt45.png'
+// @ts-ignore
+import WR from '../../../../textures/chess/Chess_rlt45.png'
+// @ts-ignore
+import WR from '../../../../textures/chess/Chess_rlt45.png'
+
 
 // Lookup table for chess UNICODE symbols
 var symbols = {
-    'wr': 'textures/chess/Chess_rlt45.svg',
-    'wn': 'textures/chess/Chess_nlt45.svg',
-    'wb': 'textures/chess/Chess_blt45.svg',
-    'wk': 'textures/chess/Chess_klt45.svg',
+    'wr': WR,
+    'wn': WN,
+    'wb': WB,
+    'wk': WK,
     'wq': 'textures/chess/Chess_qlt45.svg',
     'wp': 'textures/chess/Chess_plt45.svg',
     'br': 'textures/chess/Chess_rdt45.svg',

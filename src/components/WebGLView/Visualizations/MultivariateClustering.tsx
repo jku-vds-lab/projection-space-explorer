@@ -18,6 +18,7 @@ import * as frontend_utils from "../../../utils/frontend-connect";
 import { GroupVisualizationMode } from "../../Ducks/GroupVisualizationMode";
 import { ScaleUtil } from "../../Utility/Colors/ContinuosScale";
 import { StoriesUtil } from "../../Ducks/StoriesDuck";
+import TessyWorker from '../../workers/tessy.worker';
 
 
 const SELECTED_COLOR = 0x007dad
@@ -106,7 +107,8 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.trail.create(this.clusterObjects)
         this.scene.add(this.trail.mesh)
 
-        this.triangulationWorker = new Worker(frontend_utils.BASE_PATH + 'tessy.js')
+        this.triangulationWorker = new TessyWorker()
+        //this.triangulationWorker = new Worker(frontend_utils.BASE_PATH + 'tessy.js')
     }
 
     

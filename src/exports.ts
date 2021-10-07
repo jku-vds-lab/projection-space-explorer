@@ -6,10 +6,5 @@ import { HoverTabPanel } from "./components/DrawerTabPanels/HoverTabPanel/HoverT
 
 export * from './model'
 
-import "lineupjs/build/LineUpJS.css"
-
-
-
-
 
 export {PSEContextProvider, Application, PluginRegistry, HoverTabPanel, API, tryIt}

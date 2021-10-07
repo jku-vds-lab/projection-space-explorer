@@ -54,6 +54,10 @@ import PseEncoding from '../textures/icons/pse-icon-encoding.svg'
 import PseProject from '../textures/icons/pse-icon-project.svg'
 // @ts-ignore
 import PseLineup from '../textures/icons/pse-icon-lineup.svg'
+// @ts-ignore
+import VDSLogo from '../textures/vds-lab-logo-notext.svg'
+
+
 import Split from 'react-split'
 import { setLineByOptions } from "./components/Ducks/SelectedLineByDuck";
 import { LineUpTabPanel } from "./components/DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
@@ -382,7 +386,8 @@ export const Application = connector(class extends React.Component<Props, any> {
           display: 'flex',
           alignItems: 'stretch',
           width: "100vw",
-          height: "100vh"
+          height: "100vh",
+          overflow: 'hidden'
         }}>
 
         <Drawer
@@ -513,7 +518,7 @@ export const Application = connector(class extends React.Component<Props, any> {
         }}>
           <AppBar variant="outlined" position="relative" color="transparent">
             <Toolbar>
-              <a href={"https://jku-vds-lab.at"} target={"_blank"}><img style={{ height: 48 }} src={"textures/vds-lab-logo-notext.svg"} /></a>
+              <a href={"https://jku-vds-lab.at"} target={"_blank"}><VDSLogo style={{ height: 48, width: 48 }}></VDSLogo></a>
               {frontend_utils.CHEM_PROJECT && <a href={"https://www.bayer.com"} target={"_blank"}><img style={{ height: 48, marginLeft: 48 }} src={"textures/bayer-logo.svg"} alt="Powered By Bayer" /></a>}
               <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
                 {frontend_utils.CHEM_PROJECT ? "CIME: Chem-Informatics Model Explorer" : "Projection Space Explorer"}

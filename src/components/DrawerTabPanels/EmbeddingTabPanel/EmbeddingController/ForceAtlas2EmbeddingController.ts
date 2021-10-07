@@ -5,6 +5,8 @@ import { EmbeddingController } from "./EmbeddingController"
 import * as frontend_utils from "../../../../utils/frontend-connect";
 import { IVector } from "../../../../model/Vector";
 
+import forceatlas2Worker from "../../../workers/embeddings/forceatlas2.worker";
+
 const Graph = require('graphology');
 
 export class ForceAtlas2EmbeddingController extends EmbeddingController {
@@ -68,7 +70,7 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
         })
 
 
-        this.worker = new Worker(frontend_utils.BASE_PATH + 'forceatlas2.js') //dist/
+        this.worker = new forceatlas2Worker()
 
 
         let self = this

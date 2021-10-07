@@ -58,7 +58,8 @@
     "url-loader": "^4.1.1",
     "vega": "^5.17.0",
     "vega-lite": "^4.16.8",
-    "vega-tooltip": "^0.24.2"
+    "vega-tooltip": "^0.24.2",
+    "worker-loader": "^3.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",

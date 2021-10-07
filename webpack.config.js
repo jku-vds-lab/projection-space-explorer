@@ -8,12 +8,7 @@ module.exports = {
     'react-dom': 'react-dom'
   },
   entry: {
-    bundle: "./src/exports.ts",
-    tsne: './src/components/workers/embeddings/worker_tsne.ts',
-    umap: './src/components/workers/embeddings/worker_umap.ts',
-    cluster: './src/components/workers/worker_cluster.tsx',
-    forceatlas2: './src/components/workers/embeddings/worker_forceatlas2.ts',
-    tessy: './src/components/workers/worker_triangulate.ts'
+    bundle: "./src/exports.ts"
   },
   output: {
     filename: "[name].js",
@@ -28,6 +23,11 @@ module.exports = {
   devtool: "source-map",
   module: {
     rules: [
+      {
+        test: /\.worker\.ts$/,
+        loader: 'worker-loader',
+        options: { inline: "fallback" }
+      },
       { test: /\.scss$/, use: [
         "style-loader",
         "css-loader",
