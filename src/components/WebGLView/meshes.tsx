@@ -4,7 +4,7 @@ import * as THREE from 'three'
 import { DataLine } from "../../model/DataLine"
 import { IVector } from "../../model/Vector"
 import { Dataset } from "../../model/Dataset"
-import { LayeringSystem } from './LayeringSystem/LayeringSystem'
+import { LayeringSystem } from './LayeringSystem'
 import { StoriesType, StoriesUtil } from '../Ducks/StoriesDuck'
 import { DiscreteMapping, Mapping } from '../Utility/Colors/Mapping'
 

@@ -7,7 +7,7 @@ import { IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynami
 import * as backend_utils from "../../utils/backend-connect";
 import { EXCLUDED_COLUMNS, PrebuiltFeatures } from "../../model/Dataset";
 import { setLineUpInput_lineup, setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
-import { MyWindowPortal } from "../Overlays/WindowPortal/WindowPortal";
+import { MyWindowPortal } from "../Overlays/WindowPortal";
 import * as _ from 'lodash';
 import { ACluster } from "../../model/Cluster";
 import { selectVectors } from "../Ducks/AggregationDuck";

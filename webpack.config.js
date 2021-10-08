@@ -8,7 +8,7 @@ module.exports = {
     'react-dom': 'react-dom'
   },
   entry: {
-    bundle: "./src/exports.ts"
+    bundle: "./src/index.ts"
   },
   output: {
     filename: "[name].js",
@@ -26,7 +26,7 @@ module.exports = {
       {
         test: /\.worker\.ts$/,
         loader: 'worker-loader',
-        options: { inline: "fallback" }
+        options: { inline: "no-fallback" }
       },
       { test: /\.scss$/, use: [
         "style-loader",

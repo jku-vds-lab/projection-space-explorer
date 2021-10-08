@@ -1,19 +1,19 @@
 import { connect, ConnectedProps } from 'react-redux'
 import React = require('react')
 import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@material-ui/core'
-import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
+import { ProjectionControlCard } from './ProjectionControlCard'
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
 import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
 import { Dataset } from "../../../model/Dataset"
-import { GenericSettings } from './GenericSettings/GenericSettings'
+import { GenericSettings } from './GenericSettings'
 import { RootState } from '../../Store/Store'
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck'
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck'
-import { TSNEEmbeddingController } from './EmbeddingController/TSNEEmbeddingController'
-import { UMAPEmbeddingController } from './EmbeddingController/UMAPEmbeddingController'
-import { ClusterTrailSettings } from './ClusterTrailSettings/ClusterTrailSettings'
+import { TSNEEmbeddingController } from './TSNEEmbeddingController'
+import { UMAPEmbeddingController } from './UMAPEmbeddingController'
+import { ClusterTrailSettings } from './ClusterTrailSettings'
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck'
-import { ForceAtlas2EmbeddingController } from './EmbeddingController/ForceAtlas2EmbeddingController'
+import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController'
 import { Embedding } from '../../../model/Embedding'
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';

@@ -2,7 +2,7 @@ import { getDefaultZoom, arraysEqual, normalizeWheel, centerOfMass, interpolateL
 import { LassoSelection } from './tools'
 import * as React from "react";
 import * as THREE from 'three'
-import { LassoLayer } from './LassoLayer/LassoLayer';
+import { LassoLayer } from './LassoLayer';
 import { ACluster, ICluster, isCluster } from '../../model/Cluster';
 import { TypedObject } from "../../model/TypedObject";
 import { connect, ConnectedProps } from 'react-redux'
@@ -12,7 +12,7 @@ import { selectClusters, selectVectors } from "../Ducks/AggregationDuck";
 import { CameraTransformations } from './CameraTransformations'
 import { Camera } from 'three';
 import { LineVisualization, PointVisualization } from './meshes';
-import { MultivariateClustering } from './Visualizations/MultivariateClustering';
+import { MultivariateClustering } from './MultivariateClustering';
 import { DisplayMode, displayModeSupportsStates } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
@@ -26,8 +26,8 @@ import { IBook, ABook } from '../../model/Book';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
 import { IEdge, isEdge } from "../../model/Edge";
 import { getSyncNodesAlt } from '../NumTs/NumTs';
-import { ClusterDragTool } from './Tools/ClusterDragTool';
-import { TraceSelectTool } from './Tools/TraceSelectTool';
+import { ClusterDragTool } from './ClusterDragTool';
+import { TraceSelectTool } from './TraceSelectTool';
 import { Embedding } from '../../model/Embedding';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';

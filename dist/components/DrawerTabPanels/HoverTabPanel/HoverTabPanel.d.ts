@@ -8,7 +8,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    dataset: import("../../../model").Dataset;
+    dataset: import("../../..").Dataset;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
@@ -24,7 +24,7 @@ export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ 
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    dataset: import("../../../model").Dataset;
+    dataset: import("../../..").Dataset;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;

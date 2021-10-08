@@ -10,7 +10,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     vectorByShape: any;
     checkedShapes: any;
     activeLine: any;
-    dataset: import("../../model").Dataset;
+    dataset: import("../..").Dataset;
     highlightedSequence: any;
     viewTransform: {
         camera: import("three").Camera;
@@ -41,7 +41,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         range: number[];
         maximum: any;
     };
-    categoryOptions: import("../WebGLView/CategoryOptions").CategoryOptions;
+    categoryOptions: import("..").CategoryOptions;
     channelSize: any;
     channelColor: any;
     channelBrightness: any;
@@ -59,7 +59,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     lineUpInput: import("../Ducks/LineUpInputDuck").LineUpType;
     rdkitSettings: import("../Ducks/RDKitSettingsDuck").RDKitSettingsType;
     differenceThreshold: any;
-    projections: import("../../model").Embedding[];
+    projections: import("../..").Embedding[];
     hoverSettings: {
         windowMode: any;
     };

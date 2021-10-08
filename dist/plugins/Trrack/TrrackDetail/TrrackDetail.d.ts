@@ -1,7 +1,7 @@
 import { ConnectedProps } from 'react-redux';
 import { IVector } from "../../../model/Vector";
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    dataset: import("../../../exports.js").Dataset;
+    dataset: import("../../../index.js").Dataset;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {

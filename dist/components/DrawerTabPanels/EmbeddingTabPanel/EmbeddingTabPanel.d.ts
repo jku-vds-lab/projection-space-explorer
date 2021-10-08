@@ -7,7 +7,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    stories: import("../../Ducks/StoriesDuck").StoriesType;
+    stories: import("../..").StoriesType;
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;

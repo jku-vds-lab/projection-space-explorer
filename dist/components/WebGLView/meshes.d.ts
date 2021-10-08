@@ -1,7 +1,7 @@
 import { DataLine } from "../../model/DataLine";
 import { IVector } from "../../model/Vector";
 import { Dataset } from "../../model/Dataset";
-import { LayeringSystem } from './LayeringSystem/LayeringSystem';
+import { LayeringSystem } from './LayeringSystem';
 import { StoriesType } from '../Ducks/StoriesDuck';
 import { Mapping } from '../Utility/Colors/Mapping';
 export declare enum Shapes {

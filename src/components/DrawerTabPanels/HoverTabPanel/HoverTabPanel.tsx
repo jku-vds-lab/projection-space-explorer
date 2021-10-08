@@ -3,7 +3,7 @@ import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { selectVectors } from "../../Ducks/AggregationDuck";
 import { setHoverWindowMode, WindowMode } from "../../Ducks/HoverSettingsDuck";
-import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClusters";
+import { SelectionClusters } from "../../Overlays/SelectionClusters";
 import { RootState } from "../../Store/Store";
 
 const mapStateToProps = (state: RootState) => ({

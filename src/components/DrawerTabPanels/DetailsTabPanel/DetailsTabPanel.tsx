@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { setGenericFingerprintAttributes } from "../../Ducks/GenericFingerprintAttributesDuck";
 import { setHoverWindowMode, WindowMode } from "../../Ducks/HoverSettingsDuck";
 import { HoverStateOrientation, setHoverStateOrientation } from "../../Ducks/HoverStateOrientationDuck";
-import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClusters";
+import { SelectionClusters } from "../../Overlays/SelectionClusters";
 import { RootState } from "../../Store/Store";
 import { VirtualColumn, VirtualTable } from "../../UI/VirtualTable";
 import * as frontend_utils from "../../../utils/frontend-connect";
