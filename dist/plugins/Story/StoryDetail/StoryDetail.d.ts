@@ -1,3 +1,4 @@
+/// <reference types="react" />
 export declare var YearAggComp: ({ selection }: {
     selection: any;
 }) => JSX.Element;

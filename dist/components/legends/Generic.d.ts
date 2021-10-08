@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { IVector } from "../../model/Vector";
 import { DatasetType } from "../../model/DatasetType";
 declare type GenericLegendProps = {

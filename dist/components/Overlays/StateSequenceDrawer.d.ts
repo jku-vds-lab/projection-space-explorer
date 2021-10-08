@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Dataset } from "../../model/Dataset";
 declare type StateSequenceDrawerProps = {
     activeLine: string;

@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { IVector } from "../../model/Vector";
 import { Dataset } from "../../model/Dataset";
 declare type GenericChangesType = {

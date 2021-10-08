@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { ConnectedProps } from 'react-redux';
 import './coral.scss';
 import { IVector } from "../../../model/Vector";

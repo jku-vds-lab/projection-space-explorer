@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { ConnectedProps } from "react-redux";
 import { DownloadJob } from "./DownloadJob";
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{}, {}>;

@@ -1,3 +1,4 @@
+/// <reference types="react" />
 export declare const SizeSlider: import("react-redux").ConnectedComponent<({ sizeScale, setRange }: {
     sizeScale: any;
     setRange: any;

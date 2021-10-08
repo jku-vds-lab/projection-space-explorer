@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { ConnectedProps } from 'react-redux';
 import { ICluster } from "../../../model/Cluster";
 import { IBook } from "../../../model/Book";

@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from "../../model/Dataset";
 import { StoriesType } from "../Ducks/StoriesDuck";

@@ -12,7 +12,7 @@ const mapStateToProps = state => ({
     viewTransform: state.viewTransform as CameraTransformations
 })
 
-export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true })(class extends React.Component<LassoLayerProps, any> {
+const LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true })(class extends React.Component<LassoLayerProps, any> {
     constructor(props) {
         super(props)
 
@@ -74,3 +74,6 @@ export var LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true 
         }} ref={this.state.canvasRef}></canvas>
     }
 })
+
+
+export { LassoLayer }

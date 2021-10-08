@@ -1,3 +1,4 @@
+/// <reference types="react" />
 export declare const PathBrightnessSlider: import("react-redux").ConnectedComponent<({ lineBrightness, setLineBrightness }: {
     lineBrightness: any;
     setLineBrightness: any;

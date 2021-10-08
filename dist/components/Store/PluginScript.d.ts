@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { Store } from "redux";
 import { RootState } from "../Store/Store";
 import { IVector } from "../../model/Vector";

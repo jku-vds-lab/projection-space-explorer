@@ -1,3 +1,4 @@
+/// <reference types="react" />
 export declare const BrightnessSlider: import("react-redux").ConnectedComponent<({ brightnessScale, setRange }: {
     brightnessScale: any;
     setRange: any;

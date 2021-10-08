@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { ConnectedProps } from 'react-redux';
 import { IVector } from "../../../model/Vector";
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{

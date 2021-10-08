@@ -1,3 +1,4 @@
+/// <reference types="react" />
 export declare const TypeIcon: ({ type }: {
     type: any;
 }) => JSX.Element;
