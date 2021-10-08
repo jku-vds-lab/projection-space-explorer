@@ -5,7 +5,9 @@ module.exports = {
   watch: false,
   externals: {
     'react': 'react',
-    'react-dom': 'react-dom'
+    'react-dom': 'react-dom',
+    'react-redux': 'react-redux',
+    'redux': 'redux'
   },
   entry: {
     bundle: "./src/index.ts"
