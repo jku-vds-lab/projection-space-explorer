@@ -626,12 +626,12 @@ const loo = async () => {
 
 
 
-PluginRegistry.getInstance().registerPlugin(new RubikPlugin())
+/**PluginRegistry.getInstance().registerPlugin(new RubikPlugin())
 PluginRegistry.getInstance().registerPlugin(new ChessPlugin())
 PluginRegistry.getInstance().registerPlugin(new CoralPlugin())
 PluginRegistry.getInstance().registerPlugin(new ChemPlugin())
 PluginRegistry.getInstance().registerPlugin(new GoPlugin())
-
+**/
 
 
 

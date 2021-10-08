@@ -41,12 +41,10 @@
     "react-icons": "^4.1.0",
     "react-loader-spinner": "^3.1.14",
     "react-promise-tracker": "^2.1.0",
-    "react-redux": "^7.2.0",
     "react-rnd": "^10.2.2",
     "react-split": "^2.0.9",
     "react-vega-lite": "^6.1.0",
     "react-virtualized": "^9.22.2",
-    "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "regenerator-runtime": "^0.13.3",
@@ -84,11 +82,15 @@
     "typescript": "^3.7.5",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.10",
-    "webpack-glsl-loader": "^1.0.1"
+    "webpack-glsl-loader": "^1.0.1",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5"
   },
   "peerDependencies": {
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5"
   },
   "scripts": {
     "webpack:dev": "npx webpack --config webpack.config.js",
