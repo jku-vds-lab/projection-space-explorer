@@ -12,7 +12,7 @@ import { PredefinedDatasets } from "./PredefinedDatasets";
 import { SDFModifierDialog } from "./SDFModifierDialog";
 import { UploadedFiles } from "./UploadedFiles";
 import * as frontend_utils from "../../../utils/frontend-connect";
-import useCancellablePromise from "../../../utils/promise-helpers";
+import {useCancellablePromise} from "../../../utils/promise-helpers";
 
 var d3v5 = require('d3')
 

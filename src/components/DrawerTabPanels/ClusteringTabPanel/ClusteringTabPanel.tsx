@@ -14,7 +14,7 @@ import { StoryPreview } from "./StoryPreview"
 import * as backend_utils from "../../../utils/backend-connect";
 import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
-import useCancellablePromise from "../../../utils/promise-helpers"
+import {useCancellablePromise} from "../../../utils/promise-helpers"
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { setLineUpInput_visibility, setLineUpInput_filter, setLineUpInput_update, updateLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"

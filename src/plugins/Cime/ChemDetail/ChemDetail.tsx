@@ -9,7 +9,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SettingsIcon from '@material-ui/icons/Settings';
 import InfoIcon from '@material-ui/icons/Info';
-import useCancellablePromise from '../../../utils/promise-helpers';
+import {useCancellablePromise} from '../../../utils/promise-helpers';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { isFunction } from 'lodash';

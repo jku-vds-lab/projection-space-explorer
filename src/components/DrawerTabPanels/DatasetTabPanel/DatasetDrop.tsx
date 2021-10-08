@@ -1,6 +1,5 @@
 import { Grid } from "@material-ui/core";
 import React = require("react");
-import useCancellablePromise from "../../../utils/promise-helpers";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
 import { SDFLoader } from "../../Utility/Loaders/SDFLoader";

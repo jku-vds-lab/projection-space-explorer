@@ -8,7 +8,7 @@ import * as frontend_utils from '../../../utils/frontend-connect';
 import { DatasetType } from "../../../model/DatasetType";
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../Utility/Loaders/LoadingIndicator";
-import useCancellablePromise from "../../../utils/promise-helpers";
+import {useCancellablePromise} from "../../../utils/promise-helpers";
 
 
 export const UploadedFiles = ({ onChange, refresh }) => {

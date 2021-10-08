@@ -18,7 +18,7 @@ export function makeCancelable(promise) {
   };
 }
 
-export default function useCancellablePromise(cancelable = makeCancelable) {
+export function useCancellablePromise(cancelable = makeCancelable) {
   const emptyPromise = Promise.resolve(true);
 
   // test if the input argument is a cancelable promise generator
