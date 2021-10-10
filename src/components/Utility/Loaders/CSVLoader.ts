@@ -60,7 +60,6 @@ export class CSVLoader implements Loader {
 
 
     getClusters(vectors: IVector[], callback) {
-        //let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js')
         let worker = new WorkerCluster()
 
         worker.onmessage = (e) => {

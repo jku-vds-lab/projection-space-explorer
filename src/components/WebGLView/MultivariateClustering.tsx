@@ -108,7 +108,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.scene.add(this.trail.mesh)
 
         this.triangulationWorker = new TessyWorker()
-        //this.triangulationWorker = new Worker(frontend_utils.BASE_PATH + 'tessy.js')
     }
 
     

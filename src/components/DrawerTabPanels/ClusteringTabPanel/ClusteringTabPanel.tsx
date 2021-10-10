@@ -116,8 +116,6 @@ export const ClusteringTabPanel = connector(({
         const points = data_points.map(point => [point.x, point.y]);
         trackPromise(
             cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster)).then(data => {
-                console.log(data)
-
                 const cluster_labels = data["result"];
                 const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
