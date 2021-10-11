@@ -1,6 +1,6 @@
 
 import * as React from 'react'
-import { Box, Card, Typography } from '@material-ui/core'
+import { Box, Card, Typography } from '@mui/material'
 import { GenericLegend } from '../legends/Generic'
 import { connect, ConnectedProps } from 'react-redux'
 import ReactDOM = require('react-dom')

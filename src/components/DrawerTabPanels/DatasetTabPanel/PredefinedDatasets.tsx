@@ -3,10 +3,10 @@ import React = require("react")
 import { DatasetType } from "../../../model/DatasetType"
 import { DatasetDatabase } from "../../Utility/Data/DatasetDatabase"
 import { ListItemIcon, SvgIcon } from "@mui/material"
-import MenuBookIcon from '@material-ui/icons/MenuBook';
-import ShareIcon from '@material-ui/icons/Share';
-import WidgetsIcon from '@material-ui/icons/Widgets';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import ShareIcon from '@mui/icons-material/Share';
+import WidgetsIcon from '@mui/icons-material/Widgets';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 
 export const TypeIcon = ({ type }) => {

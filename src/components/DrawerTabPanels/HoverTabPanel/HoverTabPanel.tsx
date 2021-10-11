@@ -1,4 +1,4 @@
-import { Box, Button, FormControlLabel, Switch, Typography } from "@material-ui/core";
+import { Box, Button, FormControlLabel, Switch, Typography } from "@mui/material";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { selectVectors } from "../../Ducks/AggregationDuck";

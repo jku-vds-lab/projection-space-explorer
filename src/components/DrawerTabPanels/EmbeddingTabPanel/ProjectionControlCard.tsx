@@ -1,12 +1,12 @@
 import React = require("react");
 import { Card, CardHeader, IconButton } from "@mui/material";
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import StopIcon from '@material-ui/icons/Stop';
-import CloseIcon from '@material-ui/icons/Close';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
+import CloseIcon from '@mui/icons-material/Close';
 import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from "../../Store/Store";
 import { SettingsBackupRestoreSharp } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
 
 /**
  * Styles for the projection card that allows to stop/resume projection steps.
@@ -32,8 +32,8 @@ const useStylesMedia = makeStyles(theme => ({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
-        paddingLeft: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
+        //paddingLeft: theme.spacing(1),
+        //paddingBottom: theme.spacing(1),
         width: '100%'
     },
     playIcon: {

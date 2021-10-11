@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from '../../Store/Store';
 import FeaturePicker from './FeaturePicker';
 import clone = require('fast-clone')
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
 
 const mapState = (state: RootState) => ({
     projectionColumns: state.projectionColumns
@@ -27,7 +27,7 @@ type Props = PropsFromRedux & {
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        margin: theme.spacing(3)
+        //margin: theme.spacing(3)
     },
 }));
 

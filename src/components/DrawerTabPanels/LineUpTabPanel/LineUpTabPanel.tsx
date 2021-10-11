@@ -1,10 +1,10 @@
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { Box, Button, FormControlLabel, Switch } from "@mui/material";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { setLineUpInput_filter, setLineUpInput_visibility } from "../../Ducks/LineUpInputDuck";
 import { RootState } from "../../Store/Store";
-import GetAppIcon from '@material-ui/icons/GetApp';
+import GetAppIcon from '@mui/icons-material/GetApp';
 
 const mapStateToProps = (state: RootState) => ({
     dataset: state.dataset,

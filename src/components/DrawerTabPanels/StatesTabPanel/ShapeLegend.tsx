@@ -9,7 +9,7 @@ import CircleSymbol from '../../../../textures/sprites/circle.png'
 import CrossSymbol from '../../../../textures/sprites/cross.png'
 // @ts-ignore
 import SquareSymbol from '../../../../textures/sprites/square.png'
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@mui/styles';
 
 
 

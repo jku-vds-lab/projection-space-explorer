@@ -1,12 +1,11 @@
-import { withTheme } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import { withTheme } from '@mui/styles';
+import { Button } from '@mui/material';
 import { Grid } from '@mui/material';
 import * as React from 'react'
 
 type DragAndDropProps = {
     handleDrop: Function
     accept: string
-    theme: any
 }
 
 type DragAndDropState = {
@@ -150,4 +149,4 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
         )
     }
 }
-export default withTheme(DragAndDrop)
+export default DragAndDrop

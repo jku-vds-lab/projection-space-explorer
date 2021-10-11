@@ -1,7 +1,7 @@
-import { Divider, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
-import { makeStyles } from '@material-ui/core/styles';
+import { createTheme, Divider, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import { getCountryCode } from '../../../components/Utility/CountryCodes';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@mui/styles';
 import * as React from 'react'
 
 

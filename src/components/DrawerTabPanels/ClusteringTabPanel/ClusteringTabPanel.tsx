@@ -4,12 +4,12 @@ import { connect, ConnectedProps } from 'react-redux'
 import { ACluster, ICluster } from "../../../model/Cluster"
 import { IBook, ABook } from "../../../model/Book"
 import { graphLayout, storyLayout, transformIndicesToHandles } from "../../Utility/graphs"
-import SettingsIcon from '@material-ui/icons/Settings';
-import SaveIcon from '@material-ui/icons/Save';
+import SettingsIcon from '@mui/icons-material/Settings';
+import SaveIcon from '@mui/icons-material/Save';
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
 import { addStory, removeClusterFromStories, setActiveStory, setStories, StoriesType, StoriesUtil } from "../../Ducks/StoriesDuck"
 import { RootState } from "../../Store/Store"
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { StoryPreview } from "./StoryPreview"
 import * as backend_utils from "../../../utils/backend-connect";
 import { trackPromise } from "react-promise-tracker";
@@ -17,12 +17,13 @@ import { useCancellablePromise } from "../../../utils/promise-helpers"
 import { setLineUpInput_visibility, setLineUpInput_filter, setLineUpInput_update, updateLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
 import { selectClusters } from "../../Ducks/AggregationDuck"
 import { CategoryOptionsAPI } from "../../WebGLView/CategoryOptions"
 import { Dataset } from "../../../model/Dataset"
-import { FormHelperText, makeStyles } from "@material-ui/core"
+import { FormHelperText } from "@mui/material"
+import { makeStyles } from "@mui/styles"
 
 const mapStateToProps = (state: RootState) => ({
     stories: state.stories,
@@ -468,10 +469,10 @@ function ClusterPopover({
 
     const useStyles = makeStyles(theme => ({
         button: {
-            margin: theme.spacing(1)
+            //margin: theme.spacing(1)
         },
         root: {
-            padding: theme.spacing(3, 2)
+            //padding: theme.spacing(3, 2)
         }
     }))
 

@@ -3,7 +3,7 @@ import { Typography, Slider } from "@mui/material";
 import { connect } from 'react-redux'
 import { RootState } from "../../Store/Store";
 import { setGlobalPointBrightness } from "../../Ducks/GlobalPointBrightnessDuck";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@mui/styles";
 
 
 const useStyles = makeStyles(theme => ({

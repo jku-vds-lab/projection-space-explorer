@@ -20,9 +20,9 @@ import { setAdvancedColoringSelectionAction } from '../../Ducks/AdvancedColoring
 import { PathLengthFilter } from './PathLengthFilter'
 import { LineTreePopover } from './LineTreePopover'
 import { PathBrightnessSlider } from './PathBrightnessSlider'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions'
-import { makeStyles } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
 
 const mapStateToProps = (state: RootState) => ({
     selectedVectorByShape: state.selectedVectorByShape,
@@ -91,13 +91,13 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
     heading: {
-        fontSize: theme.typography.pxToRem(15),
+        //fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
     },
     secondaryHeading: {
-        fontSize: theme.typography.pxToRem(15),
-        color: theme.palette.text.secondary,
+        //fontSize: theme.typography.pxToRem(15),
+        //color: theme.palette.text.secondary,
     },
     details: {
         padding: '0px',

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Button, FormControl, Grid, IconButton, InputLabel, ListItem, ListItemSecondaryAction, ListItemText, Select } from '@mui/material';
 import { connect, ConnectedProps } from 'react-redux'
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { IBook, ABook } from '../../../model/Book';
 import { addStory, deleteStory, setActiveStory, StoriesUtil } from '../../Ducks/StoriesDuck';
 import { RootState } from '../../Store/Store';

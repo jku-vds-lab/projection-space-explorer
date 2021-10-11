@@ -8,7 +8,7 @@ declare type LineSelectionTreeProps = {
 };
 export declare function LineSelectionTree_GetChecks(algorithms: any): {};
 export declare function LineSelectionTree_GenAlgos(vectors: any): {};
-export declare var LineSelectionTree: React.ComponentType<Pick<LineSelectionTreeProps, "onChange" | "algorithms" | "onSelectAll" | "checkboxes" | "colorScale"> & import("@material-ui/core").StyledComponentProps<"root">>;
+export declare var LineSelectionTree: React.JSXElementConstructor<Pick<LineSelectionTreeProps, "onChange" | "algorithms" | "onSelectAll" | "checkboxes" | "colorScale"> & import("@mui/styles").StyledComponentProps<"root"> & object>;
 export declare var LineTreePopover: ({ webGlView, dataset, colorScale }: {
     webGlView: any;
     dataset: any;

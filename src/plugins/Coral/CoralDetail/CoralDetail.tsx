@@ -5,7 +5,7 @@ import { Handler } from 'vega-tooltip';
 import BarChart from './BarChart.js';
 import VegaDensity from './VegaDensity.js';
 import VegaDate from './VegaDate.js';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 import './coral.scss';
 import { FeatureType } from "../../../model/FeatureType";
 import { IVector } from "../../../model/Vector";

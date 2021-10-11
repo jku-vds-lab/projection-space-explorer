@@ -9,7 +9,7 @@ import { RootState } from "../Store/Store";
 import { connect, ConnectedProps } from "react-redux";
 import { NamedCategoricalScales } from "../Utility/Colors/NamedCategoricalScales";
 import { TrailVisualization } from "./TrailVisualization";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { CameraTransformations } from "./CameraTransformations";
 import { IBook } from "../../model/Book";
 import * as nt from '../NumTs/NumTs'

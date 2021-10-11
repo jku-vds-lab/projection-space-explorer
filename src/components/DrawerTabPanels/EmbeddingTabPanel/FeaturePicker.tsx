@@ -3,13 +3,13 @@ import { Checkbox } from "@mui/material";
 import { connect, ConnectedProps } from 'react-redux'
 import React = require("react");
 import { AutoSizer, Column, Table, defaultTableRowRenderer } from 'react-virtualized';
-import TableCell from '@material-ui/core/TableCell';
+import { TableCell } from '@mui/material';
 import { setProjectionColumns } from "../../Ducks/ProjectionColumnsDuck";
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck";
 import { setProjectionParamsAction } from "../../Ducks/ProjectionParamsDuck";
 import clsx from 'clsx';
 import clone = require('fast-clone')
-import { withStyles } from "@material-ui/core";
+import { withStyles } from "@mui/styles";
 
 
 

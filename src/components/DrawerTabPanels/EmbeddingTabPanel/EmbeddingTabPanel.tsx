@@ -15,8 +15,8 @@ import { ClusterTrailSettings } from './ClusterTrailSettings'
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck'
 import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController'
 import { Embedding } from '../../../model/Embedding'
-import FolderIcon from '@material-ui/icons/Folder';
-import DeleteIcon from '@material-ui/icons/Delete';
+import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionsDuck'
 
 import { FeatureConfig } from '../../../Application'

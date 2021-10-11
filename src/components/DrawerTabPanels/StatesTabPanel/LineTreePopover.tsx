@@ -1,9 +1,7 @@
 
-import SvgIcon from '@material-ui/core/SvgIcon';
-import { withStyles } from '@material-ui/core/styles';
-import TreeView from '@material-ui/lab/TreeView';
-import TreeItem from '@material-ui/lab/TreeItem';
-import { Link, Divider } from '@material-ui/core';
+import { withStyles } from '@mui/styles';
+import {TreeView, TreeItem} from '@mui/lab';
+import { Link, Divider, SvgIcon } from '@mui/material';
 import * as React from "react";
 import { Button, Checkbox, Grid, Popover } from '@mui/material';
 

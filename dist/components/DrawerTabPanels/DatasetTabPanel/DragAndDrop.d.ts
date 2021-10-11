@@ -2,7 +2,20 @@ import * as React from 'react';
 declare type DragAndDropProps = {
     handleDrop: Function;
     accept: string;
-    theme: any;
 };
-declare const _default: React.ComponentType<Pick<DragAndDropProps, "accept" | "handleDrop"> & import("@material-ui/core/styles/withTheme").ThemedComponentProps>;
-export default _default;
+declare type DragAndDropState = {
+    drag: boolean;
+};
+declare class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
+    dragCounter: number;
+    dropRef: any;
+    constructor(props: any);
+    handleDrag: (e: any) => void;
+    handleDragIn: (e: any) => void;
+    handleDragOut: (e: any) => void;
+    handleDrop: (e: any) => void;
+    componentDidMount(): void;
+    componentWillUnmount(): void;
+    render(): JSX.Element;
+}
+export default DragAndDrop;

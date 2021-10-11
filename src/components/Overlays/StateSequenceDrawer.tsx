@@ -3,12 +3,12 @@ import * as React from 'react'
 import { Typography, IconButton, Card, CardHeader } from "@mui/material";
 import { Dataset } from "../../model/Dataset";
 import { setHighlightedSequenceAction } from "../Ducks/HighlightedSequenceDuck";
-import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
-import StopIcon from '@material-ui/icons/Stop';
+import { makeStyles } from '@mui/styles';
+import CloseIcon from '@mui/icons-material/Close';
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import StopIcon from '@mui/icons-material/Stop';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { GenericLegend } from '../legends/Generic';
 import { GenericChanges } from '../legends/GenericChanges';
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
         padding: '6px 16px',
     },
     primaryTail: {
-        backgroundColor: theme.palette.primary.main,
+       // backgroundColor: theme.palette.primary.main,
     },
 }));
 

@@ -7,11 +7,14 @@
   "author": "Moritz Schöfl",
   "license": "BSD 3-Clause License",
   "dependencies": {
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
     "@fortawesome/fontawesome-free": "^5.15.2",
     "@fortawesome/react-fontawesome": "^0.1.14",
-    "@material-ui/core": "^4.12.3",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
+    "@material-ui/icons": "^4.11.2",
+    "@mui/icons-material": "^5.0.3",
+    "@mui/lab": "^5.0.0-alpha.50",
+    "@mui/styles": "^5.0.1",
     "@types/concaveman": "^1.1.3",
     "@types/d3": "^5.7.2",
     "@types/jest": "^26.0.15",
@@ -29,6 +32,7 @@
     "graphology": "^0.17.1",
     "graphology-layout-forceatlas2": "^0.4.4",
     "graphology-shortest-path": "^1.3.4",
+    "install": "^0.13.0",
     "jaccard": "^0.4.0",
     "jsfive": "^0.2.1",
     "jstat": "^1.9.4",
@@ -37,6 +41,7 @@
     "lineupjsx": "^4.0.0",
     "lodash": "^4.17.20",
     "ml-conrec": "^3.2.0",
+    "npm": "^8.0.0",
     "react-draggable": "^4.4.3",
     "react-icons": "^4.1.0",
     "react-loader-spinner": "^3.1.14",
@@ -95,7 +100,7 @@
     "@mui/material": "^5.0.3"
   },
   "scripts": {
-    "webpack:dev": "NODE_OPTIONS=--max-old-space-size=8192 npx webpack --config webpack.config.js",
+    "webpack:dev": "npx webpack --config webpack.config.js",
     "test": "jest"
   }
 }

@@ -1,5 +1,5 @@
 import React = require("react");
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
 
 
 export function SDFModifierDialog({openSDFDialog, handleClose}) {

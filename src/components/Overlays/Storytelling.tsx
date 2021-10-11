@@ -9,11 +9,11 @@ import { GenericChanges } from "../legends/GenericChanges";
 import { RootState } from "../Store/Store";
 import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType, StoriesUtil } from "../Ducks/StoriesDuck";
 import { DifferenceThresholdSlider } from '../../plugins/Coral/CoralChanges/DifferenceThresholdSlider';
-import CloseIcon from '@material-ui/icons/Close';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
-import StopIcon from '@material-ui/icons/Stop';
+import CloseIcon from '@mui/icons-material/Close';
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import StopIcon from '@mui/icons-material/Stop';
 import { ResizeObserver } from 'resize-observer';
 import { selectClusters } from "../Ducks/AggregationDuck";
 

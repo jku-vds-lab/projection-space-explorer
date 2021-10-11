@@ -1,22 +1,22 @@
 import * as React from 'react';
 import './chem.scss';
 import * as backend_utils from '../../../utils/backend-connect';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, Grid, IconButton, Input, InputLabel, Paper, Popover, Slider, Switch, TextField, Tooltip, Typography } from '@material-ui/core';
+import { Box, Button, Checkbox, createFilterOptions, FormControl, FormControlLabel, FormGroup, Grid, IconButton, Input, InputLabel, Paper, Popover, Slider, Switch, TextField, Tooltip, Typography } from '@mui/material';
 import { trackPromise } from "react-promise-tracker";
 import { LoadingIndicatorView } from "../../../components/Utility/Loaders/LoadingIndicator";
 import { RootState } from '../../../components/Store/Store';
 import { connect, ConnectedProps } from 'react-redux';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import SettingsIcon from '@material-ui/icons/Settings';
-import InfoIcon from '@material-ui/icons/Info';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import SettingsIcon from '@mui/icons-material/Settings';
+import InfoIcon from '@mui/icons-material/Info';
 import {useCancellablePromise} from '../../../utils/promise-helpers';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import { Autocomplete } from '@mui/lab';
 import { isFunction } from 'lodash';
 import { setRDKit_contourLines, setRDKit_refresh, setRDKit_scale, setRDKit_showMCS, setRDKit_sigma, setRDKit_width, setRDKit_doAlignment } from '../../../components/Ducks/RDKitSettingsDuck';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { WindowMode } from '../../../components/Ducks/HoverSettingsDuck';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { selectVectors } from '../../../components/Ducks/AggregationDuck';
 import { setHoverState } from '../../../components/Ducks/HoverStateDuck';
 
@@ -254,7 +254,7 @@ const ChemLegend = connector_Chem(class extends React.Component<Props_Chem, {che
         }
         
         const handle_filter = () => {
-            const filter_instances = this.props.selection.filter((x, i) => this.state.checkedList[i]);
+            const filter_instances = this.props.selection.filter((_x, i) => this.state.checkedList[i]);
             if(filter_instances.length > 0){
                 setCheckedList([]);
                 this.props.setCurrentAggregation(filter_instances.map(e => e.__meta__.meshIndex));
@@ -441,7 +441,7 @@ const mapStateToProps_Img = (state: RootState) => ({
     hoverState: state.hoverState,
     rdkitSettings: state.rdkitSettings
 })
-const mapDispatchToProps_Img = dispatch => ({
+const mapDispatchToProps_Img = _dispatch => ({
     
 })
 const connector_Img = connect(mapStateToProps_Img, mapDispatchToProps_Img);
@@ -679,17 +679,17 @@ const SettingsPopover = connector_settings(function ({
                     />
 
                     <Typography style={{paddingTop: 10}} gutterBottom>Image Width</Typography>
-                    <Slider
+                    {/**<Slider
                         ValueLabelComponent={ValueLabelComponent}
                         aria-label="Set Image Width"
                         value={rdkitSettings.width}
-                        onChange={(event, new_val) => {
+                        onChange={(_event, new_val) => {
                             setWidth(new_val); 
                         }}
                         min={50}
                         max={500}
                         step={10}
-                    />
+                    />**/}
 
                     <Button 
                         style={{marginTop: 3, maxWidth: 150}}
@@ -729,7 +729,7 @@ const RepresentationList = props => {
             size={"small"}
             className={props.className}
             filterOptions={filterOptions}
-            onChange={(event, newValue) => {
+            onChange={(_event, newValue) => {
                 if(newValue)
                     props.onChange(newValue.value);
             }}
@@ -737,10 +737,11 @@ const RepresentationList = props => {
             options={options.sort((a, b) => -b.group.localeCompare(a.group))}
             groupBy={(option:any) => option.group}
             getOptionLabel={(option:any) => option.inputValue}
-            getOptionSelected={(option:any, value) => {return option.value == value.value;}}
+            
             style={{ maxWidth: 300 }}
             defaultValue={options[0]}
             
             renderInput={(params) => <TextField {...params} label="Choose Representation" variant="outlined" />}
         />
 };
+{/**getOptionSelected={(option:any, value) => {return option.value == value.value;}}**/}

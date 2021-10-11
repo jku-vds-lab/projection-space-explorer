@@ -1,4 +1,4 @@
-import { createTheme, MuiThemeProvider } from "@material-ui/core";
+import { createTheme, ThemeProvider } from "@mui/material";
 import { PropsWithChildren } from "react";
 import React = require("react");
 import { Provider } from "react-redux";
@@ -42,9 +42,9 @@ export function PSEContextProvider({ context, children, onStateChanged }: PropsW
     }, [context])
 
     return store ? <Provider store={store}>
-        <MuiThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
             {children}
-        </MuiThemeProvider>
+        </ThemeProvider>
     </Provider> : null
 }
 
