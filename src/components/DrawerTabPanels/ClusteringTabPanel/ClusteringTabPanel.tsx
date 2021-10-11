@@ -274,6 +274,8 @@ export const ClusteringTabPanel = connector(({
                         onChange={(event) => {
                             setGroupVisualizationMode(event.target.value)
                         }}
+                        displayEmpty
+                        size='small'
                     >
                         <MenuItem value={GroupVisualizationMode.None}>
                             <em>None</em>

@@ -152,8 +152,9 @@ export const StatesTabPanelFull = ({
                     <FormControl style={{ margin: '4px 0px' }}>
                         <FormHelperText>{"shape by"}</FormHelperText>
                         <Select
-                            id="vectorByShapeSelect"
                             displayEmpty
+                            size='small'
+                            id="vectorByShapeSelect"
                             value={selectedVectorByShape}
                             onChange={(event) => {
                                 setSelectedVectorByShape(event.target.value)
@@ -166,7 +167,7 @@ export const StatesTabPanelFull = ({
                                 }
                             }}
                         >
-                            <MenuItem value="">None</MenuItem>
+                            <MenuItem value=""><em>None</em></MenuItem>
                             {CategoryOptionsAPI.getCategory(categoryOptions, "shape").attributes.map(attribute => {
                                 return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
                             })}
@@ -200,6 +201,7 @@ export const StatesTabPanelFull = ({
                         <FormHelperText>{"brightness by"}</FormHelperText>
                         <Select
                             displayEmpty
+                            size='small'
                             value={channelBrightness ? channelBrightness.key : ''}
                             onChange={(event) => {
                                 var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.filter(a => a.key == event.target.value)[0]
@@ -216,7 +218,7 @@ export const StatesTabPanelFull = ({
                                 webGLView.current.requestRender()
                             }}
                         >
-                            <MenuItem value="">None</MenuItem>
+                            <MenuItem value=""><em>None</em></MenuItem>
                             {CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.map(attribute => {
                                 return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
                             })}
@@ -245,6 +247,7 @@ export const StatesTabPanelFull = ({
                         <Select
                             id="vectorBySizeSelect"
                             displayEmpty
+                            size='small'
                             value={channelSize ? channelSize.key : ''}
                             onChange={(event) => {
                                 var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "size").attributes.filter(a => a.key == event.target.value)[0]
@@ -261,7 +264,7 @@ export const StatesTabPanelFull = ({
                                 webGLView.current.particles.sizeCat(attribute, pointSize)
                             }}
                         >
-                            <MenuItem value="">None</MenuItem>
+                            <MenuItem value=""><em>None</em></MenuItem>
                             {CategoryOptionsAPI.getCategory(categoryOptions, "size").attributes.map(attribute => {
                                 return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
                             })}
@@ -291,6 +294,7 @@ export const StatesTabPanelFull = ({
                             <Select
                                 id="vectorByColorSelect"
                                 displayEmpty
+                                size='small'
                                 value={channelColor ? channelColor.key : ""}
                                 onChange={(event) => {
                                     var attribute = null
@@ -302,7 +306,7 @@ export const StatesTabPanelFull = ({
                                     setChannelColor(attribute)
                                 }}
                             >
-                                <MenuItem value="">None</MenuItem>
+                                <MenuItem value=""><em>None</em></MenuItem>
                                 {CategoryOptionsAPI.getCategory(categoryOptions, "color").attributes.map(attribute => {
                                     return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
                                 })}

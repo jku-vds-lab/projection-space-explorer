@@ -389,6 +389,9 @@ export const Application = connector(class extends React.Component<Props, any> {
         >
           <Divider />
           <Tabs
+            style={{
+              width: 88
+            }}
             value={this.props.openTab}
             orientation="vertical"
             indicatorColor="primary"

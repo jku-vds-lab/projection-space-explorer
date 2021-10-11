@@ -132,6 +132,8 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                 {(domainSettings == 'tsne' || domainSettings == 'umap') && <FormControl>
                                     <FormHelperText>Distance Metric</FormHelperText>
                                     <Select
+                                        displayEmpty
+                                        size='small'
                                         id="demo-controlled-open-select"
                                         value={distanceMetric}
                                         onChange={(event) => { setDistanceMetric(event.target.value) }}

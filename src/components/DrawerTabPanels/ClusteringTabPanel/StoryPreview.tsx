@@ -48,7 +48,8 @@ export const StoryPreview = connector(({
         <FormControl>
             <FormHelperText>Active Story Book</FormHelperText>
             <Select
-                size={'small'}
+                displayEmpty
+                size='small'
                 value={stories.active ?? ''}
                 onChange={(event) => {
                     setActiveStory(event.target.value)

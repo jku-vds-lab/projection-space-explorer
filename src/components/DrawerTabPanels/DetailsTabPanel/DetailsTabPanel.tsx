@@ -67,6 +67,8 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, s
                 <FormControl style={{ width: '100%' }}>
                     <FormHelperText>Hover Position</FormHelperText>
                     <Select
+                        displayEmpty
+                        size='small'
                         value={hoverStateOrientation}
                         onChange={(event) => {
                             setHoverStateOrientation(event.target.value)
