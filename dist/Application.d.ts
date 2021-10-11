@@ -49,8 +49,11 @@ declare type Props = PropsFromRedux & Partial<{
     config?: Partial<{
         baseUrl: string;
     }>;
+    /**
+     * List of components that can be overridden.
+     */
     components?: Partial<{
-        datasetTab: JSX.Element;
+        datasetTab: () => JSX.Element;
     }>;
 }>;
 /**
@@ -72,7 +75,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         onLineSelect(algo: any, show: any): void;
         onChangeTab(newTab: any): void;
         render(): JSX.Element;
-        context: any;
+        context: any; /** predefined dataset */
         setState<K extends string | number | symbol>(state: any, callback?: () => void): void;
         forceUpdate(callback?: () => void): void;
         readonly props: Readonly<Props> & Readonly<{
@@ -110,7 +113,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     onLineSelect(algo: any, show: any): void;
     onChangeTab(newTab: any): void;
     render(): JSX.Element;
-    context: any;
+    context: any; /** predefined dataset */
     setState<K extends string | number | symbol>(state: any, callback?: () => void): void;
     forceUpdate(callback?: () => void): void;
     readonly props: Readonly<Props> & Readonly<{
@@ -168,8 +171,11 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     config?: Partial<{
         baseUrl: string;
     }>;
+    /**
+     * List of components that can be overridden.
+     */
     components?: Partial<{
-        datasetTab: JSX.Element;
+        datasetTab: () => JSX.Element;
     }>;
 }>, "ref" | "config" | "components" | "key">>;
 export {};
