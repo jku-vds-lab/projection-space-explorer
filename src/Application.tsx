@@ -161,8 +161,11 @@ type Props = PropsFromRedux & Partial<{
   config?: Partial<{
     baseUrl: string
   }>
+  /**
+   * List of components that can be overridden.
+   */
   components?: Partial<{
-    datasetTab: JSX.Element
+    datasetTab: () => JSX.Element
   }>
 }>
 
