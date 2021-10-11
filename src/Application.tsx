@@ -473,7 +473,7 @@ export const Application = connector(class extends React.Component<Props, any> {
               <FixedHeightTabPanel value={this.props.openTab} index={0} >
                 {
                   /** predefined dataset */
-                  this.props.components?.datasetTab ?? <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
+                  this.props.components?.datasetTab() ?? <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
                 }
               </FixedHeightTabPanel>
 
