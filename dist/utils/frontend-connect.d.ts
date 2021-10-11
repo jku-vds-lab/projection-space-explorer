@@ -1,2 +1,2 @@
-export declare const CHEM_PROJECT = false;
-export declare const DEMO = false;
+export declare var CHEM_PROJECT: boolean;
+export declare var DEMO: boolean;

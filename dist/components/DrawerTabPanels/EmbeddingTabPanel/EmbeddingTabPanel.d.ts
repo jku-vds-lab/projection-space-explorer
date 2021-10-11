@@ -2,6 +2,7 @@
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from "../../../model/Dataset";
 import { Embedding } from '../../../model/Embedding';
+import { FeatureConfig } from '../../../Application';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     currentAggregation: {
         aggregation: number[];
@@ -34,6 +35,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
+    config: FeatureConfig;
     projectionWorker?: Worker;
     projectionOpen?: boolean;
     setProjectionOpen?: any;
@@ -41,5 +43,5 @@ declare type Props = PropsFromRedux & {
     dataset?: Dataset;
     webGLView?: any;
 };
-export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => JSX.Element, Pick<Props, "webGLView">>;
+export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => JSX.Element, Pick<Props, "config" | "webGLView">>;
 export {};

@@ -144,7 +144,7 @@ export const StatesTabPanelFull = ({
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "shape") ?
                 <Grid
                     container
-                    justify="center"
+                    justifyContent="center"
                     alignItems="stretch"
                     direction="column"
                     style={{ padding: '0 16px' }}>
@@ -191,7 +191,7 @@ export const StatesTabPanelFull = ({
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "transparency") ?
                 <Grid
                     container
-                    justify="center"
+                    justifyContent="center"
                     alignItems="stretch"
                     direction="column"
                     style={{ padding: '0 16px' }}>
@@ -236,7 +236,7 @@ export const StatesTabPanelFull = ({
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "size") ?
                 <Grid
                     container
-                    justify="center"
+                    justifyContent="center"
                     alignItems="stretch"
                     direction="column"
                     style={{ padding: '0 16px' }}>
@@ -347,7 +347,7 @@ export const StatesTabPanelFull = ({
                 {dataset && dataset.isSequential && <div>
                     <Grid
                         container
-                        justify="center"
+                        justifyContent="center"
                         alignItems="stretch"
                         direction="column"
                         style={{ padding: '0 16px' }}>

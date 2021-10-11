@@ -37,16 +37,16 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, s
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
 
-    
+
 
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
         <Box paddingX={2} paddingTop={1}>
-            {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ? 
-            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.selectedClusters.length}</b> out of <b>{activeStorybook?.clusters.allIds.length}</b> groups</Typography>
-            :<Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> items</Typography>
-        }
-            
+            {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ?
+                <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.selectedClusters.length}</b> out of <b>{activeStorybook?.clusters.allIds.length}</b> groups</Typography>
+                : <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> items</Typography>
+            }
+
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
@@ -59,12 +59,9 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, s
             <Button variant="outlined" style={{ width: '100%' }} onClick={() => { setAggregation([]) }}>Clear Selection</Button>
         </Box>
 
-        { !frontend_utils.CHEM_PROJECT && 
         <Box paddingX={2} paddingTop={1}>
             <AttributeTable></AttributeTable>
         </Box>
-        }
-        
 
         <Box paddingX={2} paddingTop={1}>
             <div style={{ width: '100%' }}>

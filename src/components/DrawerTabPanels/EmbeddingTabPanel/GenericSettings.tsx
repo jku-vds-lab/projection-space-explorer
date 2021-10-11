@@ -107,7 +107,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                 {domainSettings != 'forceatlas2' && <FeaturePicker selection={selection} setSelection={setSelection}></FeaturePicker>}
 
 
-                <Grid container justify="center" style={{ width: '100%' }}>
+                <Grid container justifyContent="center" style={{ width: '100%' }}>
                     <Grid item>
                         <FormControl className={classes.root}>
                             <FormLabel component="legend">Projection Parameters</FormLabel>

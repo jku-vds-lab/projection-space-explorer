@@ -4,6 +4,23 @@ import * as React from "react";
 import { ConnectedProps } from 'react-redux';
 import { CategoryOptions } from "./components/WebGLView/CategoryOptions";
 import { IBook } from "./model/Book";
+export declare type BaseConfig = Partial<{
+    baseUrl: string;
+    preselect: {
+        url: string;
+    };
+}>;
+export declare type FeatureConfig = Partial<{
+    disableEmbeddings: {
+        tsne?: boolean;
+        umap?: boolean;
+        forceatlas?: boolean;
+    };
+}>;
+export declare type ComponentConfig = Partial<{
+    datasetTab: (props: any) => JSX.Element;
+    appBar: () => JSX.Element;
+}>;
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
  */
@@ -45,17 +62,11 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
  */
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & Partial<{
-    config?: Partial<{
-        baseUrl: string;
-    }>;
-    /**
-     * List of components that can be overridden.
-     */
-    components?: Partial<{
-        datasetTab: () => JSX.Element;
-    }>;
-}>;
+declare type Props = PropsFromRedux & {
+    config?: BaseConfig;
+    features?: FeatureConfig;
+    overrideComponents?: ComponentConfig;
+};
 /**
  * Main application that contains all other components.
  */
@@ -75,7 +86,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         onLineSelect(algo: any, show: any): void;
         onChangeTab(newTab: any): void;
         render(): JSX.Element;
-        context: any; /** predefined dataset */
+        context: any;
         setState<K extends string | number | symbol>(state: any, callback?: () => void): void;
         forceUpdate(callback?: () => void): void;
         readonly props: Readonly<Props> & Readonly<{
@@ -113,7 +124,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     onLineSelect(algo: any, show: any): void;
     onChangeTab(newTab: any): void;
     render(): JSX.Element;
-    context: any; /** predefined dataset */
+    context: any;
     setState<K extends string | number | symbol>(state: any, callback?: () => void): void;
     forceUpdate(callback?: () => void): void;
     readonly props: Readonly<Props> & Readonly<{
@@ -167,15 +178,9 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
-} & Partial<{
-    config?: Partial<{
-        baseUrl: string;
-    }>;
-    /**
-     * List of components that can be overridden.
-     */
-    components?: Partial<{
-        datasetTab: () => JSX.Element;
-    }>;
-}>, "ref" | "config" | "components" | "key">>;
+} & {
+    config?: BaseConfig;
+    features?: FeatureConfig;
+    overrideComponents?: ComponentConfig;
+}, "ref" | "config" | "features" | "overrideComponents" | "key">>;
 export {};

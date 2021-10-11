@@ -265,7 +265,7 @@ export var StoryLegend = ({ selection }: StoryLegendProps) => {
                                     var A2 = (W * H) * percent
 
                                     return <TableCell key={`${row}${col}`} className={classes.nocell} align="right">
-                                        <Grid alignItems="center" justify="center" direction="column" container>
+                                        <Grid alignItems="center" justifyContent="center" direction="column" container>
                                             <Grid item>
                                                 <div style={{
                                                     background: '#70AD47',
@@ -357,7 +357,7 @@ var SubColor = ({ selection, row }) => {
         var A2 = (W * H) * percent
 
         return <TableCell className={classes.nocell} align="right">
-            <Grid container justify="center" direction="column" alignItems="center">
+            <Grid container justifyContent="center" direction="column" alignItems="center">
                 <Grid item>
                     <div style={{
                         background: '#70AD47',

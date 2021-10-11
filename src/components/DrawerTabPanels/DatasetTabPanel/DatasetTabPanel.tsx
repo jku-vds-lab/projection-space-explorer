@@ -10,9 +10,8 @@ import { DownloadJob } from "./DownloadJob";
 import { DownloadProgress } from "./DownloadProgress";
 import { PredefinedDatasets } from "./PredefinedDatasets";
 import { SDFModifierDialog } from "./SDFModifierDialog";
-import { UploadedFiles } from "./UploadedFiles";
 import * as frontend_utils from "../../../utils/frontend-connect";
-import {useCancellablePromise} from "../../../utils/promise-helpers";
+import { useCancellablePromise } from "../../../utils/promise-helpers";
 
 var d3v5 = require('d3')
 
@@ -33,63 +32,45 @@ export function DatasetTabPanel({ onDataSelected }) {
 
     function onModifierDialogClose(modifiers) {
         setOpen(false);
-        if (modifiers !== null){
+        if (modifiers !== null) {
             abort_controller = new AbortController();
             new SDFLoader().resolvePath(entry, onDataSelected, cancellablePromise, modifiers, abort_controller);
         }
     }
 
-    let predefined = null;
-    if(frontend_utils.CHEM_PROJECT){
-        predefined = <UploadedFiles onChange={(entry)=>{
+    let predefined = <PredefinedDatasets onChange={(entry) => {
+        if (entry.path.endsWith('sdf')) {
             setEntry(entry);
             setOpen(true);
-        }} refresh={refreshUploadedFiles} />;
-    }else{
-        predefined = <PredefinedDatasets onChange={(entry) => {
-            if (entry.path.endsWith('sdf')) {
-                setEntry(entry);
-                setOpen(true);
-            } else {
-                setJob(new DownloadJob(entry))
-            }
-        }} ></PredefinedDatasets>
-    }
+        } else {
+            setJob(new DownloadJob(entry))
+        }
+    }} ></PredefinedDatasets>
 
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        {!(frontend_utils.DEMO && frontend_utils.CHEM_PROJECT) && <Box paddingLeft={2} paddingTop={2}>
-            <Typography variant="subtitle2" gutterBottom>{'Custom Datasets (Drag and Drop)'}</Typography>
-        </Box>}
-        {!(frontend_utils.DEMO && frontend_utils.CHEM_PROJECT) && 
-        <DatasetDrop onChange={(var1, var2) => {
-                onDataSelected(var1, var2);
-                setRefreshUploadedFiles(refreshUploadedFiles + 1);
-            }} cancellablePromise={cancellablePromise} abort_controller={abort_controller}></DatasetDrop>}
 
-        {!(frontend_utils.DEMO && frontend_utils.CHEM_PROJECT) && 
+
         <Box paddingLeft={2} paddingTop={2}>
-            <Typography variant="subtitle2" gutterBottom>{'Predefined Datasets'}</Typography>
-        </Box>}
-        {predefined}
+            <Typography variant="subtitle2" gutterBottom>{'Custom Datasets (Drag and Drop)'}</Typography>
+        </Box>
 
-        {/* <UploadedFiles onChange={(entry)=>{
-            setEntry(entry);
-            setOpen(true);
-        }} refresh={refreshUploadedFiles} />
+
+        <DatasetDrop
+            onChange={(var1, var2) => {
+                onDataSelected(var1, var2);
+            }}
+            cancellablePromise={cancellablePromise}
+            abort_controller={abort_controller} />
+
+
 
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Predefined Datasets'}</Typography>
         </Box>
+        {predefined}
 
-        <PredefinedDatasets onChange={(entry) => {
-            if (entry.path.endsWith('sdf')) {
-                setEntry(entry);
-                setOpen(true);
-            } else {
-                setJob(new DownloadJob(entry))
-            }
-        }} ></PredefinedDatasets> */}
+
 
         <DownloadProgress job={job} onFinish={(result) => {
             if (job.entry.path.endsWith('json')) {
@@ -101,7 +82,9 @@ export function DatasetTabPanel({ onDataSelected }) {
             setJob(null)
         }} onCancel={() => { setJob(null) }}></DownloadProgress>
 
-        <LoadingIndicatorDialog handleClose={() => {cancelPromises();}} area={"global_loading_indicator"}/>
+
+
+        <LoadingIndicatorDialog handleClose={() => { cancelPromises(); }} area={"global_loading_indicator"} />
         <SDFModifierDialog openSDFDialog={openSDFDialog} handleClose={onModifierDialogClose}></SDFModifierDialog>
     </div>
 }

@@ -19,7 +19,7 @@ export var DatasetDrop = ({ onChange, cancellablePromise, abort_controller }) =>
         }
     }
 
-    return <Grid container item alignItems="stretch" justify="center" direction="column" style={{ padding: '16px' }}>
+    return <Grid container item alignItems="stretch" justifyContent="center" direction="column" style={{ padding: '16px' }}>
         <DragAndDrop accept="image/*" handleDrop={(files) => {
             if (files == null || files.length <= 0) {
                 return;

@@ -83,7 +83,7 @@ export const StoryPreview = connector(({
             </Select>
         </FormControl>
 
-        <Grid container direction="row" alignItems="center" justify="space-between">
+        <Grid container direction="row" alignItems="center" justifyContent="space-between">
             <Button
                 style={{
                     marginTop: '16px'

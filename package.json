@@ -84,13 +84,15 @@
     "webpack-cli": "^3.3.10",
     "webpack-glsl-loader": "^1.0.1",
     "react-redux": "^7.2.0",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "@mui/material": "^5.0.3"
   },
   "peerDependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.0",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "@mui/material": "^5.0.3"
   },
   "scripts": {
     "webpack:dev": "npx webpack --config webpack.config.js",

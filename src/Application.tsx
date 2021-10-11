@@ -76,6 +76,7 @@ import { ChessPlugin } from "./plugins/Chess/ChessPlugin";
 import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { ChemPlugin } from "./plugins/Cime/ChemPlugin";
 import { GoPlugin } from "./plugins/Go/GoPlugin";
+import { PseAppBar } from "./components/PseAppBar";
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -142,6 +143,26 @@ const mapDispatchToProps = dispatch => ({
 
 
 
+export type BaseConfig = Partial<{
+  baseUrl: string,
+  preselect: {
+    url: string
+  }
+}>
+
+export type FeatureConfig = Partial<{
+  disableEmbeddings: {
+    tsne?: boolean,
+    umap?: boolean,
+    forceatlas?: boolean
+  }
+}>
+
+export type ComponentConfig = Partial<{
+  datasetTab: (props: any) => JSX.Element
+  appBar: () => JSX.Element
+}>
+
 
 
 
@@ -157,17 +178,12 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 
-type Props = PropsFromRedux & Partial<{
-  config?: Partial<{
-    baseUrl: string
-  }>
-  /**
-   * List of components that can be overridden.
-   */
-  components?: Partial<{
-    datasetTab: () => JSX.Element
-  }>
-}>
+
+type Props = PropsFromRedux & {
+  config?: BaseConfig
+  features?: FeatureConfig
+  overrideComponents?: ComponentConfig
+}
 
 
 /**
@@ -200,8 +216,9 @@ export const Application = connector(class extends React.Component<Props, any> {
 
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
-    var preselect = frontend_utils.CHEM_PROJECT ? "test.sdf" : "datasets/rubik/cube10x2_different_origins.csv"
-    var loader = frontend_utils.CHEM_PROJECT ? new SDFLoader() : new CSVLoader();
+
+    var preselect = "datasets/rubik/cube10x2_different_origins.csv"
+    var loader = new CSVLoader();
 
     if (set != null) {
       if (set == "neural") {
@@ -213,14 +230,11 @@ export const Application = connector(class extends React.Component<Props, any> {
       } else if (set == "chess") {
         preselect = "datasets/chess/chess16k.csv"
         loader = new CSVLoader();
-      } else if (set == "cime") {
-        preselect = "test.sdf";
-        loader = new SDFLoader();
       } else if (set == "reaction") {
         preselect = "datasets/chemvis/domain_5000_all_predictions.csv";
         loader = new CSVLoader();
       } else {
-        if (set.endsWith("sdf")) {
+        /**if (set.endsWith("sdf")) {
           loader.resolvePath({
             display: set,
             path: set,
@@ -229,7 +243,7 @@ export const Application = connector(class extends React.Component<Props, any> {
           }, (dataset) => { this.onDataSelected(dataset) })
           return;
         }
-        preselect = mangleURL(set);
+        preselect = mangleURL(set);**/
       }
       loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
     } else {
@@ -258,31 +272,13 @@ export const Application = connector(class extends React.Component<Props, any> {
     // Set new dataset as variable
     this.props.setDataset(dataset)
 
-
-
-    //this.threeRef.current.createVisualization(dataset, lineScheme, null)
-
     this.finite(dataset)
 
     this.props.setVectors(dataset.vectors)
 
-    // this.props.setLineUpInput_columns(dataset.columns);
-    // this.props.setLineUpInput_data(dataset.vectors);
-
-
     this.props.setLineByOptions(DatasetUtil.getColumns(dataset))
 
     setTimeout(() => this.threeRef.current.requestRender(), 500)
-
-
-    // set default storybook that contains all clusters and no arrows
-    if (dataset.clusters.length > 0) {
-      //let story = new Storybook(dataset.clusters, []);
-      //this.props.addStory(story)
-      //this.props.setActiveStory(null)
-      // this.props.setActiveStory(story) // TODO: should we set the new story active?
-    }
-
   }
 
 
@@ -411,27 +407,27 @@ export const Application = connector(class extends React.Component<Props, any> {
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Load Dataset</Typography>
               <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
-            </React.Fragment>}><Tab value={0} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            </React.Fragment>}><Tab value={0} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Embedding and Projection</Typography>
               <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
-            </React.Fragment>}><Tab value={1} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            </React.Fragment>}><Tab value={1} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Point and Line Channels</Typography>
               <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
-            </React.Fragment>}><Tab value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            </React.Fragment>}><Tab value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Groups</Typography>
               <Typography variant="body2">Contains options for displaying and navigating groups in the dataset.</Typography>
-            </React.Fragment>}><Tab value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            </React.Fragment>}><Tab value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
-            </React.Fragment>}><Tab value={4} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+            </React.Fragment>}><Tab value={4} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
             {/* {frontend_utils.CHEM_PROJECT && <Tooltip placement="right" title={<React.Fragment>
               <Typography variant="subtitle2">Backend Settings</Typography>
@@ -464,7 +460,7 @@ export const Application = connector(class extends React.Component<Props, any> {
 
             <Grid
               container
-              justify="center"
+              justifyContent="center"
               alignItems="stretch"
               direction="column">
 
@@ -473,13 +469,14 @@ export const Application = connector(class extends React.Component<Props, any> {
               <FixedHeightTabPanel value={this.props.openTab} index={0} >
                 {
                   /** predefined dataset */
-                  this.props.components?.datasetTab() ?? <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
+                  this.props.overrideComponents?.datasetTab ? React.createElement(this.props.overrideComponents?.datasetTab, { onDataSelected: this.onDataSelected }) : <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
                 }
               </FixedHeightTabPanel>
 
 
               <FixedHeightTabPanel value={this.props.openTab} index={1}>
                 <EmbeddingTabPanel
+                  config={this.props.features}
                   webGLView={this.threeRef}></EmbeddingTabPanel>
               </FixedHeightTabPanel>
 
@@ -521,15 +518,15 @@ export const Application = connector(class extends React.Component<Props, any> {
           height: '100%',
           flexGrow: 1
         }}>
-          <AppBar variant="outlined" position="relative" color="transparent">
-            <Toolbar>
+
+          {this.props.overrideComponents?.appBar ? React.createElement(this.props.overrideComponents?.appBar) :
+            <PseAppBar variant="outlined" position="relative" color="transparent">
               <a href={"https://jku-vds-lab.at"} target={"_blank"}><VDSLogo style={{ height: 48, width: 48 }}></VDSLogo></a>
-              {frontend_utils.CHEM_PROJECT && <a href={"https://www.bayer.com"} target={"_blank"}><img style={{ height: 48, marginLeft: 48 }} src={"textures/bayer-logo.svg"} alt="Powered By Bayer" /></a>}
               <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
-                {frontend_utils.CHEM_PROJECT ? "CIME: Chem-Informatics Model Explorer" : "Projection Space Explorer"}
+                {"Projection Space Explorer"}
               </Typography>
-            </Toolbar>
-          </AppBar>
+            </PseAppBar>
+          }
 
           {/** @ts-ignore */}
           <Split

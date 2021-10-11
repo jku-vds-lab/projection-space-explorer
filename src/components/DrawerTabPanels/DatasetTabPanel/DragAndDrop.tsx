@@ -93,7 +93,7 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
                             right: 0
                         }}
                     >
-                        <Grid style={{ height: '100%' }} container direction="column" justify="center" alignItems="center">
+                        <Grid style={{ height: '100%' }} container direction="column" justifyContent="center" alignItems="center">
                             <div
                                 style={{
 
@@ -116,7 +116,7 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
                             right: 0
                         }}
                     >
-                        <Grid style={{ height: '100%' }} container direction="column" justify="center" alignItems="center">
+                        <Grid style={{ height: '100%' }} container direction="column" justifyContent="center" alignItems="center">
                             <input
                                 style={{ display: 'none' }}
                                 id="contained-button-file"

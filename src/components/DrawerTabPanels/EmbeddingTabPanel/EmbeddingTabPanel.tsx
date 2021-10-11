@@ -20,6 +20,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionsDuck'
 
 import * as frontend_utils from '../../../utils/frontend-connect';
+import { FeatureConfig } from '../../../Application'
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -46,6 +47,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
+    config: FeatureConfig
     projectionWorker?: Worker
     projectionOpen?: boolean
     setProjectionOpen?: any
@@ -61,7 +63,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
     const [controller, setController] = React.useState(null)
 
-    React.useEffect(()=>{
+    React.useEffect(() => {
         if (controller) {
             controller.terminate()
         }
@@ -91,45 +93,49 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
         <Box paddingLeft={2} paddingRight={2}>
             <Grid container direction="column" spacing={1}>
-                <Grid item>
-                    <Button
-                        style={{
-                            width: '100%'
-                        }}
-                        variant="outlined"
-                        onClick={() => {
-                            setDomainSettings('umap')
-                            setOpen(true)
-                        }}>{'UMAP'}</Button>
-                </Grid>
                 {
-                !frontend_utils.CHEM_PROJECT &&
-                <Grid item>
-                    <Button
-                        style={{
-                            width: '100%'
-                        }}
-                        variant="outlined"
-                        onClick={() => {
-                            setDomainSettings('tsne')
-                            setOpen(true)
-                        }}>{'t-SNE'}</Button>
-                </Grid>
+                    ((props.config?.disableEmbeddings?.umap ?? false) === false) &&
+                    <Grid item>
+                        <Button
+                            style={{
+                                width: '100%'
+                            }}
+                            variant="outlined"
+                            onClick={() => {
+                                setDomainSettings('umap')
+                                setOpen(true)
+                            }}>{'UMAP'}</Button>
+                    </Grid>
                 }
 
                 {
-                !frontend_utils.CHEM_PROJECT && 
-                <Grid item>
-                    <Button
-                        style={{
-                            width: '100%'
-                        }}
-                        variant="outlined"
-                        onClick={() => {
-                            setDomainSettings('forceatlas2')
-                            setOpen(true)
-                        }}>{'ForceAtlas2'}</Button>
-                </Grid>
+                    ((props.config?.disableEmbeddings?.tsne ?? false) === false) &&
+                    <Grid item>
+                        <Button
+                            style={{
+                                width: '100%'
+                            }}
+                            variant="outlined"
+                            onClick={() => {
+                                setDomainSettings('tsne')
+                                setOpen(true)
+                            }}>{'t-SNE'}</Button>
+                    </Grid>
+                }
+
+                {
+                    ((props.config?.disableEmbeddings?.forceatlas ?? false) === false) &&
+                    <Grid item>
+                        <Button
+                            style={{
+                                width: '100%'
+                            }}
+                            variant="outlined"
+                            onClick={() => {
+                                setDomainSettings('forceatlas2')
+                                setOpen(true)
+                            }}>{'ForceAtlas2'}</Button>
+                    </Grid>
                 }
             </Grid>
         </Box>
@@ -155,7 +161,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             open={open} onClose={() => setOpen(false)}
             onStart={(params, selection) => {
                 const checked_sel = selection.filter(s => s.checked)
-                if(checked_sel.length <= 0){
+                if (checked_sel.length <= 0) {
                     alert("Select at least one feature.")
                     return;
                 }
@@ -207,7 +213,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                             props.webGLView.current.updateXY()
                             props.webGLView.current.repositionClusters()
                         }
-                        
+
 
                         setController(controller)
                         break;

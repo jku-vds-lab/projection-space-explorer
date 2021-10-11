@@ -7,7 +7,8 @@ module.exports = {
     'react': 'react',
     'react-dom': 'react-dom',
     'react-redux': 'react-redux',
-    'redux': 'redux'
+    'redux': 'redux',
+    '@mui/material': '@mui/material'
   },
   entry: {
     bundle: "./src/index.ts"
