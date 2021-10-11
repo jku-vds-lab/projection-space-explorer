@@ -156,13 +156,15 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
  */
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-export interface ApplicationConfig {
-  
-}
 
-type Props = PropsFromRedux & {
-  config: ApplicationConfig
-}
+type Props = PropsFromRedux & Partial<{
+  config?: Partial<{
+    baseUrl: string
+  }>
+  components?: Partial<{
+    datasetTab: JSX.Element
+  }>
+}>
 
 
 /**
@@ -215,7 +217,7 @@ export const Application = connector(class extends React.Component<Props, any> {
         preselect = "datasets/chemvis/domain_5000_all_predictions.csv";
         loader = new CSVLoader();
       } else {
-        if(set.endsWith("sdf")){
+        if (set.endsWith("sdf")) {
           loader.resolvePath({
             display: set,
             path: set,
@@ -466,7 +468,10 @@ export const Application = connector(class extends React.Component<Props, any> {
 
 
               <FixedHeightTabPanel value={this.props.openTab} index={0} >
-                <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
+                {
+                  /** predefined dataset */
+                  this.props.components?.datasetTab ?? <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
+                }
               </FixedHeightTabPanel>
 
 
@@ -523,7 +528,7 @@ export const Application = connector(class extends React.Component<Props, any> {
             </Toolbar>
           </AppBar>
 
-          {/** @ts-ignore */ }
+          {/** @ts-ignore */}
           <Split
             style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
             ref={this.splitRef}
@@ -630,42 +635,3 @@ PluginRegistry.getInstance().registerPlugin(new RubikPlugin())
 PluginRegistry.getInstance().registerPlugin(new ChessPlugin())
 PluginRegistry.getInstance().registerPlugin(new CoralPlugin())
 PluginRegistry.getInstance().registerPlugin(new GoPlugin())
-
-
-
-const EntryPoint = () => {
-  const api = new API()
-  const [context, setContext] = React.useState(api)
-
-  api.onStateChanged = (values, keys) => {
-  }
-
-
-
-  return <div>
-    <Button style={{ zIndex: 10000, position: 'absolute' }
-    } onClick={() => {
-      console.log(context.store.getState().lineUpInput)
-      onClick(context.serialize())
-    }}>store</Button>
-
-    <Button style={{ zIndex: 10000, position: 'absolute', left: 100 }} onClick={async () => {
-      const content = await loo()
-      setContext(new API(content))
-    }}>load</Button>
-    <PSEContextProvider
-      context={context}
-      onStateChanged={(values, keys) => {
-      }}
-      
-      >
-
-      <Application config={{}} />
-    </PSEContextProvider>
-  </div>
-}
-
-// Render the application into our 'mountingPoint' div that is declared in 'index.html'.
-export function tryIt() {
-  ReactDOM.render(<EntryPoint></EntryPoint>, document.getElementById("root"))
-}

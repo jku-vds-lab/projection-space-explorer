@@ -45,11 +45,14 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
  */
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
-export interface ApplicationConfig {
-}
-declare type Props = PropsFromRedux & {
-    config: ApplicationConfig;
-};
+declare type Props = PropsFromRedux & Partial<{
+    config?: Partial<{
+        baseUrl: string;
+    }>;
+    components?: Partial<{
+        datasetTab: JSX.Element;
+    }>;
+}>;
 /**
  * Main application that contains all other components.
  */
@@ -161,8 +164,12 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
-} & {
-    config: ApplicationConfig;
-}, "ref" | "config" | "key">>;
-export declare function tryIt(): void;
+} & Partial<{
+    config?: Partial<{
+        baseUrl: string;
+    }>;
+    components?: Partial<{
+        datasetTab: JSX.Element;
+    }>;
+}>, "ref" | "config" | "components" | "key">>;
 export {};
