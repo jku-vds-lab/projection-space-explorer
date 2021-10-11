@@ -3,13 +3,6 @@ import * as React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
 import './coral.scss';
 import { ChiSquareTest } from './ChiSquare'
 import BarChanges from './VegaBarChanges.js';
@@ -20,6 +13,7 @@ import { FeatureType } from '../../../model/FeatureType';
 import { setDifferenceThreshold } from "../../../components/Ducks/DifferenceThresholdDuck";
 import { cloneDeep } from "../../../components/Utility/CloneDeep";
 import { RootState } from '../../../components/Store/Store.js';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 const useStyles = makeStyles({
   table: {

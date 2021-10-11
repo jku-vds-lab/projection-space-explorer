@@ -18,7 +18,7 @@ import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
 import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import { RootState } from '../Store/Store';
-import { Menu, MenuItem } from '@material-ui/core';
+import { Menu, MenuItem } from '@mui/material';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
 import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, removeEdgeFromActive, setActiveTrace, StoriesUtil } from '../Ducks/StoriesDuck';

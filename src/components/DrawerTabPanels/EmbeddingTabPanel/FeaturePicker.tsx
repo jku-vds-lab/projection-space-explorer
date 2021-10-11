@@ -1,5 +1,5 @@
 import { Dataset, DefaultFeatureLabel } from "../../../model/Dataset";
-import { makeStyles, Modal, Box, Grid, Card, Checkbox, Button, withStyles, Paper } from "@material-ui/core";
+import { Checkbox } from "@mui/material";
 import { connect, ConnectedProps } from 'react-redux'
 import React = require("react");
 import { AutoSizer, Column, Table, defaultTableRowRenderer } from 'react-virtualized';
@@ -9,9 +9,7 @@ import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck";
 import { setProjectionParamsAction } from "../../Ducks/ProjectionParamsDuck";
 import clsx from 'clsx';
 import clone = require('fast-clone')
-import { Check } from "@material-ui/icons";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import { withStyles } from "@material-ui/core";
 
 
 

@@ -1,8 +1,9 @@
 import React = require("react");
-import { Typography, Slider, makeStyles } from "@material-ui/core";
+import { Typography, Slider } from "@mui/material";
 import { connect } from 'react-redux'
 import { RootState } from "../../Store/Store";
 import { setGlobalPointBrightness } from "../../Ducks/GlobalPointBrightnessDuck";
+import { makeStyles } from "@material-ui/core";
 
 
 const useStyles = makeStyles(theme => ({

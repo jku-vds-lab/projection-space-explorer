@@ -3,12 +3,9 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import { withStyles } from '@material-ui/core/styles';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
-import Button from '@material-ui/core/Button';
-import Popover from '@material-ui/core/Popover';
-import Grid from '@material-ui/core/Grid';
-import Checkbox from '@material-ui/core/Checkbox';
 import { Link, Divider } from '@material-ui/core';
 import * as React from "react";
+import { Button, Checkbox, Grid, Popover } from '@mui/material';
 
 function MinusSquare(props) {
     return (

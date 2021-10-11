@@ -1,5 +1,4 @@
 import { DatasetType } from "../../../model/DatasetType";
-import * as frontend_utils from "../../../utils/frontend-connect";
 
 
 export type DatasetEntry = {

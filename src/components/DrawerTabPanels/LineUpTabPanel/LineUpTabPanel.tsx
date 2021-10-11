@@ -1,5 +1,5 @@
 import { Typography } from "@material-ui/core";
-import { Box, Button, FormControlLabel, Switch } from "@material-ui/core";
+import { Box, Button, FormControlLabel, Switch } from "@mui/material";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { setLineUpInput_filter, setLineUpInput_visibility } from "../../Ducks/LineUpInputDuck";

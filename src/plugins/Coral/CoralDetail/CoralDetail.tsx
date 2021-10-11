@@ -6,15 +6,11 @@ import BarChart from './BarChart.js';
 import VegaDensity from './VegaDensity.js';
 import VegaDate from './VegaDate.js';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import './coral.scss';
 import { FeatureType } from "../../../model/FeatureType";
 import { IVector } from "../../../model/Vector";
 import { RootState } from '../../../components/Store/Store.js';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 const useStyles = makeStyles({
   table: {

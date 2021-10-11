@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Checkbox from '@material-ui/core/Checkbox';
+import { Checkbox } from '@mui/material';
 import * as clone from 'clone'
 // @ts-ignore
 import StarSymbol from '../../../../textures/sprites/star.png'

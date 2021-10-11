@@ -1,5 +1,3 @@
-import * as frontend_utils from '../../utils/frontend-connect';
-
 const SET = "reducers/DISPLAY_MODE"
 
 export enum DisplayMode {

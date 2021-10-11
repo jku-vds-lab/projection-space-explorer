@@ -1,7 +1,6 @@
 import { Dataset, DatasetUtil } from "../../../model/Dataset";
 import { EmbeddingController } from "./EmbeddingController"
 
-import * as frontend_utils from "../../../utils/frontend-connect";
 import TsneWorker from "../../workers/embeddings/tsne.worker";
 
 export class TSNEEmbeddingController extends EmbeddingController { 

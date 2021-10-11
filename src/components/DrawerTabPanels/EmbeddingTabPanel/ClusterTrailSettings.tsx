@@ -1,4 +1,4 @@
-import { FormControlLabel, FormGroup, FormLabel, Slider, Switch, Typography } from "@material-ui/core";
+import { FormControlLabel, FormGroup, FormLabel, Slider, Switch, Typography } from "@mui/material";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { setTrailLength, setTrailVisibility } from "../../Ducks/TrailSettingsDuck";
@@ -31,7 +31,7 @@ export const ClusterTrailSettings = connector(({ trailSettings, setTrailVisibili
         />
         <Typography id="discrete-slider" gutterBottom>
             Trail Length
-            </Typography>
+        </Typography>
         <Slider
             value={trailSettings.length}
             aria-labelledby="discrete-slider"

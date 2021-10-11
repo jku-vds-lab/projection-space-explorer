@@ -1,11 +1,12 @@
 import React = require("react");
-import { Card, CardHeader, IconButton, makeStyles } from "@material-ui/core";
+import { Card, CardHeader, IconButton } from "@mui/material";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import StopIcon from '@material-ui/icons/Stop';
 import CloseIcon from '@material-ui/icons/Close';
 import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from "../../Store/Store";
 import { SettingsBackupRestoreSharp } from "@material-ui/icons";
+import { makeStyles } from "@material-ui/core";
 
 /**
  * Styles for the projection card that allows to stop/resume projection steps.

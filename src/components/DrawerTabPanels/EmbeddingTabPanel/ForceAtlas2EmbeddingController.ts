@@ -2,7 +2,6 @@ import { DataLine } from "../../../model/DataLine";
 import { Dataset } from "../../../model/Dataset";
 import { EmbeddingController } from "./EmbeddingController"
 
-import * as frontend_utils from "../../../utils/frontend-connect";
 import { IVector } from "../../../model/Vector";
 
 import forceatlas2Worker from "../../workers/embeddings/forceatlas2.worker";

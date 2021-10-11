@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, Popover, Select, Switch, Typography } from "@material-ui/core";
+import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormHelperText, MenuItem, Popover, Select, Switch, Typography } from "@mui/material";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { setGenericFingerprintAttributes } from "../../Ducks/GenericFingerprintAttributesDuck";
@@ -7,7 +7,6 @@ import { HoverStateOrientation, setHoverStateOrientation } from "../../Ducks/Hov
 import { SelectionClusters } from "../../Overlays/SelectionClusters";
 import { RootState } from "../../Store/Store";
 import { VirtualColumn, VirtualTable } from "../../UI/VirtualTable";
-import * as frontend_utils from "../../../utils/frontend-connect";
 import { selectVectors } from "../../Ducks/AggregationDuck";
 
 const mapStateToProps = (state: RootState) => ({
@@ -66,10 +65,8 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, s
         <Box paddingX={2} paddingTop={1}>
             <div style={{ width: '100%' }}>
                 <FormControl style={{ width: '100%' }}>
-                    <InputLabel id="demo-customized-select-label">Hover Position</InputLabel>
+                    <FormHelperText>Hover Position</FormHelperText>
                     <Select
-                        labelId="demo-customized-select-label"
-                        id="demo-customized-select"
                         value={hoverStateOrientation}
                         onChange={(event) => {
                             setHoverStateOrientation(event.target.value)

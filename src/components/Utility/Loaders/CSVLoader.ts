@@ -7,7 +7,6 @@ import { Dataset, DefaultFeatureLabel } from "../../../model/Dataset"
 import { Loader } from "./Loader"
 import { DatasetEntry } from "../Data/DatasetDatabase"
 import { ICluster } from "../../../model/Cluster"
-import * as frontend_utils from "../../../utils/frontend-connect"
 import { ObjectTypes } from "../../../model/ObjectType"
 import WorkerCluster from "../../workers/cluster.worker";
 

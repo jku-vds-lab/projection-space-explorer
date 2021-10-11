@@ -1,8 +1,8 @@
-import { Grid, List, ListItem, ListItemText, ListSubheader } from "@material-ui/core"
+import { Grid, List, ListItem, ListItemText, ListSubheader } from "@mui/material"
 import React = require("react")
 import { DatasetType } from "../../../model/DatasetType"
 import { DatasetDatabase } from "../../Utility/Data/DatasetDatabase"
-import { ListItemIcon, SvgIcon } from "@material-ui/core"
+import { ListItemIcon, SvgIcon } from "@mui/material"
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import ShareIcon from '@material-ui/icons/Share';
 import WidgetsIcon from '@material-ui/icons/Widgets';

@@ -1,2 +1,4 @@
 /// <reference types="react" />
-export declare function PseAppBar(children: any): JSX.Element;
+export declare function PseAppBar({ children }: {
+    children: any;
+}): JSX.Element;

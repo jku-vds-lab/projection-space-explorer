@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { usePromiseTracker } from "react-promise-tracker";
 import Loader from 'react-loader-spinner';
-import { Button, Dialog, DialogActions, DialogContent } from '@material-ui/core';
+import { Button, Dialog, DialogActions, DialogContent } from '@mui/material';
 
 
 export const LoadingIndicatorView = props => {

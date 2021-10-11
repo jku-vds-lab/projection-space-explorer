@@ -1,15 +1,9 @@
 import "regenerator-runtime/runtime";
-
-import Typography from '@material-ui/core/Typography';
 import { WebGLView } from './components/WebGLView/WebGLView'
-import Grid from '@material-ui/core/Grid';
-import { AppBar, Button, Divider, Drawer, Paper, SvgIcon, Toolbar, Tooltip } from "@material-ui/core";
+import { AppBar, Button, Divider, Drawer, Paper, SvgIcon, Toolbar, Tooltip, Typography, Tab, Tabs, Box, Grid } from "@mui/material";
 import { DatasetDatabase } from "./components/Utility/Data/DatasetDatabase";
 import { Dataset, DatasetUtil, SegmentFN } from "./model/Dataset";
 import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './components/DrawerTabPanels/StatesTabPanel/LineTreePopover'
-import Box from '@material-ui/core/Box';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import * as React from "react";
 import { Storytelling } from "./components/Overlays/Storytelling";
 import * as ReactDOM from 'react-dom';
@@ -37,7 +31,6 @@ import { DatasetTabPanel } from "./components/DrawerTabPanels/DatasetTabPanel/Da
 import { LineUpContext } from "./components/LineUpContext/LineUpContext";
 import { setLineUpInput_visibility } from './components/Ducks/LineUpInputDuck';
 import { SDFLoader } from "./components/Utility/Loaders/SDFLoader";
-import * as frontend_utils from "./utils/frontend-connect";
 import { DetailsTabPanel } from "./components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
 import { addProjectionAction } from "./components/Ducks/ProjectionsDuck";
 import { Embedding } from "./model/Embedding";
@@ -520,7 +513,7 @@ export const Application = connector(class extends React.Component<Props, any> {
         }}>
 
           {this.props.overrideComponents?.appBar ? React.createElement(this.props.overrideComponents?.appBar) :
-            <PseAppBar variant="outlined" position="relative" color="transparent">
+            <PseAppBar>
               <a href={"https://jku-vds-lab.at"} target={"_blank"}><VDSLogo style={{ height: 48, width: 48 }}></VDSLogo></a>
               <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
                 {"Projection Space Explorer"}

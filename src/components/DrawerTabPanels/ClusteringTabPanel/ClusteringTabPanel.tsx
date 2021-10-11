@@ -1,5 +1,5 @@
 import React = require("react")
-import { Box, Button, Checkbox, FormControl, FormGroup, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Typography } from "@material-ui/core"
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, MenuItem, Paper, Popover, Select, Slider, Switch, TextField, Typography } from "@mui/material"
 import { connect, ConnectedProps } from 'react-redux'
 import { ACluster, ICluster } from "../../../model/Cluster"
 import { IBook, ABook } from "../../../model/Book"
@@ -12,10 +12,8 @@ import { RootState } from "../../Store/Store"
 import DeleteIcon from '@material-ui/icons/Delete';
 import { StoryPreview } from "./StoryPreview"
 import * as backend_utils from "../../../utils/backend-connect";
-import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
-import {useCancellablePromise} from "../../../utils/promise-helpers"
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { useCancellablePromise } from "../../../utils/promise-helpers"
 import { setLineUpInput_visibility, setLineUpInput_filter, setLineUpInput_update, updateLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
@@ -24,6 +22,7 @@ import { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/G
 import { selectClusters } from "../../Ducks/AggregationDuck"
 import { CategoryOptionsAPI } from "../../WebGLView/CategoryOptions"
 import { Dataset } from "../../../model/Dataset"
+import { FormHelperText, makeStyles } from "@material-ui/core"
 
 const mapStateToProps = (state: RootState) => ({
     stories: state.stories,
@@ -268,10 +267,8 @@ export const ClusteringTabPanel = connector(({
 
             <div style={{ width: '100%' }}>
                 <FormControl style={{ width: '100%' }}>
-                    <InputLabel id="demo-customized-select-label">Group Visualization</InputLabel>
+                    <FormHelperText>Group Visualization</FormHelperText>
                     <Select
-                        labelId="demo-customized-select-label"
-                        id="demo-customized-select"
                         value={groupVisualizationMode}
                         onChange={(event) => {
                             setGroupVisualizationMode(event.target.value)
@@ -283,6 +280,7 @@ export const ClusteringTabPanel = connector(({
                         <MenuItem value={GroupVisualizationMode.ConvexHull}>Contour Plot</MenuItem>
                         <MenuItem value={GroupVisualizationMode.StarVisualization}>Star Visualization</MenuItem>
                     </Select>
+
                 </FormControl>
             </div>
         </Box>

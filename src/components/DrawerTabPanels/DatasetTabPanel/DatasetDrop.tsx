@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import React = require("react");
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";

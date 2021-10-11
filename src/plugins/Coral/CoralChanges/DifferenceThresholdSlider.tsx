@@ -1,5 +1,5 @@
 import React = require("react");
-import { Typography, Slider } from "@material-ui/core";
+import { Typography, Slider } from "@mui/material";
 import { connect, ConnectedProps } from 'react-redux'
 import { setDifferenceThreshold } from "../../../components/Ducks/DifferenceThresholdDuck";
 

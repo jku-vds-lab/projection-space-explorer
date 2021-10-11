@@ -1,5 +1,5 @@
 import React = require("react");
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
 import { setLineUpInput_dump, setLineUpInput_visibility } from "../Ducks/LineUpInputDuck";
 import { connect, ConnectedProps } from "react-redux";
 

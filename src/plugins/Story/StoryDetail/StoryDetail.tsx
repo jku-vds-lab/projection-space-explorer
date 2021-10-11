@@ -1,12 +1,6 @@
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { Divider, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { makeStyles } from '@material-ui/core/styles';
 import { getCountryCode } from '../../../components/Utility/CountryCodes';
-import { Divider } from '@material-ui/core';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import * as React from 'react'
 

@@ -1,10 +1,10 @@
-import { Button, Checkbox, Container, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, InputLabel, makeStyles, MenuItem, Paper, Select, Switch, TextField } from '@material-ui/core';
+import { Button, Checkbox, Container, Dialog, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, FormHelperText, FormLabel, Grid, InputLabel, MenuItem, Paper, Select, Switch, TextField } from '@mui/material';
 import React = require('react')
 import { connect, ConnectedProps } from 'react-redux'
-import trailSettings from '../../Ducks/TrailSettingsDuck';
 import { RootState } from '../../Store/Store';
 import FeaturePicker from './FeaturePicker';
 import clone = require('fast-clone')
+import { makeStyles } from '@material-ui/core';
 
 const mapState = (state: RootState) => ({
     projectionColumns: state.projectionColumns
@@ -139,9 +139,8 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                     label="Project Selection Only"
                                 />
                                 {(domainSettings == 'tsne' || domainSettings == 'umap') && <FormControl>
-                                    <InputLabel id="demo-controlled-open-select-label">Distance Metric</InputLabel>
+                                    <FormHelperText>Distance Metric</FormHelperText>
                                     <Select
-                                        labelId="demo-controlled-open-select-label"
                                         id="demo-controlled-open-select"
                                         value={distanceMetric}
                                         onChange={(event) => { setDistanceMetric(event.target.value) }}

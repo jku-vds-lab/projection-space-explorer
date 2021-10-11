@@ -1,5 +1,5 @@
 import React = require("react");
-import { List, ListItem, Menu, MenuItem } from "@material-ui/core";
+import { List, ListItem, Menu, MenuItem } from "@mui/material";
 import { connect } from 'react-redux'
 import { defaultScalesForAttribute } from "../../Utility/Colors/colors";
 import { setPointColorScale } from "../../Ducks/PointColorScaleDuck";

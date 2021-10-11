@@ -1,4 +1,4 @@
-import { Button, Popover } from "@material-ui/core";
+import { Button, Popover } from "@mui/material";
 import React = require("react");
 import { AdvancedColoringLegend } from "./AdvancedColoringLegend";
 

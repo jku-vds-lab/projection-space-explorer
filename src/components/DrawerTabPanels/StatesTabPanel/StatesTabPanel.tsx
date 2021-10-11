@@ -1,6 +1,6 @@
 import { connect, ConnectedProps } from 'react-redux'
 import * as React from 'react'
-import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, makeStyles } from '@material-ui/core'
+import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, FormHelperText } from '@mui/material'
 import { ShapeLegend } from './ShapeLegend'
 import { setSelectedVectorByShapeAction } from "../../Ducks/SelectedVectorByShapeDuck"
 import { setVectorByShapeAction } from "../../Ducks/VectorByShapeDuck"
@@ -22,6 +22,7 @@ import { LineTreePopover } from './LineTreePopover'
 import { PathBrightnessSlider } from './PathBrightnessSlider'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions'
+import { makeStyles } from '@material-ui/core'
 
 const mapStateToProps = (state: RootState) => ({
     selectedVectorByShape: state.selectedVectorByShape,
@@ -149,8 +150,8 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
-                        <Select labelId="vectorByShapeSelectLabel"
+                        <FormHelperText>{"shape by"}</FormHelperText>
+                        <Select
                             id="vectorByShapeSelect"
                             displayEmpty
                             value={selectedVectorByShape}
@@ -196,9 +197,8 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
-                        <Select labelId="vectorByTransparencySelectLabel"
-                            id="vectorByTransparencySelect"
+                        <FormHelperText>{"brightness by"}</FormHelperText>
+                        <Select
                             displayEmpty
                             value={channelBrightness ? channelBrightness.key : ''}
                             onChange={(event) => {
@@ -241,8 +241,8 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                        <Select labelId="vectorBySizeSelectLabel"
+                        <FormHelperText>{"size by"}</FormHelperText>
+                        <Select
                             id="vectorBySizeSelect"
                             displayEmpty
                             value={channelSize ? channelSize.key : ''}
@@ -287,8 +287,8 @@ export const StatesTabPanelFull = ({
 
                     <Grid container item alignItems="stretch" direction="column">
                         <FormControl style={{ margin: '4px 0px' }}>
-                            <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
-                            <Select labelId="vectorByColorSelectLabel"
+                            <FormHelperText>{"color by"}</FormHelperText>
+                            <Select
                                 id="vectorByColorSelect"
                                 displayEmpty
                                 value={channelColor ? channelColor.key : ""}

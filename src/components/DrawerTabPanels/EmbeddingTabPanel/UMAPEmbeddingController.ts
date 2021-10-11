@@ -2,7 +2,6 @@ import { IVector } from "../../../model/Vector"
 import { Dataset, DatasetUtil } from "../../../model/Dataset"
 import { EmbeddingController } from "./EmbeddingController"
 
-import * as frontend_utils from "../../../utils/frontend-connect";
 import umapWorker from "../../workers/embeddings/umap.worker";
 
 export class UMAPEmbeddingController extends EmbeddingController {

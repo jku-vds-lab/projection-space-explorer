@@ -1,6 +1,6 @@
 import { connect, ConnectedProps } from 'react-redux'
 import React = require('react')
-import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@material-ui/core'
+import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material'
 import { ProjectionControlCard } from './ProjectionControlCard'
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
 import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
@@ -19,7 +19,6 @@ import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionsDuck'
 
-import * as frontend_utils from '../../../utils/frontend-connect';
 import { FeatureConfig } from '../../../Application'
 
 const mapStateToProps = (state: RootState) => ({

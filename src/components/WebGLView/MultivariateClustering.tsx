@@ -14,7 +14,6 @@ import { CameraTransformations } from "./CameraTransformations";
 import { IBook } from "../../model/Book";
 import * as nt from '../NumTs/NumTs'
 const d3 = require("d3")
-import * as frontend_utils from "../../utils/frontend-connect";
 import { GroupVisualizationMode } from "../Ducks/GroupVisualizationMode";
 import { ScaleUtil } from "../Utility/Colors/ContinuosScale";
 import { StoriesUtil } from "../Ducks/StoriesDuck";

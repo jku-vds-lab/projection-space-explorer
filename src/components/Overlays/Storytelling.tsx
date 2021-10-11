@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ACluster } from "../../model/Cluster";
 import { GenericLegend } from "../legends/Generic";
-import { Card, Typography, Tooltip, IconButton, CardHeader } from "@material-ui/core";
+import { Card, Typography, Tooltip, IconButton, CardHeader } from "@mui/material";
 import { connect, ConnectedProps } from 'react-redux'
 import { DatasetType } from "../../model/DatasetType";
 import { Dataset } from "../../model/Dataset";

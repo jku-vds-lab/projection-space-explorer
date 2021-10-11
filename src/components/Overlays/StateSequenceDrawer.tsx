@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import * as React from 'react'
-import { Typography, IconButton, Card, CardHeader } from "@material-ui/core";
+import { Typography, IconButton, Card, CardHeader } from "@mui/material";
 import { Dataset } from "../../model/Dataset";
 import { setHighlightedSequenceAction } from "../Ducks/HighlightedSequenceDuck";
 import { makeStyles } from '@material-ui/core/styles';

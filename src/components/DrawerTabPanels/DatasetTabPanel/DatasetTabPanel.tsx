@@ -1,4 +1,4 @@
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography } from "@mui/material";
 import React = require("react");
 import { AVector, IVector } from "../../../model/Vector";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
@@ -10,7 +10,6 @@ import { DownloadJob } from "./DownloadJob";
 import { DownloadProgress } from "./DownloadProgress";
 import { PredefinedDatasets } from "./PredefinedDatasets";
 import { SDFModifierDialog } from "./SDFModifierDialog";
-import * as frontend_utils from "../../../utils/frontend-connect";
 import { useCancellablePromise } from "../../../utils/promise-helpers";
 
 var d3v5 = require('d3')
