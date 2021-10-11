@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button, FormControl, Grid, IconButton, InputLabel, ListItem, ListItemSecondaryAction, ListItemText, Select } from '@mui/material';
+import { Button, FormControl, FormHelperText, Grid, IconButton, InputLabel, ListItem, ListItemSecondaryAction, ListItemText, Select } from '@mui/material';
 import { connect, ConnectedProps } from 'react-redux'
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IBook, ABook } from '../../../model/Book';
@@ -27,7 +27,7 @@ export const StoryPreview = connector(({
     stories,
     setActiveStory,
     deleteStory,
-    addStory}: Props) => {
+    addStory }: Props) => {
     const deleteHandler = (story) => {
         if (stories.active == story) {
             setActiveStory(null)
@@ -39,17 +39,16 @@ export const StoryPreview = connector(({
     const addHandler = () => {
         addStory(ABook.createEmpty())
     }
-    
+
     return <div style={{
         display: 'flex',
         flexDirection: 'column',
         alignContent: 'stretch'
     }}>
         <FormControl>
-            <InputLabel id="demo-simple-select-label">Active Story Book</InputLabel>
+            <FormHelperText>Active Story Book</FormHelperText>
             <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                size={'small'}
                 value={stories.active ?? ''}
                 onChange={(event) => {
                     setActiveStory(event.target.value)

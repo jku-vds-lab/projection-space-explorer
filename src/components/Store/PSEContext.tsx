@@ -41,11 +41,11 @@ export function PSEContextProvider({ context, children, onStateChanged }: PropsW
         }
     }, [context])
 
-    return store ? <Provider store={store}>
-        <ThemeProvider theme={theme}>
+    return store ? <ThemeProvider theme={theme}>
+        <Provider store={store}>
             {children}
-        </ThemeProvider>
-    </Provider> : null
+        </Provider>
+    </ThemeProvider> : null
 }
 
 

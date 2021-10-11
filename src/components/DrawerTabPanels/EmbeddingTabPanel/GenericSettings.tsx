@@ -4,7 +4,6 @@ import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from '../../Store/Store';
 import FeaturePicker from './FeaturePicker';
 import clone = require('fast-clone')
-import { makeStyles } from '@mui/styles';
 
 const mapState = (state: RootState) => ({
     projectionColumns: state.projectionColumns
@@ -24,12 +23,6 @@ type Props = PropsFromRedux & {
     onStart: any
     projectionParams: any
 }
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        //margin: theme.spacing(3)
-    },
-}));
 
 const TSNESettings = ({ learningRate, setLearningRate, perplexity, setPerplexity }) => {
 
@@ -72,8 +65,6 @@ const UMAPSettings = ({ nNeighbors, setNNeighbors }) => {
 }
 
 const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectionParams, projectionColumns }: Props) => {
-    const classes = useStyles();
-
     const [perplexity, setPerplexity] = React.useState(projectionParams.perplexity)
     const [learningRate, setLearningRate] = React.useState(projectionParams.learningRate)
     const [nNeighbors, setNNeighbors] = React.useState(projectionParams.nNeighbors)
@@ -107,9 +98,9 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                 {domainSettings != 'forceatlas2' && <FeaturePicker selection={selection} setSelection={setSelection}></FeaturePicker>}
 
 
-                <Grid container justifyContent="center" style={{ width: '100%' }}>
+                <Grid container justifyContent="center" style={{ width: '100%' }} spacing={3}>
                     <Grid item>
-                        <FormControl className={classes.root}>
+                        <FormControl>
                             <FormLabel component="legend">Projection Parameters</FormLabel>
 
                             {domainSettings == 'umap' && <UMAPSettings nNeighbors={nNeighbors} setNNeighbors={setNNeighbors}></UMAPSettings>}
@@ -118,7 +109,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                     </Grid>
 
                     <Grid item>
-                        <FormControl className={classes.root}>
+                        <FormControl>
                             <FormLabel component="legend">General Parameters</FormLabel>
                             <FormGroup>
                                 <TextField

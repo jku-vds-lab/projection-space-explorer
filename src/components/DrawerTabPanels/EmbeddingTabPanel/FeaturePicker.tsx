@@ -30,11 +30,6 @@ const styles = (theme) => ({
     tableRow: {
         cursor: 'pointer',
     },
-    tableRowHover: {
-        '&:hover': {
-            backgroundColor: theme.palette.grey[200],
-        },
-    },
     tableCell: {
         flex: 1,
     },
