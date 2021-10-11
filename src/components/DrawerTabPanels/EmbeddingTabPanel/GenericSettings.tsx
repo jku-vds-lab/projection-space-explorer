@@ -29,6 +29,7 @@ const TSNESettings = ({ learningRate, setLearningRate, perplexity, setPerplexity
 
     return <FormGroup>
         <TextField
+            size='small'
             id="textPerplexity"
             label="Perplexity"
             type="number"
@@ -38,6 +39,7 @@ const TSNESettings = ({ learningRate, setLearningRate, perplexity, setPerplexity
             }}
         />
         <TextField
+            size='small'
             id="textLearningRate"
             label="Learning Rate"
             type="number"
@@ -53,6 +55,7 @@ const UMAPSettings = ({ nNeighbors, setNNeighbors }) => {
 
     return <FormGroup>
         <TextField
+            size='small'
             id="textNNeighbors"
             label="n Neighbors"
             type="number"
@@ -113,6 +116,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                             <FormLabel component="legend">General Parameters</FormLabel>
                             <FormGroup>
                                 <TextField
+                                    size='small'
                                     id="textIterations"
                                     label="Iterations"
                                     type="number"
