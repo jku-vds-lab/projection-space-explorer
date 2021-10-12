@@ -4,7 +4,7 @@ import { RootState } from "../Store/Store";
 import * as LineUpJS from 'lineupjs'
 import './LineUpContext.scss';
 import { setAggregationAction } from "../Ducks/AggregationDuck";
-import { StringColumn, NumbersColumn, NumberColumn, NumberMapColumn, IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM, ICategoricalColumn, isCategoricalColumn, isCategoricalLikeColumn, CategoricalColumn } from "lineupjs";
+import { StringColumn, NumbersColumn, NumberColumn, NumberMapColumn, IStringFilter, equal, createSelectionDesc, Column, ERenderMode, IDynamicHeight, IGroupItem, Ranking, IRenderContext, IOrderedGroup, ICellRenderer, ICellRendererFactory, IDataRow, IGroupCellRenderer, ISummaryRenderer, LinkColumn, renderMissingDOM, ICategoricalColumn, isCategoricalColumn, isCategoricalLikeColumn, CategoricalColumn, deriveColumnDescriptions } from "lineupjs";
 
 import * as backend_utils from "../../utils/backend-connect";
 import { FeatureType } from "../Utility/Data/FeatureType";
@@ -130,12 +130,15 @@ export const LineUpContext = connector(function ({
                     if(Object.keys(col.metaInformation).length > 0 && col.metaInformation.lineUpGroup){
                         // if(col.metaInformation.lineUpGroup.endsWith(""))
                         const split = col.metaInformation.lineUpGroup.split("_"); 
-                        if(split.length <=1){ // if the string is separated with and underscore, only the first part of the string is considered as the group. the second part of the string determines a sub value of this group
+                        if(split.length <=1){ // if the string is separated with an underscore, only the first part of the string is considered as the group. the second part of the string determines a sub value of this group
                             if(Object.keys(row).includes(col.metaInformation.lineUpGroup)){
                                 row[col.metaInformation.lineUpGroup].push(element[i])
                             }else{
                                 row[col.metaInformation.lineUpGroup] = [element[i]]
                                 columns[col.metaInformation.lineUpGroup] = col;
+                                columns[col.metaInformation.lineUpGroup].metaInformation.listData = true;
+                                columns[col.metaInformation.lineUpGroup].metaInformation.range = col.metaInformation.globalRange; //TODO: iterate over all columns and derive global min/max 
+                                columns[col.metaInformation.lineUpGroup].metaInformation.colorMapping = col.metaInformation.colorMapping;
                             }
                         }else{
                             const group_name = split[0];
@@ -181,6 +184,8 @@ export const LineUpContext = connector(function ({
             // row[UNIQUE_ID] = element["__meta__"]["view"]["meshIndex"];
             // lineup_data.push(row);
         });
+
+        console.log(lineup_data)
 
         return [lineup_data, columns];
     }
@@ -517,7 +522,27 @@ function buildLineup(cols, data, pointColorScale, channelColor) {
             } else if(i == PrebuiltFeatures.ClusterLabel){
                 const clust_col = LineUpJS.buildCategoricalColumn(i, groupLabel_cat_color).custom("visible", show).width(70) // .asSet(',')
                 builder.column(clust_col);
-            } else{
+            } else if(col.metaInformation.listData){
+                // builder.column(LineUpJS.buildNumberColumn(i, [-10,10]).asArray().width(100));
+                let column_desc = deriveColumnDescriptions(data, {columns: [i]})[0]
+                if(col.metaInformation.range){
+                    column_desc["domain"] = col.metaInformation.range;
+                }
+
+                if(col.metaInformation.colorMapping){
+                    if(Array.isArray(col.metaInformation.colorMapping)){
+                        column_desc["colorMapping"] = {
+                            "type": "custom",
+                            "entries": col.metaInformation.colorMapping.map((item, index) => {return {"color": item, "value": index/(col.metaInformation.colorMapping.length-1)}})
+                        };
+                    }else{
+                        column_desc["colorMapping"] = col.metaInformation.colorMapping;
+                    }
+                // column_desc["colorMapping"] = "interpolateBrBG";
+                }
+                builder.column(column_desc)
+            }
+            else{
                 builder.deriveColumns(i);
             }
 

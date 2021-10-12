@@ -10,7 +10,7 @@ export class UMAPEmbeddingController extends EmbeddingController {
     init(dataset: Dataset, selection: any, params: any, samples?) {
 
         this.worker = new Worker(frontend_utils.BASE_PATH + 'umap.js') //dist/
-        var tensor = dataset.asTensor(selection.filter(e => e.checked), samples, params.distanceMetric!=="gower") // for gower, we don't need one-hot-encoding
+        var tensor = dataset.asTensor(selection.filter(e => e.checked), samples, params.encodingMethod, params.normalizationMethod) // for gower, we don't need one-hot-encoding
         this.worker.postMessage({
             messageType: 'init',
             input: tensor.tensor,

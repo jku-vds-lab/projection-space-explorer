@@ -1,17 +1,18 @@
+import { DistanceMetric } from "../../Ducks/ProjectionParamsDuck";
 import { FeatureType } from "../Data/FeatureType";
 
 
-export function get_distance_fn(distanceMetric:string, e){
+export function get_distance_fn(distanceMetric, e){
     switch(distanceMetric){
-        case "euclidean":
+        case DistanceMetric.EUCLIDEAN:
             return euclidean;
-        case "jaccard":
+        case DistanceMetric.JACCARD:
             return jaccard;
-        case "manhattan":
+        case DistanceMetric.MANHATTAN:
             return manhattan;
-        case "cosine":
+        case DistanceMetric.COSINE:
             return cosine;
-        case "gower":
+        case DistanceMetric.GOWER:
             return gower(e.data.featureTypes);
         default:
             return euclidean;
@@ -19,7 +20,8 @@ export function get_distance_fn(distanceMetric:string, e){
 }
 
 // for mixed datatypes
-export function gower(featureTypes: []){ // TODO: gower's distance is usually normalized by the highest value of each distance matrix --> for our case this could be problematic, since we never see all values at once... is it sufficient to just use normalized values?
+// gower's distance is usually normalized by the range of values of this feature;  we never see all values at once --> normalize between 0 and 1 before delivers same result
+export function gower(featureTypes: []){
     return function(x: number[], y: number[]){
         
         let result = 0;
@@ -51,7 +53,7 @@ export function gower(featureTypes: []){ // TODO: gower's distance is usually no
 // https://github.com/ecto/jaccard TODO: also for tsne and other projection methods
 export function jaccard(x: number[], y: number[]){
     var jaccard_dist = require('jaccard');
-    return jaccard_dist.index(x, y);
+    return jaccard_dist.distance(x, y);
   }
   
 export function euclidean(x: number[], y: number[]) {

@@ -5,6 +5,7 @@ import trailSettings from '../../../Ducks/TrailSettingsDuck';
 import { RootState } from '../../../Store/Store';
 import FeaturePicker from '../FeaturePicker/FeaturePicker';
 import clone = require('fast-clone')
+import { DistanceMetric, EncodingMethod, NormalizationMethod } from '../../../Ducks/ProjectionParamsDuck';
 
 const mapState = (state: RootState) => ({
     projectionColumns: state.projectionColumns
@@ -82,6 +83,25 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
     const [useSelection, setUseSelection] = React.useState(projectionParams.useSelection)
 
     const [distanceMetric, setDistanceMetric] = React.useState(projectionParams.distanceMetric)
+     //TODO: maybe it would make sense to make a user input for normalization and encoding methods...
+    const [normalizationMethod, setNormalizationMethod] = React.useState(projectionParams.normalizationMethod)
+    const [encodingMethod, setEncodingMethod] = React.useState(projectionParams.encodingMethod)
+
+    const changeDistanceMetric = (value) => { // when we change the distance metric, we need to adapt normalization Method and encoding of categorical features --> gower's distance usually normalizes between [0,1] and does not one-hot encode because it uses dedicated distance measures for categorical data
+        
+        switch(value){
+            case DistanceMetric.GOWER:
+                setNormalizationMethod(NormalizationMethod.NORMALIZE01);
+                setEncodingMethod(EncodingMethod.NUMERIC);
+                break;
+            default:
+                setNormalizationMethod(NormalizationMethod.STANDARDIZE);
+                setEncodingMethod(EncodingMethod.ONEHOT);
+                break;
+        }
+        setDistanceMetric(value);
+
+    }
 
     const cloneColumns = (projectionColumns) => {
         return projectionColumns.map(val => {
@@ -144,11 +164,11 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                         labelId="demo-controlled-open-select-label"
                                         id="demo-controlled-open-select"
                                         value={distanceMetric}
-                                        onChange={(event) => { setDistanceMetric(event.target.value) }}
+                                        onChange={(event) => { changeDistanceMetric(event.target.value) }}
                                     >
-                                        <MenuItem value={'euclidean'}>Euclidean</MenuItem>
-                                        <MenuItem value={'jaccard'}>Jaccard</MenuItem>
-                                        <MenuItem value={'gower'}>Gower</MenuItem>
+                                        <MenuItem value={DistanceMetric.EUCLIDEAN}>Euclidean</MenuItem>
+                                        <MenuItem value={DistanceMetric.JACCARD}>Jaccard</MenuItem>
+                                        <MenuItem value={DistanceMetric.GOWER}>Gower</MenuItem>
                                     </Select>
                                 </FormControl>}
                             </FormGroup>
@@ -168,7 +188,9 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                     nNeighbors: nNeighbors,
                     method: domainSettings,
                     useSelection: useSelection,
-                    distanceMetric: distanceMetric
+                    distanceMetric: distanceMetric,
+                    normalizationMethod: normalizationMethod,
+                    encodingMethod: encodingMethod
                 }, selection)
             }}>Start</Button>
         </DialogActions>

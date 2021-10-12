@@ -5,6 +5,7 @@ import { DatasetType } from "./DatasetType";
 import { DataLine } from "./DataLine";
 import { Vect } from "./Vect";
 import { mean, std } from "../../NumTs/NumTs";
+import { EncodingMethod, NormalizationMethod } from "../../Ducks/ProjectionParamsDuck";
 
 
 export enum PrebuiltFeatures {
@@ -239,7 +240,14 @@ export class Dataset {
      * Returns the vectors in this dataset as a 2d array, which
      * can be used as input for tsne for example.
      */
-    asTensor(projectionColumns, samples?, oneHotEncode?:boolean) {
+    asTensor(projectionColumns, samples?, encodingMethod?, normalizationMethod?) {
+        if(encodingMethod === undefined){
+            encodingMethod = EncodingMethod.ONEHOT;
+        }
+        if(normalizationMethod === undefined){
+            normalizationMethod = NormalizationMethod.STANDARDIZE;
+        }
+
         var tensor = [];
 
         function oneHot(n, length) {
@@ -258,30 +266,37 @@ export class Dataset {
                 let column = entry.name;
                 if (this.columns[column].isNumeric) {
                     if (this.columns[column].range && entry.normalized) {
-                        let m, s;
-                        
-                        if (column in lookup) {
-                            m = lookup[column].mean
-                            s = lookup[column].std
-                        } else {
-                            m = mean(this.vectors.map(v => +v[column]))
-                            s = std(this.vectors.map(v => +v[column]))
-
-                            lookup[column] = {
-                                mean: m,
-                                std: s
+                        if(normalizationMethod === NormalizationMethod.STANDARDIZE){ // map to 0 mean and unit standarddeviation
+                            let m, s;
+                            
+                            if (column in lookup) {
+                                m = lookup[column].mean
+                                s = lookup[column].std
+                            } else {
+                                m = mean(this.vectors.map(v => +v[column]))
+                                s = std(this.vectors.map(v => +v[column]))
+    
+                                lookup[column] = {
+                                    mean: m,
+                                    std: s
+                                }
                             }
+    
+                            if(s <= 0) // when all values are equal in a column, the standard deviation can be 0, which would lead to an error
+                                s = 1
+    
+                            data.push((+vector[column] - m) / s);
+
+                        }else{ // map between [0;1]
+                            let div = this.columns[column].range["max"]-this.columns[column].range["min"];
+                            div = div > 0 ? div : 1;
+                            data.push((+vector[column]-this.columns[column].range["min"])/div);
                         }
-
-                        if(s <= 0) // when all values are equal in a column, the standard deviation can be 0, which would lead to an error
-                            s = 1
-
-                        data.push((+vector[column] - m) / s);
                     } else {
                         data.push(+vector[column]);
                     }
                 } else {
-                    if(oneHotEncode){ // Non numeric data can be converted using one-hot encoding
+                    if(encodingMethod === EncodingMethod.ONEHOT){ // Non numeric data can be converted using one-hot encoding
                         let hot_encoded = oneHot(this.columns[column].distinct.indexOf(vector[column]), this.columns[column].distinct.length);
                         data = data.concat(hot_encoded);
                     }else{ // or just be integer encoded
@@ -301,7 +316,7 @@ export class Dataset {
                     featureTypes.push(FeatureType.Binary)
                     break;
                 case FeatureType.Categorical:
-                    if(oneHotEncode){ // if the categorical attribute gets one hot encoded, we set all resulting columns to be binary
+                    if(encodingMethod === EncodingMethod.ONEHOT){ // if the categorical attribute gets one hot encoded, we set all resulting columns to be binary
                         featureTypes.concat(Array(this.columns[column].distinct.length).fill(FeatureType.Binary));
                     }else{ // otherwise, it is declared as categorical column that contains integer because we can only handle integers in the distance metrics
                         featureTypes.push(FeatureType.Categorical);

@@ -8,7 +8,7 @@ export class TSNEEmbeddingController extends EmbeddingController {
     
     init(dataset: Dataset, selection: any, params: any) {
         this.worker = new Worker(frontend_utils.BASE_PATH + 'tsne.js') //dist/
-        var tensor = dataset.asTensor(selection.filter(e => e.checked), null, params.distanceMetric!=="gower") // for gower, we don't need one-hot-encoding
+        var tensor = dataset.asTensor(selection.filter(e => e.checked), null, params.encodingMethod, params.normalizationMethod) // for gower, we don't need one-hot-encoding
         this.worker.postMessage({
             messageType: 'init',
             input: tensor.tensor,

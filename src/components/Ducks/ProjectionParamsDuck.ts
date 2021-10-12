@@ -1,3 +1,22 @@
+export enum NormalizationMethod{
+    STANDARDIZE, // values are mapped to have 0 mean and unit standard deviation
+    NORMALIZE01 // values are mapped between [0;1]
+}
+
+export enum EncodingMethod{ // for categorical features
+    ONEHOT,
+    NUMERIC
+}
+
+export enum DistanceMetric{
+    EUCLIDEAN,
+    JACCARD,
+    GOWER,
+    COSINE,
+    MANHATTAN
+}
+
+
 const SET = "ducks/projectionParams/SET"
 
 export const setProjectionParamsAction = projectionParams => ({
@@ -13,7 +32,9 @@ const initialState = {
     seeded: false,
     useSelection: false,
     method: '',
-    distanceMetric: 'euclidean'
+    distanceMetric: DistanceMetric.EUCLIDEAN,
+    normalizationMethod: NormalizationMethod.STANDARDIZE,
+    encodingMethod: EncodingMethod.ONEHOT
 }
 
 type ProjectionParamsState = typeof initialState

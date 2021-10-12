@@ -7080,6 +7080,83 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./src/components/Ducks/ProjectionParamsDuck.ts":
+/*!******************************************************!*\
+  !*** ./src/components/Ducks/ProjectionParamsDuck.ts ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.setProjectionParamsAction = exports.DistanceMetric = exports.EncodingMethod = exports.NormalizationMethod = void 0;
+var NormalizationMethod;
+
+(function (NormalizationMethod) {
+  NormalizationMethod[NormalizationMethod["STANDARDIZE"] = 0] = "STANDARDIZE";
+  NormalizationMethod[NormalizationMethod["NORMALIZE01"] = 1] = "NORMALIZE01"; // values are mapped between [0;1]
+})(NormalizationMethod = exports.NormalizationMethod || (exports.NormalizationMethod = {}));
+
+var EncodingMethod;
+
+(function (EncodingMethod) {
+  EncodingMethod[EncodingMethod["ONEHOT"] = 0] = "ONEHOT";
+  EncodingMethod[EncodingMethod["NUMERIC"] = 1] = "NUMERIC";
+})(EncodingMethod = exports.EncodingMethod || (exports.EncodingMethod = {}));
+
+var DistanceMetric;
+
+(function (DistanceMetric) {
+  DistanceMetric[DistanceMetric["EUCLIDEAN"] = 0] = "EUCLIDEAN";
+  DistanceMetric[DistanceMetric["JACCARD"] = 1] = "JACCARD";
+  DistanceMetric[DistanceMetric["GOWER"] = 2] = "GOWER";
+  DistanceMetric[DistanceMetric["COSINE"] = 3] = "COSINE";
+  DistanceMetric[DistanceMetric["MANHATTAN"] = 4] = "MANHATTAN";
+})(DistanceMetric = exports.DistanceMetric || (exports.DistanceMetric = {}));
+
+var SET = "ducks/projectionParams/SET";
+
+exports.setProjectionParamsAction = function (projectionParams) {
+  return {
+    type: SET,
+    projectionParams: projectionParams
+  };
+};
+
+var initialState = {
+  perplexity: 50,
+  learningRate: 50,
+  nNeighbors: 15,
+  iterations: 1000,
+  seeded: false,
+  useSelection: false,
+  method: '',
+  distanceMetric: DistanceMetric.EUCLIDEAN,
+  normalizationMethod: NormalizationMethod.STANDARDIZE,
+  encodingMethod: EncodingMethod.ONEHOT
+};
+
+var projectionParams = function projectionParams() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+  var action = arguments.length > 1 ? arguments[1] : undefined;
+
+  switch (action.type) {
+    case SET:
+      return action.projectionParams;
+
+    default:
+      return state;
+  }
+};
+
+exports.default = projectionParams;
+
+/***/ }),
+
 /***/ "./src/components/Utility/Data/FeatureType.ts":
 /*!****************************************************!*\
   !*** ./src/components/Utility/Data/FeatureType.ts ***!
@@ -7126,23 +7203,25 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.cosine = exports.manhattan = exports.euclidean = exports.jaccard = exports.gower = exports.get_distance_fn = void 0;
 
+var ProjectionParamsDuck_1 = __webpack_require__(/*! ../../Ducks/ProjectionParamsDuck */ "./src/components/Ducks/ProjectionParamsDuck.ts");
+
 var FeatureType_1 = __webpack_require__(/*! ../Data/FeatureType */ "./src/components/Utility/Data/FeatureType.ts");
 
 function get_distance_fn(distanceMetric, e) {
   switch (distanceMetric) {
-    case "euclidean":
+    case ProjectionParamsDuck_1.DistanceMetric.EUCLIDEAN:
       return euclidean;
 
-    case "jaccard":
+    case ProjectionParamsDuck_1.DistanceMetric.JACCARD:
       return jaccard;
 
-    case "manhattan":
+    case ProjectionParamsDuck_1.DistanceMetric.MANHATTAN:
       return manhattan;
 
-    case "cosine":
+    case ProjectionParamsDuck_1.DistanceMetric.COSINE:
       return cosine;
 
-    case "gower":
+    case ProjectionParamsDuck_1.DistanceMetric.GOWER:
       return gower(e.data.featureTypes);
 
     default:
@@ -7151,6 +7230,7 @@ function get_distance_fn(distanceMetric, e) {
 }
 
 exports.get_distance_fn = get_distance_fn; // for mixed datatypes
+// gower's distance is usually normalized by the range of values of this feature;  we never see all values at once --> normalize between 0 and 1 before delivers same result
 
 function gower(featureTypes) {
   return function (x, y) {
@@ -7190,7 +7270,7 @@ exports.gower = gower; // https://github.com/ecto/jaccard TODO: also for tsne an
 function jaccard(x, y) {
   var jaccard_dist = __webpack_require__(/*! jaccard */ "./node_modules/jaccard/jaccard.js");
 
-  return jaccard_dist.index(x, y);
+  return jaccard_dist.distance(x, y);
 }
 
 exports.jaccard = jaccard;
