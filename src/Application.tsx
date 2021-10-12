@@ -1,12 +1,11 @@
 import "regenerator-runtime/runtime";
 import { WebGLView } from './components/WebGLView/WebGLView'
-import { AppBar, Button, Divider, Drawer, Paper, SvgIcon, Toolbar, Tooltip, Typography, Tab, Tabs, Box, Grid } from "@mui/material";
+import { Divider, Drawer, Paper, SvgIcon, Toolbar, Tooltip, Typography, Tab, Tabs, Box, Grid } from "@mui/material";
 import { DatasetDatabase } from "./components/Utility/Data/DatasetDatabase";
 import { Dataset, DatasetUtil, SegmentFN } from "./model/Dataset";
 import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './components/DrawerTabPanels/StatesTabPanel/LineTreePopover'
 import * as React from "react";
 import { Storytelling } from "./components/Overlays/Storytelling";
-import * as ReactDOM from 'react-dom';
 import { ClusteringTabPanel } from "./components/DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
 import { ConnectedProps } from 'react-redux'
 import { connect } from 'react-redux'
