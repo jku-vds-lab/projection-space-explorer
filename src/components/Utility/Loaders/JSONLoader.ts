@@ -1,12 +1,11 @@
 import { Loader } from "./Loader";
-import * as hdf5 from 'jsfive';
 import { FeatureType } from "../../../model/FeatureType";
 import { DatasetType } from "../../../model/DatasetType";
 import { AVector, IVector } from "../../../model/Vector";
 import { InferCategory } from "../Data/InferCategory";
 import { Preprocessor } from "../Data/Preprocessor";
 import { Dataset } from "../../../model/Dataset";
-import { ACluster, ICluster } from "../../../model/Cluster";
+import { ICluster } from "../../../model/Cluster";
 import { IEdge } from "../../../model/Edge";
 import { ObjectTypes } from "../../../model/ObjectType";
 

@@ -229,17 +229,6 @@ export const Application = connector(class extends React.Component<Props, any> {
       } else if (set == "reaction") {
         preselect = "datasets/chemvis/domain_5000_all_predictions.csv";
         loader = new CSVLoader();
-      } else {
-        /**if (set.endsWith("sdf")) {
-          loader.resolvePath({
-            display: set,
-            path: set,
-            type: DatasetType.Chem,
-            uploaded: true
-          }, (dataset) => { this.onDataSelected(dataset) })
-          return;
-        }
-        preselect = mangleURL(set);**/
       }
       loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
     } else {

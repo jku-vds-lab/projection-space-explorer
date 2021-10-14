@@ -3,7 +3,6 @@ import React = require("react");
 import { AVector, IVector } from "../../../model/Vector";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
-import { LoadingIndicatorDialog } from "../../Utility/Loaders/LoadingIndicator";
 import { DatasetDrop } from "./DatasetDrop";
 import { DownloadJob } from "./DownloadJob";
 import { DownloadProgress } from "./DownloadProgress";
@@ -20,20 +19,9 @@ function convertFromCSV(vectors) {
 
 export function DatasetTabPanel({ onDataSelected }) {
     const [job, setJob] = React.useState(null)
-    const [entry, setEntry] = React.useState(null);
-    const [openSDFDialog, setOpen] = React.useState(false);
-    const [refreshUploadedFiles, setRefreshUploadedFiles] = React.useState(0);
-
-    const { cancellablePromise, cancelPromises } = useCancellablePromise();
-    let abort_controller = new AbortController();
-
+    
     let predefined = <PredefinedDatasets onChange={(entry) => {
-        if (entry.path.endsWith('sdf')) {
-            setEntry(entry);
-            setOpen(true);
-        } else {
-            setJob(new DownloadJob(entry))
-        }
+        setJob(new DownloadJob(entry))
     }} ></PredefinedDatasets>
 
 
@@ -48,9 +36,7 @@ export function DatasetTabPanel({ onDataSelected }) {
         <DatasetDrop
             onChange={(var1, var2) => {
                 onDataSelected(var1, var2);
-            }}
-            cancellablePromise={cancellablePromise}
-            abort_controller={abort_controller} />
+            }} />
 
 
 
@@ -70,10 +56,6 @@ export function DatasetTabPanel({ onDataSelected }) {
 
             setJob(null)
         }} onCancel={() => { setJob(null) }}></DownloadProgress>
-
-
-
-        <LoadingIndicatorDialog handleClose={() => { cancelPromises(); }} area={"global_loading_indicator"} />
     </div>
 }
 
