@@ -1,9 +1,8 @@
-import { applyMiddleware, createStore, Store } from "redux";
+import { applyMiddleware, createStore, Reducer, Store } from "redux";
 import { addClusterToStory } from "../Ducks/StoriesDuck";
 import { rootReducer, RootState } from "../Store/Store";
 import thunk from 'redux-thunk';
 import { IVector } from "../../model/Vector";
-import { connect } from "react-redux";
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -26,21 +25,24 @@ function getStoreDiff(storeA, storeB) {
 /**
  * Main api class for PSE.
  */
-export class API {
-    store: Store<RootState>
+export class API<T> {
+    store: Store<T>
     onStateChanged: any;
     id: string;
 
-    constructor(json?: string) {
+    constructor(json: string, reducer: Reducer) {
         this.id = uuidv4()
+
+        
 
         if (json) {
             const preloadedState = JSON.parse(json)
-            this.store = createStore(rootReducer, preloadedState, applyMiddleware(this.differenceMiddleware, thunk))
+            this.store = createStore(reducer ? reducer : rootReducer, preloadedState, applyMiddleware(this.differenceMiddleware, thunk))
         } else {
-            this.store = createStore(rootReducer, applyMiddleware(this.differenceMiddleware, thunk))
+            this.store = createStore(reducer ? reducer : rootReducer, applyMiddleware(this.differenceMiddleware, thunk))
         }
     }
+
 
 
     serialize() {
@@ -78,6 +80,7 @@ export class PluginRegistry {
     private static instance: PluginRegistry;
 
     private plugins: PSEPlugin[] = []
+    private reducers: any[] = []
 
     private constructor() { }
 
@@ -102,6 +105,10 @@ export class PluginRegistry {
 
     public registerPlugin(plugin: PSEPlugin) {
         this.plugins.push(plugin)
+    }
+
+    public registerReducer(reducer: any) {
+        this.reducers.push(reducer)
     }
 }
 

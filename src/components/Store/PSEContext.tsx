@@ -2,13 +2,11 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import { PropsWithChildren } from "react";
 import React = require("react");
 import { Provider } from "react-redux";
-import { applyMiddleware, createStore, Store } from "redux";
-import { devToolsEnhancer } from "redux-devtools-extension";
+import { Store } from "redux";
 import { API } from "./PluginScript";
-import { rootReducer } from "./Store";
 
 type PSEContextProps = {
-    context?: API
+    context?: API<any>
     onStateChanged?: (values: any, keys: any) => void
 }
 

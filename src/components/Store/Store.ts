@@ -87,7 +87,29 @@ export const rootReducer = (state, action) => {
     state = { dataset, openTab, viewTransform };
   }
 
+
+
   return appReducer(state, action)
 }
+
+
+export function createRootReducer(reducers: any) {
+  const root = Object.assign({}, allReducers)
+  Object.assign(root, reducers)
+
+  const combined = combineReducers(root)
+
+  return (state, action) => {
+    if (action.type === 'RESET_APP') {
+      const { dataset, openTab, viewTransform } = state;
+      state = { dataset, openTab, viewTransform };
+    }
+  
+  
+  
+    return combined(state, action)
+  }
+}
+
 
 export type RootState = ReturnType<typeof rootReducer>

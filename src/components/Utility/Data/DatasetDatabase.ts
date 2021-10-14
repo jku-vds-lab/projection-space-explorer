@@ -141,12 +141,6 @@ export class DatasetDatabase {
                 type: DatasetType.None
             },
             {
-                display: "CIME: Test",
-                path: "test.sdf",
-                type: DatasetType.Chem,
-                uploaded: true
-            },
-            {
                 display: "Cohort: TCGA Sub-sampled",
                 path: "datasets/coral/coral_subsampled_normalized_no_one_hot.json",
                 type: DatasetType.Cohort_Analysis
