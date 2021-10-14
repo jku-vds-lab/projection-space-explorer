@@ -3,16 +3,16 @@ import { Button } from '@mui/material';
 import { Grid } from '@mui/material';
 import * as React from 'react'
 
-type DragAndDropProps = {
+export type DragAndDropProps = {
     handleDrop: Function
     accept: string
 }
 
-type DragAndDropState = {
+export type DragAndDropState = {
     drag: boolean
 }
 
-class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
+export class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
     dragCounter: number
     dropRef: any
 

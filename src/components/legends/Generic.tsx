@@ -6,7 +6,6 @@ import { FunctionComponent } from "react";
 import { RubikFingerprint } from "../../plugins/Rubik/RubikFingerprint/RubikFingerprint";
 import { ChessFingerprint } from "../../plugins/Chess/ChessFingerprint/ChessFingerprint";
 import { IVector } from "../../model/Vector";
-import { ChemLegendParent } from "../../plugins/Cime/ChemDetail/ChemDetail";
 import { PluginRegistry } from "../Store/PluginScript";
 import { DatasetType } from "../../model/DatasetType";
 import { GoLegend } from "../../plugins/Go/GoLegend";
@@ -40,8 +39,6 @@ export var GenericLegend = ({ type, vectors, aggregate, scale=2}: GenericLegendP
                 return <TrrackLegend selection={vectors} aggregate={aggregate}></TrrackLegend>
             case DatasetType.Go:
                 return <GoLegend selection={vectors} aggregate={aggregate}></GoLegend>
-            case DatasetType.Chem:
-                return <ChemLegendParent selection={vectors} aggregate={aggregate}></ChemLegendParent>
             default:
                 return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         }

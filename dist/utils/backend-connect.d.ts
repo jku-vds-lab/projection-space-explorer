@@ -1,12 +1,3 @@
 export declare const CREDENTIALS = "omit";
 export declare const BASE_URL = "https://cime.caleydoapp.org";
-export declare function delete_file(filename: any): Promise<any>;
-export declare function get_uploaded_files(): Promise<any>;
-export declare function get_difference_highlight(smilesA: any, smilesB: any, controller?: any): Promise<any>;
-export declare function get_structure_from_smiles(smiles: string, highlight?: boolean, controller?: any): Promise<any>;
-export declare function get_structures_from_smiles_list(formData: FormData, controller?: any): Promise<any>;
-export declare function get_mcs_from_smiles_list(formData: FormData, controller?: any): Promise<any>;
-export declare function get_substructure_count(smiles_list: any, filter: any): Promise<any>;
-export declare function upload_sdf_file(file: any, controller?: any): Promise<void>;
-export declare function get_representation_list(refresh?: boolean, dataset_name?: string, controller?: AbortController): Promise<any>;
 export declare function calculate_hdbscan_clusters(X: any, min_cluster_size: any, min_cluster_samples: any, allow_single_cluster: any): Promise<any>;

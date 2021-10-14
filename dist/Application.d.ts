@@ -20,7 +20,12 @@ export declare type FeatureConfig = Partial<{
 export declare type ComponentConfig = Partial<{
     datasetTab: (props: any) => JSX.Element;
     appBar: () => JSX.Element;
+    detailViews: Array<DetailViewSpec>;
 }>;
+export declare type DetailViewSpec = {
+    name: string;
+    view: () => JSX.Element;
+};
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
  */

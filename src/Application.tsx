@@ -27,9 +27,7 @@ import { setChannelSize } from "./components/Ducks/ChannelSize";
 import { setGlobalPointSize } from "./components/Ducks/GlobalPointSizeDuck";
 import { setChannelColor } from "./components/Ducks/ChannelColorDuck";
 import { DatasetTabPanel } from "./components/DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
-import { LineUpContext } from "./components/LineUpContext/LineUpContext";
 import { setLineUpInput_visibility } from './components/Ducks/LineUpInputDuck';
-import { SDFLoader } from "./components/Utility/Loaders/SDFLoader";
 import { DetailsTabPanel } from "./components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
 import { addProjectionAction } from "./components/Ducks/ProjectionsDuck";
 import { Embedding } from "./model/Embedding";
@@ -66,9 +64,9 @@ import { DatasetType } from "./model/DatasetType";
 import { RubikPlugin } from "./plugins/Rubik/RubikPlugin";
 import { ChessPlugin } from "./plugins/Chess/ChessPlugin";
 import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
-import { ChemPlugin } from "./plugins/Cime/ChemPlugin";
 import { GoPlugin } from "./plugins/Go/GoPlugin";
 import { PseAppBar } from "./components/PseAppBar";
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -153,8 +151,13 @@ export type FeatureConfig = Partial<{
 export type ComponentConfig = Partial<{
   datasetTab: (props: any) => JSX.Element
   appBar: () => JSX.Element
+  detailViews: Array<DetailViewSpec>
 }>
 
+export type DetailViewSpec = {
+  name: string
+  view: () => JSX.Element
+}
 
 
 
@@ -554,7 +557,7 @@ export const Application = connector(class extends React.Component<Props, any> {
             </div>
             <div style={{ flexGrow: 0.1 }}>
               {/* TODO: lineupFilter is not used anymore... */}
-              <LineUpContext onFilter={() => { this.threeRef.current.lineupFilterUpdate() }}></LineUpContext>
+              <div></div>
             </div>
           </Split>
         </div>

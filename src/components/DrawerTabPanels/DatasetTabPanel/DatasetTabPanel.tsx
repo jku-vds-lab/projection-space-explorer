@@ -4,12 +4,10 @@ import { AVector, IVector } from "../../../model/Vector";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
 import { LoadingIndicatorDialog } from "../../Utility/Loaders/LoadingIndicator";
-import { SDFLoader } from "../../Utility/Loaders/SDFLoader";
 import { DatasetDrop } from "./DatasetDrop";
 import { DownloadJob } from "./DownloadJob";
 import { DownloadProgress } from "./DownloadProgress";
 import { PredefinedDatasets } from "./PredefinedDatasets";
-import { SDFModifierDialog } from "./SDFModifierDialog";
 import { useCancellablePromise } from "../../../utils/promise-helpers";
 
 var d3v5 = require('d3')
@@ -28,14 +26,6 @@ export function DatasetTabPanel({ onDataSelected }) {
 
     const { cancellablePromise, cancelPromises } = useCancellablePromise();
     let abort_controller = new AbortController();
-
-    function onModifierDialogClose(modifiers) {
-        setOpen(false);
-        if (modifiers !== null) {
-            abort_controller = new AbortController();
-            new SDFLoader().resolvePath(entry, onDataSelected, cancellablePromise, modifiers, abort_controller);
-        }
-    }
 
     let predefined = <PredefinedDatasets onChange={(entry) => {
         if (entry.path.endsWith('sdf')) {
@@ -84,7 +74,6 @@ export function DatasetTabPanel({ onDataSelected }) {
 
 
         <LoadingIndicatorDialog handleClose={() => { cancelPromises(); }} area={"global_loading_indicator"} />
-        <SDFModifierDialog openSDFDialog={openSDFDialog} handleClose={onModifierDialogClose}></SDFModifierDialog>
     </div>
 }
 
