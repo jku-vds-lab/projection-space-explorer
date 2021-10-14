@@ -1,6 +1,6 @@
 import "regenerator-runtime/runtime";
 import { WebGLView } from './components/WebGLView/WebGLView'
-import { Divider, Drawer, Paper, SvgIcon, Toolbar, Tooltip, Typography, Tab, Tabs, Box, Grid } from "@mui/material";
+import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from "@mui/material";
 import { DatasetDatabase } from "./components/Utility/Data/DatasetDatabase";
 import { Dataset, DatasetUtil, SegmentFN } from "./model/Dataset";
 import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './components/DrawerTabPanels/StatesTabPanel/LineTreePopover'
@@ -57,17 +57,13 @@ import { setChannelBrightnessSelection } from "./components/Ducks/ChannelBrightn
 import { setGenericFingerprintAttributes } from "./components/Ducks/GenericFingerprintAttributesDuck";
 import { GroupVisualizationMode, setGroupVisualizationMode } from "./components/Ducks/GroupVisualizationMode";
 import { HoverStateOrientation } from "./components/Ducks/HoverStateOrientationDuck";
-import { PSEContextProvider } from "./components/Store/PSEContext";
-import { API, PluginRegistry } from "./components/Store/PluginScript";
+import { PluginRegistry } from "./components/Store/PluginScript";
 import { RootState } from "./components/Store/Store";
-import { DatasetType } from "./model/DatasetType";
 import { RubikPlugin } from "./plugins/Rubik/RubikPlugin";
 import { ChessPlugin } from "./plugins/Chess/ChessPlugin";
 import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { GoPlugin } from "./plugins/Go/GoPlugin";
 import { PseAppBar } from "./components/PseAppBar";
-import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
-import ReactDOM = require("react-dom");
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
