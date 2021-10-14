@@ -67,6 +67,7 @@ import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { GoPlugin } from "./plugins/Go/GoPlugin";
 import { PseAppBar } from "./components/PseAppBar";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import ReactDOM = require("react-dom");
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -556,8 +557,9 @@ export const Application = connector(class extends React.Component<Props, any> {
               />
             </div>
             <div style={{ flexGrow: 0.1 }}>
-              {/* TODO: lineupFilter is not used anymore... */}
-              <div></div>
+              {
+                React.createElement(this.props.overrideComponents.detailViews[0].view, {})
+              }
             </div>
           </Split>
         </div>

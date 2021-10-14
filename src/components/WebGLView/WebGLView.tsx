@@ -161,11 +161,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
     }
 
-    lineupFilterUpdate() {
-        this.particles.update()
-        this.requestRender()
-    }
-
     /**
      * Initializes the callbacks for the MouseController.
      */
@@ -1012,7 +1007,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
-    private updateItemClusterDisplay() {
+    updateItemClusterDisplay() {
         switch (this.props.displayMode) {
             case DisplayMode.StatesAndClusters:
             case DisplayMode.OnlyStates:
