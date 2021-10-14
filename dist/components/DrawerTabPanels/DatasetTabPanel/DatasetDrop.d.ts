@@ -1,6 +1,4 @@
 /// <reference types="react" />
-export declare var DatasetDrop: ({ onChange, cancellablePromise, abort_controller }: {
+export declare var DatasetDrop: ({ onChange }: {
     onChange: any;
-    cancellablePromise: any;
-    abort_controller: any;
 }) => JSX.Element;
