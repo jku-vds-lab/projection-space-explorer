@@ -1,5 +1,5 @@
 import React = require("react")
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, MenuItem, Paper, Popover, Select, Slider, Switch, TextField, Typography } from "@mui/material"
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, MenuItem, Paper, Popover, Select, Slider, styled, Switch, TextField, Typography } from "@mui/material"
 import { connect, ConnectedProps } from 'react-redux'
 import { ACluster, ICluster } from "../../../model/Cluster"
 import { IBook, ABook } from "../../../model/Book"
@@ -56,7 +56,9 @@ type Props = PropsFromRedux & {
 }
 
 
-
+const ContextPaper = styled(Slider)`
+  padding: 10px;
+`;
 
 
 
@@ -460,6 +462,7 @@ function ClusterPopover({
     const [name, setName] = React.useState(cluster.label)
 
     const useStyles = makeStyles(theme => ({
+        
         button: {
             //margin: theme.spacing(1)
         },
@@ -522,7 +525,7 @@ function ClusterPopover({
         }}
     >
         <div>
-            <Paper className={classes.root}>
+            <ContextPaper>
                 {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
 
                 <Button
@@ -567,7 +570,7 @@ function ClusterPopover({
 
 
                 </FormGroup>
-            </Paper>
+            </ContextPaper>
         </div>
 
     </Popover>
