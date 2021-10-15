@@ -421,11 +421,11 @@ export const Application = connector(class extends React.Component<Props, any> {
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
             </React.Fragment>}><Tab value={4} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
-            {this.props.overrideComponents?.tabs?.map(tab => {
-              return <Tooltip placement="right" title={<React.Fragment>
+            {this.props.overrideComponents?.tabs?.map((tab, i) => {
+              return <Tooltip key={tab.name} placement="right" title={<React.Fragment>
                 <Typography variant="subtitle2">{tab.title}</Typography>
                 <Typography variant="body2">{tab.description}</Typography>
-              </React.Fragment>}><Tab value={5} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+              </React.Fragment>}><Tab value={5 + i} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
             })}
 
           </Tabs>
@@ -491,8 +491,8 @@ export const Application = connector(class extends React.Component<Props, any> {
               </FixedHeightTabPanel>
 
 
-              {this.props.overrideComponents?.tabs?.map(tab => {
-                return <FixedHeightTabPanel value={this.props.openTab} index={5}>
+              {this.props.overrideComponents?.tabs?.map((tab, i) => {
+                return <FixedHeightTabPanel value={this.props.openTab} index={5 + i}>
                   {React.createElement(tab.tab, { splitRef: this.splitRef })}
                 </FixedHeightTabPanel>
               })}
