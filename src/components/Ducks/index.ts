@@ -19,7 +19,6 @@ export * from './HoverSettingsDuck';
 export * from './HoverStateDuck';
 export * from './HoverStateOrientationDuck';
 export * from './LineBrightnessDuck';
-export * from './LineUpInputDuck';
 export * from './OpenTabDuck';
 export * from './PathLengthRange';
 export * from './PointColorMappingDuck';

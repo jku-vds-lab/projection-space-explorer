@@ -56,7 +56,6 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         show: any;
         length: number;
     };
-    lineUpInput: import("../Ducks/LineUpInputDuck").LineUpType;
     rdkitSettings: import("../Ducks/RDKitSettingsDuck").RDKitSettingsType;
     differenceThreshold: any;
     projections: import("../..").Embedding[];
@@ -133,7 +132,6 @@ export declare function createRootReducer(reducers: any): (state: any, action: a
         show: any;
         length: number;
     };
-    lineUpInput: import("../Ducks/LineUpInputDuck").LineUpType;
     rdkitSettings: import("../Ducks/RDKitSettingsDuck").RDKitSettingsType;
     differenceThreshold: any;
     projections: import("../..").Embedding[];

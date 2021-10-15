@@ -7,7 +7,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    lineUpInput: import("../../Ducks/LineUpInputDuck").LineUpType;
+    lineUpInput: any;
 } & {
     setLineUpInput_visibility: (value: any) => any;
     setLineUpInput_filter: (value: any) => any;

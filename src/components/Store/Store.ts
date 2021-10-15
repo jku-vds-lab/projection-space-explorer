@@ -25,7 +25,6 @@ import globalPointSize from '../Ducks/GlobalPointSizeDuck';
 import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
-import lineUpInput from '../Ducks/LineUpInputDuck';
 import rdkitSettings from '../Ducks/RDKitSettingsDuck';
 import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
 import projections from '../Ducks/ProjectionsDuck';
@@ -67,7 +66,6 @@ const allReducers = {
   pointColorScale: pointColorScale,
   pointColorMapping: pointColorMapping,
   trailSettings: trailSettings,
-  lineUpInput: lineUpInput,
   rdkitSettings: rdkitSettings,
   differenceThreshold: differenceThreshold,
   projections: projections,

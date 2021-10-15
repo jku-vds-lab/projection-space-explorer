@@ -1,9 +1,8 @@
 import { applyMiddleware, createStore, Reducer, Store } from "redux";
 import { addClusterToStory } from "../Ducks/StoriesDuck";
-import { rootReducer, RootState } from "../Store/Store";
+import { rootReducer } from "../Store/Store";
 import thunk from 'redux-thunk';
 import { IVector } from "../../model/Vector";
-
 import { v4 as uuidv4 } from 'uuid';
 
 function getStoreDiff(storeA, storeB) {
@@ -33,8 +32,6 @@ export class API<T> {
     constructor(json: string, reducer: Reducer) {
         this.id = uuidv4()
 
-        
-
         if (json) {
             const preloadedState = JSON.parse(json)
             this.store = createStore(reducer ? reducer : rootReducer, preloadedState, applyMiddleware(this.differenceMiddleware, thunk))
@@ -60,7 +57,6 @@ export class API<T> {
             this.onStateChanged(newState, diff)
         }
 
-
         return newState
     }
 
@@ -69,11 +65,6 @@ export class API<T> {
         this.store.dispatch(addClusterToStory(cluster))
     }
 }
-
-
-
-
-
 
 
 export class PluginRegistry {
