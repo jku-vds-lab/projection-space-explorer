@@ -339,7 +339,7 @@ export const StatesTabPanelFull = ({
 
     const accordion = <div style={{
     }}>
-        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+        {dataset.isSequential && <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1bh-content"
@@ -378,10 +378,10 @@ export const StatesTabPanelFull = ({
                 </div>
                 }
             </AccordionDetails>
-        </Accordion>
+        </Accordion>}
 
 
-        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+        <Accordion expanded={expanded === 'panel2' || !dataset.isSequential} onChange={handleChange('panel2')}>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1bh-content"

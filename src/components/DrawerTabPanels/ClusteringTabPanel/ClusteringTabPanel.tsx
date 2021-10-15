@@ -56,7 +56,7 @@ type Props = PropsFromRedux & {
 }
 
 
-const ContextPaper = styled(Slider)`
+const ContextPaper = styled(Paper)`
   padding: 10px;
 `;
 
