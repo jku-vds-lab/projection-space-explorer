@@ -27,7 +27,6 @@ import { setChannelSize } from "./components/Ducks/ChannelSize";
 import { setGlobalPointSize } from "./components/Ducks/GlobalPointSizeDuck";
 import { setChannelColor } from "./components/Ducks/ChannelColorDuck";
 import { DatasetTabPanel } from "./components/DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
-import { setLineUpInput_visibility } from './components/Ducks/LineUpInputDuck';
 import { DetailsTabPanel } from "./components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
 import { addProjectionAction } from "./components/Ducks/ProjectionsDuck";
 import { Embedding } from "./model/Embedding";
@@ -50,7 +49,6 @@ import VDSLogo from '../textures/vds-lab-logo-notext.svg'
 
 import Split from 'react-split'
 import { setLineByOptions } from "./components/Ducks/SelectedLineByDuck";
-import { LineUpTabPanel } from "./components/DrawerTabPanels/LineUpTabPanel/LineUpTabPanel";
 import { IBook } from "./model/Book";
 import { setGlobalPointBrightness } from "./components/Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./components/Ducks/ChannelBrightnessDuck";
@@ -64,6 +62,7 @@ import { ChessPlugin } from "./plugins/Chess/ChessPlugin";
 import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { GoPlugin } from "./plugins/Go/GoPlugin";
 import { PseAppBar } from "./components/PseAppBar";
+import { setDetailVisibility } from "./components/Ducks/DetailViewDuck";
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -117,13 +116,13 @@ const mapDispatchToProps = dispatch => ({
   wipeState: () => dispatch({ type: 'RESET_APP' }),
   setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
   setChannelBrightness: channelBrightness => dispatch(setChannelBrightnessSelection(channelBrightness)),
-  setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
   saveProjection: embedding => dispatch(addProjectionAction(embedding)),
   setVectors: vectors => dispatch(setVectors(vectors)),
   setLineByOptions: options => dispatch(setLineByOptions(options)),
   setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
   setGenericFingerprintAttributes: value => dispatch(setGenericFingerprintAttributes(value)),
-  setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value))
+  setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value)),
+  setLineUpInput_visibility: open => dispatch(setDetailVisibility(open))
 })
 
 
@@ -149,6 +148,7 @@ export type ComponentConfig = Partial<{
   datasetTab: (props: any) => JSX.Element
   appBar: () => JSX.Element
   detailViews: Array<DetailViewSpec>
+  tabs: Array<TabSpec>
 }>
 
 export type DetailViewSpec = {
@@ -156,6 +156,14 @@ export type DetailViewSpec = {
   view: () => JSX.Element
 }
 
+
+export type TabSpec = {
+  name: string
+  tab: () => JSX.Element
+  icon: () => JSX.Element
+  title: string
+  description: string
+}
 
 
 /**
@@ -413,15 +421,13 @@ export const Application = connector(class extends React.Component<Props, any> {
               <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
             </React.Fragment>}><Tab value={4} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
-            {/* {frontend_utils.CHEM_PROJECT && <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Backend Settings</Typography>
-              <Typography variant="body2">Adjust Settings used in the backend.</Typography>
-            </React.Fragment>}><Tab icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1 }} /></Tooltip>
-            } */}
-            <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">LineUp Integration</Typography>
-              <Typography variant="body2">Settings for LineUp Integration</Typography>
-            </React.Fragment>}><Tab value={5} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+            {this.props.overrideComponents?.tabs?.map(tab => {
+              return <Tooltip placement="right" title={<React.Fragment>
+                <Typography variant="subtitle2">{tab.title}</Typography>
+                <Typography variant="body2">{tab.description}</Typography>
+              </React.Fragment>}><Tab value={5} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+            })}
+
           </Tabs>
         </Drawer>
 
@@ -484,14 +490,13 @@ export const Application = connector(class extends React.Component<Props, any> {
                 <DetailsTabPanel></DetailsTabPanel>
               </FixedHeightTabPanel>
 
-              {/* {frontend_utils.CHEM_PROJECT && 
-              <FixedHeightTabPanel value={this.props.openTab} index={5}>
-                <ChemTabPanel></ChemTabPanel>
-              </FixedHeightTabPanel>} */}
 
-              <FixedHeightTabPanel value={this.props.openTab} index={5}>
-                <LineUpTabPanel splitRef={this.splitRef}></LineUpTabPanel>
-              </FixedHeightTabPanel>
+              {this.props.overrideComponents?.tabs?.map(tab => {
+                return <FixedHeightTabPanel value={this.props.openTab} index={5}>
+                  {React.createElement(tab.tab, { splitRef: this.splitRef })}
+                </FixedHeightTabPanel>
+              })}
+
             </Grid>
           </div>
         </Box>

@@ -56,7 +56,6 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         show: any;
         length: number;
     };
-    rdkitSettings: import("../Ducks/RDKitSettingsDuck").RDKitSettingsType;
     differenceThreshold: any;
     projections: import("../..").Embedding[];
     hoverSettings: {
@@ -73,6 +72,10 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     groupVisualizationMode: any;
     genericFingerprintAttributes: any[];
     hoverStateOrientation: any;
+    detailView: {
+        open: boolean;
+        active: string;
+    };
 }>;
 export declare function createRootReducer(reducers: any): (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {
@@ -132,7 +135,6 @@ export declare function createRootReducer(reducers: any): (state: any, action: a
         show: any;
         length: number;
     };
-    rdkitSettings: import("../Ducks/RDKitSettingsDuck").RDKitSettingsType;
     differenceThreshold: any;
     projections: import("../..").Embedding[];
     hoverSettings: {
@@ -149,5 +151,9 @@ export declare function createRootReducer(reducers: any): (state: any, action: a
     groupVisualizationMode: any;
     genericFingerprintAttributes: any[];
     hoverStateOrientation: any;
+    detailView: {
+        open: boolean;
+        active: string;
+    };
 }>;
 export declare type RootState = ReturnType<typeof rootReducer>;

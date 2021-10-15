@@ -21,10 +21,18 @@ export declare type ComponentConfig = Partial<{
     datasetTab: (props: any) => JSX.Element;
     appBar: () => JSX.Element;
     detailViews: Array<DetailViewSpec>;
+    tabs: Array<TabSpec>;
 }>;
 export declare type DetailViewSpec = {
     name: string;
     view: () => JSX.Element;
+};
+export declare type TabSpec = {
+    name: string;
+    tab: () => JSX.Element;
+    icon: () => JSX.Element;
+    title: string;
+    description: string;
 };
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
@@ -55,13 +63,13 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     wipeState: () => any;
     setChannelColor: (channelColor: any) => any;
     setChannelBrightness: (channelBrightness: any) => any;
-    setLineUpInput_visibility: (input: any) => any;
     saveProjection: (embedding: any) => any;
     setVectors: (vectors: any) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
+    setLineUpInput_visibility: (open: any) => any;
 }, {}>;
 /**
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
@@ -176,13 +184,13 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     wipeState: () => any;
     setChannelColor: (channelColor: any) => any;
     setChannelBrightness: (channelBrightness: any) => any;
-    setLineUpInput_visibility: (input: any) => any;
     saveProjection: (embedding: any) => any;
     setVectors: (vectors: any) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
+    setLineUpInput_visibility: (open: any) => any;
 } & {
     config?: BaseConfig;
     features?: FeatureConfig;

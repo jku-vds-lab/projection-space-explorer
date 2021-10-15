@@ -25,7 +25,6 @@ import globalPointSize from '../Ducks/GlobalPointSizeDuck';
 import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
-import rdkitSettings from '../Ducks/RDKitSettingsDuck';
 import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
 import projections from '../Ducks/ProjectionsDuck';
 import hoverSettings from '../Ducks/HoverSettingsDuck';
@@ -36,6 +35,7 @@ import channelBrightness from '../Ducks/ChannelBrightnessDuck';
 import groupVisualizationMode from '../Ducks/GroupVisualizationMode';
 import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
+import detailView from '../Ducks/DetailViewDuck';
 
 const allReducers = {
   currentAggregation: currentAggregation,
@@ -66,7 +66,6 @@ const allReducers = {
   pointColorScale: pointColorScale,
   pointColorMapping: pointColorMapping,
   trailSettings: trailSettings,
-  rdkitSettings: rdkitSettings,
   differenceThreshold: differenceThreshold,
   projections: projections,
   hoverSettings: hoverSettings,
@@ -74,7 +73,8 @@ const allReducers = {
   globalPointBrightness: globalPointBrightness,
   groupVisualizationMode: groupVisualizationMode,
   genericFingerprintAttributes: genericFingerprintAttributes,
-  hoverStateOrientation: hoverStateOrientation
+  hoverStateOrientation: hoverStateOrientation,
+  detailView: detailView
 }
 
 const appReducer = combineReducers(allReducers)
