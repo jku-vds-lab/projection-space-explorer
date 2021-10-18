@@ -1,10 +1,11 @@
 import { Grid } from "@mui/material";
 import React = require("react");
+import { Dataset } from "../../..";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
 import DragAndDrop from "./DragAndDrop";
 
-export var DatasetDrop = ({ onChange }) => {
+export var DatasetDrop = ({ onChange }: { onChange(dataset: Dataset): void; }) => {
     return <Grid container item alignItems="stretch" justifyContent="center" direction="column" style={{ padding: '16px' }}>
         <DragAndDrop accept="image/*" handleDrop={(files) => {
             if (files == null || files.length <= 0) {

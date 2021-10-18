@@ -1,13 +1,13 @@
 import { Box, Typography } from "@mui/material";
 import React = require("react");
-import { AVector, IVector } from "../../../model/Vector";
+import { Dataset } from "../../../model/Dataset";
+import { AVector } from "../../../model/Vector";
 import { CSVLoader } from "../../Utility/Loaders/CSVLoader";
 import { JSONLoader } from "../../Utility/Loaders/JSONLoader";
 import { DatasetDrop } from "./DatasetDrop";
 import { DownloadJob } from "./DownloadJob";
 import { DownloadProgress } from "./DownloadProgress";
 import { PredefinedDatasets } from "./PredefinedDatasets";
-import { useCancellablePromise } from "../../../utils/promise-helpers";
 
 var d3v5 = require('d3')
 
@@ -17,7 +17,7 @@ function convertFromCSV(vectors) {
     })
 }
 
-export function DatasetTabPanel({ onDataSelected }) {
+export function DatasetTabPanel({ onDataSelected }: { onDataSelected(dataset: Dataset): void; }) {
     const [job, setJob] = React.useState(null)
     
     let predefined = <PredefinedDatasets onChange={(entry) => {
@@ -34,9 +34,7 @@ export function DatasetTabPanel({ onDataSelected }) {
 
 
         <DatasetDrop
-            onChange={(var1, var2) => {
-                onDataSelected(var1, var2);
-            }} />
+            onChange={onDataSelected} />
 
 
 

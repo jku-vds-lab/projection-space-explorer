@@ -145,7 +145,9 @@ export type FeatureConfig = Partial<{
 }>
 
 export type ComponentConfig = Partial<{
-  datasetTab: (props: any) => JSX.Element
+  datasetTab: (props: {
+    onDataSelected(dataset: Dataset): void;
+  }) => JSX.Element
   appBar: () => JSX.Element
   detailViews: Array<DetailViewSpec>
   tabs: Array<TabSpec>
