@@ -1,7 +1,7 @@
 import { connect, ConnectedProps } from 'react-redux'
 import { FunctionComponent } from 'react'
 import * as React from 'react'
-import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, makeStyles } from '@material-ui/core'
+import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, makeStyles, TextField } from '@material-ui/core'
 import { ShapeLegend } from './ShapeLegend/ShapeLegend'
 import { setSelectedVectorByShapeAction } from "../../Ducks/SelectedVectorByShapeDuck"
 import { setVectorByShapeAction } from "../../Ducks/VectorByShapeDuck"
@@ -23,6 +23,7 @@ import { Legend } from './LineSelection/LineSelection'
 import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks, LineTreePopover } from './LineTreePopover/LineTreePopover'
 import { PathBrightnessSlider } from './PathTransparencySlider/PathBrightnessSlider'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Autocomplete, createFilterOptions } from '@material-ui/lab'
 
 const mapStateToProps = (state: RootState) => ({
     selectedVectorByShape: state.selectedVectorByShape,
@@ -87,6 +88,57 @@ type Props = PropsFromRedux & {
 
  */
 
+const SelectFeatureComponent = ({label, default_val, categoryOptions, onChange}:any) => {
+    
+    let autocomplete_options = [{value:"None", inputValue:"None"}];
+    let autocomplete_filterOptions = null;
+    if(categoryOptions != null){
+        autocomplete_options = autocomplete_options.concat(categoryOptions.attributes.map((attribute) => {
+            return {value: attribute.key, inputValue: attribute.name}
+        }));
+        autocomplete_filterOptions = createFilterOptions({
+            stringify: (option:any) => { return option.value; },
+        });
+
+    }
+    
+    return <><Autocomplete
+        id={"vectorBySelect_"+label}
+        filterOptions={autocomplete_filterOptions}
+        onChange={(event, newValue) => {
+            if(newValue)
+                onChange(newValue.value)
+        }}
+        options={autocomplete_options.sort((a, b) => {
+            if(a.value === "None")
+                return -1
+            if(b.value === "None")
+                return 1
+            return -b.inputValue.localeCompare(a.inputValue)}
+            )}
+        groupBy={(option:any) => option.group}
+        getOptionLabel={(option:any) => option.inputValue}
+        getOptionSelected={(option:any, value) => {return option.value == value.value;}}
+        // defaultValue={channelColor ? autocomplete_color_options.filter((option:any) => option.value == channelColor.key)[0] : {value:"", inputValue:""}}
+        value = {default_val ? autocomplete_options.filter((option:any) => option.value == default_val.key)[0] : autocomplete_options[0]}
+        renderInput={(params) => <TextField {...params} label={label + " by"}  />}
+    /></>
+    // return <><InputLabel shrink id={"vectorBySelectLabel_"+label}>{label} by</InputLabel>
+    //     <Select labelId={"vectorBySelectLabel_"+label}
+    //         id={"vectorBySelect_"+label}
+    //         displayEmpty
+    //         value={default_val ? default_val.key : ""}
+    //         onChange={(event)=>{
+    //             onChange(event.target.value)
+    //         }}
+    //     >
+    //         <MenuItem value="">None</MenuItem>
+    //         {categoryOptions.attributes.map(attribute => {
+    //             return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+    //         })}
+    //     </Select></>
+}
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
@@ -136,13 +188,6 @@ export const StatesTabPanelFull = ({
 
     const classes = useStyles();
 
-
-
-
-
-
-
-
     const [expanded, setExpanded] = React.useState<boolean | string>(false);
 
     const handleChange = (panel) => (event, isExpanded) => {
@@ -159,27 +204,19 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
-                        <Select labelId="vectorByShapeSelectLabel"
-                            id="vectorByShapeSelect"
-                            displayEmpty
-                            value={selectedVectorByShape}
-                            onChange={(event) => {
-                                setSelectedVectorByShape(event.target.value)
 
-                                if (event.target.value != null && event.target.value != "") {
-                                    var attribute = categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
-                                    setVectorByShape(attribute)
-                                } else {
-                                    setVectorByShape(null)
+                        <SelectFeatureComponent label={"shape"} default_val={selectedVectorByShape ? {key: selectedVectorByShape} : null} categoryOptions={categoryOptions.getCategory("shape")} onChange={(newValue) => {
+                                
+                                setSelectedVectorByShape(newValue)
+                                var attribute = categoryOptions.getCategory("shape").attributes.filter(a => a.key == newValue)[0]
+
+                                if (attribute == undefined) {
+                                    attribute = null
                                 }
-                            }}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("shape").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
+                                setVectorByShape(attribute)
+
+                            }}></SelectFeatureComponent>
+                        
                     </FormControl>
                 </Grid>
 
@@ -206,13 +243,9 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
-                        <Select labelId="vectorByTransparencySelectLabel"
-                            id="vectorByTransparencySelect"
-                            displayEmpty
-                            value={channelBrightness ? channelBrightness.key : ''}
-                            onChange={(event) => {
-                                var attribute = categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
+                        
+                        <SelectFeatureComponent label={"brightness"} default_val={channelBrightness} categoryOptions={categoryOptions.getCategory("transparency")} onChange={(newValue) => {
+                                var attribute = categoryOptions.getCategory("transparency").attributes.filter(a => a.key == newValue)[0]
 
                                 if (attribute == undefined) {
                                     attribute = null
@@ -224,13 +257,7 @@ export const StatesTabPanelFull = ({
                                 setChannelBrightness(attribute)
                                 webGlView.current.particles.transparencyCat(attribute, pointBrightness)
                                 webGlView.current.requestRender()
-                            }}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("transparency").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
+                            }}></SelectFeatureComponent>
                     </FormControl>
                 </Grid>
                 :
@@ -251,13 +278,9 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                        <Select labelId="vectorBySizeSelectLabel"
-                            id="vectorBySizeSelect"
-                            displayEmpty
-                            value={channelSize ? channelSize.key : ''}
-                            onChange={(event) => {
-                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+                        
+                        <SelectFeatureComponent label={"size"} default_val={channelSize} categoryOptions={categoryOptions.getCategory("size")} onChange={(newValue) => {
+                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == newValue)[0]
                                 if (attribute == undefined) {
                                     attribute = null
                                 }
@@ -269,13 +292,7 @@ export const StatesTabPanelFull = ({
                                 setChannelSize(attribute)
 
                                 webGlView.current.particles.sizeCat(attribute, pointSize)
-                            }}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("size").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
+                            }}></SelectFeatureComponent>
                     </FormControl>
                 </Grid>
                 :
@@ -297,26 +314,16 @@ export const StatesTabPanelFull = ({
 
                     <Grid container item alignItems="stretch" direction="column">
                         <FormControl style={{ margin: '4px 0px' }}>
-                            <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
-                            <Select labelId="vectorByColorSelectLabel"
-                                id="vectorByColorSelect"
-                                displayEmpty
-                                value={channelColor ? channelColor.key : ""}
-                                onChange={(event) => {
+                            <SelectFeatureComponent label={"color"} default_val={channelColor} categoryOptions={categoryOptions.getCategory("color")} onChange={(newValue) => {
                                     var attribute = null
-                                    if (event.target.value != "") {
-                                        attribute = categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
+                                    if (newValue && newValue != "") {
+                                        attribute = categoryOptions.getCategory("color").attributes.filter(a => a.key == newValue)[0]
                                     }
 
                                     setAdvancedColoringSelection(new Array(10000).fill(true))
                                     setChannelColor(attribute)
-                                }}
-                            >
-                                <MenuItem value="">None</MenuItem>
-                                {categoryOptions.getCategory("color").attributes.map(attribute => {
-                                    return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                                })}
-                            </Select>
+                                }}></SelectFeatureComponent>
+
                         </FormControl>
                     </Grid>
                 </Grid>

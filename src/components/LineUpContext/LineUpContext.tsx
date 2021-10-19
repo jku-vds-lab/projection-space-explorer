@@ -185,7 +185,6 @@ export const LineUpContext = connector(function ({
             // lineup_data.push(row);
         });
 
-        console.log(lineup_data)
 
         return [lineup_data, columns];
     }
@@ -243,7 +242,6 @@ export const LineUpContext = connector(function ({
         lineUpInput.lineup?.destroy();
         let lineup = null;
         lineup = builder.buildTaggle(lineup_ref.current);
-        console.log(lineup)
         if(dump){
             lineup.restore(dump);
         }

@@ -32,6 +32,7 @@ export class CategoryOptions {
     }
 
     // Automatically infer categories from this file
+    // TODO: what is this doing?! --> ask moritz
     infer() {
         this.json = []
 

@@ -6,6 +6,7 @@ import { DataLine } from "./DataLine";
 import { Vect } from "./Vect";
 import { mean, std } from "../../NumTs/NumTs";
 import { EncodingMethod, NormalizationMethod } from "../../Ducks/ProjectionParamsDuck";
+import { size } from "lodash";
 
 
 export enum PrebuiltFeatures {
@@ -381,5 +382,162 @@ export class Dataset {
         } else {
             return 1;
         }
+    }
+
+    /**
+     * Infers an array of attributes that can be filtered after, these can be
+     * categorical, sequential or continuous attribues.
+     * @param {*} ranges
+     */
+    extractEncodingFeatures(ranges) {
+        if (this.vectors.length <= 0) {
+            return [];
+        }
+
+        var shape_options = []
+        var size_options = []
+        var transparency_options = []
+        var color_options = []
+
+
+        const columns = this.columns;
+        var header = Object.keys(columns);
+        // var header = Object.keys(this.vectors[0]).filter(a => a != "line");
+
+        header.forEach(key => {
+            if (key == PrebuiltFeatures.ClusterLabel) {
+                color_options.push({
+                    "key": key,
+                    "name": key,
+                    "type": "categorical"
+                })
+            } else {
+                var shapes = ["circle", "star", "square", "cross"];
+                switch(columns[key].featureType){
+                    case FeatureType.Binary:
+                        color_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "categorical"
+                        });
+
+                        shape_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "categorical", // TODO: is there difference for binary?
+                            "values": columns[key].distinct.map((value, index) => {
+                                return {
+                                    from: value,
+                                    to: shapes[index]
+                                };
+                            })
+                        });
+                        break;
+                    case FeatureType.Categorical:
+                        color_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "categorical"
+                        });
+                        
+                        if (columns[key].distinct.length <= 4) {
+                            var shapes = ["circle", "star", "square", "cross"];
+                            shape_options.push({
+                                "key": key,
+                                "name": key,
+                                "type": "categorical",
+                                "values": columns[key].distinct.map((value, index) => {
+                                    return {
+                                        from: value,
+                                        to: shapes[index]
+                                    };
+                                })
+                            });
+                        }
+                        break;
+                    case FeatureType.Date:
+                        break;
+                    case FeatureType.Ordinal:
+                        color_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential", // TODO: add ordinal color scale
+                            "range": columns[key].range
+                        });
+                        transparency_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential", // TODO: transparancy for ordered data?
+                            "range": columns[key].range,
+                            "values": {
+                                range: [0.3, 1.0]
+                            }
+                        });
+                        size_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential", // TODO: size for ordered data?
+                            "range": columns[key].range,
+                            "values": {
+                                range: [1, 2]
+                            }
+                        });
+                        break;
+                    case FeatureType.Quantitative:
+                        color_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential",
+                            "range": columns[key].range
+                        });
+                        transparency_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential",
+                            "range": columns[key].range,
+                            "values": {
+                                range: [0.3, 1.0]
+                            }
+                        });
+                        size_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential",
+                            "range": columns[key].range,
+                            "values": {
+                                range: [1, 2]
+                            }
+                        });
+                        break;
+                    case FeatureType.String:
+                        break;
+                    default:
+                        break;
+                }
+                
+            }
+        });
+
+        
+        var options = [
+            {
+                "category": "shape",
+                "attributes": shape_options
+            },
+            {
+                "category": "size",
+                "attributes": size_options
+            },
+            {
+                "category": "transparency",
+                "attributes": transparency_options
+            },
+            {
+                "category": "color",
+                "attributes": color_options
+            }
+        ];
+
+        return options;
     }
 }

@@ -197,6 +197,7 @@ export class JSONLoader implements Loader {
         dataset.clusters = clusters
         dataset.clusterEdges = edges
 
-        finished(dataset, new InferCategory(this.vectors).load(ranges))
+        // finished(dataset, new InferCategory(this.vectors).load(ranges))
+        finished(dataset, dataset.extractEncodingFeatures(ranges))
     }
 }

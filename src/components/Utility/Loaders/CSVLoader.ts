@@ -217,7 +217,7 @@ export class CSVLoader implements Loader {
                 vector.groupLabel = []
             })
 
-            finished(dataset, new InferCategory(vectors).load(ranges))
+            finished(dataset, dataset.extractEncodingFeatures(ranges))//new InferCategory(vectors).load(ranges))
         })
     }
 }
