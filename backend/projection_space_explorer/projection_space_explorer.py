@@ -52,7 +52,7 @@ def segmentation():
 
 # TODO: @moritz, remove hdbscan route and worker_cluster.tsx
 # Endpoint that performs the clustering algorithm
-@pse_api.route('/hdbscan', method=['OPTIONS', 'POST'])
+@pse_api.route('/hdbscan', methods=['OPTIONS', 'POST'])
 def lvambience():
     features = np.array(json.load(request.body))
     
