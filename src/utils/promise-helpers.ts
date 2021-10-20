@@ -48,13 +48,14 @@ export function useCancellablePromise(cancelable = makeCancelable) {
     }, []
   );
 
-  function cancellablePromise(p, controller?) {
+  function cancellablePromise<T = any>(p: Promise<T>, controller?: AbortController): Promise<T> {
     const cPromise = cancelable(p);
     // @ts-ignore
     promises.current.push(cPromise);
     if(controller)
       // @ts-ignore
       controllers.current.push(controller);
+    // @ts-ignore
     return cPromise.promise;
   }
 

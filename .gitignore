@@ -99,3 +99,8 @@ typings/
 /dist/datasets/chemvis
 /datasets/reaction_optimization
 /dist/datasets/reaction_optimization
+
+# Backend
+__pycache__/
+*.egg-info/
+*.egg
