@@ -3,6 +3,6 @@ export declare function makeCancelable(promise: any): {
     cancel(): void;
 };
 export declare function useCancellablePromise(cancelable?: typeof makeCancelable): {
-    cancellablePromise: (p: any, controller?: any) => Promise<unknown>;
+    cancellablePromise: <T = any>(p: Promise<T>, controller?: AbortController) => Promise<T>;
     cancelPromises: () => void;
 };

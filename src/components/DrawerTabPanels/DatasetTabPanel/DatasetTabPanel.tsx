@@ -8,8 +8,7 @@ import { DatasetDrop } from "./DatasetDrop";
 import { DownloadJob } from "./DownloadJob";
 import { DownloadProgress } from "./DownloadProgress";
 import { PredefinedDatasets } from "./PredefinedDatasets";
-
-var d3v5 = require('d3')
+import * as d3v5 from 'd3v5';
 
 function convertFromCSV(vectors) {
     return vectors.map(vector => {

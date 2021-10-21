@@ -13,7 +13,7 @@ import { Typography } from "@mui/material";
 import { CameraTransformations } from "./CameraTransformations";
 import { IBook } from "../../model/Book";
 import * as nt from '../NumTs/NumTs'
-const d3 = require("d3")
+const d3v5 = require("d3v5")
 import { GroupVisualizationMode } from "../Ducks/GroupVisualizationMode";
 import { ScaleUtil } from "../Utility/Colors/ContinuosScale";
 import { StoriesUtil } from "../Ducks/StoriesDuck";
@@ -528,16 +528,16 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             for (const [ci, cluster] of Object.entries(activeStory.clusters.byId)) {
                 const bounds = ACluster.calcBounds(this.props.dataset, cluster.indices)
 
-                let xAxis = d3.scaleLinear()
+                let xAxis = d3v5.scaleLinear()
                     .range([0, 100])
                     .domain([bounds.left, bounds.right])
 
-                let yAxis = d3.scaleLinear()
+                let yAxis = d3v5.scaleLinear()
                     .range([0, 100 * (bounds.height / bounds.width)])
                     .domain([bounds.top, bounds.bottom])
 
 
-                let contours = d3.contourDensity()
+                let contours = d3v5.contourDensity()
                     .x(d => xAxis(d.x))
                     .y(d => yAxis(d.y))
                     .bandwidth(10)

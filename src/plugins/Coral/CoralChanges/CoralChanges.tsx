@@ -1,4 +1,4 @@
-var d3 = require('d3')
+var d3v5 = require('d3v5')
 import * as React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
@@ -10,8 +10,6 @@ import Boxplot from './VegaBoxplot.js';
 import { Dataset } from '../../../model/Dataset';
 import { IVector } from '../../../model/Vector';
 import { FeatureType } from '../../../model/FeatureType';
-import { setDifferenceThreshold } from "../../../components/Ducks/DifferenceThresholdDuck";
-import { cloneDeep } from "../../../components/Utility/CloneDeep";
 import { RootState } from '../../../components/Store/Store.js';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
@@ -81,7 +79,7 @@ function createData(feature, category, score, char, difference) {
 }
 
 function getBins(a, n = 10) {
-  const bin = d3.histogram()
+  const bin = d3v5.histogram()
     .thresholds(n - 1)
   return bin(a)
 }
@@ -157,7 +155,7 @@ function getFlattenedBins(a, b) {
   // similar for b
 
   // find sensible bins for both a,b together
-  const bin = d3.histogram()
+  const bin = d3v5.histogram()
     .thresholds(10 - 1)
   const binned = bin(a.concat(b))
   const lowerBounds = []

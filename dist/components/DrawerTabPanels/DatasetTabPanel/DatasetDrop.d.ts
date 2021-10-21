@@ -1,4 +1,5 @@
 /// <reference types="react" />
+import { Dataset } from "../../..";
 export declare var DatasetDrop: ({ onChange }: {
-    onChange: any;
+    onChange(dataset: Dataset): void;
 }) => JSX.Element;

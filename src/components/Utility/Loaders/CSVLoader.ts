@@ -9,8 +9,7 @@ import { DatasetEntry } from "../Data/DatasetDatabase"
 import { ICluster } from "../../../model/Cluster"
 import { ObjectTypes } from "../../../model/ObjectType"
 import WorkerCluster from "../../workers/cluster.worker";
-
-var d3v5 = require('d3')
+import * as d3v5 from 'd3v5';
 
 function convertFromCSV(vectors) {
     return vectors.map(vector => {

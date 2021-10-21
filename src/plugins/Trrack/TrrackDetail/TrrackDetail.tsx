@@ -1,4 +1,3 @@
-var d3 = require('d3')
 import * as React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';

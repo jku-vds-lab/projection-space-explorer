@@ -1,4 +1,5 @@
 /// <reference types="react" />
+import { Dataset } from "../../../model/Dataset";
 export declare function DatasetTabPanel({ onDataSelected }: {
-    onDataSelected: any;
+    onDataSelected(dataset: Dataset): void;
 }): JSX.Element;
