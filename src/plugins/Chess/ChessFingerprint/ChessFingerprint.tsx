@@ -9,13 +9,22 @@ import WB from '../../../../textures/chess/Chess_blt45.png'
 // @ts-ignore
 import WK from '../../../../textures/chess/Chess_klt45.png'
 // @ts-ignore
-import WQ from '../../../../textures/chess/Chess_rlt45.png'
+import WQ from '../../../../textures/chess/Chess_qlt45.png'
 // @ts-ignore
-import WR from '../../../../textures/chess/Chess_rlt45.png'
+import WP from '../../../../textures/chess/Chess_plt45.png'
 // @ts-ignore
-import WR from '../../../../textures/chess/Chess_rlt45.png'
+import BR from '../../../../textures/chess/Chess_rdt45.png'
 // @ts-ignore
-import WR from '../../../../textures/chess/Chess_rlt45.png'
+import BN from '../../../../textures/chess/Chess_ndt45.png'
+// @ts-ignore
+import BB from '../../../../textures/chess/Chess_bdt45.png'
+// @ts-ignore
+import BK from '../../../../textures/chess/Chess_kdt45.png'
+// @ts-ignore
+import BQ from '../../../../textures/chess/Chess_qdt45.png'
+// @ts-ignore
+import BP from '../../../../textures/chess/Chess_pdt45.png'
+// @ts-ignore
 
 
 // Lookup table for chess UNICODE symbols
@@ -24,14 +33,14 @@ var symbols = {
     'wn': WN,
     'wb': WB,
     'wk': WK,
-    'wq': 'textures/chess/Chess_qlt45.svg',
-    'wp': 'textures/chess/Chess_plt45.svg',
-    'br': 'textures/chess/Chess_rdt45.svg',
-    'bn': 'textures/chess/Chess_ndt45.svg',
-    'bb': 'textures/chess/Chess_bdt45.svg',
-    'bk': 'textures/chess/Chess_kdt45.svg',
-    'bq': 'textures/chess/Chess_qdt45.svg',
-    'bp': 'textures/chess/Chess_pdt45.svg',
+    'wq': WQ,
+    'wp': WP,
+    'br': BR,
+    'bn': BN,
+    'bb': BB,
+    'bk': BK,
+    'bq': BQ,
+    'bp': BP,
     '': ''
 }
 

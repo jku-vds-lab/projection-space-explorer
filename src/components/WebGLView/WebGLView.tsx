@@ -621,6 +621,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     onWheel(event) {
         event.preventDefault()
 
+        if (!this.props.dataset) {
+            return;
+        }
+
         var normalized = normalizeWheel(event)
 
         // Store world position under mouse

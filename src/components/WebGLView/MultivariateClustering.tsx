@@ -122,7 +122,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             this.destroy()
             this.disposeTriangulatedMesh()
 
-            console.log(this.props.stories.active)
             if (this.props.stories.active !== null) {
                 const activeStory = this.props.stories.stories[this.props.stories.active]
 
@@ -167,7 +166,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
             if (this.props.currentAggregation.source == 'sample') {
-                console.log(this.props.currentAggregation)
                 this.highlightSamples(this.props.currentAggregation.aggregation.map(i => this.props.dataset.vectors[i]))
             }
 

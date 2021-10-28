@@ -31,20 +31,6 @@ import { DetailsTabPanel } from "./components/DrawerTabPanels/DetailsTabPanel/De
 import { addProjectionAction } from "./components/Ducks/ProjectionsDuck";
 import { Embedding } from "./model/Embedding";
 import { setActiveStory, setVectors, addStory } from "./components/Ducks/StoriesDuck";
-// @ts-ignore
-import PseDataset from '../textures/icons/pse-icon-dataset.svg'
-// @ts-ignore
-import PseClusters from '../textures/icons/pse-icon-clusters.svg'
-// @ts-ignore
-import PseDetails from '../textures/icons/pse-icon-details.svg'
-// @ts-ignore
-import PseEncoding from '../textures/icons/pse-icon-encoding.svg'
-// @ts-ignore
-import PseProject from '../textures/icons/pse-icon-project.svg'
-// @ts-ignore
-import PseLineup from '../textures/icons/pse-icon-lineup.svg'
-// @ts-ignore
-import VDSLogo from '../textures/vds-lab-logo-notext.svg'
 
 
 import Split from 'react-split'
@@ -63,6 +49,9 @@ import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { GoPlugin } from "./plugins/Go/GoPlugin";
 import { PseAppBar } from "./components/PseAppBar";
 import { setDetailVisibility } from "./components/Ducks/DetailViewDuck";
+import { PSEIcons } from "./utils/PSEIcons";
+// @ts-ignore
+import VDSLogo from '../textures/vds-lab-logo-notext.svg'
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -131,9 +120,10 @@ const mapDispatchToProps = dispatch => ({
 
 export type BaseConfig = Partial<{
   baseUrl: string,
-  preselect: {
+  preselect: Partial<{
     url: string
-  }
+    initOnMount: boolean
+  }>
 }>
 
 export type FeatureConfig = Partial<{
@@ -208,37 +198,31 @@ export const Application = connector(class extends React.Component<Props, any> {
 
 
   componentDidMount() {
-    const mangleURL = (url: string) => {
-      if (url.endsWith('csv') || url.endsWith('json')) {
-        return `datasets/${url}`
-      }
-
-      return `datasets/${url}.csv`
-    }
-
     var url = new URL(window.location.toString());
     var set = url.searchParams.get("set");
 
-    var preselect = "datasets/rubik/cube10x2_different_origins.csv"
-    var loader = new CSVLoader();
-
-    if (set != null) {
-      if (set == "neural") {
-        preselect = "datasets/neural/learning_confmat.csv"
-        loader = new CSVLoader();
-      } else if (set == "rubik") {
-        preselect = "datasets/rubik/cube10x2_different_origins.csv"
-        loader = new CSVLoader();
-      } else if (set == "chess") {
-        preselect = "datasets/chess/chess16k.csv"
-        loader = new CSVLoader();
-      } else if (set == "reaction") {
-        preselect = "datasets/chemvis/domain_5000_all_predictions.csv";
-        loader = new CSVLoader();
+    if (this.props.config?.preselect?.initOnMount ?? true) {
+      var preselect = "datasets/rubik/cube10x2_different_origins.csv"
+      var loader = new CSVLoader();
+  
+      if (set != null) {
+        if (set == "neural") {
+          preselect = "datasets/neural/learning_confmat.csv"
+          loader = new CSVLoader();
+        } else if (set == "rubik") {
+          preselect = "datasets/rubik/cube10x2_different_origins.csv"
+          loader = new CSVLoader();
+        } else if (set == "chess") {
+          preselect = "datasets/chess/chess16k.csv"
+          loader = new CSVLoader();
+        } else if (set == "reaction") {
+          preselect = "datasets/chemvis/domain_5000_all_predictions.csv";
+          loader = new CSVLoader();
+        }
+        loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
+      } else {
+        loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
       }
-      loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
-    } else {
-      loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
     }
   }
 
@@ -366,215 +350,214 @@ export const Application = connector(class extends React.Component<Props, any> {
     }
   }
 
+  
 
   render() {
-    return <div>
+    return <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'stretch',
+        overflow: 'hidden'
+      }}>
 
-      <div
+      <Drawer
+        variant="permanent"
         style={{
-          display: 'flex',
-          alignItems: 'stretch',
-          width: "100vw",
-          height: "100vh",
-          overflow: 'hidden'
-        }}>
-
-        <Drawer
-          variant="permanent"
+          width: 88
+        }}
+        PaperProps={{ style: { position: 'relative', overflow: 'hidden', border: 'none' } }}
+      >
+        <Divider />
+        <Tabs
           style={{
             width: 88
           }}
+          value={this.props.openTab}
+          orientation="vertical"
+          indicatorColor="primary"
+          textColor="primary"
+          
+          onChange={(e, newTab) => this.onChangeTab(newTab)}
+          aria-label="disabled tabs example"
         >
-          <Divider />
-          <Tabs
-            style={{
-              width: 88
-            }}
-            value={this.props.openTab}
-            orientation="vertical"
-            indicatorColor="primary"
-            textColor="primary"
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Load Dataset</Typography>
+            <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
+          </React.Fragment>}><Tab value={0} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Dataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
-            onChange={(e, newTab) => this.onChangeTab(newTab)}
-            aria-label="disabled tabs example"
-          >
-            <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Load Dataset</Typography>
-              <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
-            </React.Fragment>}><Tab value={0} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDataset}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Embedding and Projection</Typography>
+            <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
+          </React.Fragment>}><Tab value={1} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Project}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
-            <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Embedding and Projection</Typography>
-              <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
-            </React.Fragment>}><Tab value={1} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseProject}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Point and Line Channels</Typography>
+            <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
+          </React.Fragment>}><Tab value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Encoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
-            <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Point and Line Channels</Typography>
-              <Typography variant="body2">Contains settings that let you map different channels like brightness and color on point and line attributes.</Typography>
-            </React.Fragment>}><Tab value={2} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseEncoding}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Groups</Typography>
+            <Typography variant="body2">Contains options for displaying and navigating groups in the dataset.</Typography>
+          </React.Fragment>}><Tab value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Clusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
-            <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Groups</Typography>
-              <Typography variant="body2">Contains options for displaying and navigating groups in the dataset.</Typography>
-            </React.Fragment>}><Tab value={3} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseClusters}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+          <Tooltip placement="right" title={<React.Fragment>
+            <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
+            <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
+          </React.Fragment>}><Tab value={4} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Details}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
 
-            <Tooltip placement="right" title={<React.Fragment>
-              <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
-              <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
-            </React.Fragment>}><Tab value={4} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseDetails}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, padding: 12, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} /></Tooltip>
+          {this.props.overrideComponents?.tabs?.map((tab, i) => {
+            return <Tooltip key={`tooltip${tab.name}`} placement="right" title={<React.Fragment>
+              <Typography variant="subtitle2">{tab.title}</Typography>
+              <Typography variant="body2">{tab.description}</Typography>
+            </React.Fragment>}><Tab value={5 + i} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
+          })}
 
-            {this.props.overrideComponents?.tabs?.map((tab, i) => {
-              return <Tooltip key={`tooltip${tab.name}`} placement="right" title={<React.Fragment>
-                <Typography variant="subtitle2">{tab.title}</Typography>
-                <Typography variant="body2">{tab.description}</Typography>
-              </React.Fragment>}><Tab value={5 + i} icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PseLineup}></SvgIcon>} style={{ minWidth: 0, flexGrow: 1, paddingTop: 16, paddingBottom: 16 }} /></Tooltip>
-            })}
+        </Tabs>
+      </Drawer>
 
-          </Tabs>
-        </Drawer>
-
-        <Box
-          style={{
-            flexShrink: 0,
-            width: this.props.openTab === false ? '0rem' : "18rem",
-            height: '100vh',
-            overflowX: 'hidden',
-            overflowY: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            border: '1px solid rgba(0, 0, 0, 0.12)'
-          }}>
-          <div style={{
-            flexGrow: 1,
-            overflowY: 'hidden'
-          }}>
-
-
-            <Grid
-              container
-              justifyContent="center"
-              alignItems="stretch"
-              direction="column">
-
-
-
-              <FixedHeightTabPanel value={this.props.openTab} index={0} >
-                {
-                  /** predefined dataset */
-                  this.props.overrideComponents?.datasetTab ? React.createElement(this.props.overrideComponents?.datasetTab, { onDataSelected: this.onDataSelected }) : <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
-                }
-              </FixedHeightTabPanel>
-
-
-              <FixedHeightTabPanel value={this.props.openTab} index={1}>
-                <EmbeddingTabPanel
-                  config={this.props.features}
-                  webGLView={this.threeRef}></EmbeddingTabPanel>
-              </FixedHeightTabPanel>
-
-              <FixedHeightTabPanel value={this.props.openTab} index={2}>
-                <StatesTabPanel
-                  webGLView={this.threeRef}
-                ></StatesTabPanel>
-              </FixedHeightTabPanel>
-
-
-              <FixedHeightTabPanel value={this.props.openTab} index={3}>
-                {this.props.dataset != null ?
-                  <ClusteringTabPanel
-                    splitRef={this.splitRef}
-                  ></ClusteringTabPanel> : <div></div>
-                }
-              </FixedHeightTabPanel>
-
-
-              <FixedHeightTabPanel value={this.props.openTab} index={4}>
-                <DetailsTabPanel></DetailsTabPanel>
-              </FixedHeightTabPanel>
-
-
-              {this.props.overrideComponents?.tabs?.map((tab, i) => {
-                return <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={5 + i}>
-                  {React.createElement(tab.tab, { splitRef: this.splitRef })}
-                </FixedHeightTabPanel>
-              })}
-
-            </Grid>
-          </div>
-        </Box>
-
-        <div style={{
+      <Box
+        style={{
+          flexShrink: 0,
+          width: this.props.openTab === false ? '0rem' : "18rem",
+          height: '100vh',
+          overflowX: 'hidden',
+          overflowY: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          height: '100%',
-          flexGrow: 1
+          border: '1px solid rgba(0, 0, 0, 0.12)'
+        }}>
+        <div style={{
+          flexGrow: 1,
+          overflowY: 'hidden'
         }}>
 
-          {this.props.overrideComponents?.appBar ? React.createElement(this.props.overrideComponents?.appBar) :
-            <PseAppBar>
-              <a href={"https://jku-vds-lab.at"} target={"_blank"}><VDSLogo style={{ height: 48, width: 48 }}></VDSLogo></a>
-              <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
-                {"Projection Space Explorer"}
-              </Typography>
-            </PseAppBar>
-          }
 
-          {/** @ts-ignore */}
-          <Split
-            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-            ref={this.splitRef}
-            sizes={[100, 0]}
-            minSize={0}
-            expandToMin={false}
-            gutterSize={10}
-            gutterAlign="center"
-            snapOffset={30}
-            dragInterval={1}
-            direction="vertical"
-            cursor="ns-resize"
-            onDragStart={() => {
-              this.props.setLineUpInput_visibility(false)
-            }}
-            onDragEnd={(sizes) => {
-              if (sizes[0] > 90) {
-                this.props.setLineUpInput_visibility(false)
-              } else {
-                this.props.setLineUpInput_visibility(true)
-              }
-            }}
-          >
-            <div style={{ flexGrow: 0.9 }}>
-              <WebGLView
-                ref={this.threeRef}
-              />
-            </div>
-            <div style={{ flexGrow: 0.1 }}>
+          <Grid
+            container
+            justifyContent="center"
+            alignItems="stretch"
+            direction="column">
+
+
+
+            <FixedHeightTabPanel value={this.props.openTab} index={0} >
               {
-                React.createElement(this.props.overrideComponents.detailViews[0].view, {})
+                /** predefined dataset */
+                this.props.overrideComponents?.datasetTab ? React.createElement(this.props.overrideComponents?.datasetTab, { onDataSelected: this.onDataSelected }) : <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
               }
-            </div>
-          </Split>
+            </FixedHeightTabPanel>
+
+
+            <FixedHeightTabPanel value={this.props.openTab} index={1}>
+              <EmbeddingTabPanel
+                config={this.props.features}
+                webGLView={this.threeRef}></EmbeddingTabPanel>
+            </FixedHeightTabPanel>
+
+            <FixedHeightTabPanel value={this.props.openTab} index={2}>
+              <StatesTabPanel
+                webGLView={this.threeRef}
+              ></StatesTabPanel>
+            </FixedHeightTabPanel>
+
+
+            <FixedHeightTabPanel value={this.props.openTab} index={3}>
+              {this.props.dataset != null ?
+                <ClusteringTabPanel
+                  splitRef={this.splitRef}
+                ></ClusteringTabPanel> : <div></div>
+              }
+            </FixedHeightTabPanel>
+
+
+            <FixedHeightTabPanel value={this.props.openTab} index={4}>
+              <DetailsTabPanel></DetailsTabPanel>
+            </FixedHeightTabPanel>
+
+
+            {this.props.overrideComponents?.tabs?.map((tab, i) => {
+              return <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={5 + i}>
+                {React.createElement(tab.tab, { splitRef: this.splitRef })}
+              </FixedHeightTabPanel>
+            })}
+
+          </Grid>
         </div>
+      </Box>
 
-        <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        flexGrow: 1
+      }}>
 
-        <Storytelling></Storytelling>
+        {this.props.overrideComponents?.appBar ? React.createElement(this.props.overrideComponents?.appBar) :
+          <PseAppBar>
+            <a href={"https://jku-vds-lab.at"} target={"_blank"}><VDSLogo style={{ height: 48, width: 48 }}></VDSLogo></a>
+            <Typography variant="h6" style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}>
+              {"Projection Space Explorer"}
+            </Typography>
+          </PseAppBar>
+        }
 
-        {this.props.hoverStateOrientation == HoverStateOrientation.SouthWest && <div id="HoverItemDiv" style={{
-          position: 'absolute',
-          left: '0px',
-          bottom: '0px',
-          zIndex: 10000,
-          padding: 8
-        }}></div>}
-        {this.props.hoverStateOrientation == HoverStateOrientation.NorthEast && <div id="HoverItemDiv" style={{
-          position: 'absolute',
-          right: '0px',
-          top: '0px',
-          zIndex: 10000,
-          padding: 8
-        }}></div>}
+        {/** @ts-ignore */}
+        <Split
+          style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+          ref={this.splitRef}
+          sizes={[100, 0]}
+          minSize={0}
+          expandToMin={false}
+          gutterSize={10}
+          gutterAlign="center"
+          snapOffset={30}
+          dragInterval={1}
+          direction="vertical"
+          cursor="ns-resize"
+          onDragStart={() => {
+            this.props.setLineUpInput_visibility(false)
+          }}
+          onDragEnd={(sizes) => {
+            if (sizes[0] > 90) {
+              this.props.setLineUpInput_visibility(false)
+            } else {
+              this.props.setLineUpInput_visibility(true)
+            }
+          }}
+        >
+          <div style={{ flexGrow: 0.9 }}>
+            <WebGLView
+              ref={this.threeRef}
+            />
+          </div>
+          <div style={{ flexGrow: 0.1 }}>
+            {
+              React.createElement(this.props.overrideComponents.detailViews[0].view, {})
+            }
+          </div>
+        </Split>
       </div>
+
+      <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
+
+      <Storytelling></Storytelling>
+
+      {this.props.hoverStateOrientation == HoverStateOrientation.SouthWest && <div id="HoverItemDiv" style={{
+        position: 'absolute',
+        left: '0px',
+        bottom: '0px',
+        zIndex: 10000,
+        padding: 8
+      }}></div>}
+      {this.props.hoverStateOrientation == HoverStateOrientation.NorthEast && <div id="HoverItemDiv" style={{
+        position: 'absolute',
+        right: '0px',
+        top: '0px',
+        zIndex: 10000,
+        padding: 8
+      }}></div>}
     </div>
   }
 })

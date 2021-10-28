@@ -6,9 +6,10 @@ import { CategoryOptions } from "./components/WebGLView/CategoryOptions";
 import { IBook } from "./model/Book";
 export declare type BaseConfig = Partial<{
     baseUrl: string;
-    preselect: {
+    preselect: Partial<{
         url: string;
-    };
+        initOnMount: boolean;
+    }>;
 }>;
 export declare type FeatureConfig = Partial<{
     disableEmbeddings: {

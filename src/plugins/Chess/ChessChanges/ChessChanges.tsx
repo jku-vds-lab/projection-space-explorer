@@ -2,25 +2,52 @@ import * as React from 'react'
 import { arraysEqual } from '../../../components/WebGLView/UtilityFunctions'
 import { IVector } from "../../../model/Vector"
 import { CHESS_TILE_BLACK, CHESS_TILE_WHITE } from "../ChessFingerprint/ChessFingerprint"
+// @ts-ignore
+import WR from '../../../../textures/chess/Chess_rlt45.png'
+// @ts-ignore
+import WN from '../../../../textures/chess/Chess_nlt45.png'
+// @ts-ignore
+import WB from '../../../../textures/chess/Chess_blt45.png'
+// @ts-ignore
+import WK from '../../../../textures/chess/Chess_klt45.png'
+// @ts-ignore
+import WQ from '../../../../textures/chess/Chess_qlt45.png'
+// @ts-ignore
+import WP from '../../../../textures/chess/Chess_plt45.png'
+// @ts-ignore
+import BR from '../../../../textures/chess/Chess_rdt45.png'
+// @ts-ignore
+import BN from '../../../../textures/chess/Chess_ndt45.png'
+// @ts-ignore
+import BB from '../../../../textures/chess/Chess_bdt45.png'
+// @ts-ignore
+import BK from '../../../../textures/chess/Chess_kdt45.png'
+// @ts-ignore
+import BQ from '../../../../textures/chess/Chess_qdt45.png'
+// @ts-ignore
+import BP from '../../../../textures/chess/Chess_pdt45.png'
+// @ts-ignore
 
-const CHESS_TILE_CHANGES = '#007dad'
 
 // Lookup table for chess UNICODE symbols
 var symbols = {
-    'wr': 'textures/chess/Chess_rlt45.svg',
-    'wn': 'textures/chess/Chess_nlt45.svg',
-    'wb': 'textures/chess/Chess_blt45.svg',
-    'wk': 'textures/chess/Chess_klt45.svg',
-    'wq': 'textures/chess/Chess_qlt45.svg',
-    'wp': 'textures/chess/Chess_plt45.svg',
-    'br': 'textures/chess/Chess_rdt45.svg',
-    'bn': 'textures/chess/Chess_ndt45.svg',
-    'bb': 'textures/chess/Chess_bdt45.svg',
-    'bk': 'textures/chess/Chess_kdt45.svg',
-    'bq': 'textures/chess/Chess_qdt45.svg',
-    'bp': 'textures/chess/Chess_pdt45.svg',
+    'wr': WR,
+    'wn': WN,
+    'wb': WB,
+    'wk': WK,
+    'wq': WQ,
+    'wp': WP,
+    'br': BR,
+    'bn': BN,
+    'bb': BB,
+    'bk': BK,
+    'bq': BQ,
+    'bp': BP,
     '': ''
 }
+
+
+const CHESS_TILE_CHANGES = '#007dad'
 
 Object.keys(symbols).filter(key => key != '').forEach(key => {
     var path = symbols[key]
