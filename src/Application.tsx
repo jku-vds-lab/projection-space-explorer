@@ -421,7 +421,7 @@ export const Application = connector(class extends React.Component<Props, any> {
         style={{
           flexShrink: 0,
           width: this.props.openTab === false ? '0rem' : "18rem",
-          height: '100vh',
+          height: '100%',
           overflowX: 'hidden',
           overflowY: 'hidden',
           display: 'flex',
@@ -430,7 +430,8 @@ export const Application = connector(class extends React.Component<Props, any> {
         }}>
         <div style={{
           flexGrow: 1,
-          overflowY: 'hidden'
+          overflowY: 'hidden',
+          overflowX: 'hidden'
         }}>
 
 
@@ -510,7 +511,7 @@ export const Application = connector(class extends React.Component<Props, any> {
           sizes={[100, 0]}
           minSize={0}
           expandToMin={false}
-          gutterSize={10}
+          gutterSize={12}
           gutterAlign="center"
           snapOffset={30}
           dragInterval={1}
