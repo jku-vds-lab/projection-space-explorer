@@ -364,7 +364,7 @@ def get_mcs(mol_list):
         mol_list = [Chem.MolFromSmiles(sm) for sm in mol_list] #TODO: handle invalid smiles
         
 
-    res=Chem.rdFMCS.FindMCS(mol_list, timeout=60, matchValences=False, ringMatchesRingOnly=False, completeRingsOnly=False) #completeRingsOnly=True # there are different settings possible here
+    res=Chem.rdFMCS.FindMCS(mol_list, timeout=60, matchValences=False, ringMatchesRingOnly=True, completeRingsOnly=True, atomCompare=rdFMCS.AtomCompare.CompareAny,bondCompare=rdFMCS.BondCompare.CompareAny) #completeRingsOnly=True # there are different settings possible here
     if(res.canceled):
         patt = Chem.MolFromSmiles("*")
     else:
@@ -531,7 +531,7 @@ def smiles_list_to_imgs():
         showMCS = request.forms.get("showMCS")
         width = request.forms.get("width")
         doAlignment = request.forms.get("doAlignment") == "true"
-
+        
         if len(smiles_list) == 0:
             return {"error": "empty SMILES list"}
         #if len(smiles_list) == 1:
@@ -549,7 +549,7 @@ def smiles_list_to_imgs():
         if len(mol_lst) > 1:
             patt = get_mcs(mol_lst)
             
-            TemplateAlign.rdDepictor.Compute2DCoords(patt)
+            #TemplateAlign.rdDepictor.Compute2DCoords(patt)
         else:
             patt = Chem.MolFromSmiles("*")
 
@@ -557,6 +557,16 @@ def smiles_list_to_imgs():
         if current_rep != "Common Substructure":
             filename = request.forms.get("filename")
             df = sdf_to_df(filename)
+        
+        if doAlignment:
+            # set the coordinates of the core pattern based on the coordinates of the first molecule     
+            match = mol_lst[0].GetSubstructMatch(patt)
+            conf = Chem.Conformer(patt.GetNumAtoms())
+            TemplateAlign.rdDepictor.Compute2DCoords(mol_lst[0])
+            mconf = mol_lst[0].GetConformer(0)
+            for i,aidx in enumerate(match):
+                conf.SetAtomPosition(i,mconf.GetAtomPosition(aidx))
+            patt.AddConformer(conf)
             
         img_lst = []
         for mol in mol_lst:
