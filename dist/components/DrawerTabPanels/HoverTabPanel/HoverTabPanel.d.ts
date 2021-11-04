@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { ConnectedProps } from "react-redux";
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     hoverSettings: {

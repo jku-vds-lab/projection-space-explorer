@@ -532,12 +532,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
             setOpenTab: (tab: any) => any;
             setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
             removeEdgeFromActive: (edge: any) => any;
-        }>, nextState: Readonly<ViewState>, nextContext: any): void; /**
-         * Render function that gets called with the display refresh rate.
-         * Only render overlays here like the lasso selection etc.
-         * The rendering of the states + lines and stuff that does not need to be
-         * re-rendered for animations should be put in 'requestRender'
-         */
+        }>, nextState: Readonly<ViewState>, nextContext: any): void;
         UNSAFE_componentWillUpdate?(nextProps: Readonly<{
             currentAggregation: {
                 aggregation: number[];
@@ -1102,12 +1097,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         setOpenTab: (tab: any) => any;
         setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
         removeEdgeFromActive: (edge: any) => any;
-    }>, nextState: Readonly<ViewState>, nextContext: any): void; /**
-     * Render function that gets called with the display refresh rate.
-     * Only render overlays here like the lasso selection etc.
-     * The rendering of the states + lines and stuff that does not need to be
-     * re-rendered for animations should be put in 'requestRender'
-     */
+    }>, nextState: Readonly<ViewState>, nextContext: any): void;
     UNSAFE_componentWillUpdate?(nextProps: Readonly<{
         currentAggregation: {
             aggregation: number[];

@@ -8,7 +8,6 @@ import { Dataset } from "../../model/Dataset";
 import { GenericChanges } from "../legends/GenericChanges";
 import { RootState } from "../Store/Store";
 import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType, StoriesUtil } from "../Ducks/StoriesDuck";
-import { DifferenceThresholdSlider } from '../../plugins/Coral/CoralChanges/DifferenceThresholdSlider';
 import CloseIcon from '@mui/icons-material/Close';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -536,8 +535,6 @@ export const Storytelling = connector(function ({
                         position: 'relative'
                     }}>
                         <Typography align="center" variant="subtitle2">Difference</Typography>
-                        {(dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.None) && <DifferenceThresholdSlider />}
-
                         {
                             input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
                         }

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 /**
  * Simple shape legend
  * put a category in props

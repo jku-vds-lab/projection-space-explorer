@@ -1,4 +1,3 @@
-/// <reference types="react" />
 /**
  * Component that lets user pick from a list of color scales.
  */

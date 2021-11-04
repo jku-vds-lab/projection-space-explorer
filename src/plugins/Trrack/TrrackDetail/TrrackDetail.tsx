@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
-import TrrackScatter from './TrrackScatter.js';
+import TrrackScatter from './TrrackScatter';
 import { IVector } from "../../../model/Vector";
-import { RootState } from '../../../components/Store/Store.js';
+import { RootState } from '../../../components/Store/Store';
 
 
 function getScatter(vectors, dataset) {

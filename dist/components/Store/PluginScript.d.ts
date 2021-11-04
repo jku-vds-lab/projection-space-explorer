@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { Reducer, Store } from "redux";
 import { IVector } from "../../model/Vector";
 /**

@@ -45,13 +45,13 @@ import { PluginRegistry } from "./components/Store/PluginScript";
 import { RootState } from "./components/Store/Store";
 import { RubikPlugin } from "./plugins/Rubik/RubikPlugin";
 import { ChessPlugin } from "./plugins/Chess/ChessPlugin";
-import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { GoPlugin } from "./plugins/Go/GoPlugin";
 import { PseAppBar } from "./components/PseAppBar";
 import { setDetailVisibility } from "./components/Ducks/DetailViewDuck";
 import { PSEIcons } from "./utils/PSEIcons";
 // @ts-ignore
 import VDSLogo from '../textures/vds-lab-logo-notext.svg'
+import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -609,5 +609,5 @@ const loo = async () => {
 
 PluginRegistry.getInstance().registerPlugin(new RubikPlugin())
 PluginRegistry.getInstance().registerPlugin(new ChessPlugin())
-PluginRegistry.getInstance().registerPlugin(new CoralPlugin())
 PluginRegistry.getInstance().registerPlugin(new GoPlugin())
+PluginRegistry.getInstance().registerPlugin(new CoralPlugin())
