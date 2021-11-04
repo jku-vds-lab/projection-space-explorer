@@ -459,7 +459,7 @@ export const Application = connector(class extends React.Component<Props, any> {
 
             <FixedHeightTabPanel value={this.props.openTab} index={2}>
               <StatesTabPanel
-                webGLView={this.threeRef}
+                webGlView={this.threeRef}
               ></StatesTabPanel>
             </FixedHeightTabPanel>
 

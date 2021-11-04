@@ -210,7 +210,7 @@ export class CSVLoader implements Loader {
                 vector.groupLabel = []
             })
 
-            dataset.categories = new InferCategory(vectors).load(ranges)
+            dataset.categories = dataset.extractEncodingFeatures(ranges)
 
             finished(dataset)
         })

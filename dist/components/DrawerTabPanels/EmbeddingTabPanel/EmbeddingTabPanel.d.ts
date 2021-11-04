@@ -20,7 +20,9 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         seeded: boolean;
         useSelection: boolean;
         method: string;
-        distanceMetric: string;
+        distanceMetric: import("../../../model/DistanceMetric").DistanceMetric;
+        normalizationMethod: import("../../../model/NormalizationMethod").NormalizationMethod;
+        encodingMethod: import("../../../model/EncodingMethod").EncodingMethod;
     };
     projections: Embedding[];
 } & {
