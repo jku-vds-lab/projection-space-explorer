@@ -491,7 +491,6 @@ export const Application = connector(class extends React.Component<Props, any> {
       <div style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
         flexGrow: 1
       }}>
 
