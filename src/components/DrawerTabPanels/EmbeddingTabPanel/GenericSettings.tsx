@@ -2,8 +2,11 @@ import { Button, Checkbox, Container, Dialog, DialogActions, DialogContent, Form
 import React = require('react')
 import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from '../../Store/Store';
-import FeaturePicker from './FeaturePicker';
 import clone = require('fast-clone')
+import { DistanceMetric } from '../../../model/DistanceMetric';
+import { NormalizationMethod } from '../../../model/NormalizationMethod';
+import { EncodingMethod } from '../../../model/EncodingMethod';
+import FeaturePicker from './FeaturePicker';
 
 const mapState = (state: RootState) => ({
     projectionColumns: state.projectionColumns
@@ -29,7 +32,6 @@ const TSNESettings = ({ learningRate, setLearningRate, perplexity, setPerplexity
 
     return <FormGroup>
         <TextField
-            size='small'
             id="textPerplexity"
             label="Perplexity"
             type="number"
@@ -39,7 +41,6 @@ const TSNESettings = ({ learningRate, setLearningRate, perplexity, setPerplexity
             }}
         />
         <TextField
-            size='small'
             id="textLearningRate"
             label="Learning Rate"
             type="number"
@@ -55,7 +56,6 @@ const UMAPSettings = ({ nNeighbors, setNNeighbors }) => {
 
     return <FormGroup>
         <TextField
-            size='small'
             id="textNNeighbors"
             label="n Neighbors"
             type="number"
@@ -76,6 +76,25 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
     const [useSelection, setUseSelection] = React.useState(projectionParams.useSelection)
 
     const [distanceMetric, setDistanceMetric] = React.useState(projectionParams.distanceMetric)
+     //TODO: maybe it would make sense to make a user input for normalization and encoding methods...
+    const [normalizationMethod, setNormalizationMethod] = React.useState(projectionParams.normalizationMethod)
+    const [encodingMethod, setEncodingMethod] = React.useState(projectionParams.encodingMethod)
+
+    const changeDistanceMetric = (value) => { // when we change the distance metric, we need to adapt normalization Method and encoding of categorical features --> gower's distance usually normalizes between [0,1] and does not one-hot encode because it uses dedicated distance measures for categorical data
+        
+        switch(value){
+            case DistanceMetric.GOWER:
+                setNormalizationMethod(NormalizationMethod.NORMALIZE01);
+                setEncodingMethod(EncodingMethod.NUMERIC);
+                break;
+            default:
+                setNormalizationMethod(NormalizationMethod.STANDARDIZE);
+                setEncodingMethod(EncodingMethod.ONEHOT);
+                break;
+        }
+        setDistanceMetric(value);
+
+    }
 
     const cloneColumns = (projectionColumns) => {
         return projectionColumns.map(val => {
@@ -101,7 +120,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                 {domainSettings != 'forceatlas2' && <FeaturePicker selection={selection} setSelection={setSelection}></FeaturePicker>}
 
 
-                <Grid container justifyContent="center" style={{ width: '100%' }} spacing={3}>
+                <Grid container justifyContent="center" style={{ width: '100%' }}>
                     <Grid item>
                         <FormControl>
                             <FormLabel component="legend">Projection Parameters</FormLabel>
@@ -116,7 +135,6 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                             <FormLabel component="legend">General Parameters</FormLabel>
                             <FormGroup>
                                 <TextField
-                                    size='small'
                                     id="textIterations"
                                     label="Iterations"
                                     type="number"
@@ -134,16 +152,16 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                     label="Project Selection Only"
                                 />
                                 {(domainSettings == 'tsne' || domainSettings == 'umap') && <FormControl>
-                                    <FormHelperText>Distance Metric</FormHelperText>
+                                    <InputLabel id="demo-controlled-open-select-label">Distance Metric</InputLabel>
                                     <Select
-                                        displayEmpty
-                                        size='small'
+                                        labelId="demo-controlled-open-select-label"
                                         id="demo-controlled-open-select"
                                         value={distanceMetric}
-                                        onChange={(event) => { setDistanceMetric(event.target.value) }}
+                                        onChange={(event) => { changeDistanceMetric(event.target.value) }}
                                     >
-                                        <MenuItem value={'euclidean'}>Euclidean</MenuItem>
-                                        <MenuItem value={'jaccard'}>Jaccard</MenuItem>
+                                        <MenuItem value={DistanceMetric.EUCLIDEAN}>Euclidean</MenuItem>
+                                        <MenuItem value={DistanceMetric.JACCARD}>Jaccard</MenuItem>
+                                        <MenuItem value={DistanceMetric.GOWER}>Gower</MenuItem>
                                     </Select>
                                 </FormControl>}
                             </FormGroup>
@@ -163,7 +181,9 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                     nNeighbors: nNeighbors,
                     method: domainSettings,
                     useSelection: useSelection,
-                    distanceMetric: distanceMetric
+                    distanceMetric: distanceMetric,
+                    normalizationMethod: normalizationMethod,
+                    encodingMethod: encodingMethod
                 }, selection)
             }}>Start</Button>
         </DialogActions>

@@ -195,7 +195,7 @@ export class JSONLoader implements Loader {
         let dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation)
         dataset.clusters = clusters
         dataset.clusterEdges = edges
-        dataset.categories = new InferCategory(this.vectors).load(ranges)
+        dataset.categories = dataset.extractEncodingFeatures(ranges)
 
         finished(dataset)
     }

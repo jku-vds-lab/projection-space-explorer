@@ -5,7 +5,7 @@ import StopIcon from '@mui/icons-material/Stop';
 import CloseIcon from '@mui/icons-material/Close';
 import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from "../../Store/Store";
-import { SettingsBackupRestoreSharp } from "@material-ui/icons";
+import SettingsBackupRestoreSharp from '@mui/icons-material/SettingsBackupRestoreSharp';
 import { makeStyles } from "@mui/styles";
 
 /**

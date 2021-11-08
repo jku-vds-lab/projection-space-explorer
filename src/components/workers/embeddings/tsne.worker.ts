@@ -1,5 +1,6 @@
 import "regenerator-runtime/runtime";
 import { euclidean, jaccard } from '../../Utility/UMAP/umap';
+import { get_distance_fn } from "../../Utility/DistanceFunctions";
 
 // create main global object
 var tsnejs = tsnejs || { REVISION: 'ALPHA' };
@@ -411,7 +412,7 @@ self.addEventListener('message', function (e) {
             epsilon: e.data.params.learningRate,
             perplexity: e.data.params.perplexity,
             dim: 2,
-            distanceFn: e.data.params.distanceMetric == 'euclidean' ? euclidean : jaccard
+            distanceFn: get_distance_fn(e.data.params.distanceMetric, e)
         });
         context.tsne.initDataSeeded(e.data.input, e.data.params.seeded ? e.data.seed : undefined)
         context.tsne.step()

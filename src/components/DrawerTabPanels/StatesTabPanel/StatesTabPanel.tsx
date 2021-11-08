@@ -1,6 +1,6 @@
 import { connect, ConnectedProps } from 'react-redux'
 import * as React from 'react'
-import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, FormHelperText } from '@mui/material'
+import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, FormHelperText, createFilterOptions, Autocomplete, TextField } from '@mui/material'
 import { ShapeLegend } from './ShapeLegend'
 import { setSelectedVectorByShapeAction } from "../../Ducks/SelectedVectorByShapeDuck"
 import { setVectorByShapeAction } from "../../Ducks/VectorByShapeDuck"
@@ -23,6 +23,11 @@ import { PathBrightnessSlider } from './PathBrightnessSlider'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions'
 import { makeStyles } from '@mui/styles'
+
+
+
+
+
 
 const mapStateToProps = (state: RootState) => ({
     selectedVectorByShape: state.selectedVectorByShape,
@@ -56,12 +61,11 @@ const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRe
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    webGLView: any
+    webGlView
 }
 
 /**
  
-
         {
             <FormControl style={{ margin: '4px 0px' }}>
                 <InputLabel shrink id="lineByLabel">{"line by"}</InputLabel>
@@ -83,9 +87,58 @@ type Props = PropsFromRedux & {
                 </Select>
             </FormControl>
         }
-
  */
 
+const SelectFeatureComponent = ({label, default_val, categoryOptions, onChange}:any) => {
+    
+    let autocomplete_options = [{value:"None", inputValue:"None"}];
+    let autocomplete_filterOptions = null;
+    if(categoryOptions != null){
+        autocomplete_options = autocomplete_options.concat(categoryOptions.attributes.map((attribute) => {
+            return {value: attribute.key, inputValue: attribute.name}
+        }));
+        autocomplete_filterOptions = createFilterOptions({
+            stringify: (option:any) => { return option.value; },
+        });
+
+    }
+    
+    return <><Autocomplete
+        id={"vectorBySelect_"+label}
+        filterOptions={autocomplete_filterOptions}
+        onChange={(event, newValue) => {
+            if(newValue)
+                onChange(newValue.value)
+        }}
+        options={autocomplete_options.sort((a, b) => {
+            if(a.value === "None")
+                return -1
+            if(b.value === "None")
+                return 1
+            return -b.inputValue.localeCompare(a.inputValue)}
+            )}
+        groupBy={(option:any) => option.group}
+        getOptionLabel={(option:any) => option.inputValue}
+        isOptionEqualToValue={(option:any, value) => {return option.value == value.value;}}
+        // defaultValue={channelColor ? autocomplete_color_options.filter((option:any) => option.value == channelColor.key)[0] : {value:"", inputValue:""}}
+        value = {default_val ? autocomplete_options.filter((option:any) => option.value == default_val.key)[0] : autocomplete_options[0]}
+        renderInput={(params) => <TextField {...params} label={label + " by"}  />}
+    /></>
+    // return <><InputLabel shrink id={"vectorBySelectLabel_"+label}>{label} by</InputLabel>
+    //     <Select labelId={"vectorBySelectLabel_"+label}
+    //         id={"vectorBySelect_"+label}
+    //         displayEmpty
+    //         value={default_val ? default_val.key : ""}
+    //         onChange={(event)=>{
+    //             onChange(event.target.value)
+    //         }}
+    //     >
+    //         <MenuItem value="">None</MenuItem>
+    //         {categoryOptions.attributes.map(attribute => {
+    //             return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+    //         })}
+    //     </Select></>
+}
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
@@ -106,7 +159,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 export const StatesTabPanelFull = ({
     selectedVectorByShape,
     vectorByShape,
@@ -117,7 +169,7 @@ export const StatesTabPanelFull = ({
     categoryOptions,
     selectedLineBy,
     setSelectedLineBy,
-    webGLView,
+    webGlView,
     channelBrightness,
     setChannelBrightness,
     setGlobalPointBrightness,
@@ -150,28 +202,19 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <FormHelperText>{"shape by"}</FormHelperText>
-                        <Select
-                            displayEmpty
-                            size='small'
-                            id="vectorByShapeSelect"
-                            value={selectedVectorByShape}
-                            onChange={(event) => {
-                                setSelectedVectorByShape(event.target.value)
 
-                                if (event.target.value != null && event.target.value != "") {
-                                    var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "shape").attributes.filter(a => a.key == event.target.value)[0]
-                                    setVectorByShape(attribute)
-                                } else {
-                                    setVectorByShape(null)
+                        <SelectFeatureComponent label={"shape"} default_val={selectedVectorByShape ? {key: selectedVectorByShape} : null} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "shape")} onChange={(newValue) => {
+                                
+                                setSelectedVectorByShape(newValue)
+                                var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "shape").attributes.filter(a => a.key == newValue)[0]
+
+                                if (attribute == undefined) {
+                                    attribute = null
                                 }
-                            }}
-                        >
-                            <MenuItem value=""><em>None</em></MenuItem>
-                            {CategoryOptionsAPI.getCategory(categoryOptions, "shape").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
+                                setVectorByShape(attribute)
+
+                            }}></SelectFeatureComponent>
+                        
                     </FormControl>
                 </Grid>
 
@@ -198,13 +241,9 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <FormHelperText>{"brightness by"}</FormHelperText>
-                        <Select
-                            displayEmpty
-                            size='small'
-                            value={channelBrightness ? channelBrightness.key : ''}
-                            onChange={(event) => {
-                                var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.filter(a => a.key == event.target.value)[0]
+                        
+                        <SelectFeatureComponent label={"brightness"} default_val={channelBrightness} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "transparency")} onChange={(newValue) => {
+                                var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.filter(a => a.key == newValue)[0]
 
                                 if (attribute == undefined) {
                                     attribute = null
@@ -214,15 +253,9 @@ export const StatesTabPanelFull = ({
 
                                 setGlobalPointBrightness(pointBrightness)
                                 setChannelBrightness(attribute)
-                                webGLView.current.particles.transparencyCat(attribute, pointBrightness)
-                                webGLView.current.requestRender()
-                            }}
-                        >
-                            <MenuItem value=""><em>None</em></MenuItem>
-                            {CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
+                                webGlView.current.particles.transparencyCat(attribute, pointBrightness)
+                                webGlView.current.requestRender()
+                            }}></SelectFeatureComponent>
                     </FormControl>
                 </Grid>
                 :
@@ -243,14 +276,9 @@ export const StatesTabPanelFull = ({
                     direction="column"
                     style={{ padding: '0 16px' }}>
                     <FormControl style={{ margin: '4px 0px' }}>
-                        <FormHelperText>{"size by"}</FormHelperText>
-                        <Select
-                            id="vectorBySizeSelect"
-                            displayEmpty
-                            size='small'
-                            value={channelSize ? channelSize.key : ''}
-                            onChange={(event) => {
-                                var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "size").attributes.filter(a => a.key == event.target.value)[0]
+                        
+                        <SelectFeatureComponent label={"size"} default_val={channelSize} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "size")} onChange={(newValue) => {
+                                var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "size").attributes.filter(a => a.key == newValue)[0]
                                 if (attribute == undefined) {
                                     attribute = null
                                 }
@@ -261,14 +289,8 @@ export const StatesTabPanelFull = ({
 
                                 setChannelSize(attribute)
 
-                                webGLView.current.particles.sizeCat(attribute, pointSize)
-                            }}
-                        >
-                            <MenuItem value=""><em>None</em></MenuItem>
-                            {CategoryOptionsAPI.getCategory(categoryOptions, "size").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
+                                webGlView.current.particles.sizeCat(attribute, pointSize)
+                            }}></SelectFeatureComponent>
                     </FormControl>
                 </Grid>
                 :
@@ -290,27 +312,16 @@ export const StatesTabPanelFull = ({
 
                     <Grid container item alignItems="stretch" direction="column">
                         <FormControl style={{ margin: '4px 0px' }}>
-                            <FormHelperText>{"color by"}</FormHelperText>
-                            <Select
-                                id="vectorByColorSelect"
-                                displayEmpty
-                                size='small'
-                                value={channelColor ? channelColor.key : ""}
-                                onChange={(event) => {
+                            <SelectFeatureComponent label={"color"} default_val={channelColor} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "color")} onChange={(newValue) => {
                                     var attribute = null
-                                    if (event.target.value != "") {
-                                        attribute = CategoryOptionsAPI.getCategory(categoryOptions, "color").attributes.filter(a => a.key == event.target.value)[0]
+                                    if (newValue && newValue != "") {
+                                        attribute = CategoryOptionsAPI.getCategory(categoryOptions, "color").attributes.filter(a => a.key == newValue)[0]
                                     }
 
                                     setAdvancedColoringSelection(new Array(10000).fill(true))
                                     setChannelColor(attribute)
-                                }}
-                            >
-                                <MenuItem value=""><em>None</em></MenuItem>
-                                {CategoryOptionsAPI.getCategory(categoryOptions, "color").attributes.map(attribute => {
-                                    return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                                })}
-                            </Select>
+                                }}></SelectFeatureComponent>
+
                         </FormControl>
                     </Grid>
                 </Grid>
@@ -339,7 +350,7 @@ export const StatesTabPanelFull = ({
 
     const accordion = <div style={{
     }}>
-        {dataset.isSequential && <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1bh-content"
@@ -378,10 +389,10 @@ export const StatesTabPanelFull = ({
                 </div>
                 }
             </AccordionDetails>
-        </Accordion>}
+        </Accordion>
 
 
-        <Accordion expanded={expanded === 'panel2' || !dataset.isSequential} onChange={handleChange('panel2')}>
+        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1bh-content"
@@ -400,3 +411,43 @@ export const StatesTabPanelFull = ({
 
 
 export const StatesTabPanel = connector(StatesTabPanelFull)
+
+
+/**
+ *
+         {
+            categoryOptions != null && categoryOptions.hasCategory("size") ?
+                <Grid
+                    container
+                    justify="center"
+                    alignItems="stretch"
+                    direction="column"
+                    style={{ padding: '0 16px' }}>
+                    <FormControl style={{ margin: '4px 0px' }}>
+                        <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
+                        <Select labelId="vectorBySizeSelectLabel"
+                            id="vectorBySizeSelect"
+                            displayEmpty
+                            value={channelSize ? channelSize.key : ''}
+                            onChange={(event) => {
+                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
+                                if (attribute == undefined) {
+                                    attribute = null
+                                }
+                                let pointSize = attribute ? [1, 2] : [1]
+                                setGlobalPointSize(pointSize)
+                                setChannelSize(attribute)
+                                webGlView.current.particles.sizeCat(attribute, pointSize)
+                            }}
+                        >
+                            <MenuItem value="">None</MenuItem>
+                            {categoryOptions.getCategory("size").attributes.map(attribute => {
+                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
+                            })}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                :
+                <div></div>
+        }
+ */

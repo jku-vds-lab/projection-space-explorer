@@ -90,7 +90,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     new (props: any): {
         threeRef: any;
         splitRef: any;
-        componentDidMount(): void;
         /**
          * Main callback when the dataset changes
          * @param dataset
@@ -112,6 +111,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         refs: {
             [key: string]: React.ReactInstance;
         };
+        componentDidMount?(): void;
         shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): boolean;
         componentWillUnmount?(): void;
         componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
@@ -128,7 +128,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
 }, Pick<React.ClassAttributes<{
     threeRef: any;
     splitRef: any;
-    componentDidMount(): void;
     /**
      * Main callback when the dataset changes
      * @param dataset
@@ -150,6 +149,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     refs: {
         [key: string]: React.ReactInstance;
     };
+    componentDidMount?(): void;
     shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): boolean;
     componentWillUnmount?(): void;
     componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;

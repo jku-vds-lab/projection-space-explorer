@@ -5,6 +5,8 @@ import { DatasetType } from "./DatasetType";
 import { DataLine } from "./DataLine";
 import { IVector } from "./Vector";
 import { mean, std } from "../components/NumTs/NumTs";
+import { EncodingMethod } from "./EncodingMethod";
+import { NormalizationMethod } from "./NormalizationMethod";
 
 
 export enum PrebuiltFeatures {
@@ -91,11 +93,18 @@ export class DatasetUtil {
     }
 
 
-        /**
+     /**
      * Returns the vectors in this dataset as a 2d array, which
      * can be used as input for tsne for example.
      */
-    static asTensor(dataset: Dataset, projectionColumns, samples?) {
+    static asTensor(dataset: Dataset, projectionColumns, samples?, encodingMethod?, normalizationMethod?) {
+        if(encodingMethod === undefined){
+            encodingMethod = EncodingMethod.ONEHOT;
+        }
+        if(normalizationMethod === undefined){
+            normalizationMethod = NormalizationMethod.STANDARDIZE;
+        }
+
         var tensor = [];
 
         function oneHot(n, length) {
@@ -114,34 +123,80 @@ export class DatasetUtil {
                 let column = entry.name;
                 if (dataset.columns[column].isNumeric) {
                     if (dataset.columns[column].range && entry.normalized) {
-                        let m, s;
-                        
-                        if (column in lookup) {
-                            m = lookup[column].mean
-                            s = lookup[column].std
-                        } else {
-                            m = mean(dataset.vectors.map(v => +v[column]))
-                            s = std(dataset.vectors.map(v => +v[column]))
-
-                            lookup[column] = {
-                                mean: m,
-                                std: s
+                        if(normalizationMethod === NormalizationMethod.STANDARDIZE){ // map to 0 mean and unit standarddeviation
+                            let m, s;
+                            
+                            if (column in lookup) {
+                                m = lookup[column].mean
+                                s = lookup[column].std
+                            } else {
+                                m = mean(dataset.vectors.map(v => +v[column]))
+                                s = std(dataset.vectors.map(v => +v[column]))
+    
+                                lookup[column] = {
+                                    mean: m,
+                                    std: s
+                                }
                             }
-                        }
+    
+                            if(s <= 0) // when all values are equal in a column, the standard deviation can be 0, which would lead to an error
+                                s = 1
+    
+                            data.push((+vector[column] - m) / s);
 
-                        data.push((+vector[column] - m) / s);
+                        }else{ // map between [0;1]
+                            let div = dataset.columns[column].range["max"]-dataset.columns[column].range["min"];
+                            div = div > 0 ? div : 1;
+                            data.push((+vector[column]-dataset.columns[column].range["min"])/div);
+                        }
                     } else {
                         data.push(+vector[column]);
                     }
                 } else {
-                    // Not numeric data can be converted using one-hot encoding
-                    data = data.concat(oneHot(dataset.columns[column].distinct.indexOf(vector[column]), dataset.columns[column].distinct.length));
+                    if(encodingMethod === EncodingMethod.ONEHOT){ // Non numeric data can be converted using one-hot encoding
+                        let hot_encoded = oneHot(dataset.columns[column].distinct.indexOf(vector[column]), dataset.columns[column].distinct.length);
+                        data = data.concat(hot_encoded);
+                    }else{ // or just be integer encoded
+                        data.push(dataset.columns[column].distinct.indexOf(vector[column]));
+                    }
                 }
             });
             tensor.push(data);
         });
 
-        return tensor;
+        
+        var featureTypes = [];
+        projectionColumns.forEach(entry => {
+            let column = entry.name;
+            switch(dataset.columns[column].featureType){
+                case FeatureType.Binary:
+                    featureTypes.push(FeatureType.Binary)
+                    break;
+                case FeatureType.Categorical:
+                    if(encodingMethod === EncodingMethod.ONEHOT){ // if the categorical attribute gets one hot encoded, we set all resulting columns to be binary
+                        featureTypes.concat(Array(dataset.columns[column].distinct.length).fill(FeatureType.Binary));
+                    }else{ // otherwise, it is declared as categorical column that contains integer because we can only handle integers in the distance metrics
+                        featureTypes.push(FeatureType.Categorical);
+                    }
+                    break;
+                case FeatureType.Date:
+                    // TODO: handle Date types
+                    break;
+                case FeatureType.Ordinal:
+                    // TODO: handle Ordinal types
+                    break;
+                case FeatureType.Quantitative:
+                    featureTypes.push(FeatureType.Quantitative)
+                    break;
+                case FeatureType.String:
+                    // TODO: handle String types
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        return {tensor: tensor, featureTypes: featureTypes};
     }
 }
 
@@ -332,5 +387,163 @@ export class Dataset {
             this.columns['x'].featureType = FeatureType.Quantitative;
         if ('y' in this.columns)
             this.columns['y'].featureType = FeatureType.Quantitative;
+    }
+
+
+    /**
+     * Infers an array of attributes that can be filtered after, these can be
+     * categorical, sequential or continuous attribues.
+     * @param {*} ranges
+     */
+     extractEncodingFeatures(ranges) {
+        if (this.vectors.length <= 0) {
+            return [];
+        }
+
+        var shape_options = []
+        var size_options = []
+        var transparency_options = []
+        var color_options = []
+
+
+        const columns = this.columns;
+        var header = Object.keys(columns);
+        // var header = Object.keys(this.vectors[0]).filter(a => a != "line");
+
+        header.forEach(key => {
+            if (key == PrebuiltFeatures.ClusterLabel) {
+                color_options.push({
+                    "key": key,
+                    "name": key,
+                    "type": "categorical"
+                })
+            } else {
+                var shapes = ["circle", "star", "square", "cross"];
+                switch(columns[key].featureType){
+                    case FeatureType.Binary:
+                        color_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "categorical"
+                        });
+
+                        shape_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "categorical", // TODO: is there difference for binary?
+                            "values": columns[key].distinct.map((value, index) => {
+                                return {
+                                    from: value,
+                                    to: shapes[index]
+                                };
+                            })
+                        });
+                        break;
+                    case FeatureType.Categorical:
+                        color_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "categorical"
+                        });
+
+                        if (columns[key].distinct.length <= 4) {
+                            var shapes = ["circle", "star", "square", "cross"];
+                            shape_options.push({
+                                "key": key,
+                                "name": key,
+                                "type": "categorical",
+                                "values": columns[key].distinct.map((value, index) => {
+                                    return {
+                                        from: value,
+                                        to: shapes[index]
+                                    };
+                                })
+                            });
+                        }
+                        break;
+                    case FeatureType.Date:
+                        break;
+                    case FeatureType.Ordinal:
+                        color_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential", // TODO: add ordinal color scale
+                            "range": columns[key].range
+                        });
+                        transparency_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential", // TODO: transparancy for ordered data?
+                            "range": columns[key].range,
+                            "values": {
+                                range: [0.3, 1.0]
+                            }
+                        });
+                        size_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential", // TODO: size for ordered data?
+                            "range": columns[key].range,
+                            "values": {
+                                range: [1, 2]
+                            }
+                        });
+                        break;
+                    case FeatureType.Quantitative:
+                        color_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential",
+                            "range": columns[key].range
+                        });
+                        transparency_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential",
+                            "range": columns[key].range,
+                            "values": {
+                                range: [0.3, 1.0]
+                            }
+                        });
+                        size_options.push({
+                            "key": key,
+                            "name": key,
+                            "type": "sequential",
+                            "range": columns[key].range,
+                            "values": {
+                                range: [1, 2]
+                            }
+                        });
+                        break;
+                    case FeatureType.String:
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        });
+
+
+        var options = [
+            {
+                "category": "shape",
+                "attributes": shape_options
+            },
+            {
+                "category": "size",
+                "attributes": size_options
+            },
+            {
+                "category": "transparency",
+                "attributes": transparency_options
+            },
+            {
+                "category": "color",
+                "attributes": color_options
+            }
+        ];
+
+        return options;
     }
 }

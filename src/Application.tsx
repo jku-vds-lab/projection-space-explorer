@@ -1,7 +1,6 @@
 import "regenerator-runtime/runtime";
 import { WebGLView } from './components/WebGLView/WebGLView'
 import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from "@mui/material";
-import { DatasetDatabase } from "./components/Utility/Data/DatasetDatabase";
 import { Dataset, DatasetUtil, SegmentFN } from "./model/Dataset";
 import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './components/DrawerTabPanels/StatesTabPanel/LineTreePopover'
 import * as React from "react";
@@ -31,8 +30,6 @@ import { DetailsTabPanel } from "./components/DrawerTabPanels/DetailsTabPanel/De
 import { addProjectionAction } from "./components/Ducks/ProjectionsDuck";
 import { Embedding } from "./model/Embedding";
 import { setActiveStory, setVectors, addStory } from "./components/Ducks/StoriesDuck";
-
-
 import Split from 'react-split'
 import { setLineByOptions } from "./components/Ducks/SelectedLineByDuck";
 import { IBook } from "./model/Book";
@@ -67,8 +64,9 @@ function FixedHeightTabPanel(props) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
+      style={{ height: '100%' }}
     >
-      {<Paper style={{ overflow: 'hidden', height: '100vh' }}>{children}</Paper>}
+      {<Paper style={{ overflow: 'hidden', height: '100%' }}>{children}</Paper>}
     </Typography>
   );
 }
@@ -197,36 +195,6 @@ export const Application = connector(class extends React.Component<Props, any> {
   }
 
 
-  componentDidMount() {
-    var url = new URL(window.location.toString());
-    var set = url.searchParams.get("set");
-
-    if (this.props.config?.preselect?.initOnMount ?? true) {
-      var preselect = "datasets/rubik/cube10x2_different_origins.csv"
-      var loader = new CSVLoader();
-  
-      if (set != null) {
-        if (set == "neural") {
-          preselect = "datasets/neural/learning_confmat.csv"
-          loader = new CSVLoader();
-        } else if (set == "rubik") {
-          preselect = "datasets/rubik/cube10x2_different_origins.csv"
-          loader = new CSVLoader();
-        } else if (set == "chess") {
-          preselect = "datasets/chess/chess16k.csv"
-          loader = new CSVLoader();
-        } else if (set == "reaction") {
-          preselect = "datasets/chemvis/domain_5000_all_predictions.csv";
-          loader = new CSVLoader();
-        }
-        loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
-      } else {
-        loader.resolvePath(new DatasetDatabase().getByPath(preselect), (dataset) => { this.onDataSelected(dataset) })
-      }
-    }
-  }
-
-
   /**
    * Main callback when the dataset changes
    * @param dataset 
@@ -350,7 +318,7 @@ export const Application = connector(class extends React.Component<Props, any> {
     }
   }
 
-  
+
 
   render() {
     return <div
@@ -378,7 +346,7 @@ export const Application = connector(class extends React.Component<Props, any> {
           orientation="vertical"
           indicatorColor="primary"
           textColor="primary"
-          
+
           onChange={(e, newTab) => this.onChangeTab(newTab)}
           aria-label="disabled tabs example"
         >
@@ -439,7 +407,9 @@ export const Application = connector(class extends React.Component<Props, any> {
             container
             justifyContent="center"
             alignItems="stretch"
-            direction="column">
+            direction="row"
+            height='100%'
+          >
 
 
 
@@ -459,7 +429,7 @@ export const Application = connector(class extends React.Component<Props, any> {
 
             <FixedHeightTabPanel value={this.props.openTab} index={2}>
               <StatesTabPanel
-                webGLView={this.threeRef}
+                webGlView={this.threeRef}
               ></StatesTabPanel>
             </FixedHeightTabPanel>
 
@@ -491,7 +461,6 @@ export const Application = connector(class extends React.Component<Props, any> {
       <div style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
         flexGrow: 1
       }}>
 
@@ -504,41 +473,49 @@ export const Application = connector(class extends React.Component<Props, any> {
           </PseAppBar>
         }
 
-        {/** @ts-ignore */}
-        <Split
-          style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-          ref={this.splitRef}
-          sizes={[100, 0]}
-          minSize={0}
-          expandToMin={false}
-          gutterSize={12}
-          gutterAlign="center"
-          snapOffset={30}
-          dragInterval={1}
-          direction="vertical"
-          cursor="ns-resize"
-          onDragStart={() => {
-            this.props.setLineUpInput_visibility(false)
-          }}
-          onDragEnd={(sizes) => {
-            if (sizes[0] > 90) {
-              this.props.setLineUpInput_visibility(false)
-            } else {
-              this.props.setLineUpInput_visibility(true)
-            }
-          }}
-        >
-          <div style={{ flexGrow: 0.9 }}>
-            <WebGLView
-              ref={this.threeRef}
-            />
-          </div>
-          <div style={{ flexGrow: 0.1 }}>
-            {
-              React.createElement(this.props.overrideComponents.detailViews[0].view, {})
-            }
-          </div>
-        </Split>
+
+        {
+          (this.props.overrideComponents?.detailViews?.length ?? 0) > 0 ?
+            //@ts-ignore
+            <Split
+              style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+              ref={this.splitRef}
+              sizes={[100, 0]}
+              minSize={0}
+              expandToMin={false}
+              gutterSize={12}
+              gutterAlign="center"
+              snapOffset={30}
+              dragInterval={1}
+              direction="vertical"
+              cursor="ns-resize"
+              onDragStart={() => {
+                this.props.setLineUpInput_visibility(false)
+              }}
+              onDragEnd={(sizes) => {
+                if (sizes[0] > 90) {
+                  this.props.setLineUpInput_visibility(false)
+                } else {
+                  this.props.setLineUpInput_visibility(true)
+                }
+              }}
+            >
+              <div style={{ flexGrow: 0.9 }}>
+                <WebGLView
+                  ref={this.threeRef}
+                />
+              </div>
+              <div style={{ flexGrow: 0.1 }}>
+                {
+                  React.createElement(this.props.overrideComponents.detailViews[0].view, {})
+                }
+              </div>
+            </Split> : <div style={{ flexGrow: 0.9 }}>
+              <WebGLView
+                ref={this.threeRef}
+              />
+            </div>
+        }
       </div>
 
       <StateSequenceDrawerRedux></StateSequenceDrawerRedux>

@@ -28,7 +28,9 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         seeded: boolean;
         useSelection: boolean;
         method: string;
-        distanceMetric: string;
+        distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
+        normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
+        encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
     };
     projectionWorker: Worker;
     clusterMode: import("../Ducks/ClusterModeDuck").ClusterMode;
@@ -75,6 +77,14 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     detailView: {
         open: boolean;
         active: string;
+    };
+    datasetEntries: {
+        values: {
+            byId: {
+                [id: string]: import("../..").DatasetEntry;
+            };
+            allIds: string[];
+        };
     };
 }>;
 export declare function createRootReducer(reducers: any): (state: any, action: any) => import("redux").CombinedState<{
@@ -107,7 +117,9 @@ export declare function createRootReducer(reducers: any): (state: any, action: a
         seeded: boolean;
         useSelection: boolean;
         method: string;
-        distanceMetric: string;
+        distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
+        normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
+        encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
     };
     projectionWorker: Worker;
     clusterMode: import("../Ducks/ClusterModeDuck").ClusterMode;
@@ -154,6 +166,14 @@ export declare function createRootReducer(reducers: any): (state: any, action: a
     detailView: {
         open: boolean;
         active: string;
+    };
+    datasetEntries: {
+        values: {
+            byId: {
+                [id: string]: import("../..").DatasetEntry;
+            };
+            allIds: string[];
+        };
     };
 }>;
 export declare type RootState = ReturnType<typeof rootReducer>;

@@ -10,11 +10,13 @@ export class UMAPEmbeddingController extends EmbeddingController {
     init(dataset: Dataset, selection: any, params: any, samples?) {
 
         this.worker = new umapWorker()
+        var tensor = DatasetUtil.asTensor(dataset, selection.filter(e => e.checked), samples, params.encodingMethod, params.normalizationMethod)
         this.worker.postMessage({
             messageType: 'init',
-            input: DatasetUtil.asTensor(dataset, selection.filter(e => e.checked), samples),
+            input: tensor.tensor,
             seed: dataset.vectors.map(sample => [sample.x, sample.y]),
-            params: params
+            params: params,
+            featureTypes: tensor.featureTypes
         })
 
         this.worker.addEventListener('message', (e) => {

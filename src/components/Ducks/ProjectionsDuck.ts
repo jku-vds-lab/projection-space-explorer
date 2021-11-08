@@ -1,4 +1,4 @@
-import { Delete } from "@material-ui/icons"
+import Delete from '@mui/icons-material/Delete';
 import { Embedding } from "../../model/Embedding"
 
 const ADD = "ducks/projections/ADD"
