@@ -1,7 +1,7 @@
 import { DatasetType } from "../../../model/DatasetType";
 import { IVector } from "../../../model/Vector";
 import { Loader } from "./Loader";
-import { DatasetEntry } from "../Data/DatasetDatabase";
+import { DatasetEntry } from "../../../model/DatasetEntry";
 export declare class CSVLoader implements Loader {
     vectors: IVector[];
     datasetType: DatasetType;

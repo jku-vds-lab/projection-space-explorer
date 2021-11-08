@@ -1,12 +1,14 @@
 import { Grid, List, ListItem, ListItemText, ListSubheader } from "@mui/material"
 import React = require("react")
 import { DatasetType } from "../../../model/DatasetType"
-import { DatasetDatabase } from "../../Utility/Data/DatasetDatabase"
 import { ListItemIcon, SvgIcon } from "@mui/material"
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ShareIcon from '@mui/icons-material/Share';
 import WidgetsIcon from '@mui/icons-material/Widgets';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { connect, ConnectedProps } from "react-redux"
+import { RootState } from "../../Store"
+import { DatasetEntriesAPI } from "../../Ducks/DatasetEntriesDuck"
 
 
 export const TypeIcon = ({ type }) => {
@@ -43,10 +45,21 @@ export const TypeIcon = ({ type }) => {
 }
 
 
+const mapStateToProps = (state: RootState) => ({
+    datasetEntries: state.datasetEntries
+})
 
-export var PredefinedDatasets = ({ onChange }) => {
-    var database = new DatasetDatabase()
-    var types = database.getTypes()
+const mapDispatchToProps = dispatch => ({
+})
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type Props = ConnectedProps<typeof connector> & {
+    onChange: any
+}
+
+export var PredefinedDatasets = connector(({ onChange, datasetEntries }: Props) => {
+    var types = DatasetEntriesAPI.getTypes(datasetEntries)
 
     var handleClick = (entry) => {
         onChange(entry)
@@ -61,7 +74,7 @@ export var PredefinedDatasets = ({ onChange }) => {
                             <ListSubheader>{Object.keys(DatasetType)[Object.values(DatasetType).indexOf(type)].replaceAll('_', ' ')}</ListSubheader>
                             {
 
-                                database.data.filter(value => value.type == type).map(entry => {
+                                Object.values(datasetEntries.values.byId).filter(value => value.type == type).map(entry => {
                                     return <ListItem key={entry.path} button onClick={() => {
                                         handleClick(entry)
                                     }
@@ -78,4 +91,4 @@ export var PredefinedDatasets = ({ onChange }) => {
 
         </List>
     </Grid>
-}
+})

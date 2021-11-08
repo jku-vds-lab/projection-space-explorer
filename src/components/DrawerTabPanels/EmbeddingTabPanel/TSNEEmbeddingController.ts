@@ -8,11 +8,13 @@ export class TSNEEmbeddingController extends EmbeddingController {
     
     init(dataset: Dataset, selection: any, params: any) {
         this.worker = new TsneWorker()
+        var tensor = DatasetUtil.asTensor(selection.filter(e => e.checked), null, params.encodingMethod, params.normalizationMethod) // for gower, we don't need one-hot-encoding
         this.worker.postMessage({
             messageType: 'init',
-            input: DatasetUtil.asTensor(dataset, selection.filter(e => e.checked)),
+            input: tensor.tensor,
             seed: dataset.vectors.map(sample => [sample.x, sample.y]),
-            params: params
+            params: params,
+            featureTypes: tensor.featureTypes
         })
 
         this.worker.addEventListener('message', (e) => {

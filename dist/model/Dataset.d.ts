@@ -37,10 +37,13 @@ export declare class DatasetUtil {
      */
     static getColumns(dataset: Dataset, excludeGenerated?: boolean): string[];
     /**
- * Returns the vectors in this dataset as a 2d array, which
- * can be used as input for tsne for example.
- */
-    static asTensor(dataset: Dataset, projectionColumns: any, samples?: any): any[];
+    * Returns the vectors in this dataset as a 2d array, which
+    * can be used as input for tsne for example.
+    */
+    static asTensor(dataset: Dataset, projectionColumns: any, samples?: any, encodingMethod?: any, normalizationMethod?: any): {
+        tensor: any[];
+        featureTypes: any[];
+    };
 }
 /**
  * Dataset class that holds all data, the ranges and additional stuff
@@ -81,5 +84,14 @@ export declare class Dataset {
      * Creates a map which shows the distinct types and data types of the columns.
      */
     calculateColumnTypes(ranges: any, featureTypes: any, metaInformation: any): void;
+    /**
+     * Infers an array of attributes that can be filtered after, these can be
+     * categorical, sequential or continuous attribues.
+     * @param {*} ranges
+     */
+    extractEncodingFeatures(ranges: any): {
+        category: string;
+        attributes: any[];
+    }[];
 }
 export {};

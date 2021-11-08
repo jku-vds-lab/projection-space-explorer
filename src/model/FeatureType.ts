@@ -6,5 +6,7 @@ export enum FeatureType {
     String,
     Quantitative,
     Categorical,
-    Date
+    Date,
+    Binary,
+    Ordinal
 }

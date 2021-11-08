@@ -36,6 +36,7 @@ import groupVisualizationMode from '../Ducks/GroupVisualizationMode';
 import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 import detailView from '../Ducks/DetailViewDuck';
+import datasetEntries from '../Ducks/DatasetEntriesDuck';
 
 const allReducers = {
   currentAggregation: currentAggregation,
@@ -74,7 +75,8 @@ const allReducers = {
   groupVisualizationMode: groupVisualizationMode,
   genericFingerprintAttributes: genericFingerprintAttributes,
   hoverStateOrientation: hoverStateOrientation,
-  detailView: detailView
+  detailView: detailView,
+  datasetEntries: datasetEntries
 }
 
 const appReducer = combineReducers(allReducers)
