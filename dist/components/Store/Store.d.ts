@@ -78,6 +78,14 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         open: boolean;
         active: string;
     };
+    datasetEntries: {
+        values: {
+            byId: {
+                [id: string]: import("../..").DatasetEntry;
+            };
+            allIds: string[];
+        };
+    };
 }>;
 export declare function createRootReducer(reducers: any): (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {
@@ -158,6 +166,14 @@ export declare function createRootReducer(reducers: any): (state: any, action: a
     detailView: {
         open: boolean;
         active: string;
+    };
+    datasetEntries: {
+        values: {
+            byId: {
+                [id: string]: import("../..").DatasetEntry;
+            };
+            allIds: string[];
+        };
     };
 }>;
 export declare type RootState = ReturnType<typeof rootReducer>;

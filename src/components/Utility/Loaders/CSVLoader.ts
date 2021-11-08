@@ -5,11 +5,11 @@ import { InferCategory } from "../Data/InferCategory"
 import { Preprocessor } from "../Data/Preprocessor"
 import { Dataset, DefaultFeatureLabel } from "../../../model/Dataset"
 import { Loader } from "./Loader"
-import { DatasetEntry } from "../Data/DatasetDatabase"
 import { ICluster } from "../../../model/Cluster"
 import { ObjectTypes } from "../../../model/ObjectType"
 import WorkerCluster from "../../workers/cluster.worker";
 import * as d3v5 from 'd3v5';
+import { DatasetEntry } from "../../../model/DatasetEntry"
 
 function convertFromCSV(vectors) {
     return vectors.map(vector => {
