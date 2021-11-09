@@ -5,12 +5,12 @@ import { Handler } from 'vega-tooltip';
 import { makeStyles } from '@mui/styles';
 import './coral.scss';
 import { ChiSquareTest } from './ChiSquare'
-import BarChanges from './VegaBarChanges';
-import Boxplot from './VegaBoxplot';
+import BarChanges from './VegaBarChanges.js';
+import Boxplot from './VegaBoxplot.js';
 import { Dataset } from '../../../model/Dataset';
 import { IVector } from '../../../model/Vector';
 import { FeatureType } from '../../../model/FeatureType';
-import { RootState } from '../../../components/Store/Store';
+import { RootState } from '../../../components/Store/Store.js';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 
 const useStyles = makeStyles({

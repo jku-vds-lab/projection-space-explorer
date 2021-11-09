@@ -1,15 +1,15 @@
 import * as React from 'react'
 import { connect, ConnectedProps } from 'react-redux'
 import { Handler } from 'vega-tooltip';
+import BarChart from './BarChart.js';
+import VegaDensity from './VegaDensity.js';
+import VegaDate from './VegaDate.js';
 import { makeStyles } from '@mui/styles';
 import './coral.scss';
 import { FeatureType } from "../../../model/FeatureType";
 import { IVector } from "../../../model/Vector";
+import { RootState } from '../../../components/Store/Store.js';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import BarChart from './BarChart';
-import VegaDensity from './VegaDensity';
-import VegaDate from './VegaDate';
-import { RootState } from '../../..';
 
 const useStyles = makeStyles({
   table: {
