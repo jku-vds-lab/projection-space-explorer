@@ -64,7 +64,7 @@ function FixedHeightTabPanel(props) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
-      style={{ height: '100%' }}
+      style={{ height: '100%', width: 288 }}
     >
       {<Paper style={{ overflow: 'hidden', height: '100%' }}>{children}</Paper>}
     </Typography>
@@ -510,7 +510,7 @@ export const Application = connector(class extends React.Component<Props, any> {
                   React.createElement(this.props.overrideComponents.detailViews[0].view, {})
                 }
               </div>
-            </Split> : <div style={{ flexGrow: 0.9 }}>
+            </Split> : <div style={{ flexGrow: 1 }}>
               <WebGLView
                 ref={this.threeRef}
               />
