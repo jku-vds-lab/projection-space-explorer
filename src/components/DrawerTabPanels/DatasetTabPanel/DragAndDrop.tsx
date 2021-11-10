@@ -120,6 +120,7 @@ export class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropSt
                             <input
                                 style={{ display: 'none' }}
                                 id="contained-button-file"
+                                accept={this.props.accept}
                                 multiple
                                 type="file"
                                 onChange={(e) => {
