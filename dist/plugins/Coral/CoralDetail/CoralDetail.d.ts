@@ -3,7 +3,7 @@ import './coral.scss';
 import { IVector } from "../../../model/Vector";
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     legendAttributes: any[];
-    dataset: import("../../../index.js").Dataset;
+    dataset: import("../../..").Dataset;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {

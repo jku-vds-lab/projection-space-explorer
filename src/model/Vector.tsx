@@ -11,7 +11,6 @@ export interface IVector extends TypedObject {
 
     // cluster label and probability
     groupLabel: any[];
-    clusterProbability: number;
 
     // assigned line
     line: any;

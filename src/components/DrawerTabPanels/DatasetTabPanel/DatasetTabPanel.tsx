@@ -40,9 +40,8 @@ export function DatasetTabPanel({ onDataSelected }: { onDataSelected(dataset: Da
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Predefined Datasets'}</Typography>
         </Box>
+
         {predefined}
-
-
 
         <DownloadProgress job={job} onFinish={(result) => {
             if (job.entry.path.endsWith('json')) {

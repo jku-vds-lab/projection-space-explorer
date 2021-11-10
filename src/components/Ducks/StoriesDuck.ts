@@ -379,14 +379,6 @@ export default function stories(state: StoriesType = initialState, action): Stor
                 }
             })
 
-            console.log({
-                vectors: state.vectors,
-                stories: state.stories,
-                active: state.active,
-                trace: state.trace,
-                activeTraceState: state.activeTraceState
-            })
-
             return {
                 vectors: state.vectors,
                 stories: state.stories,

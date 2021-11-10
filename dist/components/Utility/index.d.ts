@@ -1,4 +1,3 @@
-export * from './CloneDeep';
 export * from './Colors';
 export * from './CountryCodes';
 export * from './Data';

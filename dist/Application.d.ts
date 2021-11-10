@@ -48,6 +48,14 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     channelColor: any;
     channelBrightness: any;
     hoverStateOrientation: any;
+    datasetEntries: {
+        values: {
+            byId: {
+                [id: string]: import("./model").DatasetEntry;
+            };
+            allIds: string[];
+        };
+    };
 } & {
     addStory: (story: any) => any;
     setActiveStory: (activeStory: IBook) => any;
@@ -90,6 +98,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     new (props: any): {
         threeRef: any;
         splitRef: any;
+        componentDidMount(): void;
         /**
          * Main callback when the dataset changes
          * @param dataset
@@ -111,7 +120,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         refs: {
             [key: string]: React.ReactInstance;
         };
-        componentDidMount?(): void;
         shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): boolean;
         componentWillUnmount?(): void;
         componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
@@ -128,6 +136,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
 }, Pick<React.ClassAttributes<{
     threeRef: any;
     splitRef: any;
+    componentDidMount(): void;
     /**
      * Main callback when the dataset changes
      * @param dataset
@@ -149,7 +158,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     refs: {
         [key: string]: React.ReactInstance;
     };
-    componentDidMount?(): void;
     shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): boolean;
     componentWillUnmount?(): void;
     componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
@@ -169,6 +177,14 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     channelColor: any;
     channelBrightness: any;
     hoverStateOrientation: any;
+    datasetEntries: {
+        values: {
+            byId: {
+                [id: string]: import("./model").DatasetEntry;
+            };
+            allIds: string[];
+        };
+    };
 } & {
     addStory: (story: any) => any;
     setActiveStory: (activeStory: IBook) => any;

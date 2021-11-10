@@ -49,6 +49,8 @@ import { PSEIcons } from "./utils/PSEIcons";
 // @ts-ignore
 import VDSLogo from '../textures/vds-lab-logo-notext.svg'
 import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
+import { DatasetEntriesAPI } from "./components/Ducks/DatasetEntriesDuck";
+import { JSONLoader } from "./components";
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -80,7 +82,8 @@ const mapStateToProps = (state: RootState) => ({
   channelSize: state.channelSize,
   channelColor: state.channelColor,
   channelBrightness: state.channelBrightness,
-  hoverStateOrientation: state.hoverStateOrientation
+  hoverStateOrientation: state.hoverStateOrientation,
+  datasetEntries: state.datasetEntries
 })
 
 
@@ -193,6 +196,21 @@ export const Application = connector(class extends React.Component<Props, any> {
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
   }
+
+
+
+  componentDidMount() {
+    var url = new URL(window.location.toString());
+
+    if ((this.props.config?.preselect?.initOnMount ?? true) && (this.props.config?.preselect?.url ?? false)) {
+      var preselect = this.props.config?.preselect?.url
+
+      var loader = preselect.endsWith('.csv') ? new CSVLoader() : new JSONLoader();
+  
+      loader.resolvePath(DatasetEntriesAPI.getByPath(this.props.datasetEntries, preselect), (dataset) => { this.onDataSelected(dataset) })
+    }
+  }
+
 
 
   /**
