@@ -51,6 +51,7 @@ import VDSLogo from '../textures/vds-lab-logo-notext.svg'
 import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { DatasetEntriesAPI } from "./components/Ducks/DatasetEntriesDuck";
 import { JSONLoader } from "./components";
+import { DatasetType } from "./model/DatasetType";
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -206,8 +207,15 @@ export const Application = connector(class extends React.Component<Props, any> {
       var preselect = this.props.config?.preselect?.url
 
       var loader = preselect.endsWith('.csv') ? new CSVLoader() : new JSONLoader();
-  
-      loader.resolvePath(DatasetEntriesAPI.getByPath(this.props.datasetEntries, preselect), (dataset) => { this.onDataSelected(dataset) })
+
+      const entry = DatasetEntriesAPI.getByPath(this.props.datasetEntries, preselect) ??
+      {
+        type: DatasetType.None,
+        path: preselect,
+        display: preselect
+      }
+
+      loader.resolvePath(entry, (dataset) => { this.onDataSelected(dataset) })
     }
   }
 

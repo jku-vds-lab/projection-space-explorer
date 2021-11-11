@@ -45,8 +45,7 @@ export class DatasetEntriesAPI {
     }
     
     static getByPath(state: InitialType, path: string) {
-        const filtered = Object.values(state.values.byId).filter(e => e.path == path)[0];
-        return filtered;
+        return Object.values(state.values.byId).find(e => e.path == path)
     }
 }
 
