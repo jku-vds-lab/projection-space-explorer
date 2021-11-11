@@ -21,7 +21,8 @@ const spec: VisualizationSpec = {
     "color": {"field": "selection", "type": "nominal", "legend": null, "scale": {"range": ["#aaaaaa", "#007dad"]}},
     "fillOpacity": {"field": "selection", "type": "nominal", "legend": null, "scale": {"range": ["0", "1.0"]}},
     "stroke": {"field": "selection", "type": "nominal", "legend": null, "scale": {"range": ["#000000", "#007dad"]}},
-  }
+  },
+  data: { name: 'values' }
 }
 
 

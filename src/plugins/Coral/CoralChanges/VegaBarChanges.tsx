@@ -46,7 +46,8 @@ const spec: VisualizationSpec = {
     "view": {"strokeWidth": 0},
     "axisY": {"domainColor": "white"},
     "axisX": {"domainColor": "#ddd", "tickColor": "#ddd"}
-  }
+  },
+  data: { name: 'values' }
 }
 
 
