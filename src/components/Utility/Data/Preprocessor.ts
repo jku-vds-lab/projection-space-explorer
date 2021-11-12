@@ -159,7 +159,6 @@ export class Preprocessor {
         if (!header.includes('groupLabel')) {
             vectors.forEach(vector => {
                 vector.groupLabel = [];
-                vector.clusterProbability = 0.0;
             });
         } else {
             // Support multivariate points ... eg each groupLabel is actually an array

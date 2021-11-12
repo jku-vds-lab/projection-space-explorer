@@ -56,8 +56,8 @@ export const StoryPreview = connector(({
                 }}
             >
                 <ListItem
-                    key={-1}
-                    {...{ value: null }}
+                    key={''}
+                    {...{ value: '' }}
                     button
                 >
                     <ListItemText primary={"None"} />

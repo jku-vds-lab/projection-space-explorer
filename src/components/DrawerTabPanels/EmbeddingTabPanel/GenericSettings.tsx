@@ -122,7 +122,11 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
 
                 <Grid container justifyContent="center" style={{ width: '100%' }}>
                     <Grid item>
-                        <FormControl>
+                        <FormControl sx={{
+                                '& .MuiTextField-root': { m: 1 },
+                                '& .MuiFormControlLabel-root': { m: 1 },
+                                '& .MuiFormControl-root': { m: 1 }
+                            }}>
                             <FormLabel component="legend">Projection Parameters</FormLabel>
 
                             {domainSettings == 'umap' && <UMAPSettings nNeighbors={nNeighbors} setNNeighbors={setNNeighbors}></UMAPSettings>}
@@ -133,7 +137,11 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                     <Grid item>
                         <FormControl>
                             <FormLabel component="legend">General Parameters</FormLabel>
-                            <FormGroup>
+                            <FormGroup sx={{
+                                '& .MuiTextField-root': { m: 1 },
+                                '& .MuiFormControlLabel-root': { m: 1 },
+                                '& .MuiFormControl-root': { m: 1 }
+                            }}>
                                 <TextField
                                     id="textIterations"
                                     label="Iterations"
@@ -156,6 +164,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                     <Select
                                         labelId="demo-controlled-open-select-label"
                                         id="demo-controlled-open-select"
+                                        label='Distance Metric'
                                         value={distanceMetric}
                                         onChange={(event) => { changeDistanceMetric(event.target.value) }}
                                     >

@@ -7,7 +7,6 @@ export interface IVector extends TypedObject {
     x: number;
     y: number;
     groupLabel: any[];
-    clusterProbability: number;
     line: any;
     multiplicity: number;
     algo: any;

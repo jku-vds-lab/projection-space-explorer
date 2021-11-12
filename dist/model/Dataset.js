@@ -232,8 +232,6 @@ class Dataset {
             this.columns['algo'].featureType = FeatureType_1.FeatureType.Categorical;
         if ('groupLabel' in this.columns)
             this.columns['groupLabel'].featureType = FeatureType_1.FeatureType.Categorical;
-        if ('clusterProbability' in this.columns)
-            this.columns['clusterProbability'].featureType = FeatureType_1.FeatureType.Quantitative;
         if ('x' in this.columns)
             this.columns['x'].featureType = FeatureType_1.FeatureType.Quantitative;
         if ('y' in this.columns)

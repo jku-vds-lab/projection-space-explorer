@@ -83,8 +83,8 @@ const appReducer = combineReducers(allReducers)
 
 export const rootReducer = (state, action) => {
   if (action.type === 'RESET_APP') {
-    const { dataset, openTab, viewTransform } = state;
-    state = { dataset, openTab, viewTransform };
+    const { dataset, openTab, viewTransform, datasetEntries } = state;
+    state = { dataset, openTab, viewTransform, datasetEntries };
   }
 
 

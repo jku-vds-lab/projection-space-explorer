@@ -13,8 +13,8 @@ export enum PrebuiltFeatures {
     Line = 'line',
     ClusterLabel = 'groupLabel'
 }
-export const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "clusterProbability", "age", "multiplicity", "objectType"];
-export const EXCLUDED_COLUMNS_ALL = ["__meta__", "x", "y", "algo", "clusterProbability", "age", "multiplicity", "groupLabel", "objectType"];
+export const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "age", "multiplicity", "objectType"];
+export const EXCLUDED_COLUMNS_ALL = ["__meta__", "x", "y", "algo", "age", "multiplicity", "groupLabel", "objectType"];
 
 export const DefaultFeatureLabel = "Default"
 
@@ -334,6 +334,22 @@ export class Dataset {
      */
     calculateColumnTypes(ranges, featureTypes, metaInformation) {
         var columnNames = Object.keys(this.vectors[0]);
+
+        if ('algo' in this.columns)
+            this.columns['algo'].featureType = FeatureType.Categorical;
+        if ('groupLabel' in this.columns)
+            this.columns['groupLabel'].featureType = FeatureType.Categorical;
+        if ('x' in this.columns)
+            this.columns['x'].featureType = FeatureType.Quantitative;
+        if ('y' in this.columns)
+            this.columns['y'].featureType = FeatureType.Quantitative;
+
+        featureTypes['algo'] = FeatureType.Categorical
+        delete ranges['algo']
+
+        featureTypes['groupLabel'] = FeatureType.Categorical
+        delete ranges['groupLabel']
+
         columnNames.forEach(columnName => {
             // @ts-ignore
             this.columns[columnName] = { }
@@ -366,27 +382,15 @@ export class Dataset {
             if (columnName in ranges) {
                 this.columns[columnName].range = ranges[columnName];
             } else {
-                if (this.vectors.find(vector => isNaN(vector[columnName]))) {
-                    this.columns[columnName].distinct = Array.from(new Set([...this.vectors.map(vector => vector[columnName])]));
+                if (this.vectors.find(vector => isNaN(vector[columnName])) || this.columns[columnName].featureType === FeatureType.Categorical) {
                     this.columns[columnName].isNumeric = false;
+                    this.columns[columnName].distinct = Array.from(new Set([...this.vectors.map(vector => vector[columnName])]));
                 } else {
                     this.columns[columnName].isNumeric = true;
                     this.columns[columnName].range = this.inferRangeForAttribute(columnName);
                 }
             }
         });
-
-
-        if ('algo' in this.columns)
-            this.columns['algo'].featureType = FeatureType.Categorical;
-        if ('groupLabel' in this.columns)
-            this.columns['groupLabel'].featureType = FeatureType.Categorical;
-        if ('clusterProbability' in this.columns)
-            this.columns['clusterProbability'].featureType = FeatureType.Quantitative;
-        if ('x' in this.columns)
-            this.columns['x'].featureType = FeatureType.Quantitative;
-        if ('y' in this.columns)
-            this.columns['y'].featureType = FeatureType.Quantitative;
     }
 
 

@@ -739,9 +739,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         //this.scene.add(this.particles.mesh);
         this.pointScene.add(this.particles.mesh)
-
-
-
     }
 
 

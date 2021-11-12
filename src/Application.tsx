@@ -49,6 +49,9 @@ import { PSEIcons } from "./utils/PSEIcons";
 // @ts-ignore
 import VDSLogo from '../textures/vds-lab-logo-notext.svg'
 import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
+import { DatasetEntriesAPI } from "./components/Ducks/DatasetEntriesDuck";
+import { JSONLoader } from "./components";
+import { DatasetType } from "./model/DatasetType";
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -64,7 +67,7 @@ function FixedHeightTabPanel(props) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
-      style={{ height: '100%' }}
+      style={{ height: '100%', width: 288 }}
     >
       {<Paper style={{ overflow: 'hidden', height: '100%' }}>{children}</Paper>}
     </Typography>
@@ -80,7 +83,8 @@ const mapStateToProps = (state: RootState) => ({
   channelSize: state.channelSize,
   channelColor: state.channelColor,
   channelBrightness: state.channelBrightness,
-  hoverStateOrientation: state.hoverStateOrientation
+  hoverStateOrientation: state.hoverStateOrientation,
+  datasetEntries: state.datasetEntries
 })
 
 
@@ -193,6 +197,28 @@ export const Application = connector(class extends React.Component<Props, any> {
     this.onLineSelect = this.onLineSelect.bind(this)
     this.onDataSelected = this.onDataSelected.bind(this)
   }
+
+
+
+  componentDidMount() {
+    var url = new URL(window.location.toString());
+
+    if ((this.props.config?.preselect?.initOnMount ?? true) && (this.props.config?.preselect?.url ?? false)) {
+      var preselect = this.props.config?.preselect?.url
+
+      var loader = preselect.endsWith('.csv') ? new CSVLoader() : new JSONLoader();
+
+      const entry = DatasetEntriesAPI.getByPath(this.props.datasetEntries, preselect) ??
+      {
+        type: DatasetType.None,
+        path: preselect,
+        display: preselect
+      }
+
+      loader.resolvePath(entry, (dataset) => { this.onDataSelected(dataset) })
+    }
+  }
+
 
 
   /**
@@ -510,7 +536,7 @@ export const Application = connector(class extends React.Component<Props, any> {
                   React.createElement(this.props.overrideComponents.detailViews[0].view, {})
                 }
               </div>
-            </Split> : <div style={{ flexGrow: 0.9 }}>
+            </Split> : <div style={{ flexGrow: 1 }}>
               <WebGLView
                 ref={this.threeRef}
               />

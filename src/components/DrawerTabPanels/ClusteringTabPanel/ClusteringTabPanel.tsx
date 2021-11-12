@@ -422,10 +422,6 @@ export const ClusteringTabPanel = connector(({
                 removeClusterFromStories={removeClusterFromStories}
                 selectedClusters={currentAggregation.selectedClusters}
                 stories={stories}
-                //updateLineUpInput_filter={updateLineUpInput_filter}
-                //setLineUpInput_update={setLineUpInput_update}
-                //setLineUpInput_visibility={setLineUpInput_visibility}
-                //setLineUpInput_filter={setLineUpInput_filter}
                 splitRef={splitRef}
                 setSelectedCluster={setSelectedClusters}
             ></ClusterList>
@@ -438,10 +434,6 @@ type ClusterPopoverProps = {
     setAnchorEl: any
     cluster: ICluster
     removeClusterFromStories: any
-    //updateLineUpInput_filter: any
-    //setLineUpInput_update: any
-    //setLineUpInput_visibility: any
-    //setLineUpInput_filter: any
     splitRef: any
     setSelectedCluster: any
     dataset: Dataset
@@ -480,15 +472,10 @@ function ClusterPopover({
     }, [anchorEl, cluster])
 
     const onSave = () => {
-        // TODO
-        //updateLineUpInput_filter({ "key": 'groupLabel', 'val_old': cluster.label, 'val_new': name });
         cluster.label = name
         // Rename cluster labels in dataset
         replaceClusterLabels(cluster.indices.map(i => dataset.vectors[i]), cluster.label, name)
         setAnchorEl(null)
-
-        // TODO
-        //setLineUpInput_update();
     }
 
     const onDelete = () => {
@@ -498,11 +485,6 @@ function ClusterPopover({
 
     const onLineup = () => {
         setAnchorEl(null)
-
-        // TODO
-        //setLineUpInput_visibility(true)
-        //setLineUpInput_filter({ 'groupLabel': cluster.label });
-        //setSelectedCluster([cluster])
 
         const curr_sizes = splitRef.current.split.getSizes();
         if (curr_sizes[1] < 2) {
@@ -581,10 +563,6 @@ type ClusterListProps = {
     selectedClusters: string[]
     stories: StoriesType
     removeClusterFromStories
-    //updateLineUpInput_filter
-    //setLineUpInput_update
-    //setLineUpInput_visibility
-    //setLineUpInput_filter
     splitRef
     setSelectedCluster
     dataset
@@ -597,10 +575,6 @@ function ClusterList({
     stories,
     dataset,
     removeClusterFromStories,
-    //updateLineUpInput_filter,
-    //setLineUpInput_update,
-    //setLineUpInput_visibility,
-    //setLineUpInput_filter,
     splitRef,
     setSelectedCluster
 }: ClusterListProps) {

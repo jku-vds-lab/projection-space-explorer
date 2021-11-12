@@ -22,7 +22,8 @@ const spec: VisualizationSpec = {
     "color": {
       "value": "#007dad"
     }
-  }
+  },
+  data: { name: 'values' }
 }
 
 

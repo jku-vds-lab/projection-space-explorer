@@ -17,7 +17,6 @@ const spec: VisualizationSpec = {
     "x": {
       "field": "x",
       "type": "quantitative",
-      // "axis": null
       "scale": { "domain": [0, 1] },
       "axis": {
         
@@ -26,7 +25,6 @@ const spec: VisualizationSpec = {
     "y": {
       "field": "y",
       "type": "quantitative",
-      // "axis": null
       "scale": {
         "domain": [0, 1]
       },
@@ -35,13 +33,10 @@ const spec: VisualizationSpec = {
       }
     },
     "opacity": { "value": 0.15 }
-  }
+  },
+  data: { name: 'values' }
 }
 
 export default function (props: Omit<VegaLiteProps, 'spec'>) {
   return <VegaLite {...props} spec={spec}></VegaLite>
 }
-
-
-//, "scale": {"domain": [0, 1]}
-// rank != 1 and switching color scale range would be a workaround to make sure when there is only 1 datapoint it has the rank 1 colour

@@ -29,7 +29,8 @@ const spec: VisualizationSpec = {
       "value": "#007dad",
       "legend": null
     }
-  }
+  },
+  data: { name: 'values' }
 }
 
 

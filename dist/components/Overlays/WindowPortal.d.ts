@@ -3,7 +3,7 @@ export declare class MyWindowPortal extends React.PureComponent<any> {
     externalWindow: any;
     containerEl: any;
     constructor(props: any);
-    render(): any;
+    render(): React.ReactPortal;
     componentDidMount(): void;
     componentWillUnmount(): void;
 }
