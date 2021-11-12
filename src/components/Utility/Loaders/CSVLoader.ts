@@ -204,8 +204,6 @@ export class CSVLoader implements Loader {
         
 
         this.getClusters(vectors, clusters => {
-
-
             dataset.clusters = clusters
 
             // Reset cluster label after extraction
@@ -214,8 +212,6 @@ export class CSVLoader implements Loader {
             })
 
             dataset.categories = dataset.extractEncodingFeatures(ranges)
-
-            console.log("befre finish")
 
             finished(dataset)
         })

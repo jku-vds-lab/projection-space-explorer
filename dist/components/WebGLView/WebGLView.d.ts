@@ -3,7 +3,9 @@ import * as React from "react";
 import * as THREE from 'three';
 import { ICluster } from '../../model/Cluster';
 import { TypedObject } from "../../model/TypedObject";
+import { ConnectedProps } from 'react-redux';
 import { IVector } from "../../model/Vector";
+import { ViewTransformType } from "../Ducks/ViewTransformDuck";
 import { Camera } from 'three';
 import { LineVisualization, PointVisualization } from './meshes';
 import { DisplayMode } from '../Ducks/DisplayModeDuck';
@@ -14,12 +16,69 @@ import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
 import { Embedding } from '../../model/Embedding';
 import { DataLine } from '../../model/DataLine';
+import { ComponentConfig } from '../../Application';
 declare type ViewState = {
     displayClusters: any;
     camera: Camera;
     menuX: number;
     menuY: number;
     menuTarget: TypedObject;
+};
+declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
+    currentAggregation: {
+        aggregation: number[];
+        selectedClusters: string[];
+        source: "sample" | "cluster";
+    };
+    vectorByShape: any;
+    checkedShapes: any;
+    dataset: import("../../model/Dataset").Dataset;
+    highlightedSequence: any;
+    activeLine: any;
+    advancedColoringSelection: any;
+    clusterMode: import("..").ClusterMode;
+    displayMode: DisplayMode;
+    lineBrightness: any;
+    pathLengthRange: {
+        range: any;
+        maximum: number;
+    } | {
+        range: number[];
+        maximum: any;
+    };
+    globalPointSize: number[];
+    globalPointBrightness: number[];
+    channelSize: any;
+    channelColor: any;
+    channelBrightness: any;
+    pointColorScale: any;
+    stories: import("../Ducks/StoriesDuck").StoriesType;
+    trailSettings: {
+        show: boolean;
+        length: any;
+    } | {
+        show: any;
+        length: number;
+    };
+    hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
+} & {
+    selectVectors: (vectors: number[], shiftKey: boolean) => any;
+    setActiveLine: (activeLine: any) => any;
+    setViewTransform: (camera: any, width: any, height: any) => any;
+    setHoverState: (hoverState: any, updater: any) => any;
+    setPointColorMapping: (mapping: any) => any;
+    removeClusterFromStories: (cluster: ICluster) => any;
+    addStory: (story: IBook, activate: boolean) => any;
+    addClusterToStory: (cluster: any) => any;
+    addEdgeToActive: (edge: IEdge) => any;
+    setActiveTrace: (trace: any) => any;
+    setOpenTab: (tab: any) => any;
+    setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
+    removeEdgeFromActive: (edge: any) => any;
+}, {}>;
+declare type PropsFromRedux = ConnectedProps<typeof connector>;
+declare type Props = PropsFromRedux & {
+    overrideComponents: ComponentConfig;
 };
 export declare const WebGLView: import("react-redux").ConnectedComponent<{
     new (props: any): {
@@ -147,444 +206,32 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         updateItemClusterDisplay(): void;
         componentDidUpdate(prevProps: any, prevState: any): void;
         requestRender(): void;
-        createTransform(): {
-            camera: any;
-            width: any;
-            height: any;
-        };
+        createTransform(): ViewTransformType;
         renderLasso(ctx: any): void;
         repositionClusters(): void;
         loadProjection(projection: Embedding): void;
         onClusterZoom(cluster: any): void;
         render(): JSX.Element;
         context: any;
-        setState<K extends "displayClusters" | "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<{
-            currentAggregation: {
-                aggregation: number[];
-                selectedClusters: string[];
-                source: "sample" | "cluster";
-            };
-            vectorByShape: any;
-            checkedShapes: any;
-            dataset: import("../../model/Dataset").Dataset;
-            highlightedSequence: any;
-            activeLine: any;
-            advancedColoringSelection: any;
-            clusterMode: import("..").ClusterMode;
-            displayMode: DisplayMode;
-            lineBrightness: any;
-            pathLengthRange: {
-                range: any;
-                maximum: number;
-            } | {
-                range: number[];
-                maximum: any;
-            };
-            globalPointSize: number[];
-            globalPointBrightness: number[];
-            channelSize: any;
-            channelColor: any;
-            channelBrightness: any;
-            pointColorScale: any;
-            stories: import("../Ducks/StoriesDuck").StoriesType;
-            trailSettings: {
-                show: boolean;
-                length: any;
-            } | {
-                show: any;
-                length: number;
-            };
-            hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-        } & {
-            selectVectors: (vectors: number[], shiftKey: boolean) => any;
-            setActiveLine: (activeLine: any) => any;
-            setViewTransform: (camera: any, width: any, height: any) => any;
-            setHoverState: (hoverState: any, updater: any) => any;
-            setPointColorMapping: (mapping: any) => any;
-            removeClusterFromStories: (cluster: ICluster) => any;
-            addStory: (story: IBook, activate: boolean) => any;
-            addClusterToStory: (cluster: any) => any;
-            addEdgeToActive: (edge: IEdge) => any;
-            setActiveTrace: (trace: any) => any;
-            setOpenTab: (tab: any) => any;
-            setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-            removeEdgeFromActive: (edge: any) => any;
-        }>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
+        setState<K extends "displayClusters" | "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
         forceUpdate(callback?: () => void): void;
-        readonly props: Readonly<{
-            currentAggregation: {
-                aggregation: number[];
-                selectedClusters: string[];
-                source: "sample" | "cluster";
-            };
-            vectorByShape: any;
-            checkedShapes: any;
-            dataset: import("../../model/Dataset").Dataset;
-            highlightedSequence: any;
-            activeLine: any;
-            advancedColoringSelection: any;
-            clusterMode: import("..").ClusterMode;
-            displayMode: DisplayMode;
-            lineBrightness: any;
-            pathLengthRange: {
-                range: any;
-                maximum: number;
-            } | {
-                range: number[];
-                maximum: any;
-            };
-            globalPointSize: number[];
-            globalPointBrightness: number[];
-            channelSize: any;
-            channelColor: any;
-            channelBrightness: any;
-            pointColorScale: any;
-            stories: import("../Ducks/StoriesDuck").StoriesType;
-            trailSettings: {
-                show: boolean;
-                length: any;
-            } | {
-                show: any;
-                length: number;
-            };
-            hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-        } & {
-            selectVectors: (vectors: number[], shiftKey: boolean) => any;
-            setActiveLine: (activeLine: any) => any;
-            setViewTransform: (camera: any, width: any, height: any) => any;
-            setHoverState: (hoverState: any, updater: any) => any;
-            setPointColorMapping: (mapping: any) => any;
-            removeClusterFromStories: (cluster: ICluster) => any;
-            addStory: (story: IBook, activate: boolean) => any;
-            addClusterToStory: (cluster: any) => any;
-            addEdgeToActive: (edge: IEdge) => any;
-            setActiveTrace: (trace: any) => any;
-            setOpenTab: (tab: any) => any;
-            setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-            removeEdgeFromActive: (edge: any) => any;
-        }> & Readonly<{
+        readonly props: Readonly<Props> & Readonly<{
             children?: React.ReactNode;
         }>;
         state: Readonly<ViewState>;
         refs: {
             [key: string]: React.ReactInstance;
         };
-        shouldComponentUpdate?(nextProps: Readonly<{
-            currentAggregation: {
-                aggregation: number[];
-                selectedClusters: string[];
-                source: "sample" | "cluster";
-            };
-            vectorByShape: any;
-            checkedShapes: any;
-            dataset: import("../../model/Dataset").Dataset;
-            highlightedSequence: any;
-            activeLine: any;
-            advancedColoringSelection: any;
-            clusterMode: import("..").ClusterMode;
-            displayMode: DisplayMode;
-            lineBrightness: any;
-            pathLengthRange: {
-                range: any;
-                maximum: number;
-            } | {
-                range: number[];
-                maximum: any;
-            };
-            globalPointSize: number[];
-            globalPointBrightness: number[];
-            channelSize: any;
-            channelColor: any;
-            channelBrightness: any;
-            pointColorScale: any;
-            stories: import("../Ducks/StoriesDuck").StoriesType;
-            trailSettings: {
-                show: boolean;
-                length: any;
-            } | {
-                show: any;
-                length: number;
-            };
-            hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-        } & {
-            selectVectors: (vectors: number[], shiftKey: boolean) => any;
-            setActiveLine: (activeLine: any) => any;
-            setViewTransform: (camera: any, width: any, height: any) => any;
-            setHoverState: (hoverState: any, updater: any) => any;
-            setPointColorMapping: (mapping: any) => any;
-            removeClusterFromStories: (cluster: ICluster) => any;
-            addStory: (story: IBook, activate: boolean) => any;
-            addClusterToStory: (cluster: any) => any;
-            addEdgeToActive: (edge: IEdge) => any;
-            setActiveTrace: (trace: any) => any;
-            setOpenTab: (tab: any) => any;
-            setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-            removeEdgeFromActive: (edge: any) => any;
-        }>, nextState: Readonly<ViewState>, nextContext: any): boolean;
+        shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): boolean;
         componentWillUnmount?(): void;
         componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
-        getSnapshotBeforeUpdate?(prevProps: Readonly<{
-            currentAggregation: {
-                aggregation: number[];
-                selectedClusters: string[];
-                source: "sample" | "cluster";
-            };
-            vectorByShape: any;
-            checkedShapes: any;
-            dataset: import("../../model/Dataset").Dataset;
-            highlightedSequence: any;
-            activeLine: any;
-            advancedColoringSelection: any;
-            clusterMode: import("..").ClusterMode;
-            displayMode: DisplayMode;
-            lineBrightness: any;
-            pathLengthRange: {
-                range: any;
-                maximum: number;
-            } | {
-                range: number[];
-                maximum: any;
-            };
-            globalPointSize: number[];
-            globalPointBrightness: number[];
-            channelSize: any;
-            channelColor: any;
-            channelBrightness: any;
-            pointColorScale: any;
-            stories: import("../Ducks/StoriesDuck").StoriesType;
-            trailSettings: {
-                show: boolean;
-                length: any;
-            } | {
-                show: any;
-                length: number;
-            };
-            hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-        } & {
-            selectVectors: (vectors: number[], shiftKey: boolean) => any;
-            setActiveLine: (activeLine: any) => any;
-            setViewTransform: (camera: any, width: any, height: any) => any;
-            setHoverState: (hoverState: any, updater: any) => any;
-            setPointColorMapping: (mapping: any) => any;
-            removeClusterFromStories: (cluster: ICluster) => any;
-            addStory: (story: IBook, activate: boolean) => any;
-            addClusterToStory: (cluster: any) => any;
-            addEdgeToActive: (edge: IEdge) => any;
-            setActiveTrace: (trace: any) => any;
-            setOpenTab: (tab: any) => any;
-            setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-            removeEdgeFromActive: (edge: any) => any;
-        }>, prevState: Readonly<ViewState>): any;
+        getSnapshotBeforeUpdate?(prevProps: Readonly<Props>, prevState: Readonly<ViewState>): any;
         componentWillMount?(): void;
         UNSAFE_componentWillMount?(): void;
-        componentWillReceiveProps?(nextProps: Readonly<{
-            currentAggregation: {
-                aggregation: number[];
-                selectedClusters: string[];
-                source: "sample" | "cluster";
-            };
-            vectorByShape: any;
-            checkedShapes: any;
-            dataset: import("../../model/Dataset").Dataset;
-            highlightedSequence: any;
-            activeLine: any;
-            advancedColoringSelection: any;
-            clusterMode: import("..").ClusterMode;
-            displayMode: DisplayMode;
-            lineBrightness: any;
-            pathLengthRange: {
-                range: any;
-                maximum: number;
-            } | {
-                range: number[];
-                maximum: any;
-            };
-            globalPointSize: number[];
-            globalPointBrightness: number[];
-            channelSize: any;
-            channelColor: any;
-            channelBrightness: any;
-            pointColorScale: any;
-            stories: import("../Ducks/StoriesDuck").StoriesType;
-            trailSettings: {
-                show: boolean;
-                length: any;
-            } | {
-                show: any;
-                length: number;
-            };
-            hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-        } & {
-            selectVectors: (vectors: number[], shiftKey: boolean) => any;
-            setActiveLine: (activeLine: any) => any;
-            setViewTransform: (camera: any, width: any, height: any) => any;
-            setHoverState: (hoverState: any, updater: any) => any;
-            setPointColorMapping: (mapping: any) => any;
-            removeClusterFromStories: (cluster: ICluster) => any;
-            addStory: (story: IBook, activate: boolean) => any;
-            addClusterToStory: (cluster: any) => any;
-            addEdgeToActive: (edge: IEdge) => any;
-            setActiveTrace: (trace: any) => any;
-            setOpenTab: (tab: any) => any;
-            setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-            removeEdgeFromActive: (edge: any) => any;
-        }>, nextContext: any): void;
-        UNSAFE_componentWillReceiveProps?(nextProps: Readonly<{
-            currentAggregation: {
-                aggregation: number[];
-                selectedClusters: string[];
-                source: "sample" | "cluster";
-            };
-            vectorByShape: any;
-            checkedShapes: any;
-            dataset: import("../../model/Dataset").Dataset;
-            highlightedSequence: any;
-            activeLine: any;
-            advancedColoringSelection: any;
-            clusterMode: import("..").ClusterMode;
-            displayMode: DisplayMode;
-            lineBrightness: any;
-            pathLengthRange: {
-                range: any;
-                maximum: number;
-            } | {
-                range: number[];
-                maximum: any;
-            };
-            globalPointSize: number[];
-            globalPointBrightness: number[];
-            channelSize: any;
-            channelColor: any;
-            channelBrightness: any;
-            pointColorScale: any;
-            stories: import("../Ducks/StoriesDuck").StoriesType;
-            trailSettings: {
-                show: boolean;
-                length: any;
-            } | {
-                show: any;
-                length: number;
-            };
-            hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-        } & {
-            selectVectors: (vectors: number[], shiftKey: boolean) => any;
-            setActiveLine: (activeLine: any) => any;
-            setViewTransform: (camera: any, width: any, height: any) => any;
-            setHoverState: (hoverState: any, updater: any) => any;
-            setPointColorMapping: (mapping: any) => any;
-            removeClusterFromStories: (cluster: ICluster) => any;
-            addStory: (story: IBook, activate: boolean) => any;
-            addClusterToStory: (cluster: any) => any;
-            addEdgeToActive: (edge: IEdge) => any;
-            setActiveTrace: (trace: any) => any;
-            setOpenTab: (tab: any) => any;
-            setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-            removeEdgeFromActive: (edge: any) => any;
-        }>, nextContext: any): void;
-        componentWillUpdate?(nextProps: Readonly<{
-            currentAggregation: {
-                aggregation: number[];
-                selectedClusters: string[];
-                source: "sample" | "cluster";
-            };
-            vectorByShape: any;
-            checkedShapes: any;
-            dataset: import("../../model/Dataset").Dataset;
-            highlightedSequence: any;
-            activeLine: any;
-            advancedColoringSelection: any;
-            clusterMode: import("..").ClusterMode;
-            displayMode: DisplayMode;
-            lineBrightness: any;
-            pathLengthRange: {
-                range: any;
-                maximum: number;
-            } | {
-                range: number[];
-                maximum: any;
-            };
-            globalPointSize: number[];
-            globalPointBrightness: number[];
-            channelSize: any;
-            channelColor: any;
-            channelBrightness: any;
-            pointColorScale: any;
-            stories: import("../Ducks/StoriesDuck").StoriesType;
-            trailSettings: {
-                show: boolean;
-                length: any;
-            } | {
-                show: any;
-                length: number;
-            };
-            hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-        } & {
-            selectVectors: (vectors: number[], shiftKey: boolean) => any;
-            setActiveLine: (activeLine: any) => any;
-            setViewTransform: (camera: any, width: any, height: any) => any;
-            setHoverState: (hoverState: any, updater: any) => any;
-            setPointColorMapping: (mapping: any) => any;
-            removeClusterFromStories: (cluster: ICluster) => any;
-            addStory: (story: IBook, activate: boolean) => any;
-            addClusterToStory: (cluster: any) => any;
-            addEdgeToActive: (edge: IEdge) => any;
-            setActiveTrace: (trace: any) => any;
-            setOpenTab: (tab: any) => any;
-            setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-            removeEdgeFromActive: (edge: any) => any;
-        }>, nextState: Readonly<ViewState>, nextContext: any): void;
-        UNSAFE_componentWillUpdate?(nextProps: Readonly<{
-            currentAggregation: {
-                aggregation: number[];
-                selectedClusters: string[];
-                source: "sample" | "cluster";
-            };
-            vectorByShape: any;
-            checkedShapes: any;
-            dataset: import("../../model/Dataset").Dataset;
-            highlightedSequence: any;
-            activeLine: any;
-            advancedColoringSelection: any;
-            clusterMode: import("..").ClusterMode;
-            displayMode: DisplayMode;
-            lineBrightness: any;
-            pathLengthRange: {
-                range: any;
-                maximum: number;
-            } | {
-                range: number[];
-                maximum: any;
-            };
-            globalPointSize: number[];
-            globalPointBrightness: number[];
-            channelSize: any;
-            channelColor: any;
-            channelBrightness: any;
-            pointColorScale: any;
-            stories: import("../Ducks/StoriesDuck").StoriesType;
-            trailSettings: {
-                show: boolean;
-                length: any;
-            } | {
-                show: any;
-                length: number;
-            };
-            hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-        } & {
-            selectVectors: (vectors: number[], shiftKey: boolean) => any;
-            setActiveLine: (activeLine: any) => any;
-            setViewTransform: (camera: any, width: any, height: any) => any;
-            setHoverState: (hoverState: any, updater: any) => any;
-            setPointColorMapping: (mapping: any) => any;
-            removeClusterFromStories: (cluster: ICluster) => any;
-            addStory: (story: IBook, activate: boolean) => any;
-            addClusterToStory: (cluster: any) => any;
-            addEdgeToActive: (edge: IEdge) => any;
-            setActiveTrace: (trace: any) => any;
-            setOpenTab: (tab: any) => any;
-            setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-            removeEdgeFromActive: (edge: any) => any;
-        }>, nextState: Readonly<ViewState>, nextContext: any): void;
+        componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
+        UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
+        componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
+        UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
 }, Pick<React.ClassAttributes<{
@@ -712,444 +359,32 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     updateItemClusterDisplay(): void;
     componentDidUpdate(prevProps: any, prevState: any): void;
     requestRender(): void;
-    createTransform(): {
-        camera: any;
-        width: any;
-        height: any;
-    };
+    createTransform(): ViewTransformType;
     renderLasso(ctx: any): void;
     repositionClusters(): void;
     loadProjection(projection: Embedding): void;
     onClusterZoom(cluster: any): void;
     render(): JSX.Element;
     context: any;
-    setState<K extends "displayClusters" | "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<{
-        currentAggregation: {
-            aggregation: number[];
-            selectedClusters: string[];
-            source: "sample" | "cluster";
-        };
-        vectorByShape: any;
-        checkedShapes: any;
-        dataset: import("../../model/Dataset").Dataset;
-        highlightedSequence: any;
-        activeLine: any;
-        advancedColoringSelection: any;
-        clusterMode: import("..").ClusterMode;
-        displayMode: DisplayMode;
-        lineBrightness: any;
-        pathLengthRange: {
-            range: any;
-            maximum: number;
-        } | {
-            range: number[];
-            maximum: any;
-        };
-        globalPointSize: number[];
-        globalPointBrightness: number[];
-        channelSize: any;
-        channelColor: any;
-        channelBrightness: any;
-        pointColorScale: any;
-        stories: import("../Ducks/StoriesDuck").StoriesType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    } & {
-        selectVectors: (vectors: number[], shiftKey: boolean) => any;
-        setActiveLine: (activeLine: any) => any;
-        setViewTransform: (camera: any, width: any, height: any) => any;
-        setHoverState: (hoverState: any, updater: any) => any;
-        setPointColorMapping: (mapping: any) => any;
-        removeClusterFromStories: (cluster: ICluster) => any;
-        addStory: (story: IBook, activate: boolean) => any;
-        addClusterToStory: (cluster: any) => any;
-        addEdgeToActive: (edge: IEdge) => any;
-        setActiveTrace: (trace: any) => any;
-        setOpenTab: (tab: any) => any;
-        setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-        removeEdgeFromActive: (edge: any) => any;
-    }>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
+    setState<K extends "displayClusters" | "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
     forceUpdate(callback?: () => void): void;
-    readonly props: Readonly<{
-        currentAggregation: {
-            aggregation: number[];
-            selectedClusters: string[];
-            source: "sample" | "cluster";
-        };
-        vectorByShape: any;
-        checkedShapes: any;
-        dataset: import("../../model/Dataset").Dataset;
-        highlightedSequence: any;
-        activeLine: any;
-        advancedColoringSelection: any;
-        clusterMode: import("..").ClusterMode;
-        displayMode: DisplayMode;
-        lineBrightness: any;
-        pathLengthRange: {
-            range: any;
-            maximum: number;
-        } | {
-            range: number[];
-            maximum: any;
-        };
-        globalPointSize: number[];
-        globalPointBrightness: number[];
-        channelSize: any;
-        channelColor: any;
-        channelBrightness: any;
-        pointColorScale: any;
-        stories: import("../Ducks/StoriesDuck").StoriesType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    } & {
-        selectVectors: (vectors: number[], shiftKey: boolean) => any;
-        setActiveLine: (activeLine: any) => any;
-        setViewTransform: (camera: any, width: any, height: any) => any;
-        setHoverState: (hoverState: any, updater: any) => any;
-        setPointColorMapping: (mapping: any) => any;
-        removeClusterFromStories: (cluster: ICluster) => any;
-        addStory: (story: IBook, activate: boolean) => any;
-        addClusterToStory: (cluster: any) => any;
-        addEdgeToActive: (edge: IEdge) => any;
-        setActiveTrace: (trace: any) => any;
-        setOpenTab: (tab: any) => any;
-        setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-        removeEdgeFromActive: (edge: any) => any;
-    }> & Readonly<{
+    readonly props: Readonly<Props> & Readonly<{
         children?: React.ReactNode;
     }>;
     state: Readonly<ViewState>;
     refs: {
         [key: string]: React.ReactInstance;
     };
-    shouldComponentUpdate?(nextProps: Readonly<{
-        currentAggregation: {
-            aggregation: number[];
-            selectedClusters: string[];
-            source: "sample" | "cluster";
-        };
-        vectorByShape: any;
-        checkedShapes: any;
-        dataset: import("../../model/Dataset").Dataset;
-        highlightedSequence: any;
-        activeLine: any;
-        advancedColoringSelection: any;
-        clusterMode: import("..").ClusterMode;
-        displayMode: DisplayMode;
-        lineBrightness: any;
-        pathLengthRange: {
-            range: any;
-            maximum: number;
-        } | {
-            range: number[];
-            maximum: any;
-        };
-        globalPointSize: number[];
-        globalPointBrightness: number[];
-        channelSize: any;
-        channelColor: any;
-        channelBrightness: any;
-        pointColorScale: any;
-        stories: import("../Ducks/StoriesDuck").StoriesType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    } & {
-        selectVectors: (vectors: number[], shiftKey: boolean) => any;
-        setActiveLine: (activeLine: any) => any;
-        setViewTransform: (camera: any, width: any, height: any) => any;
-        setHoverState: (hoverState: any, updater: any) => any;
-        setPointColorMapping: (mapping: any) => any;
-        removeClusterFromStories: (cluster: ICluster) => any;
-        addStory: (story: IBook, activate: boolean) => any;
-        addClusterToStory: (cluster: any) => any;
-        addEdgeToActive: (edge: IEdge) => any;
-        setActiveTrace: (trace: any) => any;
-        setOpenTab: (tab: any) => any;
-        setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-        removeEdgeFromActive: (edge: any) => any;
-    }>, nextState: Readonly<ViewState>, nextContext: any): boolean;
+    shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): boolean;
     componentWillUnmount?(): void;
     componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
-    getSnapshotBeforeUpdate?(prevProps: Readonly<{
-        currentAggregation: {
-            aggregation: number[];
-            selectedClusters: string[];
-            source: "sample" | "cluster";
-        };
-        vectorByShape: any;
-        checkedShapes: any;
-        dataset: import("../../model/Dataset").Dataset;
-        highlightedSequence: any;
-        activeLine: any;
-        advancedColoringSelection: any;
-        clusterMode: import("..").ClusterMode;
-        displayMode: DisplayMode;
-        lineBrightness: any;
-        pathLengthRange: {
-            range: any;
-            maximum: number;
-        } | {
-            range: number[];
-            maximum: any;
-        };
-        globalPointSize: number[];
-        globalPointBrightness: number[];
-        channelSize: any;
-        channelColor: any;
-        channelBrightness: any;
-        pointColorScale: any;
-        stories: import("../Ducks/StoriesDuck").StoriesType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    } & {
-        selectVectors: (vectors: number[], shiftKey: boolean) => any;
-        setActiveLine: (activeLine: any) => any;
-        setViewTransform: (camera: any, width: any, height: any) => any;
-        setHoverState: (hoverState: any, updater: any) => any;
-        setPointColorMapping: (mapping: any) => any;
-        removeClusterFromStories: (cluster: ICluster) => any;
-        addStory: (story: IBook, activate: boolean) => any;
-        addClusterToStory: (cluster: any) => any;
-        addEdgeToActive: (edge: IEdge) => any;
-        setActiveTrace: (trace: any) => any;
-        setOpenTab: (tab: any) => any;
-        setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-        removeEdgeFromActive: (edge: any) => any;
-    }>, prevState: Readonly<ViewState>): any;
+    getSnapshotBeforeUpdate?(prevProps: Readonly<Props>, prevState: Readonly<ViewState>): any;
     componentWillMount?(): void;
     UNSAFE_componentWillMount?(): void;
-    componentWillReceiveProps?(nextProps: Readonly<{
-        currentAggregation: {
-            aggregation: number[];
-            selectedClusters: string[];
-            source: "sample" | "cluster";
-        };
-        vectorByShape: any;
-        checkedShapes: any;
-        dataset: import("../../model/Dataset").Dataset;
-        highlightedSequence: any;
-        activeLine: any;
-        advancedColoringSelection: any;
-        clusterMode: import("..").ClusterMode;
-        displayMode: DisplayMode;
-        lineBrightness: any;
-        pathLengthRange: {
-            range: any;
-            maximum: number;
-        } | {
-            range: number[];
-            maximum: any;
-        };
-        globalPointSize: number[];
-        globalPointBrightness: number[];
-        channelSize: any;
-        channelColor: any;
-        channelBrightness: any;
-        pointColorScale: any;
-        stories: import("../Ducks/StoriesDuck").StoriesType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    } & {
-        selectVectors: (vectors: number[], shiftKey: boolean) => any;
-        setActiveLine: (activeLine: any) => any;
-        setViewTransform: (camera: any, width: any, height: any) => any;
-        setHoverState: (hoverState: any, updater: any) => any;
-        setPointColorMapping: (mapping: any) => any;
-        removeClusterFromStories: (cluster: ICluster) => any;
-        addStory: (story: IBook, activate: boolean) => any;
-        addClusterToStory: (cluster: any) => any;
-        addEdgeToActive: (edge: IEdge) => any;
-        setActiveTrace: (trace: any) => any;
-        setOpenTab: (tab: any) => any;
-        setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-        removeEdgeFromActive: (edge: any) => any;
-    }>, nextContext: any): void;
-    UNSAFE_componentWillReceiveProps?(nextProps: Readonly<{
-        currentAggregation: {
-            aggregation: number[];
-            selectedClusters: string[];
-            source: "sample" | "cluster";
-        };
-        vectorByShape: any;
-        checkedShapes: any;
-        dataset: import("../../model/Dataset").Dataset;
-        highlightedSequence: any;
-        activeLine: any;
-        advancedColoringSelection: any;
-        clusterMode: import("..").ClusterMode;
-        displayMode: DisplayMode;
-        lineBrightness: any;
-        pathLengthRange: {
-            range: any;
-            maximum: number;
-        } | {
-            range: number[];
-            maximum: any;
-        };
-        globalPointSize: number[];
-        globalPointBrightness: number[];
-        channelSize: any;
-        channelColor: any;
-        channelBrightness: any;
-        pointColorScale: any;
-        stories: import("../Ducks/StoriesDuck").StoriesType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    } & {
-        selectVectors: (vectors: number[], shiftKey: boolean) => any;
-        setActiveLine: (activeLine: any) => any;
-        setViewTransform: (camera: any, width: any, height: any) => any;
-        setHoverState: (hoverState: any, updater: any) => any;
-        setPointColorMapping: (mapping: any) => any;
-        removeClusterFromStories: (cluster: ICluster) => any;
-        addStory: (story: IBook, activate: boolean) => any;
-        addClusterToStory: (cluster: any) => any;
-        addEdgeToActive: (edge: IEdge) => any;
-        setActiveTrace: (trace: any) => any;
-        setOpenTab: (tab: any) => any;
-        setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-        removeEdgeFromActive: (edge: any) => any;
-    }>, nextContext: any): void;
-    componentWillUpdate?(nextProps: Readonly<{
-        currentAggregation: {
-            aggregation: number[];
-            selectedClusters: string[];
-            source: "sample" | "cluster";
-        };
-        vectorByShape: any;
-        checkedShapes: any;
-        dataset: import("../../model/Dataset").Dataset;
-        highlightedSequence: any;
-        activeLine: any;
-        advancedColoringSelection: any;
-        clusterMode: import("..").ClusterMode;
-        displayMode: DisplayMode;
-        lineBrightness: any;
-        pathLengthRange: {
-            range: any;
-            maximum: number;
-        } | {
-            range: number[];
-            maximum: any;
-        };
-        globalPointSize: number[];
-        globalPointBrightness: number[];
-        channelSize: any;
-        channelColor: any;
-        channelBrightness: any;
-        pointColorScale: any;
-        stories: import("../Ducks/StoriesDuck").StoriesType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    } & {
-        selectVectors: (vectors: number[], shiftKey: boolean) => any;
-        setActiveLine: (activeLine: any) => any;
-        setViewTransform: (camera: any, width: any, height: any) => any;
-        setHoverState: (hoverState: any, updater: any) => any;
-        setPointColorMapping: (mapping: any) => any;
-        removeClusterFromStories: (cluster: ICluster) => any;
-        addStory: (story: IBook, activate: boolean) => any;
-        addClusterToStory: (cluster: any) => any;
-        addEdgeToActive: (edge: IEdge) => any;
-        setActiveTrace: (trace: any) => any;
-        setOpenTab: (tab: any) => any;
-        setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-        removeEdgeFromActive: (edge: any) => any;
-    }>, nextState: Readonly<ViewState>, nextContext: any): void;
-    UNSAFE_componentWillUpdate?(nextProps: Readonly<{
-        currentAggregation: {
-            aggregation: number[];
-            selectedClusters: string[];
-            source: "sample" | "cluster";
-        };
-        vectorByShape: any;
-        checkedShapes: any;
-        dataset: import("../../model/Dataset").Dataset;
-        highlightedSequence: any;
-        activeLine: any;
-        advancedColoringSelection: any;
-        clusterMode: import("..").ClusterMode;
-        displayMode: DisplayMode;
-        lineBrightness: any;
-        pathLengthRange: {
-            range: any;
-            maximum: number;
-        } | {
-            range: number[];
-            maximum: any;
-        };
-        globalPointSize: number[];
-        globalPointBrightness: number[];
-        channelSize: any;
-        channelColor: any;
-        channelBrightness: any;
-        pointColorScale: any;
-        stories: import("../Ducks/StoriesDuck").StoriesType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    } & {
-        selectVectors: (vectors: number[], shiftKey: boolean) => any;
-        setActiveLine: (activeLine: any) => any;
-        setViewTransform: (camera: any, width: any, height: any) => any;
-        setHoverState: (hoverState: any, updater: any) => any;
-        setPointColorMapping: (mapping: any) => any;
-        removeClusterFromStories: (cluster: ICluster) => any;
-        addStory: (story: IBook, activate: boolean) => any;
-        addClusterToStory: (cluster: any) => any;
-        addEdgeToActive: (edge: IEdge) => any;
-        setActiveTrace: (trace: any) => any;
-        setOpenTab: (tab: any) => any;
-        setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-        removeEdgeFromActive: (edge: any) => any;
-    }>, nextState: Readonly<ViewState>, nextContext: any): void;
+    componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
+    UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
+    componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
+    UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
 }> & {
     currentAggregation: {
         aggregation: number[];
@@ -1201,5 +436,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     setOpenTab: (tab: any) => any;
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
     removeEdgeFromActive: (edge: any) => any;
-}, "ref" | "key">>;
+} & {
+    overrideComponents: ComponentConfig;
+}, "ref" | "overrideComponents" | "key">>;
 export {};

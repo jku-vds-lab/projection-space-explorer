@@ -13,7 +13,7 @@ export declare class InferCategory {
      * Infers the type of the dataset from the columns
      * @param {*} header
      */
-    inferType(): DatasetType.Rubik | DatasetType.Chess | DatasetType.Neural | DatasetType.Go | DatasetType.Story | DatasetType.Trrack | DatasetType.None;
+    inferType(): DatasetType.Rubik | DatasetType.Chess | DatasetType.Neural | DatasetType.Go | DatasetType.Story | DatasetType.Trrack | DatasetType.None | DatasetType.Sound;
     /**
      * Infers an array of attributes that can be filtered after, these can be
      * categorical, sequential or continuous attribues.

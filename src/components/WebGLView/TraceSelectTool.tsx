@@ -3,11 +3,12 @@ import { Dataset } from "../../model/Dataset";
 import { RenderingContextEx } from "../Utility/RenderingContextEx";
 import { CameraTransformations } from "./CameraTransformations";
 import { Tool } from "./Tool";
+import { ViewTransformType } from "../Ducks/ViewTransformDuck";
 
 export class TraceSelectTool implements Tool {
     dataset: Dataset
     cluster: ICluster
-    viewTransform: any
+    viewTransform: ViewTransformType
     mousePosition: { x: number, y: number }
 
     constructor(dataset: Dataset, cluster: ICluster) {

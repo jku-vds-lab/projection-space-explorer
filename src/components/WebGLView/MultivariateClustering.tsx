@@ -18,6 +18,7 @@ import { GroupVisualizationMode } from "../Ducks/GroupVisualizationMode";
 import { ScaleUtil } from "../Utility/Colors/ContinuosScale";
 import { StoriesUtil } from "../Ducks/StoriesDuck";
 import TessyWorker from '../workers/tessy.worker';
+import { ViewTransformType } from "../Ducks";
 
 
 const SELECTED_COLOR = 0x007dad
@@ -633,8 +634,6 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
             }
         })
 
-
-
         return labels
     }
 
@@ -651,7 +650,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         return <div>
 
             {
-                this.props.stories.active && this.createStreetLabels(activeStory)
+                this.props.stories.active !== null && this.createStreetLabels(activeStory)
             }
 
             {
@@ -682,8 +681,9 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
     }
 })
 
-const hoverLabel = (hoverState: ICluster, viewTransform, dataset) => {
+const hoverLabel = (hoverState: ICluster, viewTransform: ViewTransformType, dataset) => {
     let screen = CameraTransformations.worldToScreen(ACluster.getCenter(dataset, hoverState), viewTransform)
+
 
     return <Typography style={{
         textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white',

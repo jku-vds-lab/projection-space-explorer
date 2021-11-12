@@ -136,12 +136,18 @@ export type FeatureConfig = Partial<{
   }
 }>
 
+export type LayerSpec = {
+  order: number
+  component: (props: any) => JSX.Element
+}
+
 export type ComponentConfig = Partial<{
   datasetTab: (props: {
     onDataSelected(dataset: Dataset): void;
   }) => JSX.Element
   appBar: () => JSX.Element
   detailViews: Array<DetailViewSpec>
+  layers: Array<LayerSpec>
   tabs: Array<TabSpec>
 }>
 
@@ -529,6 +535,7 @@ export const Application = connector(class extends React.Component<Props, any> {
               <div style={{ flexGrow: 0.9 }}>
                 <WebGLView
                   ref={this.threeRef}
+                  overrideComponents={this.props.overrideComponents}
                 />
               </div>
               <div style={{ flexGrow: 0.1 }}>
@@ -538,6 +545,7 @@ export const Application = connector(class extends React.Component<Props, any> {
               </div>
             </Split> : <div style={{ flexGrow: 1 }}>
               <WebGLView
+                overrideComponents={this.props.overrideComponents}
                 ref={this.threeRef}
               />
             </div>
