@@ -101,8 +101,8 @@ export function createRootReducer(reducers: any) {
 
   return (state, action) => {
     if (action.type === 'RESET_APP') {
-      const { dataset, openTab, viewTransform } = state;
-      state = { dataset, openTab, viewTransform };
+      const { dataset, openTab, viewTransform, datasetEntries } = state;
+      state = { dataset, openTab, viewTransform, datasetEntries };
     }
   
   
