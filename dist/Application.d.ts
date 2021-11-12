@@ -18,12 +18,17 @@ export declare type FeatureConfig = Partial<{
         forceatlas?: boolean;
     };
 }>;
+export declare type LayerSpec = {
+    order: number;
+    component: (props: any) => JSX.Element;
+};
 export declare type ComponentConfig = Partial<{
     datasetTab: (props: {
         onDataSelected(dataset: Dataset): void;
     }) => JSX.Element;
     appBar: () => JSX.Element;
     detailViews: Array<DetailViewSpec>;
+    layers: Array<LayerSpec>;
     tabs: Array<TabSpec>;
 }>;
 export declare type DetailViewSpec = {

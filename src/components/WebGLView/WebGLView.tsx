@@ -7,7 +7,7 @@ import { ACluster, ICluster, isCluster } from '../../model/Cluster';
 import { TypedObject } from "../../model/TypedObject";
 import { connect, ConnectedProps } from 'react-redux'
 import { isVector, IVector } from "../../model/Vector";
-import { setViewTransform } from "../Ducks/ViewTransformDuck";
+import { setViewTransform, ViewTransformType } from "../Ducks/ViewTransformDuck";
 import { selectClusters, selectVectors } from "../Ducks/AggregationDuck";
 import { CameraTransformations } from './CameraTransformations'
 import { Camera } from 'three';
@@ -37,6 +37,7 @@ import { DataLine } from '../../model/DataLine';
 import { NamedCategoricalScales } from '../Utility/Colors/NamedCategoricalScales';
 import { ObjectTypes } from '../../model/ObjectType';
 import { v4 as uuidv4 } from 'uuid';
+import { ComponentConfig } from '../../Application';
 
 type ViewState = {
     displayClusters: any
@@ -89,7 +90,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRe
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux
+type Props = PropsFromRedux & {
+    overrideComponents: ComponentConfig
+}
 
 const UPDATER = "scatter";
 
@@ -676,14 +679,15 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
     setupRenderer() {
         this.renderer = new THREE.WebGLRenderer({
-            antialias: true
+            antialias: true,
+            alpha: true
         });
         this.renderer.autoClear = true
         this.renderer.autoClearColor = false
 
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(this.getWidth(), this.getHeight());
-        this.renderer.setClearColor(0xf9f9f9, 1);
+        this.renderer.setClearColor(0x000000, 0);
         this.renderer.sortObjects = false;
 
         this.camera = new THREE.OrthographicCamera(this.getWidth() / - 2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / - 2, 1, 1000);
@@ -1054,7 +1058,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         if (prevProps.stories != this.props.stories) {
-            if (this.props.stories.active) {
+            if (this.props.stories.active !== null) {
                 this.particles?.storyTelling(this.props.stories)
 
                 this.lines?.storyTelling(this.props.stories)
@@ -1190,11 +1194,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         requestAnimationFrame(() => this.renderFrame())
     }
 
-    createTransform() {
+    createTransform(): ViewTransformType {
         return {
-            camera: this.camera,
+            centerX: this.camera.position.x,
+            centerY: this.camera.position.y,
             width: this.getWidth(),
-            height: this.getHeight()
+            height: this.getHeight(),
+            zoom: this.camera.zoom
         }
     }
 
@@ -1276,18 +1282,27 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 position: "relative"
             }}>
 
+
+            {
+                // Layers which 
+                this.props.overrideComponents?.layers?.filter(layer => layer.order < 0).map(layer => {
+                    return React.createElement(layer.component)
+                })
+            }
+
+
             <div id="container" style={{
                 position: "absolute",
                 top: "0px",
                 left: "0px",
                 width: "100%",
                 height: "100%"
-            }} ref={this.containerRef} tabIndex={0}>
+            }} ref={this.containerRef} tabIndex={0}></div>
 
 
 
 
-            </div>
+
 
             <LassoLayer ref={this.selectionRef}></LassoLayer>
 

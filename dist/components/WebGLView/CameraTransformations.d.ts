@@ -1,3 +1,4 @@
+import { ViewTransformType } from "../Ducks";
 /**
  * Utility object that can convert screen coordinates to world coordinates and vice-versa.
  */
@@ -6,7 +7,7 @@ export declare class CameraTransformations {
      * Converts world coordinates to screen coordinates
      * @param {*} vec a vector containing x and y
      */
-    static worldToScreen(vec: any, transform: any): {
+    static worldToScreen(vec: any, transform: ViewTransformType): {
         x: number;
         y: number;
     };
@@ -14,7 +15,7 @@ export declare class CameraTransformations {
      * Converts world coordinates to screen coordinates ignoring the camera position
      * @param screen
      */
-    static worldToScreenWithoutOffset(vec: any, transform: any): {
+    static worldToScreenWithoutOffset(vec: any, transform: ViewTransformType): {
         x: number;
         y: number;
     };
@@ -22,7 +23,7 @@ export declare class CameraTransformations {
      * Converts world coordinates to screen coordinates, but only the camera position
      * @param screen
      */
-    static cameraOffsetToScreen(transform: any): {
+    static cameraOffsetToScreen(transform: ViewTransformType): {
         x: number;
         y: number;
     };
@@ -33,9 +34,9 @@ export declare class CameraTransformations {
     static screenToWorld(screen: {
         x: number;
         y: number;
-    }, transform: any): {
-        x: any;
-        y: any;
+    }, transform: ViewTransformType): {
+        x: number;
+        y: number;
     };
-    static pixelToWorldCoordinates(pixel: number, transform: any): number;
+    static pixelToWorldCoordinates(pixel: number, transform: ViewTransformType): number;
 }

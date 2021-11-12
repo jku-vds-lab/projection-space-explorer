@@ -24,6 +24,7 @@ export class InferCategory {
     inferType() {
         var header = Object.keys(this.vectors[0]);
 
+
         // Checks if the header has all the required columns
         const hasLayout = (header: string[], columns: string[]) => {
             for (let key in columns) {
@@ -39,6 +40,10 @@ export class InferCategory {
 
         if (hasLayout(header, requiredRubikColumns)) {
             return DatasetType.Rubik;
+        }
+
+        if (header.includes('wav')) {
+            return DatasetType.Sound
         }
 
         if (header.includes('cf00')) {

@@ -2,10 +2,11 @@ import { ICluster } from "../../model/Cluster";
 import { Dataset } from "../../model/Dataset";
 import { RenderingContextEx } from "../Utility/RenderingContextEx";
 import { Tool } from "./Tool";
+import { ViewTransformType } from "../Ducks/ViewTransformDuck";
 export declare class TraceSelectTool implements Tool {
     dataset: Dataset;
     cluster: ICluster;
-    viewTransform: any;
+    viewTransform: ViewTransformType;
     mousePosition: {
         x: number;
         y: number;

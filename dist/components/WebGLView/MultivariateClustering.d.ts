@@ -6,6 +6,7 @@ import React = require("react");
 import { ConnectedProps } from "react-redux";
 import { TrailVisualization } from "./TrailVisualization";
 import { IBook } from "../../model/Book";
+import { ViewTransformType } from "../Ducks";
 declare type ClusterObjectType = {
     cluster: string;
     geometry: THREE.Geometry;
@@ -27,19 +28,15 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         show: any;
         length: number;
     };
-    stories: import("../Ducks/StoriesDuck").StoriesType;
+    stories: import("../Ducks").StoriesType;
     globalPointSize: number[];
-    viewTransform: {
-        camera: THREE.Camera;
-        width: number;
-        height: number;
-    };
+    viewTransform: ViewTransformType;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    hoverState: import("..").HoverStateType;
+    hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -210,19 +207,15 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         show: any;
         length: number;
     };
-    stories: import("../Ducks/StoriesDuck").StoriesType;
+    stories: import("../Ducks").StoriesType;
     globalPointSize: number[];
-    viewTransform: {
-        camera: THREE.Camera;
-        width: number;
-        height: number;
-    };
+    viewTransform: ViewTransformType;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    hoverState: import("..").HoverStateType;
+    hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
 } & {
     onInvalidate?: () => void;

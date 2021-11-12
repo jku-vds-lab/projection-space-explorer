@@ -65,7 +65,6 @@ export class DownloadJob {
         fetch(this.entry.path).then(response => {
             this.download(response, callback, onProgress)
         }).catch((reason) => {
-            console.log(reason)
         })
     }
 

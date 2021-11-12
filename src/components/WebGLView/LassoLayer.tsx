@@ -3,13 +3,14 @@ import * as React from 'react'
 import { RenderingContextEx } from '../Utility/RenderingContextEx'
 import { connect } from 'react-redux'
 import { CameraTransformations } from './CameraTransformations'
+import { ViewTransformType } from '../Ducks'
 
 type LassoLayerProps = {
-    viewTransform: CameraTransformations
+    viewTransform: ViewTransformType
 }
 
 const mapStateToProps = state => ({
-    viewTransform: state.viewTransform as CameraTransformations
+    viewTransform: state.viewTransform
 })
 
 const LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true })(class extends React.Component<LassoLayerProps, any> {

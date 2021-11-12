@@ -12,11 +12,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     activeLine: any;
     dataset: import("../..").Dataset;
     highlightedSequence: any;
-    viewTransform: {
-        camera: import("three").Camera;
-        width: number;
-        height: number;
-    };
+    viewTransform: import("../Ducks/ViewTransformDuck").ViewTransformType;
     advancedColoringSelection: any;
     projectionColumns: any;
     projectionOpen: any;
@@ -101,11 +97,7 @@ export declare function createRootReducer(reducers: any): (state: any, action: a
     activeLine: any;
     dataset: import("../..").Dataset;
     highlightedSequence: any;
-    viewTransform: {
-        camera: import("three").Camera;
-        width: number;
-        height: number;
-    };
+    viewTransform: import("../Ducks/ViewTransformDuck").ViewTransformType;
     advancedColoringSelection: any;
     projectionColumns: any;
     projectionOpen: any;

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { CameraTransformations } from './CameraTransformations';
+import { ViewTransformType } from '../Ducks';
 declare type LassoLayerProps = {
-    viewTransform: CameraTransformations;
+    viewTransform: ViewTransformType;
 };
 declare const LassoLayer: import("react-redux").ConnectedComponent<{
     new (props: any): {
