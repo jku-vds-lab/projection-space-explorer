@@ -47,6 +47,7 @@ export class AVector {
 
         return vect as IVector
     }
+
 }
 
 

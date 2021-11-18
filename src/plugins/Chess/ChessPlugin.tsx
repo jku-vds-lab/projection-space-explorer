@@ -1,7 +1,7 @@
 import { IVector } from "../../model/Vector";
 import React = require("react");
 import { DatasetType } from "../../model/DatasetType";
-import { PSEPlugin } from "../../components/Store/PluginScript";
+import { PSEPlugin } from "../../components/Store/PSEPlugin";
 import { ChessFingerprint } from "./ChessFingerprint/ChessFingerprint";
 
 export class ChessPlugin extends PSEPlugin {

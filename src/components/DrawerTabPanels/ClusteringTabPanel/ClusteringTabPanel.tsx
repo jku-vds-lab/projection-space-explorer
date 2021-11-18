@@ -30,7 +30,8 @@ const mapStateToProps = (state: RootState) => ({
     dataset: state.dataset,
     categoryOptions: state.categoryOptions,
     currentAggregation: state.currentAggregation,
-    groupVisualizationMode: state.groupVisualizationMode
+    groupVisualizationMode: state.groupVisualizationMode,
+    workspace: state.projections.workspace
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -74,10 +75,7 @@ export const ClusteringTabPanel = connector(({
     displayMode,
     addStory,
     removeClusterFromStories,
-    //updateLineUpInput_filter,
-    //setLineUpInput_update,
-    //setLineUpInput_visibility,
-    //setLineUpInput_filter,
+    workspace,
     currentAggregation,
     splitRef,
     groupVisualizationMode,
@@ -110,8 +108,11 @@ export const ClusteringTabPanel = connector(({
 
     function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory) {
         const loading_area = "global_loading_indicator";
-        let data_points = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation.map(i => dataset.vectors[i]) : dataset.vectors;
+
+        let data_points = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation.map(i => ({ ...workspace[i], meshIndex: i })) : dataset.vectors.map((v, i) => ({ ...workspace[i], meshIndex: i }));
+
         const points = data_points.map(point => [point.x, point.y]);
+
         trackPromise(
             cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster)).then(data => {
                 const cluster_labels = data["result"];
@@ -128,7 +129,7 @@ export const ClusteringTabPanel = connector(({
                 dist_cluster_labels.forEach(cluster_label => {
                     if (cluster_label >= 0) {
                         const current_cluster_vects = data_points.filter((x, i) => cluster_labels[i] == cluster_label);
-                        const cluster = ACluster.fromSamples(dataset, current_cluster_vects.map(i => i.__meta__.meshIndex));
+                        const cluster = ACluster.fromSamples(dataset, current_cluster_vects.map(i => i.meshIndex));
 
                         // Set correct label for cluster
                         cluster.label = cluster_label
@@ -454,7 +455,7 @@ function ClusterPopover({
     const [name, setName] = React.useState(cluster.label)
 
     const useStyles = makeStyles(theme => ({
-        
+
         button: {
             //margin: theme.spacing(1)
         },

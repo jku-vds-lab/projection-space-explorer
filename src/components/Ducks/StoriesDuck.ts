@@ -5,6 +5,7 @@ import { IBook, ABook } from "../../model/Book";
 import { IVector } from "../../model/Vector";
 import { v4 as uuidv4 } from 'uuid';
 import { ObjectTypes } from "../../model/ObjectType";
+import { ANormalized } from "../Utility/NormalizedState";
 
 const ADD_STORY_BOOK = "ducks/stories/ADD"
 const DELETE = "ducks/stories/DELETE"
@@ -120,14 +121,8 @@ export class StoriesUtil {
 
     static emptyStory(): IBook {
         const story: IBook = {
-            clusters: {
-                byId: {},
-                allIds: []
-            },
-            edges: {
-                byId: {},
-                allIds: []
-            }
+            clusters: ANormalized.create<ICluster>(),
+            edges: ANormalized.create<IEdge>()
         }
 
         return story

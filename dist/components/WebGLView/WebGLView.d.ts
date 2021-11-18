@@ -14,7 +14,6 @@ import { IBook } from '../../model/Book';
 import { IEdge } from "../../model/Edge";
 import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
-import { Embedding } from '../../model/Embedding';
 import { DataLine } from '../../model/DataLine';
 import { ComponentConfig } from '../../Application';
 declare type ViewState = {
@@ -61,6 +60,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         length: number;
     };
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
+    workspace: import("../..").IBaseProjection;
 } & {
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
@@ -209,7 +209,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         createTransform(): ViewTransformType;
         renderLasso(ctx: any): void;
         repositionClusters(): void;
-        loadProjection(projection: Embedding): void;
         onClusterZoom(cluster: any): void;
         render(): JSX.Element;
         context: any;
@@ -362,7 +361,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     createTransform(): ViewTransformType;
     renderLasso(ctx: any): void;
     repositionClusters(): void;
-    loadProjection(projection: Embedding): void;
     onClusterZoom(cluster: any): void;
     render(): JSX.Element;
     context: any;
@@ -422,6 +420,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         length: number;
     };
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
+    workspace: import("../..").IBaseProjection;
 } & {
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;

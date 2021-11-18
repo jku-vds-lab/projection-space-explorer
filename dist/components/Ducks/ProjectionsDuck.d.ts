@@ -1,10 +1,10 @@
-import { Embedding } from "../../model/Embedding";
-export declare const addProjectionAction: (projection: Embedding) => {
+import { EmbeddingType } from "../../model/Embedding";
+export declare const addProjectionAction: (projection: EmbeddingType) => {
     type: string;
-    projection: Embedding;
+    projection: EmbeddingType;
 };
-export declare const deleteProjectionAction: (projection: Embedding) => {
+export declare const deleteProjectionAction: (projection: EmbeddingType) => {
     type: string;
-    projection: Embedding;
+    projection: EmbeddingType;
 };
-export default function projections(state: Embedding[], action: any): Embedding[];
+export default function projections(state: EmbeddingType[], action: any): EmbeddingType[];

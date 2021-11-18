@@ -26,7 +26,6 @@ export * from './PointColorScaleDuck';
 export * from './ProjectionColumnsDuck';
 export * from './ProjectionOpenDuck';
 export * from './ProjectionParamsDuck';
-export * from './ProjectionsDuck';
 export * from './ProjectionWorkerDuck';
 export * from './SelectedLineByDuck';
 export * from './SelectedVectorByColorDuck';

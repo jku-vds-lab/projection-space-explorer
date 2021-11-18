@@ -8,6 +8,7 @@ import { Dataset } from "../../model/Dataset"
 import { ObjectTypes } from "../../model/ObjectType"
 import { IBook } from "../../model/Book"
 import { IEdge } from "../../model/Edge"
+import { ANormalized } from "./NormalizedState"
 
 
 
@@ -109,14 +110,8 @@ export function storyLayout(clusterInstances: ICluster[], edges: IEdge[]): IBook
 
 export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult: IEdge[]) {
     const story: IBook = {
-        clusters: {
-            byId: {},
-            allIds: []
-        },
-        edges: {
-            byId: {},
-            allIds: []
-        }
+        clusters: ANormalized.create<ICluster>(),
+        edges: ANormalized.create<IEdge>()
     }
 
     clusterResult.forEach((cluster, clusterIndex) => {

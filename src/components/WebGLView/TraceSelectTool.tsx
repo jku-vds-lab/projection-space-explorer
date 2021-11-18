@@ -4,15 +4,16 @@ import { RenderingContextEx } from "../Utility/RenderingContextEx";
 import { CameraTransformations } from "./CameraTransformations";
 import { Tool } from "./Tool";
 import { ViewTransformType } from "../Ducks/ViewTransformDuck";
+import { IBaseProjection } from "../../model/Projection";
 
 export class TraceSelectTool implements Tool {
-    dataset: Dataset
+    workspace: IBaseProjection
     cluster: ICluster
     viewTransform: ViewTransformType
     mousePosition: { x: number, y: number }
 
-    constructor(dataset: Dataset, cluster: ICluster) {
-        this.dataset = dataset
+    constructor(workspace: IBaseProjection, cluster: ICluster) {
+        this.workspace = workspace
         this.cluster = cluster
     }
 
@@ -20,7 +21,7 @@ export class TraceSelectTool implements Tool {
         if (!this.cluster || !this.viewTransform) {
             return;
         }
-        let start = CameraTransformations.worldToScreen(ACluster.getCenter(this.dataset, this.cluster), this.viewTransform)
+        let start = CameraTransformations.worldToScreen(ACluster.getCenterFromWorkspace(this.workspace, this.cluster), this.viewTransform)
 
         context.lineWidth = "2"
 

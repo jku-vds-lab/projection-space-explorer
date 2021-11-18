@@ -1,1 +1,4 @@
-export declare function pointInHull(seat: any, points: any): boolean;
+export declare function pointInHull(seat: {
+    x: number;
+    y: number;
+}, points: any): boolean;

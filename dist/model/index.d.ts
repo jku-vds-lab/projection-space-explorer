@@ -4,7 +4,7 @@ export * from './DataLine';
 export * from './Dataset';
 export * from './DatasetType';
 export * from './Edge';
-export * from './Embedding';
+export * from './Projection';
 export * from './FeatureType';
 export * from './ObjectType';
 export * from './TypedObject';

@@ -41,13 +41,7 @@ export class CategoryOptionsAPI {
  * size by (att1, att2...)
  * brightness by ...
  */
-export class CategoryOptions {
+export type CategoryOptions = {
     vectors: any
     json: any
-
-    constructor(vectors, json) {
-        this.vectors = vectors
-        this.json = json
-    }
-
 }

@@ -10,6 +10,7 @@ import { DiscreteMapping, Mapping } from '../Utility/Colors/Mapping'
 
 // @ts-ignore
 import SpriteAtlas from '../../../textures/sprites/atlas.png'
+import { IBaseProjection } from '../../model/Projection'
 
 
 var fragmentShader = require('../../shaders/fragment.glsl')
@@ -311,11 +312,12 @@ export class LineVisualization {
   }
 
 
-  updatePosition() {
+  updatePosition(workspace: IBaseProjection) {
     this.segments.forEach((segment, index) => {
       var da = []
 
-      segment.vectors.forEach(function (vector, vi) {
+      segment.vectors.forEach(function (v, vi) {
+        const vector = workspace[v.__meta__.meshIndex]
         da.push(new THREE.Vector2(vector.x, vector.y))
       })
 
@@ -889,15 +891,15 @@ export class PointVisualization {
   }
 
 
-  updatePosition() {
+  updatePosition(projection: IBaseProjection) {
     var position = this.mesh.geometry.attributes.position.array
 
-    this.vectors.forEach(vector => {
+    this.vectors.forEach((vector, i) => {
       let z = 0.0
       if ((!this.dataset.isSequential && this.grayedLayerSystem.getValue(vector.__meta__.meshIndex)) || (this.dataset.isSequential && this.lineLayerSystem.getValue(vector.__meta__.lineIndex))) {
         z = -0.1
       }
-      new THREE.Vector3(vector.x, vector.y, z).toArray(position, vector.__meta__.meshIndex * 3);
+      new THREE.Vector3(projection[i].x, projection[i].y, z).toArray(position, vector.__meta__.meshIndex * 3);
     })
 
     this.mesh.geometry.attributes.position.needsUpdate = true
@@ -919,7 +921,6 @@ export class PointVisualization {
 
     //this.updateColor()
     this.updateSize()
-    this.updatePosition()
 
     this.mesh.geometry.attributes.show.needsUpdate = true;
     this.mesh.geometry.attributes.selected.needsUpdate = true

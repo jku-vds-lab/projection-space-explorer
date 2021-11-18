@@ -2,7 +2,7 @@ import { IVector } from "../../model/Vector";
 import React = require("react");
 import { DatasetType } from "../../model/DatasetType";
 import { RubikFingerprint } from "./RubikFingerprint/RubikFingerprint";
-import { PSEPlugin } from "../../components/Store/PluginScript";
+import { PSEPlugin } from "../../components/Store/PSEPlugin";
 
 export class RubikPlugin extends PSEPlugin {
     type = DatasetType.Rubik;

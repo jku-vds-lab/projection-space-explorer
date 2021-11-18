@@ -2,7 +2,7 @@ import { IVector } from "../../model/Vector";
 import React = require("react");
 import { DatasetType } from "../../model/DatasetType";
 import { CoralLegend } from "./CoralDetail/CoralDetail";
-import { PSEPlugin } from "../../components/Store/PluginScript";
+import { PSEPlugin } from "../../components/Store/PSEPlugin";
 
 export class CoralPlugin extends PSEPlugin {
     type = DatasetType.Cohort_Analysis;

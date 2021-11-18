@@ -1,4 +1,4 @@
-export function pointInHull(seat, points) {
+export function pointInHull(seat: { x: number, y: number }, points) {
     if (points.length <= 1) {
         return false;
     }

@@ -26,7 +26,6 @@ import pointColorScale from '../Ducks/PointColorScaleDuck'
 import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
 import differenceThreshold from '../Ducks/DifferenceThresholdDuck';
-import projections from '../Ducks/ProjectionsDuck';
 import hoverSettings from '../Ducks/HoverSettingsDuck';
 import hoverState from '../Ducks/HoverStateDuck';
 import selectedLineBy from '../Ducks/SelectedLineByDuck';
@@ -37,6 +36,8 @@ import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesD
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 import detailView from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
+import embeddings from '../Ducks/ProjectionDuck';
+import { RootActionTypes } from './RootActions';
 
 const allReducers = {
   currentAggregation: currentAggregation,
@@ -68,7 +69,7 @@ const allReducers = {
   pointColorMapping: pointColorMapping,
   trailSettings: trailSettings,
   differenceThreshold: differenceThreshold,
-  projections: projections,
+  projections: embeddings,
   hoverSettings: hoverSettings,
   selectedLineBy: selectedLineBy,
   globalPointBrightness: globalPointBrightness,
@@ -82,12 +83,10 @@ const allReducers = {
 const appReducer = combineReducers(allReducers)
 
 export const rootReducer = (state, action) => {
-  if (action.type === 'RESET_APP') {
+  if (action.type === RootActionTypes.RESET) {
     const { dataset, openTab, viewTransform, datasetEntries } = state;
     state = { dataset, openTab, viewTransform, datasetEntries };
   }
-
-
 
   return appReducer(state, action)
 }
@@ -100,13 +99,19 @@ export function createRootReducer(reducers: any) {
   const combined = combineReducers(root)
 
   return (state, action) => {
-    if (action.type === 'RESET_APP') {
+    if (action.type === RootActionTypes.RESET) {
       const { dataset, openTab, viewTransform, datasetEntries } = state;
       state = { dataset, openTab, viewTransform, datasetEntries };
     }
-  
-  
-  
+
+    if (action.type === RootActionTypes.HYDRATE) {
+      const newState = { ...state }
+      
+      Object.assign(newState, action.dump)
+
+      return newState
+    }
+
     return combined(state, action)
   }
 }

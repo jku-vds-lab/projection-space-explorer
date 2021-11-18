@@ -1,6 +1,6 @@
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from "../../../model/Dataset";
-import { Embedding } from '../../../model/Embedding';
+import { IProjection, IBaseProjection } from '../../../model/Projection';
 import { FeatureConfig } from '../../../Application';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     currentAggregation: {
@@ -24,7 +24,14 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         normalizationMethod: import("../../../model/NormalizationMethod").NormalizationMethod;
         encodingMethod: import("../../../model/EncodingMethod").EncodingMethod;
     };
-    projections: Embedding[];
+    projections: {
+        byId: {
+            [id: string]: IProjection;
+        };
+        allIds: string[];
+        workspace: IBaseProjection;
+    };
+    workspace: IBaseProjection;
 } & {
     setProjectionOpen: (value: any) => any;
     setProjectionWorker: (value: any) => any;
@@ -32,7 +39,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setProjectionColumns: (value: any) => any;
     setTrailVisibility: (visibility: any) => any;
     addProjection: (embedding: any) => any;
-    deleteProjection: (projection: any) => any;
+    deleteProjection: (handle: string) => any;
+    updateWorkspace: (workspace: IBaseProjection) => any;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {

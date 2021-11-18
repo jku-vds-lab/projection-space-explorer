@@ -3,6 +3,7 @@ import { IEdge } from "./Edge";
 import { ICluster } from "./Cluster";
 const Graph = require('graphology');
 import { v4 as uuidv4 } from 'uuid';
+import { ANormalized } from "../components/Utility/NormalizedState";
 
 function* labelGenerator() {
     const code_0 = '0'.charCodeAt(0)
@@ -35,7 +36,7 @@ function* labelGenerator() {
 
 
 /**
- * Book methods.
+ * Book API.
  */
 export class ABook {
     /**
@@ -154,39 +155,19 @@ export class ABook {
     }
 
     static addCluster(book: IBook, cluster: ICluster) {
-        const handle = uuidv4()
-
-        book.clusters.byId[handle] = cluster
-        book.clusters.allIds.push(handle)
-
-        return handle
+        return ANormalized.add(book.clusters, cluster)
     }
 
     static deleteEdge(book: IBook, edge: IEdge) {
-        const handle = Object.entries(book.edges.byId).find(([key, val]) => val === edge)[0]
-
-        delete book.edges.byId[handle]
-        book.edges.allIds.splice(book.edges.allIds.indexOf(handle), 1)
-
-        return handle
+        return ANormalized.deleteByRef(book.edges, edge)
     }
 
     static addEdge(book: IBook, edge: IEdge) {
-        const handle = uuidv4()
-
-        book.edges.byId[handle] = edge
-        book.edges.allIds.push(handle)
-
-        return handle
+        return ANormalized.add(book.edges, edge)
     }
 
     static deleteCluster(book: IBook, cluster: ICluster) {
-        const handle = Object.entries(book.clusters.byId).find(([key, val]) => val === cluster)[0]
-
-        delete book.clusters.byId[handle]
-        book.clusters.allIds.splice(book.clusters.allIds.indexOf(handle), 1)
-
-        return handle
+        return ANormalized.deleteByRef(book.clusters, cluster)
     }
 }
 

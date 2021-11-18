@@ -3,6 +3,7 @@ import { Dataset } from "./model/Dataset";
 import * as React from "react";
 import { ConnectedProps } from 'react-redux';
 import { CategoryOptions } from "./components/WebGLView/CategoryOptions";
+import { IProjection, IBaseProjection } from "./model/Projection";
 import { IBook } from "./model/Book";
 export declare type BaseConfig = Partial<{
     baseUrl: string;
@@ -79,7 +80,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     wipeState: () => any;
     setChannelColor: (channelColor: any) => any;
     setChannelBrightness: (channelBrightness: any) => any;
-    saveProjection: (embedding: any) => any;
+    saveProjection: (embedding: IProjection) => any;
+    updateWorkspace: (raw: IBaseProjection) => any;
     setVectors: (vectors: any) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
@@ -208,7 +210,8 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     wipeState: () => any;
     setChannelColor: (channelColor: any) => any;
     setChannelBrightness: (channelBrightness: any) => any;
-    saveProjection: (embedding: any) => any;
+    saveProjection: (embedding: IProjection) => any;
+    updateWorkspace: (raw: IBaseProjection) => any;
     setVectors: (vectors: any) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;

@@ -1,3 +1,5 @@
 export * from './PluginScript';
 export * from './PSEContext';
 export * from './Store';
+export * from './PSEPlugin';
+export * from './API';

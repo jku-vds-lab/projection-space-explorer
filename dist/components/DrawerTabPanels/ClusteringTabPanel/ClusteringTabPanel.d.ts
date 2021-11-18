@@ -15,6 +15,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         source: "sample" | "cluster";
     };
     groupVisualizationMode: any;
+    workspace: import("../../..").IBaseProjection;
 } & {
     setStories: (stories: IBook[]) => any;
     setActiveStory: (activeStory: IBook) => any;
@@ -29,5 +30,5 @@ declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     splitRef: any;
 };
-export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ categoryOptions, setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters }: Props) => JSX.Element, Pick<Props, "splitRef">>;
+export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ categoryOptions, setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters }: Props) => JSX.Element, Pick<Props, "splitRef">>;
 export {};

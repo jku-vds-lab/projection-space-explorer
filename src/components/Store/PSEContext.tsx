@@ -3,7 +3,7 @@ import { PropsWithChildren } from "react";
 import React = require("react");
 import { Provider } from "react-redux";
 import { Store } from "redux";
-import { API } from "./PluginScript";
+import { API } from "./API";
 
 type PSEContextProps = {
     context?: API<any>
@@ -20,12 +20,6 @@ const theme = createTheme({
         }
     }
 })
-
-
-
-
-
-
 
 
 export function PSEContextProvider({ context, children, onStateChanged }: PropsWithChildren<PSEContextProps>) {
@@ -45,8 +39,3 @@ export function PSEContextProvider({ context, children, onStateChanged }: PropsW
         </Provider>
     </ThemeProvider> : null
 }
-
-
-
-
-

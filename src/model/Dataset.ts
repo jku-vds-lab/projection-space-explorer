@@ -46,7 +46,7 @@ export class SegmentFN {
 
 
 
-export class DatasetUtil {
+export class ADataset {
         /**
      * Calculates the dataset bounds for this set, eg the minimum and maximum x,y values
      * which is needed for the zoom to work correctly
@@ -97,7 +97,7 @@ export class DatasetUtil {
      * Returns the vectors in this dataset as a 2d array, which
      * can be used as input for tsne for example.
      */
-    static asTensor(dataset: Dataset, projectionColumns, samples?, encodingMethod?, normalizationMethod?) {
+    static asTensor(dataset: Dataset, projectionColumns, encodingMethod?, normalizationMethod?) {
         if(encodingMethod === undefined){
             encodingMethod = EncodingMethod.ONEHOT;
         }
@@ -117,7 +117,7 @@ export class DatasetUtil {
 
         }
 
-        ;(samples ?? dataset.vectors).forEach(vector => {
+        dataset.vectors.forEach(vector => {
             var data = [];
             projectionColumns.forEach(entry => {
                 let column = entry.name;
@@ -242,7 +242,7 @@ export class Dataset {
         this.metaInformation = metaInformation
 
 
-        DatasetUtil.calculateBounds(this);
+        ADataset.calculateBounds(this);
         this.calculateColumnTypes(ranges, featureTypes, metaInformation);
         this.checkLabels();
 
@@ -275,7 +275,7 @@ export class Dataset {
 
     // Checks if the dataset contains sequential data
     checkSequential() {
-        var header = DatasetUtil.getColumns(this);
+        var header = ADataset.getColumns(this);
 
         // If we have no line attribute, its not sequential
         if (!header.includes(PrebuiltFeatures.Line)) {

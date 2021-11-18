@@ -38,6 +38,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
+    workspace: import("../..").IBaseProjection;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
@@ -217,6 +218,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
     };
     hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
+    workspace: import("../..").IBaseProjection;
 } & {
     onInvalidate?: () => void;
 }, "ref" | "key" | "onInvalidate">>;

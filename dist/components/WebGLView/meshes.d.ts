@@ -4,6 +4,7 @@ import { Dataset } from "../../model/Dataset";
 import { LayeringSystem } from './LayeringSystem';
 import { StoriesType } from '../Ducks/StoriesDuck';
 import { Mapping } from '../Utility/Colors/Mapping';
+import { IBaseProjection } from '../../model/Projection';
 export declare enum Shapes {
     Circle = "circle",
     Star = "star",
@@ -36,7 +37,7 @@ export declare class LineVisualization {
      */
     highlight(indices: any, width: any, height: any, scene: any, grayout?: boolean): void;
     createMesh(lineBrightness: number): any[];
-    updatePosition(): void;
+    updatePosition(workspace: IBaseProjection): void;
     /**
      * Updates visibility based on settings in the lines
      */
@@ -81,7 +82,7 @@ export declare class PointVisualization {
     updateSize(): void;
     updateColor(): void;
     isPointVisible(vector: IVector): boolean;
-    updatePosition(): void;
+    updatePosition(projection: IBaseProjection): void;
     update(): void;
     /**
      * Highlights a specific point index.
