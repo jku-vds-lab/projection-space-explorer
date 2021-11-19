@@ -9,7 +9,6 @@ export abstract class PSEPlugin {
         return false;
     }
 
-
     abstract createFingerprint(vectors: IVector[], scale: number, aggregate: boolean): JSX.Element;
 
     // Checks if the header has all the required columns

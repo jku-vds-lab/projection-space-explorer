@@ -65,7 +65,7 @@ export const ANormalized = {
      * @param value the value to remove
      */
     delete: <T>(dict: NormalizedDictionary<T>, handle: string): string => {
-        if (!(handle in dict) || !dict.allIds.includes(handle)) {
+        if (!(handle in dict.byId) || !dict.allIds.includes(handle)) {
             throw Error(`ANormalized.delete was called but the handle was not in the dictionary. This should never happen and suggests that the API was used wrong.`)
         }
 
@@ -77,7 +77,7 @@ export const ANormalized = {
 
 
     get: <T>(dict: NormalizedDictionary<T>, handle: string) => {
-        if (!(handle in dict)) {
+        if (!(handle in dict.byId)) {
             throw Error(`ANormalized.get was called but the handle was not in the dictionary. This should never happen and suggests that the API was used wrong.`)
         }
 

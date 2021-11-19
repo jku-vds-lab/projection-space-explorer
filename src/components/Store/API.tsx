@@ -1,4 +1,4 @@
-import { applyMiddleware, createStore, Reducer, Store } from "redux";
+import { applyMiddleware, createStore, Reducer, Store, PreloadedState } from "redux";
 import { addClusterToStory } from "../Ducks/StoriesDuck";
 import { rootReducer, RootState } from "../Store/Store";
 import thunk from 'redux-thunk';
@@ -21,16 +21,14 @@ export class API<T> {
     /**
      * Creates a PSE API (store).
      * 
-     * @param json the json string which contains parts of store state
+     * @param dump the dump which contains parts of store state
      * @param reducer the root reducer of the store, MUST be created with PSE´s inbuilt createRootReducer method.
      */
-    constructor(json: string | undefined, reducer: Reducer) {
+    constructor(dump: any, reducer: Reducer) {
         this.id = uuidv4();
 
-        if (json) {
-            const preloadedState = JSON.parse(json);
-
-            this.store = createStore(reducer ? reducer : rootReducer, preloadedState, applyMiddleware(this.differenceMiddleware, thunk));
+        if (dump) {
+            this.store = createStore(reducer ? reducer : rootReducer, dump, applyMiddleware(this.differenceMiddleware, thunk));
         }
         else {
             this.store = createStore(reducer ? reducer : rootReducer, applyMiddleware(this.differenceMiddleware, thunk));
@@ -44,9 +42,7 @@ export class API<T> {
      * This operation can have side effects depending on which parts you change that can break the app
      * (for example changing the dataset when there are still clusters)
      */
-    partialHydrate(json: string) {
-        const dump = JSON.parse(json)
-        
+    partialHydrate(dump: any) {
         this.store.dispatch(RootActions.hydrate(dump))
     }
 
@@ -63,7 +59,7 @@ export class API<T> {
     /**
      * Creates a partial dump which excludes a list of columns.
      */
-    partialDump(excluded: string[]) {
+    partialDump(excluded: string[]): any {
         const set = new Set(excluded)
         const state = this.store.getState()
 
@@ -73,7 +69,7 @@ export class API<T> {
         Object.keys(state).filter(key => !set.has(key))
             .forEach(key => { partial[key] = state[key] })
 
-        return JSON.stringify(partial)
+        return partial
     }
 
 

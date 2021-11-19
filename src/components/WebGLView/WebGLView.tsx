@@ -484,8 +484,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         position = CameraTransformations.screenToWorld(position, this.createTransform())
 
         for (const edge of Object.values(activeStory.edges.byId)) {
-            console.log(StoriesUtil.retrieveCluster(this.props.stories, edge.source), StoriesUtil.retrieveCluster(this.props.stories, edge.destination))
-
             const a = ACluster.getCenterAsVector2(this.props.workspace, StoriesUtil.retrieveCluster(this.props.stories, edge.source))
             const b = ACluster.getCenterAsVector2(this.props.workspace, StoriesUtil.retrieveCluster(this.props.stories, edge.destination))
             const dir = b.clone().sub(a.clone()).normalize()
@@ -839,6 +837,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
             ADataset.calculateBounds(this.props.dataset)
 
+            
             this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight())
             this.camera.position.x = 0.0
             this.camera.position.y = 0.0

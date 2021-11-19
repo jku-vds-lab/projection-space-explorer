@@ -1,16 +1,20 @@
+import { ClusterMode } from "../Ducks/ClusterModeDuck";
+import { StoriesType } from "../Ducks/StoriesDuck";
+import { Dataset, IProjection, IBaseProjection } from '../../model';
+import { CategoryOptions } from '../WebGLView/CategoryOptions';
 export declare const rootReducer: (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {
         aggregation: number[];
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    stories: import("../Ducks/StoriesDuck").StoriesType;
+    stories: StoriesType;
     openTab: any;
     selectedVectorByShape: any;
     vectorByShape: any;
     checkedShapes: any;
     activeLine: any;
-    dataset: import("../..").Dataset;
+    dataset: Dataset;
     highlightedSequence: any;
     viewTransform: import("../Ducks/ViewTransformDuck").ViewTransformType;
     advancedColoringSelection: any;
@@ -29,7 +33,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
     };
     projectionWorker: Worker;
-    clusterMode: import("../Ducks/ClusterModeDuck").ClusterMode;
+    clusterMode: ClusterMode;
     displayMode: import("../Ducks/DisplayModeDuck").DisplayMode;
     lineBrightness: any;
     pathLengthRange: {
@@ -39,7 +43,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         range: number[];
         maximum: any;
     };
-    categoryOptions: import("..").CategoryOptions;
+    categoryOptions: CategoryOptions;
     channelSize: any;
     channelColor: any;
     channelBrightness: any;
@@ -57,10 +61,10 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     differenceThreshold: any;
     projections: {
         byId: {
-            [id: string]: import("../..").IProjection;
+            [id: string]: IProjection;
         };
         allIds: string[];
-        workspace: import("../..").IBaseProjection;
+        workspace: IBaseProjection;
     };
     hoverSettings: {
         windowMode: any;
@@ -83,7 +87,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     datasetEntries: {
         values: {
             byId: {
-                [id: string]: import("../..").DatasetEntry;
+                [id: string]: import("../../model").DatasetEntry;
             };
             allIds: string[];
         };

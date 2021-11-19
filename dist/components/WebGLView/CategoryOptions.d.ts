@@ -11,8 +11,7 @@ export declare class CategoryOptionsAPI {
  * size by (att1, att2...)
  * brightness by ...
  */
-export declare class CategoryOptions {
+export declare type CategoryOptions = {
     vectors: any;
     json: any;
-    constructor(vectors: any, json: any);
-}
+};

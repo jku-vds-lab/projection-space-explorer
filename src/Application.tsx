@@ -115,7 +115,8 @@ const mapDispatchToProps = dispatch => ({
   setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
   setGenericFingerprintAttributes: value => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value)),
-  setLineUpInput_visibility: open => dispatch(setDetailVisibility(open))
+  setLineUpInput_visibility: open => dispatch(setDetailVisibility(open)),
+  loadDataset: (dataset: Dataset) => dispatch(RootActions.loadDataset(dataset))
 })
 
 
@@ -235,6 +236,9 @@ export const Application = connector(class extends React.Component<Props, any> {
    * @param json 
    */
   onDataSelected(dataset: Dataset) {
+    //this.props.loadDataset(dataset)
+    //return;
+
     // Wipe old state
     this.props.wipeState()
 
@@ -260,15 +264,6 @@ export const Application = connector(class extends React.Component<Props, any> {
 
 
   finite(dataset: Dataset) {
-    var algos = LineSelectionTree_GenAlgos(this.props.dataset.vectors)
-    var selLines = LineSelectionTree_GetChecks(algos)
-
-    // Update shape legend
-    this.setState({
-      selectedLines: selLines,
-      selectedLineAlgos: algos
-    })
-
     const co: CategoryOptions = {
       vectors: this.props.dataset.vectors,
       json: this.props.dataset.categories
@@ -279,7 +274,7 @@ export const Application = connector(class extends React.Component<Props, any> {
     this.props.setCategoryOptions(co)
     this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
     this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
-    
+
     this.props.saveProjection(AProjection.createProjection(dataset.vectors, "Initial Projection"))
     this.props.updateWorkspace(AProjection.createProjection(dataset.vectors, "Initial Projection").positions)
 

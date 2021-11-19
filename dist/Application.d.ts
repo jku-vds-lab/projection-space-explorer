@@ -88,6 +88,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
     setLineUpInput_visibility: (open: any) => any;
+    loadDataset: (dataset: Dataset) => any;
 }, {}>;
 /**
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
@@ -218,6 +219,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
     setLineUpInput_visibility: (open: any) => any;
+    loadDataset: (dataset: Dataset) => any;
 } & {
     config?: BaseConfig;
     features?: FeatureConfig;

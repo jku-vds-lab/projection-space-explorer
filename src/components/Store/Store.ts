@@ -3,13 +3,13 @@ import projectionOpen from "../Ducks/ProjectionOpenDuck";
 import highlightedSequence from "../Ducks/HighlightedSequenceDuck";
 import dataset from "../Ducks/DatasetDuck";
 import openTab from "../Ducks/OpenTabDuck";
-import clusterMode from "../Ducks/ClusterModeDuck";
+import clusterMode, { ClusterMode } from "../Ducks/ClusterModeDuck";
 import advancedColoringSelection from "../Ducks/AdvancedColoringSelectionDuck";
 import projectionColumns from "../Ducks/ProjectionColumnsDuck";
 import displayMode from "../Ducks/DisplayModeDuck";
 import lineBrightness from "../Ducks/LineBrightnessDuck";
 import activeLine from "../Ducks/ActiveLineDuck";
-import stories from "../Ducks/StoriesDuck";
+import stories, { setStories, StoriesType, StoriesUtil } from "../Ducks/StoriesDuck";
 import currentAggregation from "../Ducks/AggregationDuck";
 import { viewTransform } from "../Ducks/ViewTransformDuck";
 import projectionParams from "../Ducks/ProjectionParamsDuck";
@@ -31,13 +31,18 @@ import hoverState from '../Ducks/HoverStateDuck';
 import selectedLineBy from '../Ducks/SelectedLineByDuck';
 import globalPointBrightness from '../Ducks/GlobalPointBrightnessDuck';
 import channelBrightness from '../Ducks/ChannelBrightnessDuck';
-import groupVisualizationMode from '../Ducks/GroupVisualizationMode';
+import groupVisualizationMode, { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
 import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 import detailView from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
 import embeddings from '../Ducks/ProjectionDuck';
 import { RootActionTypes } from './RootActions';
+import { Dataset, ADataset, SegmentFN, AProjection, IProjection, IBaseProjection } from '../../model';
+import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from '../DrawerTabPanels/StatesTabPanel/LineTreePopover';
+import { CategoryOptions, CategoryOptionsAPI } from '../WebGLView/CategoryOptions';
+import { ANormalized, NormalizedDictionary } from '../Utility/NormalizedState';
+import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/graphs';
 
 const allReducers = {
   currentAggregation: currentAggregation,
@@ -82,14 +87,178 @@ const allReducers = {
 
 const appReducer = combineReducers(allReducers)
 
+
+
+
+
+
+
+function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
+  const clusterMode = dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate
+  const groupVisualizationMode = dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull
+
+  const categoryOptions: CategoryOptions = {
+    vectors: dataset.vectors,
+    json: dataset.categories
+  }
+
+  CategoryOptionsAPI.init(categoryOptions)
+
+
+  const pathLengthRange = {
+    range: [0, SegmentFN.getMaxPathLength(dataset)],
+    maximum: SegmentFN.getMaxPathLength(dataset)
+  }
+
+  const projections: NormalizedDictionary<IProjection> & { workspace: IBaseProjection } = {
+    byId: {},
+    allIds: [],
+    workspace: undefined
+  }
+
+  const handle = ANormalized.add(projections, AProjection.createProjection(dataset.vectors, "Initial Projection"))
+  projections.workspace = ANormalized.get(projections, handle).positions
+
+  const genericFingerprintAttributes = ADataset.getColumns(dataset, true).map(column => ({
+    feature: column,
+    show: dataset.columns[column].project
+  }))
+
+  const formatRange = range => {
+    try {
+      return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
+    } catch {
+      return 'unknown'
+    }
+  }
+
+  const projectionColumns = ADataset.getColumns(dataset, true).map(column => ({
+    name: column,
+    checked: dataset.columns[column].project,
+    normalized: true,
+    range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
+    featureLabel: dataset.columns[column].featureLabel
+  }))
+
+  var defaultSizeAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, 'size', 'multiplicity', 'sequential')
+
+
+  var globalPointSize, channelSize
+
+  if (defaultSizeAttribute) {
+    globalPointSize = [1, 2]
+    channelSize = defaultSizeAttribute
+  } else {
+    globalPointSize = [1]
+    channelSize = null
+  }
+
+  var channelColor
+
+  var defaultColorAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, "color", "algo", "categorical")
+  if (defaultColorAttribute) {
+    channelColor = defaultColorAttribute
+  } else {
+    channelColor = null
+  }
+
+  var defaultBrightnessAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, "transparency", "age", "sequential")
+  var channelBrightness, globalPointBrightness
+
+  if (defaultBrightnessAttribute) {
+    globalPointBrightness = [0.25, 1]
+    channelBrightness = defaultBrightnessAttribute
+  } else {
+    globalPointBrightness = [1]
+    channelBrightness = null
+  }
+
+
+  var stories: StoriesType
+  if (dataset.clusters && dataset.clusters.length > 0) {
+    let clusters = dataset.clusters
+
+    if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
+      stories = {
+        vectors: [],
+        stories: [transformIndicesToHandles(dataset.clusters, dataset.clusterEdges)],
+        active: null,
+        trace: null,
+        activeTraceState: null
+      }
+    } else {
+      if (dataset.isSequential) {
+        const [edges] = graphLayout(dataset, clusters)
+
+        if (edges.length > 0) {
+          let storyArr = storyLayout(clusters, edges)
+
+          stories = {
+            vectors: [],
+            stories: storyArr,
+            active: null,
+            trace: null,
+            activeTraceState: null
+          }
+        }
+      }
+    }
+  } else {
+    stories = StoriesUtil.createEmpty()
+  }
+
+
+
+  return {
+    clusterMode,
+    groupVisualizationMode,
+    projections,
+    pathLengthRange,
+    genericFingerprintAttributes,
+    projectionColumns,
+    globalPointSize,
+    channelSize,
+    channelBrightness,
+    channelColor,
+    globalPointBrightness,
+    categoryOptions,
+    stories,
+    dataset: dataset
+  }
+}
+
+
+
+
+
 export const rootReducer = (state, action) => {
   if (action.type === RootActionTypes.RESET) {
     const { dataset, openTab, viewTransform, datasetEntries } = state;
     state = { dataset, openTab, viewTransform, datasetEntries };
   }
 
+  if (action.type === RootActionTypes.HYDRATE) {
+    const newState = { ...state }
+
+    Object.assign(newState, action.dump)
+
+    return newState
+  }
+
+  if (action.type === RootActionTypes.DATASET) {
+    const newState = { ...state }
+
+    const partialRootState = assignInitialSettingsToStore(action.dataset)
+    Object.assign(newState, partialRootState)
+
+    return newState
+  }
+
   return appReducer(state, action)
 }
+
+
+
 
 
 export function createRootReducer(reducers: any) {
@@ -106,8 +275,17 @@ export function createRootReducer(reducers: any) {
 
     if (action.type === RootActionTypes.HYDRATE) {
       const newState = { ...state }
-      
+
       Object.assign(newState, action.dump)
+
+      return newState
+    }
+
+    if (action.type === RootActionTypes.DATASET) {
+      const newState = { ...state }
+
+      const partialRootState = assignInitialSettingsToStore(action.dataset)
+      Object.assign(newState, partialRootState)
 
       return newState
     }
