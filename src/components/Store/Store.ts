@@ -237,23 +237,6 @@ export const rootReducer = (state, action) => {
     state = { dataset, openTab, viewTransform, datasetEntries };
   }
 
-  if (action.type === RootActionTypes.HYDRATE) {
-    const newState = { ...state }
-
-    Object.assign(newState, action.dump)
-
-    return newState
-  }
-
-  if (action.type === RootActionTypes.DATASET) {
-    const newState = { ...state }
-
-    const partialRootState = assignInitialSettingsToStore(action.dataset)
-    Object.assign(newState, partialRootState)
-
-    return newState
-  }
-
   return appReducer(state, action)
 }
 
