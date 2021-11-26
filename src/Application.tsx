@@ -169,9 +169,8 @@ export type TabSpec = {
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
  */
-var connector = connect(mapStateToProps, mapDispatchToProps, null, {
-  forwardRef: true
-});
+const connector = connect(mapStateToProps, mapDispatchToProps, null, {forwardRef: true});
+
 
 /**
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
