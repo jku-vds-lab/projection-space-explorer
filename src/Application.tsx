@@ -6,7 +6,7 @@ import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './compo
 import * as React from "react";
 import { Storytelling } from "./components/Overlays/Storytelling";
 import { ClusteringTabPanel } from "./components/DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
-import { ConnectedProps } from 'react-redux'
+import { ConnectedProps, ConnectedComponent } from 'react-redux'
 import { connect } from 'react-redux'
 import { StatesTabPanel } from "./components/DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./components/Overlays/StateSequenceDrawer";
@@ -28,7 +28,7 @@ import { setChannelColor } from "./components/Ducks/ChannelColorDuck";
 import { DatasetTabPanel } from "./components/DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { DetailsTabPanel } from "./components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
 import { AProjection, IProjection, IBaseProjection } from "./model/Projection";
-import { setActiveStory, setVectors, addStory } from "./components/Ducks/StoriesDuck";
+import { setActiveStory, addBook } from "./components/Ducks/StoriesDuck";
 import Split from 'react-split'
 import { setLineByOptions } from "./components/Ducks/SelectedLineByDuck";
 import { IBook } from "./model/Book";
@@ -91,7 +91,7 @@ const mapStateToProps = (state: RootState) => ({
 
 
 const mapDispatchToProps = dispatch => ({
-  addStory: story => dispatch(addStory(story)),
+  addStory: story => dispatch(addBook(story)),
   setActiveStory: (activeStory: IBook) => dispatch(setActiveStory(activeStory)),
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
@@ -110,7 +110,6 @@ const mapDispatchToProps = dispatch => ({
   setChannelBrightness: channelBrightness => dispatch(setChannelBrightnessSelection(channelBrightness)),
   saveProjection: (embedding: IProjection) => dispatch(addProjectionAction(embedding)),
   updateWorkspace: (raw: IBaseProjection) => dispatch(updateWorkspaceAction(raw)),
-  setVectors: vectors => dispatch(setVectors(vectors)),
   setLineByOptions: options => dispatch(setLineByOptions(options)),
   setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
   setGenericFingerprintAttributes: value => dispatch(setGenericFingerprintAttributes(value)),
@@ -145,9 +144,7 @@ export type LayerSpec = {
 }
 
 export type ComponentConfig = Partial<{
-  datasetTab: (props: {
-    onDataSelected(dataset: Dataset): void;
-  }) => JSX.Element
+  datasetTab: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>
   appBar: () => JSX.Element
   detailViews: Array<DetailViewSpec>
   layers: Array<LayerSpec>
@@ -172,8 +169,9 @@ export type TabSpec = {
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
  */
-const connector = connect(mapStateToProps, mapDispatchToProps);
-
+var connector = connect(mapStateToProps, mapDispatchToProps, null, {
+  forwardRef: true
+});
 
 /**
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
@@ -210,8 +208,6 @@ export const Application = connector(class extends React.Component<Props, any> {
 
 
   componentDidMount() {
-    var url = new URL(window.location.toString());
-
     if ((this.props.config?.preselect?.initOnMount ?? true) && (this.props.config?.preselect?.url ?? false)) {
       var preselect = this.props.config?.preselect?.url
 
@@ -236,8 +232,8 @@ export const Application = connector(class extends React.Component<Props, any> {
    * @param json 
    */
   onDataSelected(dataset: Dataset) {
-    //this.props.loadDataset(dataset)
-    //return;
+    this.props.loadDataset(dataset)
+    return;
 
     // Wipe old state
     this.props.wipeState()
@@ -255,7 +251,7 @@ export const Application = connector(class extends React.Component<Props, any> {
 
     this.finite(dataset)
 
-    this.props.setVectors(dataset.vectors)
+    //this.props.setVectors(dataset.vectors)
 
     this.props.setLineByOptions(ADataset.getColumns(dataset))
 
@@ -265,11 +261,8 @@ export const Application = connector(class extends React.Component<Props, any> {
 
   finite(dataset: Dataset) {
     const co: CategoryOptions = {
-      vectors: this.props.dataset.vectors,
       json: this.props.dataset.categories
     }
-
-    CategoryOptionsAPI.init(co)
 
     this.props.setCategoryOptions(co)
     this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
@@ -454,7 +447,7 @@ export const Application = connector(class extends React.Component<Props, any> {
             <FixedHeightTabPanel value={this.props.openTab} index={0} >
               {
                 /** predefined dataset */
-                this.props.overrideComponents?.datasetTab ? React.createElement(this.props.overrideComponents?.datasetTab, { onDataSelected: this.onDataSelected }) : <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
+                this.props.overrideComponents?.datasetTab ? (React.isValidElement(this.props.overrideComponents.datasetTab) ? this.props.overrideComponents.datasetTab : React.createElement(this.props.overrideComponents.datasetTab as (() => JSX.Element), { onDataSelected: this.onDataSelected })) : <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
               }
             </FixedHeightTabPanel>
 

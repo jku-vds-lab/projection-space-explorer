@@ -26,5 +26,4 @@ export declare class API<T> {
      */
     partialDump(excluded: string[]): any;
     differenceMiddleware: (store: any) => (next: any) => (action: any) => any;
-    createCluster(cluster: any): void;
 }

@@ -1,5 +1,5 @@
 import { applyMiddleware, createStore, Reducer, Store, PreloadedState } from "redux";
-import { addClusterToStory } from "../Ducks/StoriesDuck";
+import { addCluster } from "../Ducks/StoriesDuck";
 import { rootReducer, RootState } from "../Store/Store";
 import thunk from 'redux-thunk';
 import { v4 as uuidv4 } from 'uuid';
@@ -86,9 +86,4 @@ export class API<T> {
 
         return newState;
     };
-
-
-    createCluster(cluster) {
-        this.store.dispatch(addClusterToStory(cluster));
-    }
 }

@@ -7,7 +7,7 @@ import { DatasetType } from "../../model/DatasetType";
 import { Dataset } from "../../model/Dataset";
 import { GenericChanges } from "../legends/GenericChanges";
 import { RootState } from "../Store/Store";
-import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, StoriesType, StoriesUtil } from "../Ducks/StoriesDuck";
+import { addClusterToTrace, selectSideBranch, setActiveTrace, setActiveTraceState, IStorytelling, AStorytelling } from "../Ducks/StoriesDuck";
 import CloseIcon from '@mui/icons-material/Close';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -101,7 +101,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 
         if (!this.props.input) return null;
 
-        let { position, stories, elementHeight }: { position: any, stories: StoriesType, elementHeight: any } = this.props.input
+        let { position, stories, elementHeight }: { position: any, stories: IStorytelling, elementHeight: any } = this.props.input
 
         let currentAggregation = this.props.currentAggregation
         let selectSideBranch = this.props.selectSideBranch
@@ -289,7 +289,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
 }
 
 type InputType = {
-    stories: StoriesType,
+    stories: IStorytelling,
     position: { y: number, height: number, textY: number, mainEdge: string }[],
     elementHeight: number
     firstDiv: number
@@ -501,7 +501,7 @@ export const Storytelling = connector(function ({
                                         setActiveTraceState(cluster)
                                         setSelectedCluster([cluster], false)
                                     }}>
-                                    <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{ACluster.getTextRepresentation(StoriesUtil.retrieveCluster(stories, cluster))}</Typography>
+                                    <Typography noWrap gutterBottom style={{ fontWeight: 'bold', textAlign: 'center', textShadow: '-1px 0 white, 0 1px white, 1px 0 white, 0 -1px white', maxWidth: '250px' }}>{ACluster.getTextRepresentation(AStorytelling.retrieveCluster(stories, cluster))}</Typography>
 
                                     <div
                                         style={{
@@ -517,7 +517,7 @@ export const Storytelling = connector(function ({
                                     >
                                         <GenericLegend
                                             type={dataset.type}
-                                            vectors={StoriesUtil.retrieveCluster(stories, cluster).indices.map(i => dataset.vectors[i])}
+                                            vectors={AStorytelling.retrieveCluster(stories, cluster).indices.map(i => dataset.vectors[i])}
                                             scale={1}
                                             aggregate={true}
                                         />
@@ -540,7 +540,7 @@ export const Storytelling = connector(function ({
                         }
                         {
                             input && input.position.slice(0, input.position.length - 1).map((elem, index) => {
-                                let edge = StoriesUtil.retreiveEdge(stories, elem.mainEdge)
+                                let edge = AStorytelling.retreiveEdge(stories, elem.mainEdge)
                                 return <div
                                     key={index}
                                     className=""
@@ -565,8 +565,8 @@ export const Storytelling = connector(function ({
                                         <GenericChanges
 
                                             scale={1}
-                                            vectorsA={StoriesUtil.retrieveCluster(stories, edge.source).indices.map(i => dataset.vectors[i])}
-                                            vectorsB={StoriesUtil.retrieveCluster(stories, edge.destination).indices.map(i => dataset.vectors[i])}
+                                            vectorsA={AStorytelling.retrieveCluster(stories, edge.source).indices.map(i => dataset.vectors[i])}
+                                            vectorsB={AStorytelling.retrieveCluster(stories, edge.destination).indices.map(i => dataset.vectors[i])}
                                         />
                                     </div>
                                 </div>

@@ -1,9 +1,9 @@
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from "../../model/Dataset";
-import { StoriesType } from "../Ducks/StoriesDuck";
+import { IStorytelling } from "../Ducks/StoriesDuck";
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     dataset: Dataset;
-    stories: StoriesType;
+    stories: IStorytelling;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: string[];

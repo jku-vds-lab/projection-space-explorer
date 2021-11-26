@@ -3,3 +3,4 @@ export * from './PSEContext';
 export * from './Store';
 export * from './PSEPlugin';
 export * from './API';
+export * from './RootActions';

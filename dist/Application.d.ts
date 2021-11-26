@@ -1,7 +1,7 @@
 import "regenerator-runtime/runtime";
 import { Dataset } from "./model/Dataset";
 import * as React from "react";
-import { ConnectedProps } from 'react-redux';
+import { ConnectedProps, ConnectedComponent } from 'react-redux';
 import { CategoryOptions } from "./components/WebGLView/CategoryOptions";
 import { IProjection, IBaseProjection } from "./model/Projection";
 import { IBook } from "./model/Book";
@@ -24,9 +24,7 @@ export declare type LayerSpec = {
     component: (props: any) => JSX.Element;
 };
 export declare type ComponentConfig = Partial<{
-    datasetTab: (props: {
-        onDataSelected(dataset: Dataset): void;
-    }) => JSX.Element;
+    datasetTab: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
     appBar: () => JSX.Element;
     detailViews: Array<DetailViewSpec>;
     layers: Array<LayerSpec>;
@@ -46,7 +44,7 @@ export declare type TabSpec = {
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
  */
-declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
+declare var connector: import("react-redux").InferableComponentEnhancerWithProps<{
     openTab: any;
     dataset: Dataset;
     categoryOptions: CategoryOptions;
@@ -82,7 +80,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setChannelBrightness: (channelBrightness: any) => any;
     saveProjection: (embedding: IProjection) => any;
     updateWorkspace: (raw: IBaseProjection) => any;
-    setVectors: (vectors: any) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;
@@ -102,7 +99,7 @@ declare type Props = PropsFromRedux & {
 /**
  * Main application that contains all other components.
  */
-export declare const Application: import("react-redux").ConnectedComponent<{
+export declare const Application: ConnectedComponent<{
     new (props: any): {
         threeRef: any;
         splitRef: any;
@@ -213,7 +210,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     setChannelBrightness: (channelBrightness: any) => any;
     saveProjection: (embedding: IProjection) => any;
     updateWorkspace: (raw: IBaseProjection) => any;
-    setVectors: (vectors: any) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;

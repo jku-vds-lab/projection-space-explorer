@@ -1,5 +1,5 @@
 import { ClusterMode } from "../Ducks/ClusterModeDuck";
-import { StoriesType } from "../Ducks/StoriesDuck";
+import { IStorytelling } from "../Ducks/StoriesDuck";
 import { Dataset, IProjection, IBaseProjection } from '../../model';
 import { CategoryOptions } from '../WebGLView/CategoryOptions';
 export declare const rootReducer: (state: any, action: any) => import("redux").CombinedState<{
@@ -8,7 +8,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    stories: StoriesType;
+    stories: IStorytelling;
     openTab: any;
     selectedVectorByShape: any;
     vectorByShape: any;

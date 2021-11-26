@@ -17,7 +17,6 @@ import { TraceSelectTool } from './TraceSelectTool';
 import { DataLine } from '../../model/DataLine';
 import { ComponentConfig } from '../../Application';
 declare type ViewState = {
-    displayClusters: any;
     camera: Camera;
     menuX: number;
     menuY: number;
@@ -51,7 +50,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     channelColor: any;
     channelBrightness: any;
     pointColorScale: any;
-    stories: import("../Ducks/StoriesDuck").StoriesType;
+    stories: import("../Ducks/StoriesDuck").IStorytelling;
     trailSettings: {
         show: boolean;
         length: any;
@@ -212,7 +211,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         onClusterZoom(cluster: any): void;
         render(): JSX.Element;
         context: any;
-        setState<K extends "displayClusters" | "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
+        setState<K extends "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
         forceUpdate(callback?: () => void): void;
         readonly props: Readonly<Props> & Readonly<{
             children?: React.ReactNode;
@@ -364,7 +363,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     onClusterZoom(cluster: any): void;
     render(): JSX.Element;
     context: any;
-    setState<K extends "displayClusters" | "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
+    setState<K extends "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
     forceUpdate(callback?: () => void): void;
     readonly props: Readonly<Props> & Readonly<{
         children?: React.ReactNode;
@@ -411,7 +410,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     channelColor: any;
     channelBrightness: any;
     pointColorScale: any;
-    stories: import("../Ducks/StoriesDuck").StoriesType;
+    stories: import("../Ducks/StoriesDuck").IStorytelling;
     trailSettings: {
         show: boolean;
         length: any;

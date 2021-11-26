@@ -3,7 +3,7 @@ import { Button, FormControl, FormHelperText, Grid, IconButton, InputLabel, List
 import { connect, ConnectedProps } from 'react-redux'
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IBook, ABook } from '../../../model/Book';
-import { addStory, deleteStory, setActiveStory, StoriesUtil } from '../../Ducks/StoriesDuck';
+import { addBook, deleteBook, setActiveStory, AStorytelling } from '../../Ducks/StoriesDuck';
 import { RootState } from '../../Store/Store';
 
 const mapStateToProps = (state: RootState) => ({
@@ -12,8 +12,8 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = dispatch => ({
     setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
-    deleteStory: story => dispatch(deleteStory(story)),
-    addStory: (story: IBook) => dispatch(addStory(story, true))
+    deleteStory: story => dispatch(deleteBook(story)),
+    addStory: (story: IBook) => dispatch(addBook(story, true))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -50,14 +50,14 @@ export const StoryPreview = connector(({
             <Select
                 displayEmpty
                 size='small'
-                value={stories.active ?? ''}
+                value={stories.active}
                 onChange={(event) => {
                     setActiveStory(event.target.value)
                 }}
             >
                 <ListItem
                     key={''}
-                    {...{ value: '' }}
+                    {...{ value: null }}
                     button
                 >
                     <ListItemText primary={"None"} />

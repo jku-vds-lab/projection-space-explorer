@@ -18,16 +18,6 @@ export class CategoryOptionsAPI {
             return null
         }
     }
-
-    static init(categoryOptions: CategoryOptions) {
-        categoryOptions.json.forEach(category => {
-            category.attributes.forEach(attribute => {
-                if (attribute.type == 'categorical') {
-                    attribute.distinct = [... new Set(categoryOptions.vectors.map(value => value[attribute.key]))]
-                }
-            })
-        })
-    }
 }
 
 
@@ -42,6 +32,5 @@ export class CategoryOptionsAPI {
  * brightness by ...
  */
 export type CategoryOptions = {
-    vectors: any
     json: any
 }

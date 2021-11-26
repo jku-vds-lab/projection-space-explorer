@@ -2,7 +2,6 @@ export declare class CategoryOptionsAPI {
     static hasCategory(categoryOptions: CategoryOptions, catName: any): boolean;
     static getCategory(categoryOptions: CategoryOptions, catName: any): any;
     static getAttribute(categoryOptions: CategoryOptions, category: any, attribute: any, type: any): any;
-    static init(categoryOptions: CategoryOptions): void;
 }
 /**
  * Helper class that manages the attribute categories.
@@ -12,6 +11,5 @@ export declare class CategoryOptionsAPI {
  * brightness by ...
  */
 export declare type CategoryOptions = {
-    vectors: any;
     json: any;
 };

@@ -9,7 +9,7 @@ import projectionColumns from "../Ducks/ProjectionColumnsDuck";
 import displayMode from "../Ducks/DisplayModeDuck";
 import lineBrightness from "../Ducks/LineBrightnessDuck";
 import activeLine from "../Ducks/ActiveLineDuck";
-import stories, { setStories, StoriesType, StoriesUtil } from "../Ducks/StoriesDuck";
+import stories, { setStories, IStorytelling, AStorytelling } from "../Ducks/StoriesDuck";
 import currentAggregation from "../Ducks/AggregationDuck";
 import { viewTransform } from "../Ducks/ViewTransformDuck";
 import projectionParams from "../Ducks/ProjectionParamsDuck";
@@ -97,12 +97,12 @@ function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
   const clusterMode = dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate
   const groupVisualizationMode = dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull
 
+
+  //this.finite(dataset)
+
   const categoryOptions: CategoryOptions = {
-    vectors: dataset.vectors,
     json: dataset.categories
   }
-
-  CategoryOptionsAPI.init(categoryOptions)
 
 
   const pathLengthRange = {
@@ -174,13 +174,12 @@ function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
   }
 
 
-  var stories: StoriesType
+  var stories: IStorytelling
   if (dataset.clusters && dataset.clusters.length > 0) {
     let clusters = dataset.clusters
 
     if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
       stories = {
-        vectors: [],
         stories: [transformIndicesToHandles(dataset.clusters, dataset.clusterEdges)],
         active: null,
         trace: null,
@@ -194,7 +193,6 @@ function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
           let storyArr = storyLayout(clusters, edges)
 
           stories = {
-            vectors: [],
             stories: storyArr,
             active: null,
             trace: null,
@@ -204,7 +202,7 @@ function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
       }
     }
   } else {
-    stories = StoriesUtil.createEmpty()
+    stories = AStorytelling.createEmpty()
   }
 
 

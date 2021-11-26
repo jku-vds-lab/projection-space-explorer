@@ -2,17 +2,36 @@ import { ConnectedProps } from 'react-redux';
 import { ICluster } from "../../../model/Cluster";
 import { IBook } from "../../../model/Book";
 import { DisplayMode } from "../../Ducks/DisplayModeDuck";
-import { StoriesType } from "../../Ducks/StoriesDuck";
+import { IStorytelling } from "../../Ducks/StoriesDuck";
 import { Dataset } from "../../../model/Dataset";
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    stories: StoriesType;
+    stories: IStorytelling;
     displayMode: DisplayMode;
     dataset: Dataset;
     categoryOptions: import("../../WebGLView/CategoryOptions").CategoryOptions;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: string[];
-        source: "sample" | "cluster";
+        source: "sample" | "cluster"; /**function toggleClusters() {
+            if (dataset.clusters && dataset.clusters.length > 0) {
+                let clusters = dataset.clusters
+    
+                if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
+                    setStories([transformIndicesToHandles(dataset.clusters, dataset.clusterEdges)])
+                } else {
+                    if (dataset.isSequential) {
+                        const [edges] = graphLayout(dataset, clusters)
+    
+                        if (edges.length > 0) {
+                            let stories = storyLayout(clusters, edges)
+    
+                            setStories(stories)
+                            //setActiveStory(stories[0])
+                        }
+                    }
+                }
+            }
+        }**/
     };
     groupVisualizationMode: any;
     workspace: import("../../..").IBaseProjection;

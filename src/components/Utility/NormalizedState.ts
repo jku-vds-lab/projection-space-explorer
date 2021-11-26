@@ -91,7 +91,7 @@ export const ANormalized = {
 
 
 
-    forEach: <T>(dict: NormalizedDictionary<T>, callbackfn: (value: [string, T], index: number, array: [string, T][]) => void) => {
-        return Object.entries(dict.byId).forEach(callbackfn)
+    forEach: <T>(dict: NormalizedDictionary<T>, callbackfn: (value: [string, T]) => void) => {
+        return dict.allIds.forEach(id => callbackfn([id, dict.byId[id]]))
     }
 }

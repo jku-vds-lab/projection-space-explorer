@@ -28,7 +28,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         show: any;
         length: number;
     };
-    stories: import("../Ducks").StoriesType;
+    stories: import("../Ducks").IStorytelling;
     globalPointSize: number[];
     viewTransform: ViewTransformType;
     currentAggregation: {
@@ -208,7 +208,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         show: any;
         length: number;
     };
-    stories: import("../Ducks").StoriesType;
+    stories: import("../Ducks").IStorytelling;
     globalPointSize: number[];
     viewTransform: ViewTransformType;
     currentAggregation: {

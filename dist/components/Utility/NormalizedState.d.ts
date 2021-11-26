@@ -32,5 +32,5 @@ export declare const ANormalized: {
     delete: <T_3>(dict: NormalizedDictionary<T_3>, handle: string) => string;
     get: <T_4>(dict: NormalizedDictionary<T_4>, handle: string) => T_4;
     entries: <T_5>(dict: NormalizedDictionary<T_5>) => [string, T_5][];
-    forEach: <T_6>(dict: NormalizedDictionary<T_6>, callbackfn: (value: [string, T_6], index: number, array: [string, T_6][]) => void) => void;
+    forEach: <T_6>(dict: NormalizedDictionary<T_6>, callbackfn: (value: [string, T_6]) => void) => void;
 };
