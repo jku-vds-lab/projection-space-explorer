@@ -44,7 +44,7 @@ export declare type TabSpec = {
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
  */
-declare var connector: import("react-redux").InferableComponentEnhancerWithProps<{
+declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     openTab: any;
     dataset: Dataset;
     categoryOptions: CategoryOptions;
