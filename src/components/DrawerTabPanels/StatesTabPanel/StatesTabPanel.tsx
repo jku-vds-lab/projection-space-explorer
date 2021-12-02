@@ -65,7 +65,7 @@ type Props = PropsFromRedux & {
 }
 
 
-const SelectFeatureComponent = ({ label, default_val, categoryOptions, onChange }: any) => {
+export const SelectFeatureComponent = ({ label, default_val, categoryOptions, onChange }: any) => {
 
     let autocomplete_options = [{ value: "None", inputValue: "None" }];
     let autocomplete_filterOptions = null;

@@ -1,3 +1,4 @@
+import { SchemeColor } from ".";
 import { ShallowSet } from "../ShallowSet";
 import { ScaleUtil } from "./ContinuosScale";
 
@@ -40,7 +41,7 @@ export class ContinuousMapping extends Mapping {
     this.range = range;
   }
 
-  map(value) {
+  map(value): SchemeColor {
     if (this.range.max == this.range.min) {
       return this.scale.map(0);
     }

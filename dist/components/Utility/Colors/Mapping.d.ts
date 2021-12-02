@@ -1,3 +1,4 @@
+import { SchemeColor } from ".";
 import { ShallowSet } from "../ShallowSet";
 export declare abstract class Mapping {
     scale: any;
@@ -13,5 +14,5 @@ export declare class DiscreteMapping extends Mapping {
 export declare class ContinuousMapping extends Mapping {
     range: any;
     constructor(scale: any, range: any);
-    map(value: any): any;
+    map(value: any): SchemeColor;
 }
