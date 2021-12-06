@@ -1,7 +1,7 @@
 import { IVector } from "../../model/Vector";
 import React = require("react");
 import { DatasetType } from "../../model/DatasetType";
-import { PSEPlugin } from "../../components/Store/PluginScript";
+import { PSEPlugin } from "../../components/Store/PSEPlugin";
 import { TrrackLegend } from "./TrrackDetail/TrrackDetail";
 
 export class GoPlugin extends PSEPlugin {

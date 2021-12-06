@@ -2,7 +2,6 @@ import { CoralLegend } from "../../plugins/Coral/CoralDetail/CoralDetail";
 import { TrrackLegend } from "../../plugins/Trrack/TrrackDetail/TrrackDetail";
 import { StoryLegend } from "../../plugins/Story/StoryDetail/StoryDetail";
 import * as React from 'react'
-import { FunctionComponent } from "react";
 import { RubikFingerprint } from "../../plugins/Rubik/RubikFingerprint/RubikFingerprint";
 import { ChessFingerprint } from "../../plugins/Chess/ChessFingerprint/ChessFingerprint";
 import { IVector } from "../../model/Vector";

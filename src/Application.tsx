@@ -1,12 +1,12 @@
 import "regenerator-runtime/runtime";
 import { WebGLView } from './components/WebGLView/WebGLView'
 import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from "@mui/material";
-import { Dataset, DatasetUtil, SegmentFN } from "./model/Dataset";
+import { Dataset, ADataset, SegmentFN } from "./model/Dataset";
 import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './components/DrawerTabPanels/StatesTabPanel/LineTreePopover'
 import * as React from "react";
 import { Storytelling } from "./components/Overlays/Storytelling";
 import { ClusteringTabPanel } from "./components/DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
-import { ConnectedProps } from 'react-redux'
+import { ConnectedProps, ConnectedComponent } from 'react-redux'
 import { connect } from 'react-redux'
 import { StatesTabPanel } from "./components/DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./components/Overlays/StateSequenceDrawer";
@@ -27,9 +27,8 @@ import { setGlobalPointSize } from "./components/Ducks/GlobalPointSizeDuck";
 import { setChannelColor } from "./components/Ducks/ChannelColorDuck";
 import { DatasetTabPanel } from "./components/DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { DetailsTabPanel } from "./components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
-import { addProjectionAction } from "./components/Ducks/ProjectionsDuck";
-import { Embedding } from "./model/Embedding";
-import { setActiveStory, setVectors, addStory } from "./components/Ducks/StoriesDuck";
+import { AProjection, IProjection, IBaseProjection } from "./model/Projection";
+import { setActiveStory, addBook } from "./components/Ducks/StoriesDuck";
 import Split from 'react-split'
 import { setLineByOptions } from "./components/Ducks/SelectedLineByDuck";
 import { IBook } from "./model/Book";
@@ -52,6 +51,8 @@ import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { DatasetEntriesAPI } from "./components/Ducks/DatasetEntriesDuck";
 import { JSONLoader } from "./components";
 import { DatasetType } from "./model/DatasetType";
+import { addProjectionAction, updateWorkspaceAction } from "./components/Ducks/ProjectionDuck";
+import { RootActions } from "./components/Store/RootActions";
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -90,7 +91,7 @@ const mapStateToProps = (state: RootState) => ({
 
 
 const mapDispatchToProps = dispatch => ({
-  addStory: story => dispatch(addStory(story)),
+  addStory: story => dispatch(addBook(story)),
   setActiveStory: (activeStory: IBook) => dispatch(setActiveStory(activeStory)),
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
   setDataset: dataset => dispatch(setDatasetAction(dataset)),
@@ -104,16 +105,17 @@ const mapDispatchToProps = dispatch => ({
   setCategoryOptions: categoryOptions => dispatch(setCategoryOptions(categoryOptions)),
   setChannelSize: channelSize => dispatch(setChannelSize(channelSize)),
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
-  wipeState: () => dispatch({ type: 'RESET_APP' }),
+  wipeState: () => dispatch(RootActions.reset()),
   setChannelColor: channelColor => dispatch(setChannelColor(channelColor)),
   setChannelBrightness: channelBrightness => dispatch(setChannelBrightnessSelection(channelBrightness)),
-  saveProjection: embedding => dispatch(addProjectionAction(embedding)),
-  setVectors: vectors => dispatch(setVectors(vectors)),
+  saveProjection: (embedding: IProjection) => dispatch(addProjectionAction(embedding)),
+  updateWorkspace: (raw: IBaseProjection) => dispatch(updateWorkspaceAction(raw)),
   setLineByOptions: options => dispatch(setLineByOptions(options)),
   setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
   setGenericFingerprintAttributes: value => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value)),
-  setLineUpInput_visibility: open => dispatch(setDetailVisibility(open))
+  setLineUpInput_visibility: open => dispatch(setDetailVisibility(open)),
+  loadDataset: (dataset: Dataset) => dispatch(RootActions.loadDataset(dataset))
 })
 
 
@@ -142,9 +144,7 @@ export type LayerSpec = {
 }
 
 export type ComponentConfig = Partial<{
-  datasetTab: (props: {
-    onDataSelected(dataset: Dataset): void;
-  }) => JSX.Element
+  datasetTab: JSX.Element | ((onDataSelected) => JSX.Element) | ConnectedComponent<any, any>
   appBar: () => JSX.Element
   detailViews: Array<DetailViewSpec>
   layers: Array<LayerSpec>
@@ -169,7 +169,7 @@ export type TabSpec = {
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
  */
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(mapStateToProps, mapDispatchToProps, null, {forwardRef: true});
 
 
 /**
@@ -207,8 +207,6 @@ export const Application = connector(class extends React.Component<Props, any> {
 
 
   componentDidMount() {
-    var url = new URL(window.location.toString());
-
     if ((this.props.config?.preselect?.initOnMount ?? true) && (this.props.config?.preselect?.url ?? false)) {
       var preselect = this.props.config?.preselect?.url
 
@@ -233,6 +231,9 @@ export const Application = connector(class extends React.Component<Props, any> {
    * @param json 
    */
   onDataSelected(dataset: Dataset) {
+    this.props.loadDataset(dataset)
+    return;
+
     // Wipe old state
     this.props.wipeState()
 
@@ -249,30 +250,27 @@ export const Application = connector(class extends React.Component<Props, any> {
 
     this.finite(dataset)
 
-    this.props.setVectors(dataset.vectors)
+    //this.props.setVectors(dataset.vectors)
 
-    this.props.setLineByOptions(DatasetUtil.getColumns(dataset))
+    this.props.setLineByOptions(ADataset.getColumns(dataset))
 
     setTimeout(() => this.threeRef.current.requestRender(), 500)
   }
 
 
   finite(dataset: Dataset) {
-    var algos = LineSelectionTree_GenAlgos(this.props.dataset.vectors)
-    var selLines = LineSelectionTree_GetChecks(algos)
+    const co: CategoryOptions = {
+      json: this.props.dataset.categories
+    }
 
-    // Update shape legend
-    this.setState({
-      selectedLines: selLines,
-      selectedLineAlgos: algos
-    })
-    const co = new CategoryOptions(this.props.dataset.vectors, this.props.dataset.categories)
-    CategoryOptionsAPI.init(co)
     this.props.setCategoryOptions(co)
     this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
     this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
-    this.props.saveProjection(new Embedding(dataset.vectors, "Initial Projection"))
-    this.props.setGenericFingerprintAttributes(DatasetUtil.getColumns(dataset, true).map(column => ({
+
+    this.props.saveProjection(AProjection.createProjection(dataset.vectors, "Initial Projection"))
+    this.props.updateWorkspace(AProjection.createProjection(dataset.vectors, "Initial Projection").positions)
+
+    this.props.setGenericFingerprintAttributes(ADataset.getColumns(dataset, true).map(column => ({
       feature: column,
       show: dataset.columns[column].project
     })))
@@ -285,7 +283,7 @@ export const Application = connector(class extends React.Component<Props, any> {
       }
     }
 
-    this.props.setProjectionColumns(DatasetUtil.getColumns(dataset, true).map(column => ({
+    this.props.setProjectionColumns(ADataset.getColumns(dataset, true).map(column => ({
       name: column,
       checked: dataset.columns[column].project,
       normalized: true, //TODO: after benchmarking, reverse this to true,
@@ -448,7 +446,7 @@ export const Application = connector(class extends React.Component<Props, any> {
             <FixedHeightTabPanel value={this.props.openTab} index={0} >
               {
                 /** predefined dataset */
-                this.props.overrideComponents?.datasetTab ? React.createElement(this.props.overrideComponents?.datasetTab, { onDataSelected: this.onDataSelected }) : <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
+                this.props.overrideComponents?.datasetTab ? (React.isValidElement(this.props.overrideComponents.datasetTab) ? this.props.overrideComponents.datasetTab : React.createElement(this.props.overrideComponents.datasetTab as (() => JSX.Element), { onDataSelected: this.onDataSelected })) : <DatasetTabPanel onDataSelected={this.onDataSelected}></DatasetTabPanel>
               }
             </FixedHeightTabPanel>
 

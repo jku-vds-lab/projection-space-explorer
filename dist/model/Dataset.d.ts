@@ -26,7 +26,7 @@ export declare class SegmentFN {
      */
     static getMaxPathLength(dataset: Dataset): number;
 }
-export declare class DatasetUtil {
+export declare class ADataset {
     /**
  * Calculates the dataset bounds for this set, eg the minimum and maximum x,y values
  * which is needed for the zoom to work correctly
@@ -40,7 +40,7 @@ export declare class DatasetUtil {
     * Returns the vectors in this dataset as a 2d array, which
     * can be used as input for tsne for example.
     */
-    static asTensor(dataset: Dataset, projectionColumns: any, samples?: any, encodingMethod?: any, normalizationMethod?: any): {
+    static asTensor(dataset: Dataset, projectionColumns: any, encodingMethod?: any, normalizationMethod?: any): {
         tensor: any[];
         featureTypes: any[];
     };

@@ -4,7 +4,7 @@ import { ThunkAction } from "redux-thunk";
 import { RootState } from "../Store/Store";
 import { ICluster } from "../../model/Cluster";
 import { IVector } from "../../model/Vector";
-import { StoriesUtil } from "./StoriesDuck";
+import { AStorytelling } from "./StoriesDuck";
 
 
 
@@ -17,7 +17,7 @@ export const selectVectors = (selection: number[], shiftKey: boolean = false) =>
     return (dispatch, getState): ThunkAction<any, RootState, unknown, AnyAction> => {
         const state: RootState = getState()
 
-        const clusters = StoriesUtil.getActive(state.stories)?.clusters.byId
+        const clusters = AStorytelling.getActive(state.stories)?.clusters.byId
 
         let newSelection = []
 
@@ -73,7 +73,7 @@ export const selectClusters = (selection: string[], shiftKey: boolean = false) =
         return dispatch({
             type: THUNK_SET_CLUSTERS,
             clusterSelection: newSelection,
-            vectorSelection: deriveFromClusters(newSelection.map(i => StoriesUtil.getActive(state.stories).clusters.byId[i]))
+            vectorSelection: deriveFromClusters(newSelection.map(i => AStorytelling.getActive(state.stories).clusters.byId[i]))
         })
     }
 }

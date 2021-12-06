@@ -1,7 +1,7 @@
 import { IEdge } from "./Edge";
 import { ICluster } from "./Cluster";
 /**
- * Book methods.
+ * Book API.
  */
 export declare class ABook {
     /**
@@ -25,9 +25,9 @@ export declare class ABook {
     static getAllStoriesFromSource(storybook: IBook, source: any): any[];
     static getCluster(book: IBook, index: string): ICluster;
     static createEmpty(): IBook;
-    static addCluster(book: IBook, cluster: ICluster): any;
+    static addCluster(book: IBook, cluster: ICluster): string;
     static deleteEdge(book: IBook, edge: IEdge): string;
-    static addEdge(book: IBook, edge: IEdge): any;
+    static addEdge(book: IBook, edge: IEdge): string;
     static deleteCluster(book: IBook, cluster: ICluster): string;
 }
 /**

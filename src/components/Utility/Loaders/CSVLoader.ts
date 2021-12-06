@@ -40,7 +40,12 @@ export class CSVLoader implements Loader {
 
 
     resolveContent(content, finished) {
-        this.vectors = convertFromCSV(d3v5.csvParse(content))
+        const vectors = convertFromCSV(d3v5.csvParse(content))
+        this.resolveVectors(vectors, finished)
+    }
+
+    resolveVectors(vectors, finished) {
+        this.vectors = convertFromCSV(vectors)
         this.datasetType = new InferCategory(this.vectors).inferType()
 
         this.resolve(finished, this.vectors, this.datasetType, { display: "", type: this.datasetType, path: "" })

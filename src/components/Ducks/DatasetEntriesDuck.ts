@@ -1,24 +1,21 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { DatasetEntry } from '../../model/DatasetEntry';
+import { ANormalized } from '../Utility/NormalizedState';
 
 const SET = "ducks/databaseentries/SET"
 
 
 export function setDatasetEntriesAction(datasetEntries: Array<DatasetEntry>) {
-    const byId = {}
-    const allIds = []
+    const dict = ANormalized.create<DatasetEntry>()
 
     for (const entry of datasetEntries) {
-        const handle = uuidv4()
-        byId[handle] = entry
-        allIds.push(handle)
+        ANormalized.add(dict, entry)
     }
-    
+
     return {
         type: SET,
-        byId: byId,
-        allIds: allIds
+        ...dict
     }
 }
 
@@ -43,7 +40,7 @@ export class DatasetEntriesAPI {
     static getTypes(state: InitialType) {
         return [...new Set(Object.values(state.values.byId).map(value => value.type))];
     }
-    
+
     static getByPath(state: InitialType, path: string) {
         return Object.values(state.values.byId).find(e => e.path == path)
     }

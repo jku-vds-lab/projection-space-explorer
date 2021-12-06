@@ -14,12 +14,12 @@ import { UMAPEmbeddingController } from './UMAPEmbeddingController'
 import { ClusterTrailSettings } from './ClusterTrailSettings'
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck'
 import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController'
-import { Embedding } from '../../../model/Embedding'
+import { IProjection, AProjection, IBaseProjection } from '../../../model/Projection'
 import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionsDuck'
 
 import { FeatureConfig } from '../../../Application'
+import { updateWorkspaceAction, addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionDuck'
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -28,7 +28,8 @@ const mapStateToProps = (state: RootState) => ({
     projectionOpen: state.projectionOpen,
     dataset: state.dataset,
     projectionParams: state.projectionParams,
-    projections: state.projections
+    projections: state.projections,
+    workspace: state.projections.workspace
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -38,7 +39,8 @@ const mapDispatchToProps = dispatch => ({
     setProjectionColumns: value => dispatch(setProjectionColumns(value)),
     setTrailVisibility: visibility => dispatch(setTrailVisibility(visibility)),
     addProjection: embedding => dispatch(addProjectionAction(embedding)),
-    deleteProjection: projection => dispatch(deleteProjectionAction(projection))
+    deleteProjection: (handle: string) => dispatch(deleteProjectionAction(handle)),
+    updateWorkspace: (workspace: IBaseProjection) => dispatch(updateWorkspaceAction(workspace))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -72,15 +74,15 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
 
     const onSaveProjectionClick = (name) => {
-        props.addProjection(new Embedding(props.dataset.vectors, "Created " + name))
+        props.addProjection(AProjection.createProjection(props.workspace, "Created " + name))
     }
 
-    const onProjectionClick = (projection: Embedding) => {
-        props.webGLView.current.loadProjection(projection)
+    const onProjectionClick = (projection: IProjection) => {
+        props.updateWorkspace(projection.positions)
     }
 
-    const onDeleteProjectionClick = (projection: Embedding) => {
-        props.deleteProjection(projection)
+    const onDeleteProjectionClick = (handle: string) => {
+        props.deleteProjection(handle)
     }
 
 
@@ -172,14 +174,9 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                 switch (domainSettings) {
                     case 'tsne': {
                         let controller = new TSNEEmbeddingController()
-                        controller.init(props.dataset, selection, params)
+                        controller.init(props.dataset, selection, params, props.workspace)
                         controller.stepper = (Y) => {
-                            props.dataset.vectors.forEach((vector, i) => {
-                                vector.x = Y[i][0]
-                                vector.y = Y[i][1]
-                            })
-                            props.webGLView.current.updateXY()
-                            props.webGLView.current.repositionClusters()
+                            props.updateWorkspace(Y.map(y => ({ x: y[0], y: y[1] })))
                         }
 
                         setController(controller)
@@ -188,29 +185,18 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
                     case 'umap': {
                         let controller = new UMAPEmbeddingController()
-                        let samples = params.useSelection ? props.currentAggregation.aggregation : props.dataset.vectors
+                        let samples = props.dataset.vectors
 
-                        controller.init(props.dataset, selection, params, params.useSelection ? samples : undefined)
+                        controller.init(props.dataset, selection, params, props.workspace)
                         controller.stepper = (Y) => {
-                            let source = controller.boundsY(Y)
-                            let target = controller.targetBounds
-
-
-
-                            samples.forEach((sample, i) => {
-                                if (controller.targetBounds) {
-                                    sample.x = target.x + ((Y[i][0] - source.x) / source.width) * target.width
-                                    sample.y = target.y + ((Y[i][1] - source.y) / source.height) * target.height
-                                } else {
-                                    sample.x = Y[i][0]
-                                    sample.y = Y[i][1]
+                            const workspace = samples.map((sample, i) => {
+                                return {
+                                    x: Y[i][0],
+                                    y: Y[i][1]
                                 }
-
                             })
 
-
-                            props.webGLView.current.updateXY()
-                            props.webGLView.current.repositionClusters()
+                            props.updateWorkspace(workspace)
                         }
 
 
@@ -222,12 +208,16 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                         controller.init(props.dataset, selection, params)
 
                         controller.stepper = (Y) => {
-                            props.dataset.vectors.forEach((sample, i) => {
+                            const workspace = props.dataset.vectors.map((sample, i) => {
                                 let idx = controller.nodes[sample.__meta__.duplicateOf].__meta__.meshIndex
-                                sample.x = Y[idx].x
-                                sample.y = Y[idx].y
+
+                                return {
+                                    x: Y[idx].x,
+                                    y: Y[idx].y
+                                }
                             })
-                            props.webGLView.current.updateXY()
+
+                            props.updateWorkspace(workspace)
                         }
 
                         setController(controller)
@@ -260,7 +250,8 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
             <List dense={true}>
-                {props.projections.map(projection => {
+                {props.projections.allIds.map(key => {
+                    const projection = props.projections.byId[key]
                     return <ListItem key={projection.hash} button onClick={() => onProjectionClick(projection)}>
                         <ListItemAvatar>
                             <Avatar>
@@ -272,7 +263,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                             secondary={`${projection.positions.length} items`}
                         />
                         <ListItemSecondaryAction>
-                            <IconButton onClick={() => onDeleteProjectionClick(projection)}>
+                            <IconButton onClick={() => onDeleteProjectionClick(key)}>
                                 <DeleteIcon />
                             </IconButton>
                         </ListItemSecondaryAction>

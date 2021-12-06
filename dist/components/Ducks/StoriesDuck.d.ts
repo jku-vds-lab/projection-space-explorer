@@ -1,72 +1,63 @@
 import { ICluster } from "../../model/Cluster";
 import { IEdge } from "../../model/Edge";
 import { IBook } from "../../model/Book";
-import { IVector } from "../../model/Vector";
-export declare const addStory: (story: any, activate?: boolean) => {
-    type: string;
-    story: any;
-    activate: boolean;
-};
-export declare const deleteStory: (story: any) => {
-    type: string;
-    story: any;
-};
-export declare function setStories(stories: IBook[]): {
-    type: string;
-    stories: IBook[];
-};
-export declare const addClusterToStory: (cluster: any) => {
-    type: string;
-    cluster: any;
-};
-export declare function setActiveStory(activeStory: IBook): {
-    type: string;
-    activeStory: IBook;
-};
-export declare function removeClusterFromStories(cluster: ICluster): {
-    type: string;
-    cluster: ICluster;
-};
+declare const enum ActionTypes {
+    ADD_BOOK = "ducks/stories/ADD",
+    DELETE_BOOK = "ducks/stories/DELETE",
+    ADD_CLUSTER = "ducks/stories/ADD_CLUSTER",
+    DELETE_CLUSTER = "ducks/stories/REMOVE_CLUSTER_FROM_STORIES",
+    SET = "ducks/stories/SET",
+    SET_ACTIVE_STORY_BOOK = "ducks/stories/SET_ACTIVE",
+    ADD_EDGE_TO_ACTIVE = "ducks/stories/ADD_EDGE_TO_ACTIVE",
+    SET_ACTIVE_TRACE = "ducks/stories/SET_ACTIVE_TRACE",
+    ADD_CLUSTER_TO_TRACE = "ducks/stories/ADD_CLUSTER_TO_TRACE",
+    SET_ACTIVE_TRACE_STATE = "ducks/stories/SET_ACTIVE_TRACE_STATE",
+    SELECT_SIDE_BRANCH = "ducks/stories/SELECT_SIDE_BRANCH",
+    REMOVE_EDGE_FROM_ACTIVE = "ducks/stories/REMOVE_EDGE_FROM_ACTIVE"
+}
+/**type AddStoryAction = {
+    type: ActionTypes.ADD_STORY_BOOK
+    story: IBook
+    activate: boolean
+}**/
+export declare function addBook(story: IBook, activate?: boolean): (dispatch: any, getState: any) => any;
+export declare function deleteBook(story: IBook): (dispatch: any, getState: any) => any;
+export declare function addCluster(cluster: ICluster): (dispatch: any, getState: any) => any;
+export declare function deleteCluster(cluster: ICluster): (dispatch: any, getState: any) => any;
+export declare function setStories(stories: IBook[]): (dispatch: any, getState: any) => any;
+export declare function setActiveStory(activeStory: IBook): (dispatch: any, getState: any) => any;
 export declare function addEdgeToActive(edge: any): {
-    type: string;
+    type: ActionTypes;
     edge: any;
 };
 export declare function removeEdgeFromActive(edge: any): {
-    type: string;
+    type: ActionTypes;
     edge: any;
 };
 export declare const setActiveTrace: (activeTrace: number) => {
-    type: string;
+    type: ActionTypes;
     activeTrace: number;
 };
-export declare const addClusterToTrace: (cluster: any) => {
-    type: string;
-    cluster: any;
-};
+export declare const addClusterToTrace: (cluster: any) => (dispatch: any, getState: any) => any;
 export declare function setActiveTraceState(cluster: string): {
-    type: string;
+    type: ActionTypes;
     cluster: string;
 };
 export declare function selectSideBranch(i: number): {
-    type: string;
+    type: ActionTypes;
     index: number;
 };
-export declare function setVectors(vectors: IVector[]): {
-    type: string;
-    vectors: IVector[];
-};
-export declare class StoriesUtil {
-    static createEmpty(): StoriesType;
+export declare class AStorytelling {
+    static createEmpty(): IStorytelling;
     static emptyStory(): IBook;
-    static getActive(stories: StoriesType): IBook;
-    static retrieveCluster(stories: StoriesType, clusterIndex: string): ICluster;
-    static retreiveEdge(stories: StoriesType, edgeIndex: string): IEdge;
+    static getActive(stories: IStorytelling): IBook;
+    static retrieveCluster(stories: IStorytelling, clusterIndex: string): ICluster;
+    static retreiveEdge(stories: IStorytelling, edgeIndex: string): IEdge;
 }
 /**
  * Type interface for stories slace of the redux store.
  */
-export declare type StoriesType = {
-    vectors: IVector[];
+export declare type IStorytelling = {
     stories: IBook[];
     active: number;
     trace: {
@@ -80,4 +71,5 @@ export declare type StoriesType = {
     };
     activeTraceState: string;
 };
-export default function stories(state: StoriesType, action: any): StoriesType;
+export default function stories(state: IStorytelling, action: any): IStorytelling;
+export {};

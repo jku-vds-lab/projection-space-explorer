@@ -8,13 +8,14 @@ import { SelectionClusters } from "../../Overlays/SelectionClusters";
 import { RootState } from "../../Store/Store";
 import { VirtualColumn, VirtualTable } from "../../UI/VirtualTable";
 import { selectVectors } from "../../Ducks/AggregationDuck";
+import { AStorytelling } from "../../Ducks";
 
 const mapStateToProps = (state: RootState) => ({
     hoverSettings: state.hoverSettings,
     currentAggregation: state.currentAggregation,
     dataset: state.dataset,
     hoverStateOrientation: state.hoverStateOrientation,
-    activeStorybook: state.stories?.stories[state.stories.active]
+    activeStorybook: AStorytelling.getActive(state.stories)
 })
 
 const mapDispatchToProps = dispatch => ({

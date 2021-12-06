@@ -2,11 +2,12 @@ import * as THREE from 'three';
 import { Dataset } from './Dataset';
 import { TypedObject } from './TypedObject';
 import { IVector } from "./Vector";
+import { IBaseProjection } from './Projection';
 /**
- * Cluster methods.
+ * Cluster API.
  */
 export declare class ACluster {
-    static calcBounds(dataset: Dataset, indices: number[]): {
+    static calcBounds(workspace: IBaseProjection, indices: number[]): {
         x: number;
         y: number;
         width: number;
@@ -24,11 +25,11 @@ export declare class ACluster {
      * @param clusters The clusters to take the label from
      */
     static deriveVectorLabelsFromClusters(vectors: IVector[], clusters: ICluster[]): void;
-    static getCenter(dataset: Dataset, cluster: ICluster): {
+    static getCenterFromWorkspace(workspace: IBaseProjection, cluster: ICluster): {
         x: number;
         y: number;
     };
-    static getCenterAsVector2(dataset: Dataset, cluster: ICluster): THREE.Vector2;
+    static getCenterAsVector2(workspace: IBaseProjection, cluster: ICluster): THREE.Vector2;
     static getTextRepresentation(cluster: ICluster): string;
 }
 /**

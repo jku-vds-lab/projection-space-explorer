@@ -1,16 +1,20 @@
+import { ClusterMode } from "../Ducks/ClusterModeDuck";
+import { IStorytelling } from "../Ducks/StoriesDuck";
+import { Dataset, IProjection, IBaseProjection } from '../../model';
+import { CategoryOptions } from '../WebGLView/CategoryOptions';
 export declare const rootReducer: (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {
         aggregation: number[];
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    stories: import("../Ducks/StoriesDuck").StoriesType;
+    stories: IStorytelling;
     openTab: any;
     selectedVectorByShape: any;
     vectorByShape: any;
     checkedShapes: any;
     activeLine: any;
-    dataset: import("../..").Dataset;
+    dataset: Dataset;
     highlightedSequence: any;
     viewTransform: import("../Ducks/ViewTransformDuck").ViewTransformType;
     advancedColoringSelection: any;
@@ -29,7 +33,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
     };
     projectionWorker: Worker;
-    clusterMode: import("../Ducks/ClusterModeDuck").ClusterMode;
+    clusterMode: ClusterMode;
     displayMode: import("../Ducks/DisplayModeDuck").DisplayMode;
     lineBrightness: any;
     pathLengthRange: {
@@ -39,7 +43,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         range: number[];
         maximum: any;
     };
-    categoryOptions: import("..").CategoryOptions;
+    categoryOptions: CategoryOptions;
     channelSize: any;
     channelColor: any;
     channelBrightness: any;
@@ -55,7 +59,13 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         length: number;
     };
     differenceThreshold: any;
-    projections: import("../..").Embedding[];
+    projections: {
+        byId: {
+            [id: string]: IProjection;
+        };
+        allIds: string[];
+        workspace: IBaseProjection;
+    };
     hoverSettings: {
         windowMode: any;
     };
@@ -77,95 +87,11 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     datasetEntries: {
         values: {
             byId: {
-                [id: string]: import("../..").DatasetEntry;
+                [id: string]: import("../../model").DatasetEntry;
             };
             allIds: string[];
         };
     };
 }>;
-export declare function createRootReducer(reducers: any): (state: any, action: any) => import("redux").CombinedState<{
-    currentAggregation: {
-        aggregation: number[];
-        selectedClusters: string[];
-        source: "sample" | "cluster";
-    };
-    stories: import("../Ducks/StoriesDuck").StoriesType;
-    openTab: any;
-    selectedVectorByShape: any;
-    vectorByShape: any;
-    checkedShapes: any;
-    activeLine: any;
-    dataset: import("../..").Dataset;
-    highlightedSequence: any;
-    viewTransform: import("../Ducks/ViewTransformDuck").ViewTransformType;
-    advancedColoringSelection: any;
-    projectionColumns: any;
-    projectionOpen: any;
-    projectionParams: {
-        perplexity: number;
-        learningRate: number;
-        nNeighbors: number;
-        iterations: number;
-        seeded: boolean;
-        useSelection: boolean;
-        method: string;
-        distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
-        normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
-        encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
-    };
-    projectionWorker: Worker;
-    clusterMode: import("../Ducks/ClusterModeDuck").ClusterMode;
-    displayMode: import("../Ducks/DisplayModeDuck").DisplayMode;
-    lineBrightness: any;
-    pathLengthRange: {
-        range: any;
-        maximum: number;
-    } | {
-        range: number[];
-        maximum: any;
-    };
-    categoryOptions: import("..").CategoryOptions;
-    channelSize: any;
-    channelColor: any;
-    channelBrightness: any;
-    globalPointSize: number[];
-    hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    pointColorScale: any;
-    pointColorMapping: any;
-    trailSettings: {
-        show: boolean;
-        length: any;
-    } | {
-        show: any;
-        length: number;
-    };
-    differenceThreshold: any;
-    projections: import("../..").Embedding[];
-    hoverSettings: {
-        windowMode: any;
-    };
-    selectedLineBy: {
-        options: any[];
-        value: any;
-    } | {
-        options: any;
-        value: string;
-    };
-    globalPointBrightness: number[];
-    groupVisualizationMode: any;
-    genericFingerprintAttributes: any[];
-    hoverStateOrientation: any;
-    detailView: {
-        open: boolean;
-        active: string;
-    };
-    datasetEntries: {
-        values: {
-            byId: {
-                [id: string]: import("../..").DatasetEntry;
-            };
-            allIds: string[];
-        };
-    };
-}>;
+export declare function createRootReducer(reducers: any): (state: any, action: any) => any;
 export declare type RootState = ReturnType<typeof rootReducer>;

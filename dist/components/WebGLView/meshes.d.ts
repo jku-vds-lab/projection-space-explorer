@@ -1,9 +1,11 @@
+import * as THREE from 'three';
 import { DataLine } from "../../model/DataLine";
 import { IVector } from "../../model/Vector";
 import { Dataset } from "../../model/Dataset";
 import { LayeringSystem } from './LayeringSystem';
-import { StoriesType } from '../Ducks/StoriesDuck';
+import { IStorytelling } from '../Ducks/StoriesDuck';
 import { Mapping } from '../Utility/Colors/Mapping';
+import { IBaseProjection } from '../../model/Projection';
 export declare enum Shapes {
     Circle = "circle",
     Star = "star",
@@ -25,7 +27,7 @@ export declare class LineVisualization {
     dispose(scene: any): void;
     setZoom(zoom: any): void;
     groupHighlight(indices: any): void;
-    storyTelling(stories: StoriesType): void;
+    storyTelling(stories: IStorytelling, vectors: IVector[]): void;
     /**
      * Highlights the given lines that correspond to the indices
      *
@@ -36,7 +38,7 @@ export declare class LineVisualization {
      */
     highlight(indices: any, width: any, height: any, scene: any, grayout?: boolean): void;
     createMesh(lineBrightness: number): any[];
-    updatePosition(): void;
+    updatePosition(workspace: IBaseProjection): void;
     /**
      * Updates visibility based on settings in the lines
      */
@@ -52,20 +54,20 @@ export declare class PointVisualization {
     segments: DataLine[];
     vectors: IVector[];
     vectorSegmentLookup: DataLine[];
-    mesh: any;
+    mesh: THREE.Points<THREE.BufferGeometry, THREE.ShaderMaterial>;
     sizeAttribute: any;
     colorAttribute: any;
     grayedLayerSystem: LayeringSystem;
     lineLayerSystem: LayeringSystem;
     pathLengthRange: any;
     constructor(vectorColorScheme: any, dataset: Dataset, size: any, lineLayerSystem: LayeringSystem, segments: any);
-    createMesh(data: any, segments: any): void;
+    createMesh(data: any, segments: any, onUpload: any): void;
     /**
      * Applies the gray-out effect on the particles based on the given story model
      *
      * @param stories The story model
      */
-    storyTelling(stories: StoriesType): void;
+    storyTelling(stories: IStorytelling): void;
     groupHighlight(samples: number[]): void;
     setPointScaling(pointScaling: any): void;
     /**
@@ -81,7 +83,7 @@ export declare class PointVisualization {
     updateSize(): void;
     updateColor(): void;
     isPointVisible(vector: IVector): boolean;
-    updatePosition(): void;
+    updatePosition(projection: IBaseProjection): void;
     update(): void;
     /**
      * Highlights a specific point index.

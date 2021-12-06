@@ -14,11 +14,9 @@ import { IBook } from '../../model/Book';
 import { IEdge } from "../../model/Edge";
 import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
-import { Embedding } from '../../model/Embedding';
 import { DataLine } from '../../model/DataLine';
 import { ComponentConfig } from '../../Application';
 declare type ViewState = {
-    displayClusters: any;
     camera: Camera;
     menuX: number;
     menuY: number;
@@ -52,7 +50,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     channelColor: any;
     channelBrightness: any;
     pointColorScale: any;
-    stories: import("../Ducks/StoriesDuck").StoriesType;
+    stories: import("../Ducks/StoriesDuck").IStorytelling;
     trailSettings: {
         show: boolean;
         length: any;
@@ -61,6 +59,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         length: number;
     };
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
+    workspace: import("../..").IBaseProjection;
 } & {
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
@@ -209,11 +208,10 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         createTransform(): ViewTransformType;
         renderLasso(ctx: any): void;
         repositionClusters(): void;
-        loadProjection(projection: Embedding): void;
         onClusterZoom(cluster: any): void;
         render(): JSX.Element;
         context: any;
-        setState<K extends "displayClusters" | "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
+        setState<K extends "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
         forceUpdate(callback?: () => void): void;
         readonly props: Readonly<Props> & Readonly<{
             children?: React.ReactNode;
@@ -362,11 +360,10 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     createTransform(): ViewTransformType;
     renderLasso(ctx: any): void;
     repositionClusters(): void;
-    loadProjection(projection: Embedding): void;
     onClusterZoom(cluster: any): void;
     render(): JSX.Element;
     context: any;
-    setState<K extends "displayClusters" | "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
+    setState<K extends "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
     forceUpdate(callback?: () => void): void;
     readonly props: Readonly<Props> & Readonly<{
         children?: React.ReactNode;
@@ -413,7 +410,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     channelColor: any;
     channelBrightness: any;
     pointColorScale: any;
-    stories: import("../Ducks/StoriesDuck").StoriesType;
+    stories: import("../Ducks/StoriesDuck").IStorytelling;
     trailSettings: {
         show: boolean;
         length: any;
@@ -422,6 +419,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         length: number;
     };
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
+    workspace: import("../..").IBaseProjection;
 } & {
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;

@@ -1,16 +1,22 @@
-import { IVector } from "./Vector";
-declare type PositionType = {
+/**
+ * position type
+ */
+export declare type IPosition = {
     x: number;
     y: number;
-    meshIndex: number;
 };
 /**
- * Helper class that holds 1 full embedding of a selection of vectors.
+ * Projection item that also contains a name and a hash
  */
-export declare class Embedding {
-    positions: PositionType[];
+export declare type IProjection = {
+    positions: IBaseProjection;
     name: string;
     hash: string;
-    constructor(vectors: IVector[], name: any);
+};
+/**
+ * Base type for projections
+ */
+export declare type IBaseProjection = IPosition[];
+export declare class EmbeddingUtil {
+    static createEmbedding(projection: IBaseProjection, name: any): IProjection;
 }
-export {};

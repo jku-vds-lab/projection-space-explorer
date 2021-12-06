@@ -28,7 +28,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         show: any;
         length: number;
     };
-    stories: import("../Ducks").StoriesType;
+    stories: import("../Ducks").IStorytelling;
     globalPointSize: number[];
     viewTransform: ViewTransformType;
     currentAggregation: {
@@ -38,6 +38,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
+    workspace: import("../..").IBaseProjection;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
@@ -207,7 +208,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         show: any;
         length: number;
     };
-    stories: import("../Ducks").StoriesType;
+    stories: import("../Ducks").IStorytelling;
     globalPointSize: number[];
     viewTransform: ViewTransformType;
     currentAggregation: {
@@ -217,6 +218,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
     };
     hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
+    workspace: import("../..").IBaseProjection;
 } & {
     onInvalidate?: () => void;
 }, "ref" | "key" | "onInvalidate">>;

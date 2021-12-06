@@ -3,14 +3,15 @@ import { Dataset } from './Dataset';
 import { ObjectTypes } from './ObjectType';
 import { TypedObject } from './TypedObject';
 import { IVector } from "./Vector"
+import { IBaseProjection } from './Projection';
 
 
 /**
- * Cluster methods.
+ * Cluster API.
  */
 export class ACluster {
-    static calcBounds(dataset: Dataset, indices: number[]) {
-        const samples = indices.map(i => dataset.vectors[i])
+    static calcBounds(workspace: IBaseProjection, indices: number[]) {
+        const samples = indices.map(i => workspace[i])
 
         // Get rectangle that fits around data set
         var minX = 1000, maxX = -1000, minY = 1000, maxY = -1000;
@@ -63,11 +64,11 @@ export class ACluster {
         })
     }
 
-    static getCenter(dataset: Dataset, cluster: ICluster) {
+    static getCenterFromWorkspace(workspace: IBaseProjection, cluster: ICluster) {
         var x = 0
         var y = 0
 
-        cluster.indices.map(i => dataset.vectors[i]).forEach(p => {
+        cluster.indices.map(i => workspace[i]).forEach(p => {
             x = x + p.x
             y = y + p.y
         })
@@ -78,8 +79,8 @@ export class ACluster {
         }
     }
 
-    static getCenterAsVector2(dataset: Dataset, cluster: ICluster) {
-        let center = ACluster.getCenter(dataset, cluster)
+    static getCenterAsVector2(workspace: IBaseProjection, cluster: ICluster) {
+        let center = ACluster.getCenterFromWorkspace(workspace, cluster)
         return new THREE.Vector2(center.x, center.y)
     }
 

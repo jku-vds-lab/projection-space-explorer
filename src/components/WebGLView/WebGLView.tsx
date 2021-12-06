@@ -21,26 +21,25 @@ import { RootState } from '../Store/Store';
 import { Menu, MenuItem } from '@mui/material';
 import * as nt from '../NumTs/NumTs'
 import { MouseController } from './MouseController';
-import { addClusterToStory, addEdgeToActive, addStory, removeClusterFromStories, removeEdgeFromActive, setActiveTrace, StoriesUtil } from '../Ducks/StoriesDuck';
+import { addCluster, addEdgeToActive, addBook, deleteCluster, removeEdgeFromActive, setActiveTrace, AStorytelling } from '../Ducks/StoriesDuck';
 import { IBook, ABook } from '../../model/Book';
 import { RenderingContextEx } from '../Utility/RenderingContextEx';
 import { IEdge, isEdge } from "../../model/Edge";
 import { getSyncNodesAlt } from '../NumTs/NumTs';
 import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
-import { Embedding } from '../../model/Embedding';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
-import { DatasetUtil } from '../../model/Dataset';
+import { ADataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { NamedCategoricalScales } from '../Utility/Colors/NamedCategoricalScales';
 import { ObjectTypes } from '../../model/ObjectType';
 import { v4 as uuidv4 } from 'uuid';
 import { ComponentConfig } from '../../Application';
+import { ANormalized } from '../Utility/NormalizedState';
 
 type ViewState = {
-    displayClusters: any
     camera: Camera
     menuX: number
     menuY: number
@@ -67,7 +66,8 @@ const mapStateToProps = (state: RootState) => ({
     pointColorScale: state.pointColorScale,
     stories: state.stories,
     trailSettings: state.trailSettings,
-    hoverState: state.hoverState
+    hoverState: state.hoverState,
+    workspace: state.projections.workspace
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -76,9 +76,9 @@ const mapDispatchToProps = dispatch => ({
     setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
     setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
     setPointColorMapping: mapping => dispatch(setPointColorMapping(mapping)),
-    removeClusterFromStories: (cluster: ICluster) => dispatch(removeClusterFromStories(cluster)),
-    addStory: (story: IBook, activate: boolean) => dispatch(addStory(story, activate)),
-    addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
+    removeClusterFromStories: (cluster: ICluster) => dispatch(deleteCluster(cluster)),
+    addStory: (story: IBook, activate: boolean) => dispatch(addBook(story, activate)),
+    addClusterToStory: cluster => dispatch(addCluster(cluster)),
     addEdgeToActive: (edge: IEdge) => dispatch(addEdgeToActive(edge)),
     setActiveTrace: trace => dispatch(setActiveTrace(trace)),
     setOpenTab: tab => dispatch(setOpenTabAction(tab)),
@@ -155,7 +155,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         this.state = {
             // clusters to display using force-directed layout
-            displayClusters: [],
             camera: null,
             menuX: null,
             menuY: null,
@@ -217,12 +216,18 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         let cluster = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
 
                         if (cluster) {
-                            const activeStory = StoriesUtil.getActive(this.props.stories)
-                            this.props.addEdgeToActive({
-                                source: Object.keys(activeStory.clusters.byId).find(key => activeStory.clusters.byId[key] === this.currentHover),
-                                destination: Object.keys(activeStory.clusters.byId).find(key => activeStory.clusters.byId[key] === cluster),
-                                objectType: ObjectTypes.Edge
-                            })
+                            const activeStory = AStorytelling.getActive(this.props.stories)
+
+                            const source = Object.keys(activeStory.clusters.byId).find(key => activeStory.clusters.byId[key] === this.clusterDrag.cluster)
+                            const destination = Object.keys(activeStory.clusters.byId).find(key => activeStory.clusters.byId[key] === cluster)
+
+                            if (ANormalized.entries(activeStory.edges).find(e => e[1].source === source && e[1].destination === destination) !== undefined) {
+                                this.props.addEdgeToActive({
+                                    source,
+                                    destination,
+                                    objectType: ObjectTypes.Edge
+                                })
+                            }
                         }
 
                         this.clusterDrag = null
@@ -235,7 +240,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
                         this.lasso.mouseUp(coords.x, coords.y)
 
-                        var indices = this.lasso.selection(this.props.dataset.vectors, (vector) => this.particles.isPointVisible(vector))
+                        var indices = this.lasso.selection(this.props.dataset, this.props.workspace, (vector) => this.particles.isPointVisible(vector))
                         if (indices.length > 0 && wasDrawing && displayModeSupportsStates(this.props.displayMode)) {
                             this.props.selectVectors(indices, event.ctrlKey)
 
@@ -284,7 +289,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         let target = this.chooseCluster({ x: event.offsetX, y: event.offsetY })
 
                         if (target) {
-                            const activeStory = StoriesUtil.getActive(this.props.stories)
+                            const activeStory = AStorytelling.getActive(this.props.stories)
                             // We want to select a trace between 2 clusters
                             let paths = ABook.depthFirstSearch(ABook.toGraph(activeStory),
                                 Object.entries(activeStory.clusters.byId).find(([key, value]) => value === this.traceSelect.cluster)[0],
@@ -321,7 +326,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         // We click on a hover target
                         this.props.selectVectors([this.currentHover.__meta__.meshIndex], event.ctrlKey)
                     } else if (this.currentHover && isCluster(this.currentHover)) {
-                        const activeStory = this.props.stories.stories[this.props.stories.active]
+                        const activeStory = AStorytelling.getActive(this.props.stories)
                         this.props.setSelectedCluster([Object.keys(activeStory.clusters.byId).find(key => activeStory.clusters.byId[key] === this.currentHover)], event.ctrlKey)
                     }
 
@@ -446,14 +451,14 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         let nearest: ICluster = null
         let min = Number.MAX_SAFE_INTEGER
 
-        const activeStory = this.props.stories.stories[this.props.stories.active]
+        const activeStory = AStorytelling.getActive(this.props.stories)
 
         if (!activeStory) {
             return null
         }
 
         for (const [key, cluster] of Object.entries(activeStory.clusters.byId)) {
-            let clusterScreen = CameraTransformations.worldToScreen(new THREE.Vector2(ACluster.getCenter(this.props.dataset, cluster).x, ACluster.getCenter(this.props.dataset, cluster).y), this.createTransform())
+            let clusterScreen = CameraTransformations.worldToScreen(new THREE.Vector2(ACluster.getCenterFromWorkspace(this.props.workspace, cluster).x, ACluster.getCenterFromWorkspace(this.props.workspace, cluster).y), this.createTransform())
             let dist = nt.euclideanDistance(screenPosition.x, screenPosition.y, clusterScreen.x, clusterScreen.y)
 
             if (dist < min && dist < 16) {
@@ -472,13 +477,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             return null
         }
 
-        const activeStory = this.props.stories.stories[this.props.stories.active]
+        const activeStory = AStorytelling.getActive(this.props.stories)
 
         position = CameraTransformations.screenToWorld(position, this.createTransform())
 
         for (const edge of Object.values(activeStory.edges.byId)) {
-            const a = ACluster.getCenterAsVector2(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.source))
-            const b = ACluster.getCenterAsVector2(this.props.dataset, StoriesUtil.retrieveCluster(this.props.stories, edge.destination))
+            const a = ACluster.getCenterAsVector2(this.props.workspace, AStorytelling.retrieveCluster(this.props.stories, edge.source))
+            const b = ACluster.getCenterAsVector2(this.props.workspace, AStorytelling.retrieveCluster(this.props.stories, edge.destination))
             const dir = b.clone().sub(a.clone()).normalize()
             const l = new THREE.Vector2(-dir.y, dir.x).multiplyScalar(0.5)
             const r = new THREE.Vector2(dir.y, -dir.x).multiplyScalar(0.5)
@@ -506,10 +511,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         var res = -1
 
         for (var index = 0; index < this.props.dataset.vectors.length; index++) {
-            var value = this.props.dataset.vectors[index]
+            var value = this.props.workspace[index]
 
             // Skip points matching some criteria
-            if (!this.particles.isPointVisible(value)) {
+            if (!this.particles.isPointVisible(this.props.dataset.vectors[index])) {
                 continue
             }
 
@@ -698,9 +703,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
         this.containerRef.current.appendChild(this.renderer.domElement);
 
-
-        this.scene = new THREE.Scene()
-
         this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight())
 
         this.prevTime = performance.now()
@@ -708,6 +710,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
     createVisualization(dataset, lineColorScheme, vectorColorScheme) {
+        this.disposeScene()
+
         this.scene = new THREE.Scene()
         this.pointScene = new THREE.Scene()
         this.segments = dataset.segments
@@ -736,7 +740,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.particles = new PointVisualization(this.vectorColorScheme, this.props.dataset, window.devicePixelRatio * 8, this.lines?.grayedLayerSystem, this.segments)
-        this.particles.createMesh(this.props.dataset.vectors, this.segments)
+        this.particles.createMesh(this.props.dataset.vectors, this.segments, () => { this.requestRender() })
         this.particles.zoom(this.camera.zoom)
         this.particles.update()
 
@@ -821,19 +825,25 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
      * recalculate the optimal camera zoom level.
      */
     updateXY() {
-        this.particles.updatePosition()
-        if (this.props.dataset.isSequential) {
-            this.lines.updatePosition()
+        if (this.props.workspace) {
+            this.particles.updatePosition(this.props.workspace)
+
+            if (this.props.dataset.isSequential) {
+                this.lines.updatePosition(this.props.workspace)
+            }
+
+            ADataset.calculateBounds(this.props.dataset)
+
+            
+            this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight())
+            this.camera.position.x = 0.0
+            this.camera.position.y = 0.0
+            this.camera.updateProjectionMatrix();
+
+            this.repositionClusters()
+
+            this.requestRender()
         }
-        DatasetUtil.calculateBounds(this.props.dataset)
-        this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight())
-        this.camera.position.x = 0.0
-        this.camera.position.y = 0.0
-        this.camera.updateProjectionMatrix();
-
-
-
-        this.requestRender()
     }
 
 
@@ -867,16 +877,12 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     disposeScene() {
         this.currentHover = null
 
-        this.setState({
-            displayClusters: []
-        })
-
-        if (this.lines != null) {
+        if (this.lines != null && this.scene != null) {
             this.lines.dispose(this.scene)
             this.lines = null
         }
 
-        if (this.particles != null) {
+        if (this.particles != null && this.scene != null) {
             this.scene.remove(this.particles.mesh)
             this.particles.dispose()
             this.particles = null
@@ -944,7 +950,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.renderLasso(ctx)
 
         if (this.clusterDrag) {
-            this.clusterDrag.renderToContext(extended, CameraTransformations.worldToScreen(ACluster.getCenter(this.props.dataset, this.clusterDrag.cluster), this.createTransform()), this.mouseController.currentMousePosition)
+            this.clusterDrag.renderToContext(extended, CameraTransformations.worldToScreen(ACluster.getCenterFromWorkspace(this.props.workspace, this.clusterDrag.cluster), this.createTransform()), this.mouseController.currentMousePosition)
         }
 
         if (this.traceSelect) {
@@ -959,7 +965,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
     }
 
     onClusterClicked(cluster: ICluster, shiftKey: boolean = false) {
-        const activeStory = this.props.stories.stories[this.props.stories.active]
+        const activeStory = AStorytelling.getActive(this.props.stories)
         this.props.setSelectedCluster([Object.keys(activeStory.clusters.byId).find(key => activeStory.clusters.byId[key] === cluster)], shiftKey)
     }
 
@@ -1061,7 +1067,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             if (this.props.stories.active !== null) {
                 this.particles?.storyTelling(this.props.stories)
 
-                this.lines?.storyTelling(this.props.stories)
+                this.lines?.storyTelling(this.props.stories, this.props.dataset.vectors)
                 this.lines?.update()
 
                 this.particles?.update()
@@ -1069,7 +1075,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             } else {
                 this.particles?.storyTelling(null)
 
-                this.lines?.storyTelling(this.props.stories)
+                this.lines?.storyTelling(this.props.stories, this.props.dataset.vectors)
                 this.lines?.update()
 
                 this.particles?.update()
@@ -1183,6 +1189,10 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             this.particles.colorFilter(this.props.advancedColoringSelection)
         }
 
+        if (prevProps.workspace !== this.props.workspace) {
+            this.updateXY()
+        }
+
         this.requestRender()
     }
 
@@ -1244,16 +1254,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.multivariateClusterView?.current.updatePositions(this.camera.zoom)
         this.multivariateClusterView?.current.iterateTrail(this.camera.zoom)
         this.multivariateClusterView?.current.createTriangulatedMesh()
-    }
-
-    loadProjection(projection: Embedding) {
-        this.props.dataset.vectors.forEach(vector => {
-            let position = projection.positions[vector.__meta__.meshIndex]
-            vector.x = position.x
-            vector.y = position.y
-        })
-
-        this.updateXY()
     }
 
     onClusterZoom(cluster) {
@@ -1394,7 +1394,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         return;
                     }
 
-                    const activeStory = this.props.stories.stories[this.props.stories.active]
+                    const activeStory = AStorytelling.getActive(this.props.stories)
 
                     let paths = ABook.getAllStoriesFromSource(activeStory, Object.entries(activeStory.clusters.byId).find(([key, val]) => val === this.state.menuTarget)[0])
 
@@ -1431,7 +1431,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         return;
                     }
 
-                    this.traceSelect = new TraceSelectTool(this.props.dataset, this.state.menuTarget)
+                    this.traceSelect = new TraceSelectTool(this.props.workspace, this.state.menuTarget)
                     handleClose()
                 }}>{"Stories ... Between 2 Groups"}</MenuItem>
 
