@@ -99,3 +99,8 @@ typings/
 /dist/datasets/chemvis
 /datasets/reaction_optimization
 /dist/datasets/reaction_optimization
+
+# chess datasets and projections
+"/notebooks/lc0 misc/umap_outputs
+"/notebooks/lc0 misc/games"
+"/notebooks/alphazero games"
