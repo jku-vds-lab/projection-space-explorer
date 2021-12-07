@@ -15,11 +15,25 @@ export declare type BaseConfig = Partial<{
 export declare type EmbeddingMethod = {
     id: string;
     name: string;
+    settings: {
+        perplexity?: boolean;
+        learningRate?: boolean;
+        nneighbors?: boolean;
+    };
     embController?: EmbeddingController;
 };
+export declare const DEFAULT_TSNE_SETTINGS: {
+    nneighbors: boolean;
+};
+export declare const DEFAULT_UMAP_SETTINGS: {
+    perplexity: boolean;
+    learningRate: boolean;
+};
+export declare const DEFAULT_FA2_SETTINGS: {};
 export declare const DEFAULT_EMBEDDINGS: {
     id: string;
     name: string;
+    settings: {};
 }[];
 export declare type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];

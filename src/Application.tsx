@@ -127,9 +127,16 @@ export type BaseConfig = Partial<{
 export type EmbeddingMethod = {
   id: string,
   name: string,
-  embController?: EmbeddingController
+  settings: {perplexity?: boolean, learningRate?: boolean, nneighbors?: boolean}
+  embController?: EmbeddingController,
 }
-export const DEFAULT_EMBEDDINGS = [{id: "umap", name: "UMAP"}, {id: "tsne", name:"t-SNE"}, {id: "forceatlas2", name: "ForceAtlas2"}];
+export const DEFAULT_TSNE_SETTINGS = {nneighbors:true}
+export const DEFAULT_UMAP_SETTINGS = {perplexity:true, learningRate:true}
+export const DEFAULT_FA2_SETTINGS = {}
+export const DEFAULT_EMBEDDINGS = [
+  {id: "umap", name: "UMAP", settings: DEFAULT_UMAP_SETTINGS}, 
+  {id: "tsne", name:"t-SNE", settings: DEFAULT_TSNE_SETTINGS}, 
+  {id: "forceatlas2", name: "ForceAtlas2", settings: DEFAULT_FA2_SETTINGS}];
 export type FeatureConfig = Partial<{
   // disableEmbeddings: {
   //   tsne?: boolean,
