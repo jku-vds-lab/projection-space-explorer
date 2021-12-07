@@ -1,7 +1,8 @@
 import { ClusterMode } from "../Ducks/ClusterModeDuck";
 import { IStorytelling } from "../Ducks/StoriesDuck";
 import { Dataset, IProjection, IBaseProjection } from '../../model';
-import { CategoryOptions } from '../WebGLView/CategoryOptions';
+import { NormalizedDictionary } from '../Utility/NormalizedState';
+import { BaseColorScale } from '../Ducks/ColorScalesDuck';
 export declare const rootReducer: (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {
         aggregation: number[];
@@ -12,7 +13,14 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     openTab: any;
     selectedVectorByShape: any;
     vectorByShape: any;
-    checkedShapes: any;
+    pointDisplay: {
+        checkedShapes: {
+            star: boolean;
+            cross: boolean;
+            circle: boolean;
+            square: boolean;
+        };
+    };
     activeLine: any;
     dataset: Dataset;
     highlightedSequence: any;
@@ -43,7 +51,6 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         range: number[];
         maximum: any;
     };
-    categoryOptions: CategoryOptions;
     channelSize: any;
     channelColor: any;
     channelBrightness: any;
@@ -91,6 +98,10 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
             };
             allIds: string[];
         };
+    };
+    colorScales: {
+        scales: NormalizedDictionary<BaseColorScale>;
+        active: string;
     };
 }>;
 export declare function createRootReducer(reducers: any): (state: any, action: any) => any;

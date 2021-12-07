@@ -8,30 +8,10 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     stories: IStorytelling;
     displayMode: DisplayMode;
     dataset: Dataset;
-    categoryOptions: import("../../WebGLView/CategoryOptions").CategoryOptions;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: string[];
-        source: "sample" | "cluster"; /**function toggleClusters() {
-            if (dataset.clusters && dataset.clusters.length > 0) {
-                let clusters = dataset.clusters
-    
-                if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
-                    setStories([transformIndicesToHandles(dataset.clusters, dataset.clusterEdges)])
-                } else {
-                    if (dataset.isSequential) {
-                        const [edges] = graphLayout(dataset, clusters)
-    
-                        if (edges.length > 0) {
-                            let stories = storyLayout(clusters, edges)
-    
-                            setStories(stories)
-                            //setActiveStory(stories[0])
-                        }
-                    }
-                }
-            }
-        }**/
+        source: "sample" | "cluster";
     };
     groupVisualizationMode: any;
     workspace: import("../../..").IBaseProjection;
@@ -49,5 +29,5 @@ declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     splitRef: any;
 };
-export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ categoryOptions, setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters }: Props) => JSX.Element, Pick<Props, "splitRef">>;
+export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters }: Props) => JSX.Element, Pick<Props, "splitRef">>;
 export {};

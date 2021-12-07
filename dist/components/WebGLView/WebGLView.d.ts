@@ -29,7 +29,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         source: "sample" | "cluster";
     };
     vectorByShape: any;
-    checkedShapes: any;
     dataset: import("../../model/Dataset").Dataset;
     highlightedSequence: any;
     activeLine: any;
@@ -49,7 +48,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     channelSize: any;
     channelColor: any;
     channelBrightness: any;
-    pointColorScale: any;
     stories: import("../Ducks/StoriesDuck").IStorytelling;
     trailSettings: {
         show: boolean;
@@ -60,6 +58,18 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
     workspace: import("../..").IBaseProjection;
+    colorScales: {
+        scales: import("../Utility/NormalizedState").NormalizedDictionary<import("../Ducks/ColorScalesDuck").BaseColorScale>;
+        active: string;
+    };
+    pointDisplay: {
+        checkedShapes: {
+            star: boolean;
+            cross: boolean;
+            circle: boolean;
+            square: boolean;
+        };
+    };
 } & {
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
@@ -203,7 +213,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         onClusterClicked(cluster: ICluster, shiftKey?: boolean): void;
         renderFrame(): void;
         updateItemClusterDisplay(): void;
-        componentDidUpdate(prevProps: any, prevState: any): void;
+        componentDidUpdate(prevProps: Props, prevState: any): void;
         requestRender(): void;
         createTransform(): ViewTransformType;
         renderLasso(ctx: any): void;
@@ -355,7 +365,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     onClusterClicked(cluster: ICluster, shiftKey?: boolean): void;
     renderFrame(): void;
     updateItemClusterDisplay(): void;
-    componentDidUpdate(prevProps: any, prevState: any): void;
+    componentDidUpdate(prevProps: Props, prevState: any): void;
     requestRender(): void;
     createTransform(): ViewTransformType;
     renderLasso(ctx: any): void;
@@ -389,7 +399,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         source: "sample" | "cluster";
     };
     vectorByShape: any;
-    checkedShapes: any;
     dataset: import("../../model/Dataset").Dataset;
     highlightedSequence: any;
     activeLine: any;
@@ -409,7 +418,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     channelSize: any;
     channelColor: any;
     channelBrightness: any;
-    pointColorScale: any;
     stories: import("../Ducks/StoriesDuck").IStorytelling;
     trailSettings: {
         show: boolean;
@@ -420,6 +428,18 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     };
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
     workspace: import("../..").IBaseProjection;
+    colorScales: {
+        scales: import("../Utility/NormalizedState").NormalizedDictionary<import("../Ducks/ColorScalesDuck").BaseColorScale>;
+        active: string;
+    };
+    pointDisplay: {
+        checkedShapes: {
+            star: boolean;
+            cross: boolean;
+            circle: boolean;
+            square: boolean;
+        };
+    };
 } & {
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;

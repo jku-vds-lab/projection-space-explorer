@@ -1,19 +1,21 @@
 import { SchemeColor } from "./SchemeColor";
-import { LinearColorScale } from "./LinearColorScale";
 import { ContinuousMapping, DiscreteMapping } from "./Mapping";
+import { BaseColorScale, APalette } from "../../Ducks/ColorScalesDuck";
 var d3v5 = require('d3v5');
 
 
 
 export class ScaleUtil {
 
-  static mapScale(scale: LinearColorScale, value) {
+  static mapScale(scale: BaseColorScale, value) {
+    const palette = APalette.getByName(scale.palette)
+
     switch (scale.type) {
-      case 'discrete':
-        return scale.stops[value % scale.stops.length];
-      case 'continuous':
+      case 'categorical':
+        return palette[value % palette.length];
+      case 'sequential':
         const interpolator = d3v5.scaleLinear()
-        .domain(scale.stops.map((stop, index) => (1 / (scale.stops.length - 1)) * index)).range(scale.stops.map(stop => stop.hex));
+          .domain(palette.map((stop, index) => (1 / (palette.length - 1)) * index)).range(palette.map(stop => stop.hex));
         var d3color = d3v5.color(interpolator(value));
         return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
     }
@@ -21,13 +23,13 @@ export class ScaleUtil {
 
 
 
-  static mappingFromScale(scale: LinearColorScale, attribute, dataset) {
-    if (scale.type === 'discrete') {
+  static mappingFromScale(scale: BaseColorScale, attribute, dataset) {
+    if (scale.type === 'categorical') {
       // Generate scale
       return new DiscreteMapping(scale, [... new Set(dataset.vectors.map(vector => vector[attribute.key]))])
     }
 
-    if (scale.type === 'continuous') {
+    if (scale.type === 'sequential') {
       var min = null, max = null
       if (dataset.columns[attribute.key].range) {
         min = dataset.columns[attribute.key].range.min
@@ -42,20 +44,5 @@ export class ScaleUtil {
     }
 
     return null
-  }
-}
-
-
-
-
-export class ContinuosScale extends LinearColorScale {
-  constructor(stops) {
-    super(stops, "continuous");
-  }
-}
-
-export class DiscreteScale extends LinearColorScale {
-  constructor(stops) {
-    super(stops, "discrete");
   }
 }

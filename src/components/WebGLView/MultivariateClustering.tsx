@@ -7,7 +7,6 @@ import { DisplayMode } from "../Ducks/DisplayModeDuck";
 import React = require("react");
 import { RootState } from "../Store/Store";
 import { connect, ConnectedProps } from "react-redux";
-import { NamedCategoricalScales } from "../Utility/Colors/NamedCategoricalScales";
 import { TrailVisualization } from "./TrailVisualization";
 import { Typography } from "@mui/material";
 import { CameraTransformations } from "./CameraTransformations";
@@ -19,6 +18,7 @@ import { ScaleUtil } from "../Utility/Colors/ContinuosScale";
 import { AStorytelling } from "../Ducks/StoriesDuck";
 import TessyWorker from '../workers/tessy.worker';
 import { ViewTransformType } from "../Ducks";
+import { BaseColorScale } from "../Ducks/ColorScalesDuck";
 
 
 const SELECTED_COLOR = 0x007dad
@@ -111,7 +111,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
         this.triangulationWorker = new TessyWorker()
     }
 
-    
+
 
     componentDidUpdate(prevProps: Props) {
         if (prevProps.trailSettings != this.props.trailSettings) {
@@ -201,46 +201,46 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 if (this.props.stories.trace && this.props.stories.trace.mainEdges.includes(key)) {
                     color = new THREE.Color(SELECTED_COLOR)
                 }
-    
+
                 const sourceCenter = ACluster.getCenterFromWorkspace(this.props.workspace, AStorytelling.retrieveCluster(this.props.stories, edge.source))
                 const destCenter = ACluster.getCenterFromWorkspace(this.props.workspace, AStorytelling.retrieveCluster(this.props.stories, edge.destination))
                 let start = new THREE.Vector2(sourceCenter.x, sourceCenter.y)
                 let end = new THREE.Vector2(destCenter.x, destCenter.y)
                 let middle = new THREE.Vector2().addVectors(start, new THREE.Vector2().subVectors(end, start).multiplyScalar(0.5))
-    
+
                 let dir = end.clone().sub(start).normalize()
                 let markerOffset = start.clone().sub(end).normalize().multiplyScalar(24)
                 let left = new Vector2(-dir.y, dir.x).multiplyScalar(LINE_WIDTH)
                 let right = new Vector2(dir.y, -dir.x).multiplyScalar(LINE_WIDTH)
                 let offset = dir.clone().multiplyScalar(this.devicePixelRatio * CLUSTER_PIXEL_SIZE)
-    
+
                 // line without arrow
                 arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + left.x + offset.x, start.y * zoom + left.y + offset.y, 0))
                 arrowGeometry.vertices.push(new THREE.Vector3(start.x * zoom + right.x + offset.x, start.y * zoom + right.y + offset.y, 0))
                 arrowGeometry.vertices.push(new THREE.Vector3(end.x * zoom + left.x - offset.x, end.y * zoom + left.y - offset.y, 0))
                 arrowGeometry.vertices.push(new THREE.Vector3(end.x * zoom + right.x - offset.x, end.y * zoom + right.y - offset.y, 0))
-    
+
                 // left wing
                 arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x - offset.x, middle.y * zoom + left.y - offset.y, 0))
                 arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x + offset.x, middle.y * zoom + left.y + offset.y, 0))
                 arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + left.x * WING_SIZE - offset.x, middle.y * zoom + left.y * WING_SIZE - offset.y, 0))
-    
+
                 // Right wing
                 arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x - offset.x, middle.y * zoom + right.y - offset.y, 0))
                 arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x + offset.x, middle.y * zoom + right.y + offset.y, 0))
                 arrowGeometry.vertices.push(new THREE.Vector3(middle.x * zoom + right.x * WING_SIZE - offset.x, middle.y * zoom + right.y * WING_SIZE - offset.y, 0))
-    
+
                 let i = index * 10
                 // line without arrow
                 arrowGeometry.faces.push(new THREE.Face3(i, i + 1, i + 2, new Vector3(0, 0, -1), color))
                 arrowGeometry.faces.push(new THREE.Face3(i + 1, i + 3, i + 2, new Vector3(0, 0, -1), color))
-    
+
                 // left wing
                 arrowGeometry.faces.push(new THREE.Face3(i + 4, i + 6, i + 5, new Vector3(0, 0, -1), color))
-    
+
                 // Right wing
                 arrowGeometry.faces.push(new THREE.Face3(i + 7, i + 9, i + 8, new Vector3(0, 0, -1), color))
-    
+
                 index = index + 1
             }
         }
@@ -357,7 +357,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
 
 
 
-        let scale = NamedCategoricalScales.DARK2()
+        let scale: BaseColorScale = { type: 'categorical', palette: 'dark2' }
 
 
         const activeStory = AStorytelling.getActive(this.props.stories)

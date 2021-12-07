@@ -33,4 +33,6 @@ export declare const ANormalized: {
     get: <T_4>(dict: NormalizedDictionary<T_4>, handle: string) => T_4;
     entries: <T_5>(dict: NormalizedDictionary<T_5>) => [string, T_5][];
     forEach: <T_6>(dict: NormalizedDictionary<T_6>, callbackfn: (value: [string, T_6]) => void) => void;
+    map: <T_7>(dict: NormalizedDictionary<T_7>, callbackfn: (value: [string, T_7]) => any) => any[];
+    filter: <T_8>(dict: NormalizedDictionary<T_8>, callbackfn: (value: [string, T_8]) => any) => (string | T_8)[][];
 };
