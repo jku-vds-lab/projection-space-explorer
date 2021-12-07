@@ -143,6 +143,9 @@ export class CSVLoader implements Loader {
                     case "string":
                         types[current_key] = FeatureType.String;
                         break;
+                    case "array":
+                        types[current_key] = FeatureType.Array;
+                        break;
                     default:
                         types[current_key] = FeatureType.String;
                         break;

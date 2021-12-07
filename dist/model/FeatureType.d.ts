@@ -7,5 +7,6 @@ export declare enum FeatureType {
     Categorical = 2,
     Date = 3,
     Binary = 4,
-    Ordinal = 5
+    Ordinal = 5,
+    Array = 6
 }

@@ -8,5 +8,6 @@ export enum FeatureType {
     Categorical,
     Date,
     Binary,
-    Ordinal
+    Ordinal,
+    Array
 }

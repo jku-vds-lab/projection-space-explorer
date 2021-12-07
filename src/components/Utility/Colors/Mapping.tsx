@@ -27,7 +27,7 @@ export class DiscreteMapping extends Mapping {
   }
 
   map(value) {
-    const palette = APalette.getByName(this.scale.palette)
+    const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette
     return ScaleUtil.mapScale(this.scale, this.values.indexOf(value) % palette.length);
   }
 }
@@ -44,7 +44,7 @@ export class ContinuousMapping extends Mapping {
 
   map(value) {
     if (this.range.max == this.range.min) {
-      const palette = APalette.getByName(this.scale.palette)
+      const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette
       return palette[0];
     }
     

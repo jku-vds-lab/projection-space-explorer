@@ -90,7 +90,7 @@ export const ColorScalesActions = {
 
 type Action = PickAction
 
-type Palette = 'dark2' | 'accent' | 'paired'
+type Palette = 'dark2' | 'accent' | 'paired' | SchemeColor[]
 
 /**
  * Type for embedding state slice
