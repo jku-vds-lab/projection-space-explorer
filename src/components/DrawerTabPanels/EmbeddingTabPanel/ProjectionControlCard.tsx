@@ -123,6 +123,7 @@ export var ProjectionControlCard = connector(({
                     }
                     action={
                         <IconButton aria-label="settings" onClick={(e) => {
+                            console.timeEnd('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
                             onClose()
                         }}>
                             <CloseIcon />

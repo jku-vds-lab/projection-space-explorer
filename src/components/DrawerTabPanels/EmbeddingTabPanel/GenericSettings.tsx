@@ -154,8 +154,10 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
                                 '& .MuiFormControl-root': { m: 1 }
                             }}>
                             <FormLabel component="legend">Projection Parameters</FormLabel>
-                            {/* TODO: add custom settings */}
+                            {/* TODO: add also make parameters customizable; currently only a fixed set of parameters can set to be shown or not */}                            
                             <CustomSettings tempProjectionParams={tempProjectionParams} setTempProjectionParams={setTempProjectionParams} inputDict={domainSettings.settings}></CustomSettings>
+                            {/* {domainSettings.id == 'umap' && <UMAPSettings tempProjectionParams={tempProjectionParams} setTempProjectionParams={setTempProjectionParams}></UMAPSettings>} */}
+                            {/* {domainSettings.id == 'tsne' && <TSNESettings tempProjectionParams={tempProjectionParams} setTempProjectionParams={setTempProjectionParams}></TSNESettings>} */}
                         </FormControl>
                     </Grid>
 
