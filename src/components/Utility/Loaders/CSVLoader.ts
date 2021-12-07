@@ -89,7 +89,7 @@ export class CSVLoader implements Loader {
     }
 
 
-    async resolve(finished, vectors, datasetType, entry: DatasetEntry) {
+    async resolve(finished, vectors, datasetType, entry: DatasetEntry): Promise<Dataset> {
         var header = Object.keys(vectors[0])
 
         var ranges = header.reduce((map, value) => {
@@ -207,18 +207,27 @@ export class CSVLoader implements Loader {
         
         let dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation)
         
+        const promise = new Promise<Dataset>((resolve, eject) => {
+            
+            this.getClusters(vectors, clusters => {
+                dataset.clusters = clusters
+    
+                // Reset cluster label after extraction
+                dataset.vectors.forEach(vector => {
+                    vector.groupLabel = []
+                })
+    
+                dataset.categories = dataset.extractEncodingFeatures(ranges)
+    
+                resolve(dataset)
 
-        this.getClusters(vectors, clusters => {
-            dataset.clusters = clusters
-
-            // Reset cluster label after extraction
-            dataset.vectors.forEach(vector => {
-                vector.groupLabel = []
+                // Backwards compatibility
+                if (finished) {
+                    finished(dataset)
+                }
             })
-
-            dataset.categories = dataset.extractEncodingFeatures(ranges)
-
-            finished(dataset)
         })
+
+        return promise
     }
 }

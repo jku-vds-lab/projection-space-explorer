@@ -77,6 +77,10 @@ export const ANormalized = {
 
 
     get: <T>(dict: NormalizedDictionary<T>, handle: string) => {
+        if (handle === null || handle === undefined) {
+            return undefined
+        }
+
         if (!(handle in dict.byId)) {
             throw Error(`ANormalized.get was called but the handle was not in the dictionary. This should never happen and suggests that the API was used wrong.`)
         }
@@ -86,12 +90,21 @@ export const ANormalized = {
 
 
     entries: <T>(dict: NormalizedDictionary<T>) => {
-        return Object.entries(dict.byId)
+        return dict.allIds.map(id => [id, dict.byId[id]] as [string, T])
     },
 
 
 
     forEach: <T>(dict: NormalizedDictionary<T>, callbackfn: (value: [string, T]) => void) => {
         return dict.allIds.forEach(id => callbackfn([id, dict.byId[id]]))
+    },
+
+    map: <T>(dict: NormalizedDictionary<T>, callbackfn: (value: [string, T]) => any) => {
+        return dict.allIds.map(id => callbackfn([id, dict.byId[id]]))
+    },
+
+    filter: <T>(dict: NormalizedDictionary<T>, callbackfn: (value: [string, T]) => any) => {
+        return dict.allIds.filter(id => callbackfn([id, dict.byId[id]]))
+            .map(id => [id, dict.byId[id]])
     }
 }

@@ -2,9 +2,9 @@ import "regenerator-runtime/runtime";
 import { Dataset } from "./model/Dataset";
 import * as React from "react";
 import { ConnectedProps, ConnectedComponent } from 'react-redux';
-import { CategoryOptions } from "./components/WebGLView/CategoryOptions";
 import { IProjection, IBaseProjection } from "./model/Projection";
 import { IBook } from "./model/Book";
+import { EmbeddingController } from "./components";
 export declare type BaseConfig = Partial<{
     baseUrl: string;
     preselect: Partial<{
@@ -12,16 +12,21 @@ export declare type BaseConfig = Partial<{
         initOnMount: boolean;
     }>;
 }>;
+export declare type EmbeddingMethod = {
+    id: string;
+    name: string;
+    embController?: EmbeddingController;
+};
+export declare const DEFAULT_EMBEDDINGS: {
+    id: string;
+    name: string;
+}[];
 export declare type FeatureConfig = Partial<{
-    disableEmbeddings: {
-        tsne?: boolean;
-        umap?: boolean;
-        forceatlas?: boolean;
-    };
+    embeddings: EmbeddingMethod[];
 }>;
 export declare type LayerSpec = {
     order: number;
-    component: (props: any) => JSX.Element;
+    component: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
 };
 export declare type ComponentConfig = Partial<{
     datasetTab: JSX.Element | ((onDataSelected: any) => JSX.Element) | ConnectedComponent<any, any>;
@@ -47,7 +52,6 @@ export declare type TabSpec = {
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     openTab: any;
     dataset: Dataset;
-    categoryOptions: CategoryOptions;
     channelSize: any;
     channelColor: any;
     channelBrightness: any;
@@ -64,7 +68,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     addStory: (story: any) => any;
     setActiveStory: (activeStory: IBook) => any;
     setOpenTab: (openTab: any) => any;
-    setDataset: (dataset: any) => any;
     setAdvancedColoringSelection: (value: any) => any;
     setActiveLine: (value: any) => any;
     setProjectionColumns: (projectionColumns: any) => any;
@@ -72,7 +75,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setClusterMode: (clusterMode: any) => any;
     setPathLengthMaximum: (maximum: any) => any;
     setPathLengthRange: (range: any) => any;
-    setCategoryOptions: (categoryOptions: any) => any;
     setChannelSize: (channelSize: any) => any;
     setGlobalPointSize: (size: any) => any;
     wipeState: () => any;
@@ -110,7 +112,41 @@ export declare const Application: ConnectedComponent<{
          * @param json
          */
         onDataSelected(dataset: Dataset): void;
-        finite(dataset: Dataset): void;
+        /**  finite(dataset: Dataset) {
+            const co: CategoryOptions = {
+              json: this.props.dataset.categories
+            }
+        
+            this.props.setCategoryOptions(co)
+            this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
+            this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
+        
+            this.props.saveProjection(AProjection.createProjection(dataset.vectors, "Initial Projection"))
+            this.props.updateWorkspace(AProjection.createProjection(dataset.vectors, "Initial Projection").positions)
+        
+            this.props.setGenericFingerprintAttributes(ADataset.getColumns(dataset, true).map(column => ({
+              feature: column,
+              show: dataset.columns[column].project
+            })))
+        
+            const formatRange = range => {
+              try {
+                return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
+              } catch {
+                return 'unknown'
+              }
+            }
+        
+            this.props.setProjectionColumns(ADataset.getColumns(dataset, true).map(column => ({
+              name: column,
+              checked: dataset.columns[column].project,
+              normalized: true, //TODO: after benchmarking, reverse this to true,
+              range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
+              featureLabel: dataset.columns[column].featureLabel
+            })))
+        
+            this.initializeEncodings(dataset)
+          }**/
         initializeEncodings(dataset: any): void;
         onLineSelect(algo: any, show: any): void;
         onChangeTab(newTab: any): void;
@@ -148,7 +184,41 @@ export declare const Application: ConnectedComponent<{
      * @param json
      */
     onDataSelected(dataset: Dataset): void;
-    finite(dataset: Dataset): void;
+    /**  finite(dataset: Dataset) {
+        const co: CategoryOptions = {
+          json: this.props.dataset.categories
+        }
+    
+        this.props.setCategoryOptions(co)
+        this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
+        this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
+    
+        this.props.saveProjection(AProjection.createProjection(dataset.vectors, "Initial Projection"))
+        this.props.updateWorkspace(AProjection.createProjection(dataset.vectors, "Initial Projection").positions)
+    
+        this.props.setGenericFingerprintAttributes(ADataset.getColumns(dataset, true).map(column => ({
+          feature: column,
+          show: dataset.columns[column].project
+        })))
+    
+        const formatRange = range => {
+          try {
+            return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
+          } catch {
+            return 'unknown'
+          }
+        }
+    
+        this.props.setProjectionColumns(ADataset.getColumns(dataset, true).map(column => ({
+          name: column,
+          checked: dataset.columns[column].project,
+          normalized: true, //TODO: after benchmarking, reverse this to true,
+          range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
+          featureLabel: dataset.columns[column].featureLabel
+        })))
+    
+        this.initializeEncodings(dataset)
+      }**/
     initializeEncodings(dataset: any): void;
     onLineSelect(algo: any, show: any): void;
     onChangeTab(newTab: any): void;
@@ -177,7 +247,6 @@ export declare const Application: ConnectedComponent<{
 }> & {
     openTab: any;
     dataset: Dataset;
-    categoryOptions: CategoryOptions;
     channelSize: any;
     channelColor: any;
     channelBrightness: any;
@@ -194,7 +263,6 @@ export declare const Application: ConnectedComponent<{
     addStory: (story: any) => any;
     setActiveStory: (activeStory: IBook) => any;
     setOpenTab: (openTab: any) => any;
-    setDataset: (dataset: any) => any;
     setAdvancedColoringSelection: (value: any) => any;
     setActiveLine: (value: any) => any;
     setProjectionColumns: (projectionColumns: any) => any;
@@ -202,7 +270,6 @@ export declare const Application: ConnectedComponent<{
     setClusterMode: (clusterMode: any) => any;
     setPathLengthMaximum: (maximum: any) => any;
     setPathLengthRange: (range: any) => any;
-    setCategoryOptions: (categoryOptions: any) => any;
     setChannelSize: (channelSize: any) => any;
     setGlobalPointSize: (size: any) => any;
     wipeState: () => any;

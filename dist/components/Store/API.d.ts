@@ -1,10 +1,11 @@
 import { Reducer, Store } from "redux";
+import { RootState } from "../Store/Store";
 /**
  * Main api class for PSE.
  */
-export declare class API<T> {
+export declare class API<T extends RootState> {
     store: Store<T>;
-    onStateChanged: any;
+    onStateChanged: (newState: T, difference: Partial<T>) => void;
     id: string;
     /**
      * Creates a PSE API (store).
@@ -26,4 +27,5 @@ export declare class API<T> {
      */
     partialDump(excluded: string[]): any;
     differenceMiddleware: (store: any) => (next: any) => (action: any) => any;
+    generateImage(): void;
 }

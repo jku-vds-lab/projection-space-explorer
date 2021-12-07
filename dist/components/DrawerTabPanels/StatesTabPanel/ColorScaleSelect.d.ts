@@ -1,20 +1,15 @@
+import { BaseColorScale } from "../../Ducks/ColorScalesDuck";
 /**
  * Component that lets user pick from a list of color scales.
  */
-export declare var ColorScaleSelectFull: ({ channelColor, pointColorScale, setPointColorScale }: {
+export declare var ColorScaleSelectFull: ({ channelColor }: {
     channelColor: any;
-    pointColorScale: any;
-    setPointColorScale: any;
 }) => JSX.Element;
 export declare var ColorScaleMenuItem: ({ scale }: {
-    scale: any;
+    scale: BaseColorScale;
 }) => JSX.Element;
-export declare const ColorScaleSelect: import("react-redux").ConnectedComponent<({ channelColor, pointColorScale, setPointColorScale }: {
+export declare const ColorScaleSelect: import("react-redux").ConnectedComponent<({ channelColor }: {
     channelColor: any;
-    pointColorScale: any;
-    setPointColorScale: any;
 }) => JSX.Element, Pick<{
     channelColor: any;
-    pointColorScale: any;
-    setPointColorScale: any;
 }, never>>;

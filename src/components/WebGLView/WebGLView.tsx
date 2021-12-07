@@ -33,7 +33,6 @@ import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
 import { ADataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
-import { NamedCategoricalScales } from '../Utility/Colors/NamedCategoricalScales';
 import { ObjectTypes } from '../../model/ObjectType';
 import { v4 as uuidv4 } from 'uuid';
 import { ComponentConfig } from '../../Application';
@@ -49,7 +48,6 @@ type ViewState = {
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
     vectorByShape: state.vectorByShape,
-    checkedShapes: state.checkedShapes,
     dataset: state.dataset,
     highlightedSequence: state.highlightedSequence,
     activeLine: state.activeLine,
@@ -63,11 +61,12 @@ const mapStateToProps = (state: RootState) => ({
     channelSize: state.channelSize,
     channelColor: state.channelColor,
     channelBrightness: state.channelBrightness,
-    pointColorScale: state.pointColorScale,
     stories: state.stories,
     trailSettings: state.trailSettings,
     hoverState: state.hoverState,
-    workspace: state.projections.workspace
+    workspace: state.projections.workspace,
+    colorScales: state.colorScales,
+    pointDisplay: state.pointDisplay
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -834,7 +833,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
             ADataset.calculateBounds(this.props.dataset)
 
-            
+
             this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight())
             this.camera.position.x = 0.0
             this.camera.position.y = 0.0
@@ -1045,16 +1044,16 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps: Props, prevState) {
         if (prevProps.dataset !== this.props.dataset) {
-            this.createVisualization(this.props.dataset, mappingFromScale(NamedCategoricalScales.DARK2(), { key: 'algo' }, this.props.dataset), null)
+            this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, { key: 'algo' }, this.props.dataset), null)
         }
 
-        if (prevProps.pointColorScale != this.props.pointColorScale || prevProps.stories != this.props.stories) {
+        if (prevProps.colorScales.active != this.props.colorScales.active || prevProps.stories != this.props.stories) {
 
-            if (this.props.channelColor && this.props.pointColorScale) {
+            if (this.props.channelColor && this.props.colorScales.active) {
 
-                let mapping = mappingFromScale(this.props.pointColorScale, this.props.channelColor, this.props.dataset)
+                let mapping = mappingFromScale(ANormalized.get(this.props.colorScales.scales, this.props.colorScales.active), this.props.channelColor, this.props.dataset)
                 this.props.setPointColorMapping(mapping)
                 this.particles.colorCat(this.props.channelColor, mapping)
             } else {
@@ -1171,8 +1170,8 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             this.particles.shapeCat(this.props.vectorByShape)
         }
 
-        if (prevProps.checkedShapes != this.props.checkedShapes && this.particles) {
-            this.filterPoints(this.props.checkedShapes)
+        if (prevProps.pointDisplay.checkedShapes != this.props.pointDisplay.checkedShapes && this.particles) {
+            this.filterPoints(this.props.pointDisplay.checkedShapes)
         }
 
         if (prevProps.activeLine != this.props.activeLine) {
@@ -1284,9 +1283,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
             {
-                // Layers which 
+                // Layers which are behind the webgl view
                 this.props.overrideComponents?.layers?.filter(layer => layer.order < 0).map(layer => {
-                    return React.createElement(layer.component)
+                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element)
                 })
             }
 
@@ -1300,16 +1299,19 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             }} ref={this.containerRef} tabIndex={0}></div>
 
 
-
-
-
-
             <LassoLayer ref={this.selectionRef}></LassoLayer>
 
             <MultivariateClustering
                 onInvalidate={() => { this.requestRender() }}
                 ref={this.multivariateClusterView}></MultivariateClustering>
 
+
+            {
+                // Layers which are in front of the webgl view
+                this.props.overrideComponents?.layers?.filter(layer => layer.order > 0).map(layer => {
+                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element)
+                })
+            }
 
 
 

@@ -20,6 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { FeatureConfig } from '../../../Application'
 import { updateWorkspaceAction, addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionDuck'
+import { DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../..'
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -27,7 +28,7 @@ const mapStateToProps = (state: RootState) => ({
     projectionWorker: state.projectionWorker,
     projectionOpen: state.projectionOpen,
     dataset: state.dataset,
-    projectionParams: state.projectionParams,
+    // projectionParams: state.projectionParams,
     projections: state.projections,
     workspace: state.projections.workspace
 })
@@ -35,7 +36,7 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = dispatch => ({
     setProjectionOpen: value => dispatch(setProjectionOpenAction(value)),
     setProjectionWorker: value => dispatch(setProjectionWorkerAction(value)),
-    setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
+    // setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
     setProjectionColumns: value => dispatch(setProjectionColumns(value)),
     setTrailVisibility: visibility => dispatch(setTrailVisibility(visibility)),
     addProjection: embedding => dispatch(addProjectionAction(embedding)),
@@ -57,10 +58,31 @@ type Props = PropsFromRedux & {
     webGLView?: any
 }
 
+const EmbeddingMethodButtons = (props:{setOpen, setDomainSettings, embeddings?: EmbeddingMethod[]}) => {
+    // use == instead of === to also check if it is undefined
+    if(props.embeddings == null || props.embeddings.length <= 0){
+        props.embeddings = DEFAULT_EMBEDDINGS;
+    }
+    return <Grid container direction="column" spacing={1}> 
+        {props.embeddings.map((emb) => 
+            <Grid key={emb.id} item>
+                <Button
+                    style={{
+                        width: '100%'
+                    }}
+                    variant="outlined"
+                    onClick={() => {
+                        props.setDomainSettings(emb)
+                        props.setOpen(true)
+                    }}>{emb.name}</Button>
+            </Grid>)
+        }
+    </Grid>
+}
 
 export const EmbeddingTabPanel = connector((props: Props) => {
     const [open, setOpen] = React.useState(false)
-    const [domainSettings, setDomainSettings] = React.useState('')
+    const [domainSettings, setDomainSettings] = React.useState({id:"", name:"", embController:null})
 
     const [controller, setController] = React.useState(null)
 
@@ -86,59 +108,13 @@ export const EmbeddingTabPanel = connector((props: Props) => {
     }
 
 
-
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Projection Methods'}</Typography>
         </Box>
 
         <Box paddingLeft={2} paddingRight={2}>
-            <Grid container direction="column" spacing={1}>
-                {
-                    ((props.config?.disableEmbeddings?.umap ?? false) === false) &&
-                    <Grid item>
-                        <Button
-                            style={{
-                                width: '100%'
-                            }}
-                            variant="outlined"
-                            onClick={() => {
-                                setDomainSettings('umap')
-                                setOpen(true)
-                            }}>{'UMAP'}</Button>
-                    </Grid>
-                }
-
-                {
-                    ((props.config?.disableEmbeddings?.tsne ?? false) === false) &&
-                    <Grid item>
-                        <Button
-                            style={{
-                                width: '100%'
-                            }}
-                            variant="outlined"
-                            onClick={() => {
-                                setDomainSettings('tsne')
-                                setOpen(true)
-                            }}>{'t-SNE'}</Button>
-                    </Grid>
-                }
-
-                {
-                    ((props.config?.disableEmbeddings?.forceatlas ?? false) === false) &&
-                    <Grid item>
-                        <Button
-                            style={{
-                                width: '100%'
-                            }}
-                            variant="outlined"
-                            onClick={() => {
-                                setDomainSettings('forceatlas2')
-                                setOpen(true)
-                            }}>{'ForceAtlas2'}</Button>
-                    </Grid>
-                }
-            </Grid>
+            <EmbeddingMethodButtons setOpen={setOpen} setDomainSettings={setDomainSettings} embeddings={props.config?.embeddings}></EmbeddingMethodButtons>
         </Box>
 
         <Box p={1}>
@@ -157,7 +133,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
 
         <GenericSettings
-            projectionParams={props.projectionParams}
+            // projectionParams={props.projectionParams}
             domainSettings={domainSettings}
             open={open} onClose={() => setOpen(false)}
             onStart={(params, selection) => {
@@ -169,14 +145,15 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
                 setOpen(false)
                 props.setProjectionColumns(selection)
-                props.setProjectionParams(params)
-
-                switch (domainSettings) {
+                // props.setProjectionParams(params)
+                
+                switch (domainSettings.id) {
                     case 'tsne': {
                         let controller = new TSNEEmbeddingController()
                         controller.init(props.dataset, selection, params, props.workspace)
                         controller.stepper = (Y) => {
-                            props.updateWorkspace(Y.map(y => ({ x: y[0], y: y[1] })))
+                            const workspace = Y.map(y => ({ x: y[0], y: y[1] }));
+                            props.updateWorkspace(workspace);
                         }
 
                         setController(controller)
@@ -185,17 +162,15 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
                     case 'umap': {
                         let controller = new UMAPEmbeddingController()
-                        let samples = props.dataset.vectors
 
                         controller.init(props.dataset, selection, params, props.workspace)
                         controller.stepper = (Y) => {
-                            const workspace = samples.map((sample, i) => {
+                            const workspace = props.dataset.vectors.map((sample, i) => {
                                 return {
                                     x: Y[i][0],
                                     y: Y[i][1]
                                 }
                             })
-
                             props.updateWorkspace(workspace)
                         }
 
@@ -210,7 +185,6 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                         controller.stepper = (Y) => {
                             const workspace = props.dataset.vectors.map((sample, i) => {
                                 let idx = controller.nodes[sample.__meta__.duplicateOf].__meta__.meshIndex
-
                                 return {
                                     x: Y[idx].x,
                                     y: Y[idx].y
@@ -221,6 +195,26 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                         }
 
                         setController(controller)
+                        break;
+                    }
+                    default: {
+                        // custom embedding controller
+                        if(domainSettings.embController){
+                            let controller = domainSettings.embController;
+    
+                            controller.init(props.dataset, selection, params, props.workspace)
+                            controller.stepper = (Y) => {
+                                const workspace = props.dataset.vectors.map((sample, i) => {
+                                    return {
+                                        x: Y[i][0],
+                                        y: Y[i][1]
+                                    }
+                                })
+                                props.updateWorkspace(workspace)
+                            }
+    
+                            setController(controller)
+                        }
                         break;
                     }
 

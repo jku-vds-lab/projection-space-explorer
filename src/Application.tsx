@@ -1,8 +1,7 @@
 import "regenerator-runtime/runtime";
 import { WebGLView } from './components/WebGLView/WebGLView'
 import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from "@mui/material";
-import { Dataset, ADataset, SegmentFN } from "./model/Dataset";
-import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from './components/DrawerTabPanels/StatesTabPanel/LineTreePopover'
+import { Dataset } from "./model/Dataset";
 import * as React from "react";
 import { Storytelling } from "./components/Overlays/Storytelling";
 import { ClusteringTabPanel } from "./components/DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
@@ -11,23 +10,21 @@ import { connect } from 'react-redux'
 import { StatesTabPanel } from "./components/DrawerTabPanels/StatesTabPanel/StatesTabPanel";
 import { StateSequenceDrawerRedux } from "./components/Overlays/StateSequenceDrawer";
 import { setProjectionOpenAction } from "./components/Ducks/ProjectionOpenDuck";
-import { setDatasetAction } from "./components/Ducks/DatasetDuck";
 import { setOpenTabAction } from "./components/Ducks/OpenTabDuck";
-import { ClusterMode, setClusterModeAction } from "./components/Ducks/ClusterModeDuck";
+import { setClusterModeAction } from "./components/Ducks/ClusterModeDuck";
 import { setAdvancedColoringSelectionAction } from "./components/Ducks/AdvancedColoringSelectionDuck";
-import { CategoryOptions, CategoryOptionsAPI } from "./components/WebGLView/CategoryOptions";
+import { CategoryOptionsAPI } from "./components/WebGLView/CategoryOptions";
 import { setProjectionColumns } from "./components/Ducks/ProjectionColumnsDuck";
 import { EmbeddingTabPanel } from "./components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel";
 import { CSVLoader } from "./components/Utility/Loaders/CSVLoader";
 import { setActiveLine } from "./components/Ducks/ActiveLineDuck";
 import { setPathLengthMaximum, setPathLengthRange } from "./components/Ducks/PathLengthRange";
-import { setCategoryOptions } from "./components/Ducks/CategoryOptionsDuck";
 import { setChannelSize } from "./components/Ducks/ChannelSize";
 import { setGlobalPointSize } from "./components/Ducks/GlobalPointSizeDuck";
 import { setChannelColor } from "./components/Ducks/ChannelColorDuck";
 import { DatasetTabPanel } from "./components/DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
 import { DetailsTabPanel } from "./components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
-import { AProjection, IProjection, IBaseProjection } from "./model/Projection";
+import { IProjection, IBaseProjection } from "./model/Projection";
 import { setActiveStory, addBook } from "./components/Ducks/StoriesDuck";
 import Split from 'react-split'
 import { setLineByOptions } from "./components/Ducks/SelectedLineByDuck";
@@ -35,7 +32,7 @@ import { IBook } from "./model/Book";
 import { setGlobalPointBrightness } from "./components/Ducks/GlobalPointBrightnessDuck";
 import { setChannelBrightnessSelection } from "./components/Ducks/ChannelBrightnessDuck";
 import { setGenericFingerprintAttributes } from "./components/Ducks/GenericFingerprintAttributesDuck";
-import { GroupVisualizationMode, setGroupVisualizationMode } from "./components/Ducks/GroupVisualizationMode";
+import { setGroupVisualizationMode } from "./components/Ducks/GroupVisualizationMode";
 import { HoverStateOrientation } from "./components/Ducks/HoverStateOrientationDuck";
 import { PluginRegistry } from "./components/Store/PluginScript";
 import { RootState } from "./components/Store/Store";
@@ -49,7 +46,7 @@ import { PSEIcons } from "./utils/PSEIcons";
 import VDSLogo from '../textures/vds-lab-logo-notext.svg'
 import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { DatasetEntriesAPI } from "./components/Ducks/DatasetEntriesDuck";
-import { JSONLoader } from "./components";
+import { EmbeddingController, JSONLoader } from "./components";
 import { DatasetType } from "./model/DatasetType";
 import { addProjectionAction, updateWorkspaceAction } from "./components/Ducks/ProjectionDuck";
 import { RootActions } from "./components/Store/RootActions";
@@ -80,7 +77,6 @@ function FixedHeightTabPanel(props) {
 const mapStateToProps = (state: RootState) => ({
   openTab: state.openTab,
   dataset: state.dataset,
-  categoryOptions: state.categoryOptions,
   channelSize: state.channelSize,
   channelColor: state.channelColor,
   channelBrightness: state.channelBrightness,
@@ -94,7 +90,6 @@ const mapDispatchToProps = dispatch => ({
   addStory: story => dispatch(addBook(story)),
   setActiveStory: (activeStory: IBook) => dispatch(setActiveStory(activeStory)),
   setOpenTab: openTab => dispatch(setOpenTabAction(openTab)),
-  setDataset: dataset => dispatch(setDatasetAction(dataset)),
   setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value)),
   setActiveLine: value => dispatch(setActiveLine(value)),
   setProjectionColumns: projectionColumns => dispatch(setProjectionColumns(projectionColumns)),
@@ -102,7 +97,6 @@ const mapDispatchToProps = dispatch => ({
   setClusterMode: clusterMode => dispatch(setClusterModeAction(clusterMode)),
   setPathLengthMaximum: maximum => dispatch(setPathLengthMaximum(maximum)),
   setPathLengthRange: range => dispatch(setPathLengthRange(range)),
-  setCategoryOptions: categoryOptions => dispatch(setCategoryOptions(categoryOptions)),
   setChannelSize: channelSize => dispatch(setChannelSize(channelSize)),
   setGlobalPointSize: size => dispatch(setGlobalPointSize(size)),
   wipeState: () => dispatch(RootActions.reset()),
@@ -130,17 +124,24 @@ export type BaseConfig = Partial<{
   }>
 }>
 
+export type EmbeddingMethod = {
+  id: string,
+  name: string,
+  embController?: EmbeddingController
+}
+export const DEFAULT_EMBEDDINGS = [{id: "umap", name: "UMAP"}, {id: "tsne", name:"t-SNE"}, {id: "forceatlas2", name: "ForceAtlas2"}];
 export type FeatureConfig = Partial<{
-  disableEmbeddings: {
-    tsne?: boolean,
-    umap?: boolean,
-    forceatlas?: boolean
-  }
+  // disableEmbeddings: {
+  //   tsne?: boolean,
+  //   umap?: boolean,
+  //   forceatlas?: boolean
+  // }
+  embeddings: EmbeddingMethod[] //array can either contain strings of predefined embedding methods, or functions
 }>
 
 export type LayerSpec = {
   order: number
-  component: (props: any) => JSX.Element
+  component: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>
 }
 
 export type ComponentConfig = Partial<{
@@ -232,33 +233,10 @@ export const Application = connector(class extends React.Component<Props, any> {
    */
   onDataSelected(dataset: Dataset) {
     this.props.loadDataset(dataset)
-    return;
-
-    // Wipe old state
-    this.props.wipeState()
-
-    // Dispose old view
-    this.threeRef.current.disposeScene()
-
-    this.props.setClusterMode(dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate)
-
-    // if(!frontend_utils.CHEM_PROJECT)
-    this.props.setGroupVisualizationMode(dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull)
-
-    // Set new dataset as variable
-    this.props.setDataset(dataset)
-
-    this.finite(dataset)
-
-    //this.props.setVectors(dataset.vectors)
-
-    this.props.setLineByOptions(ADataset.getColumns(dataset))
-
-    setTimeout(() => this.threeRef.current.requestRender(), 500)
   }
 
 
-  finite(dataset: Dataset) {
+/**  finite(dataset: Dataset) {
     const co: CategoryOptions = {
       json: this.props.dataset.categories
     }
@@ -292,14 +270,13 @@ export const Application = connector(class extends React.Component<Props, any> {
     })))
 
     this.initializeEncodings(dataset)
-  }
-
+  }**/
 
 
   initializeEncodings(dataset) {
     this.threeRef.current.particles.shapeCat(null)
 
-    var defaultSizeAttribute = CategoryOptionsAPI.getAttribute(this.props.categoryOptions, 'size', 'multiplicity', 'sequential')
+    var defaultSizeAttribute = CategoryOptionsAPI.getAttribute(dataset.categories, 'size', 'multiplicity', 'sequential')
 
     if (defaultSizeAttribute) {
       this.props.setGlobalPointSize([1, 2])
@@ -315,14 +292,14 @@ export const Application = connector(class extends React.Component<Props, any> {
 
 
 
-    var defaultColorAttribute = CategoryOptionsAPI.getAttribute(this.props.categoryOptions, "color", "algo", "categorical")
+    var defaultColorAttribute = CategoryOptionsAPI.getAttribute(dataset.categories, "color", "algo", "categorical")
     if (defaultColorAttribute) {
       this.props.setChannelColor(defaultColorAttribute)
     } else {
       this.props.setChannelColor(null)
     }
 
-    var defaultBrightnessAttribute = CategoryOptionsAPI.getAttribute(this.props.categoryOptions, "transparency", "age", "sequential")
+    var defaultBrightnessAttribute = CategoryOptionsAPI.getAttribute(dataset.categories, "transparency", "age", "sequential")
 
     if (defaultBrightnessAttribute) {
       this.props.setGlobalPointBrightness([0.25, 1])

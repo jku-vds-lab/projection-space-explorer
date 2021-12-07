@@ -9,16 +9,14 @@ import projectionColumns from "../Ducks/ProjectionColumnsDuck";
 import displayMode from "../Ducks/DisplayModeDuck";
 import lineBrightness from "../Ducks/LineBrightnessDuck";
 import activeLine from "../Ducks/ActiveLineDuck";
-import stories, { setStories, IStorytelling, AStorytelling } from "../Ducks/StoriesDuck";
+import stories, { IStorytelling, AStorytelling } from "../Ducks/StoriesDuck";
 import currentAggregation from "../Ducks/AggregationDuck";
 import { viewTransform } from "../Ducks/ViewTransformDuck";
 import projectionParams from "../Ducks/ProjectionParamsDuck";
-import checkedShapes from "../Ducks/CheckedShapesDuck";
 import projectionWorker from "../Ducks/ProjectionWorkerDuck";
 import vectorByShape from "../Ducks/VectorByShapeDuck";
 import selectedVectorByShape from "../Ducks/SelectedVectorByShapeDuck";
 import pathLengthRange from '../Ducks/PathLengthRange';
-import categoryOptions from '../Ducks/CategoryOptionsDuck';
 import channelSize from '../Ducks/ChannelSize';
 import channelColor from '../Ducks/ChannelColorDuck';
 import globalPointSize from '../Ducks/GlobalPointSizeDuck';
@@ -39,10 +37,12 @@ import datasetEntries from '../Ducks/DatasetEntriesDuck';
 import embeddings from '../Ducks/ProjectionDuck';
 import { RootActionTypes } from './RootActions';
 import { Dataset, ADataset, SegmentFN, AProjection, IProjection, IBaseProjection } from '../../model';
-import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks } from '../DrawerTabPanels/StatesTabPanel/LineTreePopover';
 import { CategoryOptions, CategoryOptionsAPI } from '../WebGLView/CategoryOptions';
 import { ANormalized, NormalizedDictionary } from '../Utility/NormalizedState';
 import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/graphs';
+import colorScales, { BaseColorScale } from '../Ducks/ColorScalesDuck';
+import clone = require('fast-clone');
+import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 
 const allReducers = {
   currentAggregation: currentAggregation,
@@ -50,7 +50,7 @@ const allReducers = {
   openTab: openTab,
   selectedVectorByShape: selectedVectorByShape,
   vectorByShape: vectorByShape,
-  checkedShapes: checkedShapes,
+  pointDisplay: PointDisplayReducer,
   activeLine: activeLine,
   dataset: dataset,
   highlightedSequence: highlightedSequence,
@@ -64,7 +64,6 @@ const allReducers = {
   displayMode: displayMode,
   lineBrightness: lineBrightness,
   pathLengthRange: pathLengthRange,
-  categoryOptions: categoryOptions,
   channelSize: channelSize,
   channelColor: channelColor,
   channelBrightness: channelBrightness,
@@ -82,7 +81,8 @@ const allReducers = {
   genericFingerprintAttributes: genericFingerprintAttributes,
   hoverStateOrientation: hoverStateOrientation,
   detailView: detailView,
-  datasetEntries: datasetEntries
+  datasetEntries: datasetEntries,
+  colorScales: colorScales
 }
 
 const appReducer = combineReducers(allReducers)
@@ -100,10 +100,7 @@ function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
 
   //this.finite(dataset)
 
-  const categoryOptions: CategoryOptions = {
-    json: dataset.categories
-  }
-
+  const categoryOptions = dataset.categories
 
   const pathLengthRange = {
     range: [0, SegmentFN.getMaxPathLength(dataset)],
@@ -205,7 +202,14 @@ function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
     stories = AStorytelling.createEmpty()
   }
 
+  var colorScalesState = clone(colorScales())
+  if (channelColor) {
+    const handle = ANormalized.entries<BaseColorScale>(colorScalesState.scales).find(([key, value]) => {
+      return value.type === channelColor.type
+    })[0]
 
+    colorScalesState.active = handle
+  }
 
   return {
     clusterMode,
@@ -219,9 +223,9 @@ function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
     channelBrightness,
     channelColor,
     globalPointBrightness,
-    categoryOptions,
     stories,
-    dataset: dataset
+    dataset: dataset,
+    colorScales: colorScalesState
   }
 }
 

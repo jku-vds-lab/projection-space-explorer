@@ -1,12 +1,7 @@
-import { LinearColorScale } from "./LinearColorScale";
+import { SchemeColor } from "./SchemeColor";
 import { ContinuousMapping, DiscreteMapping } from "./Mapping";
+import { BaseColorScale } from "../../Ducks/ColorScalesDuck";
 export declare class ScaleUtil {
-    static mapScale(scale: LinearColorScale, value: any): any;
-    static mappingFromScale(scale: LinearColorScale, attribute: any, dataset: any): DiscreteMapping | ContinuousMapping;
-}
-export declare class ContinuosScale extends LinearColorScale {
-    constructor(stops: any);
-}
-export declare class DiscreteScale extends LinearColorScale {
-    constructor(stops: any);
+    static mapScale(scale: BaseColorScale, value: any): SchemeColor;
+    static mappingFromScale(scale: BaseColorScale, attribute: any, dataset: any): DiscreteMapping | ContinuousMapping;
 }

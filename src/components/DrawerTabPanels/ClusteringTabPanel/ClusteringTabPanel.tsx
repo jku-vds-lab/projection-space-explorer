@@ -26,7 +26,6 @@ const mapStateToProps = (state: RootState) => ({
     stories: state.stories,
     displayMode: state.displayMode,
     dataset: state.dataset,
-    categoryOptions: state.categoryOptions,
     currentAggregation: state.currentAggregation,
     groupVisualizationMode: state.groupVisualizationMode,
     workspace: state.projections.workspace
@@ -60,7 +59,6 @@ const ContextPaper = styled(Paper)`
 
 
 export const ClusteringTabPanel = connector(({
-    categoryOptions,
     setChannelColor,
     setStories,
     dataset,
@@ -75,7 +73,8 @@ export const ClusteringTabPanel = connector(({
     groupVisualizationMode,
     setGroupVisualizationMode,
     setSelectedClusters }: Props) => {
-
+    
+    const categoryOptions = dataset?.categories
 
 
     /**function toggleClusters() {

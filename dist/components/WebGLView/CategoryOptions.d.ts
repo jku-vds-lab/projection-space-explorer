@@ -10,6 +10,4 @@ export declare class CategoryOptionsAPI {
  * size by (att1, att2...)
  * brightness by ...
  */
-export declare type CategoryOptions = {
-    json: any;
-};
+export declare type CategoryOptions = any[];

@@ -1,32 +1,27 @@
 import React = require("react");
 import { List, ListItem, Menu, MenuItem } from "@mui/material";
-import { connect } from 'react-redux'
-import { defaultScalesForAttribute } from "../../Utility/Colors/colors";
-import { setPointColorScale } from "../../Ducks/PointColorScaleDuck";
+import { connect, useSelector, useDispatch } from 'react-redux'
+import { RootState } from "../../Store";
+import { ANormalized, NormalizedDictionary } from "../..";
+import { BaseColorScale, ColorScalesActions, APalette } from "../../Ducks/ColorScalesDuck";
+import { dispatch } from "d3";
 
 /**
  * Component that lets user pick from a list of color scales.
  */
-export var ColorScaleSelectFull = ({ channelColor, pointColorScale, setPointColorScale }) => {
+export var ColorScaleSelectFull = ({ channelColor }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [definedScales, setDefinedScales] = React.useState([])
     
-    React.useEffect(() => {
-        if (channelColor) {
-            let a = defaultScalesForAttribute(channelColor)
-            setDefinedScales(a)
-            setPointColorScale(a[0])
-        } else {
-            setDefinedScales([])
-            setPointColorScale(null)
-        }
-    }, [channelColor])
+    const scales = useSelector<RootState, NormalizedDictionary<BaseColorScale>>((state) => state.colorScales.scales)
+    const active = useSelector<RootState, BaseColorScale>((state) => ANormalized.get(state.colorScales.scales, state.colorScales.active))
+
+    const dispatch = useDispatch()
 
     const handleClickListItem = event => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleMenuItemClick = (event, index) => {
+    const handleMenuItemClick = () => {
         setAnchorEl(null);
     };
 
@@ -34,10 +29,10 @@ export var ColorScaleSelectFull = ({ channelColor, pointColorScale, setPointColo
         setAnchorEl(null);
     };
 
-
-    if (!channelColor || definedScales.length == 0 || !pointColorScale) {
+    if (!channelColor || !scales) {
         return null
     }
+
 
     return (
         <div>
@@ -49,7 +44,7 @@ export var ColorScaleSelectFull = ({ channelColor, pointColorScale, setPointColo
                     aria-label="when device is locked"
                     onClick={handleClickListItem}
                 >
-                    <ColorScaleMenuItem scale={pointColorScale}></ColorScaleMenuItem>
+                    <ColorScaleMenuItem scale={active}></ColorScaleMenuItem>
 
                 </ListItem>
             </List>
@@ -60,16 +55,16 @@ export var ColorScaleSelectFull = ({ channelColor, pointColorScale, setPointColo
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {definedScales.map((scale, index) => (
+                {ANormalized.entries(scales).filter(([key, value]) => value.type === channelColor.type).map(([key, value]) => (
                     <MenuItem
-                        key={index}
-                        selected={pointColorScale == scale}
+                        key={key}
+                        selected={active === value}
                         onClick={(event) => {
-                            setPointColorScale(definedScales[index])
-                            handleMenuItemClick(event, index)
+                            dispatch(ColorScalesActions.pickScale(key))
+                            handleMenuItemClick()
                         }}
                     >
-                        <ColorScaleMenuItem scale={scale}></ColorScaleMenuItem>
+                        <ColorScaleMenuItem scale={value}></ColorScaleMenuItem>
                     </MenuItem>
                 ))}
             </Menu>
@@ -77,23 +72,23 @@ export var ColorScaleSelectFull = ({ channelColor, pointColorScale, setPointColo
     )
 }
 
-export var ColorScaleMenuItem = ({ scale }) => {
-    if (scale.type == "continuous") {
-        return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map(stop => stop.hex).join(',')})` }}>
+export var ColorScaleMenuItem = ({ scale }: { scale: BaseColorScale }) => {
+    const palette = APalette.getByName(scale.palette)
+
+    if (scale.type == 'sequential') {
+        return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${palette.map(stop => stop.hex).join(',')})` }}>
         </div>
     } else {
-        return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${scale.stops.map((stop, index) => `${stop.hex} ${(index / scale.stops.length) * 100.0}%, ${stop.hex} ${((index + 1) / scale.stops.length) * 100.0}%`).join(',')})` }}>
+        return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${palette.map((stop, index) => `${stop.hex} ${(index / palette.length) * 100.0}%, ${stop.hex} ${((index + 1) / palette.length) * 100.0}%`).join(',')})` }}>
         </div>
     }
 }
 
 const mapStateToProps = state => ({
-    channelColor: state.channelColor,
-    pointColorScale: state.pointColorScale
+    channelColor: state.channelColor
 })
 
 const mapDispatchToProps = dispatch => ({
-    setPointColorScale: value => dispatch(setPointColorScale(value))
 })
 
 export const ColorScaleSelect = connect(mapStateToProps, mapDispatchToProps)(ColorScaleSelectFull)

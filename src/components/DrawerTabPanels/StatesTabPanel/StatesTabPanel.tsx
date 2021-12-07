@@ -1,10 +1,9 @@
-import { connect, ConnectedProps } from 'react-redux'
+import { connect, ConnectedProps, useDispatch } from 'react-redux'
 import * as React from 'react'
 import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, FormHelperText, createFilterOptions, Autocomplete, TextField } from '@mui/material'
 import { ShapeLegend } from './ShapeLegend'
 import { setSelectedVectorByShapeAction } from "../../Ducks/SelectedVectorByShapeDuck"
 import { setVectorByShapeAction } from "../../Ducks/VectorByShapeDuck"
-import { setCheckedShapesAction } from "../../Ducks/CheckedShapesDuck"
 import { RootState } from '../../Store/Store'
 import { setSelectedLineBy } from '../../Ducks/SelectedLineByDuck'
 import { setChannelBrightnessSelection } from '../../Ducks/ChannelBrightnessDuck'
@@ -23,6 +22,8 @@ import { PathBrightnessSlider } from './PathBrightnessSlider'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions'
 import { makeStyles } from '@mui/styles'
+import { ColorScalesActions } from '../../Ducks/ColorScalesDuck'
+import { PointDisplayActions } from '../../Ducks/PointDisplayDuck'
 
 
 
@@ -34,7 +35,6 @@ const mapStateToProps = (state: RootState) => ({
     selectedLineBy: state.selectedLineBy,
     vectorByShape: state.vectorByShape,
     dataset: state.dataset,
-    categoryOptions: state.categoryOptions,
     channelBrightness: state.channelBrightness,
     channelSize: state.channelSize,
     channelColor: state.channelColor
@@ -43,13 +43,11 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = dispatch => ({
     setSelectedVectorByShape: selectedVectorByShape => dispatch(setSelectedVectorByShapeAction(selectedVectorByShape)),
     setVectorByShape: vectorByShape => dispatch(setVectorByShapeAction(vectorByShape)),
-    setCheckedShapes: checkedShapes => dispatch(setCheckedShapesAction(checkedShapes)),
     setSelectedLineBy: lineBy => dispatch(setSelectedLineBy(lineBy)),
     setChannelBrightness: value => dispatch(setChannelBrightnessSelection(value)),
     setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
     setChannelSize: value => dispatch(setChannelSize(value)),
     setGlobalPointSize: value => dispatch(setGlobalPointSize(value)),
-    setChannelColor: value => dispatch(setChannelColor(value)),
     setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value))
 })
 
@@ -129,8 +127,6 @@ export const StatesTabPanelFull = ({
     dataset,
     setSelectedVectorByShape,
     setVectorByShape,
-    setCheckedShapes,
-    categoryOptions,
     selectedLineBy,
     setSelectedLineBy,
     webGlView,
@@ -141,12 +137,13 @@ export const StatesTabPanelFull = ({
     setChannelSize,
     setGlobalPointSize,
     channelColor,
-    setChannelColor,
     setAdvancedColoringSelection
 }: Props) => {
     if (dataset == null) {
         return null;
     }
+
+    const dispatch = useDispatch()
 
     const classes = useStyles();
 
@@ -155,6 +152,8 @@ export const StatesTabPanelFull = ({
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
+
+    const categoryOptions = dataset?.categories
 
     const points_box = <Box sx={{
         '& .MuiAutocomplete-root': { p: 2, width: '100%', boxSizing: 'border-box' },
@@ -181,7 +180,7 @@ export const StatesTabPanelFull = ({
                 dataset={dataset}
                 category={vectorByShape}
                 onChange={(checkboxes) => {
-                    setCheckedShapes(checkboxes)
+                    dispatch(PointDisplayActions.setCheckedShapes(checkboxes))
                 }}></ShapeLegend>
         </Grid>
 
@@ -244,7 +243,9 @@ export const StatesTabPanelFull = ({
                     }
 
                     setAdvancedColoringSelection(new Array(10000).fill(true))
-                    setChannelColor(attribute)
+                    dispatch(setChannelColor(attribute))
+                    dispatch(ColorScalesActions.initScaleByType(attribute.type))
+                    
                 }}></SelectFeatureComponent>
                 :
                 <div></div>

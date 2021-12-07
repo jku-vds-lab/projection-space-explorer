@@ -1,9 +1,10 @@
 import { SchemeColor } from ".";
 import { ShallowSet } from "../ShallowSet";
 import { ScaleUtil } from "./ContinuosScale";
+import { BaseColorScale, APalette } from "../../Ducks/ColorScalesDuck";
 
 export abstract class Mapping {
-  scale: any;
+  scale: BaseColorScale;
 
   constructor(scale) {
     this.scale = scale;
@@ -27,7 +28,8 @@ export class DiscreteMapping extends Mapping {
   }
 
   map(value) {
-    return ScaleUtil.mapScale(this.scale, this.values.indexOf(value) % this.scale.stops.length);
+    const palette = APalette.getByName(this.scale.palette)
+    return ScaleUtil.mapScale(this.scale, this.values.indexOf(value) % palette.length);
   }
 }
 
@@ -43,9 +45,12 @@ export class ContinuousMapping extends Mapping {
 
   map(value): SchemeColor {
     if (this.range.max == this.range.min) {
-      return this.scale.map(0);
+      const palette = APalette.getByName(this.scale.palette)
+      return palette[0];
     }
+    
     var normalized = (value - this.range.min) / (this.range.max - this.range.min);
+
     return ScaleUtil.mapScale(this.scale, normalized);
   }
 }
