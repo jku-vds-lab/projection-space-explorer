@@ -101,6 +101,6 @@ typings/
 /dist/datasets/reaction_optimization
 
 # chess datasets and projections
-"/notebooks/lc0 misc/umap_outputs/"
-"/notebooks/lc0 misc/games/"
-"/notebooks/alphazero games/"
+notebooks/lc0 misc/umap_outputs/
+notebooks/lc0 misc/games/
+notebooks/lc0 misc/alphazero games/
