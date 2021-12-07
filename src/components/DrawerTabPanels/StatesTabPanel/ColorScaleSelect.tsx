@@ -73,7 +73,7 @@ export var ColorScaleSelectFull = ({ channelColor }) => {
 }
 
 export var ColorScaleMenuItem = ({ scale }: { scale: BaseColorScale }) => {
-    const palette = APalette.getByName(scale.palette)
+    const palette = typeof scale.palette === 'string' ? APalette.getByName(scale.palette) : scale.palette
 
     if (scale.type == 'sequential') {
         return <div style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${palette.map(stop => stop.hex).join(',')})` }}>

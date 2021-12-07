@@ -18,7 +18,7 @@ export declare const ColorScalesActions: {
     initScaleByType: (type: string) => (dispatch: any, getState: any) => any;
 };
 declare type Action = PickAction;
-declare type Palette = 'dark2' | 'accent' | 'paired';
+declare type Palette = 'dark2' | 'accent' | 'paired' | SchemeColor[];
 /**
  * Type for embedding state slice
  */

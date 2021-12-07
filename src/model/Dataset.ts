@@ -117,47 +117,54 @@ export class ADataset {
 
         }
 
+
         dataset.vectors.forEach(vector => {
             var data = [];
             projectionColumns.forEach(entry => {
                 let column = entry.name;
-                if (dataset.columns[column].isNumeric) {
-                    if (dataset.columns[column].range && entry.normalized) {
-                        if(normalizationMethod === NormalizationMethod.STANDARDIZE){ // map to 0 mean and unit standarddeviation
-                            let m, s;
-                            
-                            if (column in lookup) {
-                                m = lookup[column].mean
-                                s = lookup[column].std
-                            } else {
-                                m = mean(dataset.vectors.map(v => +v[column]))
-                                s = std(dataset.vectors.map(v => +v[column]))
-    
-                                lookup[column] = {
-                                    mean: m,
-                                    std: s
+                if (dataset.columns[column].featureType === FeatureType.Array) {
+                    console.log(vector[column])
+                    const array = JSON.parse(vector[column])
+                    data.push(...array)
+                } else {
+                    if (dataset.columns[column].isNumeric) {
+                        if (dataset.columns[column].range && entry.normalized) {
+                            if(normalizationMethod === NormalizationMethod.STANDARDIZE){ // map to 0 mean and unit standarddeviation
+                                let m, s;
+                                
+                                if (column in lookup) {
+                                    m = lookup[column].mean
+                                    s = lookup[column].std
+                                } else {
+                                    m = mean(dataset.vectors.map(v => +v[column]))
+                                    s = std(dataset.vectors.map(v => +v[column]))
+        
+                                    lookup[column] = {
+                                        mean: m,
+                                        std: s
+                                    }
                                 }
+        
+                                if(s <= 0) // when all values are equal in a column, the standard deviation can be 0, which would lead to an error
+                                    s = 1
+        
+                                data.push((+vector[column] - m) / s);
+    
+                            }else{ // map between [0;1]
+                                let div = dataset.columns[column].range["max"]-dataset.columns[column].range["min"];
+                                div = div > 0 ? div : 1;
+                                data.push((+vector[column]-dataset.columns[column].range["min"])/div);
                             }
-    
-                            if(s <= 0) // when all values are equal in a column, the standard deviation can be 0, which would lead to an error
-                                s = 1
-    
-                            data.push((+vector[column] - m) / s);
-
-                        }else{ // map between [0;1]
-                            let div = dataset.columns[column].range["max"]-dataset.columns[column].range["min"];
-                            div = div > 0 ? div : 1;
-                            data.push((+vector[column]-dataset.columns[column].range["min"])/div);
+                        } else {
+                            data.push(+vector[column]);
                         }
                     } else {
-                        data.push(+vector[column]);
-                    }
-                } else {
-                    if(encodingMethod === EncodingMethod.ONEHOT){ // Non numeric data can be converted using one-hot encoding
-                        let hot_encoded = oneHot(dataset.columns[column].distinct.indexOf(vector[column]), dataset.columns[column].distinct.length);
-                        data = data.concat(hot_encoded);
-                    }else{ // or just be integer encoded
-                        data.push(dataset.columns[column].distinct.indexOf(vector[column]));
+                        if(encodingMethod === EncodingMethod.ONEHOT){ // Non numeric data can be converted using one-hot encoding
+                            let hot_encoded = oneHot(dataset.columns[column].distinct.indexOf(vector[column]), dataset.columns[column].distinct.length);
+                            data = data.concat(hot_encoded);
+                        }else{ // or just be integer encoded
+                            data.push(dataset.columns[column].distinct.indexOf(vector[column]));
+                        }
                     }
                 }
             });
@@ -382,12 +389,16 @@ export class Dataset {
             if (columnName in ranges) {
                 this.columns[columnName].range = ranges[columnName];
             } else {
-                if (this.vectors.find(vector => isNaN(vector[columnName])) || this.columns[columnName].featureType === FeatureType.Categorical) {
-                    this.columns[columnName].isNumeric = false;
-                    this.columns[columnName].distinct = Array.from(new Set([...this.vectors.map(vector => vector[columnName])]));
+                if (this.columns[columnName].featureType === FeatureType.Array) {
+                    this.columns[columnName].isNumeric = false
                 } else {
-                    this.columns[columnName].isNumeric = true;
-                    this.columns[columnName].range = this.inferRangeForAttribute(columnName);
+                    if (this.vectors.find(vector => isNaN(vector[columnName])) || this.columns[columnName].featureType === FeatureType.Categorical) {
+                        this.columns[columnName].isNumeric = false;
+                        this.columns[columnName].distinct = Array.from(new Set([...this.vectors.map(vector => vector[columnName])]));
+                    } else {
+                        this.columns[columnName].isNumeric = true;
+                        this.columns[columnName].range = this.inferRangeForAttribute(columnName);
+                    }
                 }
             }
         });

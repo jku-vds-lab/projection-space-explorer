@@ -8,7 +8,7 @@ var d3v5 = require('d3v5');
 export class ScaleUtil {
 
   static mapScale(scale: BaseColorScale, value) {
-    const palette = APalette.getByName(scale.palette)
+    const palette = typeof scale.palette === 'string' ? APalette.getByName(scale.palette) : scale.palette
 
     switch (scale.type) {
       case 'categorical':
