@@ -268,6 +268,16 @@ export class DatasetDatabase {
                     type: DatasetType.Chess
                 },
                 {
+                    display: "Chess: Lichess, metadata, UMAP",
+                    path: "datasets/chess/lichess_umap.csv",
+                    type: DatasetType.Chess
+                },
+                {
+                    display: "Chess: Lichess, metadata, t-SNE",
+                    path: "datasets/chess/lichess_tsne.csv",
+                    type: DatasetType.Chess
+                },
+                {
                     display: "Rubik: 1x2 Different Origins",
                     path: "datasets/rubik/cube1x2_different_origins.csv",
                     type: DatasetType.Rubik

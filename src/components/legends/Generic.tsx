@@ -21,6 +21,7 @@ import { DatasetType } from "../Utility/Data/DatasetType";
 import { Vect } from "../Utility/Data/Vect";
 import { Dataset } from "../Utility/Data/Dataset";
 import { ChemLegendParent } from "./ChemDetail/ChemDetail";
+import clone = require('fast-clone')
 
 type GenericLegendProps = {
     type: DatasetType
@@ -28,6 +29,33 @@ type GenericLegendProps = {
     aggregate: boolean
     hoverUpdate?
     scale?: number
+}
+
+function dropCoordinates(vectors) {
+    // var array1=['a','b','c','d','e','f','g','h'];
+    // var array2=['1','2','3','4','5','6','7','8'];
+    // const coords = (array1.flatMap(d => array2.map(v => d + v)))
+
+    // vectors.forEach(function(obj, i) {
+    //     for (const i in coords) {
+    //         obj[coords[i]] && delete obj[coords[i]];
+    //     }
+    // });
+    // console.log('vectors :>> ', vectors);
+    // return vectors
+
+    const map = vectors.map(x => {
+        const { a1, a2, a3, a4, a5, a6, a7, a8,
+                b1, b2, b3, b4, b5, b6, b7, b8,
+                c1, c2, c3, c4, c5, c6, c7, c8,
+                d1, d2, d3, d4, d5, d6, d7, d8,
+                e1, e2, e3, e4, e5, e6, e7, e8,
+                f1, f2, f3, f4, f5, f6, f7, f8,
+                g1, g2, g3, g4, g5, g6, g7, g8,
+                h1, h2, h3, h4, h5, h6, h7, h8, ...rest} = x;
+        return rest
+    });
+    return map
 }
 
 //shows single and aggregated view
@@ -40,7 +68,9 @@ export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: G
         case DatasetType.Neural:
             return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
         case DatasetType.Chess:
-            return <ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint>
+            // console.log('vectors :>> ', vectors);
+
+            return <div><ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
         case DatasetType.Cohort_Analysis:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Trrack:
