@@ -22,10 +22,10 @@ export declare type EmbeddingMethod = {
     };
     embController?: EmbeddingController;
 };
-export declare const DEFAULT_TSNE_SETTINGS: {
+export declare const DEFAULT_UMAP_SETTINGS: {
     nneighbors: boolean;
 };
-export declare const DEFAULT_UMAP_SETTINGS: {
+export declare const DEFAULT_TSNE_SETTINGS: {
     perplexity: boolean;
     learningRate: boolean;
 };

@@ -130,8 +130,8 @@ export type EmbeddingMethod = {
   settings: {perplexity?: boolean, learningRate?: boolean, nneighbors?: boolean}
   embController?: EmbeddingController,
 }
-export const DEFAULT_TSNE_SETTINGS = {nneighbors:true}
-export const DEFAULT_UMAP_SETTINGS = {perplexity:true, learningRate:true}
+export const DEFAULT_UMAP_SETTINGS = {nneighbors:true}
+export const DEFAULT_TSNE_SETTINGS = {perplexity:true, learningRate:true}
 export const DEFAULT_FA2_SETTINGS = {}
 export const DEFAULT_EMBEDDINGS = [
   {id: "umap", name: "UMAP", settings: DEFAULT_UMAP_SETTINGS}, 

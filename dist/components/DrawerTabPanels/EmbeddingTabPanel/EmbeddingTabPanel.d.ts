@@ -3,11 +3,6 @@ import { Dataset } from "../../../model/Dataset";
 import { IProjection, IBaseProjection } from '../../../model/Projection';
 import { FeatureConfig } from '../../../Application';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    currentAggregation: {
-        aggregation: number[];
-        selectedClusters: string[];
-        source: "sample" | "cluster";
-    };
     stories: import("../../..").IStorytelling;
     projectionWorker: Worker;
     projectionOpen: any;

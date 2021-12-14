@@ -1,9 +1,9 @@
 
 
 export enum DistanceMetric{
-    EUCLIDEAN,
-    JACCARD,
-    GOWER,
-    COSINE,
-    MANHATTAN
+    EUCLIDEAN="euclidean",
+    JACCARD="jaccard",
+    GOWER="gower",
+    COSINE="cosine",
+    MANHATTAN="manhattan"
 }

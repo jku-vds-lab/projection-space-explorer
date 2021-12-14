@@ -7,7 +7,6 @@ import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
 import { Dataset } from "../../../model/Dataset"
 import { GenericSettings } from './GenericSettings'
 import { RootState } from '../../Store/Store'
-import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck'
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck'
 import { TSNEEmbeddingController } from './TSNEEmbeddingController'
 import { UMAPEmbeddingController } from './UMAPEmbeddingController'
@@ -23,7 +22,7 @@ import { updateWorkspaceAction, addProjectionAction, deleteProjectionAction } fr
 import { DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../..'
 
 const mapStateToProps = (state: RootState) => ({
-    currentAggregation: state.currentAggregation,
+    // currentAggregation: state.currentAggregation,
     stories: state.stories,
     projectionWorker: state.projectionWorker,
     projectionOpen: state.projectionOpen,
@@ -203,14 +202,15 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                             let controller = domainSettings.embController;
     
                             controller.init(props.dataset, selection, params, props.workspace)
-                            controller.stepper = (Y) => {
-                                const workspace = props.dataset.vectors.map((sample, i) => {
-                                    return {
-                                        x: Y[i][0],
-                                        y: Y[i][1]
-                                    }
-                                })
-                                props.updateWorkspace(workspace)
+                            controller.stepper = (Y:IBaseProjection) => {
+                                // const workspace = props.dataset.vectors.map((sample, i) => {
+                                //     return {
+                                //         x: Y[i].x,
+                                //         y: Y[i].y
+                                //     }
+                                // })
+                                // props.updateWorkspace(workspace)
+                                props.updateWorkspace(Y)
                             }
     
                             setController(controller)
