@@ -68,9 +68,7 @@ export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: G
         case DatasetType.Neural:
             return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
         case DatasetType.Chess:
-            // console.log('vectors :>> ', vectors);
-
-            return <div><ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
+            return <div style={{display: 'flex', flexDirection: 'column'}}><ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
         case DatasetType.Cohort_Analysis:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Trrack:
