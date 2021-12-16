@@ -215,6 +215,7 @@ const GenericSettingsComp = ({ domainSettings, open, onClose, onStart, projectio
         <DialogActions>
             <Button color="primary" onClick={onClose}>Cancel</Button>
             <Button color="primary" onClick={() => {
+                tempProjectionParams.method = domainSettings.name
                 setProjectionParams(tempProjectionParams)
                 onStart(tempProjectionParams, selection)
             }}>Start</Button>

@@ -1,4 +1,4 @@
 export declare enum EncodingMethod {
     ONEHOT = "onehot",
-    NUMERIC = "onehot"
+    NUMERIC = "numeric"
 }

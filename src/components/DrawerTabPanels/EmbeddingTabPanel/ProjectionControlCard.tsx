@@ -7,6 +7,7 @@ import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from "../../Store/Store";
 import SettingsBackupRestoreSharp from '@mui/icons-material/SettingsBackupRestoreSharp';
 import { makeStyles } from "@mui/styles";
+import { DEFAULT_EMBEDDINGS, EmbeddingMethod } from "../../..";
 
 /**
  * Styles for the projection card that allows to stop/resume projection steps.
@@ -70,10 +71,12 @@ export var ProjectionControlCard = connector(({
     onClose }: Props) => {
     if (controller == null) return null
 
+
     const classes = useStylesMedia();
 
 
     const [step, setStep] = React.useState(0)
+    const [msg, setMsg] = React.useState("")
     const ref = React.useRef(step)
 
     if(step == 0){
@@ -85,8 +88,13 @@ export var ProjectionControlCard = connector(({
 
     const [computing, setComputing] = React.useState(true)
 
-    controller.notifier = () => {
-        updateState(ref.current + 1)
+    controller.notifier = (step?:number, msg?:string) => {
+        setMsg(msg);
+        var new_step = ref.current + 1;
+        if(step != null && !isNaN(step)){ // checks if step is not null or undefined or nan
+            new_step = step
+        }
+        updateState(new_step)
     }
 
     React.useEffect(() => {
@@ -100,18 +108,12 @@ export var ProjectionControlCard = connector(({
         setStep(newState);
     }
 
-    const titles = {
-        forceatlas2: 'ForceAtlas2',
-        umap: 'UMAP',
-        tsne: 't-SNE'
-    }
-
     const genlabel = (step) => {
         if (step == 0) {
-            return <div>Initializing Projection ...</div>
+            return <div><div>Initializing Projection ...</div>{msg && <div>Server: {msg}</div>}</div>
         }
         const percent = Math.min((step / projectionParams.iterations) * 100, 100).toFixed(1)
-        return <div><div>{`${Math.min(step, projectionParams.iterations)}/${projectionParams.iterations}`}</div><div>{`${percent}%`}</div></div>
+        return <div><div>{`${Math.min(step, projectionParams.iterations)}/${projectionParams.iterations}`}</div><div>{`${percent}%`}</div>{msg && <div>Server: {msg}</div>}</div>
     }
 
     
@@ -129,7 +131,7 @@ export var ProjectionControlCard = connector(({
                             <CloseIcon />
                         </IconButton>
                     }
-                    title={titles[projectionParams.method]}
+                    title={projectionParams.method}
                     subheader={genlabel(step)}
                 />
                 <div className={classes.controls}>
@@ -139,6 +141,7 @@ export var ProjectionControlCard = connector(({
                         setComputing(newVal)
                         onComputingChanged(null, newVal)
                     }}>
+                        {/* TODO: don't show play/pause for back-end projection, since it does not do anything */}
                         {computing ? <StopIcon className={classes.playIcon} /> :
                             <PlayArrowIcon className={classes.playIcon}></PlayArrowIcon>}
                     </IconButton>
