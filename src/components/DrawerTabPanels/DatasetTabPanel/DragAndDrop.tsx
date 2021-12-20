@@ -1,18 +1,18 @@
-import Button from '@material-ui/core/Button';
-import { Grid, withTheme } from '@material-ui/core';
+import { withTheme } from '@mui/styles';
+import { Button } from '@mui/material';
+import { Grid } from '@mui/material';
 import * as React from 'react'
 
-type DragAndDropProps = {
+export type DragAndDropProps = {
     handleDrop: Function
     accept: string
-    theme: any
 }
 
-type DragAndDropState = {
+export type DragAndDropState = {
     drag: boolean
 }
 
-class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
+export class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
     dragCounter: number
     dropRef: any
 
@@ -93,7 +93,7 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
                             right: 0
                         }}
                     >
-                        <Grid style={{ height: '100%' }} container direction="column" justify="center" alignItems="center">
+                        <Grid style={{ height: '100%' }} container direction="column" justifyContent="center" alignItems="center">
                             <div
                                 style={{
 
@@ -116,7 +116,7 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
                             right: 0
                         }}
                     >
-                        <Grid style={{ height: '100%' }} container direction="column" justify="center" alignItems="center">
+                        <Grid style={{ height: '100%' }} container direction="column" justifyContent="center" alignItems="center">
                             <input
                                 style={{ display: 'none' }}
                                 id="contained-button-file"
@@ -149,4 +149,4 @@ class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
         )
     }
 }
-export default withTheme(DragAndDrop)
+export default DragAndDrop

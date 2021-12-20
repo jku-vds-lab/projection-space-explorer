@@ -1,16 +1,16 @@
 import { Loader } from "./Loader";
-import * as hdf5 from 'jsfive';
-import { FeatureType } from "../Data/FeatureType";
-import { DatasetType } from "../Data/DatasetType";
-import { Vect } from "../Data/Vect";
+import { FeatureType } from "../../../model/FeatureType";
+import { DatasetType } from "../../../model/DatasetType";
+import { AVector, IVector } from "../../../model/Vector";
 import { InferCategory } from "../Data/InferCategory";
 import { Preprocessor } from "../Data/Preprocessor";
-import { Dataset } from "../Data/Dataset";
-import Cluster from "../Data/Cluster";
-import { Edge } from "../graphs";
+import { Dataset } from "../../../model/Dataset";
+import { ICluster } from "../../../model/Cluster";
+import { IEdge } from "../../../model/Edge";
+import { ObjectTypes } from "../../../model/ObjectType";
 
 export class JSONLoader implements Loader {
-    vectors: Vect[]
+    vectors: IVector[]
     datasetType: DatasetType
 
     resolvePath(entry: any, finished: any) {
@@ -81,7 +81,7 @@ export class JSONLoader implements Loader {
             fileSamples.columns.forEach((column, ci) => {
                 data[column] = row[ci]
             })
-            this.vectors.push(new Vect(data))
+            this.vectors.push(AVector.create(data))
         })
 
         var header = Object.keys(this.vectors[0])
@@ -145,33 +145,32 @@ export class JSONLoader implements Loader {
 
         this.datasetType = datasetType ? datasetType : new InferCategory(this.vectors).inferType()
 
-        let clusters: Cluster[] = []
+        let clusters: ICluster[] = []
         content.clusters[0].data.forEach(row => {
             let nameIndex = content.clusters[0].columns.indexOf("name")
 
-            let points = []
-            row[1].forEach(i => {
-                points.push(this.vectors[i])
+            clusters.push({
+                objectType: ObjectTypes.Cluster,
+                label: row[0],
+                name: nameIndex >= 0 ? row[nameIndex] : undefined,
+                indices: row[1]
             })
-            let cluster = new Cluster(points)
-
-            cluster.vectors = points
-            if (nameIndex >= 0) {
-                cluster.name = row[nameIndex]
-            }
-            
-            cluster.label = row[0]
-
-            clusters.push(cluster)
         })
 
         let edges = []
         content.edges[0].data.forEach(row => {
             let nameIndex = content.edges[0].columns.indexOf("name")
-            let edge = new Edge(clusters.find(cluster => cluster.label == row[1]), clusters.find(cluster => cluster.label == row[2]), null)
+
+            let edge: IEdge = {
+                source: clusters.findIndex(cluster => cluster.label == row[1]).toString(),
+                destination: clusters.findIndex(cluster => cluster.label == row[2]).toString(),
+                objectType: ObjectTypes.Edge
+            }
+
             if (nameIndex >= 0) {
                 edge.name = row[nameIndex]
             }
+            
             edges.push(edge)
         })
 
@@ -181,7 +180,7 @@ export class JSONLoader implements Loader {
             preselection = content.preselection[0].data.flat()
 
             metaInformation = {}
-            
+
             header.forEach(column => {
                 metaInformation[column] = {
                     project: preselection.includes(column)
@@ -192,11 +191,12 @@ export class JSONLoader implements Loader {
 
         ranges = new Preprocessor(this.vectors).preprocess(ranges)
 
-        
+
         let dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation)
         dataset.clusters = clusters
         dataset.clusterEdges = edges
+        dataset.categories = dataset.extractEncodingFeatures(ranges)
 
-        finished(dataset, new InferCategory(this.vectors).load(ranges))
+        finished(dataset)
     }
 }

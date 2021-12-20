@@ -1,4 +1,4 @@
-import { DatasetType } from "../../Utility/Data/DatasetType"
+import { DatasetType } from "../../../model/DatasetType"
 
 /**
  * Helper for fetching a resource asynchronous.
@@ -39,7 +39,7 @@ export class DownloadJob {
             onProgress(receivedLength)
 
             // This sleep is necessary to have a fluid animated UI, else it would stutter since everything is on the same thread
-            await this.sleep(10)
+            await this.sleep(0)
         }
 
         if (this.terminated) {
@@ -64,6 +64,7 @@ export class DownloadJob {
     start(callback: (string) => void, onProgress: (number) => void) {
         fetch(this.entry.path).then(response => {
             this.download(response, callback, onProgress)
+        }).catch((reason) => {
         })
     }
 

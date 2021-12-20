@@ -1,4 +1,11 @@
+import { NormalizationMethod } from "../../model/NormalizationMethod";
+import { DistanceMetric } from "../../model/DistanceMetric";
+import { EncodingMethod } from "../../model/EncodingMethod";
+
 const SET = "ducks/projectionParams/SET"
+
+
+
 
 export const setProjectionParamsAction = projectionParams => ({
     type: SET,
@@ -13,7 +20,9 @@ const initialState = {
     seeded: false,
     useSelection: false,
     method: '',
-    distanceMetric: 'euclidean'
+    distanceMetric: DistanceMetric.EUCLIDEAN,
+    normalizationMethod: NormalizationMethod.STANDARDIZE,
+    encodingMethod: EncodingMethod.ONEHOT
 }
 
 type ProjectionParamsState = typeof initialState

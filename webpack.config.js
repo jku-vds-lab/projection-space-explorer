@@ -2,18 +2,26 @@ const webpack = require('webpack');
 
 module.exports = {
   mode: "development",
-  watch: true,
+  watch: false,
+  externals: {
+    'react': 'react',
+    'react-dom': 'react-dom',
+    'react-redux': 'react-redux',
+    'redux': 'redux',
+    '@mui/material': '@mui/material',
+    '@mui/styles': '@mui/styles',
+    '@emotion/react': '@emotion/react',
+    '@emotion/styled': '@emotion/styled'
+  },
   entry: {
-    bundle: "./src/components/index.tsx",
-    tsne: './src/components/workers/embeddings/worker_tsne.ts',
-    umap: './src/components/workers/embeddings/worker_umap.ts',
-    cluster: './src/components/workers/worker_cluster.tsx',
-    forceatlas2: './src/components/workers/embeddings/worker_forceatlas2.ts',
-    tessy: './src/components/workers/worker_triangulate.ts'
+    bundle: "./src/index.ts"
   },
   output: {
     filename: "[name].js",
-    path: __dirname + "/dist"
+    path: __dirname + "/dist",
+    publicPath: '',
+    library: 'PSE',
+    libraryTarget: 'umd'
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]
@@ -21,6 +29,11 @@ module.exports = {
   devtool: "source-map",
   module: {
     rules: [
+      {
+        test: /\.worker\.ts$/,
+        loader: 'worker-loader',
+        options: { inline: "no-fallback" }
+      },
       { test: /\.scss$/, use: [
         "style-loader",
         "css-loader",
@@ -35,13 +48,18 @@ module.exports = {
       {
         test: /\.svg$/,
         use: ['@svgr/webpack'],
+      },
+      {
+        test: /\.(png|jpg)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: true,
+            },
+          },
+        ],
       }
     ]
-  },
-  plugins: [
-    new webpack.ProvidePlugin({
-      ReactDOM: 'react-dom',
-      React: 'react'
-    })
-  ]
+  }
 };

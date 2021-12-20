@@ -1,5 +1,4 @@
 import { Camera } from "three";
-import { CameraTransformations } from "../WebGLView/CameraTransformations";
 
 const SET = "ducks/viewTransform/SET"
 const INVALIDATE = "ducks/viewTransform/INVALIDATE"
@@ -15,32 +14,54 @@ export const invalidateTransform = () => ({
     type: INVALIDATE
 })
 
-type ViewTransformType = {
-    camera: Camera,
+
+
+
+
+
+
+
+/**
+ * Type specifying the camera transformation that all components should use.
+ * From this an orthographic projection can be constructed.
+ */
+export type ViewTransformType = {
+    // Width (px) of the viewport -> width for orthographic projections
     width: number,
-    height: number
+    
+    // Height (px) of the viewport -> height for orthographic projections
+    height: number,
+
+    // Center x coordinate of the camera
+    centerX: number,
+
+    // Center y coordinate of the camera
+    centerY: number,
+
+    // Zoom level of the camera
+    zoom: number
 }
 
 const initialState: ViewTransformType = {
-    camera: null,
+    zoom: 0,
     width: 0,
-    height: 0
+    height: 0,
+    centerX: 0,
+    centerY: 0
 }
 
 export const viewTransform = (state = initialState, action): ViewTransformType => {
     switch (action.type) {
         case SET:
             return {
-                camera: action.camera,
+                centerX: action.camera.position.x,
+                centerY: action.camera.position.y,
                 width: action.width,
-                height: action.height
+                height: action.height,
+                zoom: action.camera.zoom
             }
         case INVALIDATE:
-            return {
-                camera: state.camera,
-                width: state.width,
-                height: state.height
-            }
+            return {...state}
         default:
             return state
     }

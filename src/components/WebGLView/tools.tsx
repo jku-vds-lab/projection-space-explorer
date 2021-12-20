@@ -1,7 +1,8 @@
-import { Vect } from "../Utility/Data/Vect"
+import { IVector } from "../../model/Vector"
 import * as libtess from 'libtess'
 import * as THREE from 'three'
 import { pointInHull } from "../Utility/Geometry/Intersection"
+import { IBaseProjection, Dataset } from "../../model"
 
 
 
@@ -53,10 +54,10 @@ export class LassoSelection {
         }
     }
 
-    selection(vectors, visible) {
+    selection(dataset: Dataset, workspace: IBaseProjection, visible) {
         var indices = []
-        vectors.forEach((vector, index) => {
-            if (visible(vector) && this.intersects(vector)) {
+        dataset.vectors.forEach((vector, index) => {
+            if (visible(vector) && this.intersects(workspace[index])) {
                 indices.push(index)
             }
         })

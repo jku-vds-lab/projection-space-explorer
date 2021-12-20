@@ -18,7 +18,7 @@ export function makeCancelable(promise) {
   };
 }
 
-export default function useCancellablePromise(cancelable = makeCancelable) {
+export function useCancellablePromise(cancelable = makeCancelable) {
   const emptyPromise = Promise.resolve(true);
 
   // test if the input argument is a cancelable promise generator
@@ -48,13 +48,14 @@ export default function useCancellablePromise(cancelable = makeCancelable) {
     }, []
   );
 
-  function cancellablePromise(p, controller?) {
+  function cancellablePromise<T = any>(p: Promise<T>, controller?: AbortController): Promise<T> {
     const cPromise = cancelable(p);
     // @ts-ignore
     promises.current.push(cPromise);
     if(controller)
       // @ts-ignore
       controllers.current.push(controller);
+    // @ts-ignore
     return cPromise.promise;
   }
 

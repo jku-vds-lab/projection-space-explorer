@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 export class SchemeColor {
   hex: string;
   rgb: { r; g; b; };

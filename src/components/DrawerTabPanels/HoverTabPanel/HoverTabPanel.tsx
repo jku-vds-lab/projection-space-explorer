@@ -1,9 +1,9 @@
-import { Box, Button, FormControlLabel, Switch, Typography } from "@material-ui/core";
+import { Box, Button, FormControlLabel, Switch, Typography } from "@mui/material";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
-import { setAggregationAction } from "../../Ducks/AggregationDuck";
+import { selectVectors } from "../../Ducks/AggregationDuck";
 import { setHoverWindowMode, WindowMode } from "../../Ducks/HoverSettingsDuck";
-import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClusters";
+import { SelectionClusters } from "../../Overlays/SelectionClusters";
 import { RootState } from "../../Store/Store";
 
 const mapStateToProps = (state: RootState) => ({
@@ -14,7 +14,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = dispatch => ({
     setHoverWindowMode: value => dispatch(setHoverWindowMode(value)),
-    setAggregation: value => dispatch(setAggregationAction(value))
+    setAggregation: value => dispatch(selectVectors(value))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -22,11 +22,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    hoverUpdate
 }
 
-
-export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset }: Props) => {
+export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
@@ -45,6 +43,6 @@ export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, hov
             <Button variant="outlined" onClick={() => { setAggregation([]) }}>Clear Selection</Button>
         </Box>
 
-        <SelectionClusters hoverUpdate={hoverUpdate}></SelectionClusters>
+        <SelectionClusters></SelectionClusters>
     </div>
 })

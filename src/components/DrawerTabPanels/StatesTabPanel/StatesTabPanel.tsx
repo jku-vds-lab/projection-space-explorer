@@ -1,36 +1,40 @@
-import { connect, ConnectedProps } from 'react-redux'
-import { FunctionComponent } from 'react'
+import { connect, ConnectedProps, useDispatch } from 'react-redux'
 import * as React from 'react'
-import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, makeStyles } from '@material-ui/core'
-import { ShapeLegend } from './ShapeLegend/ShapeLegend'
+import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, FormHelperText, createFilterOptions, Autocomplete, TextField } from '@mui/material'
+import { ShapeLegend } from './ShapeLegend'
 import { setSelectedVectorByShapeAction } from "../../Ducks/SelectedVectorByShapeDuck"
 import { setVectorByShapeAction } from "../../Ducks/VectorByShapeDuck"
-import { setCheckedShapesAction } from "../../Ducks/CheckedShapesDuck"
 import { RootState } from '../../Store/Store'
 import { setSelectedLineBy } from '../../Ducks/SelectedLineByDuck'
 import { setChannelBrightnessSelection } from '../../Ducks/ChannelBrightnessDuck'
 import { setGlobalPointBrightness } from '../../Ducks/GlobalPointBrightnessDuck'
-import { BrightnessSlider } from './BrightnessSlider/BrightnessSlider'
+import { BrightnessSlider } from './BrightnessSlider'
 import { setChannelSize } from '../../Ducks/ChannelSize'
 import { setGlobalPointSize } from '../../Ducks/GlobalPointSizeDuck'
-import { SizeSlider } from './SizeSlider/SizeSlider'
-import { ColorScaleSelect } from './ColorScaleSelect/ColorScaleSelect'
-import { AdvancedColoringPopover } from './AdvancedColoring/AdvancedColoringPopover/AdvancedColoringPopover'
+import { SizeSlider } from './SizeSlider'
+import { ColorScaleSelect } from './ColorScaleSelect'
+import { AdvancedColoringPopover } from './AdvancedColoringPopover'
 import { setChannelColor } from '../../Ducks/ChannelColorDuck'
 import { setAdvancedColoringSelectionAction } from '../../Ducks/AdvancedColoringSelectionDuck'
-import { PathLengthFilter } from './PathLengthFilter/PathLengthFilter'
-import { Legend } from './LineSelection/LineSelection'
-import { LineSelectionTree_GenAlgos, LineSelectionTree_GetChecks, LineTreePopover } from './LineTreePopover/LineTreePopover'
-import { PathBrightnessSlider } from './PathTransparencySlider/PathBrightnessSlider'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { PathLengthFilter } from './PathLengthFilter'
+import { LineTreePopover } from './LineTreePopover'
+import { PathBrightnessSlider } from './PathBrightnessSlider'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions'
+import { makeStyles } from '@mui/styles'
+import { ColorScalesActions } from '../../Ducks/ColorScalesDuck'
+import { PointDisplayActions } from '../../Ducks/PointDisplayDuck'
+
+
+
+
+
 
 const mapStateToProps = (state: RootState) => ({
     selectedVectorByShape: state.selectedVectorByShape,
     selectedLineBy: state.selectedLineBy,
     vectorByShape: state.vectorByShape,
     dataset: state.dataset,
-    categoryOptions: state.categoryOptions,
-    webGlView: state.webGLView,
     channelBrightness: state.channelBrightness,
     channelSize: state.channelSize,
     channelColor: state.channelColor
@@ -39,13 +43,11 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = dispatch => ({
     setSelectedVectorByShape: selectedVectorByShape => dispatch(setSelectedVectorByShapeAction(selectedVectorByShape)),
     setVectorByShape: vectorByShape => dispatch(setVectorByShapeAction(vectorByShape)),
-    setCheckedShapes: checkedShapes => dispatch(setCheckedShapesAction(checkedShapes)),
     setSelectedLineBy: lineBy => dispatch(setSelectedLineBy(lineBy)),
     setChannelBrightness: value => dispatch(setChannelBrightnessSelection(value)),
     setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
     setChannelSize: value => dispatch(setChannelSize(value)),
     setGlobalPointSize: value => dispatch(setGlobalPointSize(value)),
-    setChannelColor: value => dispatch(setChannelColor(value)),
     setAdvancedColoringSelection: value => dispatch(setAdvancedColoringSelectionAction(value))
 })
 
@@ -57,48 +59,60 @@ const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRe
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    lineColorScheme
+    webGlView
 }
 
-/**
- 
 
-        {
-            <FormControl style={{ margin: '4px 0px' }}>
-                <InputLabel shrink id="lineByLabel">{"line by"}</InputLabel>
-                <Select labelId="lineByLabel"
-                    id="lineBySelect"
-                    displayEmpty
-                    value={selectedLineBy.value}
-                    onChange={(event) => {
-                        setSelectedLineBy(event.target.value)
-                        webGlView.current.recreateLines(event.target.value)
-                    }}
-                >
-                    <MenuItem value="">None</MenuItem>
-                    {
-                        selectedLineBy.options.map((option, i) => {
-                            return <MenuItem key={option} value={option}>{option}</MenuItem>
-                        })
-                    }
-                </Select>
-            </FormControl>
+const SelectFeatureComponent = ({ label, default_val, categoryOptions, onChange }: any) => {
+
+    let autocomplete_options = [{ value: "None", inputValue: "None" }];
+    let autocomplete_filterOptions = null;
+    if (categoryOptions != null) {
+        autocomplete_options = autocomplete_options.concat(categoryOptions.attributes.map((attribute) => {
+            return { value: attribute.key, inputValue: attribute.name }
+        }));
+        autocomplete_filterOptions = createFilterOptions({
+            stringify: (option: any) => { return option.value; },
+        });
+
+    }
+
+    return <><Autocomplete
+        id={"vectorBySelect_" + label}
+        filterOptions={autocomplete_filterOptions}
+        onChange={(event, newValue) => {
+            if (newValue)
+                onChange(newValue.value)
+        }}
+        options={autocomplete_options.sort((a, b) => {
+            if (a.value === "None")
+                return -1
+            if (b.value === "None")
+                return 1
+            return -b.inputValue.localeCompare(a.inputValue)
         }
-
- */
-
+        )}
+        size='small'
+        groupBy={(option: any) => option.group}
+        getOptionLabel={(option: any) => option.inputValue}
+        isOptionEqualToValue={(option: any, value) => { return option.value == value.value; }}
+        // defaultValue={channelColor ? autocomplete_color_options.filter((option:any) => option.value == channelColor.key)[0] : {value:"", inputValue:""}}
+        value={default_val ? autocomplete_options.filter((option: any) => option.value == default_val.key)[0] : autocomplete_options[0]}
+        renderInput={(params) => <TextField {...params} label={label + " by"} />}
+    /></>
+}
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
     },
     heading: {
-        fontSize: theme.typography.pxToRem(15),
+        //fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
     },
     secondaryHeading: {
-        fontSize: theme.typography.pxToRem(15),
-        color: theme.palette.text.secondary,
+        //fontSize: theme.typography.pxToRem(15),
+        //color: theme.palette.text.secondary,
     },
     details: {
         padding: '0px',
@@ -107,15 +121,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 export const StatesTabPanelFull = ({
     selectedVectorByShape,
     vectorByShape,
     dataset,
     setSelectedVectorByShape,
     setVectorByShape,
-    setCheckedShapes,
-    categoryOptions,
     selectedLineBy,
     setSelectedLineBy,
     webGlView,
@@ -126,22 +137,15 @@ export const StatesTabPanelFull = ({
     setChannelSize,
     setGlobalPointSize,
     channelColor,
-    setChannelColor,
-    setAdvancedColoringSelection,
-    lineColorScheme
+    setAdvancedColoringSelection
 }: Props) => {
     if (dataset == null) {
         return null;
     }
 
+    const dispatch = useDispatch()
+
     const classes = useStyles();
-
-
-
-
-
-
-
 
     const [expanded, setExpanded] = React.useState<boolean | string>(false);
 
@@ -149,40 +153,24 @@ export const StatesTabPanelFull = ({
         setExpanded(isExpanded ? panel : false);
     };
 
-    const points_box = <Box>
+    const categoryOptions = dataset.categories
+
+    const points_box = <Box sx={{
+        '& .MuiAutocomplete-root': { p: 2, width: '100%', boxSizing: 'border-box' },
+    }}>
         {
-            categoryOptions != null && categoryOptions.hasCategory("shape") ?
-                <Grid
-                    container
-                    justify="center"
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}>
-                    <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorByShapeSelectLabel">{"shape by"}</InputLabel>
-                        <Select labelId="vectorByShapeSelectLabel"
-                            id="vectorByShapeSelect"
-                            displayEmpty
-                            value={selectedVectorByShape}
-                            onChange={(event) => {
-                                setSelectedVectorByShape(event.target.value)
+            categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "shape") ?
+                <SelectFeatureComponent label={"shape"} default_val={selectedVectorByShape ? { key: selectedVectorByShape } : null} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "shape")} onChange={(newValue) => {
 
-                                if (event.target.value != null && event.target.value != "") {
-                                    var attribute = categoryOptions.getCategory("shape").attributes.filter(a => a.key == event.target.value)[0]
-                                    setVectorByShape(attribute)
-                                } else {
-                                    setVectorByShape(null)
-                                }
-                            }}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("shape").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
-                    </FormControl>
-                </Grid>
+                    setSelectedVectorByShape(newValue)
+                    var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "shape").attributes.filter(a => a.key == newValue)[0]
 
+                    if (attribute == undefined) {
+                        attribute = null
+                    }
+                    setVectorByShape(attribute)
+
+                }}></SelectFeatureComponent>
                 :
                 <div></div>
         }
@@ -192,47 +180,28 @@ export const StatesTabPanelFull = ({
                 dataset={dataset}
                 category={vectorByShape}
                 onChange={(checkboxes) => {
-                    setCheckedShapes(checkboxes)
+                    dispatch(PointDisplayActions.setCheckedShapes(checkboxes))
                 }}></ShapeLegend>
         </Grid>
 
 
         {
-            categoryOptions != null && categoryOptions.hasCategory("transparency") ?
-                <Grid
-                    container
-                    justify="center"
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}>
-                    <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorByTransparencySelectLabel">{"brightness by"}</InputLabel>
-                        <Select labelId="vectorByTransparencySelectLabel"
-                            id="vectorByTransparencySelect"
-                            displayEmpty
-                            value={channelBrightness ? channelBrightness.key : ''}
-                            onChange={(event) => {
-                                var attribute = categoryOptions.getCategory("transparency").attributes.filter(a => a.key == event.target.value)[0]
+            categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "transparency") ?
 
-                                if (attribute == undefined) {
-                                    attribute = null
-                                }
+                <SelectFeatureComponent label={"brightness"} default_val={channelBrightness} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "transparency")} onChange={(newValue) => {
+                    var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.filter(a => a.key == newValue)[0]
 
-                                let pointBrightness = attribute ? [0.25, 1] : [1]
+                    if (attribute == undefined) {
+                        attribute = null
+                    }
 
-                                setGlobalPointBrightness(pointBrightness)
-                                setChannelBrightness(attribute)
-                                webGlView.current.particles.transparencyCat(attribute, pointBrightness)
-                                webGlView.current.requestRender()
-                            }}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("transparency").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
-                    </FormControl>
-                </Grid>
+                    let pointBrightness = attribute ? [0.25, 1] : [1]
+
+                    setGlobalPointBrightness(pointBrightness)
+                    setChannelBrightness(attribute)
+                    webGlView.current.particles.transparencyCat(attribute, pointBrightness)
+                    webGlView.current.requestRender()
+                }}></SelectFeatureComponent>
                 :
                 <div></div>
         }
@@ -243,41 +212,21 @@ export const StatesTabPanelFull = ({
 
 
         {
-            categoryOptions != null && categoryOptions.hasCategory("size") ?
-                <Grid
-                    container
-                    justify="center"
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}>
-                    <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                        <Select labelId="vectorBySizeSelectLabel"
-                            id="vectorBySizeSelect"
-                            displayEmpty
-                            value={channelSize ? channelSize.key : ''}
-                            onChange={(event) => {
-                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
-                                if (attribute == undefined) {
-                                    attribute = null
-                                }
+            categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "size") ?
+                <SelectFeatureComponent label={"size"} default_val={channelSize} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "size")} onChange={(newValue) => {
+                    var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "size").attributes.filter(a => a.key == newValue)[0]
+                    if (attribute == undefined) {
+                        attribute = null
+                    }
 
-                                let pointSize = attribute ? [1, 2] : [1]
+                    let pointSize = attribute ? [1, 2] : [1]
 
-                                setGlobalPointSize(pointSize)
+                    setGlobalPointSize(pointSize)
 
-                                setChannelSize(attribute)
+                    setChannelSize(attribute)
 
-                                webGlView.current.particles.sizeCat(attribute, pointSize)
-                            }}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("size").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
-                    </FormControl>
-                </Grid>
+                    webGlView.current.particles.sizeCat(attribute, pointSize)
+                }}></SelectFeatureComponent>
                 :
                 <div></div>
         }
@@ -286,40 +235,18 @@ export const StatesTabPanelFull = ({
 
 
         {
-            categoryOptions != null && categoryOptions.hasCategory("color") ?
-                <Grid
-                    container
-                    item
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}
-                >
+            categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "color") ?
+                <SelectFeatureComponent label={"color"} default_val={channelColor} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "color")} onChange={(newValue) => {
+                    var attribute = null
+                    if (newValue && newValue != "") {
+                        attribute = CategoryOptionsAPI.getCategory(categoryOptions, "color").attributes.filter(a => a.key == newValue)[0]
+                    }
 
-                    <Grid container item alignItems="stretch" direction="column">
-                        <FormControl style={{ margin: '4px 0px' }}>
-                            <InputLabel shrink id="vectorByColorSelectLabel">{"color by"}</InputLabel>
-                            <Select labelId="vectorByColorSelectLabel"
-                                id="vectorByColorSelect"
-                                displayEmpty
-                                value={channelColor ? channelColor.key : ""}
-                                onChange={(event) => {
-                                    var attribute = null
-                                    if (event.target.value != "") {
-                                        attribute = categoryOptions.getCategory("color").attributes.filter(a => a.key == event.target.value)[0]
-                                    }
-
-                                    setAdvancedColoringSelection(new Array(10000).fill(true))
-                                    setChannelColor(attribute)
-                                }}
-                            >
-                                <MenuItem value="">None</MenuItem>
-                                {categoryOptions.getCategory("color").attributes.map(attribute => {
-                                    return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                </Grid>
+                    setAdvancedColoringSelection(new Array(10000).fill(true))
+                    dispatch(setChannelColor(attribute))
+                    dispatch(ColorScalesActions.initScaleByType(attribute.type))
+                    
+                }}></SelectFeatureComponent>
                 :
                 <div></div>
         }
@@ -357,7 +284,7 @@ export const StatesTabPanelFull = ({
                 {dataset && dataset.isSequential && <div>
                     <Grid
                         container
-                        justify="center"
+                        justifyContent="center"
                         alignItems="stretch"
                         direction="column"
                         style={{ padding: '0 16px' }}>
@@ -370,10 +297,10 @@ export const StatesTabPanelFull = ({
 
                         <Box p={1}></Box>
 
-                        <LineTreePopover
-                            webGlView={webGlView}
+                        {/**<LineTreePopover
+                            webGlView={webGLView}
                             dataset={dataset}
-                            colorScale={lineColorScheme} />
+                        colorScale={lineColorScheme} />**/}
                     </Grid>
 
 
@@ -406,47 +333,3 @@ export const StatesTabPanelFull = ({
 
 
 export const StatesTabPanel = connector(StatesTabPanelFull)
-
-
-/**
- *
-         {
-            categoryOptions != null && categoryOptions.hasCategory("size") ?
-                <Grid
-                    container
-                    justify="center"
-                    alignItems="stretch"
-                    direction="column"
-                    style={{ padding: '0 16px' }}>
-                    <FormControl style={{ margin: '4px 0px' }}>
-                        <InputLabel shrink id="vectorBySizeSelectLabel">{"size by"}</InputLabel>
-                        <Select labelId="vectorBySizeSelectLabel"
-                            id="vectorBySizeSelect"
-                            displayEmpty
-                            value={channelSize ? channelSize.key : ''}
-                            onChange={(event) => {
-                                var attribute = categoryOptions.getCategory("size").attributes.filter(a => a.key == event.target.value)[0]
-                                if (attribute == undefined) {
-                                    attribute = null
-                                }
-
-                                let pointSize = attribute ? [1, 2] : [1]
-
-                                setGlobalPointSize(pointSize)
-
-                                setChannelSize(attribute)
-
-                                webGlView.current.particles.sizeCat(attribute, pointSize)
-                            }}
-                        >
-                            <MenuItem value="">None</MenuItem>
-                            {categoryOptions.getCategory("size").attributes.map(attribute => {
-                                return <MenuItem key={attribute.key} value={attribute.key}>{attribute.name}</MenuItem>
-                            })}
-                        </Select>
-                    </FormControl>
-                </Grid>
-                :
-                <div></div>
-        }
- */

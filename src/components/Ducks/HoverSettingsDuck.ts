@@ -1,6 +1,3 @@
-import Cluster from "../Utility/Data/Cluster"
-import { Vect } from "../Utility/Data/Vect"
-
 const SET = "ducks/hoverSettings/SET_HOVER_WINDOW_MODE"
 
 export const setHoverWindowMode = windowMode => ({

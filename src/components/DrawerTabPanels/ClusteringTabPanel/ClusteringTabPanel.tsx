@@ -1,275 +1,144 @@
 import React = require("react")
-import { Avatar, Box, Button, Checkbox, FormControl, FormGroup, IconButton, InputAdornment, InputLabel, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, makeStyles, MenuItem, Paper, Popover, Select, Switch, TextField, Typography } from "@material-ui/core"
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, MenuItem, Paper, Popover, Select, Slider, styled, Switch, TextField, Typography } from "@mui/material"
 import { connect, ConnectedProps } from 'react-redux'
-import Cluster from "../../Utility/Data/Cluster"
-import { Storybook } from "../../Utility/Data/Storybook"
-import { graphLayout, Edge } from "../../Utility/graphs"
-import SettingsIcon from '@material-ui/icons/Settings';
-import SaveIcon from '@material-ui/icons/Save';
-import { setClusterEdgesAction } from "../../Ducks/ClusterEdgesDuck"
+import { ACluster, ICluster } from "../../../model/Cluster"
+import { IBook, ABook } from "../../../model/Book"
+import SettingsIcon from '@mui/icons-material/Settings';
+import SaveIcon from '@mui/icons-material/Save';
 import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck"
-import { addClusterToStory, addStory, removeClusterFromStories, setActiveStory, setStories } from "../../Ducks/StoriesDuck"
+import { addBook, deleteCluster, setActiveStory, setStories, IStorytelling, AStorytelling } from "../../Ducks/StoriesDuck"
 import { RootState } from "../../Store/Store"
-import FolderIcon from '@material-ui/icons/Folder';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { StoryPreview } from "./StoryPreview"
 import * as backend_utils from "../../../utils/backend-connect";
-import * as frontend_utils from "../../../utils/frontend-connect";
-import Slider from '@material-ui/core/Slider';
 import { trackPromise } from "react-promise-tracker";
-import useCancellablePromise from "../../../utils/promise-helpers"
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import lineUpInput, { setLineUpInput_visibility, setLineUpInput_filter, setLineUpInput_update, updateLineUpInput_filter } from "../../Ducks/LineUpInputDuck"
+import { useCancellablePromise } from "../../../utils/promise-helpers"
 import { setChannelColor } from "../../Ducks/ChannelColorDuck"
 import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions"
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import groupVisualizationMode, { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
-import { aggSelectCluster, setAggregationGroups } from "../../Ducks/AggregationDuck"
-const d3 = require("d3")
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { GroupVisualizationMode, setGroupVisualizationMode } from "../../Ducks/GroupVisualizationMode"
+import { selectClusters } from "../../Ducks/AggregationDuck"
+import { CategoryOptionsAPI } from "../../WebGLView/CategoryOptions"
+import { Dataset } from "../../../model/Dataset"
+import { FormHelperText } from "@mui/material"
 
 const mapStateToProps = (state: RootState) => ({
     stories: state.stories,
     displayMode: state.displayMode,
     dataset: state.dataset,
-    webGLView: state.webGLView,
-    categoryOptions: state.categoryOptions,
     currentAggregation: state.currentAggregation,
-    splitRef: state.splitRef,
-    groupVisualizationMode: state.groupVisualizationMode
+    groupVisualizationMode: state.groupVisualizationMode,
+    workspace: state.projections.workspace
 })
 
 const mapDispatchToProps = dispatch => ({
-    setStories: stories => dispatch(setStories(stories)),
-    setActiveStory: (activeStory: Storybook) => dispatch(setActiveStory(activeStory)),
-    setClusterEdges: clusterEdges => dispatch(setClusterEdgesAction(clusterEdges)),
+    setStories: (stories: IBook[]) => dispatch(setStories(stories)),
+    setActiveStory: (activeStory: IBook) => dispatch(setActiveStory(activeStory)),
     setDisplayMode: displayMode => dispatch(setDisplayMode(displayMode)),
-    addClusterToStory: cluster => dispatch(addClusterToStory(cluster)),
-    addStory: story => dispatch(addStory(story)),
-    removeClusterFromStories: cluster => dispatch(removeClusterFromStories(cluster)),
+    addStory: story => dispatch(addBook(story, true)),
+    removeClusterFromStories: (cluster: ICluster) => dispatch(deleteCluster(cluster)),
     setChannelColor: col => dispatch(setChannelColor(col)),
-    // setLineUpInput_data: input => dispatch(setLineUpInput_data(input)),
-    updateLineUpInput_filter: input => dispatch(updateLineUpInput_filter(input)),
-    setLineUpInput_update: input => dispatch(setLineUpInput_update(input)),
-    setLineUpInput_visibility: input => dispatch(setLineUpInput_visibility(input)),
-    setLineUpInput_filter: input => dispatch(setLineUpInput_filter(input)),
     setGroupVisualizationMode: groupVisualizationMode => dispatch(setGroupVisualizationMode(groupVisualizationMode)),
-    setAggregationGroups: groups => dispatch(setAggregationGroups(groups)),
-    setSelectedCluster: (cluster, shift) => dispatch(aggSelectCluster(cluster, shift))
+    setSelectedClusters: (clusters: string[], shift: boolean) => dispatch(selectClusters(clusters, shift))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    open,
-    clusteringWorker,
     splitRef
 }
 
 
-
+const ContextPaper = styled(Paper)`
+  padding: 10px;
+`;
 
 
 
 
 
 export const ClusteringTabPanel = connector(({
-    categoryOptions,
     setChannelColor,
     setStories,
-    setActiveStory,
-    clusteringWorker,
     dataset,
     stories,
-    setClusterEdges,
     setDisplayMode,
     displayMode,
     addStory,
-    addClusterToStory,
     removeClusterFromStories,
-    webGLView,
-    // selectedClusters,
-    // setLineUpInput_data,
-    updateLineUpInput_filter,
-    setLineUpInput_update,
-    setLineUpInput_visibility,
+    workspace,
     currentAggregation,
-    setLineUpInput_filter,
     splitRef,
     groupVisualizationMode,
-    setAggregationGroups,
     setGroupVisualizationMode,
-    setSelectedCluster }: Props) => {
-
-    React.useEffect(() => {
-        if (stories && stories.active && stories.active.clusters) {
-            setAggregationGroups(stories.active.clusters)
-        }
-    }, [stories])
+    setSelectedClusters }: Props) => {
+    
+    const categoryOptions = dataset?.categories
 
 
+    /**function toggleClusters() {
+        if (dataset.clusters && dataset.clusters.length > 0) {
+            let clusters = dataset.clusters
 
-    function storyLayout(edges: Edge[]) {
-        var stories: Storybook[] = []
-        var copy = edges.slice(0)
-        // hh
-        while (copy.length > 0) {
-            var toProcess = [copy.splice(0, 1)[0]]
-
-            var clusters = new Set()
-            var storyEdges = new Set()
-
-
-            while (toProcess.length > 0) {
-                var edge = toProcess.splice(0, 1)[0]
-                do {
-                    clusters.add(edge.source)
-                    clusters.add(edge.destination)
-                    storyEdges.add(edge)
-
-                    var idx = copy.findIndex(value => value.destination == edge.source || value.source == edge.destination)
-                    if (idx >= 0) {
-                        var removed = copy.splice(idx, 1)[0]
-                        clusters.add(removed.source)
-                        clusters.add(removed.destination)
-                        storyEdges.add(removed)
-                        toProcess.push(removed)
-                    }
-                } while (idx >= 0)
-            }
-
-
-            stories.push(new Storybook([...clusters], [...storyEdges]))
-        }
-        return stories
-    }
-
-    function toggleClusters() {
-        if (null == null) {
-            if (dataset.clusters && dataset.clusters.length > 0) {
-                let clusters = dataset.clusters
-
-                if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
-                    setClusterEdges(dataset.clusterEdges)
-
-                    //let stories = storyLayout(dataset.clusterEdges)
-
-                    //setStories(stories)
-                    setStories([new Storybook(dataset.clusters, dataset.clusterEdges)])
-
-                    //setActiveStory(stories[0])
-                } else {
-                    if (dataset.isSequential) {
-                        const [edges] = graphLayout(clusters)
-
-                        setClusterEdges(edges)
-
-                        if (edges.length > 0) {
-                            let stories = storyLayout(edges)
-
-                            setStories(stories)
-                            //setActiveStory(stories[0])
-                        }
-                    }
-                }
+            if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
+                setStories([transformIndicesToHandles(dataset.clusters, dataset.clusterEdges)])
             } else {
-                let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js') //dist/
+                if (dataset.isSequential) {
+                    const [edges] = graphLayout(dataset, clusters)
 
-                worker.onmessage = (e) => {
-                    // Point clusteruing
-                    let clusters = []
-                    Object.keys(e.data).forEach(k => {
-                        console.log(e.data[k])
-                        let t = e.data[k]
-                        let f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
-                        f.label = k
-                        clusters.push(f)
-                    })
-
-
-                    // Inject cluster attributes
-                    clusters.forEach(cluster => {
-                        let vecs = []
-                        cluster.points.forEach(point => {
-                            vecs.push(dataset.vectors[point.meshIndex])
-                        })
-                        cluster.vectors = vecs
-                        cluster.points = cluster.vectors
-                    })
-
-                    if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
-                        setClusterEdges(dataset.clusterEdges)
-
-                        let stories = storyLayout(dataset.clusterEdges)
+                    if (edges.length > 0) {
+                        let stories = storyLayout(clusters, edges)
 
                         setStories(stories)
-
-
                         //setActiveStory(stories[0])
-                    } else {
-                        if (dataset.isSequential) {
-                            const [edges] = graphLayout(clusters)
-
-                            setClusterEdges(edges)
-
-                            if (edges.length > 0) {
-                                let stories = storyLayout(edges)
-
-                                setStories(stories)
-                                //setActiveStory(stories[0])
-                            }
-                        }
                     }
                 }
-
-                worker.postMessage({
-                    type: 'extract',
-                    message: dataset.vectors.map(vector => [vector.x, vector.y, vector.groupLabel])
-                })
             }
         }
-    }
+    }**/
 
 
     function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory) {
         const loading_area = "global_loading_indicator";
-        let data_points = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation : dataset.vectors;
+
+        let data_points = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation.map(i => ({ ...workspace[i], meshIndex: i })) : dataset.vectors.map((v, i) => ({ ...workspace[i], meshIndex: i }));
+
         const points = data_points.map(point => [point.x, point.y]);
+
         trackPromise(
             cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster)).then(data => {
                 const cluster_labels = data["result"];
                 const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
-                if(dist_cluster_labels.length <= 1){ //if there are no clusters found, return and give error message
+                if (dist_cluster_labels.length <= 1) { //if there are no clusters found, return and give error message
                     alert("No Cluster could be derived. Please, adjust the Clustering Cettings and try again.")
                     return;
                 }
 
 
-                let story = addClusterToCurrentStory && stories.active ? stories.active : new Storybook([], []);
-                // let clusters = []
+                const story: IBook = stories.active !== null ? AStorytelling.getActive(stories) : AStorytelling.emptyStory()
 
-                
                 dist_cluster_labels.forEach(cluster_label => {
                     if (cluster_label >= 0) {
                         const current_cluster_vects = data_points.filter((x, i) => cluster_labels[i] == cluster_label);
-                        const cluster = Cluster.fromSamples(current_cluster_vects);
+                        const cluster = ACluster.fromSamples(dataset, current_cluster_vects.map(i => i.meshIndex));
 
                         // Set correct label for cluster
                         cluster.label = cluster_label
                         // clusters.push(cluster)
 
-                        story.clusters.push(cluster)
+
+                        ABook.addCluster(story, cluster)
                     }
                 });
 
                 // if(!addClusterToCurrentStory){
                 addStory(story)
-                setActiveStory(story)
                 // }
 
                 // Update UI, dont know how to right now
-                var clusterAttribute = categoryOptions.getAttribute("color", "groupLabel", "categorical")
+                var clusterAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, "color", "groupLabel", "categorical")
 
                 if (clusterAttribute) {
                     setChannelColor(clusterAttribute)
@@ -340,7 +209,7 @@ export const ClusteringTabPanel = connector(({
             label: 'Many Clusters',
         }
     ];
-    React.useEffect(() => toggleClusters(), [dataset])
+    //React.useEffect(() => toggleClusters(), [dataset])
 
     const onCheckItems = (event) => {
         if (event.target.checked) {
@@ -391,14 +260,14 @@ export const ClusteringTabPanel = connector(({
 
             <div style={{ width: '100%' }}>
                 <FormControl style={{ width: '100%' }}>
-                    <InputLabel id="demo-customized-select-label">Group Visualization</InputLabel>
+                    <FormHelperText>Group Visualization</FormHelperText>
                     <Select
-                        labelId="demo-customized-select-label"
-                        id="demo-customized-select"
                         value={groupVisualizationMode}
                         onChange={(event) => {
                             setGroupVisualizationMode(event.target.value)
                         }}
+                        displayEmpty
+                        size='small'
                     >
                         <MenuItem value={GroupVisualizationMode.None}>
                             <em>None</em>
@@ -406,19 +275,20 @@ export const ClusteringTabPanel = connector(({
                         <MenuItem value={GroupVisualizationMode.ConvexHull}>Contour Plot</MenuItem>
                         <MenuItem value={GroupVisualizationMode.StarVisualization}>Star Visualization</MenuItem>
                     </Select>
+
                 </FormControl>
             </div>
         </Box>
 
         <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
-            <Button variant="outlined" fullWidth ref={anchorRef} onClick={ () => setOpenClusterPanel(true) }>
+            <Button variant="outlined" fullWidth ref={anchorRef} onClick={() => setOpenClusterPanel(true)}>
                 Define Groups by Clustering <ChevronRightIcon></ChevronRightIcon>
             </Button>
         </Box>
         <Popover
             open={openClusterPanel}
             anchorEl={anchorRef.current}
-            onClose={ ()=> setOpenClusterPanel(false) }
+            onClose={() => setOpenClusterPanel(false)}
             anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'right',
@@ -431,12 +301,12 @@ export const ClusteringTabPanel = connector(({
             <Box paddingLeft={2} paddingTop={2} width={300}>
                 <Typography variant="subtitle2" gutterBottom>Clustering Settings</Typography>
             </Box>
-            
+
             <Box paddingLeft={2}>
                 <FormControlLabel
                     control={
                         <Switch
-                            color="primary" 
+                            color="primary"
                             checked={clusterAdvancedMode}
                             onChange={(event, newValue) => { setClusterAdvancedMode(newValue) }}
                             name="advancedClustering"
@@ -451,7 +321,7 @@ export const ClusteringTabPanel = connector(({
                         <FormControlLabel
                             control={
                                 <Switch
-                                    color="primary" 
+                                    color="primary"
                                     checked={clusterSelectionOnly}
                                     onChange={(event, newValue) => { setClusterSelectionOnly(newValue) }}
                                     name="selectionClustering"
@@ -464,7 +334,7 @@ export const ClusteringTabPanel = connector(({
                         <FormControlLabel
                             control={
                                 <Switch
-                                    color="primary" 
+                                    color="primary"
                                     checked={addClusterToCurrentStory}
                                     onChange={(event, newValue) => { setAddClusterToCurrentStory(newValue) }}
                                     name="addClusterToCurrentStory"
@@ -525,12 +395,12 @@ export const ClusteringTabPanel = connector(({
                         calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory);
                         setOpenClusterPanel(false);
                     }}>
-                        Run Clustering{/* Projection-based Clustering */}
-                    </Button>
+                    Run Clustering{/* Projection-based Clustering */}
+                </Button>
             </Box>
         </Popover>
 
-        
+
 
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Groups and Stories'}</Typography>
@@ -542,17 +412,12 @@ export const ClusteringTabPanel = connector(({
 
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
             <ClusterList
+                dataset={dataset}
                 removeClusterFromStories={removeClusterFromStories}
                 selectedClusters={currentAggregation.selectedClusters}
-                webGLView={webGLView}
                 stories={stories}
-                // setLineUpInput_data={setLineUpInput_data}
-                updateLineUpInput_filter={updateLineUpInput_filter}
-                setLineUpInput_update={setLineUpInput_update}
-                setLineUpInput_visibility={setLineUpInput_visibility}
-                setLineUpInput_filter={setLineUpInput_filter}
                 splitRef={splitRef}
-                setSelectedCluster={setSelectedCluster}
+                setSelectedCluster={setSelectedClusters}
             ></ClusterList>
         </div>
     </div>
@@ -561,26 +426,19 @@ export const ClusteringTabPanel = connector(({
 type ClusterPopoverProps = {
     anchorEl: any
     setAnchorEl: any
-    cluster: Cluster
+    cluster: ICluster
     removeClusterFromStories: any
-    // setLineUpInput_data: any
-    updateLineUpInput_filter: any
-    setLineUpInput_update: any
-    setLineUpInput_visibility: any
-    setLineUpInput_filter: any
     splitRef: any
     setSelectedCluster: any
+    dataset: Dataset
 }
 
 function ClusterPopover({
     anchorEl,
     setAnchorEl,
     cluster,
+    dataset,
     removeClusterFromStories,
-    updateLineUpInput_filter,
-    setLineUpInput_visibility,
-    setLineUpInput_filter,
-    setLineUpInput_update,
     splitRef,
     setSelectedCluster
 }: ClusterPopoverProps) {
@@ -589,16 +447,6 @@ function ClusterPopover({
 
     const [name, setName] = React.useState(cluster.label)
 
-    const useStyles = makeStyles(theme => ({
-        button: {
-            margin: theme.spacing(1)
-        },
-        root: {
-            padding: theme.spacing(3, 2)
-        }
-    }))
-
-    const classes = useStyles()
 
     React.useEffect(() => {
         if (cluster && anchorEl) {
@@ -607,13 +455,10 @@ function ClusterPopover({
     }, [anchorEl, cluster])
 
     const onSave = () => {
-        updateLineUpInput_filter({ "key": 'groupLabel', 'val_old': cluster.label, 'val_new': name });
         cluster.label = name
         // Rename cluster labels in dataset
-        replaceClusterLabels(cluster.vectors, cluster.label, name)
+        replaceClusterLabels(cluster.indices.map(i => dataset.vectors[i]), cluster.label, name)
         setAnchorEl(null)
-
-        setLineUpInput_update();
     }
 
     const onDelete = () => {
@@ -623,13 +468,9 @@ function ClusterPopover({
 
     const onLineup = () => {
         setAnchorEl(null)
-        // setLineUpInput_data(cluster.vectors)
-        setLineUpInput_visibility(true)
-        setLineUpInput_filter({ 'groupLabel': cluster.label });
-        setSelectedCluster(cluster)
-        
+
         const curr_sizes = splitRef.current.split.getSizes();
-        if(curr_sizes[1] < 2){
+        if (curr_sizes[1] < 2) {
             splitRef.current.split.setSizes([curr_sizes[0], 70])
         }
     }
@@ -649,11 +490,10 @@ function ClusterPopover({
         }}
     >
         <div>
-            <Paper className={classes.root}>
+            <ContextPaper>
                 {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
 
                 <Button
-                    className={classes.button}
                     variant="outlined"
                     // color="secondary"
                     onClick={onDelete}
@@ -664,7 +504,6 @@ function ClusterPopover({
 
                 <FormGroup>
                     <TextField
-                        className={classes.button}
                         id="option3"
                         label="Group Name"
                         value={name}
@@ -677,14 +516,12 @@ function ClusterPopover({
                             color="primary"
                             variant="contained"
                             aria-label="Save"
-                            className={classes.button}
                             onClick={onSave}
                             startIcon={<SaveIcon />}
-                        >Save 
-                        {/* Name */}
+                        >Save
+                            {/* Name */}
                         </Button>
                         <Button
-                            className={classes.button}
                             onClick={onLineup}
                             variant="outlined"
                         >Show Group in Table</Button>
@@ -694,69 +531,74 @@ function ClusterPopover({
 
 
                 </FormGroup>
-            </Paper>
+            </ContextPaper>
         </div>
 
     </Popover>
 }
 
+
+type ClusterListProps = {
+    selectedClusters: string[]
+    stories: IStorytelling
+    removeClusterFromStories
+    splitRef
+    setSelectedCluster
+    dataset
+}
+
+
+
 function ClusterList({
     selectedClusters,
-    webGLView,
     stories,
+    dataset,
     removeClusterFromStories,
-    // setLineUpInput_data,
-    updateLineUpInput_filter,
-    setLineUpInput_update,
-    setLineUpInput_visibility,
-    setLineUpInput_filter,
     splitRef,
     setSelectedCluster
-}) {
+}: ClusterListProps) {
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [popoverCluster, setPopoverCluster] = React.useState(null)
+    const [popoverCluster, setPopoverCluster] = React.useState<ICluster>(null)
 
-    const handleClick = event => {
-        setAnchorEl(event.currentTarget);
-    };
+    const activeStory = AStorytelling.getActive(stories)
 
+    const storyItems = new Array<JSX.Element>()
+
+    if (activeStory) {
+        for (const [key, cluster] of Object.entries(activeStory.clusters.byId)) {
+            storyItems.push(<ListItem key={key} button selected={selectedClusters.includes(key)} onClick={(event) => {
+                setSelectedCluster([key], event.ctrlKey)
+            }}>
+                <ListItemText
+                    primary={ACluster.getTextRepresentation(cluster)}
+                    secondary={`${cluster.indices.length} Items`}
+                />
+                <ListItemSecondaryAction>
+                    <IconButton edge="end" aria-label="delete" onClick={(event) => {
+                        //removeClusterFromStories(cluster)
+                        setPopoverCluster(cluster)
+                        setAnchorEl(event.target)
+                    }}>
+                        <SettingsIcon />
+                    </IconButton>
+                </ListItemSecondaryAction>
+            </ListItem>)
+        }
+    }
 
     return <div>
         <ClusterPopover
             anchorEl={anchorEl}
+            dataset={dataset}
             setAnchorEl={setAnchorEl}
             cluster={popoverCluster}
             removeClusterFromStories={removeClusterFromStories}
-            setLineUpInput_visibility={setLineUpInput_visibility}
-            setLineUpInput_filter={setLineUpInput_filter}
-            setLineUpInput_update={setLineUpInput_update}
-            updateLineUpInput_filter={updateLineUpInput_filter}
-            // setLineUpInput_data={setLineUpInput_data}
             splitRef={splitRef}
             setSelectedCluster={setSelectedCluster}
         ></ClusterPopover>
 
         <List>
-            {stories.active?.clusters.map((cluster, key) => {
-                return <ListItem key={key} button selected={selectedClusters.includes(cluster)} onClick={(event) => {
-                    setSelectedCluster(cluster, event.ctrlKey)
-                }}>
-                    <ListItemText
-                        primary={cluster.getTextRepresentation()}
-                        secondary={`${cluster.vectors.length} Items`}
-                    />
-                    <ListItemSecondaryAction>
-                        <IconButton edge="end" aria-label="delete" onClick={(event) => {
-                            //removeClusterFromStories(cluster)
-                            setPopoverCluster(cluster)
-                            setAnchorEl(event.target)
-                        }}>
-                            <SettingsIcon />
-                        </IconButton>
-                    </ListItemSecondaryAction>
-                </ListItem>
-            })
-            }
+            {storyItems}
         </List>
     </div>
 }

@@ -1,26 +1,26 @@
-import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, InputLabel, MenuItem, Popover, Select, Switch, Typography } from "@material-ui/core";
+import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormHelperText, MenuItem, Popover, Select, Switch, Typography } from "@mui/material";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
-import { setAggregationAction } from "../../Ducks/AggregationDuck";
 import { setGenericFingerprintAttributes } from "../../Ducks/GenericFingerprintAttributesDuck";
 import { setHoverWindowMode, WindowMode } from "../../Ducks/HoverSettingsDuck";
 import { HoverStateOrientation, setHoverStateOrientation } from "../../Ducks/HoverStateOrientationDuck";
-import { SelectionClusters } from "../../Overlays/SelectionClusters/SelectionClusters";
+import { SelectionClusters } from "../../Overlays/SelectionClusters";
 import { RootState } from "../../Store/Store";
 import { VirtualColumn, VirtualTable } from "../../UI/VirtualTable";
-import * as frontend_utils from "../../../utils/frontend-connect";
+import { selectVectors } from "../../Ducks/AggregationDuck";
+import { AStorytelling } from "../../Ducks";
 
 const mapStateToProps = (state: RootState) => ({
     hoverSettings: state.hoverSettings,
     currentAggregation: state.currentAggregation,
     dataset: state.dataset,
     hoverStateOrientation: state.hoverStateOrientation,
-    activeStorybook: state.stories?.active
+    activeStorybook: AStorytelling.getActive(state.stories)
 })
 
 const mapDispatchToProps = dispatch => ({
     setHoverWindowMode: value => dispatch(setHoverWindowMode(value)),
-    setAggregation: value => dispatch(setAggregationAction(value)),
+    setAggregation: value => dispatch(selectVectors(value, false)),
     setHoverStateOrientation: value => dispatch(setHoverStateOrientation(value))
 })
 
@@ -29,25 +29,24 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    hoverUpdate
 }
 
 
-export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, hoverUpdate, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook }: Props) => {
+export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook }: Props) => {
     const handleChange = (_, value) => {
         setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded)
     }
 
-    
+
 
 
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
         <Box paddingX={2} paddingTop={1}>
-            {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ? 
-            <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.selectedClusters.length}</b> out of <b>{activeStorybook.clusters.length}</b> groups</Typography>
-            :<Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> items</Typography>
-        }
-            
+            {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ?
+                <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.selectedClusters.length}</b> out of <b>{activeStorybook?.clusters.allIds.length}</b> groups</Typography>
+                : <Typography color={"textSecondary"} variant="body2">Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> items</Typography>
+            }
+
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
@@ -60,20 +59,17 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, h
             <Button variant="outlined" style={{ width: '100%' }} onClick={() => { setAggregation([]) }}>Clear Selection</Button>
         </Box>
 
-        { !frontend_utils.CHEM_PROJECT && 
         <Box paddingX={2} paddingTop={1}>
             <AttributeTable></AttributeTable>
         </Box>
-        }
-        
 
         <Box paddingX={2} paddingTop={1}>
             <div style={{ width: '100%' }}>
                 <FormControl style={{ width: '100%' }}>
-                    <InputLabel id="demo-customized-select-label">Hover Position</InputLabel>
+                    <FormHelperText>Hover Position</FormHelperText>
                     <Select
-                        labelId="demo-customized-select-label"
-                        id="demo-customized-select"
+                        displayEmpty
+                        size='small'
                         value={hoverStateOrientation}
                         onChange={(event) => {
                             setHoverStateOrientation(event.target.value)
@@ -91,7 +87,7 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, h
         </Box>
 
 
-        <SelectionClusters hoverUpdate={hoverUpdate}></SelectionClusters>
+        <SelectionClusters></SelectionClusters>
     </div>
 })
 

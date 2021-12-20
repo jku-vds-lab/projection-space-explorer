@@ -1,25 +1,24 @@
-import { FeatureType } from "../Data/FeatureType"
-import { DatasetType } from "../Data/DatasetType"
-import { Vect } from "../Data/Vect"
+import { FeatureType } from "../../../model/FeatureType"
+import { DatasetType } from "../../../model/DatasetType"
+import { AVector, IVector } from "../../../model/Vector"
 import { InferCategory } from "../Data/InferCategory"
 import { Preprocessor } from "../Data/Preprocessor"
-import { Dataset, DefaultFeatureLabel } from "../Data/Dataset"
+import { Dataset, DefaultFeatureLabel } from "../../../model/Dataset"
 import { Loader } from "./Loader"
-import { DatasetEntry } from "../Data/DatasetDatabase"
-import Cluster from "../Data/Cluster"
-import * as frontend_utils from "../../../utils/frontend-connect"
-
-
-var d3v5 = require('d3')
+import { ICluster } from "../../../model/Cluster"
+import { ObjectTypes } from "../../../model/ObjectType"
+import WorkerCluster from "../../workers/cluster.worker";
+import * as d3v5 from 'd3v5';
+import { DatasetEntry } from "../../../model/DatasetEntry"
 
 function convertFromCSV(vectors) {
     return vectors.map(vector => {
-        return new Vect(vector)
+        return AVector.create(vector)
     })
 }
 
 export class CSVLoader implements Loader {
-    vectors: Vect[]
+    vectors: IVector[]
     datasetType: DatasetType
 
     constructor() {
@@ -41,7 +40,12 @@ export class CSVLoader implements Loader {
 
 
     resolveContent(content, finished) {
-        this.vectors = convertFromCSV(d3v5.csvParse(content))
+        const vectors = convertFromCSV(d3v5.csvParse(content))
+        this.resolveVectors(vectors, finished)
+    }
+
+    resolveVectors(vectors, finished) {
+        this.vectors = convertFromCSV(vectors)
         this.datasetType = new InferCategory(this.vectors).inferType()
 
         this.resolve(finished, this.vectors, this.datasetType, { display: "", type: this.datasetType, path: "" })
@@ -58,29 +62,23 @@ export class CSVLoader implements Loader {
     }
 
 
-    getClusters(vectors: Vect[], callback) {
-        let worker = new Worker(frontend_utils.BASE_PATH + 'cluster.js')
+    getClusters(vectors: IVector[], callback) {
+        let worker = new WorkerCluster()
 
         worker.onmessage = (e) => {
             // Point clustering
-            let clusters = []
+            let clusters = new Array<ICluster>()
             Object.keys(e.data).forEach(k => {
                 let t = e.data[k]
-                let f = new Cluster(t.points, t.bounds, t.hull, t.triangulation)
-                f.label = k
-                clusters.push(f)
-            })
-
-
-            // Inject cluster attributes
-            clusters.forEach(cluster => {
-                let vecs = []
-                cluster.points.forEach(point => {
-                    vecs.push(vectors[point.meshIndex])
+                clusters.push({
+                    objectType: ObjectTypes.Cluster,
+                    indices: t.points.map(i => i.meshIndex),
+                    hull: t.hull,
+                    triangulation: t.triangulation,
+                    label: k
                 })
-                cluster.vectors = vecs
-                cluster.points = cluster.vectors
             })
+
             callback(clusters)
         }
 
@@ -91,7 +89,7 @@ export class CSVLoader implements Loader {
     }
 
 
-    async resolve(finished, vectors, datasetType, entry: DatasetEntry) {
+    async resolve(finished, vectors, datasetType, entry: DatasetEntry): Promise<Dataset> {
         var header = Object.keys(vectors[0])
 
         var ranges = header.reduce((map, value) => {
@@ -144,6 +142,9 @@ export class CSVLoader implements Loader {
                         break;
                     case "string":
                         types[current_key] = FeatureType.String;
+                        break;
+                    case "array":
+                        types[current_key] = FeatureType.Array;
                         break;
                     default:
                         types[current_key] = FeatureType.String;
@@ -209,15 +210,27 @@ export class CSVLoader implements Loader {
         
         let dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation)
         
-        this.getClusters(vectors, clusters => {
-            dataset.clusters = clusters
+        const promise = new Promise<Dataset>((resolve, eject) => {
+            
+            this.getClusters(vectors, clusters => {
+                dataset.clusters = clusters
+    
+                // Reset cluster label after extraction
+                dataset.vectors.forEach(vector => {
+                    vector.groupLabel = []
+                })
+    
+                dataset.categories = dataset.extractEncodingFeatures(ranges)
+    
+                resolve(dataset)
 
-            // Reset cluster label after extraction
-            dataset.vectors.forEach(vector => {
-                vector.groupLabel = []
+                // Backwards compatibility
+                if (finished) {
+                    finished(dataset)
+                }
             })
-
-            finished(dataset, new InferCategory(vectors).load(ranges))
         })
+
+        return promise
     }
 }

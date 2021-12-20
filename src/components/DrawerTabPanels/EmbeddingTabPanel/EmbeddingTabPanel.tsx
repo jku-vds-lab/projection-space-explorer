@@ -1,26 +1,25 @@
 import { connect, ConnectedProps } from 'react-redux'
 import React = require('react')
-import { FlexParent } from '../../Utility/FlexParent'
-import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@material-ui/core'
-import { ProjectionControlCard } from './ProjectionControlCard/ProjectionControlCard'
+import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material'
+import { ProjectionControlCard } from './ProjectionControlCard'
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
 import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
-import { Dataset } from "../../Utility/Data/Dataset"
-import { GenericSettings } from './GenericSettings/GenericSettings'
+import { Dataset } from "../../../model/Dataset"
+import { GenericSettings } from './GenericSettings'
 import { RootState } from '../../Store/Store'
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck'
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck'
-import { TSNEEmbeddingController } from './EmbeddingController/TSNEEmbeddingController'
-import { UMAPEmbeddingController } from './EmbeddingController/UMAPEmbeddingController'
-import { ClusterTrailSettings } from './ClusterTrailSettings/ClusterTrailSettings'
+import { TSNEEmbeddingController } from './TSNEEmbeddingController'
+import { UMAPEmbeddingController } from './UMAPEmbeddingController'
+import { ClusterTrailSettings } from './ClusterTrailSettings'
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck'
-import { ForceAtlas2EmbeddingController } from './EmbeddingController/ForceAtlas2EmbeddingController'
-import { Embedding } from '../../Utility/Data/Embedding'
-import FolderIcon from '@material-ui/icons/Folder';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionsDuck'
+import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController'
+import { IProjection, AProjection, IBaseProjection } from '../../../model/Projection'
+import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-import * as frontend_utils from '../../../utils/frontend-connect';
+import { FeatureConfig } from '../../../Application'
+import { updateWorkspaceAction, addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionDuck'
 
 const mapStateToProps = (state: RootState) => ({
     currentAggregation: state.currentAggregation,
@@ -28,9 +27,9 @@ const mapStateToProps = (state: RootState) => ({
     projectionWorker: state.projectionWorker,
     projectionOpen: state.projectionOpen,
     dataset: state.dataset,
-    webGLView: state.webGLView,
     projectionParams: state.projectionParams,
-    projections: state.projections
+    projections: state.projections,
+    workspace: state.projections.workspace
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -40,7 +39,8 @@ const mapDispatchToProps = dispatch => ({
     setProjectionColumns: value => dispatch(setProjectionColumns(value)),
     setTrailVisibility: visibility => dispatch(setTrailVisibility(visibility)),
     addProjection: embedding => dispatch(addProjectionAction(embedding)),
-    deleteProjection: projection => dispatch(deleteProjectionAction(projection))
+    deleteProjection: (handle: string) => dispatch(deleteProjectionAction(handle)),
+    updateWorkspace: (workspace: IBaseProjection) => dispatch(updateWorkspaceAction(workspace))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -48,6 +48,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
+    config: FeatureConfig
     projectionWorker?: Worker
     projectionOpen?: boolean
     setProjectionOpen?: any
@@ -63,7 +64,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
     const [controller, setController] = React.useState(null)
 
-    React.useEffect(()=>{
+    React.useEffect(() => {
         if (controller) {
             controller.terminate()
         }
@@ -73,15 +74,15 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
 
     const onSaveProjectionClick = (name) => {
-        props.addProjection(new Embedding(props.dataset.vectors, "Created " + name))
+        props.addProjection(AProjection.createProjection(props.workspace, "Created " + name))
     }
 
-    const onProjectionClick = (projection: Embedding) => {
-        props.webGLView.current.loadProjection(projection)
+    const onProjectionClick = (projection: IProjection) => {
+        props.updateWorkspace(projection.positions)
     }
 
-    const onDeleteProjectionClick = (projection: Embedding) => {
-        props.deleteProjection(projection)
+    const onDeleteProjectionClick = (handle: string) => {
+        props.deleteProjection(handle)
     }
 
 
@@ -93,45 +94,49 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
         <Box paddingLeft={2} paddingRight={2}>
             <Grid container direction="column" spacing={1}>
-                <Grid item>
-                    <Button
-                        style={{
-                            width: '100%'
-                        }}
-                        variant="outlined"
-                        onClick={() => {
-                            setDomainSettings('umap')
-                            setOpen(true)
-                        }}>{'UMAP'}</Button>
-                </Grid>
                 {
-                !frontend_utils.CHEM_PROJECT &&
-                <Grid item>
-                    <Button
-                        style={{
-                            width: '100%'
-                        }}
-                        variant="outlined"
-                        onClick={() => {
-                            setDomainSettings('tsne')
-                            setOpen(true)
-                        }}>{'t-SNE'}</Button>
-                </Grid>
+                    ((props.config?.disableEmbeddings?.umap ?? false) === false) &&
+                    <Grid item>
+                        <Button
+                            style={{
+                                width: '100%'
+                            }}
+                            variant="outlined"
+                            onClick={() => {
+                                setDomainSettings('umap')
+                                setOpen(true)
+                            }}>{'UMAP'}</Button>
+                    </Grid>
                 }
 
                 {
-                !frontend_utils.CHEM_PROJECT && 
-                <Grid item>
-                    <Button
-                        style={{
-                            width: '100%'
-                        }}
-                        variant="outlined"
-                        onClick={() => {
-                            setDomainSettings('forceatlas2')
-                            setOpen(true)
-                        }}>{'ForceAtlas2'}</Button>
-                </Grid>
+                    ((props.config?.disableEmbeddings?.tsne ?? false) === false) &&
+                    <Grid item>
+                        <Button
+                            style={{
+                                width: '100%'
+                            }}
+                            variant="outlined"
+                            onClick={() => {
+                                setDomainSettings('tsne')
+                                setOpen(true)
+                            }}>{'t-SNE'}</Button>
+                    </Grid>
+                }
+
+                {
+                    ((props.config?.disableEmbeddings?.forceatlas ?? false) === false) &&
+                    <Grid item>
+                        <Button
+                            style={{
+                                width: '100%'
+                            }}
+                            variant="outlined"
+                            onClick={() => {
+                                setDomainSettings('forceatlas2')
+                                setOpen(true)
+                            }}>{'ForceAtlas2'}</Button>
+                    </Grid>
                 }
             </Grid>
         </Box>
@@ -157,7 +162,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             open={open} onClose={() => setOpen(false)}
             onStart={(params, selection) => {
                 const checked_sel = selection.filter(s => s.checked)
-                if(checked_sel.length <= 0){
+                if (checked_sel.length <= 0) {
                     alert("Select at least one feature.")
                     return;
                 }
@@ -169,14 +174,9 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                 switch (domainSettings) {
                     case 'tsne': {
                         let controller = new TSNEEmbeddingController()
-                        controller.init(props.dataset, selection, params)
+                        controller.init(props.dataset, selection, params, props.workspace)
                         controller.stepper = (Y) => {
-                            props.dataset.vectors.forEach((vector, i) => {
-                                vector.x = Y[i][0]
-                                vector.y = Y[i][1]
-                            })
-                            props.webGLView.current.updateXY()
-                            props.webGLView.current.repositionClusters()
+                            props.updateWorkspace(Y.map(y => ({ x: y[0], y: y[1] })))
                         }
 
                         setController(controller)
@@ -185,31 +185,20 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
                     case 'umap': {
                         let controller = new UMAPEmbeddingController()
-                        let samples = params.useSelection ? props.currentAggregation.aggregation : props.dataset.vectors
+                        let samples = props.dataset.vectors
 
-                        controller.init(props.dataset, selection, params, params.useSelection ? samples : undefined)
+                        controller.init(props.dataset, selection, params, props.workspace)
                         controller.stepper = (Y) => {
-                            let source = controller.boundsY(Y)
-                            let target = controller.targetBounds
-
-
-
-                            samples.forEach((sample, i) => {
-                                if (controller.targetBounds) {
-                                    sample.x = target.x + ((Y[i][0] - source.x) / source.width) * target.width
-                                    sample.y = target.y + ((Y[i][1] - source.y) / source.height) * target.height
-                                } else {
-                                    sample.x = Y[i][0]
-                                    sample.y = Y[i][1]
+                            const workspace = samples.map((sample, i) => {
+                                return {
+                                    x: Y[i][0],
+                                    y: Y[i][1]
                                 }
-
                             })
 
-
-                            props.webGLView.current.updateXY()
-                            props.webGLView.current.repositionClusters()
+                            props.updateWorkspace(workspace)
                         }
-                        
+
 
                         setController(controller)
                         break;
@@ -219,12 +208,16 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                         controller.init(props.dataset, selection, params)
 
                         controller.stepper = (Y) => {
-                            props.dataset.vectors.forEach((sample, i) => {
-                                let idx = controller.nodes[sample.view.duplicateOf].view.meshIndex
-                                sample.x = Y[idx].x
-                                sample.y = Y[idx].y
+                            const workspace = props.dataset.vectors.map((sample, i) => {
+                                let idx = controller.nodes[sample.__meta__.duplicateOf].__meta__.meshIndex
+
+                                return {
+                                    x: Y[idx].x,
+                                    y: Y[idx].y
+                                }
                             })
-                            props.webGLView.current.updateXY()
+
+                            props.updateWorkspace(workspace)
                         }
 
                         setController(controller)
@@ -257,7 +250,8 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
         <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
             <List dense={true}>
-                {props.projections.map(projection => {
+                {props.projections.allIds.map(key => {
+                    const projection = props.projections.byId[key]
                     return <ListItem key={projection.hash} button onClick={() => onProjectionClick(projection)}>
                         <ListItemAvatar>
                             <Avatar>
@@ -269,7 +263,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                             secondary={`${projection.positions.length} items`}
                         />
                         <ListItemSecondaryAction>
-                            <IconButton onClick={() => onDeleteProjectionClick(projection)}>
+                            <IconButton onClick={() => onDeleteProjectionClick(key)}>
                                 <DeleteIcon />
                             </IconButton>
                         </ListItemSecondaryAction>

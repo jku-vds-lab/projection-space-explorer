@@ -1,4 +1,4 @@
-import { Vect } from "../Utility/Data/Vect";
+import { IVector } from "../../model/Vector";
 
 /**
  * Calculates the default zoom factor by examining the bounds of the data set
@@ -180,7 +180,7 @@ export function valueInRange(value, range) {
 
 
 
-export function replaceClusterLabels(vectors: Vect[], from: any, to: any) {
+export function replaceClusterLabels(vectors: IVector[], from: any, to: any) {
   vectors.forEach(vector => {
     let i = vector.groupLabel.findIndex((e) => e === from)
     if (i >= 0) {

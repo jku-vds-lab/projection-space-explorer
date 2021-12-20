@@ -1,5 +1,0 @@
-conda install -c conda-forge bottle
-conda install -c conda-forge rdkit
-conda install -c conda-forge hdbscan
-conda install joblib==0.17.0 # can probably be removed in a future version: https://github.com/scikit-learn-contrib/hdbscan/issues/436
-pip install bottle-beaker

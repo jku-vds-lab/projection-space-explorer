@@ -1,23 +1,19 @@
 import * as React from 'react'
-import { Button, FormControl, Grid, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, MenuItem, Select } from '@material-ui/core';
+import { Button, FormControl, FormHelperText, Grid, IconButton, InputLabel, ListItem, ListItemSecondaryAction, ListItemText, Select } from '@mui/material';
 import { connect, ConnectedProps } from 'react-redux'
-import './StoryPreview.scss'
-import DeleteIcon from '@material-ui/icons/Delete';
-import { Storybook } from '../../Utility/Data/Storybook';
-import { addStory, deleteStory, setActiveStory } from '../../Ducks/StoriesDuck';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { IBook, ABook } from '../../../model/Book';
+import { addBook, deleteBook, setActiveStory, AStorytelling } from '../../Ducks/StoriesDuck';
 import { RootState } from '../../Store/Store';
-import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
 
 const mapStateToProps = (state: RootState) => ({
-    stories: state.stories,
-    storyEditor: state.storyEditor
+    stories: state.stories
 })
 
 const mapDispatchToProps = dispatch => ({
     setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
-    deleteStory: story => dispatch(deleteStory(story)),
-    addStory: story => dispatch(addStory(story)),
-    openStoryEditor: visible => dispatch(openStoryEditor(visible))
+    deleteStory: story => dispatch(deleteBook(story)),
+    addStory: (story: IBook) => dispatch(addBook(story, true))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -25,16 +21,13 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    addStory: any
 }
 
 export const StoryPreview = connector(({
     stories,
     setActiveStory,
     deleteStory,
-    addStory,
-    storyEditor,
-    openStoryEditor }: Props) => {
+    addStory }: Props) => {
     const deleteHandler = (story) => {
         if (stories.active == story) {
             setActiveStory(null)
@@ -44,23 +37,27 @@ export const StoryPreview = connector(({
     }
 
     const addHandler = () => {
-        addStory(new Storybook([], []))
+        addStory(ABook.createEmpty())
     }
-    
-    return <div className="StoryPreviewContent">
+
+    return <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignContent: 'stretch'
+    }}>
         <FormControl>
-            <InputLabel id="demo-simple-select-label">Active Story Book</InputLabel>
+            <FormHelperText>Active Story Book</FormHelperText>
             <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={stories.active ? stories.active.getId() : ''}
+                displayEmpty
+                size='small'
+                value={stories.active}
                 onChange={(event) => {
-                    setActiveStory(stories.stories.find(story => story.getId() == event.target.value))
+                    setActiveStory(event.target.value)
                 }}
             >
                 <ListItem
-                    key={-1}
-                    {...{ value: '' }}
+                    key={''}
+                    {...{ value: null }}
                     button
                 >
                     <ListItemText primary={"None"} />
@@ -70,9 +67,9 @@ export const StoryPreview = connector(({
                         return <ListItem
                             key={key}
                             button
-                            {...{ value: story.getId() }}
+                            {...{ value: key }}
                         >
-                            <ListItemText primary={"Story Book"} secondary={`${story.clusters.length} nodes`} />
+                            <ListItemText primary={"Story Book"} secondary={`${Object.keys(story.clusters.byId).length} nodes`} />
                             <ListItemSecondaryAction>
                                 <IconButton edge="end" aria-label="delete" onClick={() => {
                                     deleteHandler(story)
@@ -86,7 +83,7 @@ export const StoryPreview = connector(({
             </Select>
         </FormControl>
 
-        <Grid container direction="row" alignItems="center" justify="space-between">
+        <Grid container direction="row" alignItems="center" justifyContent="space-between">
             <Button
                 style={{
                     marginTop: '16px'
@@ -96,16 +93,6 @@ export const StoryPreview = connector(({
                 size="small"
                 aria-label="move selected left"
             >Add Empty</Button>
-
-
-            {stories.active && stories.active.clusters.length > 0 && false && <Grid item>
-                <Button style={{
-                    marginTop: '16px'
-                }}
-                    onClick={() => openStoryEditor(!storyEditor.visible)}
-                    size="small"
-                    variant="outlined">{`${storyEditor.visible ? 'Close' : 'Open'} Story Editor`}</Button>
-            </Grid>}
         </Grid>
     </div>
 })

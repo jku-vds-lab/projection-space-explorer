@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Container, Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress, RadioGroup, Typography } from "@material-ui/core";
+import { Box, Button, CircularProgress, Container, Dialog, DialogActions, DialogContent, DialogTitle, LinearProgress, RadioGroup, Typography } from "@mui/material";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../Store/Store";
@@ -35,7 +35,6 @@ export function DownloadProgress({ job, onFinish, onCancel }: Props) {
 
     return (
         <Dialog
-            disableBackdropClick
             disableEscapeKeyDown
             maxWidth="xs"
             aria-labelledby="confirmation-dialog-title"
