@@ -301,5 +301,5 @@ export declare const Application: ConnectedComponent<{
     config?: BaseConfig;
     features?: FeatureConfig;
     overrideComponents?: ComponentConfig;
-}, "ref" | "config" | "features" | "overrideComponents" | "key">>;
+}, "ref" | "config" | "key" | "features" | "overrideComponents">>;
 export {};

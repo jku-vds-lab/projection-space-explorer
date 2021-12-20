@@ -456,5 +456,5 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     removeEdgeFromActive: (edge: any) => any;
 } & {
     overrideComponents: ComponentConfig;
-}, "ref" | "overrideComponents" | "key">>;
+}, "ref" | "key" | "overrideComponents">>;
 export {};

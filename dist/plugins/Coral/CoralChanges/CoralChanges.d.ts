@@ -81,5 +81,5 @@ export declare const CoralChanges: import("react-redux").ConnectedComponent<{
     vectorsB: Array<IVector>;
     dataset: Dataset;
     scale: number;
-}, "ref" | "key" | "width" | "height" | "scale" | "vectorsA" | "vectorsB">>;
+}, "height" | "scale" | "width" | "ref" | "key" | "vectorsA" | "vectorsB">>;
 export {};

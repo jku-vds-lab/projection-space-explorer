@@ -51,6 +51,8 @@ function mapDensityData(allData, selectedData, feature) {
 }
 
 function mapBarChartData(data, feature) {
+  console.log(data)
+  console.log(feature)
   const counts = {}
   for (var i=0; i<data.length; i++) {
     if (data[i][feature] in counts) {
@@ -66,7 +68,9 @@ function mapBarChartData(data, feature) {
 
   const barChartData = []
   for (var key in counts) {
-    barChartData.push({'category': key, 'count': counts[key]/data.length})
+    let count = counts[key]/data.length
+    count = isFinite(count) ? count : 0
+    barChartData.push({'category': key, 'count': count})
   }
   barChartData.sort(sortCountDesc)
   return {'values': barChartData}
@@ -76,7 +80,8 @@ const getSTD = (data) => {
   const total = data.reduce(function (a, b) {
     return a + b
   });
-  const mean = total / data.length
+  let mean = total / data.length
+  mean = isFinite(mean) ? mean : 0;
   function var_numerator(value) {
     return ((value - mean) * (value - mean));
   }
@@ -85,6 +90,7 @@ const getSTD = (data) => {
     return (a + b);
   });
   variance = variance / data.length;
+  variance = isFinite(variance) ? variance : 1;
   const std = Math.sqrt(variance)
   return std
 }
@@ -192,6 +198,12 @@ function genRows(vectors, aggregation, legendAttributes, dataset) {
         var barData = mapBarChartData(vectors, key)
         var barChart
         if (Object.keys(barData.values).length != 1) {
+          console.log(barData)
+          // barData = {
+          //   "values": [
+          //     {"category": "A","count": 20}, {"category": "B","count": 34}, {"category": "C","count": 55}
+          //   ]
+          // };
           barChart = <BarChart data={barData} actions={false} tooltip={new Handler().call}/>
         } else {
           barChart = null
