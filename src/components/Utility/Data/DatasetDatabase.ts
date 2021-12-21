@@ -256,17 +256,7 @@ export class DatasetDatabase {
                     display: "Chess: AlphaZero vs Stockfish",
                     path: "datasets/chess/alphazero.csv",
                     type: DatasetType.Chess
-                },
-                {
-                    display: "Chess: AlphaZero vs Stockfish, metadata, t-SNE",
-                    path: "datasets/chess/alphazero_tsne.csv",
-                    type: DatasetType.Chess
-                },
-                {
-                    display: "Chess: AlphaZero vs Stockfish, metadata, UMAP",
-                    path: "datasets/chess/alphazero_umap.csv",
-                    type: DatasetType.Chess
-                },
+                }
                 {
                     display: "Chess: Lichess, metadata, UMAP",
                     path: "datasets/chess/lichess_umap.csv",
@@ -275,6 +265,16 @@ export class DatasetDatabase {
                 {
                     display: "Chess: Lichess, metadata, t-SNE",
                     path: "datasets/chess/lichess_tsne.csv",
+                    type: DatasetType.Chess
+                },
+                {
+                    display: "Chess: Lichess, metadata, parametric UMAP custom network",
+                    path: "datasets/chess/lichess_umap_seed0_3CNN_2FF.csv",
+                    type: DatasetType.Chess
+                },
+                {
+                    display: "Chess: Lichess, metadata, parametric UMAP default network",
+                    path: "datasets/chess/lichess_umap_seed0_parametric_default.csv",
                     type: DatasetType.Chess
                 },
                 {
