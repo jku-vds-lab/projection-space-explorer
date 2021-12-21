@@ -256,7 +256,7 @@ export class DatasetDatabase {
                     display: "Chess: AlphaZero vs Stockfish",
                     path: "datasets/chess/alphazero.csv",
                     type: DatasetType.Chess
-                }
+                },
                 {
                     display: "Chess: Lichess, metadata, UMAP",
                     path: "datasets/chess/lichess_umap.csv",
