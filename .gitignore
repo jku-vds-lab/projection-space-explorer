@@ -104,3 +104,4 @@ typings/
 notebooks/chess/umap_outputs/
 notebooks/chess/games/
 notebooks/chess/alphazero games/
+notebooks/chess/local datasets/
