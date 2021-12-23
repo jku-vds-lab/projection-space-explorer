@@ -1,8 +1,11 @@
 const webpack = require('webpack');
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const smp = new SpeedMeasurePlugin();
 
-module.exports = {
+module.exports = smp.wrap({
   mode: "development",
-  watch: false,
+  watch: false, //true
   externals: {
     'react': 'react',
     'react-dom': 'react-dom',
@@ -40,7 +43,16 @@ module.exports = {
         "sass-loader"
       ] },
       { test: /\.tsx?$/, loader: "babel-loader" },
-      { test: /\.tsx?$/, loader: "ts-loader" },
+      { test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            },
+          },
+        ],
+      },
       {
         test: /\.(glsl|vs|fs)$/,
         loader: 'shader-loader'
@@ -61,5 +73,6 @@ module.exports = {
         ],
       }
     ]
-  }
-};
+  },
+  plugins: [new ForkTsCheckerWebpackPlugin()]
+});
