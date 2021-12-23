@@ -362,7 +362,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.mouseController.onMouseUp = (event: MouseEvent) => {
-
         }
 
 
@@ -524,6 +523,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 res = index
             }
         }
+        console.log('choose result:', this.props.dataset.vectors[res])
         return res
     }
 
