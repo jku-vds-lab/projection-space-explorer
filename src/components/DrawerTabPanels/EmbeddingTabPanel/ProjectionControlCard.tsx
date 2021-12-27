@@ -59,6 +59,7 @@ type Props = PropsFromRedux & {
     onClose: any
     onComputingChanged: any
     controller: any
+    dataset_name: string
 }
 
 /**
@@ -68,7 +69,7 @@ export var ProjectionControlCard = connector(({
     onComputingChanged,
     projectionParams,
     controller,
-    onClose }: Props) => {
+    onClose, dataset_name }: Props) => {
     if (controller == null) return null
 
 
@@ -80,10 +81,10 @@ export var ProjectionControlCard = connector(({
     const ref = React.useRef(step)
 
     if(step == 0){
-        console.time('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
+        console.time('time elapsed to project the file ' + dataset_name)
     }
     if(step / projectionParams.iterations >= 1){
-        console.timeEnd('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
+        console.timeEnd('time elapsed to project the file ' + dataset_name)
     }
 
     const [computing, setComputing] = React.useState(true)
@@ -125,7 +126,7 @@ export var ProjectionControlCard = connector(({
                     }
                     action={
                         <IconButton aria-label="settings" onClick={(e) => {
-                            console.timeEnd('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
+                            console.timeEnd('time elapsed to project the file ' + dataset_name)
                             onClose()
                         }}>
                             <CloseIcon />

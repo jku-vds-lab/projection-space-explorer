@@ -10,6 +10,7 @@ import BarChart from './BarChart';
 import VegaDensity from './VegaDensity';
 import VegaDate from './VegaDate';
 import { RootState } from '../../..';
+import * as vegaImport from 'vega';
 
 const useStyles = makeStyles({
   table: {
@@ -34,13 +35,13 @@ function mapHistData(data, feature) {
 }
 
 function mapDensityData(allData, selectedData, feature) {
-  const mappedData = allData.map((d) => {
+  const mappedData = allData.map((d, i) => {
     return {
       feature: +d[feature],
       selection: "all"
     }
   })
-  const mappedSelection = selectedData.map((d) => {
+  const mappedSelection = selectedData.map((d, i) => {
     return {
       feature: +d[feature],
       selection: "selection"
@@ -51,8 +52,6 @@ function mapDensityData(allData, selectedData, feature) {
 }
 
 function mapBarChartData(data, feature) {
-  console.log(data)
-  console.log(feature)
   const counts = {}
   for (var i=0; i<data.length; i++) {
     if (data[i][feature] in counts) {
@@ -191,20 +190,15 @@ function genRows(vectors, aggregation, legendAttributes, dataset) {
       } else if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
         var densityData = mapDensityData(dataset.vectors, vectors, key)
-        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDensity data={densityData} actions={false} tooltip={new Handler().call}/>])
-
+        // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
+        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDensity logLevel={vegaImport.Error} data={densityData} actions={false} tooltip={new Handler().call}/>])
       } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
         // categorical feature
         var barData = mapBarChartData(vectors, key)
         var barChart
         if (Object.keys(barData.values).length != 1) {
-          console.log(barData)
-          // barData = {
-          //   "values": [
-          //     {"category": "A","count": 20}, {"category": "B","count": 34}, {"category": "C","count": 55}
-          //   ]
-          // };
-          barChart = <BarChart data={barData} actions={false} tooltip={new Handler().call}/>
+          // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
+          barChart = <BarChart logLevel={vegaImport.Error} data={barData} actions={false} tooltip={new Handler().call}/>
         } else {
           barChart = null
         }

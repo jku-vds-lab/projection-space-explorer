@@ -66,7 +66,8 @@ const mapStateToProps = (state: RootState) => ({
     hoverState: state.hoverState,
     workspace: state.projections.workspace,
     colorScales: state.colorScales,
-    pointDisplay: state.pointDisplay
+    pointDisplay: state.pointDisplay,
+    // viewTransform: state.viewTransform
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -697,8 +698,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.camera = new THREE.OrthographicCamera(this.getWidth() / - 2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / - 2, 1, 1000);
         this.camera.position.z = 1;
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-        this.camera.updateProjectionMatrix();
 
+
+        // this.camera.position.x = this.props.viewTransform.centerX
+        // this.camera.position.y = this.props.viewTransform.centerY
+        // this.camera.zoom = this.props.viewTransform.zoom
+
+        this.camera.updateProjectionMatrix();
 
         this.containerRef.current.appendChild(this.renderer.domElement);
 
@@ -986,6 +992,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             camera.position.z = 1;
             camera.position.x = this.camera.position.x * this.camera.zoom
             camera.position.y = this.camera.position.y * this.camera.zoom
+            // camera.position.x = this.props.viewTransform.centerX
+            // camera.position.y = this.props.viewTransform.centerY
+            // camera.zoom = this.props.viewTransform.zoom
             camera.updateProjectionMatrix();
 
             this.renderer.clear()
@@ -1285,7 +1294,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             {
                 // Layers which are behind the webgl view
                 this.props.overrideComponents?.layers?.filter(layer => layer.order < 0).map(layer => {
-                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element)
+                    return <div key={"layer"+layer.order}>{React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element)}</div>
                 })
             }
 
@@ -1309,7 +1318,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             {
                 // Layers which are in front of the webgl view
                 this.props.overrideComponents?.layers?.filter(layer => layer.order > 0).map(layer => {
-                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element)
+                    return <div key={"layer"+layer.order}>{React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element)}</div>
                 })
             }
 

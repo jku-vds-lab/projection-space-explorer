@@ -118,6 +118,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
         <Box p={1}>
             <ProjectionControlCard
+                dataset_name={props.dataset?.info?.path}
                 controller={controller}
                 onClose={() => {
                     if (controller) {
