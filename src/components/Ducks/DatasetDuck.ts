@@ -1,5 +1,5 @@
 import { Dataset } from "../../model/Dataset";
-export function dataset(state?: Dataset): Dataset;
+// export function dataset(state?: Dataset): Dataset;
 
 const SET = "ducks/dataset/SET"
 interface SetDatasetAction {
@@ -18,7 +18,7 @@ export function setDatasetAction(dataset: Dataset): DatasetActionTypes {
 
 const initialState: Dataset = null
 
-export default function Dataset(state = initialState, action): Dataset {
+export default function setDataset(state = initialState, action): Dataset {
     switch (action.type) {
         case SET:
             return action.dataset
