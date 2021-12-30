@@ -103,6 +103,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         scales: NormalizedDictionary<BaseColorScale>;
         active: string;
     };
+    cimeBackgroundSelection: any;
 }>;
 export declare function createRootReducer(reducers: any): (state: any, action: any) => any;
 export declare type RootState = ReturnType<typeof rootReducer>;
