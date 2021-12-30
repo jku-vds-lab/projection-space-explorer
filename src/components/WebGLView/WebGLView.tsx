@@ -1378,6 +1378,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                       },
                       this.createTransform()
                     );
+                    console.log('Pressed "Download k-Nearest" option from context-menu with coords :>> ', coords);
                     this.props.setCimeBackgroundSelection(coords);
                     handleClose()
                 }}>Download k-Nearest</MenuItem>
