@@ -19,9 +19,10 @@ declare type Props = PropsFromRedux & {
     onClose: any;
     onComputingChanged: any;
     controller: any;
+    dataset_name: string;
 };
 /**
  * Projection card that allows to start/stop the projection and shows the current steps.
  */
-export declare var ProjectionControlCard: import("react-redux").ConnectedComponent<({ onComputingChanged, projectionParams, controller, onClose }: Props) => JSX.Element, Pick<Props, "onClose" | "controller" | "onComputingChanged">>;
+export declare var ProjectionControlCard: import("react-redux").ConnectedComponent<({ onComputingChanged, projectionParams, controller, onClose, dataset_name }: Props) => JSX.Element, Pick<Props, "onClose" | "controller" | "onComputingChanged" | "dataset_name">>;
 export {};
