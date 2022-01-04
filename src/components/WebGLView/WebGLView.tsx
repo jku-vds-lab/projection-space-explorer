@@ -37,7 +37,6 @@ import { ObjectTypes } from '../../model/ObjectType';
 import { v4 as uuidv4 } from 'uuid';
 import { ComponentConfig } from '../../Application';
 import { ANormalized } from '../Utility/NormalizedState';
-// import { setCimeBackgroundSelection } from "../Ducks/CimeBackgroundSelectionDuck"
 
 type ViewState = {
     camera: Camera
@@ -68,7 +67,6 @@ const mapStateToProps = (state: RootState) => ({
     workspace: state.projections.workspace,
     colorScales: state.colorScales,
     pointDisplay: state.pointDisplay,
-    // cimeBackgroundSelection: state.cimeBackgroundSelection,
     // viewTransform: state.viewTransform
 })
 
@@ -86,7 +84,6 @@ const mapDispatchToProps = dispatch => ({
     setOpenTab: tab => dispatch(setOpenTabAction(tab)),
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => dispatch(selectClusters(clusters, shiftKey)),
     removeEdgeFromActive: (edge) => dispatch(removeEdgeFromActive(edge)),
-    // setCimeBackgroundSelection: (coords) => dispatch(setCimeBackgroundSelection(coords))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
