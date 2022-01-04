@@ -114,6 +114,8 @@ export interface ICluster extends TypedObject {
  * Cluster type guard.
  */
 export function isCluster(object: TypedObject): object is ICluster {
+    if(object?.objectType == null)
+        return false
     return object && object.objectType === ObjectTypes.Cluster
 }
 

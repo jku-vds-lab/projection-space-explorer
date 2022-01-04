@@ -48,7 +48,13 @@ export declare type ComponentConfig = Partial<{
     detailViews: Array<DetailViewSpec>;
     layers: Array<LayerSpec>;
     tabs: Array<TabSpec>;
+    contextMenuItems: Array<ContextMenuItem>;
 }>;
+export declare type ContextMenuItem = {
+    key: string;
+    title: string;
+    function: (coords: any) => void;
+};
 export declare type DetailViewSpec = {
     name: string;
     view: () => JSX.Element;

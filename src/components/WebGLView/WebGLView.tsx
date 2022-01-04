@@ -37,7 +37,7 @@ import { ObjectTypes } from '../../model/ObjectType';
 import { v4 as uuidv4 } from 'uuid';
 import { ComponentConfig } from '../../Application';
 import { ANormalized } from '../Utility/NormalizedState';
-import { setCimeBackgroundSelection } from "../Ducks/CimeBackgroundSelectionDuck"
+// import { setCimeBackgroundSelection } from "../Ducks/CimeBackgroundSelectionDuck"
 
 type ViewState = {
     camera: Camera
@@ -68,7 +68,7 @@ const mapStateToProps = (state: RootState) => ({
     workspace: state.projections.workspace,
     colorScales: state.colorScales,
     pointDisplay: state.pointDisplay,
-    cimeBackgroundSelection: state.cimeBackgroundSelection,
+    // cimeBackgroundSelection: state.cimeBackgroundSelection,
     // viewTransform: state.viewTransform
 })
 
@@ -86,7 +86,7 @@ const mapDispatchToProps = dispatch => ({
     setOpenTab: tab => dispatch(setOpenTabAction(tab)),
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => dispatch(selectClusters(clusters, shiftKey)),
     removeEdgeFromActive: (edge) => dispatch(removeEdgeFromActive(edge)),
-    setCimeBackgroundSelection: (coords) => dispatch(setCimeBackgroundSelection(coords))
+    // setCimeBackgroundSelection: (coords) => dispatch(setCimeBackgroundSelection(coords))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
@@ -1277,6 +1277,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 menuY: null
             });
         };
+        
 
         return <div
             onContextMenu={
@@ -1365,9 +1366,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     handleClose()
                 }}>{"Create Group from Selection"}</MenuItem>
 
-                <MenuItem onClick={() => {
+                {this.props.dataset?.isSequential && <MenuItem onClick={() => {
                     var coords = CameraTransformations.screenToWorld({ x: this.mouseController.currentMousePosition.x, y: this.mouseController.currentMousePosition.y }, this.createTransform())
-
+                    console.log(this.props.dataset.isSequential)
                     if (this.props.displayMode == DisplayMode.OnlyClusters) {
                         return;
                     }
@@ -1377,20 +1378,23 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         var vector = this.props.dataset.vectors[idx]
                         this.props.setActiveLine(vector.line)
                     }
-                }}>Investigate Line</MenuItem>
-
-                <MenuItem onClick={() => {
-                    var coords = CameraTransformations.screenToWorld(
-                      {
-                        x: this.mouseController.currentMousePosition.x,
-                        y: this.mouseController.currentMousePosition.y,
-                      },
-                      this.createTransform()
-                    );
-                    console.log('Pressed "Download k-Nearest" option from context-menu with coords :>> ', coords);
-                    this.props.setCimeBackgroundSelection(coords);
                     handleClose()
-                }}>Download k-Nearest</MenuItem>
+                }}>Investigate Line</MenuItem>}
+
+                {this.props.overrideComponents?.contextMenuItems?.map((item) => 
+                    <MenuItem key={item.key} onClick={() => {
+                        var coords = CameraTransformations.screenToWorld(
+                          {
+                            x: this.mouseController.currentMousePosition.x,
+                            y: this.mouseController.currentMousePosition.y,
+                          },
+                          this.createTransform()
+                        );
+                        item.function(coords)
+                        handleClose()
+                    }}>{item.title}</MenuItem>
+                )}
+
             </Menu>
 
 

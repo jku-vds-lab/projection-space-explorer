@@ -157,7 +157,14 @@ export type ComponentConfig = Partial<{
   detailViews: Array<DetailViewSpec>
   layers: Array<LayerSpec>
   tabs: Array<TabSpec>
+  contextMenuItems: Array<ContextMenuItem>
 }>
+
+export type ContextMenuItem = {
+  key: string
+  title: string
+  function: (coords) => void
+}
 
 export type DetailViewSpec = {
   name: string

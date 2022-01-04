@@ -70,7 +70,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
             square: boolean;
         };
     };
-    cimeBackgroundSelection: any;
 } & {
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
@@ -85,7 +84,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setOpenTab: (tab: any) => any;
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
     removeEdgeFromActive: (edge: any) => any;
-    setCimeBackgroundSelection: (coords: any) => any;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
@@ -442,7 +440,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
             square: boolean;
         };
     };
-    cimeBackgroundSelection: any;
 } & {
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
@@ -457,7 +454,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     setOpenTab: (tab: any) => any;
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
     removeEdgeFromActive: (edge: any) => any;
-    setCimeBackgroundSelection: (coords: any) => any;
 } & {
     overrideComponents: ComponentConfig;
 }, "ref" | "overrideComponents" | "key">>;
