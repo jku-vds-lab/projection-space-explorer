@@ -37,6 +37,7 @@ import { ObjectTypes } from '../../model/ObjectType';
 import { v4 as uuidv4 } from 'uuid';
 import { ComponentConfig } from '../../Application';
 import { ANormalized } from '../Utility/NormalizedState';
+import { setCimeBackgroundSelection } from "../Ducks/CimeBackgroundSelectionDuck"
 
 type ViewState = {
     camera: Camera
@@ -67,6 +68,7 @@ const mapStateToProps = (state: RootState) => ({
     workspace: state.projections.workspace,
     colorScales: state.colorScales,
     pointDisplay: state.pointDisplay,
+    cimeBackgroundSelection: state.cimeBackgroundSelection,
     // viewTransform: state.viewTransform
 })
 
@@ -83,7 +85,8 @@ const mapDispatchToProps = dispatch => ({
     setActiveTrace: trace => dispatch(setActiveTrace(trace)),
     setOpenTab: tab => dispatch(setOpenTabAction(tab)),
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => dispatch(selectClusters(clusters, shiftKey)),
-    removeEdgeFromActive: (edge) => dispatch(removeEdgeFromActive(edge))
+    removeEdgeFromActive: (edge) => dispatch(removeEdgeFromActive(edge)),
+    setCimeBackgroundSelection: (coords) => dispatch(setCimeBackgroundSelection(coords))
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
@@ -363,7 +366,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.mouseController.onMouseUp = (event: MouseEvent) => {
-
         }
 
 
@@ -1376,6 +1378,19 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         this.props.setActiveLine(vector.line)
                     }
                 }}>Investigate Line</MenuItem>
+
+                <MenuItem onClick={() => {
+                    var coords = CameraTransformations.screenToWorld(
+                      {
+                        x: this.mouseController.currentMousePosition.x,
+                        y: this.mouseController.currentMousePosition.y,
+                      },
+                      this.createTransform()
+                    );
+                    console.log('Pressed "Download k-Nearest" option from context-menu with coords :>> ', coords);
+                    this.props.setCimeBackgroundSelection(coords);
+                    handleClose()
+                }}>Download k-Nearest</MenuItem>
             </Menu>
 
 

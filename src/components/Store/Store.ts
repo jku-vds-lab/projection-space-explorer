@@ -43,6 +43,7 @@ import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/
 import colorScales, { BaseColorScale } from '../Ducks/ColorScalesDuck';
 import clone = require('fast-clone');
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
+import cimeBackgroundSelection from "../Ducks/CimeBackgroundSelectionDuck"
 
 const allReducers = {
   currentAggregation: currentAggregation,
@@ -82,7 +83,8 @@ const allReducers = {
   hoverStateOrientation: hoverStateOrientation,
   detailView: detailView,
   datasetEntries: datasetEntries,
-  colorScales: colorScales
+  colorScales: colorScales,
+  cimeBackgroundSelection: cimeBackgroundSelection
 }
 
 const appReducer = combineReducers(allReducers)
