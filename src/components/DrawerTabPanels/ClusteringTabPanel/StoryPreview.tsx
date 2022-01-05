@@ -49,7 +49,7 @@ export const StoryPreview = connector(({
     
     return <div className="StoryPreviewContent">
         <FormControl>
-            <InputLabel id="demo-simple-select-label">Active Story Book</InputLabel>
+            <InputLabel id="demo-simple-select-label">Active Session</InputLabel>
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -72,7 +72,7 @@ export const StoryPreview = connector(({
                             button
                             {...{ value: story.getId() }}
                         >
-                            <ListItemText primary={"Story Book"} secondary={`${story.clusters.length} nodes`} />
+                            <ListItemText primary={"Session"} secondary={`${story.clusters.length} nodes`} />
                             <ListItemSecondaryAction>
                                 <IconButton edge="end" aria-label="delete" onClick={() => {
                                     deleteHandler(story)

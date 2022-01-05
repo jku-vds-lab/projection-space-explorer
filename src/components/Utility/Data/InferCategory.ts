@@ -65,7 +65,7 @@ export class InferCategory {
             return DatasetType.Trrack
         }
 
-        return DatasetType.None;
+        return DatasetType.Toy;
     }
 
 

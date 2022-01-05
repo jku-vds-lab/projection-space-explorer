@@ -332,7 +332,7 @@ const StateSequenceDrawer = ({
                     }}>
                         <Typography align="center" variant="subtitle2">Change</Typography>
                         {
-                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
+                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.Toy) ? 76 : 0) }}></div>
                         }
                         {
                             input && activeLine.vectors.slice(0, activeLine.vectors.length - 1).map((vector, index) => {
@@ -342,7 +342,7 @@ const StateSequenceDrawer = ({
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        //top: input.position[index].y + input.position[index].height / 2 - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0),
+                                        //top: input.position[index].y + input.position[index].height / 2 - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.Toy) ? 76 : 0),
                                         height: (input.position[index + 1].y + input.position[index + 1].height / 2) - (input.position[index].y + input.position[index].height / 2) - 16,
                                         margin: 8,
 

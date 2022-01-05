@@ -400,7 +400,7 @@ export const Storytelling = connector(function ({
                         <CloseIcon />
                     </IconButton>
                 }
-                title="Storytelling"
+                title="Comparison"
             />
 
             <div style={{
@@ -531,10 +531,10 @@ export const Storytelling = connector(function ({
                         position: 'relative'
                     }}>
                         <Typography align="center" variant="subtitle2">Difference</Typography>
-                        {(dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.None || dataset.type === DatasetType.Chess) && <DifferenceThresholdSlider />}
+                        {(dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.Toy || dataset.type === DatasetType.None || dataset.type === DatasetType.Chess) && <DifferenceThresholdSlider />}
 
                         {
-                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.None) ? 76 : 0) }}></div>
+                            input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.Toy) ? 76 : 0) }}></div>
                         }
                         {
                             input && input.position.slice(0, input.position.length - 1).map((elem, index) => {
@@ -545,7 +545,7 @@ export const Storytelling = connector(function ({
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        //top: input.position[index].y + input.position[index].height / 2 - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0),
+                                        //top: input.position[index].y + input.position[index].height / 2 - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.Toy) ? 76 : 0),
                                         height: (input.position[index + 1].y + input.position[index + 1].height / 2) - (input.position[index].y + input.position[index].height / 2) - 16,
                                         margin: 8,
 
