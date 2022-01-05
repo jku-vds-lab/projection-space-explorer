@@ -21,6 +21,7 @@ import { DatasetType } from "../Utility/Data/DatasetType";
 import { Vect } from "../Utility/Data/Vect";
 import { Dataset } from "../Utility/Data/Dataset";
 import { ChemLegendParent } from "./ChemDetail/ChemDetail";
+import clone = require('fast-clone')
 
 type GenericLegendProps = {
     type: DatasetType
@@ -28,6 +29,23 @@ type GenericLegendProps = {
     aggregate: boolean
     hoverUpdate?
     scale?: number
+}
+
+function dropChessBoardCoordinates(vectors) {
+    // TODO export to utils
+
+    const map = vectors.map(x => {
+        const { a1, a2, a3, a4, a5, a6, a7, a8,
+                b1, b2, b3, b4, b5, b6, b7, b8,
+                c1, c2, c3, c4, c5, c6, c7, c8,
+                d1, d2, d3, d4, d5, d6, d7, d8,
+                e1, e2, e3, e4, e5, e6, e7, e8,
+                f1, f2, f3, f4, f5, f6, f7, f8,
+                g1, g2, g3, g4, g5, g6, g7, g8,
+                h1, h2, h3, h4, h5, h6, h7, h8, ...rest} = x;
+        return rest
+    });
+    return map
 }
 
 //shows single and aggregated view
@@ -40,7 +58,7 @@ export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: G
         case DatasetType.Neural:
             return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
         case DatasetType.Chess:
-            return <ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint>
+            return <div style={{display: 'flex', flexDirection: 'column'}}><ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
         case DatasetType.Cohort_Analysis:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Trrack:
@@ -68,7 +86,8 @@ export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({
         case DatasetType.Rubik:
             return <RubikFingerprint width={81 * scale} height={108 * scale} vectors={vectors}></RubikFingerprint>
         case DatasetType.Chess:
-            return <ChessFingerprint width={150 * scale} height={150 * scale} vectors={vectors}></ChessFingerprint>
+            // return <ChessFingerprint width={150 * scale} height={150 * scale} vectors={vectors}></ChessFingerprint>
+            return <div style={{display: 'flex', flexDirection: 'column'}}><ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={true}></CoralLegend></div>
         case DatasetType.Neural:
             return <NeuralLegend selection={vectors} aggregate={true}></NeuralLegend>
         case DatasetType.Story:

@@ -92,3 +92,16 @@ typings/
 
 # temp files
 /backend/temp-files
+/backend/session_data
+
+# large dataset
+/datasets/chemvis
+/dist/datasets/chemvis
+/datasets/reaction_optimization
+/dist/datasets/reaction_optimization
+
+# chess datasets and projections
+notebooks/chess/umap_outputs/
+notebooks/chess/games/
+notebooks/chess/alphazero games/
+notebooks/chess/local datasets/

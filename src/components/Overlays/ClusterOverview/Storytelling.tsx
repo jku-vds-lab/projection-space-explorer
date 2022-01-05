@@ -531,7 +531,7 @@ export const Storytelling = connector(function ({
                         position: 'relative'
                     }}>
                         <Typography align="center" variant="subtitle2">Difference</Typography>
-                        {(dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.Toy) && <DifferenceThresholdSlider />}
+                        {(dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.Toy || dataset.type === DatasetType.None || dataset.type === DatasetType.Chess) && <DifferenceThresholdSlider />}
 
                         {
                             input && <div style={{ height: input.firstDiv - ((dataset.type === DatasetType.Cohort_Analysis || dataset.type === DatasetType.Toy) ? 76 : 0) }}></div>

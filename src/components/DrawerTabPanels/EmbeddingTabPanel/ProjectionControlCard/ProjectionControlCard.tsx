@@ -75,6 +75,13 @@ export var ProjectionControlCard = connector(({
     const [step, setStep] = React.useState(0)
     const ref = React.useRef(step)
 
+    if(step == 0){
+        console.time('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
+    }
+    if(step / projectionParams.iterations >= 1){
+        console.timeEnd('time elapsed to project the file ' + localStorage.getItem("unique_filename"))
+    }
+
     const [computing, setComputing] = React.useState(true)
 
     controller.notifier = () => {
@@ -106,6 +113,7 @@ export var ProjectionControlCard = connector(({
         return <div><div>{`${Math.min(step, projectionParams.iterations)}/${projectionParams.iterations}`}</div><div>{`${percent}%`}</div></div>
     }
 
+    
     return (
         <Card className={classes.root}>
             <div className={classes.details}>

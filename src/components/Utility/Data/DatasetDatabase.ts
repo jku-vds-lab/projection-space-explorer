@@ -1,4 +1,5 @@
 import { DatasetType } from "./DatasetType";
+import * as frontend_utils from "../../../utils/frontend-connect";
 
 
 export type DatasetEntry = {
@@ -133,6 +134,7 @@ export class DatasetDatabase {
     }
 
     getByPath(path) {
-        return this.data.filter(e => e.path == path)[0];
+        const filtered = this.data.filter(e => e.path == path)[0];
+        return filtered ? filtered : this.data[0];
     }
 }

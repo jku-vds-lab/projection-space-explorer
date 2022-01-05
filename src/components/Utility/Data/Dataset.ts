@@ -11,6 +11,8 @@ export enum PrebuiltFeatures {
     Line = 'line',
     ClusterLabel = 'groupLabel'
 }
+export const EXCLUDED_COLUMNS = ["__meta__", "x", "y", "algo", "clusterProbability", "age", "multiplicity"];
+export const EXCLUDED_COLUMNS_ALL = ["__meta__", "x", "y", "algo", "clusterProbability", "age", "multiplicity", "groupLabel"];
 
 export const DefaultFeatureLabel = "Default"
 
@@ -219,8 +221,7 @@ export class Dataset {
         var vector = this.vectors[0];
 
         if (excludeGenerated) {
-            const blackList = ["x", "y", "algo", "age", "clusterProbability", "multiplicity", "groupLabel"];
-            return Object.keys(vector).filter(e => e != '__meta__' && !blackList.includes(e));
+            return Object.keys(vector).filter(e => e != '__meta__' && !EXCLUDED_COLUMNS_ALL.includes(e));
         } else {
             return Object.keys(vector).filter(e => e != '__meta__');
         }

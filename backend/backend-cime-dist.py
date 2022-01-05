@@ -67,11 +67,11 @@ def tryParseFloat(value):
     return value
     
 
-# # not needed for production server
-# import psutil
-# def print_memory():
-#     mem = dict(psutil.virtual_memory()._asdict())
-#     print("percent:", mem["percent"], "|", "used MB:", mem["used"]/1000000)
+# not needed for production server
+#import psutil
+#def print_memory():
+#    mem = dict(psutil.virtual_memory()._asdict())
+#    print("percent:", mem["percent"], "|", "used MB:", mem["used"]/1000000)
 
     
 import sys
@@ -294,12 +294,12 @@ def sdf_to_csv(filename=None, modifiers=None):
             modifier = '%s"noLineUp":true,'%modifier # this modifier tells lineup that the column should not be viewed at all (remove this modifier, if you want to be able to add the column with the sideview of lineup)
             modifier = '%s"featureLabel":"%s",'%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
             split_col = col.split("_")
-            col_name = split_col[1] + " (" + split_col[0] + ")"
+            col_name = col.replace(split_col[0]+"_", "") + " (" + split_col[0] + ")"
         elif col.startswith(tuple(descriptor_names_show_lineup)):
             #modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
             modifier = '%s"featureLabel":"%s",'%(modifier, col.split("_")[0]) # this modifier tells lineup that the columns belong to a certain group
             split_col = col.split("_")
-            col_name = split_col[1] + " (" + split_col[0] + ")"
+            col_name = col.replace(split_col[0]+"_", "") + " (" + split_col[0] + ")"
         #else:
             #modifier = '%s"showLineUp":true,'%modifier # this modifier tells lineup that the column should be initially viewed
             
@@ -308,7 +308,7 @@ def sdf_to_csv(filename=None, modifiers=None):
             
             split_col = col.split("_")
             if len(split_col) >= 2:
-                col_name = split_col[1] + " (" + split_col[0] + ")"
+                col_name = col.replace(split_col[0]+"_", "") + " (" + split_col[0] + ")"
             
         if col == "ID":
             modifier = '%s"dtype":"string","project":false,'%modifier # TODO: json crashed....
@@ -326,7 +326,10 @@ def sdf_to_csv(filename=None, modifiers=None):
     csv_buffer = StringIO()
     frame.to_csv(csv_buffer, index=False)
     
-    print("get_csv time elapsed [s]:", time.time()-start_time)
+    delta_time = time.time()-start_time
+    print("took", time.strftime('%H:%M:%S', time.gmtime(delta_time)), "to load file %s"%filename)
+    print("took %i min %f s to load file %s"%(delta_time/60, delta_time%60, filename))
+    #print("get_csv time elapsed [s]:", time.time()-start_time)
     
     return csv_buffer.getvalue()
 
@@ -369,21 +372,7 @@ def get_mcs(mol_list):
     
     return patt
 
-def smiles_to_base64(smiles, highlight=False):
-#    filename = request.session.get("unique_filename", None)
-#    if filename and highlight:
-#        df = sdf_to_df(filename)
-#        mol = pickle.loads(df.set_index(smiles_col).loc[smiles][mol_col])
-#        weights = [mol.GetAtomWithIdx(i).GetDoubleProp("rep_1") for i in range(mol.GetNumAtoms())]
-#        
-#        fig = SimilarityMaps.GetSimilarityMapFromWeights(mol, weights)
-#        
-#        buffered = BytesIO()
-#        fig.savefig(buffered, format="JPEG", bbox_inches = matplotlib.transforms.Bbox([[0, 0], [6, 6]]))
-#        img_str = base64.b64encode(buffered.getvalue())
-#        buffered.close()
-#        return img_str.decode("utf-8")
-#    else:
+def smiles_to_base64(smiles):
     m = Chem.MolFromSmiles(smiles)
     if m:
         return mol_to_base64(m)
@@ -522,22 +511,14 @@ def smiles_to_difference_highlight():
         return {}
 
 @bottle.route('/get_mol_img', method=['OPTIONS', 'POST'])
-def smiles_to_img_post(highlight=False):
+def smiles_to_img_post():
     if request.method == 'POST':
         smiles = request.forms.get("smiles")
-        img = smiles_to_base64(smiles, False)
+        img = smiles_to_base64(smiles)
         return {"data": img}
     else:
         return {}
         
-@bottle.route('/get_mol_img/highlight', method=['OPTIONS', 'POST'])
-def smiles_to_img_post_highlight():
-    if request.method == 'POST':
-        smiles = request.forms.get("smiles")
-        return smiles_to_base64(smiles, True)
-    else:
-        return {}
-
 
 @bottle.route('/get_mol_imgs', method=['OPTIONS', 'POST'])
 def smiles_list_to_imgs():
