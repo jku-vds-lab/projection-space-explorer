@@ -227,7 +227,7 @@ function getTable(vectors, aggregation, legendAttributes, dataset) {
   const classes = useStyles()
   const rows = genRows(vectors, aggregation, legendAttributes, dataset)
 
-  
+
 
   return (
     <div style={{ width: "100%", maxHeight: '100%', overflowY: "scroll" }}>
