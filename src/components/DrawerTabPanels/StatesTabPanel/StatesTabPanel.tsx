@@ -188,7 +188,7 @@ export const StatesTabPanelFull = ({
         {
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "transparency") ?
 
-                <SelectFeatureComponent label={"brightness"} default_val={channelBrightness} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "transparency")} onChange={(newValue) => {
+                <SelectFeatureComponent label={"opacity"} default_val={channelBrightness} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "transparency")} onChange={(newValue) => {
                     var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.filter(a => a.key == newValue)[0]
 
                     if (attribute == undefined) {

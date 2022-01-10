@@ -72,7 +72,7 @@ Additional columns might exist in the source file. If this is the case the tool 
 Possible visualization properties that can be changed are:
 
  - **color** (by categorical and sequential/diverging attributes)
- - **brightness** (by sequential/diverging attributes)
+ - **opacity** (by sequential/diverging attributes)
  - **transparency** (by sequential/diverging attributes)
  - **size** (by sequential/diverging attributes)
 
