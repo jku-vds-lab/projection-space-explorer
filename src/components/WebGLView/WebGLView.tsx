@@ -1285,7 +1285,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             {
                 // Layers which are behind the webgl view
                 this.props.overrideComponents?.layers?.filter(layer => layer.order < 0).map(layer => {
-                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element)
+                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element, {key: layer.order})
                 })
             }
 
@@ -1309,7 +1309,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             {
                 // Layers which are in front of the webgl view
                 this.props.overrideComponents?.layers?.filter(layer => layer.order > 0).map(layer => {
-                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element)
+                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element, {key: layer.order})
                 })
             }
 

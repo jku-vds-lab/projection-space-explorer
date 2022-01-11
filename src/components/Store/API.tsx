@@ -8,6 +8,29 @@ import { RootActions } from "./RootActions";
 import { SchemeColor } from "../Utility";
 import { IBaseProjection } from "../..";
 
+var catRomSpline = require('cat-rom-spline');
+import dataset from "../Ducks/DatasetDuck";
+
+
+
+
+const blobToBase64 = (blob) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    return new Promise<string>(resolve => {
+        reader.onloadend = () => {
+            var b64 = reader.result as string
+
+            b64 = b64.replace(/^data:.+;base64,/, '');
+
+            resolve(b64);
+        };
+    });
+};
+
+
+
+
 
 
 /**
@@ -15,7 +38,7 @@ import { IBaseProjection } from "../..";
  */
 export class API<T extends RootState> {
     store: Store<T>;
-    onStateChanged: (newState: T, difference: Partial<T>) => void;
+    onStateChanged: (newState: T, difference: Partial<T>, action: any) => void;
     id: string;
 
 
@@ -83,7 +106,7 @@ export class API<T extends RootState> {
         const diff = getStoreDiff(oldState, store.getState());
 
         if (this.onStateChanged) {
-            this.onStateChanged(newState, diff);
+            this.onStateChanged(newState, diff, action);
         }
 
         return newState;
@@ -91,7 +114,9 @@ export class API<T extends RootState> {
 
 
 
-    generateImage() {
+    generateImage(width: number, height: number, padding: number, options: any, ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): Promise<string> {
+        const provided = ctx !== null && ctx !== undefined
+
         function calcBounds(workspace: IBaseProjection) {
             // Get rectangle that fits around data set
             var minX = 1000, maxX = -1000, minY = 1000, maxY = -1000;
@@ -101,7 +126,7 @@ export class API<T extends RootState> {
                 minY = Math.min(minY, sample.y)
                 maxY = Math.max(maxY, sample.y)
             })
-    
+
             return {
                 x: minX,
                 y: minY,
@@ -114,17 +139,57 @@ export class API<T extends RootState> {
             }
         }
 
-
-
-
-        var canvas = new OffscreenCanvas(256, 256)
-        var ctx = canvas.getContext("2d")
+       
         
+
+
+        function solve(data, k) {
+
+            if (k == null) k = 1;
+
+            var size = data.length;
+            var last = size - 4;
+
+            var path = "M" + [data[0], data[1]];
+
+            for (var i = 0; i < size - 2; i += 2) {
+
+                var x0 = i ? data[i - 2] : data[0];
+                var y0 = i ? data[i - 1] : data[1];
+
+                var x1 = data[i + 0];
+                var y1 = data[i + 1];
+
+                var x2 = data[i + 2];
+                var y2 = data[i + 3];
+
+                var x3 = i !== last ? data[i + 4] : x2;
+                var y3 = i !== last ? data[i + 5] : y2;
+
+                var cp1x = x1 + (x2 - x0) / 6 * k;
+                var cp1y = y1 + (y2 - y0) / 6 * k;
+
+                var cp2x = x2 - (x3 - x1) / 6 * k;
+                var cp2y = y2 - (y3 - y1) / 6 * k;
+
+                path += "C" + [cp1x, cp1y, cp2x, cp2y, x2, y2];
+            }
+
+            return path;
+        }
+
+
+        if (!ctx) {
+            var canvas = new OffscreenCanvas(width, height)
+            ctx = canvas.getContext("2d")
+        }
+
+
         //This line is actually not even needed...
         ctx.beginPath()
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.rect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ffffff';
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = options?.backgroundColor ?? '#fff';
+        ctx.rect(0, 0, width, height);
         ctx.fill();
         ctx.closePath()
         ctx.beginPath()
@@ -138,52 +203,67 @@ export class API<T extends RootState> {
         const offsetX = -(bounds.left)
         const offsetY = -(bounds.top)
 
-        const padding = 16
+
+        const sx = (x: number) => {
+            return padding + (offsetX + x) * ((width - 2 * padding) / bounds.width)
+        }
+
+        const sy = (y: number) => {
+            return height - (padding + (offsetY + y) * ((height - 2 * padding) / bounds.height))
+        }
+
+        if (state.dataset.isSequential) {
+            ctx.globalAlpha = 0.5;
+            ctx.lineWidth = options?.lineWidth ?? 2;
+
+            state.dataset.segments.forEach((segment) => {
+                const points = segment.vectors.map((vector) => [sx(vector.x), sy(vector.y)]).flat()
+
+                const path = new Path2D(solve(points, 1))
+
+                ctx.strokeStyle = segment.__meta__.intrinsicColor.hex
+                ctx.stroke(path)
+
+                //creatpath)ePath(ctx, points, 10, false)
+            })
+        }
+
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 1;
 
         state.projections.workspace.forEach((value, index) => {
-            const {x, y} = value
-            
+            const { x, y } = value
+
             const color = mapping.map(state.dataset.vectors[index][state.channelColor.key]) as SchemeColor
+            ctx.beginPath()
+
             ctx.fillStyle = color.hex
-            ctx.moveTo(x, y)
-            ctx.arc(padding + (offsetX + x) * ((256 - 2 * padding) / bounds.width), (padding + (offsetY + y) * ((256 - 2 * padding) / bounds.height)), 4, 0, 2 * Math.PI)
+            ctx.strokeStyle = color.hex
+            ctx.globalAlpha = options?.pointBrightness ?? 0.5
+            ctx.moveTo(sx(x), sy(y))
+            ctx.arc(sx(x), sy(y), options?.pointSize ?? 4, 0, 2 * Math.PI)
             ctx.fill()
-           
+            ctx.stroke();
+
         })
 
-        canvas.convertToBlob({
-            type: "image/jpeg",
-            quality: 1
-        }).then((result) => {
-            downloadBlob(result, "test.jpg")
-        })
+        ctx.globalAlpha = 1;
 
-        function downloadBlob(blob, name = 'file.txt') {
-            // Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
-            const blobUrl = URL.createObjectURL(blob);
 
-            // Create a link element
-            const link = document.createElement("a");
+        return new Promise<string>((resolve, reject) => {
+            if (!provided) {
 
-            // Set link's href to point to the Blob URL
-            link.href = blobUrl;
-            link.download = name;
-
-            // Append link to the body
-            document.body.appendChild(link);
-
-            // Dispatch click event on the link
-            // This is necessary as link.click() does not work on the latest firefox
-            link.dispatchEvent(
-                new MouseEvent('click', {
-                    bubbles: true,
-                    cancelable: true,
-                    view: window
+                canvas.convertToBlob({
+                    type: "image/jpeg",
+                    quality: 1
+                }).then((result) => {
+                    blobToBase64(result).then((result) => {
+                        resolve(result)
+                    })
                 })
-            );
-
-            // Remove link from body
-            document.body.removeChild(link);
-        }
+            } else {
+                resolve('')
+            }
+        })
     }
 }
