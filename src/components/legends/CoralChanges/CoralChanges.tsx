@@ -365,7 +365,7 @@ function genRows(vectorsA, vectorsB, legendAttributes, dataset) {
   const rows = []
   const dictOfArraysA = dictionary(vectorsA)
   const dictOfArraysB = dictionary(vectorsB)
-  const preselect = getProjectionColumns(legendAttributes)
+  const preselect = getProjectionColumns(legendAttributes).filter(key => vectorsA[0][key] !== undefined).filter(key => vectorsB[0][key] !== undefined);
 
   // for each feature in preselect
   preselect.forEach(key => {
@@ -455,8 +455,6 @@ export const CoralChanges = connector(class extends React.Component<Props> {
   constructor(props) {
     super(props)
   }
-  
-  
 
   render() {
     // generate rows including vega specs for table div

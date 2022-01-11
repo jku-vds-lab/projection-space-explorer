@@ -42,7 +42,9 @@ function dropChessBoardCoordinates(vectors) {
                 e1, e2, e3, e4, e5, e6, e7, e8,
                 f1, f2, f3, f4, f5, f6, f7, f8,
                 g1, g2, g3, g4, g5, g6, g7, g8,
-                h1, h2, h3, h4, h5, h6, h7, h8, ...rest} = x;
+                h1, h2, h3, h4, h5, h6, h7, h8, 
+                bb,bk,bn,bp,bq,br,wb,wk,wn,wp,wq,wr,
+                ...rest} = x;
         return rest
     });
     return map
@@ -87,7 +89,7 @@ export const GenericFingerprint: FunctionComponent<GenericFingerprintProps> = ({
             return <RubikFingerprint width={81 * scale} height={108 * scale} vectors={vectors}></RubikFingerprint>
         case DatasetType.Chess:
             // return <ChessFingerprint width={150 * scale} height={150 * scale} vectors={vectors}></ChessFingerprint>
-            return <div style={{display: 'flex', flexDirection: 'column'}}><ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={true}></CoralLegend></div>
+            return <div style={{display: 'flex', flexDirection: 'column'}}><ChessFingerprint width={150 * scale} height={150 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={true}></CoralLegend></div>
         case DatasetType.Neural:
             return <NeuralLegend selection={vectors} aggregate={true}></NeuralLegend>
         case DatasetType.Story:
