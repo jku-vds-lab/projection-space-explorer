@@ -456,6 +456,8 @@ export const CoralChanges = connector(class extends React.Component<Props> {
     super(props)
   }
 
+  
+
   render() {
     // generate rows including vega specs for table div
     this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.legendAttributes, this.props.dataset);
