@@ -35,7 +35,7 @@ function dropChessBoardCoordinates(vectors) {
                 f1, f2, f3, f4, f5, f6, f7, f8,
                 g1, g2, g3, g4, g5, g6, g7, g8,
                 h1, h2, h3, h4, h5, h6, h7, h8, 
-                bb,bk,bn,bp,bq,br,wb,wk,wn,wp,wq,wr,
+                // bb,bk,bn,bp,bq,br,wb,wk,wn,wp,wq,wr,
                 ...rest} = x;
         return rest
     });

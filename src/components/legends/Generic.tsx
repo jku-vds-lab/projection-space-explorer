@@ -16,7 +16,7 @@ import TableHead from '@material-ui/core/TableHead';
 import * as React from 'react'
 import { FunctionComponent } from "react";
 import { RubikFingerprint } from "./RubikFingerprint/RubikFingerprint";
-import { ChessFingerprint } from "./ChessFingerprint/ChessFingerprint";
+import { ChessFingerprint, ChessCapturesFingerprint } from "./ChessFingerprint/ChessFingerprint";
 import { DatasetType } from "../Utility/Data/DatasetType";
 import { Vect } from "../Utility/Data/Vect";
 import { Dataset } from "../Utility/Data/Dataset";
@@ -43,12 +43,23 @@ function dropChessBoardCoordinates(vectors) {
                 f1, f2, f3, f4, f5, f6, f7, f8,
                 g1, g2, g3, g4, g5, g6, g7, g8,
                 h1, h2, h3, h4, h5, h6, h7, h8, 
-                bb,bk,bn,bp,bq,br,wb,wk,wn,wp,wq,wr,
+                // bb,bk,bn,bp,bq,br,wb,wk,wn,wp,wq,wr,
                 ...rest} = x;
         return rest
     });
     return map
 }
+
+const containsAll = (obj, arr) => {
+    for(const str of arr){
+       if(Object.keys(obj).includes(str)){
+          continue;
+       }else{
+          return false;
+       }
+    }
+    return true;
+ };
 
 //shows single and aggregated view
 export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: GenericLegendProps) => {
@@ -60,7 +71,11 @@ export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: G
         case DatasetType.Neural:
             return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
         case DatasetType.Chess:
-            return <div style={{display: 'flex', flexDirection: 'column'}}><ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
+            if (containsAll(vectors[0], ['bb','bk','bn','bp','bq','br','wb','wk','wn','wp','wq','wr'].map(i => 'captured_' + i))) {
+                return <div style={{display: 'flex', flexDirection: 'column'}}><ChessCapturesFingerprint width={144 * scale} height={144*10/8 * scale} vectors={vectors}></ChessCapturesFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
+            } else {
+                return <div style={{display: 'flex', flexDirection: 'column'}}><ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
+            }
         case DatasetType.Cohort_Analysis:
             return <CoralLegend selection={vectors} aggregate={aggregate}></CoralLegend>
         case DatasetType.Trrack:
