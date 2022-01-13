@@ -5,7 +5,7 @@ import { RootState } from "../Store/Store";
  */
 export declare class API<T extends RootState> {
     store: Store<T>;
-    onStateChanged: (newState: T, difference: Partial<T>) => void;
+    onStateChanged: (newState: T, difference: Partial<T>, action: any) => void;
     id: string;
     /**
      * Creates a PSE API (store).
@@ -27,5 +27,5 @@ export declare class API<T extends RootState> {
      */
     partialDump(excluded: string[]): any;
     differenceMiddleware: (store: any) => (next: any) => (action: any) => any;
-    generateImage(): void;
+    generateImage(width: number, height: number, padding: number, options: any, ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): Promise<string>;
 }

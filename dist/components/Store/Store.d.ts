@@ -3,6 +3,7 @@ import { IStorytelling } from "../Ducks/StoriesDuck";
 import { Dataset, IProjection, IBaseProjection } from '../../model';
 import { NormalizedDictionary } from '../Utility/NormalizedState';
 import { BaseColorScale } from '../Ducks/ColorScalesDuck';
+export declare function createInitialReducerState(dataset: Dataset): Partial<RootState>;
 export declare const rootReducer: (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {
         aggregation: number[];

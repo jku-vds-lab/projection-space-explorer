@@ -93,7 +93,7 @@ const appReducer = combineReducers(allReducers)
 
 
 
-function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
+export function createInitialReducerState(dataset: Dataset): Partial<RootState> {
   const clusterMode = dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate
   const groupVisualizationMode = dataset.multivariateLabels ? GroupVisualizationMode.StarVisualization : GroupVisualizationMode.ConvexHull
 
@@ -224,7 +224,6 @@ function assignInitialSettingsToStore(dataset: Dataset): Partial<RootState> {
     channelColor,
     globalPointBrightness,
     stories,
-    dataset: dataset,
     colorScales: colorScalesState
   }
 }
@@ -269,7 +268,8 @@ export function createRootReducer(reducers: any) {
     if (action.type === RootActionTypes.DATASET) {
       const newState = { ...state }
 
-      const partialRootState = assignInitialSettingsToStore(action.dataset)
+      const partialRootState = createInitialReducerState(action.dataset)
+      partialRootState.dataset = action.dataset
       Object.assign(newState, partialRootState)
 
       return newState
