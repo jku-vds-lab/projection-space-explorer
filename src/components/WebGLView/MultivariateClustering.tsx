@@ -19,6 +19,7 @@ import { AStorytelling } from "../Ducks/StoriesDuck";
 import TessyWorker from '../workers/tessy.worker';
 import { ViewTransformType } from "../Ducks";
 import { BaseColorScale } from "../Ducks/ColorScalesDuck";
+import { SchemeColor } from "..";
 
 
 const SELECTED_COLOR = 0x007dad
@@ -391,7 +392,7 @@ export const MultivariateClustering = connector(class extends React.Component<Pr
                 mesh: circle,
                 children: [],
                 trailPositions: [],
-                lineColor: ScaleUtil.mapScale(scale, scaleI),//for paper used: new SchemeColor(DEFAULT_COLOR),
+                lineColor: new SchemeColor(DEFAULT_COLOR),
                 triangulatedMesh: {
 
                 },
