@@ -50,7 +50,7 @@ export const StoryPreview = connector(({
             <Select
                 displayEmpty
                 size='small'
-                value={stories.active != null ? stories.active : ""}
+                value={stories.active ?? ""}
                 onChange={(event) => {
                     setActiveStory(event.target.value)
                 }}
