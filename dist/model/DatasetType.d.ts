@@ -16,5 +16,6 @@ export declare enum DatasetType {
     Experiments_Only = "experiments_only",
     Subsampled_with_Sugestions = "subsampled_with_suggestions",
     Experiments_Only_with_Sugestions = "experiments_only_with_suggestions",
+    Parameterspace_and_Experiments = "parameterspace_and_experiments",
     Sound = "sound"
 }

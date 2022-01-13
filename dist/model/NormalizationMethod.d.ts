@@ -1,4 +1,4 @@
 export declare enum NormalizationMethod {
-    STANDARDIZE = 0,
-    NORMALIZE01 = 1
+    STANDARDIZE = "standardize",
+    NORMALIZE01 = "normalize01"
 }

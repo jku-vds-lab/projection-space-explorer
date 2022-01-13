@@ -39,7 +39,7 @@ export const StoryPreview = connector(({
     const addHandler = () => {
         addStory(ABook.createEmpty())
     }
-
+    
     return <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -50,14 +50,14 @@ export const StoryPreview = connector(({
             <Select
                 displayEmpty
                 size='small'
-                value={stories.active}
+                value={stories.active ?? ""}
                 onChange={(event) => {
                     setActiveStory(event.target.value)
                 }}
             >
                 <ListItem
                     key={''}
-                    {...{ value: null }}
+                    {...{ value: "" }}
                     button
                 >
                     <ListItemText primary={"None"} />

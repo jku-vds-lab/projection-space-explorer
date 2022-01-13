@@ -2,7 +2,7 @@ const webpack = require('webpack');
 
 module.exports = {
   mode: "development",
-  watch: false,
+  watch: false, //true
   externals: {
     'react': 'react',
     'react-dom': 'react-dom',

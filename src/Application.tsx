@@ -46,7 +46,7 @@ import { PSEIcons } from "./utils/PSEIcons";
 import VDSLogo from '../textures/vds-lab-logo-notext.svg'
 import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
 import { DatasetEntriesAPI } from "./components/Ducks/DatasetEntriesDuck";
-import { JSONLoader } from "./components";
+import { EmbeddingController, JSONLoader } from "./components";
 import { DatasetType } from "./model/DatasetType";
 import { addProjectionAction, updateWorkspaceAction } from "./components/Ducks/ProjectionDuck";
 import { RootActions } from "./components/Store/RootActions";
@@ -124,12 +124,26 @@ export type BaseConfig = Partial<{
   }>
 }>
 
+export type EmbeddingMethod = {
+  id: string,
+  name: string,
+  settings: {perplexity?: boolean, learningRate?: boolean, nneighbors?: boolean}
+  embController?: EmbeddingController,
+}
+export const DEFAULT_UMAP_SETTINGS = {nneighbors:true}
+export const DEFAULT_TSNE_SETTINGS = {perplexity:true, learningRate:true}
+export const DEFAULT_FA2_SETTINGS = {}
+export const DEFAULT_EMBEDDINGS = [
+  {id: "umap", name: "UMAP", settings: DEFAULT_UMAP_SETTINGS}, 
+  {id: "tsne", name:"t-SNE", settings: DEFAULT_TSNE_SETTINGS}, 
+  {id: "forceatlas2", name: "ForceAtlas2", settings: DEFAULT_FA2_SETTINGS}];
 export type FeatureConfig = Partial<{
-  disableEmbeddings: {
-    tsne?: boolean,
-    umap?: boolean,
-    forceatlas?: boolean
-  }
+  // disableEmbeddings: {
+  //   tsne?: boolean,
+  //   umap?: boolean,
+  //   forceatlas?: boolean
+  // }
+  embeddings: EmbeddingMethod[] //array can either contain strings of predefined embedding methods, or functions
 }>
 
 export type LayerSpec = {
@@ -138,12 +152,19 @@ export type LayerSpec = {
 }
 
 export type ComponentConfig = Partial<{
-  datasetTab: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>
+  datasetTab: JSX.Element | ((onDataSelected) => JSX.Element) | ConnectedComponent<any, any>
   appBar: () => JSX.Element
   detailViews: Array<DetailViewSpec>
   layers: Array<LayerSpec>
   tabs: Array<TabSpec>
+  contextMenuItems: Array<ContextMenuItem>
 }>
+
+export type ContextMenuItem = {
+  key: string
+  title: string
+  function: (coords) => void
+}
 
 export type DetailViewSpec = {
   name: string
