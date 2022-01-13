@@ -27,7 +27,7 @@ declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     webGlView: any;
 };
-export declare const SelectFeatureComponent: ({ label, default_val, categoryOptions, onChange }: any) => JSX.Element;
+export declare const SelectFeatureComponent: ({ label, default_val, categoryOptions, onChange, column_info }: any) => JSX.Element;
 export declare const StatesTabPanelFull: ({ selectedVectorByShape, vectorByShape, dataset, setSelectedVectorByShape, setVectorByShape, selectedLineBy, setSelectedLineBy, webGlView, channelBrightness, setChannelBrightness, setGlobalPointBrightness, channelSize, setChannelSize, setGlobalPointSize, channelColor, setAdvancedColoringSelection }: Props) => JSX.Element;
 export declare const StatesTabPanel: import("react-redux").ConnectedComponent<({ selectedVectorByShape, vectorByShape, dataset, setSelectedVectorByShape, setVectorByShape, selectedLineBy, setSelectedLineBy, webGlView, channelBrightness, setChannelBrightness, setGlobalPointBrightness, channelSize, setChannelSize, setGlobalPointSize, channelColor, setAdvancedColoringSelection }: Props) => JSX.Element, Pick<Props, "webGlView">>;
 export {};

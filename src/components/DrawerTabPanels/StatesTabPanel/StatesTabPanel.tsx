@@ -24,6 +24,7 @@ import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions'
 import { makeStyles } from '@mui/styles'
 import { ColorScalesActions } from '../../Ducks/ColorScalesDuck'
 import { PointDisplayActions } from '../../Ducks/PointDisplayDuck'
+import { DefaultFeatureLabel } from '../../..'
 
 
 
@@ -63,16 +64,24 @@ type Props = PropsFromRedux & {
 }
 
 
-export const SelectFeatureComponent = ({ label, default_val, categoryOptions, onChange }: any) => {
+export const SelectFeatureComponent = ({ label, default_val, categoryOptions, onChange, column_info }: any) => {
 
-    let autocomplete_options = [{ value: "None", inputValue: "None" }];
+    let autocomplete_options = [{ value: "None", inputValue: "None", group: null }];
     let autocomplete_filterOptions = null;
     if (categoryOptions != null) {
         autocomplete_options = autocomplete_options.concat(categoryOptions.attributes.map((attribute) => {
-            return { value: attribute.key, inputValue: attribute.name }
+            let group = null;
+            if(column_info != null && attribute.key in column_info){
+                group = column_info[attribute.key].featureLabel
+            }
+            return { 
+                value: attribute.key, 
+                inputValue: attribute.name,
+                group: group
+            }
         }));
         autocomplete_filterOptions = createFilterOptions({
-            stringify: (option: any) => { return option.value; },
+            stringify: (option: any) => { return option.group+option.value; },
         });
 
     }
@@ -89,7 +98,11 @@ export const SelectFeatureComponent = ({ label, default_val, categoryOptions, on
                 return -1
             if (b.value === "None")
                 return 1
-            return -b.inputValue.localeCompare(a.inputValue)
+
+            if (a.group === b.group){
+                return -b.value.localeCompare(a.value)
+            }
+            return -b.group.localeCompare(a.group)
         }
         )}
         size='small'
@@ -99,6 +112,7 @@ export const SelectFeatureComponent = ({ label, default_val, categoryOptions, on
         // defaultValue={channelColor ? autocomplete_color_options.filter((option:any) => option.value == channelColor.key)[0] : {value:"", inputValue:""}}
         value={default_val ? autocomplete_options.filter((option: any) => option.value == default_val.key)[0] : autocomplete_options[0]}
         renderInput={(params) => <TextField {...params} label={label + " by"} />}
+        
     /></>
 }
 const useStyles = makeStyles((theme) => ({
@@ -160,7 +174,7 @@ export const StatesTabPanelFull = ({
     }}>
         {
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "shape") ?
-                <SelectFeatureComponent label={"shape"} default_val={selectedVectorByShape ? { key: selectedVectorByShape } : null} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "shape")} onChange={(newValue) => {
+                <SelectFeatureComponent column_info={dataset?.columns} label={"shape"} default_val={selectedVectorByShape ? { key: selectedVectorByShape } : null} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "shape")} onChange={(newValue) => {
 
                     setSelectedVectorByShape(newValue)
                     var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "shape").attributes.filter(a => a.key == newValue)[0]
@@ -188,7 +202,7 @@ export const StatesTabPanelFull = ({
         {
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "transparency") ?
 
-                <SelectFeatureComponent label={"brightness"} default_val={channelBrightness} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "transparency")} onChange={(newValue) => {
+                <SelectFeatureComponent column_info={dataset?.columns} label={"brightness"} default_val={channelBrightness} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "transparency")} onChange={(newValue) => {
                     var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "transparency").attributes.filter(a => a.key == newValue)[0]
 
                     if (attribute == undefined) {
@@ -213,7 +227,7 @@ export const StatesTabPanelFull = ({
 
         {
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "size") ?
-                <SelectFeatureComponent label={"size"} default_val={channelSize} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "size")} onChange={(newValue) => {
+                <SelectFeatureComponent column_info={dataset?.columns} label={"size"} default_val={channelSize} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "size")} onChange={(newValue) => {
                     var attribute = CategoryOptionsAPI.getCategory(categoryOptions, "size").attributes.filter(a => a.key == newValue)[0]
                     if (attribute == undefined) {
                         attribute = null
@@ -236,7 +250,7 @@ export const StatesTabPanelFull = ({
 
         {
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "color") ?
-                <SelectFeatureComponent label={"color"} default_val={channelColor} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "color")} onChange={(newValue) => {
+                <SelectFeatureComponent column_info={dataset?.columns} label={"color"} default_val={channelColor} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "color")} onChange={(newValue) => {
                     var attribute = null
                     if (newValue && newValue != "") {
                         attribute = CategoryOptionsAPI.getCategory(categoryOptions, "color").attributes.filter(a => a.key == newValue)[0]

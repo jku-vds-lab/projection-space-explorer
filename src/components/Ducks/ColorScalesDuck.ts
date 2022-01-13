@@ -7,6 +7,7 @@ import { RootState } from "../Store";
 
 
 const palettes = {
+    // categorical
     dark2: [
         new SchemeColor("#1b9e77"),
         new SchemeColor("#d95f02"),
@@ -40,7 +41,49 @@ const palettes = {
         new SchemeColor("#6a3d9a"),
         new SchemeColor("#ffff99"),
         new SchemeColor("#b15928")
-    ]
+    ],
+
+    // sequential
+    Greys: [
+        new SchemeColor("#ffffff"),
+        new SchemeColor("#000000"),
+    ],
+    YlOrRd: [
+        new SchemeColor("#ffffcc"),
+        new SchemeColor("#fd8d3c"),
+        new SchemeColor("#800026"),
+    ],
+    Viridis: [
+        new SchemeColor("#440154"),
+        new SchemeColor("#482475"),
+        new SchemeColor("#414487"),
+        new SchemeColor("#355f8d"),
+        new SchemeColor("#2a788e"),
+        new SchemeColor("#21908d"),
+        new SchemeColor("#22a884"),
+        new SchemeColor("#42be71"),
+        new SchemeColor("#7ad151"),
+        new SchemeColor("#bddf26"),
+        new SchemeColor("#bddf26")
+    ],
+
+    // diverging
+    BrBG: [
+        new SchemeColor("#543005"),
+        new SchemeColor("#f5f5f5"),
+        new SchemeColor("#003c30"),
+    ],
+    PRGn: [
+        new SchemeColor("#40004b"),
+        new SchemeColor("#f7f7f7"),
+        new SchemeColor("#00441b"),
+    ],
+    SHAP: [
+        new SchemeColor("#1e88e5"),
+        new SchemeColor("#ffffff"),
+        new SchemeColor("#ff0d57"),
+    ],
+
 }
 
 
@@ -90,7 +133,7 @@ export const ColorScalesActions = {
 
 type Action = PickAction
 
-type Palette = 'dark2' | 'accent' | 'paired' | SchemeColor[]
+type Palette = 'dark2' | 'accent' | 'paired' | 'YlOrRd' | 'Greys' | 'Viridis' | 'BrBG' | 'PRGn' | 'SHAP' | SchemeColor[]
 
 /**
  * Type for embedding state slice
@@ -123,11 +166,6 @@ const initialState: StateType = function () {
     })
 
     ANormalized.add(state.scales, {
-        palette: 'dark2',
-        type: 'sequential'
-    })
-
-    ANormalized.add(state.scales, {
         palette: 'accent',
         type: 'categorical'
     })
@@ -135,6 +173,36 @@ const initialState: StateType = function () {
     ANormalized.add(state.scales, {
         palette: 'paired',
         type: 'categorical'
+    })
+
+    ANormalized.add(state.scales, {
+        palette: 'YlOrRd',
+        type: 'sequential'
+    })
+    
+    ANormalized.add(state.scales, {
+        palette: 'Greys',
+        type: 'sequential'
+    })
+    
+    ANormalized.add(state.scales, {
+        palette: 'Viridis',
+        type: 'sequential'
+    })
+
+    ANormalized.add(state.scales, {
+        palette: 'BrBG',
+        type: 'diverging'
+    })
+    
+    ANormalized.add(state.scales, {
+        palette: 'PRGn',
+        type: 'diverging'
+    })
+    
+    ANormalized.add(state.scales, {
+        palette: 'SHAP',
+        type: 'diverging'
     })
 
     return state
