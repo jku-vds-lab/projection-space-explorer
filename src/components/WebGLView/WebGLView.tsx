@@ -66,7 +66,8 @@ const mapStateToProps = (state: RootState) => ({
     hoverState: state.hoverState,
     workspace: state.projections.workspace,
     colorScales: state.colorScales,
-    pointDisplay: state.pointDisplay
+    pointDisplay: state.pointDisplay,
+    // viewTransform: state.viewTransform
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -82,7 +83,7 @@ const mapDispatchToProps = dispatch => ({
     setActiveTrace: trace => dispatch(setActiveTrace(trace)),
     setOpenTab: tab => dispatch(setOpenTabAction(tab)),
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => dispatch(selectClusters(clusters, shiftKey)),
-    removeEdgeFromActive: (edge) => dispatch(removeEdgeFromActive(edge))
+    removeEdgeFromActive: (edge) => dispatch(removeEdgeFromActive(edge)),
 })
 
 const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
@@ -362,7 +363,6 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         }
 
         this.mouseController.onMouseUp = (event: MouseEvent) => {
-
         }
 
 
@@ -697,8 +697,13 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
         this.camera = new THREE.OrthographicCamera(this.getWidth() / - 2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / - 2, 1, 1000);
         this.camera.position.z = 1;
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-        this.camera.updateProjectionMatrix();
 
+
+        // this.camera.position.x = this.props.viewTransform.centerX
+        // this.camera.position.y = this.props.viewTransform.centerY
+        // this.camera.zoom = this.props.viewTransform.zoom
+
+        this.camera.updateProjectionMatrix();
 
         this.containerRef.current.appendChild(this.renderer.domElement);
 
@@ -986,6 +991,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             camera.position.z = 1;
             camera.position.x = this.camera.position.x * this.camera.zoom
             camera.position.y = this.camera.position.y * this.camera.zoom
+            // camera.position.x = this.props.viewTransform.centerX
+            // camera.position.y = this.props.viewTransform.centerY
+            // camera.zoom = this.props.viewTransform.zoom
             camera.updateProjectionMatrix();
 
             this.renderer.clear()
@@ -1266,6 +1274,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                 menuY: null
             });
         };
+        
 
         return <div
             onContextMenu={
@@ -1285,7 +1294,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             {
                 // Layers which are behind the webgl view
                 this.props.overrideComponents?.layers?.filter(layer => layer.order < 0).map(layer => {
-                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element, {key: layer.order})
+                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element, {key: "layer"+layer.order})
                 })
             }
 
@@ -1309,7 +1318,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             {
                 // Layers which are in front of the webgl view
                 this.props.overrideComponents?.layers?.filter(layer => layer.order > 0).map(layer => {
-                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element, {key: layer.order})
+                    return React.isValidElement(layer.component) ? layer.component : React.createElement(layer.component as () => JSX.Element, {key: "layer"+layer.order})
                 })
             }
 
@@ -1354,9 +1363,9 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                     handleClose()
                 }}>{"Create Group from Selection"}</MenuItem>
 
-                <MenuItem onClick={() => {
+                {this.props.dataset?.isSequential && <MenuItem onClick={() => {
                     var coords = CameraTransformations.screenToWorld({ x: this.mouseController.currentMousePosition.x, y: this.mouseController.currentMousePosition.y }, this.createTransform())
-
+                    console.log(this.props.dataset.isSequential)
                     if (this.props.displayMode == DisplayMode.OnlyClusters) {
                         return;
                     }
@@ -1366,7 +1375,23 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                         var vector = this.props.dataset.vectors[idx]
                         this.props.setActiveLine(vector.line)
                     }
-                }}>Investigate Line</MenuItem>
+                    handleClose()
+                }}>Investigate Line</MenuItem>}
+
+                {this.props.overrideComponents?.contextMenuItems?.map((item) => 
+                    <MenuItem key={item.key} onClick={() => {
+                        var coords = CameraTransformations.screenToWorld(
+                          {
+                            x: this.mouseController.currentMousePosition.x,
+                            y: this.mouseController.currentMousePosition.y,
+                          },
+                          this.createTransform()
+                        );
+                        item.function(coords)
+                        handleClose()
+                    }}>{item.title}</MenuItem>
+                )}
+
             </Menu>
 
 

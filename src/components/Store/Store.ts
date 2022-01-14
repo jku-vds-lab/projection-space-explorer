@@ -82,7 +82,7 @@ const allReducers = {
   hoverStateOrientation: hoverStateOrientation,
   detailView: detailView,
   datasetEntries: datasetEntries,
-  colorScales: colorScales
+  colorScales: colorScales,
 }
 
 const appReducer = combineReducers(allReducers)

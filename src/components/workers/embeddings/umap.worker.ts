@@ -1,6 +1,5 @@
 import { UMAP } from '../../Utility/UMAP';
 import "regenerator-runtime/runtime";
-import { euclidean, jaccard } from '../../Utility/UMAP/umap';
 import { get_distance_fn } from '../../Utility/DistanceFunctions';
 
 /**

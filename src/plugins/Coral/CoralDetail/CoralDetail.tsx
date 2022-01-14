@@ -10,6 +10,7 @@ import BarChart from './BarChart';
 import VegaDensity from './VegaDensity';
 import VegaDate from './VegaDate';
 import { RootState } from '../../..';
+import * as vegaImport from 'vega';
 
 const useStyles = makeStyles({
   table: {
@@ -34,13 +35,13 @@ function mapHistData(data, feature) {
 }
 
 function mapDensityData(allData, selectedData, feature) {
-  const mappedData = allData.map((d) => {
+  const mappedData = allData.map((d, i) => {
     return {
       feature: +d[feature],
       selection: "all"
     }
   })
-  const mappedSelection = selectedData.map((d) => {
+  const mappedSelection = selectedData.map((d, i) => {
     return {
       feature: +d[feature],
       selection: "selection"
@@ -66,7 +67,9 @@ function mapBarChartData(data, feature) {
 
   const barChartData = []
   for (var key in counts) {
-    barChartData.push({'category': key, 'count': counts[key]/data.length})
+    let count = counts[key]/data.length
+    count = isFinite(count) ? count : 0
+    barChartData.push({'category': key, 'count': count})
   }
   barChartData.sort(sortCountDesc)
   return {'values': barChartData}
@@ -76,7 +79,8 @@ const getSTD = (data) => {
   const total = data.reduce(function (a, b) {
     return a + b
   });
-  const mean = total / data.length
+  let mean = total / data.length
+  mean = isFinite(mean) ? mean : 0;
   function var_numerator(value) {
     return ((value - mean) * (value - mean));
   }
@@ -85,6 +89,7 @@ const getSTD = (data) => {
     return (a + b);
   });
   variance = variance / data.length;
+  variance = isFinite(variance) ? variance : 1;
   const std = Math.sqrt(variance)
   return std
 }
@@ -185,14 +190,15 @@ function genRows(vectors, aggregation, legendAttributes, dataset) {
       } else if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
         var densityData = mapDensityData(dataset.vectors, vectors, key)
-        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDensity data={densityData} actions={false} tooltip={new Handler().call}/>])
-
+        // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
+        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDensity logLevel={vegaImport.Error} data={densityData} actions={false} tooltip={new Handler().call}/>])
       } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
         // categorical feature
         var barData = mapBarChartData(vectors, key)
         var barChart
         if (Object.keys(barData.values).length != 1) {
-          barChart = <BarChart data={barData} actions={false} tooltip={new Handler().call}/>
+          // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
+          barChart = <BarChart logLevel={vegaImport.Error} data={barData} actions={false} tooltip={new Handler().call}/>
         } else {
           barChart = null
         }

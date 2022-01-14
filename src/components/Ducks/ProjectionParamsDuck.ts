@@ -13,10 +13,10 @@ export const setProjectionParamsAction = projectionParams => ({
 });
 
 const initialState = {
-    perplexity: 50,
-    learningRate: 50,
+    perplexity: 50, //50,
+    learningRate: 50,//50,
     nNeighbors: 15,
-    iterations: 1000,
+    iterations: 500, //1000,
     seeded: false,
     useSelection: false,
     method: '',
@@ -25,9 +25,9 @@ const initialState = {
     encodingMethod: EncodingMethod.ONEHOT
 }
 
-type ProjectionParamsState = typeof initialState
+export type ProjectionParamsType = typeof initialState
 
-const projectionParams = (state = initialState, action): ProjectionParamsState => {
+const projectionParams = (state = initialState, action): ProjectionParamsType => {
     switch (action.type) {
         case SET:
             return action.projectionParams

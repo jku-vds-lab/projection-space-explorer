@@ -33,5 +33,7 @@ export interface IEdge extends TypedObject {
  * Edge type guard.
  */
 export function isEdge(value: TypedObject): value is IEdge {
+    if(value?.objectType == null)
+        return false
     return value && value.objectType === ObjectTypes.Edge
 }

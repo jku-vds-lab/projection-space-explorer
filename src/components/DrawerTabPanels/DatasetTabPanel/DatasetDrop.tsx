@@ -8,7 +8,7 @@ import Papa = require("papaparse");
 
 export var DatasetDrop = ({ onChange }: { onChange(dataset: Dataset): void; }) => {
     return <Grid container item alignItems="stretch" justifyContent="center" direction="column" style={{ padding: '16px' }}>
-        <DragAndDrop accept="image/*" handleDrop={(files) => {
+        <DragAndDrop accept=".csv,.json,.sdf" handleDrop={(files) => {
             if (files == null || files.length <= 0) {
                 return;
             }

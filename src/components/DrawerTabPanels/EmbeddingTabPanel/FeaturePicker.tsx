@@ -6,7 +6,6 @@ import { AutoSizer, Column, Table, defaultTableRowRenderer } from 'react-virtual
 import { TableCell } from '@mui/material';
 import { setProjectionColumns } from "../../Ducks/ProjectionColumnsDuck";
 import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck";
-import { setProjectionParamsAction } from "../../Ducks/ProjectionParamsDuck";
 import clsx from 'clsx';
 import clone = require('fast-clone')
 import { withStyles } from "@mui/styles";
@@ -231,7 +230,6 @@ const mapState = state => ({
 
 const mapDispatch = dispatch => ({
     setProjectionOpen: (projectionOpen) => dispatch(setProjectionOpenAction(projectionOpen)),
-    setProjectionParams: (projectionParams) => dispatch(setProjectionParamsAction(projectionParams)),
     setProjectionColumns: value => dispatch(setProjectionColumns(value))
 })
 

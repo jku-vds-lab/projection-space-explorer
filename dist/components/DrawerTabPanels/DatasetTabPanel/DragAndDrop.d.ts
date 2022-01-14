@@ -9,6 +9,7 @@ export declare type DragAndDropState = {
 export declare class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
     dragCounter: number;
     dropRef: any;
+    fileInput: any;
     constructor(props: any);
     handleDrag: (e: any) => void;
     handleDragIn: (e: any) => void;

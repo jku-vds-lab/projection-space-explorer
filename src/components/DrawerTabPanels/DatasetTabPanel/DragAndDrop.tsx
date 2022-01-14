@@ -15,6 +15,7 @@ export type DragAndDropState = {
 export class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {
     dragCounter: number
     dropRef: any
+    fileInput: any
 
     constructor(props) {
         super(props)
@@ -24,6 +25,7 @@ export class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropSt
         }
         this.dragCounter = 0
         this.dropRef = React.createRef()
+        this.fileInput = React.createRef()
     }
 
     handleDrag = (e) => {
@@ -77,7 +79,7 @@ export class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropSt
     render() {
         return (
             <div
-                id="master"
+                // id="master"
                 style={{ display: 'inline-block', position: 'relative' }}
                 ref={this.dropRef}
             >
@@ -119,18 +121,18 @@ export class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropSt
                         <Grid style={{ height: '100%' }} container direction="column" justifyContent="center" alignItems="center">
                             <input
                                 style={{ display: 'none' }}
-                                id="contained-button-file"
-                                multiple
+                                accept={this.props.accept}
+                                ref={this.fileInput}
+                                // multiple
                                 type="file"
                                 onChange={(e) => {
                                     this.props.handleDrop(e.target.files)
                                 }}
                             />
-                            <label htmlFor="contained-button-file">
-                                <Button variant="outlined" component="span">
-                                    Open File
+                            <Button variant="outlined" component="span"
+                                onClick={() => this.fileInput.current.click()}>
+                                Open File
                             </Button>
-                            </label>
 
                             <div
                                 style={{

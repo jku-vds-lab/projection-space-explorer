@@ -165,7 +165,7 @@ export const ClusteringTabPanel = connector(({
 
     React.useEffect(() => {
         handleClusterSliderChange(clusterSliderValue, clusterSelectionOnly);
-    }, [dataset.info.path, currentAggregation, clusterSelectionOnly]);
+    }, [dataset?.info?.path, currentAggregation, clusterSelectionOnly]);
 
     const handleClusterSliderChange = (newValue, clusterSelectionOnly) => {
         let data = clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation : dataset.vectors;
@@ -242,7 +242,6 @@ export const ClusteringTabPanel = connector(({
             }
         }
     }
-
     return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>{'Group Settings'}</Typography>

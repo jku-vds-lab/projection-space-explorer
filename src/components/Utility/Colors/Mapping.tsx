@@ -1,3 +1,4 @@
+import { SchemeColor } from ".";
 import { ShallowSet } from "../ShallowSet";
 import { ScaleUtil } from "./ContinuosScale";
 import { BaseColorScale, APalette } from "../../Ducks/ColorScalesDuck";
@@ -42,7 +43,7 @@ export class ContinuousMapping extends Mapping {
     this.range = range;
   }
 
-  map(value) {
+  map(value): SchemeColor {
     if (this.range.max == this.range.min) {
       const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette
       return palette[0];
