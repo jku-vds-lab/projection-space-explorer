@@ -12,6 +12,7 @@ import { DiscreteMapping, Mapping } from '../Utility/Colors/Mapping'
 import SpriteAtlas from '../../../textures/sprites/atlas.png'
 import { IBaseProjection } from '../../model/Projection'
 import { BufferAttribute } from 'three'
+import { createLinearRangeScaler } from '../Utility/ScalingAndAxes'
 
 
 var fragmentShader = require('../../shaders/fragment.glsl')
@@ -700,13 +701,10 @@ export class PointVisualization {
               min = Math.min(...filtered)
             }
 
-            segment.vectors.forEach(vector => {
-              if (min == max) {
-                vector.__meta__.brightness = range[0]
-              } else {
-                vector.__meta__.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
-              }
+            const scaler = createLinearRangeScaler(range, min, max)
 
+            segment.vectors.forEach(vector => {
+                vector.__meta__.brightness = scaler(vector[category.key])
             })
           })
         } else {
@@ -720,13 +718,10 @@ export class PointVisualization {
             min = Math.min(...filtered)
           }
 
-          this.vectors.forEach(vector => {
-            if (min == max) {
-              vector.__meta__.brightness = range[0]
-            } else {
-              vector.__meta__.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
-            }
+          const scaler = createLinearRangeScaler(range, min, max)
 
+          this.vectors.forEach(vector => {
+            vector.__meta__.brightness = scaler(vector[category.key])
           })
         }
       }
@@ -755,12 +750,10 @@ export class PointVisualization {
               min = Math.min(...filtered)
             }
 
+            const sizeScaler = createLinearRangeScaler(range, min, max)
+
             segment.vectors.forEach(vector => {
-              if (min == max) {
-                vector.__meta__.baseSize = this.particleSize * range[0]
-              } else {
-                vector.__meta__.baseSize = this.particleSize * (range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min)))
-              }
+              vector.__meta__.baseSize = this.particleSize * sizeScaler(vector[category.key])
             })
           })
         } else {
@@ -775,12 +768,10 @@ export class PointVisualization {
             min = Math.min(...filtered)
           }
 
+          const sizeScaler = createLinearRangeScaler(range, min, max)
+
           this.vectors.forEach(vector => {
-            if (min == max) {
-              vector.__meta__.baseSize = this.particleSize * range[0]
-            } else {
-              vector.__meta__.baseSize = this.particleSize * (range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min)))
-            }
+              vector.__meta__.baseSize = this.particleSize * sizeScaler(vector[category.key])
           })
         }
       }

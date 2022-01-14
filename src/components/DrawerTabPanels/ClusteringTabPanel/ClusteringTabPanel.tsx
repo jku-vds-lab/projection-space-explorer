@@ -112,7 +112,7 @@ export const ClusteringTabPanel = connector(({
                 const dist_cluster_labels = cluster_labels.filter((value, index, self) => { return self.indexOf(value) === index; }); //return distinct list of clusters
 
                 if (dist_cluster_labels.length <= 1) { //if there are no clusters found, return and give error message
-                    alert("No Cluster could be derived. Please, adjust the Clustering Cettings and try again.")
+                    alert("No Cluster could be derived. Please, adjust the Clustering Settings and try again.")
                     return;
                 }
 

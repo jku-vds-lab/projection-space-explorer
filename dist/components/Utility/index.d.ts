@@ -7,3 +7,4 @@ export * from './RenderingContextEx';
 export * from './ShallowSet';
 export * from './UMAP';
 export * from './NormalizedState';
+export * from './ScalingAndAxes';

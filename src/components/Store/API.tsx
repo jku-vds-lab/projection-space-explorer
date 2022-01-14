@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import { v4 as uuidv4 } from 'uuid';
 import { getStoreDiff } from "./PluginScript";
 import { RootActions } from "./RootActions";
-import { SchemeColor } from "../Utility";
+import { SchemeColor, createLinearRangeScaler } from "../Utility";
 import { IBaseProjection } from "../..";
 
 var catRomSpline = require('cat-rom-spline');
@@ -203,18 +203,32 @@ export class API<T extends RootState> {
         const offsetX = -(bounds.left)
         const offsetY = -(bounds.top)
 
+        const innerAR = bounds.width / bounds.height
+        const outerAR = width / height
+
+        let xPad = 0
+        let yPad = 0
+
+        if (innerAR > outerAR) {
+            // more broad than bounds allow... pad horizontal
+            yPad = ((1 - (outerAR / innerAR)) * height) / 2
+        } else if (innerAR < outerAR) {
+            // more narrow than bounds allow, pad vertical
+            xPad = ((1 - (innerAR / outerAR)) * width) / 2
+        }
 
         const sx = (x: number) => {
-            return padding + (offsetX + x) * ((width - 2 * padding) / bounds.width)
+            return padding + xPad + (offsetX + x) * ((width - 2 * (padding + xPad)) / bounds.width)
         }
 
         const sy = (y: number) => {
-            return height - (padding + (offsetY + y) * ((height - 2 * padding) / bounds.height))
+            return height - (padding + yPad + (offsetY + y) * ((height - 2 * (padding + yPad)) / bounds.height))
         }
 
         if (state.dataset.isSequential) {
             ctx.globalAlpha = 0.5;
             ctx.lineWidth = options?.lineWidth ?? 2;
+            ctx.filter = options?.lineFilter ?? ''
 
             state.dataset.segments.forEach((segment) => {
                 const points = segment.vectors.map((vector) => [sx(vector.x), sy(vector.y)]).flat()
@@ -230,6 +244,9 @@ export class API<T extends RootState> {
 
         ctx.lineWidth = 1;
         ctx.globalAlpha = 1;
+        ctx.filter = options?.pointFilter ?? ''
+
+        //const pointSizeScaler = createLinearRangeScaler(state.globalPointSize as any, state.dataset.columns[state.channelColor.key].range.min, state.dataset.columns[state.channelColor.key].range.max)
 
         state.projections.workspace.forEach((value, index) => {
             const { x, y } = value
@@ -241,12 +258,13 @@ export class API<T extends RootState> {
             ctx.strokeStyle = color.hex
             ctx.globalAlpha = options?.pointBrightness ?? 0.5
             ctx.moveTo(sx(x), sy(y))
-            ctx.arc(sx(x), sy(y), options?.pointSize ?? 4, 0, 2 * Math.PI)
+            ctx.arc(sx(x), sy(y), (options?.pointSize ?? 4), 0, 2 * Math.PI)
             ctx.fill()
             ctx.stroke();
 
         })
 
+        ctx.filter = '';
         ctx.globalAlpha = 1;
 
 
