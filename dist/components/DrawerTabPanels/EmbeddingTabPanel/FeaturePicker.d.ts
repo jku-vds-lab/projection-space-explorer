@@ -5,7 +5,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     dataset: any;
 } & {
     setProjectionOpen: (projectionOpen: any) => any;
-    setProjectionParams: (projectionParams: any) => any;
     setProjectionColumns: (value: any) => any;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;

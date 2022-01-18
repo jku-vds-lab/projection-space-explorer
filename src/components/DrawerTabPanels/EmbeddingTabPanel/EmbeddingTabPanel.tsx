@@ -58,12 +58,10 @@ type Props = PropsFromRedux & {
 }
 
 const EmbeddingMethodButtons = (props:{setOpen, setDomainSettings, embeddings?: EmbeddingMethod[]}) => {
-    // use == instead of === to also check if it is undefined
-    if(props.embeddings == null || props.embeddings.length <= 0){
-        props.embeddings = DEFAULT_EMBEDDINGS;
-    }
+    const embeddings = props.embeddings ?? DEFAULT_EMBEDDINGS
+    
     return <Grid container direction="column" spacing={1}> 
-        {props.embeddings.map((emb) => 
+        {embeddings.map((emb) => 
             <Grid key={emb.id} item>
                 <Button
                     style={{

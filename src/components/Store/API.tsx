@@ -8,10 +8,6 @@ import { RootActions } from "./RootActions";
 import { SchemeColor } from "../Utility";
 import { IBaseProjection } from "../..";
 
-var catRomSpline = require('cat-rom-spline');
-import dataset from "../Ducks/DatasetDuck";
-
-
 
 
 const blobToBase64 = (blob) => {
