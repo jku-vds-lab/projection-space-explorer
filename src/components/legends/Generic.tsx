@@ -72,7 +72,7 @@ export var GenericLegend = ({ type, vectors, aggregate, hoverUpdate, scale=2}: G
             return <NeuralLegend selection={vectors} aggregate={aggregate}></NeuralLegend>
         case DatasetType.Chess:
             if (containsAll(vectors[0], ['bb','bk','bn','bp','bq','br','wb','wk','wn','wp','wq','wr'].map(i => 'captured_' + i))) {
-                return <div style={{display: 'flex', flexDirection: 'column'}}><ChessCapturesFingerprint width={144 * scale} height={144*10/8 * scale} vectors={vectors}></ChessCapturesFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
+                return <div style={{display: 'flex', flexDirection: 'column'}}><ChessCapturesFingerprint width={144 * scale} height={144*11/8 * scale} vectors={vectors}></ChessCapturesFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
             } else {
                 return <div style={{display: 'flex', flexDirection: 'column'}}><ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors}></ChessFingerprint><CoralLegend selection={dropChessBoardCoordinates(vectors)} aggregate={aggregate}></CoralLegend></div>
             }

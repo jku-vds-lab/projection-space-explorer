@@ -264,7 +264,7 @@ export class ChessCapturesFingerprint extends React.Component<ChessFingerprintPr
         try {
             this.canvasContext.save()
             this.canvasContext.globalAlpha = 1.0
-            this.canvasContext.fillRect(0, size*1, width, size*8+2*borderOffset)
+            this.canvasContext.fillRect(0, 0, width, size*8+2*borderOffset)
             this.canvasContext.restore()
         } catch (e) {
         }
@@ -312,44 +312,30 @@ export class ChessCapturesFingerprint extends React.Component<ChessFingerprintPr
             
             this.canvasContext.fillRect(
                 x * size + borderOffset,
-                (1+y) * size + borderOffset,
+                (y) * size + borderOffset,
                 size,
                 size)
 
             try {
                 this.canvasContext.save()
                 this.canvasContext.globalAlpha = opacity
-                this.canvasContext.drawImage(symbols[content], x * size + borderOffset, (1+y) * size + borderOffset, size, size)
+                this.canvasContext.drawImage(symbols[content], x * size + borderOffset, (y) * size + borderOffset, size, size)
                 this.canvasContext.restore()
             } catch (e) {
             }
         }
 
-        const whitePieces = ['wp', 'wr', 'wn', 'wb', 'wq']
-        whitePieces.forEach((key, i) => {
-            const sum = aggregation['captured_'+key].reduce((val, cur) => val + cur.count, 0)
-            const avg = aggregation['captured_'+key].reduce((val, cur) => val + (cur.key * cur.count / sum), 0)
-
-            try {
-                this.canvasContext.save()
-                this.canvasContext.globalAlpha = 1.0
-                this.canvasContext.drawImage(symbols[key], 2 * i * (size*8/10) + borderOffset, size*2/10, size*8/10, size*8/10)
-                this.canvasContext.restore()
-            } catch (e) {
-            }
-
-            try {
-                this.canvasContext.save()
-                this.canvasContext.globalAlpha = 1.0
-                this.canvasContext.fillStyle = '#000000'
-                const fontSize = Math.floor(size/3)
-                this.canvasContext.font = fontSize+'px roboto'
-                this.canvasContext.fillText(avg.toFixed(2), (size*8/10) + 2 * i * (size*8/10) + borderOffset, 1/2 * size + fontSize)
-                this.canvasContext.restore()
-            } catch (e) {
-            }
-            
-        });
+        try {
+            this.canvasContext.save()
+            this.canvasContext.globalAlpha = 1.0
+            this.canvasContext.fillStyle = '#000000'
+            const fontSize = Math.floor(size*0.4)
+            this.canvasContext.font = fontSize+'px roboto'
+            this.canvasContext.textAlign = "center";
+            this.canvasContext.fillText('Captured Pieces:', 4*size, 8.5 * size + fontSize)
+            this.canvasContext.restore()
+        } catch (e) {
+        }
 
         const blackPieces = ['bp', 'br', 'bn', 'bb', 'bq']
         blackPieces.forEach((key, i) => {
@@ -376,7 +362,34 @@ export class ChessCapturesFingerprint extends React.Component<ChessFingerprintPr
             }
             
         });
+
+        const whitePieces = ['wp', 'wr', 'wn', 'wb', 'wq']
+        whitePieces.forEach((key, i) => {
+            const sum = aggregation['captured_'+key].reduce((val, cur) => val + cur.count, 0)
+            const avg = aggregation['captured_'+key].reduce((val, cur) => val + (cur.key * cur.count / sum), 0)
+
+            try {
+                this.canvasContext.save()
+                this.canvasContext.globalAlpha = 1.0
+                this.canvasContext.drawImage(symbols[key], 2 * i * (size*8/10) + borderOffset, size*10 + size * 2/10, size*8/10, size*8/10)
+                this.canvasContext.restore()
+            } catch (e) {
+            }
+
+            try {
+                this.canvasContext.save()
+                this.canvasContext.globalAlpha = 1.0
+                this.canvasContext.fillStyle = '#000000'
+                const fontSize = Math.floor(size/3)
+                this.canvasContext.font = fontSize+'px roboto'
+                this.canvasContext.fillText(avg.toFixed(2), (size*8/10) + 2 * i * (size*8/10) + borderOffset, 10.5 * size + fontSize)
+                this.canvasContext.restore()
+            } catch (e) {
+            }
+            
+        });
     }
+    
 
     componentDidMount() {
         this.canvasContext = this.canvasRef.current.getContext('2d')
