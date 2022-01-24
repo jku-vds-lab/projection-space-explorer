@@ -1,6 +1,6 @@
 import { connect, ConnectedProps, useDispatch } from 'react-redux'
 import * as React from 'react'
-import { Grid, FormControl, InputLabel, Select, MenuItem, Typography, Divider, Box, Accordion, AccordionSummary, AccordionDetails, FormHelperText, createFilterOptions, Autocomplete, TextField } from '@mui/material'
+import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, createFilterOptions, Autocomplete, TextField } from '@mui/material'
 import { ShapeLegend } from './ShapeLegend'
 import { setSelectedVectorByShapeAction } from "../../Ducks/SelectedVectorByShapeDuck"
 import { setVectorByShapeAction } from "../../Ducks/VectorByShapeDuck"
@@ -24,7 +24,7 @@ import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions'
 import { makeStyles } from '@mui/styles'
 import { ColorScalesActions } from '../../Ducks/ColorScalesDuck'
 import { PointDisplayActions } from '../../Ducks/PointDisplayDuck'
-import { DefaultFeatureLabel } from '../../..'
+import { EncodingChannel } from '../../../model'
 
 
 
@@ -60,7 +60,8 @@ const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRe
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    webGlView
+    webGlView,
+    encodings: EncodingChannel[]
 }
 
 
@@ -71,17 +72,17 @@ export const SelectFeatureComponent = ({ label, default_val, categoryOptions, on
     if (categoryOptions != null) {
         autocomplete_options = autocomplete_options.concat(categoryOptions.attributes.map((attribute) => {
             let group = null;
-            if(column_info != null && attribute.key in column_info){
+            if (column_info != null && attribute.key in column_info) {
                 group = column_info[attribute.key].featureLabel
             }
-            return { 
-                value: attribute.key, 
+            return {
+                value: attribute.key,
                 inputValue: attribute.name,
                 group: group
             }
         }));
         autocomplete_filterOptions = createFilterOptions({
-            stringify: (option: any) => { return option.group+option.value; },
+            stringify: (option: any) => { return option.group + option.value; },
         });
 
     }
@@ -99,7 +100,7 @@ export const SelectFeatureComponent = ({ label, default_val, categoryOptions, on
             if (b.value === "None")
                 return 1
 
-            if (a.group === b.group){
+            if (a.group === b.group) {
                 return -b.value.localeCompare(a.value)
             }
             return -b.group.localeCompare(a.group)
@@ -112,7 +113,7 @@ export const SelectFeatureComponent = ({ label, default_val, categoryOptions, on
         // defaultValue={channelColor ? autocomplete_color_options.filter((option:any) => option.value == channelColor.key)[0] : {value:"", inputValue:""}}
         value={default_val ? autocomplete_options.filter((option: any) => option.value == default_val.key)[0] : autocomplete_options[0]}
         renderInput={(params) => <TextField {...params} label={label + " by"} />}
-        
+
     /></>
 }
 const useStyles = makeStyles((theme) => ({
@@ -141,8 +142,6 @@ export const StatesTabPanelFull = ({
     dataset,
     setSelectedVectorByShape,
     setVectorByShape,
-    selectedLineBy,
-    setSelectedLineBy,
     webGlView,
     channelBrightness,
     setChannelBrightness,
@@ -151,6 +150,7 @@ export const StatesTabPanelFull = ({
     setChannelSize,
     setGlobalPointSize,
     channelColor,
+    encodings,
     setAdvancedColoringSelection
 }: Props) => {
     if (dataset == null) {
@@ -173,7 +173,8 @@ export const StatesTabPanelFull = ({
         '& .MuiAutocomplete-root': { p: 2, width: '100%', boxSizing: 'border-box' },
     }}>
         {
-            categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "shape") ?
+            (!encodings || encodings.includes(EncodingChannel.Shape)) &&
+                categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "shape") ?
                 <SelectFeatureComponent column_info={dataset?.columns} label={"shape"} default_val={selectedVectorByShape ? { key: selectedVectorByShape } : null} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "shape")} onChange={(newValue) => {
 
                     setSelectedVectorByShape(newValue)
@@ -189,15 +190,17 @@ export const StatesTabPanelFull = ({
                 <div></div>
         }
 
-        <Grid item style={{ padding: '0 16px' }}>
-            <ShapeLegend
-                dataset={dataset}
-                category={vectorByShape}
-                onChange={(checkboxes) => {
-                    dispatch(PointDisplayActions.setCheckedShapes(checkboxes))
-                }}></ShapeLegend>
-        </Grid>
-
+        {
+            (!encodings || encodings.includes(EncodingChannel.Shape)) &&
+            vectorByShape && <Grid item style={{ padding: '0 16px' }}>
+                <ShapeLegend
+                    dataset={dataset}
+                    category={vectorByShape}
+                    onChange={(checkboxes) => {
+                        dispatch(PointDisplayActions.setCheckedShapes(checkboxes))
+                    }}></ShapeLegend>
+            </Grid>
+        }
 
         {
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "transparency") ?
@@ -222,9 +225,6 @@ export const StatesTabPanelFull = ({
 
         <BrightnessSlider></BrightnessSlider>
 
-
-
-
         {
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "size") ?
                 <SelectFeatureComponent column_info={dataset?.columns} label={"size"} default_val={channelSize} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "size")} onChange={(newValue) => {
@@ -247,7 +247,6 @@ export const StatesTabPanelFull = ({
 
         <SizeSlider></SizeSlider>
 
-
         {
             categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, "color") ?
                 <SelectFeatureComponent column_info={dataset?.columns} label={"color"} default_val={channelColor} categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, "color")} onChange={(newValue) => {
@@ -259,14 +258,13 @@ export const StatesTabPanelFull = ({
                     setAdvancedColoringSelection(new Array(10000).fill(true))
                     dispatch(setChannelColor(attribute))
                     dispatch(ColorScalesActions.initScaleByType(attribute.type))
-                    
+
                 }}></SelectFeatureComponent>
                 :
                 <div></div>
         }
 
         <Grid item>
-
             <ColorScaleSelect></ColorScaleSelect>
         </Grid>
 

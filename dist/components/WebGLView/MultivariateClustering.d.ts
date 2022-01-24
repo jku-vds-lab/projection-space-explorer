@@ -28,7 +28,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         show: any;
         length: number;
     };
-    stories: import("../Ducks").IStorytelling;
+    stories: import("..").IStorytelling;
     globalPointSize: number[];
     viewTransform: ViewTransformType;
     currentAggregation: {
@@ -36,7 +36,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    hoverState: import("../Ducks").HoverStateType;
+    hoverState: import("..").HoverStateType;
     groupVisualizationMode: any;
     workspace: import("../..").IBaseProjection;
 }, {}>;
@@ -208,7 +208,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         show: any;
         length: number;
     };
-    stories: import("../Ducks").IStorytelling;
+    stories: import("..").IStorytelling;
     globalPointSize: number[];
     viewTransform: ViewTransformType;
     currentAggregation: {
@@ -216,7 +216,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         selectedClusters: string[];
         source: "sample" | "cluster";
     };
-    hoverState: import("../Ducks").HoverStateType;
+    hoverState: import("..").HoverStateType;
     groupVisualizationMode: any;
     workspace: import("../..").IBaseProjection;
 } & {

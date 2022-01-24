@@ -50,6 +50,7 @@ import { EmbeddingController, JSONLoader } from "./components";
 import { DatasetType } from "./model/DatasetType";
 import { addProjectionAction, updateWorkspaceAction } from "./components/Ducks/ProjectionDuck";
 import { RootActions } from "./components/Store/RootActions";
+import { EncodingChannel } from ".";
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -138,12 +139,8 @@ export const DEFAULT_EMBEDDINGS = [
   {id: "tsne", name:"t-SNE", settings: DEFAULT_TSNE_SETTINGS}, 
   {id: "forceatlas2", name: "ForceAtlas2", settings: DEFAULT_FA2_SETTINGS}];
 export type FeatureConfig = Partial<{
-  // disableEmbeddings: {
-  //   tsne?: boolean,
-  //   umap?: boolean,
-  //   forceatlas?: boolean
-  // }
   embeddings: EmbeddingMethod[] //array can either contain strings of predefined embedding methods, or functions
+  encodings: EncodingChannel[]
 }>
 
 export type LayerSpec = {
@@ -179,6 +176,11 @@ export type TabSpec = {
   title: string
   description: string
 }
+
+
+
+
+
 
 
 /**
@@ -451,6 +453,7 @@ export const Application = connector(class extends React.Component<Props, any> {
             <FixedHeightTabPanel value={this.props.openTab} index={2}>
               <StatesTabPanel
                 webGlView={this.threeRef}
+                encodings={this.props.features?.encodings}
               ></StatesTabPanel>
             </FixedHeightTabPanel>
 

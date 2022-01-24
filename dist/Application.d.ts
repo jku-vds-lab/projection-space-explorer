@@ -5,6 +5,7 @@ import { ConnectedProps, ConnectedComponent } from 'react-redux';
 import { IProjection, IBaseProjection } from "./model/Projection";
 import { IBook } from "./model/Book";
 import { EmbeddingController } from "./components";
+import { EncodingChannel } from ".";
 export declare type BaseConfig = Partial<{
     baseUrl: string;
     preselect: Partial<{
@@ -37,6 +38,7 @@ export declare const DEFAULT_EMBEDDINGS: {
 }[];
 export declare type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
+    encodings: EncodingChannel[];
 }>;
 export declare type LayerSpec = {
     order: number;
@@ -79,7 +81,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     datasetEntries: {
         values: {
             byId: {
-                [id: string]: import("./model").DatasetEntry;
+                [id: string]: import(".").DatasetEntry;
             };
             allIds: string[];
         };
@@ -274,7 +276,7 @@ export declare const Application: ConnectedComponent<{
     datasetEntries: {
         values: {
             byId: {
-                [id: string]: import("./model").DatasetEntry;
+                [id: string]: import(".").DatasetEntry;
             };
             allIds: string[];
         };
