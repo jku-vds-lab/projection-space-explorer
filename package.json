@@ -50,7 +50,7 @@
     "resize-observer": "^1.0.0",
     "serve-dist": "^1.0.11",
     "sigma-webpack": "^1.2.0-1",
-    "three": "^0.117.1",
+    "three": "^0.137.0",
     "three.meshline": "^1.2.0",
     "tinyqueue": "^2.0.3",
     "umap-js": "^1.3.2",
