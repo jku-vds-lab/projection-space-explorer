@@ -1,7 +1,7 @@
 import "regenerator-runtime/runtime";
 import { Dataset } from "./model/Dataset";
 import * as React from "react";
-import { ConnectedProps, ConnectedComponent } from 'react-redux';
+import { ConnectedProps, ConnectedComponent } from "react-redux";
 import { IProjection, IBaseProjection } from "./model/Projection";
 import { IBook } from "./model/Book";
 import { EmbeddingController } from "./components";
@@ -135,40 +135,40 @@ export declare const Application: ConnectedComponent<{
          */
         onDataSelected(dataset: Dataset): void;
         /**  finite(dataset: Dataset) {
-            const co: CategoryOptions = {
-              json: this.props.dataset.categories
-            }
-        
-            this.props.setCategoryOptions(co)
-            this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
-            this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
-        
-            this.props.saveProjection(AProjection.createProjection(dataset.vectors, "Initial Projection"))
-            this.props.updateWorkspace(AProjection.createProjection(dataset.vectors, "Initial Projection").positions)
-        
-            this.props.setGenericFingerprintAttributes(ADataset.getColumns(dataset, true).map(column => ({
-              feature: column,
-              show: dataset.columns[column].project
-            })))
-        
-            const formatRange = range => {
-              try {
-                return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
-              } catch {
-                return 'unknown'
-              }
-            }
-        
-            this.props.setProjectionColumns(ADataset.getColumns(dataset, true).map(column => ({
-              name: column,
-              checked: dataset.columns[column].project,
-              normalized: true, //TODO: after benchmarking, reverse this to true,
-              range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
-              featureLabel: dataset.columns[column].featureLabel
-            })))
-        
-            this.initializeEncodings(dataset)
-          }**/
+        const co: CategoryOptions = {
+          json: this.props.dataset.categories
+        }
+    
+        this.props.setCategoryOptions(co)
+        this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
+        this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
+    
+        this.props.saveProjection(AProjection.createProjection(dataset.vectors, "Initial Projection"))
+        this.props.updateWorkspace(AProjection.createProjection(dataset.vectors, "Initial Projection").positions)
+    
+        this.props.setGenericFingerprintAttributes(ADataset.getColumns(dataset, true).map(column => ({
+          feature: column,
+          show: dataset.columns[column].project
+        })))
+    
+        const formatRange = range => {
+          try {
+            return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
+          } catch {
+            return 'unknown'
+          }
+        }
+    
+        this.props.setProjectionColumns(ADataset.getColumns(dataset, true).map(column => ({
+          name: column,
+          checked: dataset.columns[column].project,
+          normalized: true, //TODO: after benchmarking, reverse this to true,
+          range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
+          featureLabel: dataset.columns[column].featureLabel
+        })))
+    
+        this.initializeEncodings(dataset)
+      }**/
         initializeEncodings(dataset: any): void;
         onLineSelect(algo: any, show: any): void;
         onChangeTab(newTab: any): void;
@@ -207,40 +207,40 @@ export declare const Application: ConnectedComponent<{
      */
     onDataSelected(dataset: Dataset): void;
     /**  finite(dataset: Dataset) {
-        const co: CategoryOptions = {
-          json: this.props.dataset.categories
-        }
-    
-        this.props.setCategoryOptions(co)
-        this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
-        this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
-    
-        this.props.saveProjection(AProjection.createProjection(dataset.vectors, "Initial Projection"))
-        this.props.updateWorkspace(AProjection.createProjection(dataset.vectors, "Initial Projection").positions)
-    
-        this.props.setGenericFingerprintAttributes(ADataset.getColumns(dataset, true).map(column => ({
-          feature: column,
-          show: dataset.columns[column].project
-        })))
-    
-        const formatRange = range => {
-          try {
-            return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
-          } catch {
-            return 'unknown'
-          }
-        }
-    
-        this.props.setProjectionColumns(ADataset.getColumns(dataset, true).map(column => ({
-          name: column,
-          checked: dataset.columns[column].project,
-          normalized: true, //TODO: after benchmarking, reverse this to true,
-          range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
-          featureLabel: dataset.columns[column].featureLabel
-        })))
-    
-        this.initializeEncodings(dataset)
-      }**/
+    const co: CategoryOptions = {
+      json: this.props.dataset.categories
+    }
+
+    this.props.setCategoryOptions(co)
+    this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
+    this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
+
+    this.props.saveProjection(AProjection.createProjection(dataset.vectors, "Initial Projection"))
+    this.props.updateWorkspace(AProjection.createProjection(dataset.vectors, "Initial Projection").positions)
+
+    this.props.setGenericFingerprintAttributes(ADataset.getColumns(dataset, true).map(column => ({
+      feature: column,
+      show: dataset.columns[column].project
+    })))
+
+    const formatRange = range => {
+      try {
+        return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
+      } catch {
+        return 'unknown'
+      }
+    }
+
+    this.props.setProjectionColumns(ADataset.getColumns(dataset, true).map(column => ({
+      name: column,
+      checked: dataset.columns[column].project,
+      normalized: true, //TODO: after benchmarking, reverse this to true,
+      range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
+      featureLabel: dataset.columns[column].featureLabel
+    })))
+
+    this.initializeEncodings(dataset)
+  }**/
     initializeEncodings(dataset: any): void;
     onLineSelect(algo: any, show: any): void;
     onChangeTab(newTab: any): void;

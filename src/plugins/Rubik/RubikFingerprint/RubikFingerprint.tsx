@@ -1,5 +1,4 @@
 import * as React from 'react';
-import './RubikFingerprint.scss'
 import { arraysEqual } from '../../../components/WebGLView/UtilityFunctions';
 
 

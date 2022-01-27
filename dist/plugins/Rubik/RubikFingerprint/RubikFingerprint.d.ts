@@ -1,5 +1,4 @@
 import * as React from 'react';
-import './RubikFingerprint.scss';
 declare type RubikFingerprintProps = {
     vectors: Array<any>;
     width?: number;

@@ -123,7 +123,7 @@ export class ADataset {
             projectionColumns.forEach(entry => {
                 let column = entry.name;
                 if (dataset.columns[column].featureType === FeatureType.Array) {
-                    console.log(vector[column])
+
                     const array = JSON.parse(vector[column])
                     data.push(...array)
                 } else {
