@@ -29,7 +29,8 @@ const mapStateToProps = (state: RootState) => ({
     dataset: state.dataset,
     // projectionParams: state.projectionParams,
     projections: state.projections,
-    workspace: state.projections.workspace
+    workspace: state.projections.workspace,
+    projectionParams: state.projectionParams
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -82,7 +83,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
     const [domainSettings, setDomainSettings] = React.useState({ id: "", name: "", embController: null })
 
     const [controller, setController] = React.useState(null)
-
+    
     React.useEffect(() => {
         if (controller) {
             controller.terminate()
@@ -92,8 +93,10 @@ export const EmbeddingTabPanel = connector((props: Props) => {
     }, [props.dataset]);
 
 
-    const onSaveProjectionClick = (name) => {
-        props.addProjection(AProjection.createProjection(props.workspace, "Created " + name))
+    const onSaveProjectionClick = () => {
+        const metadata = props.projectionParams
+        
+        props.addProjection(AProjection.createProjection(props.workspace, null, metadata))
     }
 
     const onProjectionClick = (projection: IProjection) => {
@@ -235,7 +238,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
         <Box paddingLeft={2} paddingRight={2}>
             <Button
-                onClick={(name) => onSaveProjectionClick(new Date().getHours() + ":" + new Date().getMinutes())}
+                onClick={(name) => onSaveProjectionClick()}
                 variant="outlined"
                 size="small"
             >{'Store Projection'}</Button>
@@ -246,14 +249,9 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                 {props.projections.allIds.map(key => {
                     const projection = props.projections.byId[key]
                     return <ListItem key={projection.hash} button onClick={() => onProjectionClick(projection)}>
-                        <ListItemAvatar>
-                            <Avatar>
-                                <FolderIcon />
-                            </Avatar>
-                        </ListItemAvatar>
                         <ListItemText
                             primary={`${projection.name}`}
-                            secondary={`${projection.positions.length} items`}
+                            secondary={`${projection.metadata?.iterations} iterations`}
                         />
                         <ListItemSecondaryAction>
                             <IconButton onClick={() => onDeleteProjectionClick(key)}>

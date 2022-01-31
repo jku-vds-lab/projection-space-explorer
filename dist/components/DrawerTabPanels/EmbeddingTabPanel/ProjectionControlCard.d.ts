@@ -1,4 +1,4 @@
-import { ConnectedProps } from 'react-redux';
+import { ConnectedProps } from "react-redux";
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     projectionParams: {
         perplexity: number;
@@ -24,5 +24,5 @@ declare type Props = PropsFromRedux & {
 /**
  * Projection card that allows to start/stop the projection and shows the current steps.
  */
-export declare var ProjectionControlCard: import("react-redux").ConnectedComponent<({ onComputingChanged, projectionParams, controller, onClose, dataset_name }: Props) => JSX.Element, Pick<Props, "onClose" | "controller" | "onComputingChanged" | "dataset_name">>;
+export declare var ProjectionControlCard: import("react-redux").ConnectedComponent<({ onComputingChanged, projectionParams, controller, onClose, dataset_name, }: Props) => JSX.Element, Pick<Props, "onClose" | "controller" | "onComputingChanged" | "dataset_name">>;
 export {};
