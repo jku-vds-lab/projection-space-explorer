@@ -108,7 +108,7 @@ const mapDispatchToProps = dispatch => ({
   setGlobalPointBrightness: value => dispatch(setGlobalPointBrightness(value)),
   setGenericFingerprintAttributes: value => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: value => dispatch(setGroupVisualizationMode(value)),
-  setLineUpInput_visibility: open => dispatch(setDetailVisibility(open)),
+  setDetailVisibility: open => dispatch(setDetailVisibility(open)),
   loadDataset: (dataset: Dataset) => dispatch(RootActions.loadDataset(dataset))
 })
 
@@ -168,7 +168,7 @@ export type ContextMenuItem = {
 
 export type DetailViewSpec = {
   name: string
-  view: () => JSX.Element
+  view: () => JSX.Element // JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>
 }
 
 
@@ -511,13 +511,13 @@ export const Application = connector(class extends React.Component<Props, any> {
               direction="vertical"
               cursor="ns-resize"
               onDragStart={() => {
-                this.props.setLineUpInput_visibility(false)
+                this.props.setDetailVisibility(false)
               }}
               onDragEnd={(sizes) => {
                 if (sizes[0] > 90) {
-                  this.props.setLineUpInput_visibility(false)
+                  this.props.setDetailVisibility(false)
                 } else {
-                  this.props.setLineUpInput_visibility(true)
+                  this.props.setDetailVisibility(true)
                 }
               }}
             >
@@ -530,6 +530,8 @@ export const Application = connector(class extends React.Component<Props, any> {
               <div style={{ flexGrow: 0.1 }}>
                 {
                   React.createElement(this.props.overrideComponents.detailViews[0].view, {})
+                  // React.isValidElement(this.props.overrideComponents.detailViews[0].view) ? this.props.overrideComponents.detailViews[0].view : React.createElement(this.props.overrideComponents.detailViews[0].view as () => JSX.Element, {})
+                  // this.props.overrideComponents.detailViews[0].view
                 }
               </div>
             </Split> : <div style={{ flexGrow: 1 }}>

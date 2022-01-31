@@ -37,7 +37,7 @@ const SizeSliderFull = ({ sizeScale, setRange }) => {
     }}>
         <Typography id="range-slider" gutterBottom>
             Size Scale
-      </Typography>
+        </Typography>
         <Slider
             min={0}
             max={5}

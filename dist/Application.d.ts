@@ -106,7 +106,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
-    setLineUpInput_visibility: (open: any) => any;
+    setDetailVisibility: (open: any) => any;
     loadDataset: (dataset: Dataset) => any;
 }, {}>;
 /**
@@ -301,7 +301,7 @@ export declare const Application: ConnectedComponent<{
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
-    setLineUpInput_visibility: (open: any) => any;
+    setDetailVisibility: (open: any) => any;
     loadDataset: (dataset: Dataset) => any;
 } & {
     config?: BaseConfig;
