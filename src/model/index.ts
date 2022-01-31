@@ -10,3 +10,4 @@ export * from './ObjectType';
 export * from './TypedObject';
 export * from './Vector';
 export * from './DatasetEntry'
+export * from './EncodingChannel'

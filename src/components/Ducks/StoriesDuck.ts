@@ -266,14 +266,13 @@ export default function stories(state: IStorytelling = initialState, action): IS
 
             // Add cluster to active story book
             const activeStory = AStorytelling.getActive(state)
-
-            ABook.addCluster(activeStory, cluster)
+            const addedHandle = ABook.addCluster(activeStory, cluster)
 
             // Add edge that connects the active trace state with the current cluster
             if (state.trace.mainPath.length > 0) {
                 let edge: IEdge = {
                     source: state.trace.mainPath[state.trace.mainPath.length - 1],
-                    destination: cluster,
+                    destination: addedHandle,
                     objectType: ObjectTypes.Edge
                 }
 
@@ -283,9 +282,10 @@ export default function stories(state: IStorytelling = initialState, action): IS
             }
 
             // Add cluster to current trace
-            state.trace.mainPath.push(cluster)
+            state.trace.mainPath.push(addedHandle)
 
             ACluster.deriveVectorLabelsFromClusters(action.vectors, Object.values(activeStory.clusters.byId))
+
 
             return {
                 stories: state.stories,

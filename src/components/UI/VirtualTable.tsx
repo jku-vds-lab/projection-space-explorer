@@ -1,5 +1,5 @@
-import React = require("react")
 import './VirtualTable.scss'
+import React = require("react");
 
 type VirtualTableProps = {
     rows: any

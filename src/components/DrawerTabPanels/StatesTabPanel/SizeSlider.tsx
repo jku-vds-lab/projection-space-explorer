@@ -3,73 +3,52 @@ import { Typography, Slider } from "@mui/material";
 import { connect } from 'react-redux'
 import { setGlobalPointSize } from "../../Ducks/GlobalPointSizeDuck";
 
-const SizeSliderFull = ({ sizeScale, setRange }) => {
-    const marks = [
-        {
-            value: 0,
-            label: '0',
-        },
-        {
-            value: 1,
-            label: `1`,
-        },
-        {
-            value: 2,
-            label: `2`,
-        },
-        {
-            value: 3,
-            label: `3`,
-        },
-        {
-            value: 4,
-            label: `4`,
-        },
-        {
-            value: 5,
-            label: `5`,
-        },
-    ];
+export const SizeSliderMarks = [
+    {
+        value: 0,
+        label: '0',
+    },
+    {
+        value: 1,
+        label: `1`,
+    },
+    {
+        value: 2,
+        label: `2`,
+    },
+    {
+        value: 3,
+        label: `3`,
+    },
+    {
+        value: 4,
+        label: `4`,
+    },
+    {
+        value: 5,
+        label: `5`,
+    },
+];
 
+const SizeSliderFull = ({ sizeScale, setRange }) => {
     return <div style={{
         margin: '0px 16px',
         padding: '0px 8px'
     }}>
-        <Typography id="range-slider" gutterBottom>
-            Size Scale
-        </Typography>
+        <Typography id="range-slider" gutterBottom>Size Scale</Typography>
+
         <Slider
             min={0}
             max={5}
             value={sizeScale}
             onChange={(_, newValue) => setRange(newValue)}
             step={0.25}
-            marks={marks}
+            marks={SizeSliderMarks}
             valueLabelDisplay="auto"
         ></Slider>
     </div>
 }
 
-/**
- * 
- * @param state                 sizeScale={this.state.vectorBySize.values.range}
-                onChange={(e, newVal) => {
-                  if (arraysEqual(newVal, this.state.vectorBySize.values.range)) {
-                    return;
-                  }
-
-                  this.state.vectorBySize.values.range = newVal
-
-                  this.setState({
-                    vectorBySize: this.state.vectorBySize
-                  })
-
-                  if (this.state.vectorBySize != null) {
-                    this.threeRef.current.particles.sizeCat(this.state.vectorBySize)
-                    this.threeRef.current.particles.updateSize()
-                  }
-                }}
- */
 
 const mapStateToProps = state => ({
     sizeScale: state.globalPointSize

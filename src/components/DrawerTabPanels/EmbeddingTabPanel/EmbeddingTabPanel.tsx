@@ -57,11 +57,11 @@ type Props = PropsFromRedux & {
     webGLView?: any
 }
 
-const EmbeddingMethodButtons = (props:{setOpen, setDomainSettings, embeddings?: EmbeddingMethod[]}) => {
+const EmbeddingMethodButtons = (props: { setOpen, setDomainSettings, embeddings?: EmbeddingMethod[] }) => {
     const embeddings = props.embeddings ?? DEFAULT_EMBEDDINGS
-    
-    return <Grid container direction="column" spacing={1}> 
-        {embeddings.map((emb) => 
+
+    return <Grid container direction="column" spacing={1}>
+        {embeddings.map((emb) =>
             <Grid key={emb.id} item>
                 <Button
                     style={{
@@ -79,7 +79,7 @@ const EmbeddingMethodButtons = (props:{setOpen, setDomainSettings, embeddings?: 
 
 export const EmbeddingTabPanel = connector((props: Props) => {
     const [open, setOpen] = React.useState(false)
-    const [domainSettings, setDomainSettings] = React.useState({id:"", name:"", embController:null})
+    const [domainSettings, setDomainSettings] = React.useState({ id: "", name: "", embController: null })
 
     const [controller, setController] = React.useState(null)
 
@@ -144,7 +144,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                 setOpen(false)
                 props.setProjectionColumns(selection)
                 // props.setProjectionParams(params)
-                
+
                 switch (domainSettings.id) {
                     case 'tsne': {
                         let controller = new TSNEEmbeddingController()
@@ -197,11 +197,11 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                     }
                     default: {
                         // custom embedding controller
-                        if(domainSettings.embController){
+                        if (domainSettings.embController) {
                             let controller = domainSettings.embController;
-    
+
                             controller.init(props.dataset, selection, params, props.workspace)
-                            controller.stepper = (Y:IBaseProjection) => {
+                            controller.stepper = (Y: IBaseProjection) => {
                                 // const workspace = props.dataset.vectors.map((sample, i) => {
                                 //     return {
                                 //         x: Y[i].x,
@@ -211,7 +211,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                                 // props.updateWorkspace(workspace)
                                 props.updateWorkspace(Y)
                             }
-    
+
                             setController(controller)
                         }
                         break;

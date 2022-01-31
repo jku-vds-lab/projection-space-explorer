@@ -1,3 +1,7 @@
+export declare const SizeSliderMarks: {
+    value: number;
+    label: string;
+}[];
 export declare const SizeSlider: import("react-redux").ConnectedComponent<({ sizeScale, setRange }: {
     sizeScale: any;
     setRange: any;

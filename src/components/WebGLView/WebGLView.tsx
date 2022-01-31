@@ -207,6 +207,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
 
 
         this.mouseController.onDragEnd = (event: MouseEvent, button: number) => {
+
             switch (button) {
                 case 0:
                     let coords = CameraTransformations.screenToWorld({ x: event.offsetX, y: event.offsetY }, this.createTransform())
@@ -221,7 +222,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
                             const source = Object.keys(activeStory.clusters.byId).find(key => activeStory.clusters.byId[key] === this.clusterDrag.cluster)
                             const destination = Object.keys(activeStory.clusters.byId).find(key => activeStory.clusters.byId[key] === cluster)
 
-                            if (ANormalized.entries(activeStory.edges).find(e => e[1].source === source && e[1].destination === destination) !== undefined) {
+                            if (ANormalized.entries(activeStory.edges).find(e => e[1].source === source && e[1].destination === destination) === undefined) {
                                 this.props.addEdgeToActive({
                                     source,
                                     destination,
@@ -1057,7 +1058,7 @@ export const WebGLView = connector(class extends React.Component<Props, ViewStat
             this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, { key: 'algo' }, this.props.dataset), null)
         }
 
-        if (prevProps.colorScales.active != this.props.colorScales.active || prevProps.stories != this.props.stories) {
+        if (prevProps.colorScales.active != this.props.colorScales.active || prevProps.stories != this.props.stories || prevProps.channelColor  != this.props.channelColor) {
 
             if (this.props.channelColor && this.props.colorScales.active) {
 
