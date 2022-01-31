@@ -13,8 +13,8 @@ export const setProjectionParamsAction = projectionParams => ({
 });
 
 const initialState = {
-    perplexity: 30, //50,
-    learningRate: 1.0,//50,
+    perplexity: 50, //50,
+    learningRate: 50,//50,
     nNeighbors: 15,
     iterations: 500, //1000,
     seeded: false,
