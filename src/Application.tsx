@@ -193,9 +193,10 @@ export type ContextMenuItem = {
 };
 
 export type DetailViewSpec = {
-  name: string;
-  view: () => JSX.Element;
+  name: string
+  view: () => JSX.Element // JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>
 };
+
 
 export type TabSpec = {
   name: string;

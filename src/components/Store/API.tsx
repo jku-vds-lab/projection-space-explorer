@@ -9,7 +9,30 @@ import thunk from "redux-thunk";
 import { v4 as uuidv4 } from "uuid";
 import { getStoreDiff } from "./PluginScript";
 import { RootActions } from "./RootActions";
+import { SchemeColor } from "../Utility";
+import { IBaseProjection } from "../..";
 import { UtilityActions } from "../..";
+
+
+
+const blobToBase64 = (blob) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    return new Promise<string>(resolve => {
+        reader.onloadend = () => {
+            var b64 = reader.result as string
+
+            b64 = b64.replace(/^data:.+;base64,/, '');
+
+            resolve(b64);
+        };
+    });
+};
+
+
+
+
+
 
 /**
  * Main api class for PSE.
