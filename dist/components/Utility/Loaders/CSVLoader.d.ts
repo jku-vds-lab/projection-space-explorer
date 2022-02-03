@@ -1,12 +1,11 @@
-import { DatasetType } from "../../../model/DatasetType";
-import { IVector } from "../../../model/Vector";
-import { Dataset } from "../../../model/Dataset";
-import { Loader } from "./Loader";
-import { DatasetEntry } from "../../../model/DatasetEntry";
+import { DatasetType } from '../../../model/DatasetType';
+import { IVector } from '../../../model/Vector';
+import { Dataset } from '../../../model/Dataset';
+import { Loader } from './Loader';
+import { DatasetEntry } from '../../../model/DatasetEntry';
 export declare class CSVLoader implements Loader {
     vectors: IVector[];
     datasetType: DatasetType;
-    constructor();
     resolvePath(entry: DatasetEntry, finished: any): void;
     parseRange(str: any): {
         min: any;

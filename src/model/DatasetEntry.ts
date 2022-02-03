@@ -1,8 +1,8 @@
-import { DatasetType } from "./DatasetType";
+import { DatasetType } from './DatasetType';
 
 export type DatasetEntry = {
-    display: string
-    path: string
-    type: DatasetType
-    uploaded?: boolean
-}
+  display: string;
+  path: string;
+  type: DatasetType;
+  uploaded?: boolean;
+};

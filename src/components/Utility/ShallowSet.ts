@@ -1,51 +1,48 @@
-import { arraysEqual } from "../WebGLView/UtilityFunctions"
-
+import { arraysEqual } from '../WebGLView/UtilityFunctions';
 
 /**
  * Custom set implementation that can handle array types as well
  */
 export class ShallowSet {
-    values = []
+  values = [];
 
-    constructor(values) {
-        values.forEach(element => {
-            this.add(element)
-        })
+  constructor(values) {
+    values.forEach((element) => {
+      this.add(element);
+    });
+  }
+
+  has(value) {
+    if (value instanceof Array) {
+      return this.values.find((e) => arraysEqual(e, value));
+    }
+    return this.values.includes(value);
+  }
+
+  add(value) {
+    if (this.has(value)) {
+      return;
     }
 
-    has(value) {
-        if (value instanceof Array) {
-            return this.values.find(e => arraysEqual(e, value))
-        } else {
-            return this.values.includes(value)
-        }
-    }
+    this.values.push(value);
+  }
 
-    add(value) {
-        if (this.has(value)) {
-            return;
-        }
+  get(index: number) {
+    return this.values[index];
+  }
 
-        this.values.push(value)
+  indexOf(value) {
+    if (value instanceof Array) {
+      return this.values.findIndex((e) => arraysEqual(e, value));
     }
+    return this.values.indexOf(value);
+  }
 
-    get(index: number) {
-        return this.values[index]
-    }
+  map(callbackfn) {
+    return this.values.map(callbackfn);
+  }
 
-    indexOf(value) {
-        if (value instanceof Array) {
-            return this.values.findIndex(e => arraysEqual(e, value))
-        } else {
-            return this.values.indexOf(value)
-        }
-    }
-
-    map(callbackfn) {
-        return this.values.map(callbackfn)
-    }
-
-    filter(callbackfn){
-        return this.values.filter(callbackfn)
-    }
+  filter(callbackfn) {
+    return this.values.filter(callbackfn);
+  }
 }

@@ -1,4 +1,9 @@
-import React = require("react");
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React = require('react');
+import { EntityId, createEntityAdapter } from '@reduxjs/toolkit';
 import {
   Box,
   Button,
@@ -7,7 +12,6 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
-  InputLabel,
   List,
   ListItem,
   ListItemSecondaryAction,
@@ -21,38 +25,29 @@ import {
   Switch,
   TextField,
   Typography,
-} from "@mui/material";
-import { connect, ConnectedProps } from "react-redux";
-import { ACluster, ICluster } from "../../../model/Cluster";
-import { IBook, ABook } from "../../../model/Book";
-import SettingsIcon from "@mui/icons-material/Settings";
-import SaveIcon from "@mui/icons-material/Save";
-import { DisplayMode, setDisplayMode } from "../../Ducks/DisplayModeDuck";
-import {
-  addBook,
-  deleteCluster,
-  setActiveStory,
-  setStories,
-  IStorytelling,
-  AStorytelling,
-} from "../../Ducks/StoriesDuck";
-import { RootState } from "../../Store/Store";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { StoryPreview } from "./StoryPreview";
-import * as backend_utils from "../../../utils/backend-connect";
-import { trackPromise } from "react-promise-tracker";
-import { useCancellablePromise } from "../../../utils/promise-helpers";
-import { setChannelColor } from "../../Ducks/ChannelColorDuck";
-import { replaceClusterLabels } from "../../WebGLView/UtilityFunctions";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import {
-  GroupVisualizationMode,
-  setGroupVisualizationMode,
-} from "../../Ducks/GroupVisualizationMode";
-import { selectClusters } from "../../Ducks/AggregationDuck";
-import { CategoryOptionsAPI } from "../../WebGLView/CategoryOptions";
-import { Dataset } from "../../../model/Dataset";
-import { FormHelperText } from "@mui/material";
+  FormHelperText,
+} from '@mui/material';
+import { connect, ConnectedProps } from 'react-redux';
+import SettingsIcon from '@mui/icons-material/Settings';
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { trackPromise } from 'react-promise-tracker';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { ACluster } from '../../../model/Cluster';
+import { ICluster } from '../../../model/ICluster';
+import { IBook, ABook } from '../../../model/Book';
+import { DisplayMode, setDisplayMode } from '../../Ducks/DisplayModeDuck';
+import type { RootState } from '../../Store/Store';
+import { StoryPreview } from './StoryPreview';
+import * as backend_utils from '../../../utils/backend-connect';
+import { useCancellablePromise } from '../../../utils/promise-helpers';
+import { setChannelColor } from '../../Ducks/ChannelColorDuck';
+import { replaceClusterLabels } from '../../WebGLView/UtilityFunctions';
+import { GroupVisualizationMode, setGroupVisualizationMode } from '../../Ducks/GroupVisualizationMode';
+import { selectClusters } from '../../Ducks/AggregationDuck';
+import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
+import { Dataset } from '../../../model/Dataset';
+import { StoriesActions, AStorytelling, IStorytelling } from '../../Ducks/StoriesDuck copy';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -64,17 +59,14 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setStories: (stories: IBook[]) => dispatch(setStories(stories)),
-  setActiveStory: (activeStory: IBook) => dispatch(setActiveStory(activeStory)),
+  setStories: (stories: IBook[]) => dispatch(StoriesActions.set({ stories })),
+  setActiveStory: (book: EntityId) => dispatch(StoriesActions.setActiveStoryBook({ book })),
   setDisplayMode: (displayMode) => dispatch(setDisplayMode(displayMode)),
-  addStory: (story) => dispatch(addBook(story, true)),
-  removeClusterFromStories: (cluster: ICluster) =>
-    dispatch(deleteCluster(cluster)),
+  addStory: (book: IBook) => dispatch(StoriesActions.addBookAsync({ book, activate: true })),
+  removeClusterFromStories: (cluster: ICluster) => dispatch(StoriesActions.deleteCluster({ cluster })),
   setChannelColor: (col) => dispatch(setChannelColor(col)),
-  setGroupVisualizationMode: (groupVisualizationMode) =>
-    dispatch(setGroupVisualizationMode(groupVisualizationMode)),
-  setSelectedClusters: (clusters: string[], shift: boolean) =>
-    dispatch(selectClusters(clusters, shift)),
+  setGroupVisualizationMode: (groupVisualizationMode) => dispatch(setGroupVisualizationMode(groupVisualizationMode)),
+  setSelectedClusters: (clusters: string[], shift: boolean) => dispatch(selectClusters(clusters, shift)),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -87,6 +79,10 @@ type Props = PropsFromRedux & {
 const ContextPaper = styled(Paper)`
   padding: 10px;
 `;
+
+const bookAdapter = createEntityAdapter<IBook>({
+  selectId: (book) => book.id,
+});
 
 export const ClusteringTabPanel = connector(
   ({
@@ -107,20 +103,11 @@ export const ClusteringTabPanel = connector(
   }: Props) => {
     const categoryOptions = dataset?.categories;
 
-    function calc_hdbscan(
-      min_cluster_size,
-      min_cluster_samples,
-      allow_single_cluster,
-      cancellablePromise,
-      clusterSelectionOnly,
-      addClusterToCurrentStory
-    ) {
-      const loading_area = "global_loading_indicator";
+    function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory) {
+      const loading_area = 'global_loading_indicator';
 
-      let data_points =
-        clusterSelectionOnly &&
-        currentAggregation.aggregation &&
-        currentAggregation.aggregation.length > 0
+      const data_points =
+        clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0
           ? currentAggregation.aggregation.map((i) => ({
               ...workspace[i],
               meshIndex: i,
@@ -130,72 +117,58 @@ export const ClusteringTabPanel = connector(
       const points = data_points.map((point) => [point.x, point.y]);
 
       trackPromise(
-        cancellablePromise(
-          backend_utils.calculate_hdbscan_clusters(
-            points,
-            min_cluster_size,
-            min_cluster_samples,
-            allow_single_cluster
-          )
-        )
+        cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster))
           .then((data) => {
-            const cluster_labels = data["result"];
-            const dist_cluster_labels = cluster_labels.filter(
-              (value, index, self) => {
-                return self.indexOf(value) === index;
-              }
-            ); //return distinct list of clusters
+            const cluster_labels = data.result;
+            const dist_cluster_labels = cluster_labels.filter((value, index, self) => {
+              return self.indexOf(value) === index;
+            }); // return distinct list of clusters
 
             if (dist_cluster_labels.length <= 1) {
-              //if there are no clusters found, return and give error message
-              alert(
-                "No Cluster could be derived. Please, adjust the Clustering Settings and try again."
-              );
+              // if there are no clusters found, return and give error message
+              alert('No Cluster could be derived. Please, adjust the Clustering Settings and try again.');
               return;
             }
 
-            const story: IBook =
-              stories.active !== null
-                ? AStorytelling.getActive(stories)
-                : AStorytelling.emptyStory();
+            const story: IBook = stories.active !== null ? AStorytelling.getActive(stories) : AStorytelling.emptyStory();
+            const clusters: ICluster[] = new Array<ICluster>();
 
             dist_cluster_labels.forEach((cluster_label) => {
+              console.log(cluster_label);
               if (cluster_label >= 0) {
-                const current_cluster_vects = data_points.filter(
-                  (x, i) => cluster_labels[i] == cluster_label
-                );
+                const current_cluster_vects = data_points.filter((x, i) => cluster_labels[i] === cluster_label);
                 const cluster = ACluster.fromSamples(
                   dataset,
                   current_cluster_vects.map((i) => i.meshIndex),
-                  { method: "hdbscan" }
+                  { method: 'hdbscan' },
                 );
 
                 // Set correct label for cluster
                 cluster.label = cluster_label;
-                // clusters.push(cluster)
 
-                ABook.addCluster(story, cluster);
+                clusters.push(cluster);
               }
             });
+
+            story.clusters.entities = clusters.reduce((prev, cur) => {
+              prev[cur.id] = cur;
+              return prev;
+            }, {});
+            story.clusters.ids = Object.keys(story.clusters.entities);
 
             // if(!addClusterToCurrentStory){
             addStory(story);
             // }
 
             // Update UI, dont know how to right now
-            var clusterAttribute = CategoryOptionsAPI.getAttribute(
-              categoryOptions,
-              "color",
-              "groupLabel",
-              "categorical"
-            );
+            const clusterAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, 'color', 'groupLabel', 'categorical');
 
             if (clusterAttribute) {
               setChannelColor(clusterAttribute);
             }
           })
           .catch((error) => console.log(error)),
-        loading_area
+        loading_area,
       );
     }
 
@@ -204,33 +177,22 @@ export const ClusteringTabPanel = connector(
     const [openClusterPanel, setOpenClusterPanel] = React.useState(false);
     const anchorRef = React.useRef();
 
-    const [clusterSelectionOnly, setClusterSelectionOnly] =
-      React.useState(false);
-    const [addClusterToCurrentStory, setAddClusterToCurrentStory] =
-      React.useState(false);
+    const [clusterSelectionOnly, setClusterSelectionOnly] = React.useState(false);
+    const [addClusterToCurrentStory, setAddClusterToCurrentStory] = React.useState(false);
 
     const [clusterAdvancedMode, setClusterAdvancedMode] = React.useState(false);
     const [clusterSliderValue, setClusterSliderValue] = React.useState(2);
 
     const [min_cluster_size, set_min_cluster_size] = React.useState(5);
     const [min_cluster_samples, set_min_cluster_samples] = React.useState(1);
-    const [allow_single_cluster, set_allow_single_cluster] =
-      React.useState(false);
-
-    React.useEffect(() => {
-      handleClusterSliderChange(clusterSliderValue, clusterSelectionOnly);
-    }, [dataset?.info?.path, currentAggregation, clusterSelectionOnly]);
+    const [allow_single_cluster, set_allow_single_cluster] = React.useState(false);
 
     const handleClusterSliderChange = (newValue, clusterSelectionOnly) => {
-      let data =
-        clusterSelectionOnly &&
-        currentAggregation.aggregation &&
-        currentAggregation.aggregation.length > 0
-          ? currentAggregation.aggregation
-          : dataset.vectors;
+      const data =
+        clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? currentAggregation.aggregation : dataset.vectors;
       let min_clust = 0;
       switch (newValue) {
-        case 0:
+        case 0: {
           const c_few = 11;
           min_clust = Math.log10(data.length) * c_few;
           // min_clust = Math.max(data.length / 200, 20);
@@ -239,7 +201,8 @@ export const ClusteringTabPanel = connector(
           // set_allow_single_cluster(true);
           set_allow_single_cluster(false);
           break;
-        case 1:
+        }
+        case 1: {
           const c_med = 6;
           min_clust = Math.log10(data.length) * c_med;
           // min_clust = Math.max(data.length / 500, 9);
@@ -247,7 +210,8 @@ export const ClusteringTabPanel = connector(
           set_min_cluster_samples(Math.round(min_clust / 2));
           set_allow_single_cluster(false);
           break;
-        case 2:
+        }
+        case 2: {
           const c_many = 3;
           min_clust = Math.log10(data.length) * c_many;
           // min_clust = Math.max(data.length / 700, 5);
@@ -255,90 +219,76 @@ export const ClusteringTabPanel = connector(
           set_min_cluster_samples(Math.round(min_clust / 5));
           set_allow_single_cluster(false);
           break;
+        }
+        default:
+          break;
       }
       setClusterSliderValue(newValue);
     };
+
+    React.useEffect(() => {
+      handleClusterSliderChange(clusterSliderValue, clusterSelectionOnly);
+    }, [dataset?.info?.path, currentAggregation, clusterSelectionOnly]);
+
     const marks = [
       {
         value: 0,
-        label: "Few Clusters",
+        label: 'Few Clusters',
       },
       {
         value: 2,
-        label: "Many Clusters",
+        label: 'Many Clusters',
       },
     ];
-    //React.useEffect(() => toggleClusters(), [dataset])
+    // React.useEffect(() => toggleClusters(), [dataset])
 
     const onCheckItems = (event) => {
       if (event.target.checked) {
-        if (displayMode == DisplayMode.OnlyClusters) {
+        if (displayMode === DisplayMode.OnlyClusters) {
           setDisplayMode(DisplayMode.StatesAndClusters);
         } else {
           setDisplayMode(DisplayMode.OnlyStates);
         }
+      } else if (displayMode === DisplayMode.StatesAndClusters) {
+        setDisplayMode(DisplayMode.OnlyClusters);
       } else {
-        if (displayMode == DisplayMode.StatesAndClusters) {
-          setDisplayMode(DisplayMode.OnlyClusters);
-        } else {
-          setDisplayMode(DisplayMode.None);
-        }
+        setDisplayMode(DisplayMode.None);
       }
     };
 
     const onCheckClusters = (event) => {
       if (event.target.checked) {
-        if (displayMode == DisplayMode.OnlyStates) {
+        if (displayMode === DisplayMode.OnlyStates) {
           setDisplayMode(DisplayMode.StatesAndClusters);
         } else {
           setDisplayMode(DisplayMode.OnlyClusters);
         }
+      } else if (displayMode === DisplayMode.StatesAndClusters) {
+        setDisplayMode(DisplayMode.OnlyStates);
       } else {
-        if (displayMode == DisplayMode.StatesAndClusters) {
-          setDisplayMode(DisplayMode.OnlyStates);
-        } else {
-          setDisplayMode(DisplayMode.None);
-        }
+        setDisplayMode(DisplayMode.None);
       }
     };
     return (
-      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
           <Typography variant="subtitle2" gutterBottom>
-            {"Group Settings"}
+            Group Settings
           </Typography>
         </Box>
 
         <Box paddingLeft={2} paddingRight={2}>
           <FormControlLabel
-            control={
-              <Switch
-                color="primary"
-                checked={
-                  displayMode != DisplayMode.OnlyClusters &&
-                  displayMode != DisplayMode.None
-                }
-                onChange={onCheckItems}
-              />
-            }
+            control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyClusters && displayMode !== DisplayMode.None} onChange={onCheckItems} />}
             label="Show Items"
           />
           <FormControlLabel
-            control={
-              <Switch
-                color="primary"
-                checked={
-                  displayMode != DisplayMode.OnlyStates &&
-                  displayMode != DisplayMode.None
-                }
-                onChange={onCheckClusters}
-              />
-            }
+            control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyStates && displayMode !== DisplayMode.None} onChange={onCheckClusters} />}
             label="Show Group Centers"
           />
 
-          <div style={{ width: "100%" }}>
-            <FormControl style={{ width: "100%" }}>
+          <div style={{ width: '100%' }}>
+            <FormControl style={{ width: '100%' }}>
               <FormHelperText>Group Visualization</FormHelperText>
               <Select
                 value={groupVisualizationMode}
@@ -351,25 +301,16 @@ export const ClusteringTabPanel = connector(
                 <MenuItem value={GroupVisualizationMode.None}>
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={GroupVisualizationMode.ConvexHull}>
-                  Contour Plot
-                </MenuItem>
-                <MenuItem value={GroupVisualizationMode.StarVisualization}>
-                  Star Visualization
-                </MenuItem>
+                <MenuItem value={GroupVisualizationMode.ConvexHull}>Contour Plot</MenuItem>
+                <MenuItem value={GroupVisualizationMode.StarVisualization}>Star Visualization</MenuItem>
               </Select>
             </FormControl>
           </div>
         </Box>
 
         <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
-          <Button
-            variant="outlined"
-            fullWidth
-            ref={anchorRef}
-            onClick={() => setOpenClusterPanel(true)}
-          >
-            Define Groups by Clustering <ChevronRightIcon></ChevronRightIcon>
+          <Button variant="outlined" fullWidth ref={anchorRef} onClick={() => setOpenClusterPanel(true)}>
+            Define Groups by Clustering <ChevronRightIcon />
           </Button>
         </Box>
         <Popover
@@ -377,12 +318,12 @@ export const ClusteringTabPanel = connector(
           anchorEl={anchorRef.current}
           onClose={() => setOpenClusterPanel(false)}
           anchorOrigin={{
-            vertical: "top",
-            horizontal: "right",
+            vertical: 'top',
+            horizontal: 'right',
           }}
           transformOrigin={{
-            vertical: "top",
-            horizontal: "left",
+            vertical: 'top',
+            horizontal: 'left',
           }}
         >
           <Box paddingLeft={2} paddingTop={2} width={300}>
@@ -447,12 +388,10 @@ export const ClusteringTabPanel = connector(
                 }}
                 value={min_cluster_size}
                 onChange={(event) => {
-                  set_min_cluster_size(
-                    Math.max(parseInt(event.target.value), 2)
-                  );
+                  set_min_cluster_size(Math.max(parseInt(event.target.value, 10), 2));
                 }}
               />
-              <br></br>
+              <br />
               <TextField
                 fullWidth
                 label="Min Cluster Samples"
@@ -462,12 +401,10 @@ export const ClusteringTabPanel = connector(
                 }}
                 value={min_cluster_samples}
                 onChange={(event) => {
-                  set_min_cluster_samples(
-                    Math.max(parseInt(event.target.value), 1)
-                  );
+                  set_min_cluster_samples(Math.max(parseInt(event.target.value, 10), 1));
                 }}
               />
-              <br></br>
+              <br />
               <FormControlLabel
                 control={
                   <Checkbox
@@ -492,9 +429,7 @@ export const ClusteringTabPanel = connector(
                 min={0}
                 max={2}
                 value={clusterSliderValue}
-                onChange={(event, newValue) =>
-                  handleClusterSliderChange(newValue, clusterSelectionOnly)
-                }
+                onChange={(event, newValue) => handleClusterSliderChange(newValue, clusterSelectionOnly)}
               />
             </Box>
           )}
@@ -502,17 +437,10 @@ export const ClusteringTabPanel = connector(
             <Button
               variant="outlined"
               style={{
-                width: "100%",
+                width: '100%',
               }}
               onClick={() => {
-                calc_hdbscan(
-                  min_cluster_size,
-                  min_cluster_samples,
-                  allow_single_cluster,
-                  cancellablePromise,
-                  clusterSelectionOnly,
-                  addClusterToCurrentStory
-                );
+                calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory);
                 setOpenClusterPanel(false);
               }}
             >
@@ -523,15 +451,15 @@ export const ClusteringTabPanel = connector(
 
         <Box paddingLeft={2} paddingTop={2}>
           <Typography variant="subtitle2" gutterBottom>
-            {"Groups and Stories"}
+            Groups and Stories
           </Typography>
         </Box>
 
         <Box paddingLeft={2} paddingRight={2} paddingBottom={2}>
-          <StoryPreview></StoryPreview>
+          <StoryPreview />
         </Box>
 
-        <div style={{ overflowY: "auto", height: "100px", flex: "1 1 auto" }}>
+        <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
           <ClusterList
             dataset={dataset}
             removeClusterFromStories={removeClusterFromStories}
@@ -539,11 +467,11 @@ export const ClusteringTabPanel = connector(
             stories={stories}
             splitRef={splitRef}
             setSelectedCluster={setSelectedClusters}
-          ></ClusterList>
+          />
         </div>
       </div>
     );
-  }
+  },
 );
 
 type ClusterPopoverProps = {
@@ -556,15 +484,7 @@ type ClusterPopoverProps = {
   dataset: Dataset;
 };
 
-function ClusterPopover({
-  anchorEl,
-  setAnchorEl,
-  cluster,
-  dataset,
-  removeClusterFromStories,
-  splitRef,
-  setSelectedCluster,
-}: ClusterPopoverProps) {
+function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeClusterFromStories, splitRef, setSelectedCluster }: ClusterPopoverProps) {
   if (!cluster) return null;
 
   const [name, setName] = React.useState(cluster.label);
@@ -581,7 +501,7 @@ function ClusterPopover({
     replaceClusterLabels(
       cluster.indices.map((i) => dataset.vectors[i]),
       cluster.label,
-      name
+      name,
     );
     setAnchorEl(null);
   };
@@ -602,17 +522,17 @@ function ClusterPopover({
 
   return (
     <Popover
-      id={"dialog to open"}
+      id="dialog to open"
       open={anchorEl !== null}
       anchorEl={anchorEl}
       onClose={() => setAnchorEl(null)}
       anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "center",
+        vertical: 'bottom',
+        horizontal: 'center',
       }}
       transformOrigin={{
-        vertical: "bottom",
-        horizontal: "center",
+        vertical: 'bottom',
+        horizontal: 'center',
       }}
     >
       <div>
@@ -639,14 +559,8 @@ function ClusterPopover({
               margin="normal"
             />
 
-            <div style={{ display: "flex" }}>
-              <Button
-                color="primary"
-                variant="contained"
-                aria-label="Save"
-                onClick={onSave}
-                startIcon={<SaveIcon />}
-              >
+            <div style={{ display: 'flex' }}>
+              <Button color="primary" variant="contained" aria-label="Save" onClick={onSave} startIcon={<SaveIcon />}>
                 Save
                 {/* Name */}
               </Button>
@@ -662,7 +576,7 @@ function ClusterPopover({
 }
 
 type ClusterListProps = {
-  selectedClusters: string[];
+  selectedClusters: EntityId[];
   stories: IStorytelling;
   removeClusterFromStories;
   splitRef;
@@ -670,14 +584,7 @@ type ClusterListProps = {
   dataset;
 };
 
-function ClusterList({
-  selectedClusters,
-  stories,
-  dataset,
-  removeClusterFromStories,
-  splitRef,
-  setSelectedCluster,
-}: ClusterListProps) {
+function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStories, splitRef, setSelectedCluster }: ClusterListProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [popoverCluster, setPopoverCluster] = React.useState<ICluster>(null);
 
@@ -686,7 +593,7 @@ function ClusterList({
   const storyItems = new Array<JSX.Element>();
 
   if (activeStory) {
-    for (const [key, cluster] of Object.entries(activeStory.clusters.byId)) {
+    for (const [key, cluster] of Object.entries(activeStory.clusters.entities)) {
       storyItems.push(
         <ListItem
           key={key}
@@ -696,16 +603,13 @@ function ClusterList({
             setSelectedCluster([key], event.ctrlKey);
           }}
         >
-          <ListItemText
-            primary={ACluster.getTextRepresentation(cluster)}
-            secondary={`${cluster.indices.length} Items`}
-          />
+          <ListItemText primary={ACluster.getTextRepresentation(cluster)} secondary={`${cluster.indices.length} Items`} />
           <ListItemSecondaryAction>
             <IconButton
               edge="end"
               aria-label="delete"
               onClick={(event) => {
-                //removeClusterFromStories(cluster)
+                // removeClusterFromStories(cluster)
                 setPopoverCluster(cluster);
                 setAnchorEl(event.target);
               }}
@@ -713,7 +617,7 @@ function ClusterList({
               <SettingsIcon />
             </IconButton>
           </ListItemSecondaryAction>
-        </ListItem>
+        </ListItem>,
       );
     }
   }
@@ -728,7 +632,7 @@ function ClusterList({
         removeClusterFromStories={removeClusterFromStories}
         splitRef={splitRef}
         setSelectedCluster={setSelectedCluster}
-      ></ClusterPopover>
+      />
 
       <List>{storyItems}</List>
     </div>

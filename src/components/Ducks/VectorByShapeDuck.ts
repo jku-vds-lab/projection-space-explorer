@@ -1,17 +1,17 @@
-const SET = "ducks/vectorByShape/SET"
+const SET = 'ducks/vectorByShape/SET';
 
-export const setVectorByShapeAction = vectorByShape => ({
-    type: SET,
-    vectorByShape: vectorByShape
+export const setVectorByShapeAction = (vectorByShape) => ({
+  type: SET,
+  vectorByShape,
 });
 
 const vectorByShape = (state = null, action) => {
-    switch (action.type) {
-        case SET:
-            return action.vectorByShape
-        default:
-            return state
-    }
-}
+  switch (action.type) {
+    case SET:
+      return action.vectorByShape;
+    default:
+      return state;
+  }
+};
 
-export default vectorByShape
+export default vectorByShape;

@@ -1,17 +1,17 @@
 import * as React from 'react';
-import { ViewTransformType } from '../Ducks';
+import type { ViewTransformType } from '../Ducks';
 declare type LassoLayerProps = {
     viewTransform: ViewTransformType;
 };
 declare const LassoLayer: import("react-redux").ConnectedComponent<{
     new (props: any): {
+        getContext(): any;
         setDimensions(width: any, height: any): void;
         renderHighlightedSequence(context: CanvasRenderingContext2D, highlightedSequence: {
             previous;
             current;
             next;
         }): void;
-        getContext(): any;
         render(): JSX.Element;
         context: any;
         setState<K extends string | number | symbol>(state: any, callback?: () => void): void;
@@ -38,13 +38,13 @@ declare const LassoLayer: import("react-redux").ConnectedComponent<{
     };
     contextType?: React.Context<any>;
 }, Pick<React.ClassAttributes<{
+    getContext(): any;
     setDimensions(width: any, height: any): void;
     renderHighlightedSequence(context: CanvasRenderingContext2D, highlightedSequence: {
         previous;
         current;
         next;
     }): void;
-    getContext(): any;
     render(): JSX.Element;
     context: any;
     setState<K extends string | number | symbol>(state: any, callback?: () => void): void;

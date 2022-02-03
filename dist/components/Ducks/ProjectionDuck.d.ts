@@ -1,43 +1,16 @@
-import { IProjection, IBaseProjection } from "../../model/Projection";
-declare enum ActionTypes {
-    ADD = "ducks/embedding/ADD",
-    DELETE = "ducks/embedding/DELETE",
-    UPDATE_ACTIVE = "ducks/embedding/UPDATE"
-}
-declare type AddAction = {
-    type: ActionTypes.ADD;
-    projection: IProjection;
-};
-declare type DeleteAction = {
-    type: ActionTypes.DELETE;
-    handle: string;
-};
-declare type UpdateAction = {
-    type: ActionTypes.UPDATE_ACTIVE;
-    workspace: IBaseProjection;
-};
-export declare const addProjectionAction: (projection: IProjection) => {
-    type: ActionTypes;
-    projection: IProjection;
-};
-export declare const deleteProjectionAction: (handle: string) => {
-    type: ActionTypes;
-    handle: string;
-};
-export declare const updateWorkspaceAction: (workspace: IBaseProjection) => {
-    type: ActionTypes;
-    workspace: IBaseProjection;
-};
-declare type Action = AddAction | DeleteAction | UpdateAction;
+import { EntityState, EntityId, Update } from '@reduxjs/toolkit';
+import { IProjection, IBaseProjection, IPosition } from '../../model/ProjectionInterfaces';
 /**
  * Type for embedding state slice
  */
-declare type StateType = {
-    byId: {
-        [id: string]: IProjection;
-    };
-    allIds: string[];
+export declare type ProjectionStateType = {
+    values: EntityState<IProjection>;
     workspace: IBaseProjection;
 };
-export default function embeddings(state: StateType, action: Action): StateType;
-export {};
+export declare const embeddings: import("redux").Reducer<ProjectionStateType, import("redux").AnyAction>;
+export declare const ProjectionActions: {
+    add: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IProjection, string>;
+    updateActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IPosition[], string>;
+    remove: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    save: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Update<IProjection>, string>;
+};

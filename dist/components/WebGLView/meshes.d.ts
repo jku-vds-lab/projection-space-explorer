@@ -1,18 +1,12 @@
 import * as THREE from 'three';
-import { DataLine } from "../../model/DataLine";
-import { IVector } from "../../model/Vector";
-import { Dataset } from "../../model/Dataset";
-import { LayeringSystem } from './LayeringSystem';
-import { IStorytelling } from '../Ducks/StoriesDuck';
 import { Mapping } from '../Utility/Colors/Mapping';
-import { IBaseProjection } from '../../model/Projection';
-export declare enum Shapes {
-    Circle = "circle",
-    Star = "star",
-    Square = "square",
-    Cross = "cross"
-}
-export declare function imageFromShape(value: any): "./textures/sprites/cross.png" | "./textures/sprites/square.png" | "./textures/sprites/circle.png" | "./textures/sprites/star.png";
+import { DataLine } from '../../model/DataLine';
+import { IVector } from '../../model/Vector';
+import { Dataset } from '../../model/Dataset';
+import { LayeringSystem } from './LayeringSystem';
+import { IBaseProjection } from '../../model/ProjectionInterfaces';
+import { IStorytelling } from '../Ducks/StoriesDuck copy';
+export declare function imageFromShape(value: any): "" | "./textures/sprites/cross.png" | "./textures/sprites/square.png" | "./textures/sprites/circle.png" | "./textures/sprites/star.png";
 export declare class LineVisualization {
     segments: DataLine[];
     highlightIndices: any;

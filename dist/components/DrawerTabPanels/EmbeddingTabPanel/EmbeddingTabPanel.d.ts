@@ -1,19 +1,13 @@
 import { ConnectedProps } from 'react-redux';
-import { Dataset } from "../../../model/Dataset";
-import { IProjection, IBaseProjection } from '../../../model/Projection';
-import { FeatureConfig } from '../../../Application';
+import { Dataset } from '../../../model/Dataset';
+import { IBaseProjection } from '../../../model/ProjectionInterfaces';
+import { FeatureConfig } from '../../../BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    stories: import("../../..").IStorytelling;
+    stories: import("../../Ducks/StoriesDuck copy").IStorytelling;
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;
-    projections: {
-        byId: {
-            [id: string]: IProjection;
-        };
-        allIds: string[];
-        workspace: IBaseProjection;
-    };
+    projections: import("../../Ducks/ProjectionDuck").ProjectionStateType;
     workspace: IBaseProjection;
     projectionParams: {
         perplexity: number;

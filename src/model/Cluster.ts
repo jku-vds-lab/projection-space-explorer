@@ -1,9 +1,11 @@
-import * as THREE from "three";
-import { Dataset } from "./Dataset";
-import { ObjectTypes } from "./ObjectType";
-import { TypedObject } from "./TypedObject";
-import { IVector } from "./Vector";
-import { IBaseProjection } from "./Projection";
+import { v4 as uuidv4 } from 'uuid';
+import * as THREE from 'three';
+import { Dataset } from './Dataset';
+import { ObjectTypes } from './ObjectType';
+import { TypedObject } from './TypedObject';
+import { IVector } from './Vector';
+import { IBaseProjection } from './ProjectionInterfaces';
+import { ICluster } from './ICluster';
 
 /**
  * Cluster API.
@@ -13,10 +15,10 @@ export class ACluster {
     const samples = indices.map((i) => workspace[i]);
 
     // Get rectangle that fits around data set
-    var minX = 1000,
-      maxX = -1000,
-      minY = 1000,
-      maxY = -1000;
+    let minX = 1000;
+    let maxX = -1000;
+    let minY = 1000;
+    let maxY = -1000;
     samples.forEach((sample) => {
       minX = Math.min(minX, sample.x);
       maxX = Math.max(maxX, sample.x);
@@ -36,12 +38,9 @@ export class ACluster {
     };
   }
 
-  static fromSamples(
-    dataset: Dataset,
-    samples: number[],
-    metadata?: any
-  ): ICluster {
+  static fromSamples(dataset: Dataset, samples: number[], metadata?: any): ICluster {
     return {
+      id: uuidv4(),
       objectType: ObjectTypes.Cluster,
       indices: samples,
       label: Math.floor(Math.random() * 1000),
@@ -55,10 +54,7 @@ export class ACluster {
    * @param vectors The vectors to relabel
    * @param clusters The clusters to take the label from
    */
-  static deriveVectorLabelsFromClusters(
-    vectors: IVector[],
-    clusters: ICluster[]
-  ) {
+  static deriveVectorLabelsFromClusters(vectors: IVector[], clusters: ICluster[]) {
     // Clear all cluster labels from vectors
     vectors.forEach((vector) => {
       vector.groupLabel = [];
@@ -75,14 +71,14 @@ export class ACluster {
   }
 
   static getCenterFromWorkspace(workspace: IBaseProjection, cluster: ICluster) {
-    var x = 0;
-    var y = 0;
+    let x = 0;
+    let y = 0;
 
     cluster.indices
       .map((i) => workspace[i])
       .forEach((p) => {
-        x = x + p.x;
-        y = y + p.y;
+        x += p.x;
+        y += p.y;
       });
 
     return {
@@ -92,35 +88,16 @@ export class ACluster {
   }
 
   static getCenterAsVector2(workspace: IBaseProjection, cluster: ICluster) {
-    let center = ACluster.getCenterFromWorkspace(workspace, cluster);
+    const center = ACluster.getCenterFromWorkspace(workspace, cluster);
     return new THREE.Vector2(center.x, center.y);
   }
 
   static getTextRepresentation(cluster: ICluster) {
     if (cluster.name) {
       return `${cluster.label} / ${cluster.name}`;
-    } else {
-      return "" + cluster.label;
     }
+    return `${cluster.label}`;
   }
-}
-
-/**
- * Cluster type.
- */
-export interface ICluster extends TypedObject {
-  label: any;
-
-  hull?: number[][];
-  triangulation?: number[];
-  name?: string;
-
-  metadata?: { [id: string]: any };
-
-  /**
-   * List of indices on the dataset vectors this cluster has.
-   */
-  indices: number[];
 }
 
 /**

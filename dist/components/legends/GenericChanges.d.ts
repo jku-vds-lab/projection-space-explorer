@@ -1,5 +1,5 @@
-import { IVector } from "../../model/Vector";
-import { Dataset } from "../../model/Dataset";
+import { IVector } from '../../model/Vector';
+import { Dataset } from '../../model/Dataset';
 declare type GenericChangesType = {
     vectorsA: Array<IVector>;
     vectorsB: Array<IVector>;

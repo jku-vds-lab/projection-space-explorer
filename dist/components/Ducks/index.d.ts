@@ -28,7 +28,6 @@ export * from './ProjectionWorkerDuck';
 export * from './SelectedLineByDuck';
 export * from './SelectedVectorByColorDuck';
 export * from './SelectedVectorByShapeDuck';
-export * from './StoriesDuck';
 export * from './TrailSettingsDuck';
 export * from './VectorByShapeDuck';
 export * from './ViewTransformDuck';

@@ -1,8 +1,5 @@
-import { NormalizedDictionary } from "../Utility/NormalizedState";
-import { SchemeColor } from "../Utility";
-export declare const APalette: {
-    getByName: (palette: string) => SchemeColor[];
-};
+import { NormalizedDictionary } from '../Utility/NormalizedState';
+import { BaseColorScale } from '../../model/Palette';
 declare enum ActionTypes {
     PICK_SCALE = "ducks/colorScales/PICK"
 }
@@ -18,18 +15,12 @@ export declare const ColorScalesActions: {
     initScaleByType: (type: string) => (dispatch: any, getState: any) => any;
 };
 declare type Action = PickAction;
-declare type Palette = 'dark2' | 'accent' | 'paired' | 'YlOrRd' | 'Greys' | 'Viridis' | 'BrBG' | 'PRGn' | 'SHAP' | SchemeColor[];
 /**
  * Type for embedding state slice
  */
 declare type StateType = {
     scales: NormalizedDictionary<BaseColorScale>;
     active: string;
-};
-export declare type BaseColorScale = {
-    palette: Palette;
-    type: 'sequential' | 'diverging' | 'categorical';
-    dataClasses?: number;
 };
 export default function colorScales(state?: StateType, action?: Action): StateType;
 export {};

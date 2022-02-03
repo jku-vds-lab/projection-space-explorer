@@ -1,1 +1,1 @@
-export declare var AdvancedColoringPopover: ({}: {}) => JSX.Element;
+export declare function AdvancedColoringPopover(): JSX.Element;

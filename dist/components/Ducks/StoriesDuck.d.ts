@@ -1,6 +1,6 @@
-import { ICluster } from "../../model/Cluster";
-import { IEdge } from "../../model/Edge";
-import { IBook } from "../../model/Book";
+import { ICluster } from '../../model/ICluster';
+import { IEdge } from '../../model/Edge';
+import { IBook } from '../../model/Book';
 declare const enum ActionTypes {
     ADD_BOOK = "ducks/stories/ADD",
     DELETE_BOOK = "ducks/stories/DELETE",
@@ -15,11 +15,11 @@ declare const enum ActionTypes {
     SELECT_SIDE_BRANCH = "ducks/stories/SELECT_SIDE_BRANCH",
     REMOVE_EDGE_FROM_ACTIVE = "ducks/stories/REMOVE_EDGE_FROM_ACTIVE"
 }
-/**type AddStoryAction = {
+/** type AddStoryAction = {
     type: ActionTypes.ADD_STORY_BOOK
     story: IBook
     activate: boolean
-}**/
+}* */
 export declare function addBook(story: IBook, activate?: boolean): (dispatch: any, getState: any) => any;
 export declare function deleteBook(story: IBook): (dispatch: any, getState: any) => any;
 export declare function addCluster(cluster: ICluster): (dispatch: any, getState: any) => any;

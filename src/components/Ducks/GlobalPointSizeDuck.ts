@@ -1,17 +1,17 @@
-const SET = "ducks/globalPointSize/SET"
+const SET = 'ducks/globalPointSize/SET';
 
-export const setGlobalPointSize = globalPointSize => ({
-    type: SET,
-    globalPointSize: globalPointSize
+export const setGlobalPointSize = (globalPointSize) => ({
+  type: SET,
+  globalPointSize,
 });
 
 const globalPointSize = (state = [1], action): number[] => {
-    switch (action.type) {
-        case SET:
-            return action.globalPointSize
-        default:
-            return state
-    }
-}
+  switch (action.type) {
+    case SET:
+      return action.globalPointSize;
+    default:
+      return state;
+  }
+};
 
-export default globalPointSize
+export default globalPointSize;

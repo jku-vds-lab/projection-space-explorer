@@ -1,5 +1,5 @@
 import { DatasetEntry } from '../../model/DatasetEntry';
-export declare function setDatasetEntriesAction(datasetEntries: Array<DatasetEntry>): {
+export declare function setDatasetEntriesAction(pdatasetEntries: Array<DatasetEntry>): {
     byId: {
         [id: string]: DatasetEntry;
     };

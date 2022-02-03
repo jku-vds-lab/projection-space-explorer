@@ -1,266 +1,292 @@
-import { connect, ConnectedProps } from 'react-redux'
-import React = require('react')
-import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material'
-import { ProjectionControlCard } from './ProjectionControlCard'
-import { setProjectionOpenAction } from "../../Ducks/ProjectionOpenDuck"
-import { setProjectionWorkerAction } from "../../Ducks/ProjectionWorkerDuck"
-import { Dataset } from "../../../model/Dataset"
-import { GenericSettings } from './GenericSettings'
-import { RootState } from '../../Store/Store'
-import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck'
-import { TSNEEmbeddingController } from './TSNEEmbeddingController'
-import { UMAPEmbeddingController } from './UMAPEmbeddingController'
-import { ClusterTrailSettings } from './ClusterTrailSettings'
-import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck'
-import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController'
-import { IProjection, AProjection, IBaseProjection } from '../../../model/Projection'
-import FolderIcon from '@mui/icons-material/Folder';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { connect, ConnectedProps, useDispatch } from 'react-redux';
+import React = require('react');
+import { Box, Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { EntityId } from '@reduxjs/toolkit';
+import { ProjectionControlCard } from './ProjectionControlCard';
+import { setProjectionOpenAction } from '../../Ducks/ProjectionOpenDuck';
+import { setProjectionWorkerAction } from '../../Ducks/ProjectionWorkerDuck';
+import { Dataset } from '../../../model/Dataset';
+import { GenericSettings } from './GenericSettings';
+import type { RootState } from '../../Store/Store';
+import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
+import { TSNEEmbeddingController } from './TSNEEmbeddingController';
+import { UMAPEmbeddingController } from './UMAPEmbeddingController';
+import { ClusterTrailSettings } from './ClusterTrailSettings';
+import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck';
+import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController';
+import { AProjection } from '../../../model/Projection';
+import { IProjection, IBaseProjection } from '../../../model/ProjectionInterfaces';
 
-import { FeatureConfig } from '../../../Application'
-import { updateWorkspaceAction, addProjectionAction, deleteProjectionAction } from '../../Ducks/ProjectionDuck'
-import { DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../..'
+import { FeatureConfig, DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../../BaseConfig';
+import { ProjectionActions } from '../../Ducks/ProjectionDuck';
+import { EditProjectionDialog } from './EditProjectionDialog';
 
 const mapStateToProps = (state: RootState) => ({
-    // currentAggregation: state.currentAggregation,
-    stories: state.stories,
-    projectionWorker: state.projectionWorker,
-    projectionOpen: state.projectionOpen,
-    dataset: state.dataset,
-    // projectionParams: state.projectionParams,
-    projections: state.projections,
-    workspace: state.projections.workspace,
-    projectionParams: state.projectionParams
-})
+  // currentAggregation: state.currentAggregation,
+  stories: state.stories,
+  projectionWorker: state.projectionWorker,
+  projectionOpen: state.projectionOpen,
+  dataset: state.dataset,
+  // projectionParams: state.projectionParams,
+  projections: state.projections,
+  workspace: state.projections.workspace,
+  projectionParams: state.projectionParams,
+});
 
-const mapDispatchToProps = dispatch => ({
-    setProjectionOpen: value => dispatch(setProjectionOpenAction(value)),
-    setProjectionWorker: value => dispatch(setProjectionWorkerAction(value)),
-    // setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
-    setProjectionColumns: value => dispatch(setProjectionColumns(value)),
-    setTrailVisibility: visibility => dispatch(setTrailVisibility(visibility)),
-    addProjection: embedding => dispatch(addProjectionAction(embedding)),
-    deleteProjection: (handle: string) => dispatch(deleteProjectionAction(handle)),
-    updateWorkspace: (workspace: IBaseProjection) => dispatch(updateWorkspaceAction(workspace))
-})
+const mapDispatchToProps = (dispatch) => ({
+  setProjectionOpen: (value) => dispatch(setProjectionOpenAction(value)),
+  setProjectionWorker: (value) => dispatch(setProjectionWorkerAction(value)),
+  // setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
+  setProjectionColumns: (value) => dispatch(setProjectionColumns(value)),
+  setTrailVisibility: (visibility) => dispatch(setTrailVisibility(visibility)),
+  addProjection: (embedding) => dispatch(ProjectionActions.add(embedding)),
+  deleteProjection: (handle: string) => dispatch(ProjectionActions.remove(handle)),
+  updateWorkspace: (workspace: IBaseProjection) => dispatch(ProjectionActions.updateActive(workspace)),
+});
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-type PropsFromRedux = ConnectedProps<typeof connector>
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
-    config: FeatureConfig
-    projectionWorker?: Worker
-    projectionOpen?: boolean
-    setProjectionOpen?: any
-    setProjectionWorker?: any
-    dataset?: Dataset
-    webGLView?: any
-}
+  config: FeatureConfig;
+  projectionWorker?: Worker;
+  projectionOpen?: boolean;
+  setProjectionOpen?: any;
+  setProjectionWorker?: any;
+  dataset?: Dataset;
+  webGLView?: any;
+};
 
-const EmbeddingMethodButtons = (props: { setOpen, setDomainSettings, embeddings?: EmbeddingMethod[] }) => {
-    const embeddings = props.embeddings ?? DEFAULT_EMBEDDINGS
+function EmbeddingMethodButtons(props: { setOpen; setDomainSettings; embeddings?: EmbeddingMethod[] }) {
+  const embeddings = props.embeddings ?? DEFAULT_EMBEDDINGS;
 
-    return <Grid container direction="column" spacing={1}>
-        {embeddings.map((emb) =>
-            <Grid key={emb.id} item>
-                <Button
-                    style={{
-                        width: '100%'
-                    }}
-                    variant="outlined"
-                    onClick={() => {
-                        props.setDomainSettings(emb)
-                        props.setOpen(true)
-                    }}>{emb.name}</Button>
-            </Grid>)
-        }
+  return (
+    <Grid container direction="column" spacing={1}>
+      {embeddings.map((emb) => (
+        <Grid key={emb.id} item>
+          <Button
+            style={{
+              width: '100%',
+            }}
+            variant="outlined"
+            onClick={() => {
+              props.setDomainSettings(emb);
+              props.setOpen(true);
+            }}
+          >
+            {emb.name}
+          </Button>
+        </Grid>
+      ))}
     </Grid>
+  );
 }
 
 export const EmbeddingTabPanel = connector((props: Props) => {
-    const [open, setOpen] = React.useState(false)
-    const [domainSettings, setDomainSettings] = React.useState({ id: "", name: "", embController: null })
+  const [open, setOpen] = React.useState(false);
+  const [domainSettings, setDomainSettings] = React.useState({
+    id: '',
+    name: '',
+    embController: null,
+  });
 
-    const [controller, setController] = React.useState(null)
-    
-    React.useEffect(() => {
-        if (controller) {
-            controller.terminate()
-        }
-        setController(null)
-        props.setTrailVisibility(false)
-    }, [props.dataset]);
+  const [controller, setController] = React.useState(null);
 
+  const [projectionToEdit, setProjectionToEdit] = React.useState<IProjection>(null);
 
-    const onSaveProjectionClick = () => {
-        const metadata = props.projectionParams
-        
-        props.addProjection(AProjection.createProjection(props.workspace, null, metadata))
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    if (controller) {
+      controller.terminate();
     }
+    setController(null);
+    props.setTrailVisibility(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.dataset]);
 
-    const onProjectionClick = (projection: IProjection) => {
-        props.updateWorkspace(projection.positions)
-    }
+  const onSaveProjectionClick = () => {
+    const metadata = props.projectionParams;
 
-    const onDeleteProjectionClick = (handle: string) => {
-        props.deleteProjection(handle)
-    }
+    props.addProjection(AProjection.createProjection(props.workspace, null, metadata));
+  };
 
+  const onProjectionClick = (projection: IProjection) => {
+    props.updateWorkspace(projection.positions);
+  };
 
-    return <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box paddingLeft={2} paddingTop={2}>
-            <Typography variant="subtitle2" gutterBottom>{'Projection Methods'}</Typography>
-        </Box>
+  const onDeleteEditProjectDialog = (handle: string) => {
+    props.deleteProjection(handle);
+    setProjectionToEdit(null);
+  };
 
-        <Box paddingLeft={2} paddingRight={2}>
-            <EmbeddingMethodButtons setOpen={setOpen} setDomainSettings={setDomainSettings} embeddings={props.config?.embeddings}></EmbeddingMethodButtons>
-        </Box>
+  const onCloseEditProjectionDialog = () => {
+    setProjectionToEdit(null);
+  };
 
-        <Box p={1}>
-            <ProjectionControlCard
-                dataset_name={props.dataset?.info?.path}
-                controller={controller}
-                onClose={() => {
-                    if (controller) {
-                        controller.terminate()
-                    }
-                    setController(null)
-                    props.setTrailVisibility(false)
-                }}
-                onComputingChanged={(e, newVal) => {
-                }} />
-        </Box>
+  const onSaveEditProjectionDialog = (key: EntityId, changes: any) => {
+    dispatch(ProjectionActions.save({ id: key, changes }));
+    setProjectionToEdit(null);
+  };
 
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <EditProjectionDialog
+        projection={projectionToEdit}
+        onClose={onCloseEditProjectionDialog}
+        onSave={onSaveEditProjectionDialog}
+        onDelete={onDeleteEditProjectDialog}
+      />
 
-        <GenericSettings
-            // projectionParams={props.projectionParams}
-            domainSettings={domainSettings}
-            open={open} onClose={() => setOpen(false)}
-            onStart={(params, selection) => {
-                const checked_sel = selection.filter(s => s.checked)
-                if (checked_sel.length <= 0) {
-                    alert("Select at least one feature.")
-                    return;
-                }
+      <Box paddingLeft={2} paddingTop={2}>
+        <Typography variant="subtitle2" gutterBottom>
+          Projection Methods
+        </Typography>
+      </Box>
 
-                setOpen(false)
-                props.setProjectionColumns(selection)
-                // props.setProjectionParams(params)
+      <Box paddingLeft={2} paddingRight={2}>
+        <EmbeddingMethodButtons setOpen={setOpen} setDomainSettings={setDomainSettings} embeddings={props.config?.embeddings} />
+      </Box>
 
-                switch (domainSettings.id) {
-                    case 'tsne': {
-                        let controller = new TSNEEmbeddingController()
-                        controller.init(props.dataset, selection, params, props.workspace)
-                        controller.stepper = (Y) => {
-                            const workspace = Y.map(y => ({ x: y[0], y: y[1] }));
-                            props.updateWorkspace(workspace);
-                        }
+      <Box p={1}>
+        <ProjectionControlCard
+          dataset_name={props.dataset?.info?.path}
+          controller={controller}
+          onClose={() => {
+            if (controller) {
+              controller.terminate();
+            }
+            setController(null);
+            props.setTrailVisibility(false);
+          }}
+          onComputingChanged={() => {}}
+        />
+      </Box>
 
-                        setController(controller)
-                        break;
-                    }
+      <GenericSettings
+        // projectionParams={props.projectionParams}
+        domainSettings={domainSettings}
+        open={open}
+        onClose={() => setOpen(false)}
+        onStart={(params, selection) => {
+          const checked_sel = selection.filter((s) => s.checked);
+          if (checked_sel.length <= 0) {
+            alert('Select at least one feature.');
+            return;
+          }
 
-                    case 'umap': {
-                        let controller = new UMAPEmbeddingController()
+          setOpen(false);
+          props.setProjectionColumns(selection);
+          // props.setProjectionParams(params)
 
-                        controller.init(props.dataset, selection, params, props.workspace)
-                        controller.stepper = (Y) => {
-                            const workspace = props.dataset.vectors.map((sample, i) => {
-                                return {
-                                    x: Y[i][0],
-                                    y: Y[i][1]
-                                }
-                            })
-                            props.updateWorkspace(workspace)
-                        }
+          switch (domainSettings.id) {
+            case 'tsne': {
+              const controller = new TSNEEmbeddingController();
+              controller.init(props.dataset, selection, params, props.workspace);
+              controller.stepper = (Y) => {
+                const workspace = Y.map((y) => ({ x: y[0], y: y[1] }));
+                props.updateWorkspace(workspace);
+              };
 
+              setController(controller);
+              break;
+            }
 
-                        setController(controller)
-                        break;
-                    }
-                    case 'forceatlas2': {
-                        let controller = new ForceAtlas2EmbeddingController()
-                        controller.init(props.dataset, selection, params)
+            case 'umap': {
+              const controller = new UMAPEmbeddingController();
 
-                        controller.stepper = (Y) => {
-                            const workspace = props.dataset.vectors.map((sample, i) => {
-                                let idx = controller.nodes[sample.__meta__.duplicateOf].__meta__.meshIndex
-                                return {
-                                    x: Y[idx].x,
-                                    y: Y[idx].y
-                                }
-                            })
+              controller.init(props.dataset, selection, params, props.workspace);
+              controller.stepper = (Y) => {
+                const workspace = props.dataset.vectors.map((sample, i) => {
+                  return {
+                    x: Y[i][0],
+                    y: Y[i][1],
+                  };
+                });
+                props.updateWorkspace(workspace);
+              };
 
-                            props.updateWorkspace(workspace)
-                        }
+              setController(controller);
+              break;
+            }
+            case 'forceatlas2': {
+              const controller = new ForceAtlas2EmbeddingController();
+              controller.init(props.dataset, selection, params);
 
-                        setController(controller)
-                        break;
-                    }
-                    default: {
-                        // custom embedding controller
-                        if (domainSettings.embController) {
-                            let controller = domainSettings.embController;
+              controller.stepper = (Y) => {
+                const workspace = props.dataset.vectors.map((sample) => {
+                  const idx = controller.nodes[sample.__meta__.duplicateOf].__meta__.meshIndex;
+                  return {
+                    x: Y[idx].x,
+                    y: Y[idx].y,
+                  };
+                });
 
-                            controller.init(props.dataset, selection, params, props.workspace)
-                            controller.stepper = (Y: IBaseProjection) => {
-                                // const workspace = props.dataset.vectors.map((sample, i) => {
-                                //     return {
-                                //         x: Y[i].x,
-                                //         y: Y[i].y
-                                //     }
-                                // })
-                                // props.updateWorkspace(workspace)
-                                props.updateWorkspace(Y)
-                            }
+                props.updateWorkspace(workspace);
+              };
 
-                            setController(controller)
-                        }
-                        break;
-                    }
+              setController(controller);
+              break;
+            }
+            default: {
+              // custom embedding controller
+              if (domainSettings.embController) {
+                const controller = domainSettings.embController;
 
-                }
-            }}
-        ></GenericSettings>
+                controller.init(props.dataset, selection, params, props.workspace);
+                controller.stepper = (Y: IBaseProjection) => {
+                  props.updateWorkspace(Y);
+                };
 
-        <Box paddingLeft={2} paddingTop={2}>
-            <Typography variant="subtitle2" gutterBottom>{'Projection Settings'}</Typography>
-        </Box>
+                setController(controller);
+              }
+              break;
+            }
+          }
+        }}
+      />
 
-        <Box paddingLeft={2} paddingRight={2}>
-            <ClusterTrailSettings></ClusterTrailSettings>
-        </Box>
+      <Box paddingLeft={2} paddingTop={2}>
+        <Typography variant="subtitle2" gutterBottom>
+          Projection Settings
+        </Typography>
+      </Box>
 
-        <Box paddingLeft={2} paddingTop={2}>
-            <Typography variant="subtitle2" gutterBottom>{'Stored Projections'}</Typography>
-        </Box>
+      <Box paddingLeft={2} paddingRight={2}>
+        <ClusterTrailSettings />
+      </Box>
 
-        <Box paddingLeft={2} paddingRight={2}>
-            <Button
-                onClick={(name) => onSaveProjectionClick()}
-                variant="outlined"
-                size="small"
-            >{'Store Projection'}</Button>
-        </Box>
+      <Box paddingLeft={2} paddingTop={2}>
+        <Typography variant="subtitle2" gutterBottom>
+          Stored Projections
+        </Typography>
+      </Box>
 
-        <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
-            <List dense={true}>
-                {props.projections.allIds.map(key => {
-                    const projection = props.projections.byId[key]
-                    return <ListItem key={projection.hash} button onClick={() => onProjectionClick(projection)}>
-                        <ListItemText
-                            primary={`${projection.name}`}
-                            secondary={`${projection.metadata?.iterations} iterations`}
-                        />
-                        <ListItemSecondaryAction>
-                            <IconButton onClick={() => onDeleteProjectionClick(key)}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                })}
-            </List>
-        </div>
+      <Box paddingLeft={2} paddingRight={2}>
+        <Button onClick={() => onSaveProjectionClick()} variant="outlined" size="small">
+          Store Projection
+        </Button>
+      </Box>
+
+      <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
+        <List dense>
+          {props.projections.values.ids.map((key) => {
+            const projection = props.projections.values.entities[key];
+            return (
+              <ListItem key={projection.hash} button onClick={() => onProjectionClick(projection)}>
+                <ListItemText primary={`${projection.name}`} secondary={`${projection.metadata?.iterations} iterations`} />
+                <ListItemSecondaryAction>
+                  <IconButton onClick={() => setProjectionToEdit(props.projections.values.entities[key])}>
+                    <SettingsIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            );
+          })}
+        </List>
+      </div>
     </div>
-})
+  );
+});

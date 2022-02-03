@@ -1,11 +1,11 @@
-
 export class EmbeddingController {
-    worker: Worker
-    stepper: any
+  worker: Worker;
 
-    notifier: any
+  stepper: any;
 
-    terminate() {
-        this.worker.terminate()
-    }
+  notifier: any;
+
+  terminate() {
+    this.worker.terminate();
+  }
 }

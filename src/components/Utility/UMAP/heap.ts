@@ -91,11 +91,7 @@ export function makeHeap(nPoints: number, size: number): Heap {
  * integer is selected twice. The duplication constraint is achieved via
  * rejection sampling.
  */
-export function rejectionSample(
-  nSamples: number,
-  poolSize: number,
-  random: RandomFn
-) {
+export function rejectionSample(nSamples: number, poolSize: number, random: RandomFn) {
   const result = utils.zeros(nSamples);
   for (let i = 0; i < nSamples; i++) {
     let rejectSample = true;
@@ -123,13 +119,7 @@ export function rejectionSample(
  * the ``index`` is the element to add, and the flag determines whether this
  * is to be considered a new addition.
  */
-export function heapPush(
-  heap: Heap,
-  row: number,
-  weight: number,
-  index: number,
-  flag: number
-): number {
+export function heapPush(heap: Heap, row: number, weight: number, index: number, flag: number): number {
   row = Math.floor(row);
   const indices = heap[0][row];
   const weights = heap[1][row];
@@ -156,13 +146,7 @@ export function heapPush(
  * the ``index`` is the element to add, and the flag determines whether this
  * is to be considered a new addition.
  */
-export function uncheckedHeapPush(
-  heap: Heap,
-  row: number,
-  weight: number,
-  index: number,
-  flag: number
-): number {
+export function uncheckedHeapPush(heap: Heap, row: number, weight: number, index: number, flag: number): number {
   const indices = heap[0][row];
   const weights = heap[1][row];
   const isNew = heap[2][row];
@@ -198,12 +182,10 @@ export function uncheckedHeapPush(
       } else {
         break;
       }
+    } else if (weight < weights[ic2]) {
+      iSwap = ic2;
     } else {
-      if (weight < weights[ic2]) {
-        iSwap = ic2;
-      } else {
-        break;
-      }
+      break;
     }
 
     weights[i] = weights[iSwap];
@@ -224,13 +206,7 @@ export function uncheckedHeapPush(
  * each vertex the candidate neighbors are any current neighbors, and any
  * vertices that have the vertex as one of their nearest neighbors.
  */
-export function buildCandidates(
-  currentGraph: Heap,
-  nVertices: number,
-  nNeighbors: number,
-  maxCandidates: number,
-  random: RandomFn
-) {
+export function buildCandidates(currentGraph: Heap, nVertices: number, nNeighbors: number, maxCandidates: number, random: RandomFn) {
   const candidateNeighbors = makeHeap(nVertices, maxCandidates);
   for (let i = 0; i < nVertices; i++) {
     for (let j = 0; j < nNeighbors; j++) {
@@ -285,12 +261,7 @@ export function deheapSort(heap: Heap) {
  * at position ``elt``. This works with a heap pair where heap1 carries
  * the weights and heap2 holds the corresponding elements.
  */
-function siftDown(
-  heap1: number[],
-  heap2: number[],
-  ceiling: number,
-  elt: number
-) {
+function siftDown(heap1: number[], heap2: number[], ceiling: number, elt: number) {
   while (elt * 2 + 1 < ceiling) {
     const leftChild = elt * 2 + 1;
     const rightChild = leftChild + 1;
@@ -339,7 +310,6 @@ export function smallestFlagged(heap: Heap, row: number) {
   if (resultIndex >= 0) {
     flag[resultIndex] = 0;
     return Math.floor(ind[resultIndex]);
-  } else {
-    return -1;
   }
+  return -1;
 }

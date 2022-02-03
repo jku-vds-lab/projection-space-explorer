@@ -1,73 +1,43 @@
-import "regenerator-runtime/runtime";
-import { WebGLView } from "./components/WebGLView/WebGLView";
-import {
-  Divider,
-  Drawer,
-  Paper,
-  SvgIcon,
-  Tooltip,
-  Typography,
-  Tab,
-  Tabs,
-  Box,
-  Grid,
-} from "@mui/material";
-import { Dataset } from "./model/Dataset";
-import * as React from "react";
-import { Storytelling } from "./components/Overlays/Storytelling";
-import { ClusteringTabPanel } from "./components/DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel";
-import { ConnectedProps, ConnectedComponent } from "react-redux";
-import { connect } from "react-redux";
-import { StatesTabPanel } from "./components/DrawerTabPanels/StatesTabPanel/StatesTabPanel";
-import { StateSequenceDrawerRedux } from "./components/Overlays/StateSequenceDrawer";
-import { setProjectionOpenAction } from "./components/Ducks/ProjectionOpenDuck";
-import { setOpenTabAction } from "./components/Ducks/OpenTabDuck";
-import { setClusterModeAction } from "./components/Ducks/ClusterModeDuck";
-import { setAdvancedColoringSelectionAction } from "./components/Ducks/AdvancedColoringSelectionDuck";
-import { CategoryOptionsAPI } from "./components/WebGLView/CategoryOptions";
-import { setProjectionColumns } from "./components/Ducks/ProjectionColumnsDuck";
-import { EmbeddingTabPanel } from "./components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel";
-import { CSVLoader } from "./components/Utility/Loaders/CSVLoader";
-import { setActiveLine } from "./components/Ducks/ActiveLineDuck";
-import {
-  setPathLengthMaximum,
-  setPathLengthRange,
-} from "./components/Ducks/PathLengthRange";
-import { setChannelSize } from "./components/Ducks/ChannelSize";
-import { setGlobalPointSize } from "./components/Ducks/GlobalPointSizeDuck";
-import { setChannelColor } from "./components/Ducks/ChannelColorDuck";
-import { DatasetTabPanel } from "./components/DrawerTabPanels/DatasetTabPanel/DatasetTabPanel";
-import { DetailsTabPanel } from "./components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel";
-import { IProjection, IBaseProjection } from "./model/Projection";
-import { setActiveStory, addBook } from "./components/Ducks/StoriesDuck";
-import Split from "react-split";
-import { setLineByOptions } from "./components/Ducks/SelectedLineByDuck";
-import { IBook } from "./model/Book";
-import { setGlobalPointBrightness } from "./components/Ducks/GlobalPointBrightnessDuck";
-import { setChannelBrightnessSelection } from "./components/Ducks/ChannelBrightnessDuck";
-import { setGenericFingerprintAttributes } from "./components/Ducks/GenericFingerprintAttributesDuck";
-import { setGroupVisualizationMode } from "./components/Ducks/GroupVisualizationMode";
-import { HoverStateOrientation } from "./components/Ducks/HoverStateOrientationDuck";
-import { PluginRegistry } from "./components/Store/PluginScript";
-import { RootState } from "./components/Store/Store";
-import { RubikPlugin } from "./plugins/Rubik/RubikPlugin";
-import { ChessPlugin } from "./plugins/Chess/ChessPlugin";
-import { GoPlugin } from "./plugins/Go/GoPlugin";
-import { PseAppBar } from "./components/PseAppBar";
-import { setDetailVisibility } from "./components/Ducks/DetailViewDuck";
-import { PSEIcons } from "./utils/PSEIcons";
+/* eslint-disable react/display-name */
+import 'regenerator-runtime/runtime';
+import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from '@mui/material';
+import * as React from 'react';
+import { ConnectedProps, connect } from 'react-redux';
+import Split from 'react-split';
+import { WebGLView } from './components/WebGLView/WebGLView';
+import { Dataset } from './model/Dataset';
+import { Storytelling } from './components/Overlays/Storytelling';
+import { ClusteringTabPanel } from './components/DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel';
+import { StatesTabPanel } from './components/DrawerTabPanels/StatesTabPanel/StatesTabPanel';
+import { StateSequenceDrawerRedux } from './components/Overlays/StateSequenceDrawer';
+import { setOpenTabAction } from './components/Ducks/OpenTabDuck';
+import { EmbeddingTabPanel } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel';
+import { CSVLoader } from './components/Utility/Loaders/CSVLoader';
+import { DatasetTabPanel } from './components/DrawerTabPanels/DatasetTabPanel/DatasetTabPanel';
+import { DetailsTabPanel } from './components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel';
+import { IProjection, IBaseProjection } from './model/ProjectionInterfaces';
+import { setLineByOptions } from './components/Ducks/SelectedLineByDuck';
+import { setGlobalPointBrightness } from './components/Ducks/GlobalPointBrightnessDuck';
+import { setGenericFingerprintAttributes } from './components/Ducks/GenericFingerprintAttributesDuck';
+import { setGroupVisualizationMode } from './components/Ducks/GroupVisualizationMode';
+import { HoverStateOrientation } from './components/Ducks/HoverStateOrientationDuck';
+import { PluginRegistry } from './components/Store/PluginScript';
+import type { RootState } from './components/Store/Store';
+import { RubikPlugin } from './plugins/Rubik/RubikPlugin';
+import { ChessPlugin } from './plugins/Chess/ChessPlugin';
+import { GoPlugin } from './plugins/Go/GoPlugin';
+import { PseAppBar } from './components/PseAppBar';
+import { setDetailVisibility } from './components/Ducks/DetailViewDuck';
+import { PSEIcons } from './utils/PSEIcons';
 // @ts-ignore
-import VDSLogo from "../textures/vds-lab-logo-notext.svg";
-import { CoralPlugin } from "./plugins/Coral/CoralPlugin";
-import { DatasetEntriesAPI } from "./components/Ducks/DatasetEntriesDuck";
-import { EmbeddingController, JSONLoader } from "./components";
-import { DatasetType } from "./model/DatasetType";
-import {
-  addProjectionAction,
-  updateWorkspaceAction,
-} from "./components/Ducks/ProjectionDuck";
-import { RootActions } from "./components/Store/RootActions";
-import { EncodingChannel } from ".";
+import VDSLogo from '../textures/vds-lab-logo-notext.svg';
+import { CoralPlugin } from './plugins/Coral/CoralPlugin';
+import { DatasetEntriesAPI } from './components/Ducks/DatasetEntriesDuck';
+import { JSONLoader } from './components/Utility/Loaders';
+import { DatasetType } from './model/DatasetType';
+import { ProjectionActions } from './components/Ducks/ProjectionDuck';
+import { RootActions } from './components/Store/RootActions';
+import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -83,9 +53,9 @@ function FixedHeightTabPanel(props) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
-      style={{ height: "100%", width: 288 }}
+      style={{ height: '100%', width: 288 }}
     >
-      {<Paper style={{ overflow: "hidden", height: "100%" }}>{children}</Paper>}
+      <Paper style={{ overflow: 'hidden', height: '100%' }}>{children}</Paper>
     </Typography>
   );
 }
@@ -101,109 +71,15 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  addStory: (story) => dispatch(addBook(story)),
-  setActiveStory: (activeStory: IBook) => dispatch(setActiveStory(activeStory)),
   setOpenTab: (openTab) => dispatch(setOpenTabAction(openTab)),
-  setAdvancedColoringSelection: (value) =>
-    dispatch(setAdvancedColoringSelectionAction(value)),
-  setActiveLine: (value) => dispatch(setActiveLine(value)),
-  setProjectionColumns: (projectionColumns) =>
-    dispatch(setProjectionColumns(projectionColumns)),
-  setProjectionOpen: (projectionOpen) =>
-    dispatch(setProjectionOpenAction(projectionOpen)),
-  setClusterMode: (clusterMode) => dispatch(setClusterModeAction(clusterMode)),
-  setPathLengthMaximum: (maximum) => dispatch(setPathLengthMaximum(maximum)),
-  setPathLengthRange: (range) => dispatch(setPathLengthRange(range)),
-  setChannelSize: (channelSize) => dispatch(setChannelSize(channelSize)),
-  setGlobalPointSize: (size) => dispatch(setGlobalPointSize(size)),
-  wipeState: () => dispatch(RootActions.reset()),
-  setChannelColor: (channelColor) => dispatch(setChannelColor(channelColor)),
-  setChannelBrightness: (channelBrightness) =>
-    dispatch(setChannelBrightnessSelection(channelBrightness)),
-  saveProjection: (embedding: IProjection) =>
-    dispatch(addProjectionAction(embedding)),
-  updateWorkspace: (raw: IBaseProjection) =>
-    dispatch(updateWorkspaceAction(raw)),
+  saveProjection: (embedding: IProjection) => dispatch(ProjectionActions.add(embedding)),
   setLineByOptions: (options) => dispatch(setLineByOptions(options)),
-  setGlobalPointBrightness: (value) =>
-    dispatch(setGlobalPointBrightness(value)),
-  setGenericFingerprintAttributes: (value) =>
-    dispatch(setGenericFingerprintAttributes(value)),
-  setGroupVisualizationMode: (value) =>
-    dispatch(setGroupVisualizationMode(value)),
+  setGlobalPointBrightness: (value) => dispatch(setGlobalPointBrightness(value)),
+  setGenericFingerprintAttributes: (value) => dispatch(setGenericFingerprintAttributes(value)),
+  setGroupVisualizationMode: (value) => dispatch(setGroupVisualizationMode(value)),
   setLineUpInput_visibility: (open) => dispatch(setDetailVisibility(open)),
   loadDataset: (dataset: Dataset) => dispatch(RootActions.loadDataset(dataset)),
 });
-
-export type BaseConfig = Partial<{
-  baseUrl: string;
-  preselect: Partial<{
-    url: string;
-    initOnMount: boolean;
-  }>;
-}>;
-
-export type EmbeddingMethod = {
-  id: string;
-  name: string;
-  settings: {
-    perplexity?: boolean;
-    learningRate?: boolean;
-    nneighbors?: boolean;
-  };
-  embController?: EmbeddingController;
-};
-export const DEFAULT_UMAP_SETTINGS = { nneighbors: true };
-export const DEFAULT_TSNE_SETTINGS = { perplexity: true, learningRate: true };
-export const DEFAULT_FA2_SETTINGS = {};
-export const DEFAULT_EMBEDDINGS = [
-  { id: "umap", name: "UMAP", settings: DEFAULT_UMAP_SETTINGS },
-  { id: "tsne", name: "t-SNE", settings: DEFAULT_TSNE_SETTINGS },
-  { id: "forceatlas2", name: "ForceAtlas2", settings: DEFAULT_FA2_SETTINGS },
-];
-export type FeatureConfig = Partial<{
-  embeddings: EmbeddingMethod[]; //array can either contain strings of predefined embedding methods, or functions
-  encodings: EncodingChannel[];
-}>;
-
-export type LayerSpec = {
-  order: number;
-  component:
-    | JSX.Element
-    | ((props: any) => JSX.Element)
-    | ConnectedComponent<any, any>;
-};
-
-export type ComponentConfig = Partial<{
-  datasetTab:
-    | JSX.Element
-    | ((onDataSelected) => JSX.Element)
-    | ConnectedComponent<any, any>;
-  appBar: () => JSX.Element;
-  detailViews: Array<DetailViewSpec>;
-  layers: Array<LayerSpec>;
-  tabs: Array<TabSpec>;
-  contextMenuItems: Array<ContextMenuItem>;
-}>;
-
-export type ContextMenuItem = {
-  key: string;
-  title: string;
-  function: (coords) => void;
-};
-
-export type DetailViewSpec = {
-  name: string;
-  view: () => JSX.Element;
-};
-
-export type TabSpec = {
-  name: string;
-  tab: () => JSX.Element;
-  icon: () => JSX.Element;
-  title: string;
-  description: string;
-};
 
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
@@ -229,6 +105,7 @@ type Props = PropsFromRedux & {
 export const Application = connector(
   class extends React.Component<Props, any> {
     threeRef: any;
+
     splitRef: any;
 
     constructor(props) {
@@ -242,20 +119,12 @@ export const Application = connector(
     }
 
     componentDidMount() {
-      if (
-        (this.props.config?.preselect?.initOnMount ?? true) &&
-        (this.props.config?.preselect?.url ?? false)
-      ) {
-        var preselect = this.props.config?.preselect?.url;
+      if ((this.props.config?.preselect?.initOnMount ?? true) && (this.props.config?.preselect?.url ?? false)) {
+        const preselect = this.props.config?.preselect?.url;
 
-        var loader = preselect.endsWith(".csv")
-          ? new CSVLoader()
-          : new JSONLoader();
+        const loader = preselect.endsWith('.csv') ? new CSVLoader() : new JSONLoader();
 
-        const entry = DatasetEntriesAPI.getByPath(
-          this.props.datasetEntries,
-          preselect
-        ) ?? {
+        const entry = DatasetEntriesAPI.getByPath(this.props.datasetEntries, preselect) ?? {
           type: DatasetType.None,
           path: preselect,
           display: preselect,
@@ -276,100 +145,6 @@ export const Application = connector(
       this.props.loadDataset(dataset);
     }
 
-    /**  finite(dataset: Dataset) {
-    const co: CategoryOptions = {
-      json: this.props.dataset.categories
-    }
-
-    this.props.setCategoryOptions(co)
-    this.props.setPathLengthMaximum(SegmentFN.getMaxPathLength(dataset))
-    this.props.setPathLengthRange([0, SegmentFN.getMaxPathLength(dataset)])
-
-    this.props.saveProjection(AProjection.createProjection(dataset.vectors, "Initial Projection"))
-    this.props.updateWorkspace(AProjection.createProjection(dataset.vectors, "Initial Projection").positions)
-
-    this.props.setGenericFingerprintAttributes(ADataset.getColumns(dataset, true).map(column => ({
-      feature: column,
-      show: dataset.columns[column].project
-    })))
-
-    const formatRange = range => {
-      try {
-        return `${range.min.toFixed(2)} - ${range.max.toFixed(2)}`
-      } catch {
-        return 'unknown'
-      }
-    }
-
-    this.props.setProjectionColumns(ADataset.getColumns(dataset, true).map(column => ({
-      name: column,
-      checked: dataset.columns[column].project,
-      normalized: true, //TODO: after benchmarking, reverse this to true,
-      range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : "unknown",
-      featureLabel: dataset.columns[column].featureLabel
-    })))
-
-    this.initializeEncodings(dataset)
-  }**/
-
-    initializeEncodings(dataset) {
-      this.threeRef.current.particles.shapeCat(null);
-
-      var defaultSizeAttribute = CategoryOptionsAPI.getAttribute(
-        dataset.categories,
-        "size",
-        "multiplicity",
-        "sequential"
-      );
-
-      if (defaultSizeAttribute) {
-        this.props.setGlobalPointSize([1, 2]);
-        this.props.setChannelSize(defaultSizeAttribute);
-
-        this.threeRef.current.particles.sizeCat(defaultSizeAttribute, [1, 2]);
-      } else {
-        this.props.setGlobalPointSize([1]);
-        this.props.setChannelSize(null);
-
-        this.threeRef.current.particles.sizeCat(defaultSizeAttribute, [1]);
-      }
-
-      var defaultColorAttribute = CategoryOptionsAPI.getAttribute(
-        dataset.categories,
-        "color",
-        "algo",
-        "categorical"
-      );
-      if (defaultColorAttribute) {
-        this.props.setChannelColor(defaultColorAttribute);
-      } else {
-        this.props.setChannelColor(null);
-      }
-
-      var defaultBrightnessAttribute = CategoryOptionsAPI.getAttribute(
-        dataset.categories,
-        "transparency",
-        "age",
-        "sequential"
-      );
-
-      if (defaultBrightnessAttribute) {
-        this.props.setGlobalPointBrightness([0.25, 1]);
-        this.props.setChannelBrightness(defaultBrightnessAttribute);
-        this.threeRef.current.particles.transparencyCat(
-          defaultBrightnessAttribute,
-          [0.25, 1]
-        );
-      } else {
-        this.props.setGlobalPointBrightness([1]);
-        this.props.setChannelBrightness(null);
-        this.threeRef.current.particles.transparencyCat(
-          defaultBrightnessAttribute,
-          [1]
-        );
-      }
-    }
-
     onLineSelect(algo, show) {
       this.threeRef.current.filterLines(algo, show);
       this.threeRef.current.requestRender();
@@ -387,11 +162,11 @@ export const Application = connector(
       return (
         <div
           style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "stretch",
-            overflow: "hidden",
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'stretch',
+            overflow: 'hidden',
           }}
         >
           <Drawer
@@ -401,9 +176,9 @@ export const Application = connector(
             }}
             PaperProps={{
               style: {
-                position: "relative",
-                overflow: "hidden",
-                border: "none",
+                position: 'relative',
+                overflow: 'hidden',
+                border: 'none',
               },
             }}
           >
@@ -422,28 +197,20 @@ export const Application = connector(
               <Tooltip
                 placement="right"
                 title={
-                  <React.Fragment>
+                  <>
                     <Typography variant="subtitle2">Load Dataset</Typography>
-                    <Typography variant="body2">
-                      Upload a new dataset or choose a predefined one.
-                    </Typography>
-                  </React.Fragment>
+                    <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
+                  </>
                 }
               >
                 <Tab
                   value={0}
-                  icon={
-                    <SvgIcon
-                      style={{ fontSize: 64 }}
-                      viewBox="0 0 18.521 18.521"
-                      component={PSEIcons.Dataset}
-                    ></SvgIcon>
-                  }
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Dataset} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -451,31 +218,20 @@ export const Application = connector(
               <Tooltip
                 placement="right"
                 title={
-                  <React.Fragment>
-                    <Typography variant="subtitle2">
-                      Embedding and Projection
-                    </Typography>
-                    <Typography variant="body2">
-                      Perform projection techniques like t-SNE, UMAP, or a
-                      force-directly layout with your data.
-                    </Typography>
-                  </React.Fragment>
+                  <>
+                    <Typography variant="subtitle2">Embedding and Projection</Typography>
+                    <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
+                  </>
                 }
               >
                 <Tab
                   value={1}
-                  icon={
-                    <SvgIcon
-                      style={{ fontSize: 64 }}
-                      viewBox="0 0 18.521 18.521"
-                      component={PSEIcons.Project}
-                    ></SvgIcon>
-                  }
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Project} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -483,31 +239,22 @@ export const Application = connector(
               <Tooltip
                 placement="right"
                 title={
-                  <React.Fragment>
-                    <Typography variant="subtitle2">
-                      Point and Line Channels
-                    </Typography>
+                  <>
+                    <Typography variant="subtitle2">Point and Line Channels</Typography>
                     <Typography variant="body2">
-                      Contains settings that let you map different channels like
-                      brightness and color on point and line attributes.
+                      Contains settings that let you map different channels like brightness and color on point and line attributes.
                     </Typography>
-                  </React.Fragment>
+                  </>
                 }
               >
                 <Tab
                   value={2}
-                  icon={
-                    <SvgIcon
-                      style={{ fontSize: 64 }}
-                      viewBox="0 0 18.521 18.521"
-                      component={PSEIcons.Encoding}
-                    ></SvgIcon>
-                  }
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Encoding} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -515,29 +262,20 @@ export const Application = connector(
               <Tooltip
                 placement="right"
                 title={
-                  <React.Fragment>
+                  <>
                     <Typography variant="subtitle2">Groups</Typography>
-                    <Typography variant="body2">
-                      Contains options for displaying and navigating groups in
-                      the dataset.
-                    </Typography>
-                  </React.Fragment>
+                    <Typography variant="body2">Contains options for displaying and navigating groups in the dataset.</Typography>
+                  </>
                 }
               >
                 <Tab
                   value={3}
-                  icon={
-                    <SvgIcon
-                      style={{ fontSize: 64 }}
-                      viewBox="0 0 18.521 18.521"
-                      component={PSEIcons.Clusters}
-                    ></SvgIcon>
-                  }
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Clusters} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -545,31 +283,20 @@ export const Application = connector(
               <Tooltip
                 placement="right"
                 title={
-                  <React.Fragment>
-                    <Typography variant="subtitle2">
-                      Hover Item and Selection Summary
-                    </Typography>
-                    <Typography variant="body2">
-                      Contains information about the currently hovered item and
-                      the currently selected summary.
-                    </Typography>
-                  </React.Fragment>
+                  <>
+                    <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
+                    <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
+                  </>
                 }
               >
                 <Tab
                   value={4}
-                  icon={
-                    <SvgIcon
-                      style={{ fontSize: 64 }}
-                      viewBox="0 0 18.521 18.521"
-                      component={PSEIcons.Details}
-                    ></SvgIcon>
-                  }
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Details} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -580,23 +307,15 @@ export const Application = connector(
                     key={`tooltip${tab.name}`}
                     placement="right"
                     title={
-                      <React.Fragment>
+                      <>
                         <Typography variant="subtitle2">{tab.title}</Typography>
-                        <Typography variant="body2">
-                          {tab.description}
-                        </Typography>
-                      </React.Fragment>
+                        <Typography variant="body2">{tab.description}</Typography>
+                      </>
                     }
                   >
                     <Tab
                       value={5 + i}
-                      icon={
-                        <SvgIcon
-                          style={{ fontSize: 64 }}
-                          viewBox="0 0 18.521 18.521"
-                          component={tab.icon}
-                        ></SvgIcon>
-                      }
+                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon} />}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,
@@ -613,87 +332,57 @@ export const Application = connector(
           <Box
             style={{
               flexShrink: 0,
-              width: this.props.openTab === false ? "0rem" : "18rem",
-              height: "100%",
-              overflowX: "hidden",
-              overflowY: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              border: "1px solid rgba(0, 0, 0, 0.12)",
+              width: this.props.openTab === false ? '0rem' : '18rem',
+              height: '100%',
+              overflowX: 'hidden',
+              overflowY: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              border: '1px solid rgba(0, 0, 0, 0.12)',
             }}
           >
             <div
               style={{
                 flexGrow: 1,
-                overflowY: "hidden",
-                overflowX: "hidden",
+                overflowY: 'hidden',
+                overflowX: 'hidden',
               }}
             >
-              <Grid
-                container
-                justifyContent="center"
-                alignItems="stretch"
-                direction="row"
-                height="100%"
-              >
+              <Grid container justifyContent="center" alignItems="stretch" direction="row" height="100%">
                 <FixedHeightTabPanel value={this.props.openTab} index={0}>
                   {
                     /** predefined dataset */
                     this.props.overrideComponents?.datasetTab ? (
-                      React.isValidElement(
-                        this.props.overrideComponents.datasetTab
-                      ) ? (
+                      React.isValidElement(this.props.overrideComponents.datasetTab) ? (
                         this.props.overrideComponents.datasetTab
                       ) : (
-                        React.createElement(
-                          this.props.overrideComponents
-                            .datasetTab as () => JSX.Element,
-                          { onDataSelected: this.onDataSelected }
-                        )
+                        React.createElement(this.props.overrideComponents.datasetTab as () => JSX.Element, { onDataSelected: this.onDataSelected })
                       )
                     ) : (
-                      <DatasetTabPanel
-                        onDataSelected={this.onDataSelected}
-                      ></DatasetTabPanel>
+                      <DatasetTabPanel onDataSelected={this.onDataSelected} />
                     )
                   }
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={1}>
-                  <EmbeddingTabPanel
-                    config={this.props.features}
-                    webGLView={this.threeRef}
-                  ></EmbeddingTabPanel>
+                  <EmbeddingTabPanel config={this.props.features} webGLView={this.threeRef} />
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={2}>
-                  <StatesTabPanel
-                    webGlView={this.threeRef}
-                    encodings={this.props.features?.encodings}
-                  ></StatesTabPanel>
+                  <StatesTabPanel webGlView={this.threeRef} encodings={this.props.features?.encodings} />
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={3}>
-                  {this.props.dataset != null ? (
-                    <ClusteringTabPanel
-                      splitRef={this.splitRef}
-                    ></ClusteringTabPanel>
-                  ) : (
-                    <div></div>
-                  )}
+                  {this.props.dataset != null ? <ClusteringTabPanel splitRef={this.splitRef} /> : <div />}
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={4}>
-                  <DetailsTabPanel></DetailsTabPanel>
+                  <DetailsTabPanel />
                 </FixedHeightTabPanel>
 
                 {this.props.overrideComponents?.tabs?.map((tab, i) => {
                   return (
-                    <FixedHeightTabPanel
-                      key={`fixed${tab.name}`}
-                      value={this.props.openTab}
-                      index={5 + i}
-                    >
+                    <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={5 + i}>
                       {React.createElement(tab.tab, {
                         splitRef: this.splitRef,
                       })}
@@ -706,8 +395,8 @@ export const Application = connector(
 
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
               flexGrow: 1,
             }}
           >
@@ -715,25 +404,22 @@ export const Application = connector(
               React.createElement(this.props.overrideComponents?.appBar)
             ) : (
               <PseAppBar>
-                <a href={"https://jku-vds-lab.at"} target={"_blank"}>
-                  <VDSLogo style={{ height: 48, width: 48 }}></VDSLogo>
+                <a href="https://jku-vds-lab.at" target="_blank" rel="noreferrer">
+                  <VDSLogo style={{ height: 48, width: 48 }} />
                 </a>
-                <Typography
-                  variant="h6"
-                  style={{ marginLeft: 48, color: "rgba(0, 0, 0, 0.54)" }}
-                >
-                  {"Projection Space Explorer"}
+                <Typography variant="h6" style={{ marginLeft: 48, color: 'rgba(0, 0, 0, 0.54)' }}>
+                  Projection Space Explorer
                 </Typography>
               </PseAppBar>
             )}
 
             {(this.props.overrideComponents?.detailViews?.length ?? 0) > 0 ? (
-              //@ts-ignore
+              // @ts-ignore
               <Split
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "100%",
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
                 }}
                 ref={this.splitRef}
                 sizes={[100, 0]}
@@ -757,97 +443,54 @@ export const Application = connector(
                 }}
               >
                 <div style={{ flexGrow: 0.9 }}>
-                  <WebGLView
-                    ref={this.threeRef}
-                    overrideComponents={this.props.overrideComponents}
-                  />
+                  <WebGLView ref={this.threeRef} overrideComponents={this.props.overrideComponents} />
                 </div>
                 <div style={{ flexGrow: 0.1 }}>
-                  {React.isValidElement(
-                    this.props.overrideComponents.detailViews[0].view
-                  )
+                  {React.isValidElement(this.props.overrideComponents.detailViews[0].view)
                     ? this.props.overrideComponents.detailViews[0].view
-                    : React.createElement(
-                        this.props.overrideComponents.detailViews[0].view,
-                        {}
-                      )}
+                    : React.createElement(this.props.overrideComponents.detailViews[0].view, {})}
                 </div>
               </Split>
             ) : (
               <div style={{ flexGrow: 1 }}>
-                <WebGLView
-                  overrideComponents={this.props.overrideComponents}
-                  ref={this.threeRef}
-                />
+                <WebGLView overrideComponents={this.props.overrideComponents} ref={this.threeRef} />
               </div>
             )}
           </div>
 
-          <StateSequenceDrawerRedux></StateSequenceDrawerRedux>
+          <StateSequenceDrawerRedux />
 
-          <Storytelling></Storytelling>
+          <Storytelling />
 
-          {this.props.hoverStateOrientation ==
-            HoverStateOrientation.SouthWest && (
+          {this.props.hoverStateOrientation === HoverStateOrientation.SouthWest && (
             <div
               id="HoverItemDiv"
               style={{
-                position: "absolute",
-                left: "0px",
-                bottom: "0px",
+                position: 'absolute',
+                left: '0px',
+                bottom: '0px',
                 zIndex: 10000,
                 padding: 8,
               }}
-            ></div>
+            />
           )}
-          {this.props.hoverStateOrientation ==
-            HoverStateOrientation.NorthEast && (
+          {this.props.hoverStateOrientation === HoverStateOrientation.NorthEast && (
             <div
               id="HoverItemDiv"
               style={{
-                position: "absolute",
-                right: "0px",
-                top: "0px",
+                position: 'absolute',
+                right: '0px',
+                top: '0px',
                 zIndex: 10000,
                 padding: 8,
               }}
-            ></div>
+            />
           )}
         </div>
       );
     }
-  }
+  },
 );
-
-const onClick = async (content: string) => {
-  // @ts-ignore
-  const handle = await window.showSaveFilePicker({
-    suggestedName: "session.pse",
-    types: [
-      {
-        description: "PSE Session",
-        accept: {
-          "text/plain": [".pse"],
-        },
-      },
-    ],
-  });
-
-  const writable = await handle.createWritable();
-  writable.write(content);
-  await writable.close();
-
-  return handle;
-};
-
-const loo = async () => {
-  // @ts-ignore
-  const [fileHandle] = await window.showOpenFilePicker();
-  const file = await fileHandle.getFile();
-  const contents = await file.text();
-
-  return contents;
-};
 
 PluginRegistry.getInstance().registerPlugin(new RubikPlugin());
 PluginRegistry.getInstance().registerPlugin(new ChessPlugin());
