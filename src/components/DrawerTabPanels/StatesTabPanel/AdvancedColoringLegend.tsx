@@ -34,7 +34,7 @@ function toLabel(value: any): string {
 }
 
 export function AdvancedColoringLegendFull({ mapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps) {
-  if (mapping === undefined || mapping == null) {
+  if (mapping == null) {
     return <div />;
   }
 
