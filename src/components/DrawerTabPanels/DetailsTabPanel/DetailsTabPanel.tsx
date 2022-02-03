@@ -191,6 +191,7 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
         const filteredRows = localAttributes.filter((row) => {
           return row?.feature?.toLowerCase().includes(searchedVal?.toLowerCase());
         });
+        
         setRows(filteredRows);
       };
     
@@ -201,14 +202,12 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
 
     function rowKeyGetter(row: any) {
         return row.feature;
-      }
+    }
 
     function rowClickHandler(row: any, column: any) {
-        console.log('localAttributes1', localAttributes[row.id]);
-        localAttributes[row.id].show = !row['show']
-        row['show'] = !row['show']
+        localAttributes[row.id].show = !row.show
         setLocalAttributes([...localAttributes])
-        console.log('localAttributes2', localAttributes[row.id]);
+        row.show = localAttributes[row.id].show
     }
 
     // const gridRef = React.useRef<DataGridHandle>(null);
