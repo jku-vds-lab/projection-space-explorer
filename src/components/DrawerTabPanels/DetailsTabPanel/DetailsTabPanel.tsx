@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormHelperText, MenuItem, Popover, Select, Switch, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormHelperText, Hidden, MenuItem, Popover, Select, Switch, Typography } from "@mui/material";
 import React = require("react");
 import { connect, ConnectedProps } from "react-redux";
 import { setGenericFingerprintAttributes } from "../../Ducks/GenericFingerprintAttributesDuck";
@@ -9,6 +9,12 @@ import { RootState } from "../../Store/Store";
 import { VirtualColumn, VirtualTable } from "../../UI/VirtualTable";
 import { selectVectors } from "../../Ducks/AggregationDuck";
 import { AStorytelling } from "../../Ducks";
+import SearchBar from "material-ui-search-bar";
+import { display } from "@mui/system";
+import DataGrid, {DataGridHandle} from 'react-data-grid';
+import { groupBy, groupBy as rowGrouper } from 'lodash';
+import { autoMaxBins } from "vega-lite/build/src/bin";
+import './DatasetTabPanel.scss';
 
 const mapStateToProps = (state: RootState) => ({
     hoverSettings: state.hoverSettings,
@@ -116,7 +122,8 @@ export const DetailsTabPanel = connector(({ hoverSettings, setHoverWindowMode, s
 
 const attributeConnector = connect(
     (state: RootState) => ({
-        genericFingerprintAttributes: state.genericFingerprintAttributes
+        genericFingerprintAttributes: state.genericFingerprintAttributes,
+        dataset: state.dataset
     }),
     dispatch => ({
         setGenericFingerprintAttributes: genericFingerprintAttributes => dispatch(setGenericFingerprintAttributes(genericFingerprintAttributes)),
@@ -129,7 +136,7 @@ type AttributeTableProps = AttributeTablePropsFromRedux
 
 
 
-const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGenericFingerprintAttributes }: AttributeTableProps) => {
+const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGenericFingerprintAttributes, dataset }: AttributeTableProps) => {
     const [anchorEl, setAnchorEl] = React.useState(null)
 
     const fingerprintAttributes = (event) => {
@@ -142,9 +149,35 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
     }
 
     const [localAttributes, setLocalAttributes] = React.useState<any>([])
+    const [rows, setRows] = React.useState<any>([])
+    const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<number>>(() => new Set());
+    const [searched, setSearched] = React.useState<string>("");
+    const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(
+        () => new Set<unknown>([])
+      );
+
+    const columns = [
+        {key: 'feature', name: 'Feature', resizable: false},
+        {key: 'group', name: 'Group', resizable: false},
+    ]
+
+    const columnsSelected = [
+        {key: 'feature', name: 'Selected', resizable: false},
+        {key: 'group', name: 'Group', resizable: false},
+    ]
+
+    const groupMapping = (r, i) => {
+        return {
+            'id': i,
+            'feature': r.feature,
+            'show': r.show,
+            'group': dataset.columns[r.feature].featureLabel
+        }
+    }
 
     React.useEffect(() => {
-        setLocalAttributes(genericFingerprintAttributes)
+        setLocalAttributes(genericFingerprintAttributes.map(groupMapping))
+        setRows(genericFingerprintAttributes.map(groupMapping))
     }, [genericFingerprintAttributes])
 
     const booleanRenderer = (row: any) => {
@@ -153,6 +186,72 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
             setLocalAttributes([...localAttributes])
         }}></Checkbox>
     }
+
+    const requestSearch = (searchedVal: string) => {
+        const filteredRows = localAttributes.filter((row) => {
+          return row?.feature?.toLowerCase().includes(searchedVal?.toLowerCase());
+        });
+        setRows(filteredRows);
+      };
+    
+    const cancelSearch = () => {
+    setSearched("");
+    requestSearch(searched);
+    };
+
+    function rowKeyGetter(row: any) {
+        return row.feature;
+      }
+
+    function rowClickHandler(row: any, column: any) {
+        console.log('localAttributes1', localAttributes[row.id]);
+        localAttributes[row.id].show = !row['show']
+        row['show'] = !row['show']
+        setLocalAttributes([...localAttributes])
+        console.log('localAttributes2', localAttributes[row.id]);
+    }
+
+    // const gridRef = React.useRef<DataGridHandle>(null);
+
+    // const NoBoxShadowComponent = styled('div')({
+    //     className: 'fixedname',
+    //     width: 500,
+    //     '& .rdg-cell:': { className: 'anotherfixedname', boxShadow: 'none !important' }
+    //   });
+
+    const featureGrid = (
+        <DataGrid
+            // ref={gridRef}
+            className="rdg-light"
+            style={{flex: '1', minWidth: 900, overflowX: 'hidden'}}
+            groupBy={["group"]}
+            rowGrouper={rowGrouper}
+            rowKeyGetter={rowKeyGetter}
+            selectedRows={selectedRows}
+            onSelectedRowsChange={setSelectedRows}
+            onRowClick={rowClickHandler}
+            expandedGroupIds={expandedGroupIds}
+            onExpandedGroupIdsChange={setExpandedGroupIds}
+            columns={columns}
+            rows={rows.filter((x) => !x.show)}
+        />
+    );
+    const selectionGrid = (
+            <DataGrid
+            className="rdg-light"
+            style={{flex: '1', minWidth: 900, overflowX: 'hidden'}}
+            groupBy={["group"]}
+            rowGrouper={rowGrouper}
+            rowKeyGetter={rowKeyGetter}
+            selectedRows={selectedRows}
+            onSelectedRowsChange={setSelectedRows}
+            onRowClick={rowClickHandler}
+            expandedGroupIds={expandedGroupIds}
+            onExpandedGroupIdsChange={setExpandedGroupIds}
+            columns={columnsSelected}
+            rows={rows.filter((x) => x.show)}
+            />
+    );
 
     return <div>
         <Button style={{ width: '100%' }} variant="outlined" onClick={fingerprintAttributes}>Summary Attributes</Button>
@@ -171,10 +270,19 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
             }}
         >
             <Box margin={2}>
-                <VirtualTable rows={localAttributes} rowHeight={42} tableHeight={300}>
-                    <VirtualColumn width={300} name="Feature" renderer={(row) => strrenderer("feature", row)}></VirtualColumn>
-                    <VirtualColumn width={50} name="Show" renderer={(row) => booleanRenderer(row)}></VirtualColumn>
-                </VirtualTable>
+                <SearchBar
+                value={searched}
+                onChange={(searchVal) => requestSearch(searchVal)}
+                onCancelSearch={() => cancelSearch()}
+                />
+                <div style={{display: 'flex'}}>
+                {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
+                {featureGrid}
+                {/* </div> */}
+                {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
+                {selectionGrid}
+                {/* </div> */}
+                </div>
             </Box>
         </Popover>
     </div>
