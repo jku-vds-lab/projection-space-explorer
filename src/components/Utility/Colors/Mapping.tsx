@@ -33,7 +33,14 @@ export class DiscreteMapping extends Mapping {
   }
 }
 
-
+// ---usage example:
+// let background_colorMapping = new ContinuousMapping(
+//     {
+//         palette: [new SchemeColor('#fefefe'), new SchemeColor('#111111')],
+//         type: 'sequential'
+//     },
+//     range // needs to have the same range as the overview Dataset
+// );
 export class ContinuousMapping extends Mapping {
   range: any;
 
