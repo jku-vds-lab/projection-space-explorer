@@ -8,6 +8,7 @@ import { IEdge } from '../../model/Edge';
 import { IBook } from '../../model/Book';
 import { ObjectTypes } from '../../model/ObjectType';
 import type { RootState } from '../Store';
+import { StatesTabPanelFull } from '../DrawerTabPanels';
 
 export const bookAdapter = createEntityAdapter<IBook>({
   selectId: (book) => book.id,
@@ -125,7 +126,29 @@ const bookSlice = createSlice({
   name: 'stories',
   initialState,
   reducers: {
-    selectSideBranch(state, action: PayloadAction<number>) {},
+    selectSideBranch(state, action: PayloadAction<number>) {
+      const index = action.payload;
+
+      const sidePath = { mainEdges: state.trace.mainEdges, mainPath: state.trace.mainPath };
+
+      state.trace = {
+        mainPath: state.trace.sidePaths[index].nodes,
+        mainEdges: state.trace.sidePaths[index].edges,
+        sidePaths: [...state.trace.sidePaths.slice(0, index), ...state.trace.sidePaths.slice(index + 1)],
+      };
+
+      state.trace.sidePaths.push({
+        nodes: sidePath.mainPath,
+        edges: sidePath.mainEdges,
+        syncNodes: [],
+      });
+
+      state.trace.sidePaths.forEach((sidePath) => {
+        sidePath.syncNodes = getSyncNodesAlt(state.trace.mainPath, sidePath.nodes);
+      });
+
+      state.activeTraceState = state.trace.mainPath[0];
+    },
     addEdgeToActive(state, action: PayloadAction<IEdge>) {
       const active = state.stories.entities[state.active];
       edgeAdapter.addOne(active.edges, action.payload);
@@ -139,7 +162,7 @@ const bookSlice = createSlice({
     removeEdgeFromActive(state, action: PayloadAction<EntityId>) {
       const active = state.stories.entities[state.active];
       edgeAdapter.removeOne(active.edges, action.payload);
-      if (state.trace.mainEdges.includes(action.payload)) {
+      if (state.trace?.mainEdges?.includes(action.payload)) {
         state.activeTraceState = null;
         state.trace = null;
       }
@@ -147,32 +170,27 @@ const bookSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(addBookAsync.fulfilled, (state, { payload }) => {
-      bookAdapter.addOne(state.stories, payload.book);
-      state.trace = {
-        mainEdges: [],
-        mainPath: [],
-        sidePaths: [],
-      };
+      const { book, activate } = payload;
 
+      bookAdapter.addOne(state.stories, book);
+
+      state.trace = null;
       state.activeTraceState = null;
-      if (payload.activate) {
-        state.active = payload.book.id;
+
+      if (activate) {
+        state.active = book.id;
       }
-
-      console.log('added book');
-      console.log(state.stories);
-    });
-
-    builder.addCase(addBookAsync.rejected, (state, action) => {
-      console.log(action.error);
     });
 
     builder.addCase(addCluster.fulfilled, (state, { payload }) => {
       const active = state.stories.entities[state.active];
+
       clusterAdapter.addOne(active.clusters, payload);
     });
 
     builder.addCase(deleteCluster.fulfilled, (state, { payload }) => {
+      const { cluster } = payload;
+
       const active = state.stories.entities[state.active];
       clusterAdapter.removeOne(active.clusters, payload.cluster.id);
 
@@ -182,6 +200,11 @@ const bookSlice = createSlice({
 
       for (const [, edge] of entries) {
         edgeAdapter.removeOne(active.edges, edge.id);
+      }
+
+      if (state.trace?.mainPath?.includes(cluster.id)) {
+        state.trace = null;
+        state.activeTraceState = null;
       }
 
       // Remove cluster labels from samples
@@ -200,13 +223,8 @@ const bookSlice = createSlice({
     builder.addCase(setActiveStoryBook.fulfilled, (state, { payload }) => {
       const storyBook = state.stories.entities[payload.book];
 
-      if (storyBook && storyBook.clusters.ids.length === 0) {
-        state.trace = null;
-        state.activeTraceState = null;
-      } else {
-        state.trace = null;
-        state.activeTraceState = null;
-      }
+      state.trace = null;
+      state.activeTraceState = null;
 
       if (storyBook && storyBook.clusters) {
         ACluster.deriveVectorLabelsFromClusters(payload.vectors, Object.values(storyBook.clusters.entities));
@@ -244,11 +262,7 @@ const bookSlice = createSlice({
     builder.addCase(deleteBookAsync.fulfilled, (state, { payload }) => {
       bookAdapter.removeOne(state.stories, payload);
       if (state.active === payload) {
-        state.trace = {
-          mainEdges: null,
-          mainPath: null,
-          sidePaths: null,
-        };
+        state.trace = null;
         state.activeTraceState = null;
       }
     });

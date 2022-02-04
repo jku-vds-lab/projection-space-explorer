@@ -91,14 +91,6 @@ const bookAdapter = createEntityAdapter<IBook>({
   selectId: (book) => book.id,
 });
 
-const edgeAdapter = createEntityAdapter<IEdge>({
-  selectId: (edge) => edge.id,
-});
-
-const clusterAdapter = createEntityAdapter<ICluster>({
-  selectId: (cluster) => cluster.id,
-});
-
 const appReducer = combineReducers(allReducers);
 
 export function createInitialReducerState(dataset: Dataset): Partial<RootState> {
@@ -189,8 +181,12 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     const { clusters } = dataset;
 
     if (dataset.clusterEdges && dataset.clusterEdges.length > 0) {
+      const story = transformIndicesToHandles(dataset.clusters, dataset.clusterEdges);
       const init = bookAdapter.getInitialState();
-      bookAdapter.addOne(init, transformIndicesToHandles(dataset.clusters, dataset.clusterEdges));
+      init.entities = {
+        [story.id]: story,
+      };
+      init.ids = [story.id];
 
       stories = {
         stories: init,
@@ -199,13 +195,18 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
         activeTraceState: null,
       };
     } else if (dataset.isSequential) {
+      console.log('getting edges');
       const [edges] = graphLayout(dataset, clusters);
-
+      console.log(edges);
       if (edges.length > 0) {
         const storyArr = storyLayout(clusters, edges);
 
         const init = bookAdapter.getInitialState();
-        bookAdapter.addMany(init, storyArr);
+        init.entities = storyArr.reduce((prev, cur) => {
+          prev[cur.id] = cur;
+          return prev;
+        }, {});
+        init.ids = Object.keys(init.entities);
 
         stories = {
           stories: init,

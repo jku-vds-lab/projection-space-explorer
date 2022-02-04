@@ -108,7 +108,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
   }, [props.dataset]);
 
   const onSaveProjectionClick = () => {
-    const metadata = props.projectionParams;
+    const metadata = { ...props.projectionParams };
 
     props.addProjection(AProjection.createProjection(props.workspace, null, metadata));
   };
