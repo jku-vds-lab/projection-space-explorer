@@ -9,12 +9,13 @@ import { ICluster } from "../../../model/Cluster";
 import { IEdge } from "../../../model/Edge";
 import { ObjectTypes } from "../../../model/ObjectType";
 
+var d3v5 = require('d3')
 export class JSONLoader implements Loader {
     vectors: IVector[]
     datasetType: DatasetType
 
     resolvePath(entry: any, finished: any) {
-        throw new Error("Method not implemented.");
+      d3v5.json(entry.path).then(file => this.resolve(file, finished, null, { path: "" }));
     }
 
     resolveContent(content: any, finished: any) {
