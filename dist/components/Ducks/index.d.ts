@@ -33,3 +33,4 @@ export * from './VectorByShapeDuck';
 export * from './ViewTransformDuck';
 export * from './DetailViewDuck';
 export * from './DatasetEntriesDuck';
+export * from './StoriesDuck copy';

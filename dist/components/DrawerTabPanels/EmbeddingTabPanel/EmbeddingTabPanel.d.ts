@@ -3,7 +3,7 @@ import { Dataset } from '../../../model/Dataset';
 import { IBaseProjection } from '../../../model/ProjectionInterfaces';
 import { FeatureConfig } from '../../../BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    stories: import("../../Ducks/StoriesDuck copy").IStorytelling;
+    stories: import("../..").IStorytelling;
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;

@@ -130,7 +130,7 @@ export const ClusteringTabPanel = connector(
               return;
             }
 
-            const story: IBook = stories.active !== null ? AStorytelling.getActive(stories) : AStorytelling.emptyStory();
+            const story: IBook = stories.active !== null ? AStorytelling.getActive(stories) : AStorytelling.emptyStory({ method: 'hdbscan' });
             const clusters: ICluster[] = new Array<ICluster>();
 
             dist_cluster_labels.forEach((cluster_label) => {

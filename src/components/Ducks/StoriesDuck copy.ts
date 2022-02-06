@@ -32,11 +32,12 @@ export class AStorytelling {
     };
   }
 
-  static emptyStory(): IBook {
+  static emptyStory(metadata?): IBook {
     const story: IBook = {
       id: uuidv4(),
       clusters: clusterAdapter.getInitialState(),
       edges: edgeAdapter.getInitialState(),
+      metadata
     };
 
     return story;
