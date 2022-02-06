@@ -15,3 +15,4 @@ export * from './palettes';
 export * from './Palette';
 export * from './ProjectionInterfaces';
 export * from './ICluster';
+export * from './Curves';

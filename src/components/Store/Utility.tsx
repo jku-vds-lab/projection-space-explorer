@@ -1,6 +1,7 @@
 import { createLinearRangeScaler } from '../Utility/ScalingAndAxes';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { IBaseProjection } from '../../model/ProjectionInterfaces';
+import { CubicBezierCurve } from '../../model/Curves';
 
 function calcBounds(workspace: IBaseProjection) {
   // Get rectangle that fits around data set
@@ -92,6 +93,67 @@ export class UtilityActions {
 
     return partial;
   }
+
+
+
+
+  static solveCatmullRom(data, k): CubicBezierCurve[] {
+    if (k == null) k = 1;
+
+    var size = data.length;
+    var last = size - 4;
+
+    let path: CubicBezierCurve[] = []
+
+    //var path = "M" + [data[0], data[1]];
+    let startX = data[0], startY = data[1];
+
+    for (var i = 0; i < size - 2; i += 2) {
+
+        var x0 = i ? data[i - 2] : data[0];
+        var y0 = i ? data[i - 1] : data[1];
+
+        var x1 = data[i + 0];
+        var y1 = data[i + 1];
+
+        var x2 = data[i + 2];
+        var y2 = data[i + 3];
+
+        var x3 = i !== last ? data[i + 4] : x2;
+        var y3 = i !== last ? data[i + 5] : y2;
+
+        var cp1x = x1 + (x2 - x0) / 6 * k;
+        var cp1y = y1 + (y2 - y0) / 6 * k;
+
+        var cp2x = x2 - (x3 - x1) / 6 * k;
+        var cp2y = y2 - (y3 - y1) / 6 * k;
+
+        path.push({start: {x: startX, y: startY}, cp1: {x: cp1x, y: cp1y}, cp2: {x: cp2x, y: cp2y}, end: {x: x2, y: y2}});
+
+        startX = x2;
+        startY = y2;
+    }
+
+    return path;
+  }
+
+
+  static partialBezierCurve(t, p0, p1, p2, p3){
+    var cX = 3 * (p1.x - p0.x),
+        bX = 3 * (p2.x - p1.x) - cX,
+        aX = p3.x - p0.x - cX - bX;
+          
+    var cY = 3 * (p1.y - p0.y),
+        bY = 3 * (p2.y - p1.y) - cY,
+        aY = p3.y - p0.y - cY - bY;
+          
+    var x = (aX * Math.pow(t, 3)) + (bX * Math.pow(t, 2)) + (cX * t) + p0.x;
+    var y = (aY * Math.pow(t, 3)) + (bY * Math.pow(t, 2)) + (cY * t) + p0.y;
+          
+    return {x: x, y: y};
+  }
+
+
 
   static generateImage(
     state: any,
