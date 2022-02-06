@@ -9,7 +9,7 @@ import { ICluster } from "../../../model/Cluster";
 import { IEdge } from "../../../model/Edge";
 import { ObjectTypes } from "../../../model/ObjectType";
 
-var d3v5 = require('d3')
+var d3v5 = require('d3v5')
 export class JSONLoader implements Loader {
     vectors: IVector[]
     datasetType: DatasetType

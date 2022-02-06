@@ -1,4 +1,4 @@
-import { ConnectedProps } from 'react-redux';
+import { ConnectedProps } from "react-redux";
 import { ICluster } from "../../../model/Cluster";
 import { IBook } from "../../../model/Book";
 import { DisplayMode } from "../../Ducks/DisplayModeDuck";
@@ -29,5 +29,5 @@ declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     splitRef: any;
 };
-export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters }: Props) => JSX.Element, Pick<Props, "splitRef">>;
+export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters, }: Props) => JSX.Element, Pick<Props, "splitRef">>;
 export {};

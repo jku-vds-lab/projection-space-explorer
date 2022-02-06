@@ -182,7 +182,7 @@ export declare const Application: ConnectedComponent<{
         state: Readonly<any>;
         refs: {
             [key: string]: React.ReactInstance;
-        };
+        }; /** predefined dataset */
         shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): boolean;
         componentWillUnmount?(): void;
         componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
@@ -254,7 +254,7 @@ export declare const Application: ConnectedComponent<{
     state: Readonly<any>;
     refs: {
         [key: string]: React.ReactInstance;
-    };
+    }; /** predefined dataset */
     shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): boolean;
     componentWillUnmount?(): void;
     componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;

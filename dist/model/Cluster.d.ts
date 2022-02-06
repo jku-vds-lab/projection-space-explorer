@@ -1,8 +1,8 @@
-import * as THREE from 'three';
-import { Dataset } from './Dataset';
-import { TypedObject } from './TypedObject';
+import * as THREE from "three";
+import { Dataset } from "./Dataset";
+import { TypedObject } from "./TypedObject";
 import { IVector } from "./Vector";
-import { IBaseProjection } from './Projection';
+import { IBaseProjection } from "./Projection";
 /**
  * Cluster API.
  */
@@ -17,7 +17,7 @@ export declare class ACluster {
         right: number;
         bottom: number;
     };
-    static fromSamples(dataset: Dataset, samples: number[]): ICluster;
+    static fromSamples(dataset: Dataset, samples: number[], metadata?: any): ICluster;
     /**
      * Resets the labeling for given vectors based on given clusters
      *
@@ -40,6 +40,9 @@ export interface ICluster extends TypedObject {
     hull?: number[][];
     triangulation?: number[];
     name?: string;
+    metadata?: {
+        [id: string]: any;
+    };
     /**
      * List of indices on the dataset vectors this cluster has.
      */

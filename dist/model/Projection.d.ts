@@ -27,7 +27,5 @@ export declare type IBaseProjection = IPosition[];
  * Projection API.
  */
 export declare class AProjection {
-    static createProjection(projection: IBaseProjection, name: any, metadata?: {
-        [id: string]: any;
-    }): IProjection;
+    static createProjection(projection: IBaseProjection, name: any, metadata?: any): IProjection;
 }

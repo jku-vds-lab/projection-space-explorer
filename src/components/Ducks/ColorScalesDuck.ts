@@ -42,6 +42,20 @@ const palettes = {
         new SchemeColor("#ffff99"),
         new SchemeColor("#b15928")
     ],
+    set3: [
+        new SchemeColor("#8dd3c7"),
+        new SchemeColor("#ffffb3"),
+        new SchemeColor("#bebada"),
+        new SchemeColor("#fb8072"),
+        new SchemeColor("#80b1d3"),
+        new SchemeColor("#fdb462"),
+        new SchemeColor("#b3de69"),
+        new SchemeColor("#fccde5"),
+        new SchemeColor("#d9d9d9"),
+        new SchemeColor("#bc80bd"),
+        new SchemeColor("#ccebc5"),
+        new SchemeColor("#ffed6f")
+    ],
 
     // sequential
     Greys: [
