@@ -7,7 +7,7 @@ export declare const edgeAdapter: import("@reduxjs/toolkit").EntityAdapter<IEdge
 export declare const clusterAdapter: import("@reduxjs/toolkit").EntityAdapter<ICluster>;
 export declare class AStorytelling {
     static createEmpty(): IStorytelling;
-    static emptyStory(): IBook;
+    static emptyStory(metadata?: any): IBook;
     static getActive(stories: IStorytelling): IBook;
     static retrieveCluster(stories: IStorytelling, clusterIndex: EntityId): ICluster;
     static retreiveEdge(stories: IStorytelling, edgeIndex: EntityId): IEdge;
