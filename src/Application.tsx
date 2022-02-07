@@ -30,7 +30,7 @@ import { setDetailVisibility } from './components/Ducks/DetailViewDuck';
 import { PSEIcons } from './utils/PSEIcons';
 // @ts-ignore
 import VDSLogo from '../textures/vds-lab-logo-notext.svg';
-// import { CoralPlugin } from './plugins/Coral/CoralPlugin';
+import { CoralPlugin } from './plugins/Coral/CoralPlugin';
 import { DatasetEntriesAPI } from './components/Ducks/DatasetEntriesDuck';
 import { JSONLoader } from './components/Utility/Loaders';
 import { DatasetType } from './model/DatasetType';
@@ -492,4 +492,4 @@ export const Application = connector(
 PluginRegistry.getInstance().registerPlugin(new RubikPlugin());
 PluginRegistry.getInstance().registerPlugin(new ChessPlugin());
 PluginRegistry.getInstance().registerPlugin(new GoPlugin());
-// PluginRegistry.getInstance().registerPlugin(new CoralPlugin());
+PluginRegistry.getInstance().registerPlugin(new CoralPlugin());

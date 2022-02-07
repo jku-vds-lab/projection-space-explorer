@@ -5,7 +5,7 @@ import { IVector } from '../../model/Vector';
 import { Dataset } from '../../model/Dataset';
 import { RubikChanges } from '../../plugins/Rubik/RubikChanges/RubikChanges';
 import { ChessChanges } from '../../plugins/Chess/ChessChanges/ChessChanges';
-// import { CoralChanges } from '../../plugins/Coral/CoralChanges/CoralChanges';
+import { CoralChanges } from '../../plugins/Coral/CoralChanges/CoralChanges';
 
 type GenericChangesType = {
   vectorsA: Array<IVector>;
@@ -30,10 +30,8 @@ export const GenericChanges = connect(
     case DatasetType.Chess:
       return <ChessChanges width={144 * scale} height={144 * scale} vectorsA={vectorsA} vectorsB={vectorsB} />;
     case DatasetType.Cohort_Analysis:
-      return <div />;
-    // return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale} />;
+      return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale} />;
     default:
-      return <div />;
-    // return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale} />;
+      return <CoralChanges width={80 * scale} height={80 * scale} vectorsA={vectorsA} vectorsB={vectorsB} scale={scale} />;
   }
 });

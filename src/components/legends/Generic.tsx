@@ -1,5 +1,5 @@
 import * as React from 'react';
-// import { CoralLegend } from '../../plugins/Coral/CoralDetail/CoralDetail';
+import { CoralLegend } from '../../plugins/Coral/CoralDetail/CoralDetail';
 import { TrrackLegend } from '../../plugins/Trrack/TrrackDetail/TrrackDetail';
 import { StoryLegend } from '../../plugins/Story/StoryDetail/StoryDetail';
 import { RubikFingerprint } from '../../plugins/Rubik/RubikFingerprint/RubikFingerprint';
@@ -32,14 +32,12 @@ export function GenericLegend({ type, vectors, aggregate, scale = 2 }: GenericLe
     case DatasetType.Chess:
       return <ChessFingerprint width={144 * scale} height={144 * scale} vectors={vectors} />;
     case DatasetType.Cohort_Analysis:
-      return <div />;
-    // return <CoralLegend selection={vectors} aggregate={aggregate} />;
+      return <CoralLegend selection={vectors} aggregate={aggregate} />;
     case DatasetType.Trrack:
       return <TrrackLegend selection={vectors} aggregate={aggregate} />;
     case DatasetType.Go:
       return <GoLegend selection={vectors} aggregate={aggregate} />;
     default:
-      return <div />;
-    // return <CoralLegend selection={vectors} aggregate={aggregate} />;
+      return <CoralLegend selection={vectors} aggregate={aggregate} />;
   }
 }
