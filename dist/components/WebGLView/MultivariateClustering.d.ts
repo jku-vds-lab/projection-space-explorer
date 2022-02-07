@@ -124,7 +124,9 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): void;
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): void;
     };
-    contextType?: React.Context<any>;
+    contextType?: React.Context<any>; /**
+     * Destroys the visualization.
+     */
 }, Pick<React.ClassAttributes<{
     arrowMesh: THREE.Mesh;
     trailMesh: THREE.Mesh;
