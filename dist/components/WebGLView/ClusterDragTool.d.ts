@@ -1,6 +1,6 @@
-import { ICluster } from "../../model/Cluster";
-import { RenderingContextEx } from "../Utility/RenderingContextEx";
-import { Tool } from "./Tool";
+import { Tool } from './Tool';
+import { ICluster } from '../../model/ICluster';
+import { RenderingContextEx } from '../Utility/RenderingContextEx';
 export declare class ClusterDragTool implements Tool {
     cluster: ICluster;
     constructor(cluster: any);

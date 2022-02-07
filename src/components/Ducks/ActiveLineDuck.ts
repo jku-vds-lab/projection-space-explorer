@@ -1,17 +1,17 @@
-const SET = "ducks/activeLine/SET"
+const SET = 'ducks/activeLine/SET';
 
 const activeLine = (state = null, action): string => {
-    switch (action.type) {
-        case SET:
-            return action.activeLine
-        default:
-            return state
-    }
-}
+  switch (action.type) {
+    case SET:
+      return action.activeLine;
+    default:
+      return state;
+  }
+};
 
-export const setActiveLine = activeLine => ({
-    type: SET,
-    activeLine: activeLine
-})
+export const setActiveLine = (activeLine) => ({
+  type: SET,
+  activeLine,
+});
 
-export default activeLine
+export default activeLine;

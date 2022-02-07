@@ -1,6 +1,6 @@
-import { Dataset } from "../../model/Dataset";
+import { Dataset } from '../../model/Dataset';
 
-const initialState: Dataset = null
+const initialState: Dataset = null;
 export default function dataset(state = initialState): Dataset {
-    return state
+  return state;
 }

@@ -9,5 +9,10 @@ export * from './FeatureType';
 export * from './ObjectType';
 export * from './TypedObject';
 export * from './Vector';
-export * from './DatasetEntry'
-export * from './EncodingChannel'
+export * from './DatasetEntry';
+export * from './EncodingChannel';
+export * from './palettes';
+export * from './Palette';
+export * from './ProjectionInterfaces';
+export * from './ICluster';
+export * from './Curves';

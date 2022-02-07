@@ -1,4 +1,4 @@
-import { Dataset } from "../../model";
+import { Dataset } from '../../model';
 export declare enum RootActionTypes {
     RESET = "root/RESET",
     HYDRATE = "root/HYDRATE",

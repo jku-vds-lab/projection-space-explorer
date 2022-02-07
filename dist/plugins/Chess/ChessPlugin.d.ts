@@ -1,6 +1,6 @@
-import { IVector } from "../../model/Vector";
-import { DatasetType } from "../../model/DatasetType";
-import { PSEPlugin } from "../../components/Store/PSEPlugin";
+import { IVector } from '../../model/Vector';
+import { DatasetType } from '../../model/DatasetType';
+import { PSEPlugin } from '../../components/Store/PSEPlugin';
 export declare class ChessPlugin extends PSEPlugin {
     type: DatasetType;
     hasFileLayout(header: string[]): boolean;

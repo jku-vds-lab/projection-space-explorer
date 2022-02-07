@@ -26,5 +26,6 @@ declare type Props = PropsFromRedux & {
     onClose: any;
     onStart: any;
 };
-export declare const GenericSettings: import("react-redux").ConnectedComponent<({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns }: Props) => JSX.Element, Pick<Props, "open" | "onClose" | "domainSettings" | "onStart">>;
+declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns }: Props): JSX.Element;
+export declare const GenericSettings: import("react-redux").ConnectedComponent<typeof GenericSettingsComp, Pick<Props, "open" | "onClose" | "domainSettings" | "onStart">>;
 export {};

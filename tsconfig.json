@@ -9,6 +9,7 @@
     "lib": ["ESNext","DOM"],
     "declaration": true,
     "sourceMap": true,
+    "preserveSymlinks": true,
     "declarationDir": "dist"
   },
   "include": [

@@ -1,4 +1,4 @@
-import { IVector } from "../../../model/Vector";
+import { IVector } from '../../../model/Vector';
 export declare class Preprocessor {
     vectors: IVector[];
     constructor(vectors: any);

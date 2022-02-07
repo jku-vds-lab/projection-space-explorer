@@ -1,17 +1,17 @@
-const SET = "ducks/projectionOpen/SET"
+const SET = 'ducks/projectionOpen/SET';
 
-export const setProjectionOpenAction = projectionOpen => ({
-    type: SET,
-    projectionOpen: projectionOpen
+export const setProjectionOpenAction = (projectionOpen) => ({
+  type: SET,
+  projectionOpen,
 });
 
 const projectionOpen = (state = false, action) => {
-    switch (action.type) {
-        case SET:
-            return action.projectionOpen
-        default:
-            return state
-    }
-}
+  switch (action.type) {
+    case SET:
+      return action.projectionOpen;
+    default:
+      return state;
+  }
+};
 
-export default projectionOpen
+export default projectionOpen;

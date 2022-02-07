@@ -1,13 +1,13 @@
-import { ClusterMode } from "../Ducks/ClusterModeDuck";
-import { IStorytelling } from "../Ducks/StoriesDuck";
-import { Dataset, IProjection, IBaseProjection } from '../../model';
-import { NormalizedDictionary } from '../Utility/NormalizedState';
-import { BaseColorScale } from '../Ducks/ColorScalesDuck';
+import { ClusterMode } from '../Ducks/ClusterModeDuck';
+import { ProjectionStateType } from '../Ducks/ProjectionDuck';
+import { Dataset } from '../../model';
+import { BaseColorScale } from '../../model/Palette';
+import { IStorytelling } from '../Ducks/StoriesDuck copy';
 export declare function createInitialReducerState(dataset: Dataset): Partial<RootState>;
 export declare const rootReducer: (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: string[];
+        selectedClusters: import("@reduxjs/toolkit").EntityId[];
         source: "sample" | "cluster";
     };
     stories: IStorytelling;
@@ -67,13 +67,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         length: number;
     };
     differenceThreshold: any;
-    projections: {
-        byId: {
-            [id: string]: IProjection;
-        };
-        allIds: string[];
-        workspace: IBaseProjection;
-    };
+    projections: ProjectionStateType;
     hoverSettings: {
         windowMode: any;
     };
@@ -101,7 +95,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         };
     };
     colorScales: {
-        scales: NormalizedDictionary<BaseColorScale>;
+        scales: import("../Utility/NormalizedState").NormalizedDictionary<BaseColorScale>;
         active: string;
     };
 }>;

@@ -1,37 +1,10 @@
-import {
-  applyMiddleware,
-  createStore,
-  Reducer,
-  Store
-} from "redux";
-import { rootReducer, RootState } from "../Store/Store";
-import thunk from "redux-thunk";
-import { v4 as uuidv4 } from "uuid";
-import { getStoreDiff } from "./PluginScript";
-import { RootActions } from "./RootActions";
-import { SchemeColor } from "../Utility";
-import { IBaseProjection } from "../..";
-import { UtilityActions } from "../..";
-
-
-
-const blobToBase64 = (blob) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    return new Promise<string>(resolve => {
-        reader.onloadend = () => {
-            var b64 = reader.result as string
-
-            b64 = b64.replace(/^data:.+;base64,/, '');
-
-            resolve(b64);
-        };
-    });
-};
-
-
-
-
+import { applyMiddleware, createStore, Reducer, Store } from 'redux';
+import thunk from 'redux-thunk';
+import { v4 as uuidv4 } from 'uuid';
+import { rootReducer, RootState } from './Store';
+import { getStoreDiff } from './PluginScript';
+import { RootActions } from './RootActions';
+import { UtilityActions } from './Utility';
 
 
 /**
@@ -39,7 +12,9 @@ const blobToBase64 = (blob) => {
  */
 export class API<T extends RootState> {
   store: Store<T>;
+
   onStateChanged: (newState: T, difference: Partial<T>, action: any) => void;
+
   id: string;
 
   /**
@@ -52,16 +27,9 @@ export class API<T extends RootState> {
     this.id = uuidv4();
 
     if (dump) {
-      this.store = createStore(
-        reducer ? reducer : rootReducer,
-        dump,
-        applyMiddleware(this.differenceMiddleware, thunk)
-      );
+      this.store = createStore(reducer || rootReducer, dump, applyMiddleware(this.differenceMiddleware, thunk));
     } else {
-      this.store = createStore(
-        reducer ? reducer : rootReducer,
-        applyMiddleware(this.differenceMiddleware, thunk)
-      );
+      this.store = createStore(reducer || rootReducer, applyMiddleware(this.differenceMiddleware, thunk));
     }
   }
 
@@ -92,7 +60,7 @@ export class API<T extends RootState> {
   differenceMiddleware = (store) => (next) => (action) => {
     const oldState = store.getState();
 
-    let newState = next(action);
+    const newState = next(action);
 
     const diff = getStoreDiff(oldState, store.getState());
 
@@ -108,15 +76,8 @@ export class API<T extends RootState> {
     height: number,
     padding: number,
     options: any,
-    ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+    ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
   ): Promise<string> {
-    return UtilityActions.generateImage(
-      this.store.getState(),
-      width,
-      height,
-      padding,
-      options,
-      ctx
-    );
+    return UtilityActions.generateImage(this.store.getState(), width, height, padding, options, ctx);
   }
 }

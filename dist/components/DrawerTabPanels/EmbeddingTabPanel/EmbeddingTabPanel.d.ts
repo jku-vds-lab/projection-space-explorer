@@ -1,20 +1,26 @@
 import { ConnectedProps } from 'react-redux';
-import { Dataset } from "../../../model/Dataset";
-import { IProjection, IBaseProjection } from '../../../model/Projection';
-import { FeatureConfig } from '../../../Application';
+import { Dataset } from '../../../model/Dataset';
+import { IBaseProjection } from '../../../model/ProjectionInterfaces';
+import { FeatureConfig } from '../../../BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    stories: import("../../..").IStorytelling;
+    stories: import("../..").IStorytelling;
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;
-    projections: {
-        byId: {
-            [id: string]: IProjection;
-        };
-        allIds: string[];
-        workspace: IBaseProjection;
-    };
+    projections: import("../../Ducks/ProjectionDuck").ProjectionStateType;
     workspace: IBaseProjection;
+    projectionParams: {
+        perplexity: number;
+        learningRate: number;
+        nNeighbors: number;
+        iterations: number;
+        seeded: boolean;
+        useSelection: boolean;
+        method: string;
+        distanceMetric: import("../../../model/DistanceMetric").DistanceMetric;
+        normalizationMethod: import("../../../model/NormalizationMethod").NormalizationMethod;
+        encodingMethod: import("../../../model/EncodingMethod").EncodingMethod;
+    };
 } & {
     setProjectionOpen: (value: any) => any;
     setProjectionWorker: (value: any) => any;

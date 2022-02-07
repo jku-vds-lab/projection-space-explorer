@@ -1,5 +1,37 @@
-import { IEdge } from "./Edge";
-import { ICluster } from "./Cluster";
+import { EntityId, EntityState } from '@reduxjs/toolkit';
+import { IEdge } from './Edge';
+import { ICluster } from './ICluster';
+/**
+
+function* labelGenerator() {
+  const code_0 = '0'.charCodeAt(0);
+  const code_9 = '9'.charCodeAt(0);
+  const code_A = 'A'.charCodeAt(0);
+  const code_Z = 'Z'.charCodeAt(0);
+  const code_a = 'a'.charCodeAt(0);
+
+  function mapChar(c) {
+    if (c >= code_0 && c <= code_9) {
+      return String.fromCharCode(code_A + (c - code_0));
+    }
+    return String.fromCharCode(code_A + (c - code_a));
+  }
+
+  let i = 0;
+
+  while (true) {
+    const str = i.toString(26);
+    const comb = Array.prototype.map.call(str, (e) => mapChar(e.charCodeAt(0))).join('');
+    yield comb;
+    i += 1;
+  }
+}
+
+
+
+
+
+
 /**
  * Book API.
  */
@@ -23,27 +55,13 @@ export declare class ABook {
      * @param source A start label (of a cluster)
      */
     static getAllStoriesFromSource(storybook: IBook, source: any): any[];
-    static getCluster(book: IBook, index: string): ICluster;
     static createEmpty(): IBook;
-    static addCluster(book: IBook, cluster: ICluster): string;
-    static deleteEdge(book: IBook, edge: IEdge): string;
-    static addEdge(book: IBook, edge: IEdge): string;
-    static deleteCluster(book: IBook, cluster: ICluster): string;
 }
 /**
  * Book type.
  */
 export interface IBook {
-    clusters: {
-        byId: {
-            [id: string]: ICluster;
-        };
-        allIds: string[];
-    };
-    edges: {
-        byId: {
-            [id: string]: IEdge;
-        };
-        allIds: string[];
-    };
+    id: EntityId;
+    clusters: EntityState<ICluster>;
+    edges: EntityState<IEdge>;
 }

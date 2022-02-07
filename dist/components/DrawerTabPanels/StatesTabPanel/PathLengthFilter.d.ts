@@ -1,11 +1,8 @@
-export declare var PathLengthFilterFull: ({ pathLengthRange, setPathLengthRange }: {
+export declare function PathLengthFilterFull({ pathLengthRange, setPathLengthRange }: {
     pathLengthRange: any;
     setPathLengthRange: any;
-}) => JSX.Element;
-export declare const PathLengthFilter: import("react-redux").ConnectedComponent<({ pathLengthRange, setPathLengthRange }: {
-    pathLengthRange: any;
-    setPathLengthRange: any;
-}) => JSX.Element, Pick<{
+}): JSX.Element;
+export declare const PathLengthFilter: import("react-redux").ConnectedComponent<typeof PathLengthFilterFull, Pick<{
     pathLengthRange: any;
     setPathLengthRange: any;
 }, never>>;

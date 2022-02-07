@@ -1,6 +1,6 @@
-import { SchemeColor } from ".";
-import { ShallowSet } from "../ShallowSet";
-import { BaseColorScale } from "../../Ducks/ColorScalesDuck";
+import { SchemeColor } from './SchemeColor';
+import { ShallowSet } from '../ShallowSet';
+import { BaseColorScale } from '../../../model/Palette';
 export declare abstract class Mapping {
     scale: BaseColorScale;
     constructor(scale: any);

@@ -1,9 +1,9 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 declare type ICheckedMarks = {
-    'star': boolean;
-    'cross': boolean;
-    'circle': boolean;
-    'square': boolean;
+    star: boolean;
+    cross: boolean;
+    circle: boolean;
+    square: boolean;
 };
 declare type IPointDisplay = {
     checkedShapes: ICheckedMarks;

@@ -1,4 +1,4 @@
-import { ViewTransformType } from "../Ducks";
+import type { ViewTransformType } from '../Ducks';
 /**
  * Utility object that can convert screen coordinates to world coordinates and vice-versa.
  */

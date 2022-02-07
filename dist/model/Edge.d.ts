@@ -1,8 +1,10 @@
-import { TypedObject } from "./TypedObject";
+import { EntityId } from '@reduxjs/toolkit';
+import { TypedObject } from './TypedObject';
 /**
  * Edge type.
  */
 export interface IEdge extends TypedObject {
+    id: EntityId;
     /**
      * Object type.
      */
@@ -10,11 +12,11 @@ export interface IEdge extends TypedObject {
     /**
      * Handle to source cluster.
      */
-    source: string;
+    source: EntityId;
     /**
      * Handle to destination cluster.
      */
-    destination: string;
+    destination: EntityId;
     /**
      * Optional name for this edge (will be displayed like a street name).
      */

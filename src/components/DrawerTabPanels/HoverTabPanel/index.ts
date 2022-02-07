@@ -1,1 +1,1 @@
-export * from './HoverTabPanel'
+export * from './HoverTabPanel';

@@ -1,6 +1,6 @@
 import { ConnectedProps } from 'react-redux';
 import './coral.scss';
-import { IVector } from "../../../model/Vector";
+import { IVector } from '../../../model/Vector';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     legendAttributes: any[];
     dataset: import("../../..").Dataset;

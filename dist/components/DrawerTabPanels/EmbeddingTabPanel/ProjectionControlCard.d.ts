@@ -5,6 +5,9 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         learningRate: number;
         nNeighbors: number;
         iterations: number;
+        /**
+         * Styles for the projection card that allows to stop/resume projection steps.
+         */
         seeded: boolean;
         useSelection: boolean;
         method: string;
@@ -24,5 +27,5 @@ declare type Props = PropsFromRedux & {
 /**
  * Projection card that allows to start/stop the projection and shows the current steps.
  */
-export declare var ProjectionControlCard: import("react-redux").ConnectedComponent<({ onComputingChanged, projectionParams, controller, onClose, dataset_name }: Props) => JSX.Element, Pick<Props, "onClose" | "controller" | "onComputingChanged" | "dataset_name">>;
+export declare const ProjectionControlCard: import("react-redux").ConnectedComponent<({ onComputingChanged, projectionParams, controller, onClose, dataset_name }: Props) => JSX.Element, Pick<Props, "onClose" | "controller" | "onComputingChanged" | "dataset_name">>;
 export {};
