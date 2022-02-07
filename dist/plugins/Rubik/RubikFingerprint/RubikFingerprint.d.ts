@@ -6,7 +6,7 @@ declare type RubikFingerprintProps = {
 };
 export declare const requiredRubikColumns: string[];
 export declare class RubikFingerprint extends React.Component<RubikFingerprintProps> {
-    canvasRef: React.RefObject<HTMLCanvasElement>;
+    canvasRef: any;
     canvasContext: CanvasRenderingContext2D;
     constructor(props: RubikFingerprintProps);
     componentDidMount(): void;

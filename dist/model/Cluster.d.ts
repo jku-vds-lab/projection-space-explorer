@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { Dataset } from './Dataset';
 import { TypedObject } from './TypedObject';
 import { IVector } from './Vector';
@@ -30,7 +29,7 @@ export declare class ACluster {
         x: number;
         y: number;
     };
-    static getCenterAsVector2(workspace: IBaseProjection, cluster: ICluster): THREE.Vector2;
+    static getCenterAsVector2(workspace: IBaseProjection, cluster: ICluster): any;
     static getTextRepresentation(cluster: ICluster): string;
 }
 /**

@@ -31,5 +31,5 @@ declare type Props = PropsFromRedux & {
 };
 export declare function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info }: any): JSX.Element;
 export declare function StatesTabPanelFull({ selectedVectorByShape, vectorByShape, dataset, setSelectedVectorByShape, setVectorByShape, webGlView, channelBrightness, setChannelBrightness, setGlobalPointBrightness, channelSize, setChannelSize, setGlobalPointSize, channelColor, encodings, setAdvancedColoringSelection, }: Props): JSX.Element;
-export declare const StatesTabPanel: import("react-redux").ConnectedComponent<typeof StatesTabPanelFull, Pick<Props, "webGlView" | "encodings">>;
+export declare const StatesTabPanel: any;
 export {};
