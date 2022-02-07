@@ -1,0 +1,12 @@
+/**
+ * The data type of a feature
+ */
+export declare enum FeatureType {
+    String = "String",
+    Quantitative = "Quantitative",
+    Categorical = "Categorical",
+    Date = "Date",
+    Binary = "Binary",
+    Ordinal = "Ordinal",
+    Array = "Array"
+}
