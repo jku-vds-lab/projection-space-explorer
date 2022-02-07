@@ -615,7 +615,6 @@ export const Storytelling = connector(function ({
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        // top: input.position[index].y + input.position[index].height / 2 - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0),
                         height:
                           input.position[index + 1].y +
                           input.position[index + 1].height / 2 -

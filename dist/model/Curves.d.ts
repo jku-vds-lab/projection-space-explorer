@@ -1,4 +1,4 @@
-import { IPosition } from ".";
+import { IPosition } from './ProjectionInterfaces';
 export declare type CubicBezierCurve = {
     start: IPosition;
     cp1: IPosition;

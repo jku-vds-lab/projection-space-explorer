@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { v4 as uuidv4 } from 'uuid';
-import { EntityId, EntityState, createEntityAdapter } from '@reduxjs/toolkit';
+import { EntityId, EntityState } from '@reduxjs/toolkit';
 import { IEdge } from './Edge';
 import { ICluster } from './ICluster';
 
@@ -137,21 +136,6 @@ export class ABook {
     DFS_iter(source, visited, pathList);
 
     return output.sort((a, b) => a.length - b.length);
-  }
-
-
-  static createEmpty(): IBook {
-    return {
-      id: uuidv4(),
-      clusters: {
-        entities: {},
-        ids: [],
-      },
-      edges: {
-        entities: {},
-        ids: [],
-      },
-    };
   }
 }
 

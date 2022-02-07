@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { createEntityAdapter } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import clone = require('fast-clone');
@@ -37,7 +38,7 @@ import detailView from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
 import { embeddings, ProjectionStateType } from '../Ducks/ProjectionDuck';
 import { RootActionTypes } from './RootActions';
-import { Dataset, ADataset, SegmentFN, AProjection, IBook, IEdge, ICluster } from '../../model';
+import { Dataset, ADataset, SegmentFN, AProjection, IBook } from '../../model';
 import { CategoryOptionsAPI } from '../WebGLView/CategoryOptions';
 import { ANormalized } from '../Utility/NormalizedState';
 import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/graphs';
@@ -119,7 +120,12 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     workspace: undefined,
   };
 
-  projections.workspace = initialProjection.positions;
+  projections.workspace = {
+    positions: initialProjection.positions,
+    metadata: { method: 'dataset' },
+    hash: uuidv4(),
+    name: '',
+  };
 
   const genericFingerprintAttributes = ADataset.getColumns(dataset, true).map((column) => ({
     feature: column,

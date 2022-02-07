@@ -5,5 +5,9 @@ export declare class MyWindowPortal extends React.PureComponent<any> {
     constructor(props: any);
     componentDidMount(): void;
     componentWillUnmount(): void;
+<<<<<<< HEAD
     render(): any;
+=======
+    render(): React.ReactPortal;
+>>>>>>> develop
 }

@@ -13,7 +13,7 @@ import CrossSymbol from '../../../../textures/sprites/cross.png';
 // @ts-ignore
 import SquareSymbol from '../../../../textures/sprites/square.png';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     padding: '3px 9px !important',
   },

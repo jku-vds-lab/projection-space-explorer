@@ -92,6 +92,7 @@ export class Legend extends React.Component<LegendProps, LegendState> {
     this.props.onLineSelect(col.algo, event.target.checked);
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   load(type, lineColorScheme, algorithms) {
     const lineChecks = algorithms.map((entry) => {
       return {
@@ -118,7 +119,7 @@ export class Legend extends React.Component<LegendProps, LegendState> {
         return (
           <div key={line.algo} className="d-flex" style={{ width: '100%', height: '1rem' }}>
             <small className="small flex-shrink-0" style={{ width: '2.5rem' }}>
-              {line.name == 'undefined' ? '-' : line.name}
+              {line.name === 'undefined' ? '-' : line.name}
             </small>
             <div
               className="flex-grow-1"
@@ -130,6 +131,7 @@ export class Legend extends React.Component<LegendProps, LegendState> {
         );
       });
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       colorLegend = this.state.lineChecks.map((line) => {
         const comp = line.color.rgb;
         return (

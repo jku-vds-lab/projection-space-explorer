@@ -20,7 +20,7 @@ export const ColorScalesActions = {
     return (dispatch, getState) => {
       const state: RootState = getState();
 
-      const handle = ANormalized.entries<BaseColorScale>(state.colorScales.scales).find(([key, value]) => {
+      const handle = ANormalized.entries<BaseColorScale>(state.colorScales.scales).find(([, value]) => {
         return value.type === type;
       })[0];
 

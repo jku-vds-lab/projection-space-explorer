@@ -10,7 +10,7 @@ import { IVector } from '../../../model/Vector';
 import BarChart from './BarChart';
 import VegaDensity from './VegaDensity';
 import VegaDate from './VegaDate';
-import type { RootState } from '../../..';
+import type { RootState } from '../../../components/Store/Store';
 
 const useStyles = makeStyles({
   table: {
