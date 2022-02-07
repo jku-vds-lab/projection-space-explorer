@@ -6,7 +6,7 @@ import type { ProjectionParamsType } from '../components/Ducks/ProjectionParamsD
  * Projection API.
  */
 export class AProjection {
-  static createProjection(projection: IBaseProjection, name, metadata?: any): IProjection {
+  static createProjection(positions: IBaseProjection, name, metadata?: any): IProjection {
     const hash = uuidv4();
 
     const deriveName = (metadata: ProjectionParamsType) => {
@@ -17,14 +17,14 @@ export class AProjection {
 
     if (name === null && metadata) {
       return {
-        positions: projection,
+        positions: positions.map((p) => ({ x: p.x, y: p.y })),
         hash,
         name: deriveName(metadata),
         metadata,
       };
     }
     return {
-      positions: projection,
+      positions: positions.map((p) => ({ x: p.x, y: p.y })),
       hash,
       name,
       metadata,

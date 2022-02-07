@@ -3,7 +3,6 @@
 import { connect } from 'react-redux';
 import * as React from 'react';
 import { Typography, IconButton, Card, CardHeader } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -27,15 +26,6 @@ type StateSequenceDrawerProps = {
 };
 
 const mainColor = '#007dad';
-
-const useStyles = makeStyles(() => ({
-  paper: {
-    padding: '6px 16px',
-  },
-  primaryTail: {
-    // backgroundColor: theme.palette.primary.main,
-  },
-}));
 
 /**
  * The StateSequenceDrawer is the UI element that is shown when one line is selected by the line selection tool. In this case
@@ -358,7 +348,6 @@ function StateSequenceDrawer({ activeLine, setHighlightedSequence, dataset, setA
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        // top: input.position[index].y + input.position[index].height / 2 - ((dataset.type === DatasetType.Coral || dataset.type === DatasetType.None) ? 76 : 0),
                         height:
                           input.position[index + 1].y +
                           input.position[index + 1].height / 2 -

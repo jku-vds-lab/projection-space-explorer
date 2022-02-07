@@ -55,7 +55,6 @@ export declare class ABook {
      * @param source A start label (of a cluster)
      */
     static getAllStoriesFromSource(storybook: IBook, source: any): any[];
-    static createEmpty(): IBook;
 }
 /**
  * Book type.
@@ -64,4 +63,7 @@ export interface IBook {
     id: EntityId;
     clusters: EntityState<ICluster>;
     edges: EntityState<IEdge>;
+    metadata?: {
+        [id: string]: any;
+    };
 }

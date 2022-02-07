@@ -2,7 +2,6 @@ import 'regenerator-runtime/runtime';
 import * as React from 'react';
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from './model/Dataset';
-import { IProjection } from './model/ProjectionInterfaces';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
@@ -24,7 +23,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
 } & {
     setOpenTab: (openTab: any) => any;
-    saveProjection: (embedding: IProjection) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;
@@ -132,7 +130,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     };
 } & {
     setOpenTab: (openTab: any) => any;
-    saveProjection: (embedding: IProjection) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
     setGenericFingerprintAttributes: (value: any) => any;

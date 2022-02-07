@@ -8,7 +8,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     projectionOpen: any;
     dataset: Dataset;
     projections: import("../../Ducks/ProjectionDuck").ProjectionStateType;
-    workspace: IBaseProjection;
     projectionParams: {
         perplexity: number;
         learningRate: number;
@@ -28,7 +27,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setTrailVisibility: (visibility: any) => any;
     addProjection: (embedding: any) => any;
     deleteProjection: (handle: string) => any;
-    updateWorkspace: (workspace: IBaseProjection) => any;
+    updateWorkspace: (workspace: IBaseProjection, metadata?: any) => any;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {

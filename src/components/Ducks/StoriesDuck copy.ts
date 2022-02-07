@@ -8,7 +8,6 @@ import { IEdge } from '../../model/Edge';
 import { IBook } from '../../model/Book';
 import { ObjectTypes } from '../../model/ObjectType';
 import type { RootState } from '../Store';
-import { StatesTabPanelFull } from '../DrawerTabPanels';
 
 export const bookAdapter = createEntityAdapter<IBook>({
   selectId: (book) => book.id,
@@ -37,7 +36,7 @@ export class AStorytelling {
       id: uuidv4(),
       clusters: clusterAdapter.getInitialState(),
       edges: edgeAdapter.getInitialState(),
-      metadata
+      metadata: metadata ?? { method: 'custom' },
     };
 
     return story;

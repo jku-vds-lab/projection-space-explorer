@@ -78,8 +78,6 @@ export const selectClusters = (selection: EntityId[], shiftKey = false) => {
   return (dispatch, getState): ThunkAction<any, RootState, unknown, AnyAction> => {
     const state: RootState = getState();
 
-    const { vectors } = state.dataset;
-
     let newSelection = [];
 
     if (shiftKey) {

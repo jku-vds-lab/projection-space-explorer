@@ -15,7 +15,6 @@ import { EmbeddingTabPanel } from './components/DrawerTabPanels/EmbeddingTabPane
 import { CSVLoader } from './components/Utility/Loaders/CSVLoader';
 import { DatasetTabPanel } from './components/DrawerTabPanels/DatasetTabPanel/DatasetTabPanel';
 import { DetailsTabPanel } from './components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel';
-import { IProjection, IBaseProjection } from './model/ProjectionInterfaces';
 import { setLineByOptions } from './components/Ducks/SelectedLineByDuck';
 import { setGlobalPointBrightness } from './components/Ducks/GlobalPointBrightnessDuck';
 import { setGenericFingerprintAttributes } from './components/Ducks/GenericFingerprintAttributesDuck';
@@ -31,11 +30,10 @@ import { setDetailVisibility } from './components/Ducks/DetailViewDuck';
 import { PSEIcons } from './utils/PSEIcons';
 // @ts-ignore
 import VDSLogo from '../textures/vds-lab-logo-notext.svg';
-import { CoralPlugin } from './plugins/Coral/CoralPlugin';
+// import { CoralPlugin } from './plugins/Coral/CoralPlugin';
 import { DatasetEntriesAPI } from './components/Ducks/DatasetEntriesDuck';
 import { JSONLoader } from './components/Utility/Loaders';
 import { DatasetType } from './model/DatasetType';
-import { ProjectionActions } from './components/Ducks/ProjectionDuck';
 import { RootActions } from './components/Store/RootActions';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 
@@ -72,7 +70,6 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   setOpenTab: (openTab) => dispatch(setOpenTabAction(openTab)),
-  saveProjection: (embedding: IProjection) => dispatch(ProjectionActions.add(embedding)),
   setLineByOptions: (options) => dispatch(setLineByOptions(options)),
   setGlobalPointBrightness: (value) => dispatch(setGlobalPointBrightness(value)),
   setGenericFingerprintAttributes: (value) => dispatch(setGenericFingerprintAttributes(value)),
@@ -495,4 +492,4 @@ export const Application = connector(
 PluginRegistry.getInstance().registerPlugin(new RubikPlugin());
 PluginRegistry.getInstance().registerPlugin(new ChessPlugin());
 PluginRegistry.getInstance().registerPlugin(new GoPlugin());
-PluginRegistry.getInstance().registerPlugin(new CoralPlugin());
+// PluginRegistry.getInstance().registerPlugin(new CoralPlugin());

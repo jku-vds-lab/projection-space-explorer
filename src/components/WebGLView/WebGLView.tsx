@@ -44,6 +44,7 @@ import { ObjectTypes } from '../../model/ObjectType';
 import { ComponentConfig } from '../../BaseConfig';
 import { ANormalized } from '../Utility/NormalizedState';
 import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck copy';
+import { ProjectionSelectors } from '../Ducks/ProjectionDuck';
 
 type ViewState = {
   camera: Camera;
@@ -71,7 +72,7 @@ const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
   trailSettings: state.trailSettings,
   hoverState: state.hoverState,
-  workspace: state.projections.workspace,
+  workspace: ProjectionSelectors.getWorkspace(state)?.positions,
   colorScales: state.colorScales,
   pointDisplay: state.pointDisplay,
   // viewTransform: state.viewTransform

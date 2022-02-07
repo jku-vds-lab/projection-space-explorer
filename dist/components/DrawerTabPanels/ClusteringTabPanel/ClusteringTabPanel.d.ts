@@ -15,7 +15,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         source: "sample" | "cluster";
     };
     groupVisualizationMode: any;
-    workspace: import("../../..").IBaseProjection;
+    workspace: string | number | import("../../..").IProjection;
 } & {
     setStories: (stories: IBook[]) => any;
     setActiveStory: (book: EntityId) => any;

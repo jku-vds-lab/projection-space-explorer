@@ -11,8 +11,8 @@ import { ICluster } from './ICluster';
  * Cluster API.
  */
 export class ACluster {
-  static calcBounds(workspace: IBaseProjection, indices: number[]) {
-    const samples = indices.map((i) => workspace[i]);
+  static calcBounds(positions: IBaseProjection, indices: number[]) {
+    const samples = indices.map((i) => positions[i]);
 
     // Get rectangle that fits around data set
     let minX = 1000;
@@ -70,12 +70,12 @@ export class ACluster {
     });
   }
 
-  static getCenterFromWorkspace(workspace: IBaseProjection, cluster: ICluster) {
+  static getCenterFromWorkspace(positions: IBaseProjection, cluster: ICluster) {
     let x = 0;
     let y = 0;
 
     cluster.indices
-      .map((i) => workspace[i])
+      .map((i) => positions[i])
       .forEach((p) => {
         x += p.x;
         y += p.y;
@@ -87,8 +87,8 @@ export class ACluster {
     };
   }
 
-  static getCenterAsVector2(workspace: IBaseProjection, cluster: ICluster) {
-    const center = ACluster.getCenterFromWorkspace(workspace, cluster);
+  static getCenterAsVector2(positions: IBaseProjection, cluster: ICluster) {
+    const center = ACluster.getCenterFromWorkspace(positions, cluster);
     return new THREE.Vector2(center.x, center.y);
   }
 

@@ -67,12 +67,12 @@ export function ColorScaleSelectFull({ channelColor }) {
       </List>
       <Menu id="lock-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
         {ANormalized.entries(scales)
-          .filter(([key, value]) => value.type === channelColor.type)
+          .filter(([, value]) => value.type === channelColor.type)
           .map(([key, value]) => (
             <MenuItem
               key={key}
               selected={active === value}
-              onClick={(event) => {
+              onClick={() => {
                 dispatch(ColorScalesActions.pickScale(key));
                 handleMenuItemClick();
               }}
@@ -89,6 +89,6 @@ const mapStateToProps = (state) => ({
   channelColor: state.channelColor,
 });
 
-const mapDispatchToProps = (dispatch) => ({});
+const mapDispatchToProps = () => ({});
 
 export const ColorScaleSelect = connect(mapStateToProps, mapDispatchToProps)(ColorScaleSelectFull);

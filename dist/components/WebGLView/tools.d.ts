@@ -13,6 +13,6 @@ export declare class LassoSelection {
     mouseDown(alt: any, x: any, y: any): void;
     mouseMove(x: any, y: any): void;
     mouseUp(x: any, y: any): void;
-    selection(dataset: Dataset, workspace: IBaseProjection, visible: any): any[];
+    selection(dataset: Dataset, positions: IBaseProjection, visible: any): any[];
     intersects: (seat: any) => boolean;
 }

@@ -3,9 +3,9 @@ import * as React from 'react';
 import { Button, FormControl, FormHelperText, Grid, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Select } from '@mui/material';
 import { connect, ConnectedProps } from 'react-redux';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { IBook, ABook } from '../../../model/Book';
+import { IBook } from '../../../model/Book';
 import type { RootState } from '../../Store/Store';
-import { StoriesActions } from '../../Ducks/StoriesDuck copy';
+import { StoriesActions, AStorytelling } from '../../Ducks/StoriesDuck copy';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -33,7 +33,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
   };
 
   const addHandler = () => {
-    addStory(ABook.createEmpty());
+    addStory(AStorytelling.emptyStory());
   };
 
   return (
@@ -69,7 +69,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
                         edge="end"
                         aria-label="delete"
                         onClick={() => {
-                          deleteHandler(story);
+                          deleteHandler(story.id);
                         }}
                       >
                         <DeleteIcon />

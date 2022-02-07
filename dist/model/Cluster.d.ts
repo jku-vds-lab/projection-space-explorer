@@ -8,7 +8,7 @@ import { ICluster } from './ICluster';
  * Cluster API.
  */
 export declare class ACluster {
-    static calcBounds(workspace: IBaseProjection, indices: number[]): {
+    static calcBounds(positions: IBaseProjection, indices: number[]): {
         x: number;
         y: number;
         width: number;
@@ -26,11 +26,11 @@ export declare class ACluster {
      * @param clusters The clusters to take the label from
      */
     static deriveVectorLabelsFromClusters(vectors: IVector[], clusters: ICluster[]): void;
-    static getCenterFromWorkspace(workspace: IBaseProjection, cluster: ICluster): {
+    static getCenterFromWorkspace(positions: IBaseProjection, cluster: ICluster): {
         x: number;
         y: number;
     };
-    static getCenterAsVector2(workspace: IBaseProjection, cluster: ICluster): THREE.Vector2;
+    static getCenterAsVector2(positions: IBaseProjection, cluster: ICluster): THREE.Vector2;
     static getTextRepresentation(cluster: ICluster): string;
 }
 /**

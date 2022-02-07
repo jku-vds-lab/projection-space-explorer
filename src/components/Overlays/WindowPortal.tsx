@@ -63,7 +63,7 @@ export class MyWindowPortal extends React.PureComponent<any> {
     if (this.externalWindow?.document) {
       copyStyles(document, this.externalWindow.document);
     }
-    
+
     // STEP 2: append props.children to the container <div> that isn't mounted anywhere yet
     return ReactDOM.createPortal(this.props.children, this.containerEl);
   }
