@@ -58,12 +58,13 @@ type Props = PropsFromRedux & {
   onComputingChanged: any;
   controller: any;
   dataset_name: string;
+  onStep?: any;
 };
 
 /**
  * Projection card that allows to start/stop the projection and shows the current steps.
  */
-export const ProjectionControlCard = connector(({ onComputingChanged, projectionParams, controller, onClose, dataset_name }: Props) => {
+export const ProjectionControlCard = connector(({ onComputingChanged, projectionParams, controller, onClose, dataset_name, onStep }: Props) => {
   if (controller == null) return null;
 
   const classes = useStylesMedia();
@@ -94,6 +95,9 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
       new_step = step;
     }
     updateState(new_step);
+    if (onStep) {
+      onStep(new_step);
+    }
   };
 
   React.useEffect(() => {

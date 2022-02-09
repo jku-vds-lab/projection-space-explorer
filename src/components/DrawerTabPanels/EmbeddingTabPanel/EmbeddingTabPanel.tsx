@@ -1,6 +1,6 @@
 import { connect, ConnectedProps, useDispatch, useSelector } from 'react-redux';
 import React = require('react');
-import { Box, Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
+import { Box, Button, Chip, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { EntityId } from '@reduxjs/toolkit';
 import { ProjectionControlCard } from './ProjectionControlCard';
@@ -15,7 +15,7 @@ import { UMAPEmbeddingController } from './UMAPEmbeddingController';
 import { ClusterTrailSettings } from './ClusterTrailSettings';
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck';
 import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController';
-import { IProjection, IBaseProjection } from '../../../model/ProjectionInterfaces';
+import { IProjection, IBaseProjection, ProjectionMethod } from '../../../model/ProjectionInterfaces';
 import { FeatureConfig, DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../../BaseConfig';
 import { ProjectionActions, ProjectionSelectors } from '../../Ducks/ProjectionDuck';
 import { EditProjectionDialog } from './EditProjectionDialog';
@@ -88,10 +88,10 @@ export const EmbeddingTabPanel = connector((props: Props) => {
     name: '',
     embController: null,
   });
-
   const [controller, setController] = React.useState(null);
-
   const [projectionToEdit, setProjectionToEdit] = React.useState<IProjection>(null);
+  const [step, setStep] = React.useState(0);
+  const stepRef = React.useRef(0);
 
   const dispatch = useDispatch();
 
@@ -160,6 +160,10 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             props.setTrailVisibility(false);
           }}
           onComputingChanged={() => {}}
+          onStep={(step) => {
+            stepRef.current += 1;
+            setStep(stepRef.current);
+          }}
         />
       </Box>
 
@@ -180,21 +184,22 @@ export const EmbeddingTabPanel = connector((props: Props) => {
           // props.setProjectionParams(params)
 
           switch (domainSettings.id) {
-            case 'tsne': {
+            case ProjectionMethod.TSNE: {
               const controller = new TSNEEmbeddingController();
               controller.init(props.dataset, selection, params, workspace?.positions);
+              const paramsCopy = { ...params };
               controller.stepper = (Y) => {
                 const workspace = Y.map((y) => ({ x: y[0], y: y[1] }));
-                props.updateWorkspace(workspace, { method: 'tsne' });
+                props.updateWorkspace(workspace, { ...paramsCopy, iterations: stepRef.current, features: [...selection] });
               };
 
               setController(controller);
               break;
             }
 
-            case 'umap': {
+            case ProjectionMethod.UMAP: {
               const controller = new UMAPEmbeddingController();
-
+              const paramsCopy = { ...params };
               controller.init(props.dataset, selection, params, workspace?.positions);
               controller.stepper = (Y) => {
                 const workspace = props.dataset.vectors.map((sample, i) => {
@@ -203,16 +208,16 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                     y: Y[i][1],
                   };
                 });
-                props.updateWorkspace(workspace, { method: 'umap' });
+                props.updateWorkspace(workspace, { ...paramsCopy, iterations: stepRef.current, features: [...selection] });
               };
 
               setController(controller);
               break;
             }
-            case 'forceatlas2': {
+            case ProjectionMethod.FORCEATLAS2: {
               const controller = new ForceAtlas2EmbeddingController();
               controller.init(props.dataset, selection, params);
-
+              const paramsCopy = { ...params };
               controller.stepper = (Y) => {
                 const workspace = props.dataset.vectors.map((sample) => {
                   const idx = controller.nodes[sample.__meta__.duplicateOf].__meta__.meshIndex;
@@ -222,7 +227,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                   };
                 });
 
-                props.updateWorkspace(workspace, { method: 'forceatlas2' });
+                props.updateWorkspace(workspace, { ...paramsCopy, iterations: stepRef.current, features: [...selection] });
               };
 
               setController(controller);
@@ -232,10 +237,10 @@ export const EmbeddingTabPanel = connector((props: Props) => {
               // custom embedding controller
               if (domainSettings.embController) {
                 const controller = domainSettings.embController;
-
+                const paramsCopy = { ...params };
                 controller.init(props.dataset, selection, params, workspace);
                 controller.stepper = (Y: IBaseProjection) => {
-                  props.updateWorkspace(Y, { method: 'custom' });
+                  props.updateWorkspace(Y, { ...paramsCopy, method: ProjectionMethod.CUSTOM, iterations: stepRef.current, features: [...selection] });
                 };
 
                 setController(controller);
@@ -260,8 +265,16 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         <Typography variant="subtitle2" gutterBottom>
           Visible Projection
         </Typography>
-        <ListItem key={workspace?.hash} selected={workspaceIsTemporal === true}>
-          {workspaceIsTemporal ? <ListItemText primary={`Temporal ${workspace?.metadata.method}`} /> : <ListItemText primary={`${workspace?.name}`} />}
+        <ListItem
+          key={workspace?.hash}
+          selected={workspaceIsTemporal === true}
+          secondaryAction={workspaceIsTemporal ? <Chip label="Temporal" variant="outlined" /> : <Chip label="Stored" />}
+        >
+          {workspaceIsTemporal ? (
+            <ListItemText primary={<strong>{workspace?.metadata.method.toUpperCase()}</strong>} secondary={`Iteration ${step}`} />
+          ) : (
+            <ListItemText primary={<strong>{workspace?.metadata.method.toUpperCase()}</strong>} secondary={`loaded from ${workspace?.name}`} />
+          )}
         </ListItem>
       </Box>
 
@@ -288,7 +301,14 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                 onClick={() => onProjectionClick(projection)}
                 selected={workspaceIsTemporal === false && workspace?.hash === projection.hash}
               >
-                <ListItemText primary={`${projection.name}`} secondary={`${projection.metadata?.iterations} iterations`} />
+                <ListItemText
+                  primary={`${projection.name}`}
+                  secondary={
+                    projection.metadata.method === ProjectionMethod.RANDOM || projection.metadata.method === ProjectionMethod.DATASET
+                      ? 'loaded from dataset'
+                      : `${projection.metadata?.iterations} iterations`
+                  }
+                />
                 <ListItemSecondaryAction>
                   <IconButton onClick={() => setProjectionToEdit(props.projections.values.entities[key])}>
                     <SettingsIcon />

@@ -203,9 +203,13 @@ export class CSVLoader implements Loader {
       });
     }
 
-    ranges = new Preprocessor(vectors).preprocess(ranges);
+    const preprocessor = new Preprocessor(vectors);
+    const hasScalarTypes = preprocessor.hasScalarTypes();
+    ranges = preprocessor.preprocess(ranges);
+    
 
     const dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation);
+    dataset.hasInitialScalarTypes = hasScalarTypes;
 
     const promise = new Promise<Dataset>((resolve) => {
       this.getClusters(vectors, (clusters) => {

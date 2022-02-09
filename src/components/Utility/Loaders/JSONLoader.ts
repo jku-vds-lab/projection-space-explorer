@@ -194,9 +194,13 @@ export class JSONLoader implements Loader {
       });
     }
 
-    ranges = new Preprocessor(this.vectors).preprocess(ranges);
+    const preprocessor = new Preprocessor(this.vectors);
+    const hasScalarTypes = preprocessor.hasScalarTypes();
+    ranges = preprocessor.preprocess(ranges);
 
     const dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation);
+    dataset.hasInitialScalarTypes = hasScalarTypes;
+
     dataset.clusters = clusters;
     dataset.clusterEdges = edges;
     dataset.categories = dataset.extractEncodingFeatures(ranges);

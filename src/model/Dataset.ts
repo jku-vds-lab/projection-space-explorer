@@ -222,6 +222,9 @@ export class Dataset {
   // True if the dataset has sequential information (line attribute)
   isSequential: boolean;
 
+  // True if the dataset has a projection provided
+  hasInitialScalarTypes: boolean;
+
   clusters: ICluster[];
 
   // The edges between clusters.
@@ -238,6 +241,7 @@ export class Dataset {
     this.columns = {};
     this.type = this.info.type;
     this.metaInformation = metaInformation;
+    this.hasInitialScalarTypes = false;
 
     ADataset.calculateBounds(this);
     this.calculateColumnTypes(ranges, featureTypes, metaInformation);

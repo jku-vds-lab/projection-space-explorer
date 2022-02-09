@@ -24,6 +24,12 @@ const projectionsSlice = createSlice({
       projectionAdapter.addOne(state.values, action.payload);
     },
     copyFromWorkspace(state) {
+      const deriveName = (metadata) => {
+        const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
+
+        return `${metadata?.method} at ${time}`;
+      };
+
       if (typeof state.workspace === 'string' || typeof state.workspace === 'number') {
         const workspace = state.values.entities[state.workspace];
         const hash = uuidv4();
@@ -31,7 +37,7 @@ const projectionsSlice = createSlice({
         state.workspace = hash;
       } else {
         const { workspace } = state;
-        projectionAdapter.addOne(state.values, { ...workspace, name: 'Stored' });
+        projectionAdapter.addOne(state.values, { ...workspace, name: workspace.name ?? deriveName(workspace.metadata) });
         state.workspace = workspace.hash;
       }
     },
@@ -41,7 +47,7 @@ const projectionsSlice = createSlice({
           hash: uuidv4(),
           positions: action.payload.positions,
           metadata: action.payload.metadata,
-          name: '',
+          name: null,
         };
       } else {
         state.workspace.positions = action.payload.positions;
