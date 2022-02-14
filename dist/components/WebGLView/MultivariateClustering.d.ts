@@ -1,3 +1,4 @@
+import { Scene } from 'three';
 import { EntityId } from '@reduxjs/toolkit';
 import THREE = require('three');
 import React = require('react');
@@ -49,23 +50,23 @@ declare type Props = PropsFromRedux & {
  */
 export declare const MultivariateClustering: import("react-redux").ConnectedComponent<{
     new (props: any): {
-        arrowMesh: any;
-        trailMesh: any;
-        scene: any;
-        lineMesh: any;
+        arrowMesh: THREE.Mesh;
+        trailMesh: THREE.Mesh;
+        scene: Scene;
+        lineMesh: THREE.Mesh;
         clusterObjects: ClusterObjectType[];
         devicePixelRatio: number;
-        scalingScene: any;
+        scalingScene: Scene;
         length: number;
         clusterVis: {
             clusterMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
             lineMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
         };
         trail: TrailVisualization;
-        clusterScene: any;
+        clusterScene: THREE.Scene;
         triangulationWorker: Worker;
         componentDidUpdate(prevProps: Props): void;
-        getColorForClusterObject(clusterObject: ClusterObjectType): any;
+        getColorForClusterObject(clusterObject: ClusterObjectType): THREE.Color;
         updateArrows(zoom: number): void;
         /**
          * Updates geometry of the trail mesh.
@@ -125,23 +126,23 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
     };
     contextType?: React.Context<any>;
 }, Pick<React.ClassAttributes<{
-    arrowMesh: any;
-    trailMesh: any;
-    scene: any;
-    lineMesh: any;
+    arrowMesh: THREE.Mesh;
+    trailMesh: THREE.Mesh;
+    scene: Scene;
+    lineMesh: THREE.Mesh;
     clusterObjects: ClusterObjectType[];
     devicePixelRatio: number;
-    scalingScene: any;
+    scalingScene: Scene;
     length: number;
     clusterVis: {
         clusterMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
         lineMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
     };
     trail: TrailVisualization;
-    clusterScene: any;
+    clusterScene: THREE.Scene;
     triangulationWorker: Worker;
     componentDidUpdate(prevProps: Props): void;
-    getColorForClusterObject(clusterObject: ClusterObjectType): any;
+    getColorForClusterObject(clusterObject: ClusterObjectType): THREE.Color;
     updateArrows(zoom: number): void;
     /**
      * Updates geometry of the trail mesh.

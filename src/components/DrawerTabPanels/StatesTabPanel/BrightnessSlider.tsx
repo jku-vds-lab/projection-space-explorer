@@ -5,7 +5,7 @@ import { makeStyles } from '@mui/styles';
 import type { RootState } from '../../Store/Store';
 import { setGlobalPointBrightness } from '../../Ducks/GlobalPointBrightnessDuck';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     margin: '0px 16px',
     padding: '0px 8px',

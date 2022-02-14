@@ -21,6 +21,7 @@ const theme = createTheme({
   },
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function PSEContextProvider({ context, children, onStateChanged }: PropsWithChildren<PSEContextProps>) {
   const [store, setStore] = React.useState<Store>(null);
 

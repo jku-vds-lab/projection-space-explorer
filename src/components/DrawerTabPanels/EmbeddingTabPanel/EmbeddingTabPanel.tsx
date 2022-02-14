@@ -1,6 +1,6 @@
-import { connect, ConnectedProps, useDispatch } from 'react-redux';
+import { connect, ConnectedProps, useDispatch, useSelector } from 'react-redux';
 import React = require('react');
-import { Box, Button, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
+import { Box, Button, Chip, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { EntityId } from '@reduxjs/toolkit';
 import { ProjectionControlCard } from './ProjectionControlCard';
@@ -15,11 +15,9 @@ import { UMAPEmbeddingController } from './UMAPEmbeddingController';
 import { ClusterTrailSettings } from './ClusterTrailSettings';
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck';
 import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController';
-import { AProjection } from '../../../model/Projection';
-import { IProjection, IBaseProjection } from '../../../model/ProjectionInterfaces';
-
+import { IProjection, IBaseProjection, ProjectionMethod } from '../../../model/ProjectionInterfaces';
 import { FeatureConfig, DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../../BaseConfig';
-import { ProjectionActions } from '../../Ducks/ProjectionDuck';
+import { ProjectionActions, ProjectionSelectors } from '../../Ducks/ProjectionDuck';
 import { EditProjectionDialog } from './EditProjectionDialog';
 
 const mapStateToProps = (state: RootState) => ({
@@ -30,7 +28,6 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   // projectionParams: state.projectionParams,
   projections: state.projections,
-  workspace: state.projections.workspace,
   projectionParams: state.projectionParams,
 });
 
@@ -42,7 +39,7 @@ const mapDispatchToProps = (dispatch) => ({
   setTrailVisibility: (visibility) => dispatch(setTrailVisibility(visibility)),
   addProjection: (embedding) => dispatch(ProjectionActions.add(embedding)),
   deleteProjection: (handle: string) => dispatch(ProjectionActions.remove(handle)),
-  updateWorkspace: (workspace: IBaseProjection) => dispatch(ProjectionActions.updateActive(workspace)),
+  updateWorkspace: (workspace: IBaseProjection, metadata?) => dispatch(ProjectionActions.updateActive({ positions: workspace, metadata })),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -91,12 +88,15 @@ export const EmbeddingTabPanel = connector((props: Props) => {
     name: '',
     embController: null,
   });
-
   const [controller, setController] = React.useState(null);
-
   const [projectionToEdit, setProjectionToEdit] = React.useState<IProjection>(null);
+  const [step, setStep] = React.useState(0);
+  const stepRef = React.useRef(0);
 
   const dispatch = useDispatch();
+
+  const workspace = useSelector(ProjectionSelectors.getWorkspace);
+  const workspaceIsTemporal = useSelector(ProjectionSelectors.workspaceIsTemporal);
 
   React.useEffect(() => {
     if (controller) {
@@ -108,13 +108,11 @@ export const EmbeddingTabPanel = connector((props: Props) => {
   }, [props.dataset]);
 
   const onSaveProjectionClick = () => {
-    const metadata = { ...props.projectionParams };
-
-    props.addProjection(AProjection.createProjection(props.workspace, null, metadata));
+    dispatch(ProjectionActions.copyFromWorkspace());
   };
 
   const onProjectionClick = (projection: IProjection) => {
-    props.updateWorkspace(projection.positions);
+    dispatch(ProjectionActions.loadById(projection.hash));
   };
 
   const onDeleteEditProjectDialog = (handle: string) => {
@@ -162,6 +160,10 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             props.setTrailVisibility(false);
           }}
           onComputingChanged={() => {}}
+          onStep={(step) => {
+            stepRef.current += 1;
+            setStep(stepRef.current);
+          }}
         />
       </Box>
 
@@ -182,22 +184,23 @@ export const EmbeddingTabPanel = connector((props: Props) => {
           // props.setProjectionParams(params)
 
           switch (domainSettings.id) {
-            case 'tsne': {
+            case ProjectionMethod.TSNE: {
               const controller = new TSNEEmbeddingController();
-              controller.init(props.dataset, selection, params, props.workspace);
+              controller.init(props.dataset, selection, params, workspace?.positions);
+              const paramsCopy = { ...params };
               controller.stepper = (Y) => {
                 const workspace = Y.map((y) => ({ x: y[0], y: y[1] }));
-                props.updateWorkspace(workspace);
+                props.updateWorkspace(workspace, { ...paramsCopy, iterations: stepRef.current, features: [...selection] });
               };
 
               setController(controller);
               break;
             }
 
-            case 'umap': {
+            case ProjectionMethod.UMAP: {
               const controller = new UMAPEmbeddingController();
-
-              controller.init(props.dataset, selection, params, props.workspace);
+              const paramsCopy = { ...params };
+              controller.init(props.dataset, selection, params, workspace?.positions);
               controller.stepper = (Y) => {
                 const workspace = props.dataset.vectors.map((sample, i) => {
                   return {
@@ -205,16 +208,16 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                     y: Y[i][1],
                   };
                 });
-                props.updateWorkspace(workspace);
+                props.updateWorkspace(workspace, { ...paramsCopy, iterations: stepRef.current, features: [...selection] });
               };
 
               setController(controller);
               break;
             }
-            case 'forceatlas2': {
+            case ProjectionMethod.FORCEATLAS2: {
               const controller = new ForceAtlas2EmbeddingController();
               controller.init(props.dataset, selection, params);
-
+              const paramsCopy = { ...params };
               controller.stepper = (Y) => {
                 const workspace = props.dataset.vectors.map((sample) => {
                   const idx = controller.nodes[sample.__meta__.duplicateOf].__meta__.meshIndex;
@@ -224,7 +227,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                   };
                 });
 
-                props.updateWorkspace(workspace);
+                props.updateWorkspace(workspace, { ...paramsCopy, iterations: stepRef.current, features: [...selection] });
               };
 
               setController(controller);
@@ -234,10 +237,10 @@ export const EmbeddingTabPanel = connector((props: Props) => {
               // custom embedding controller
               if (domainSettings.embController) {
                 const controller = domainSettings.embController;
-
-                controller.init(props.dataset, selection, params, props.workspace);
+                const paramsCopy = { ...params };
+                controller.init(props.dataset, selection, params, workspace);
                 controller.stepper = (Y: IBaseProjection) => {
-                  props.updateWorkspace(Y);
+                  props.updateWorkspace(Y, { ...paramsCopy, method: ProjectionMethod.CUSTOM, iterations: stepRef.current, features: [...selection] });
                 };
 
                 setController(controller);
@@ -258,16 +261,33 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         <ClusterTrailSettings />
       </Box>
 
-      <Box paddingLeft={2} paddingTop={2}>
+      <Box padding={1}>
         <Typography variant="subtitle2" gutterBottom>
-          Stored Projections
+          Visible Projection
         </Typography>
+        <ListItem
+          key={workspace?.hash}
+          selected={workspaceIsTemporal === true}
+          secondaryAction={workspaceIsTemporal ? <Chip label="Temporal" variant="outlined" /> : <Chip label="Stored" />}
+        >
+          {workspaceIsTemporal ? (
+            <ListItemText primary={<strong>{workspace?.metadata.method.toUpperCase()}</strong>} secondary={`Iteration ${step}`} />
+          ) : (
+            <ListItemText primary={<strong>{workspace?.metadata.method.toUpperCase()}</strong>} secondary={`loaded from ${workspace?.name}`} />
+          )}
+        </ListItem>
       </Box>
 
       <Box paddingLeft={2} paddingRight={2}>
         <Button onClick={() => onSaveProjectionClick()} variant="outlined" size="small">
-          Store Projection
+          Store Visible Projection
         </Button>
+      </Box>
+
+      <Box paddingLeft={2} paddingTop={2}>
+        <Typography variant="subtitle2" gutterBottom>
+          Stored Projections
+        </Typography>
       </Box>
 
       <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
@@ -275,8 +295,20 @@ export const EmbeddingTabPanel = connector((props: Props) => {
           {props.projections.values.ids.map((key) => {
             const projection = props.projections.values.entities[key];
             return (
-              <ListItem key={projection.hash} button onClick={() => onProjectionClick(projection)}>
-                <ListItemText primary={`${projection.name}`} secondary={`${projection.metadata?.iterations} iterations`} />
+              <ListItem
+                key={projection.hash}
+                button
+                onClick={() => onProjectionClick(projection)}
+                selected={workspaceIsTemporal === false && workspace?.hash === projection.hash}
+              >
+                <ListItemText
+                  primary={`${projection.name}`}
+                  secondary={
+                    projection.metadata.method === ProjectionMethod.RANDOM || projection.metadata.method === ProjectionMethod.DATASET
+                      ? 'loaded from dataset'
+                      : `${projection.metadata?.iterations} iterations`
+                  }
+                />
                 <ListItemSecondaryAction>
                   <IconButton onClick={() => setProjectionToEdit(props.projections.values.entities[key])}>
                     <SettingsIcon />

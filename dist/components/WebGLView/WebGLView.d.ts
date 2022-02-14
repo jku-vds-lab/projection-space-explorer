@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as THREE from 'three';
 import { ConnectedProps } from 'react-redux';
 import { Camera } from 'three';
 import { LassoSelection } from './tools';
@@ -106,11 +107,11 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         vectors: IVector[];
         renderer: any;
         lines: LineVisualization;
-        scene: any;
+        scene: THREE.Scene;
         dataset: any;
         lineColorScheme: any;
         segments: DataLine[];
-        pointScene: any;
+        pointScene: THREE.Scene;
         vectorColorScheme: any;
         prevTime: number;
         sourcePosition: any;
@@ -251,11 +252,11 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     vectors: IVector[];
     renderer: any;
     lines: LineVisualization;
-    scene: any;
+    scene: THREE.Scene;
     dataset: any;
     lineColorScheme: any;
     segments: DataLine[];
-    pointScene: any;
+    pointScene: THREE.Scene;
     vectorColorScheme: any;
     prevTime: number;
     sourcePosition: any;

@@ -25,6 +25,11 @@ export class Preprocessor {
     return Object.keys(vector).filter((e) => e !== '__meta__');
   }
 
+  hasScalarTypes() {
+    const header = Object.keys(this.vectors[0]);
+    return header.includes('x') && header.includes('y');
+  }
+
   /**
    * Returns a unique array of distinct line values.
    */

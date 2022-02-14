@@ -304,12 +304,12 @@ export class LineVisualization {
     return lines;
   }
 
-  updatePosition(workspace: IBaseProjection) {
+  updatePosition(positions: IBaseProjection) {
     this.segments.forEach((segment) => {
       const da = [];
 
       segment.vectors.forEach(function (v) {
-        const vector = workspace[v.__meta__.meshIndex];
+        const vector = positions[v.__meta__.meshIndex];
         da.push(new THREE.Vector2(vector.x, vector.y));
       });
 

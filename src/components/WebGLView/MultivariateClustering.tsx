@@ -21,6 +21,7 @@ import TessyWorker from '../workers/tessy.worker';
 import { ViewTransformType } from '../Ducks';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { AStorytelling } from '../Ducks/StoriesDuck copy';
+import { ProjectionSelectors } from '../Ducks/ProjectionDuck';
 
 const d3v5 = require('d3v5');
 
@@ -78,7 +79,7 @@ const mapState = (state: RootState) => ({
   currentAggregation: state.currentAggregation,
   hoverState: state.hoverState,
   groupVisualizationMode: state.groupVisualizationMode,
-  workspace: state.projections.workspace,
+  workspace: ProjectionSelectors.getWorkspace(state)?.positions,
 });
 
 const connector = connect(mapState, null, null, { forwardRef: true });

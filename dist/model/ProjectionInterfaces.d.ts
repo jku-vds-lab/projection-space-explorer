@@ -1,3 +1,11 @@
+export declare const ProjectionMethod: {
+    TSNE: string;
+    UMAP: string;
+    FORCEATLAS2: string;
+    CUSTOM: string;
+    RANDOM: string;
+    DATASET: string;
+};
 /**
  * position type containing x and y coordinates.
  */
@@ -12,12 +20,16 @@ export declare type IProjection = {
     positions: IBaseProjection;
     name: string;
     hash: string;
-    /**
-     * Dictionary containing meta data about this specific projection
-     */
     metadata?: {
         [id: string]: any;
     };
+};
+export declare type ITemporaryProjection = {
+    positions: IBaseProjection;
+    metadata?: {
+        [id: string]: any;
+    };
+    hash: string;
 };
 /**
  * Base type for projections

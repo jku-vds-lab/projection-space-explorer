@@ -32,7 +32,7 @@ export declare class LineVisualization {
      */
     highlight(indices: any, width: any, height: any, scene: any, grayout?: boolean): void;
     createMesh(lineBrightness: number): any[];
-    updatePosition(workspace: IBaseProjection): void;
+    updatePosition(positions: IBaseProjection): void;
     /**
      * Updates visibility based on settings in the lines
      */

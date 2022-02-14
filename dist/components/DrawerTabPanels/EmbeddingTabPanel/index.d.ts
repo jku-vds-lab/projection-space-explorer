@@ -1,7 +1,6 @@
 export * from './ClusterTrailSettings';
 export * from './EmbeddingController';
 export * from './EmbeddingTabPanel';
-export * from './FeaturePicker';
 export * from './ForceAtlas2EmbeddingController';
 export * from './GenericSettings';
 export * from './ProjectionControlCard';

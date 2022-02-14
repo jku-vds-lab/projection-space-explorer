@@ -2,14 +2,17 @@ import { createLinearRangeScaler } from '../Utility/ScalingAndAxes';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { IBaseProjection } from '../../model/ProjectionInterfaces';
 import { CubicBezierCurve } from '../../model/Curves';
+import type { RootState } from './Store';
+import { ProjectionSelectors } from '../Ducks/ProjectionDuck';
+import * as THREE from 'three';
 
-function calcBounds(workspace: IBaseProjection) {
+function calcBounds(positions: IBaseProjection) {
   // Get rectangle that fits around data set
   let minX = 1000;
   let maxX = -1000;
   let minY = 1000;
   let maxY = -1000;
-  workspace.forEach((sample) => {
+  positions.forEach((sample) => {
     minX = Math.min(minX, sample.x);
     maxX = Math.max(maxX, sample.x);
     minY = Math.min(minY, sample.y);
@@ -94,69 +97,78 @@ export class UtilityActions {
     return partial;
   }
 
+  static bezierLength(curve: CubicBezierCurve) {
+    const tc = new THREE.CubicBezierCurve(
+      new THREE.Vector2(curve.start.x, curve.start.y),
+      new THREE.Vector2(curve.cp1.x, curve.cp1.y),
+      new THREE.Vector2(curve.cp2.x, curve.cp2.y),
+      new THREE.Vector2(curve.end.x, curve.end.y),
+    );
 
-
+    return tc.getLength();
+  }
 
   static solveCatmullRom(data, k): CubicBezierCurve[] {
     if (k == null) k = 1;
 
-    var size = data.length;
-    var last = size - 4;
+    const size = data.length;
+    const last = size - 4;
 
-    let path: CubicBezierCurve[] = []
+    const path: CubicBezierCurve[] = [];
 
-    //var path = "M" + [data[0], data[1]];
-    let startX = data[0], startY = data[1];
+    let startX = data[0];
+    let startY = data[1];
 
-    for (var i = 0; i < size - 2; i += 2) {
+    for (let i = 0; i < size - 2; i += 2) {
+      const x0 = i ? data[i - 2] : data[0];
+      const y0 = i ? data[i - 1] : data[1];
 
-        var x0 = i ? data[i - 2] : data[0];
-        var y0 = i ? data[i - 1] : data[1];
+      const x1 = data[i + 0];
+      const y1 = data[i + 1];
 
-        var x1 = data[i + 0];
-        var y1 = data[i + 1];
+      const x2 = data[i + 2];
+      const y2 = data[i + 3];
 
-        var x2 = data[i + 2];
-        var y2 = data[i + 3];
+      const x3 = i !== last ? data[i + 4] : x2;
+      const y3 = i !== last ? data[i + 5] : y2;
 
-        var x3 = i !== last ? data[i + 4] : x2;
-        var y3 = i !== last ? data[i + 5] : y2;
+      const cp1x = x1 + ((x2 - x0) / 6) * k;
+      const cp1y = y1 + ((y2 - y0) / 6) * k;
 
-        var cp1x = x1 + (x2 - x0) / 6 * k;
-        var cp1y = y1 + (y2 - y0) / 6 * k;
+      const cp2x = x2 - ((x3 - x1) / 6) * k;
+      const cp2y = y2 - ((y3 - y1) / 6) * k;
 
-        var cp2x = x2 - (x3 - x1) / 6 * k;
-        var cp2y = y2 - (y3 - y1) / 6 * k;
+      path.push({ start: { x: startX, y: startY }, cp1: { x: cp1x, y: cp1y }, cp2: { x: cp2x, y: cp2y }, end: { x: x2, y: y2 } });
 
-        path.push({start: {x: startX, y: startY}, cp1: {x: cp1x, y: cp1y}, cp2: {x: cp2x, y: cp2y}, end: {x: x2, y: y2}});
-
-        startX = x2;
-        startY = y2;
+      startX = x2;
+      startY = y2;
     }
 
     return path;
   }
 
+  static partialBezierCurve(t: number, curve: CubicBezierCurve) {
+    const p0 = curve.start;
+    const p1 = curve.cp1;
+    const p2 = curve.cp2;
+    const p3 = curve.end;
 
-  static partialBezierCurve(t, p0, p1, p2, p3){
-    var cX = 3 * (p1.x - p0.x),
-        bX = 3 * (p2.x - p1.x) - cX,
-        aX = p3.x - p0.x - cX - bX;
-          
-    var cY = 3 * (p1.y - p0.y),
-        bY = 3 * (p2.y - p1.y) - cY,
-        aY = p3.y - p0.y - cY - bY;
-          
-    var x = (aX * Math.pow(t, 3)) + (bX * Math.pow(t, 2)) + (cX * t) + p0.x;
-    var y = (aY * Math.pow(t, 3)) + (bY * Math.pow(t, 2)) + (cY * t) + p0.y;
-          
-    return {x: x, y: y};
+    const cX = 3 * (p1.x - p0.x);
+    const bX = 3 * (p2.x - p1.x) - cX;
+    const aX = p3.x - p0.x - cX - bX;
+
+    const cY = 3 * (p1.y - p0.y);
+    const bY = 3 * (p2.y - p1.y) - cY;
+    const aY = p3.y - p0.y - cY - bY;
+
+    const x = aX * t ** 3 + bX * t ** 2 + cX * t + p0.x;
+    const y = aY * t ** 3 + bY * t ** 2 + cY * t + p0.y;
+
+    return { x, y };
   }
 
-
-
   static generateImage(
-    state: any,
+    state: RootState,
     width: number,
     height: number,
     padding: number,
@@ -183,7 +195,9 @@ export class UtilityActions {
 
       const mapping = state.pointColorMapping;
 
-      const bounds = calcBounds(state.projections.workspace);
+      const positions = ProjectionSelectors.getWorkspace(state)?.positions;
+
+      const bounds = calcBounds(positions);
 
       const offsetX = -bounds.left;
       const offsetY = -bounds.top;
@@ -248,7 +262,7 @@ export class UtilityActions {
         };
       }
 
-      state.projections.workspace.forEach((value, index) => {
+      positions.forEach((value, index) => {
         const { x, y } = value;
 
         const color = isSelected(index) ? (mapping.map(state.dataset.vectors[index][state.channelColor.key]) as SchemeColor) : new SchemeColor('#c0c0c0');

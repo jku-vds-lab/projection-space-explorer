@@ -6,6 +6,7 @@ export declare class Preprocessor {
      * Returns an array of columns that are available in the vectors
      */
     getColumns(): string[];
+    hasScalarTypes(): boolean;
     /**
      * Returns a unique array of distinct line values.
      */
