@@ -40,10 +40,6 @@
     "lineupjs": "4.1.2",
     "lodash": "^4.17.20",
     "material-ui-search-bar": "^1.0.0",
-<<<<<<< HEAD
-    "npm": "^8.1.1",
-=======
->>>>>>> develop
     "papaparse": "^5.3.1",
     "react-data-grid": "^7.0.0-beta.8",
     "react-promise-tracker": "^2.1.0",
