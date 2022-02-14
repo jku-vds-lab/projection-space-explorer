@@ -1,4 +1,5 @@
 import { ConnectedProps } from 'react-redux';
+import './DatasetTabPanel.scss';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     hoverSettings: {
         windowMode: any;
