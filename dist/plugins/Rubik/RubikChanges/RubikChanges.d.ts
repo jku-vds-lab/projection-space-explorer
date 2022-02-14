@@ -7,7 +7,7 @@ declare type RubikChangesProps = {
     height?: number;
 };
 export declare class RubikChanges extends React.Component<RubikChangesProps> {
-    canvasRef: any;
+    canvasRef: React.RefObject<HTMLCanvasElement>;
     canvasContext: CanvasRenderingContext2D;
     constructor(props: RubikChangesProps);
     componentDidMount(): void;

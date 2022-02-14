@@ -1,3 +1,11 @@
+export declare const ProjectionMethod: {
+    TSNE: string;
+    UMAP: string;
+    FORCEATLAS2: string;
+    CUSTOM: string;
+    RANDOM: string;
+    DATASET: string;
+};
 /**
  * position type containing x and y coordinates.
  */

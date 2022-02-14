@@ -38,7 +38,7 @@ import detailView from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
 import { embeddings, ProjectionStateType } from '../Ducks/ProjectionDuck';
 import { RootActionTypes } from './RootActions';
-import { Dataset, ADataset, SegmentFN, AProjection, IBook } from '../../model';
+import { Dataset, ADataset, SegmentFN, AProjection, IBook, ProjectionMethod } from '../../model';
 import { CategoryOptionsAPI } from '../WebGLView/CategoryOptions';
 import { ANormalized } from '../Utility/NormalizedState';
 import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/graphs';
@@ -107,25 +107,42 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     maximum: SegmentFN.getMaxPathLength(dataset),
   };
 
-  const initialProjection = AProjection.createProjection(
-    dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y })),
-    'Initial Projection',
-  );
+  let projections: ProjectionStateType = null;
 
-  const projections: ProjectionStateType = {
-    values: {
-      entities: { [initialProjection.hash]: initialProjection },
-      ids: [initialProjection.hash],
-    },
-    workspace: undefined,
-  };
+  if (dataset.hasInitialScalarTypes) {
+    // When the dataset has initial positions, add this as a projection
+    const initialProjection = AProjection.createProjection(
+      dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y })),
+      'Initial Projection',
+      { method: ProjectionMethod.DATASET },
+    );
 
-  projections.workspace = {
-    positions: initialProjection.positions,
-    metadata: { method: 'dataset' },
-    hash: uuidv4(),
-    name: '',
-  };
+    projections = {
+      values: {
+        entities: { [initialProjection.hash]: initialProjection },
+        ids: [initialProjection.hash],
+      },
+      workspace: undefined,
+    };
+
+    projections.workspace = initialProjection.hash;
+  } else {
+    // If no initial positions -> add temporary projection
+    // When the dataset has initial positions, add this as a projection
+    const initialProjection = AProjection.createProjection(
+      dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y })),
+      'Random Initialisation',
+      { method: ProjectionMethod.RANDOM },
+    );
+
+    projections = {
+      values: {
+        entities: {},
+        ids: [],
+      },
+      workspace: initialProjection,
+    };
+  }
 
   const genericFingerprintAttributes = ADataset.getColumns(dataset, true).map((column) => ({
     feature: column,

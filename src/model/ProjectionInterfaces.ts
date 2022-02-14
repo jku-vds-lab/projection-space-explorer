@@ -1,3 +1,12 @@
+export const ProjectionMethod = {
+  TSNE: 'tsne',
+  UMAP: 'umap',
+  FORCEATLAS2: 'forceatlas2',
+  CUSTOM: 'custom',
+  RANDOM: 'random',
+  DATASET: 'dataset',
+};
+
 /**
  * position type containing x and y coordinates.
  */

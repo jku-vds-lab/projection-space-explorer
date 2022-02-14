@@ -8,4 +8,6 @@ export declare function ColorScaleMenuItem({ scale }: {
 export declare function ColorScaleSelectFull({ channelColor }: {
     channelColor: any;
 }): JSX.Element;
-export declare const ColorScaleSelect: any;
+export declare const ColorScaleSelect: import("react-redux").ConnectedComponent<typeof ColorScaleSelectFull, Pick<{
+    channelColor: any;
+}, never>>;

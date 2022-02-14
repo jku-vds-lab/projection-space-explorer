@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { Dataset } from './Dataset';
 import { TypedObject } from './TypedObject';
 import { IVector } from './Vector';
@@ -29,11 +30,7 @@ export declare class ACluster {
         x: number;
         y: number;
     };
-<<<<<<< HEAD
-    static getCenterAsVector2(workspace: IBaseProjection, cluster: ICluster): any;
-=======
     static getCenterAsVector2(positions: IBaseProjection, cluster: ICluster): THREE.Vector2;
->>>>>>> develop
     static getTextRepresentation(cluster: ICluster): string;
 }
 /**

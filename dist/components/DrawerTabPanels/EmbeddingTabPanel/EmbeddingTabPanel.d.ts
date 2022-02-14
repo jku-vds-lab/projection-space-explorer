@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-export declare const EmbeddingTabPanel: any;
-=======
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from '../../../model/Dataset';
 import { IBaseProjection } from '../../../model/ProjectionInterfaces';
@@ -44,4 +41,3 @@ declare type Props = PropsFromRedux & {
 };
 export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => JSX.Element, Pick<Props, "config" | "webGLView">>;
 export {};
->>>>>>> develop

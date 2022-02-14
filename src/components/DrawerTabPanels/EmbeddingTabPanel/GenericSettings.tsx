@@ -24,6 +24,7 @@ import { NormalizationMethod } from '../../../model/NormalizationMethod';
 import { EncodingMethod } from '../../../model/EncodingMethod';
 import FeaturePicker from './FeaturePicker';
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck';
+import { ProjectionMethod } from '../../../model';
 
 const mapState = (state: RootState) => ({
   projectionColumns: state.projectionColumns,
@@ -161,7 +162,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
     <Dialog maxWidth="lg" open={open} onClose={onClose}>
       <DialogContent>
         <Container>
-          {domainSettings.id !== 'forceatlas2' && <FeaturePicker selection={selection} setSelection={setSelection} />}
+          {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && <FeaturePicker selection={selection} setSelection={setSelection} />}
 
           <Grid container justifyContent="center" style={{ width: '100%' }}>
             <Grid item>
@@ -224,7 +225,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                     }
                     label="Project Selection Only"
                   />
-                  {domainSettings.id !== 'forceatlas2' && (
+                  {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
                     <FormControl>
                       <InputLabel id="demo-controlled-open-select-label">Distance Metric</InputLabel>
                       <Select
@@ -255,7 +256,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
         <Button
           color="primary"
           onClick={() => {
-            tempProjectionParams.method = domainSettings.name;
+            tempProjectionParams.method = domainSettings.id;
             setProjectionParams(tempProjectionParams);
             onStart(tempProjectionParams, selection);
           }}

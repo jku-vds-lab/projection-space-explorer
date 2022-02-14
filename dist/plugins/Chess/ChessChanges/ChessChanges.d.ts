@@ -7,7 +7,7 @@ declare type ChessChangesProps = {
     height?: number;
 };
 export declare class ChessChanges extends React.Component<ChessChangesProps> {
-    canvasRef: any;
+    canvasRef: React.RefObject<HTMLCanvasElement>;
     canvasContext: CanvasRenderingContext2D;
     constructor(props: ChessChangesProps);
     renderToContext(): void;

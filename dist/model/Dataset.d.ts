@@ -67,6 +67,7 @@ export declare class Dataset {
     type: DatasetType;
     multivariateLabels: boolean;
     isSequential: boolean;
+    hasInitialScalarTypes: boolean;
     clusters: ICluster[];
     clusterEdges: IEdge[];
     metaInformation: any;

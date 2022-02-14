@@ -1,6 +1,7 @@
 import { ConnectedComponent } from 'react-redux';
 import { EncodingChannel } from './model/EncodingChannel';
 import { EmbeddingController } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingController';
+import { ProjectionMethod } from './model';
 
 export type BaseConfig = Partial<{
   baseUrl: string;
@@ -28,9 +29,9 @@ export const DEFAULT_TSNE_SETTINGS = { perplexity: true, learningRate: true };
 export const DEFAULT_FA2_SETTINGS = {};
 
 export const DEFAULT_EMBEDDINGS = [
-  { id: 'umap', name: 'UMAP', settings: DEFAULT_UMAP_SETTINGS },
-  { id: 'tsne', name: 't-SNE', settings: DEFAULT_TSNE_SETTINGS },
-  { id: 'forceatlas2', name: 'ForceAtlas2', settings: DEFAULT_FA2_SETTINGS },
+  { id: ProjectionMethod.UMAP, name: 'UMAP', settings: DEFAULT_UMAP_SETTINGS },
+  { id: ProjectionMethod.TSNE, name: 't-SNE', settings: DEFAULT_TSNE_SETTINGS },
+  { id: ProjectionMethod.FORCEATLAS2, name: 'ForceAtlas2', settings: DEFAULT_FA2_SETTINGS },
 ];
 
 export type FeatureConfig = Partial<{

@@ -14,7 +14,7 @@ export declare class CSVLoader implements Loader {
     };
     resolveContent(content: any, finished: any): void;
     resolveVectors(vectors: any, finished: any): void;
-    getFeatureType(x: any): "number" | "date" | "arbitrary";
+    getFeatureType(x: any): "date" | "number" | "arbitrary";
     getClusters(vectors: IVector[], callback: any): void;
     resolve(finished: any, vectors: any, datasetType: any, entry: DatasetEntry): Promise<Dataset>;
 }

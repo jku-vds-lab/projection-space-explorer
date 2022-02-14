@@ -8,7 +8,7 @@ declare type ChessFingerprintProps = {
     height?: number;
 };
 export declare class ChessFingerprint extends React.Component<ChessFingerprintProps> {
-    canvasRef: any;
+    canvasRef: React.RefObject<HTMLCanvasElement>;
     canvasContext: CanvasRenderingContext2D;
     constructor(props: ChessFingerprintProps);
     renderToContext(): void;

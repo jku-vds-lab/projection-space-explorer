@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-export declare const ClusteringTabPanel: any;
-=======
 import { EntityId } from '@reduxjs/toolkit';
 import { ConnectedProps } from 'react-redux';
 import { ICluster } from '../../../model/ICluster';
@@ -35,4 +32,3 @@ declare type Props = PropsFromRedux & {
 };
 export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters, }: Props) => JSX.Element, Pick<Props, "splitRef">>;
 export {};
->>>>>>> develop

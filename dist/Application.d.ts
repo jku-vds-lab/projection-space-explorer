@@ -1,10 +1,4 @@
 import 'regenerator-runtime/runtime';
-<<<<<<< HEAD
-/**
- * Main application that contains all other components.
- */
-export declare const Application: any;
-=======
 import * as React from 'react';
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from './model/Dataset';
@@ -148,4 +142,3 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     overrideComponents?: ComponentConfig;
 }, "ref" | "config" | "features" | "overrideComponents" | "key">>;
 export {};
->>>>>>> develop
