@@ -13,7 +13,7 @@ function handle_errors_json(data) {
   return data;
 }
 
-export async function calculate_hdbscan_clusters(X, min_cluster_size, min_cluster_samples, allow_single_cluster, baseUrl) {
+export async function calculate_hdbscan_clusters(X, min_cluster_size, min_cluster_samples, allow_single_cluster, baseUrl: string) {
   const formData = new FormData();
   formData.append('min_cluster_size', min_cluster_size);
   formData.append('min_cluster_samples', min_cluster_samples);

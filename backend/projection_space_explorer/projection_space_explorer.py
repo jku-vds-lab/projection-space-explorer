@@ -11,8 +11,6 @@ pse_api = Blueprint('projection-space-explorer', __name__)
 @pse_api.route('/segmentation', methods=['OPTIONS', 'POST'])
 def segmentation():
     if request.method == 'POST':
-        #clusterVal = request.forms.get("clusterVal")
-        print(request.form.get("min_cluster_size"))
         min_cluster_size_arg = request.form.get("min_cluster_size")
         min_cluster_samples_arg = request.form.get("min_cluster_samples")
         allow_single_cluster_arg = request.form.get("allow_single_cluster")
