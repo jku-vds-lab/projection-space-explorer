@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { createSlice, PayloadAction, createEntityAdapter, EntityState, EntityId, Update, createSelector } from '@reduxjs/toolkit';
-import { IProjection, IPosition } from '../../model/ProjectionInterfaces';
+import { IProjection, IPosition, ProjectionMethod } from '../../model/ProjectionInterfaces';
 import type { RootState } from '../Store';
 
 const projectionAdapter = createEntityAdapter<IProjection>({
@@ -25,6 +25,9 @@ const projectionsSlice = createSlice({
     },
     copyFromWorkspace(state) {
       const deriveName = (metadata) => {
+        if (metadata?.method === ProjectionMethod.RANDOM) {
+          return 'Random Initialisation';
+        }
         const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
 
         return `${metadata?.method} at ${time}`;
@@ -37,7 +40,7 @@ const projectionsSlice = createSlice({
         state.workspace = hash;
       } else {
         const { workspace } = state;
-        projectionAdapter.addOne(state.values, { ...workspace, name: workspace.name ?? deriveName(workspace.metadata) });
+        projectionAdapter.addOne(state.values, { ...workspace, name: deriveName(workspace.metadata) });
         state.workspace = workspace.hash;
       }
     },

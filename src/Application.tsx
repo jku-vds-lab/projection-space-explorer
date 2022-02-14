@@ -370,7 +370,7 @@ export const Application = connector(
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={3}>
-                  {this.props.dataset != null ? <ClusteringTabPanel splitRef={this.splitRef} /> : <div />}
+                  {this.props.dataset != null ? <ClusteringTabPanel splitRef={this.splitRef} baseUrl={this.props.config?.baseUrl} /> : <div />}
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={4}>
