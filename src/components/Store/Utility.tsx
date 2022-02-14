@@ -265,7 +265,11 @@ export class UtilityActions {
       positions.forEach((value, index) => {
         const { x, y } = value;
 
-        const color = isSelected(index) ? (mapping.map(state.dataset.vectors[index][state.channelColor.key]) as SchemeColor) : new SchemeColor('#c0c0c0');
+        const color = isSelected(index)
+          ? mapping
+            ? (mapping.map(state.dataset.vectors[index][state.channelColor.key]) as SchemeColor)
+            : new SchemeColor('#7fc97f')
+          : new SchemeColor('#c0c0c0');
 
         ctx.beginPath();
 

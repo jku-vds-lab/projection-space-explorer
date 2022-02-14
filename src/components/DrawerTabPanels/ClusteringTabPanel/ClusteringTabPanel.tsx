@@ -47,7 +47,7 @@ import { GroupVisualizationMode, setGroupVisualizationMode } from '../../Ducks/G
 import { selectClusters } from '../../Ducks/AggregationDuck';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
 import { Dataset } from '../../../model/Dataset';
-import { StoriesActions, AStorytelling, IStorytelling } from '../../Ducks/StoriesDuck copy';
+import { StoriesActions, AStorytelling, IStorytelling, clusterAdapter } from '../../Ducks/StoriesDuck copy';
 import { ProjectionSelectors } from '../../Ducks/ProjectionDuck';
 
 const mapStateToProps = (state: RootState) => ({
@@ -81,10 +81,6 @@ type Props = PropsFromRedux & {
 const ContextPaper = styled(Paper)`
   padding: 10px;
 `;
-
-const bookAdapter = createEntityAdapter<IBook>({
-  selectId: (book) => book.id,
-});
 
 export const ClusteringTabPanel = connector(
   ({
@@ -133,7 +129,7 @@ export const ClusteringTabPanel = connector(
               return;
             }
 
-            const story: IBook = stories.active !== null ? AStorytelling.getActive(stories) : AStorytelling.emptyStory({ method: 'hdbscan' });
+            const story: IBook = AStorytelling.emptyStory({ method: 'hdbscan' });
             const clusters: ICluster[] = new Array<ICluster>();
 
             dist_cluster_labels.forEach((cluster_label) => {
@@ -153,11 +149,13 @@ export const ClusteringTabPanel = connector(
               }
             });
 
-            story.clusters.entities = clusters.reduce((prev, cur) => {
+            story.clusters = clusterAdapter.addMany(story.clusters, clusters);
+
+            /** story.clusters.entities = clusters.reduce((prev, cur) => {
               prev[cur.id] = cur;
               return prev;
             }, {});
-            story.clusters.ids = Object.keys(story.clusters.entities);
+            story.clusters.ids = Object.keys(story.clusters.entities); * */
 
             // if(!addClusterToCurrentStory){
             addStory(story);
