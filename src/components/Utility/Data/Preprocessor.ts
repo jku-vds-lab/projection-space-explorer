@@ -106,6 +106,8 @@ export class Preprocessor {
   preprocess(ranges) {
     this.inferMultiplicity();
 
+    const inferredColumns = [];
+
     const { vectors } = this;
     const header = Object.keys(vectors[0]);
 
@@ -116,6 +118,8 @@ export class Preprocessor {
         vector.y = +vector.y;
       });
     } else {
+      inferredColumns.push('x');
+      inferredColumns.push('y');
       // In case we are missing x and y columns, we can just generate a uniformly distributed point cloud
       vectors.forEach((vector) => {
         vector.x = (Math.random() - 0.5) * 100;
@@ -143,6 +147,7 @@ export class Preprocessor {
         cur[vector.line] = cur[vector.line] + 1;
       });
       ranges.age = { min: 0, max: 1 };
+      inferredColumns.push('age');
     }
 
     // If data has no algo attribute, add DEFAULT_ALGO
@@ -150,6 +155,7 @@ export class Preprocessor {
       vectors.forEach((vector) => {
         vector.algo = DEFAULT_ALGO;
       });
+      inferredColumns.push('algo');
     }
 
     vectors.forEach(function (d) {
@@ -163,6 +169,7 @@ export class Preprocessor {
       vectors.forEach((vector) => {
         vector.groupLabel = [];
       });
+      inferredColumns.push('groupLabel');
     } else {
       // Support multivariate points ... eg each groupLabel is actually an array
       vectors.forEach((vector) => {
@@ -182,6 +189,6 @@ export class Preprocessor {
       });
     }
 
-    return ranges;
+    return [ranges, inferredColumns];
   }
 }

@@ -204,12 +204,15 @@ export class CSVLoader implements Loader {
     }
 
     const preprocessor = new Preprocessor(vectors);
+    let inferredColumns = [];
     const hasScalarTypes = preprocessor.hasScalarTypes();
-    ranges = preprocessor.preprocess(ranges);
-    
+
+    [ranges, inferredColumns] = preprocessor.preprocess(ranges);
 
     const dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation);
+
     dataset.hasInitialScalarTypes = hasScalarTypes;
+    dataset.inferredColumns = inferredColumns;
 
     const promise = new Promise<Dataset>((resolve) => {
       this.getClusters(vectors, (clusters) => {

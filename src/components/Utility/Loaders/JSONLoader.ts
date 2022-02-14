@@ -193,16 +193,17 @@ export class JSONLoader implements Loader {
         };
       });
     }
-
+    let inferredColumns = [];
     const preprocessor = new Preprocessor(this.vectors);
     const hasScalarTypes = preprocessor.hasScalarTypes();
-    ranges = preprocessor.preprocess(ranges);
+    [ranges, inferredColumns] = preprocessor.preprocess(ranges);
 
     const dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation);
     dataset.hasInitialScalarTypes = hasScalarTypes;
 
     dataset.clusters = clusters;
     dataset.clusterEdges = edges;
+    dataset.inferredColumns = inferredColumns;
     dataset.categories = dataset.extractEncodingFeatures(ranges);
 
     finished(dataset);

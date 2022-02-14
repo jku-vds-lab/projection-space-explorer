@@ -814,7 +814,7 @@ export class PointVisualization {
           vector.__meta__.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key]);
         }
       } else {
-        rgb = { r: 0, g: 0, b: 0 };
+        rgb = { r: 127.0 / 255, g: 201 / 255, b: 127 / 255 };
       }
 
       color.setXYZ(i, rgb.r / 255.0, rgb.g / 255.0, rgb.b / 255.0);

@@ -70,6 +70,7 @@ export declare class Dataset {
     hasInitialScalarTypes: boolean;
     clusters: ICluster[];
     clusterEdges: IEdge[];
+    inferredColumns: string[];
     metaInformation: any;
     categories: any;
     constructor(vectors: any, ranges: any, info: any, featureTypes: any, metaInformation?: {});
