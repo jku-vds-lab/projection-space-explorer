@@ -1,13 +1,4 @@
-import { IVector } from "./Vector";
-/**
- * Main data class for lines
- */
-export declare class DataLine {
-    lineKey: any;
-    vectors: IVector[];
-    __meta__: DataLineView;
-    constructor(lineKey: any, vectors: any);
-}
+import { IVector } from './Vector';
 /**
  * View information for segments
  */
@@ -32,4 +23,13 @@ export declare class DataLineView {
      * Line mesh
      */
     lineMesh: any;
+}
+/**
+ * Main data class for lines
+ */
+export declare class DataLine {
+    lineKey: any;
+    vectors: IVector[];
+    __meta__: DataLineView;
+    constructor(lineKey: any, vectors: any);
 }

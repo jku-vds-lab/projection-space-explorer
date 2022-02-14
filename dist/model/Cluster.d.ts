@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { Dataset } from './Dataset';
 import { TypedObject } from './TypedObject';
-import { IVector } from "./Vector";
-import { IBaseProjection } from './Projection';
+import { IVector } from './Vector';
+import { IBaseProjection } from './ProjectionInterfaces';
+import { ICluster } from './ICluster';
 /**
  * Cluster API.
  */
@@ -17,7 +18,7 @@ export declare class ACluster {
         right: number;
         bottom: number;
     };
-    static fromSamples(dataset: Dataset, samples: number[]): ICluster;
+    static fromSamples(dataset: Dataset, samples: number[], metadata?: any): ICluster;
     /**
      * Resets the labeling for given vectors based on given clusters
      *
@@ -31,19 +32,6 @@ export declare class ACluster {
     };
     static getCenterAsVector2(workspace: IBaseProjection, cluster: ICluster): THREE.Vector2;
     static getTextRepresentation(cluster: ICluster): string;
-}
-/**
- * Cluster type.
- */
-export interface ICluster extends TypedObject {
-    label: any;
-    hull?: number[][];
-    triangulation?: number[];
-    name?: string;
-    /**
-     * List of indices on the dataset vectors this cluster has.
-     */
-    indices: number[];
 }
 /**
  * Cluster type guard.

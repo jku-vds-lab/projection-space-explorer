@@ -1,20 +1,20 @@
-const SET = "ducks/clusterMode/SET"
+const SET = 'ducks/clusterMode/SET';
 
 export enum ClusterMode {
-    Univariate,
-    Multivariate
+  Univariate,
+  Multivariate,
 }
 
-export const setClusterModeAction = clusterMode => ({
-    type: SET,
-    clusterMode: clusterMode
+export const setClusterModeAction = (clusterMode) => ({
+  type: SET,
+  clusterMode,
 });
 
-export default function clusterMode (state = ClusterMode.Univariate, action): ClusterMode {
-    switch (action.type) {
-        case SET:
-            return action.clusterMode
-        default:
-            return state
-    }
+export default function clusterMode(state = ClusterMode.Univariate, action): ClusterMode {
+  switch (action.type) {
+    case SET:
+      return action.clusterMode;
+    default:
+      return state;
+  }
 }

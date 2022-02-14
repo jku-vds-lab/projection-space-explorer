@@ -1,4 +1,4 @@
-import { IVector } from "../../model/Vector";
+import { IVector } from '../../model/Vector';
 export declare abstract class PSEPlugin {
     type: string;
     hasFileLayout(header: string[]): boolean;

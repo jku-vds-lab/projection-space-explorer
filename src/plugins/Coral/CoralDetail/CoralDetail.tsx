@@ -1,249 +1,259 @@
-import * as React from 'react'
-import { connect, ConnectedProps } from 'react-redux'
+import * as React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { Handler } from 'vega-tooltip';
 import { makeStyles } from '@mui/styles';
 import './coral.scss';
-import { FeatureType } from "../../../model/FeatureType";
-import { IVector } from "../../../model/Vector";
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import * as vegaImport from 'vega';
+import { FeatureType } from '../../../model/FeatureType';
+import { IVector } from '../../../model/Vector';
 import BarChart from './BarChart';
 import VegaDensity from './VegaDensity';
 import VegaDate from './VegaDate';
-import { RootState } from '../../..';
-import * as vegaImport from 'vega';
+import type { RootState } from '../../..';
 
 const useStyles = makeStyles({
   table: {
     maxWidth: 288,
   },
   tableRow: {
-    height: "66px"
+    height: '66px',
   },
 });
 
 function createData(feature, category, score, char) {
-  return {feature, category, score, char}
+  return { feature, category, score, char };
 }
 
 function mapHistData(data, feature) {
   const mapped = data.map((d) => {
     return {
-      feature: +d[feature]
-    }
-  })
-  return {"values": mapped}
+      feature: +d[feature],
+    };
+  });
+  return { values: mapped };
 }
 
 function mapDensityData(allData, selectedData, feature) {
   const mappedData = allData.map((d, i) => {
     return {
       feature: +d[feature],
-      selection: "all"
-    }
-  })
+      selection: 'all',
+    };
+  });
   const mappedSelection = selectedData.map((d, i) => {
     return {
       feature: +d[feature],
-      selection: "selection"
-    }
-  })
-  const mapped = [...mappedSelection, ...mappedData]
-  return {"values": mapped}
+      selection: 'selection',
+    };
+  });
+  const mapped = [...mappedSelection, ...mappedData];
+  return { values: mapped };
 }
 
 function mapBarChartData(data, feature) {
-  const counts = {}
-  for (var i=0; i<data.length; i++) {
+  const counts = {};
+  for (let i = 0; i < data.length; i++) {
     if (data[i][feature] in counts) {
-      counts[data[i][feature]] += 1
+      counts[data[i][feature]] += 1;
     } else {
-      counts[data[i][feature]] = 1
+      counts[data[i][feature]] = 1;
     }
   }
 
-  const sortCountDesc = (a,b) => {
-    return b['count'] - a['count']
-  }
+  const sortCountDesc = (a, b) => {
+    return b.count - a.count;
+  };
 
-  const barChartData = []
-  for (var key in counts) {
-    let count = counts[key]/data.length
-    count = isFinite(count) ? count : 0
-    barChartData.push({'category': key, 'count': count})
+  const barChartData = [];
+  for (const key in counts) {
+    let count = counts[key] / data.length;
+    count = isFinite(count) ? count : 0;
+    barChartData.push({ category: key, count });
   }
-  barChartData.sort(sortCountDesc)
-  return {'values': barChartData}
+  barChartData.sort(sortCountDesc);
+  return { values: barChartData };
 }
 
 const getSTD = (data) => {
   const total = data.reduce(function (a, b) {
-    return a + b
+    return a + b;
   });
-  let mean = total / data.length
+  let mean = total / data.length;
   mean = isFinite(mean) ? mean : 0;
   function var_numerator(value) {
-    return ((value - mean) * (value - mean));
+    return (value - mean) * (value - mean);
   }
-  var variance = data.map(var_numerator);
+  let variance = data.map(var_numerator);
   variance = variance.reduce(function (a, b) {
-    return (a + b);
+    return a + b;
   });
-  variance = variance / data.length;
+  variance /= data.length;
   variance = isFinite(variance) ? variance : 1;
-  const std = Math.sqrt(variance)
-  return std
-}
+  const std = Math.sqrt(variance);
+  return std;
+};
 
 function dictionary(list) {
-  var map = {}
-  for (var i = 0; i < list.length; ++i) {
-    for (var key in list[i]) {
+  const map = {};
+  for (let i = 0; i < list.length; ++i) {
+    for (const key in list[i]) {
       if (key in map) {
-        map[key].push(list[i][key])
+        map[key].push(list[i][key]);
       } else {
-        map[key] = [list[i][key]]
+        map[key] = [list[i][key]];
       }
     }
   }
-  return map
+  return map;
 }
 
 function getMaxMean(data) {
-  var max = Number.NEGATIVE_INFINITY
-  data = data['values']
-  for (var i = 0; i < data.length; i++) {
-    if (data[i]['count'] > max) {
-      max = data[i]['count']
+  let max = Number.NEGATIVE_INFINITY;
+  data = data.values;
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].count > max) {
+      max = data[i].count;
     }
   }
-  return max
+  return max;
 }
 
 function sortByScore(a, b) {
-  if (a['score'] === b['score']) {
-      return 0;
+  if (a.score === b.score) {
+    return 0;
   }
-  else {
-      return (a['score'] < b['score']) ? 1 : -1;
-  }
+
+  return a.score < b.score ? 1 : -1;
 }
 
 function getExplainingFeatures(data) {
   // data format [{'category': x, 'count': y}, ...]
   // data should be sorted descendingly
-  const n = data.length
-  const features = []
-  for (var i = 0; i < n; i++) {
-    if (data[i]['count'] >= (1/n)) { 
-      features.push(data[i]['category'])
+  const n = data.length;
+  const features = [];
+  for (let i = 0; i < n; i++) {
+    if (data[i].count >= 1 / n) {
+      features.push(data[i].category);
     } else {
-      return features
+      return features;
     }
   }
-  return features
+  return features;
 }
 
 function getProjectionColumns(legendAttributes) {
   if (legendAttributes === null) {
-    return []
+    return [];
   }
-  const pcol = []
-  for (var i = 0; i <= legendAttributes.length; i++) {
-    if (legendAttributes[i] !== undefined && legendAttributes[i]['show']) {
-      pcol.push(legendAttributes[i]['feature'])
+  const pcol = [];
+  for (let i = 0; i <= legendAttributes.length; i++) {
+    if (legendAttributes[i] !== undefined && legendAttributes[i].show) {
+      pcol.push(legendAttributes[i].feature);
     }
   }
-  return pcol
+  return pcol;
 }
 
 function getNormalizedSTD(data, min, max) {
   if (min === max) {
-    return 0
+    return 0;
   }
-  data.forEach( (x, i, self) => {
-    self[i] = (+x - +min)/(+max - +min)
+  data.forEach((x, i, self) => {
+    self[i] = (+x - +min) / (+max - +min);
   });
-  
-  return getSTD(data)
-  
+
+  return getSTD(data);
 }
 
 function genRows(vectors, aggregation, legendAttributes, dataset) {
   if (dataset === undefined) {
-    return []
+    return [];
   }
-  
+
   // if(!aggregation){ // TODO: if it shows the hover state, we don't need to generate all rows because we can't scroll anyway
   //   return []
   // }
 
-  const rows = []
-  const dictOfArrays = dictionary(vectors)
-  const preselect = getProjectionColumns(legendAttributes)
+  const rows = [];
+  const dictOfArrays = dictionary(vectors);
+  const preselect = getProjectionColumns(legendAttributes);
 
   // loop through dict
-  for (var key in dictOfArrays) {
+  for (const key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-      if(dataset.columns[key]?.metaInformation.noLineUp){
-        //dont do anything, if column should not be shown
+      if (dataset.columns[key]?.metaInformation.noLineUp) {
+        // dont do anything, if column should not be shown
       } else if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
-        var densityData = mapDensityData(dataset.vectors, vectors, key)
+        const densityData = mapDensityData(dataset.vectors, vectors, key);
         // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
-        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDensity logLevel={vegaImport.Error} data={densityData} actions={false} tooltip={new Handler().call}/>])
+        rows.push([
+          key,
+          '',
+          1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max),
+          <VegaDensity logLevel={vegaImport.Error} data={densityData} actions={false} tooltip={new Handler().call} />,
+        ]);
       } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
         // categorical feature
-        var barData = mapBarChartData(vectors, key)
-        var barChart
+        const barData = mapBarChartData(vectors, key);
+        var barChart;
         if (Object.keys(barData.values).length != 1) {
           // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
-          barChart = <BarChart logLevel={vegaImport.Error} data={barData} actions={false} tooltip={new Handler().call}/>
+          barChart = <BarChart logLevel={vegaImport.Error} data={barData} actions={false} tooltip={new Handler().call} />;
         } else {
-          barChart = null
+          barChart = null;
         }
-        rows.push([key, barData['values'][0]['category'], getMaxMean(barData), barChart])
-        
+        rows.push([key, barData.values[0].category, getMaxMean(barData), barChart]);
       } else if (dataset.columns[key]?.featureType === FeatureType.Date) {
         // date feature
-        var histData = mapHistData(vectors, key)
-        rows.push([key, "", 1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max), <VegaDate data={histData} actions={false} tooltip={new Handler().call}/>])
+        const histData = mapHistData(vectors, key);
+        rows.push([
+          key,
+          '',
+          1 - getNormalizedSTD(dictOfArrays[key], dataset.columns[key].range.min, dataset.columns[key].range.max),
+          <VegaDate data={histData} actions={false} tooltip={new Handler().call} />,
+        ]);
       }
     }
   }
 
   // turn into array of dicts
-  const ret = []
-  for (var i = 0; i < rows.length; i++) {
-    ret.push(createData(rows[i][0], rows[i][1], rows[i][2], rows[i][3]))
+  const ret = [];
+  for (let i = 0; i < rows.length; i++) {
+    ret.push(createData(rows[i][0], rows[i][1], rows[i][2], rows[i][3]));
   }
 
   // sort rows by score
-  ret.sort(sortByScore)
+  ret.sort(sortByScore);
 
-  return ret
+  return ret;
 }
 
 function getTable(vectors, aggregation, legendAttributes, dataset) {
-  const classes = useStyles()
-  const rows = genRows(vectors, aggregation, legendAttributes, dataset)
-
-  
+  const classes = useStyles();
+  const rows = genRows(vectors, aggregation, legendAttributes, dataset);
 
   return (
-    <div style={{ width: "100%", maxHeight: '100%', overflowY: "scroll" }}>
-      <div style={{
-        width: "100%",
-        // overflow: "auto"
-      }}>
-        <Table className={classes.table} aria-label="simple table" size={'small'}>
-          <TableHead>
-          </TableHead>
+    <div style={{ width: '100%', maxHeight: '100%', overflowY: 'scroll' }}>
+      <div
+        style={{
+          width: '100%',
+          // overflow: "auto"
+        }}
+      >
+        <Table className={classes.table} aria-label="simple table" size="small">
+          <TableHead />
           <TableBody>
             {rows.map((row) => (
               <TableRow className={classes.tableRow} key={row.feature}>
                 <TableCell component="th" scope="row">
-                <div style={{maxWidth:200}}>{row.feature}<br/><b>{row.category}</b></div>
+                  <div style={{ maxWidth: 200 }}>
+                    {row.feature}
+                    <br />
+                    <b>{row.category}</b>
+                  </div>
                 </TableCell>
                 <TableCell>{row.char}</TableCell>
               </TableRow>
@@ -256,23 +266,23 @@ function getTable(vectors, aggregation, legendAttributes, dataset) {
 }
 
 const mapState = (state: RootState) => {
-  return ({
+  return {
     legendAttributes: state.genericFingerprintAttributes,
-    dataset: state.dataset
-  })
-}
+    dataset: state.dataset,
+  };
+};
 
-const mapDispatch = dispatch => ({})
+const mapDispatch = (dispatch) => ({});
 
 const connector = connect(mapState, mapDispatch);
 
-type PropsFromRedux = ConnectedProps<typeof connector>
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
-    aggregate: boolean
-    selection: IVector[]
-}
+  aggregate: boolean;
+  selection: IVector[];
+};
 
 export var CoralLegend = connector(({ selection, aggregate, legendAttributes, dataset }: Props) => {
-  return getTable(selection, aggregate, legendAttributes, dataset)
-})
+  return getTable(selection, aggregate, legendAttributes, dataset);
+});

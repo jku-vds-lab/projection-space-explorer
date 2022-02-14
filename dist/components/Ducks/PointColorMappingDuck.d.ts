@@ -1,4 +1,4 @@
-import { DiscreteMapping, ContinuousMapping } from "..";
+import { DiscreteMapping, ContinuousMapping } from '../Utility/Colors';
 export declare const setPointColorMapping: (pointColorMapping: any) => {
     type: string;
     pointColorMapping: any;

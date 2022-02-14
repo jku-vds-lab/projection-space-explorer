@@ -1,4 +1,4 @@
-import { IVector } from "../../model/Vector";
+import { IVector } from '../../model/Vector';
 /**
  * Calculates the default zoom factor by examining the bounds of the data set
  * and then dividing it by the height of the viewport.
@@ -21,7 +21,7 @@ export declare function arraysEqual(a: any, b: any): boolean;
  * @param {*} b
  */
 export declare function dictEqual(a: any, b: any): boolean;
-export declare function normalizeWheel(/*object*/ event: any): {
+export declare function normalizeWheel(/* object */ event: any): {
     spinX: number;
     spinY: number;
     pixelX: number;

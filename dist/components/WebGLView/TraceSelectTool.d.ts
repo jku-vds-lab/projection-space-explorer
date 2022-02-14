@@ -1,8 +1,8 @@
-import { ICluster } from "../../model/Cluster";
-import { RenderingContextEx } from "../Utility/RenderingContextEx";
-import { Tool } from "./Tool";
-import { ViewTransformType } from "../Ducks/ViewTransformDuck";
-import { IBaseProjection } from "../../model/Projection";
+import { ICluster } from '../../model/ICluster';
+import { RenderingContextEx } from '../Utility/RenderingContextEx';
+import { Tool } from './Tool';
+import { ViewTransformType } from '../Ducks/ViewTransformDuck';
+import { IBaseProjection } from '../../model/ProjectionInterfaces';
 export declare class TraceSelectTool implements Tool {
     workspace: IBaseProjection;
     cluster: ICluster;

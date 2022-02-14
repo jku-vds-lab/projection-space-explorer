@@ -1,4 +1,4 @@
-import { IBaseProjection, Dataset } from "../../model";
+import type { IBaseProjection, Dataset } from '../../model';
 export declare class LassoSelection {
     drawing: boolean;
     start: {

@@ -1,15 +1,13 @@
-import { BaseColorScale } from "../../Ducks/ColorScalesDuck";
+import { BaseColorScale } from '../../../model/Palette';
+export declare function ColorScaleMenuItem({ scale }: {
+    scale: BaseColorScale;
+}): JSX.Element;
 /**
  * Component that lets user pick from a list of color scales.
  */
-export declare var ColorScaleSelectFull: ({ channelColor }: {
+export declare function ColorScaleSelectFull({ channelColor }: {
     channelColor: any;
-}) => JSX.Element;
-export declare var ColorScaleMenuItem: ({ scale }: {
-    scale: BaseColorScale;
-}) => JSX.Element;
-export declare const ColorScaleSelect: import("react-redux").ConnectedComponent<({ channelColor }: {
-    channelColor: any;
-}) => JSX.Element, Pick<{
+}): JSX.Element;
+export declare const ColorScaleSelect: import("react-redux").ConnectedComponent<typeof ColorScaleSelectFull, Pick<{
     channelColor: any;
 }, never>>;

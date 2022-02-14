@@ -37,7 +37,7 @@ export function tauRand(random: RandomFn) {
  */
 export function norm(vec: number[]) {
   let result = 0;
-  for (let item of vec) {
+  for (const item of vec) {
     result += item ** 2;
   }
   return Math.sqrt(result);
@@ -134,11 +134,7 @@ export function max2d(input: number[][]): number {
  * integer is selected twice. The duplication constraint is achieved via
  * rejection sampling.
  */
-export function rejectionSample(
-  nSamples: number,
-  poolSize: number,
-  random: RandomFn
-): number[] {
+export function rejectionSample(nSamples: number, poolSize: number, random: RandomFn): number[] {
   const result = zeros(nSamples);
   for (let i = 0; i < nSamples; i++) {
     let rejectSample = true;

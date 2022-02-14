@@ -1,1 +1,1 @@
-export * from './DetailsTabPanel'
+export * from './DetailsTabPanel';

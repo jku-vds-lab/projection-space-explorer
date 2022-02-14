@@ -1,6 +1,6 @@
-import { Loader } from "./Loader";
-import { DatasetType } from "../../../model/DatasetType";
-import { IVector } from "../../../model/Vector";
+import { Loader } from './Loader';
+import { DatasetType } from '../../../model/DatasetType';
+import { IVector } from '../../../model/Vector';
 export declare class JSONLoader implements Loader {
     vectors: IVector[];
     datasetType: DatasetType;

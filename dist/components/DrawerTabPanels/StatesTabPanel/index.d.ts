@@ -3,7 +3,6 @@ export * from './AdvancedColoringPopover';
 export * from './BrightnessSlider';
 export * from './ColorScaleSelect';
 export * from './LineSelection';
-export * from './LineTreePopover';
 export * from './PathBrightnessSlider';
 export * from './PathLengthFilter';
 export * from './ShapeLegend';

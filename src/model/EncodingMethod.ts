@@ -1,4 +1,4 @@
-export enum EncodingMethod{ // for categorical features
-    ONEHOT="onehot",
-    NUMERIC="numeric"
+export enum EncodingMethod { // for categorical features
+  ONEHOT = 'onehot',
+  NUMERIC = 'numeric',
 }

@@ -73,29 +73,17 @@ interface RandomProjectionTreeNode {
 }
 
 export class FlatTree {
-  constructor(
-    public hyperplanes: number[][],
-    public offsets: number[],
-    public children: number[][],
-    public indices: number[][]
-  ) {}
+  constructor(public hyperplanes: number[][], public offsets: number[], public children: number[][], public indices: number[][]) {}
 }
 
 /**
  * Build a random projection forest with ``nTrees``.
  */
-export function makeForest(
-  data: Vectors,
-  nNeighbors: number,
-  nTrees: number,
-  random: RandomFn
-) {
+export function makeForest(data: Vectors, nNeighbors: number, nTrees: number, random: RandomFn) {
   const leafSize = Math.max(10, nNeighbors);
 
-  const trees = utils
-    .range(nTrees)
-    .map((_, i) => makeTree(data, leafSize, i, random));
-  const forest = trees.map(tree => flattenTree(tree, leafSize));
+  const trees = utils.range(nTrees).map((_, i) => makeTree(data, leafSize, i, random));
+  const forest = trees.map((tree) => flattenTree(tree, leafSize));
 
   return forest;
 }
@@ -104,49 +92,25 @@ export function makeForest(
  * Construct a random projection tree based on ``data`` with leaves
  * of size at most ``leafSize``
  */
-function makeTree(
-  data: Vectors,
-  leafSize = 30,
-  n: number,
-  random: RandomFn
-): RandomProjectionTreeNode {
+function makeTree(data: Vectors, leafSize = 30, n: number, random: RandomFn): RandomProjectionTreeNode {
   const indices = utils.range(data.length);
   const tree = makeEuclideanTree(data, indices, leafSize, n, random);
   return tree;
 }
 
-function makeEuclideanTree(
-  data: Vectors,
-  indices: number[],
-  leafSize = 30,
-  q: number,
-  random: RandomFn
-): RandomProjectionTreeNode {
+function makeEuclideanTree(data: Vectors, indices: number[], leafSize = 30, q: number, random: RandomFn): RandomProjectionTreeNode {
   if (indices.length > leafSize) {
     const splitResults = euclideanRandomProjectionSplit(data, indices, random);
     const { indicesLeft, indicesRight, hyperplane, offset } = splitResults;
 
-    const leftChild = makeEuclideanTree(
-      data,
-      indicesLeft,
-      leafSize,
-      q + 1,
-      random
-    );
-    const rightChild = makeEuclideanTree(
-      data,
-      indicesRight,
-      leafSize,
-      q + 1,
-      random
-    );
+    const leftChild = makeEuclideanTree(data, indicesLeft, leafSize, q + 1, random);
+    const rightChild = makeEuclideanTree(data, indicesRight, leafSize, q + 1, random);
 
     const node = { leftChild, rightChild, isLeaf: false, hyperplane, offset };
     return node;
-  } else {
-    const node = { indices, isLeaf: true };
-    return node;
   }
+  const node = { indices, isLeaf: true };
+  return node;
 }
 
 /**
@@ -157,18 +121,14 @@ function makeEuclideanTree(
  * This particular split uses euclidean distance to determine the hyperplane
  * and which side each data sample falls on.
  */
-function euclideanRandomProjectionSplit(
-  data: Vectors,
-  indices: number[],
-  random: RandomFn
-) {
+function euclideanRandomProjectionSplit(data: Vectors, indices: number[], random: RandomFn) {
   const dim = data[0].length;
 
   // Select two random points, set the hyperplane between them
-  let leftIndex = utils.tauRandInt(indices.length, random);
+  const leftIndex = utils.tauRandInt(indices.length, random);
   let rightIndex = utils.tauRandInt(indices.length, random);
   rightIndex += leftIndex === rightIndex ? 1 : 0;
-  rightIndex = rightIndex % indices.length;
+  rightIndex %= indices.length;
   const left = indices[leftIndex];
   const right = indices[rightIndex];
 
@@ -179,8 +139,7 @@ function euclideanRandomProjectionSplit(
 
   for (let i = 0; i < hyperplaneVector.length; i++) {
     hyperplaneVector[i] = data[left][i] - data[right][i];
-    hyperplaneOffset -=
-      (hyperplaneVector[i] * (data[left][i] + data[right][i])) / 2.0;
+    hyperplaneOffset -= (hyperplaneVector[i] * (data[left][i] + data[right][i])) / 2.0;
   }
 
   // For each point compute the margin (project into normal vector)
@@ -217,7 +176,7 @@ function euclideanRandomProjectionSplit(
   // Populate the arrays with indices according to which side they fell on
   nLeft = 0;
   nRight = 0;
-  for (let i in utils.range(side.length)) {
+  for (const i in utils.range(side.length)) {
     if (side[i] === 0) {
       indicesLeft[nLeft] = indices[i];
       nLeft += 1;
@@ -240,15 +199,11 @@ function flattenTree(tree: RandomProjectionTreeNode, leafSize: number) {
   const nLeaves = numLeaves(tree);
 
   // TODO: Verify that sparse code is not relevant...
-  const hyperplanes = utils
-    .range(nNodes)
-    .map(() => utils.zeros(tree.hyperplane ? tree.hyperplane.length : 0));
+  const hyperplanes = utils.range(nNodes).map(() => utils.zeros(tree.hyperplane ? tree.hyperplane.length : 0));
 
   const offsets = utils.zeros(nNodes);
   const children = utils.range(nNodes).map(() => [-1, -1]);
-  const indices = utils
-    .range(nLeaves)
-    .map(() => utils.range(leafSize).map(() => -1));
+  const indices = utils.range(nLeaves).map(() => utils.range(leafSize).map(() => -1));
   recursiveFlatten(tree, hyperplanes, offsets, children, indices, 0, 0);
   return new FlatTree(hyperplanes, offsets, children, indices);
 }
@@ -260,7 +215,7 @@ function recursiveFlatten(
   children: number[][],
   indices: number[][],
   nodeNum: number,
-  leafNum: number
+  leafNum: number,
 ): { nodeNum: number; leafNum: number } {
   if (tree.isLeaf) {
     children[nodeNum][0] = -leafNum;
@@ -270,53 +225,34 @@ function recursiveFlatten(
     indices[leafNum].splice(0, tree.indices!.length, ...tree.indices!);
     leafNum += 1;
     return { nodeNum, leafNum };
-  } else {
-    hyperplanes[nodeNum] = tree.hyperplane!;
-    offsets[nodeNum] = tree.offset!;
-    children[nodeNum][0] = nodeNum + 1;
-    const oldNodeNum = nodeNum;
-
-    let res = recursiveFlatten(
-      tree.leftChild!,
-      hyperplanes,
-      offsets,
-      children,
-      indices,
-      nodeNum + 1,
-      leafNum
-    );
-    nodeNum = res.nodeNum;
-    leafNum = res.leafNum;
-
-    children[oldNodeNum][1] = nodeNum + 1;
-
-    res = recursiveFlatten(
-      tree.rightChild!,
-      hyperplanes,
-      offsets,
-      children,
-      indices,
-      nodeNum + 1,
-      leafNum
-    );
-    return { nodeNum: res.nodeNum, leafNum: res.leafNum };
   }
+  hyperplanes[nodeNum] = tree.hyperplane!;
+  offsets[nodeNum] = tree.offset!;
+  children[nodeNum][0] = nodeNum + 1;
+  const oldNodeNum = nodeNum;
+
+  let res = recursiveFlatten(tree.leftChild!, hyperplanes, offsets, children, indices, nodeNum + 1, leafNum);
+  nodeNum = res.nodeNum;
+  leafNum = res.leafNum;
+
+  children[oldNodeNum][1] = nodeNum + 1;
+
+  res = recursiveFlatten(tree.rightChild!, hyperplanes, offsets, children, indices, nodeNum + 1, leafNum);
+  return { nodeNum: res.nodeNum, leafNum: res.leafNum };
 }
 
 function numNodes(tree: RandomProjectionTreeNode): number {
   if (tree.isLeaf) {
     return 1;
-  } else {
-    return 1 + numNodes(tree.leftChild!) + numNodes(tree.rightChild!);
   }
+  return 1 + numNodes(tree.leftChild!) + numNodes(tree.rightChild!);
 }
 
 function numLeaves(tree: RandomProjectionTreeNode): number {
   if (tree.isLeaf) {
     return 1;
-  } else {
-    return numLeaves(tree.leftChild!) + numLeaves(tree.rightChild!);
   }
+  return numLeaves(tree.leftChild!) + numLeaves(tree.rightChild!);
 }
 
 /**
@@ -331,24 +267,18 @@ function numLeaves(tree: RandomProjectionTreeNode): number {
 export function makeLeafArray(rpForest: FlatTree[]): number[][] {
   if (rpForest.length > 0) {
     const output: number[][] = [];
-    for (let tree of rpForest) {
+    for (const tree of rpForest) {
       output.push(...tree.indices!);
     }
     return output;
-  } else {
-    return [[-1]];
   }
+  return [[-1]];
 }
 
 /**
  * Selects the side of the tree to search during flat tree search.
  */
-function selectSide(
-  hyperplane: number[],
-  offset: number,
-  point: Vector,
-  random: RandomFn
-) {
+function selectSide(hyperplane: number[], offset: number, point: Vector, random: RandomFn) {
   let margin = offset;
   for (let d = 0; d < point.length; d++) {
     margin += hyperplane[d] * point[d];
@@ -357,29 +287,20 @@ function selectSide(
   if (margin === 0) {
     const side = utils.tauRandInt(2, random);
     return side;
-  } else if (margin > 0) {
-    return 0;
-  } else {
-    return 1;
   }
+  if (margin > 0) {
+    return 0;
+  }
+  return 1;
 }
 
 /**
  * Searches a flattened rp-tree for a point.
  */
-export function searchFlatTree(
-  point: Vector,
-  tree: FlatTree,
-  random: RandomFn
-) {
+export function searchFlatTree(point: Vector, tree: FlatTree, random: RandomFn) {
   let node = 0;
   while (tree.children[node][0] > 0) {
-    const side = selectSide(
-      tree.hyperplanes[node],
-      tree.offsets[node],
-      point,
-      random
-    );
+    const side = selectSide(tree.hyperplanes[node], tree.offsets[node], point, random);
     if (side === 0) {
       node = tree.children[node][0];
     } else {

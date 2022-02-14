@@ -1,11 +1,11 @@
-import { ConnectedProps } from "react-redux";
+import { ConnectedProps } from 'react-redux';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     hoverSettings: {
         windowMode: any;
     };
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: string[];
+        selectedClusters: import("@reduxjs/toolkit").EntityId[];
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;
@@ -21,7 +21,7 @@ export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ 
     };
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: string[];
+        selectedClusters: import("@reduxjs/toolkit").EntityId[];
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;

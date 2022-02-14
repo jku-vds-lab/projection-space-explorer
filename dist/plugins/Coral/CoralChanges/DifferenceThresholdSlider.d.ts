@@ -1,4 +1,4 @@
-import React = require("react");
+import React = require('react');
 import { ConnectedProps } from 'react-redux';
 declare class simpleSlider extends React.Component<Props> {
     state: {

@@ -1,4 +1,4 @@
-import { DatasetType } from "./DatasetType";
+import { DatasetType } from './DatasetType';
 export declare type DatasetEntry = {
     display: string;
     path: string;

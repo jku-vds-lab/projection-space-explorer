@@ -1,14 +1,15 @@
-import { Scene } from "three";
-import THREE = require("three");
-import { IVector } from "../../model/Vector";
-import { DisplayMode } from "../Ducks/DisplayModeDuck";
-import React = require("react");
-import { ConnectedProps } from "react-redux";
-import { TrailVisualization } from "./TrailVisualization";
-import { IBook } from "../../model/Book";
-import { ViewTransformType } from "../Ducks";
+import { Scene } from 'three';
+import { EntityId } from '@reduxjs/toolkit';
+import THREE = require('three');
+import React = require('react');
+import { ConnectedProps } from 'react-redux';
+import { IVector } from '../../model/Vector';
+import { DisplayMode } from '../Ducks/DisplayModeDuck';
+import { TrailVisualization } from './TrailVisualization';
+import { IBook } from '../../model/Book';
+import { ViewTransformType } from '../Ducks';
 declare type ClusterObjectType = {
-    cluster: string;
+    cluster: EntityId;
     geometry: THREE.Geometry;
     material: THREE.MeshBasicMaterial;
     mesh: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>;
@@ -28,15 +29,15 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         show: any;
         length: number;
     };
-    stories: import("..").IStorytelling;
+    stories: import("../Ducks").IStorytelling;
     globalPointSize: number[];
     viewTransform: ViewTransformType;
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: string[];
+        selectedClusters: EntityId[];
         source: "sample" | "cluster";
     };
-    hoverState: import("..").HoverStateType;
+    hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
     workspace: import("../..").IBaseProjection;
 }, {}>;
@@ -65,21 +66,21 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         clusterScene: THREE.Scene;
         triangulationWorker: Worker;
         componentDidUpdate(prevProps: Props): void;
+        getColorForClusterObject(clusterObject: ClusterObjectType): THREE.Color;
         updateArrows(zoom: number): void;
         /**
          * Updates geometry of the trail mesh.
          */
         updateTrail(zoom: number): void;
-        iterateTrail(zoom: any): void;
+        iterateTrail(): void;
         updatePositions(zoom: number): void;
-        getColorForClusterObject(clusterObject: ClusterObjectType): THREE.Color;
         /**
          * Creates the visualization.
          */
         create(): void;
         highlightSamples(samples: IVector[]): void;
         deactivateAll(): void;
-        highlightCluster(indices?: string[]): void;
+        highlightCluster(indices?: EntityId[]): void;
         /**
          * Destroys the visualization.
          */
@@ -141,21 +142,21 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
     clusterScene: THREE.Scene;
     triangulationWorker: Worker;
     componentDidUpdate(prevProps: Props): void;
+    getColorForClusterObject(clusterObject: ClusterObjectType): THREE.Color;
     updateArrows(zoom: number): void;
     /**
      * Updates geometry of the trail mesh.
      */
     updateTrail(zoom: number): void;
-    iterateTrail(zoom: any): void;
+    iterateTrail(): void;
     updatePositions(zoom: number): void;
-    getColorForClusterObject(clusterObject: ClusterObjectType): THREE.Color;
     /**
      * Creates the visualization.
      */
     create(): void;
     highlightSamples(samples: IVector[]): void;
     deactivateAll(): void;
-    highlightCluster(indices?: string[]): void;
+    highlightCluster(indices?: EntityId[]): void;
     /**
      * Destroys the visualization.
      */
@@ -208,15 +209,15 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         show: any;
         length: number;
     };
-    stories: import("..").IStorytelling;
+    stories: import("../Ducks").IStorytelling;
     globalPointSize: number[];
     viewTransform: ViewTransformType;
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: string[];
+        selectedClusters: EntityId[];
         source: "sample" | "cluster";
     };
-    hoverState: import("..").HoverStateType;
+    hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
     workspace: import("../..").IBaseProjection;
 } & {

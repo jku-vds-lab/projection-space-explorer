@@ -1,7 +1,10 @@
-import { SchemeColor } from ".";
-import { ShallowSet } from "../ShallowSet";
-import { ScaleUtil } from "./ContinuosScale";
-import { BaseColorScale, APalette } from "../../Ducks/ColorScalesDuck";
+import { SchemeColor } from './SchemeColor';
+import { ShallowSet } from '../ShallowSet';
+import { BaseColorScale } from '../../../model/Palette';
+import { APalette } from '../../../model/palettes';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const d3v5 = require('d3v5');
 
 export abstract class Mapping {
   scale: BaseColorScale;
@@ -12,7 +15,6 @@ export abstract class Mapping {
 
   abstract map(value): any;
 }
-
 
 export class DiscreteMapping extends Mapping {
   values: ShallowSet;
@@ -28,12 +30,19 @@ export class DiscreteMapping extends Mapping {
   }
 
   map(value) {
-    const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette
-    return ScaleUtil.mapScale(this.scale, this.values.indexOf(value) % palette.length);
+    const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette;
+    return palette[this.values.indexOf(value) % palette.length];
   }
 }
 
-
+// ---usage example:
+// let background_colorMapping = new ContinuousMapping(
+//     {
+//         palette: [new SchemeColor('#fefefe'), new SchemeColor('#111111')],
+//         type: 'sequential'
+//     },
+//     range // needs to have the same range as the overview Dataset
+// );
 export class ContinuousMapping extends Mapping {
   range: any;
 
@@ -44,13 +53,19 @@ export class ContinuousMapping extends Mapping {
   }
 
   map(value): SchemeColor {
-    if (this.range.max == this.range.min) {
-      const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette
+    const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette;
+
+    if (this.range.max === this.range.min) {
       return palette[0];
     }
-    
-    var normalized = (value - this.range.min) / (this.range.max - this.range.min);
 
-    return ScaleUtil.mapScale(this.scale, normalized);
+    const normalized = (value - this.range.min) / (this.range.max - this.range.min);
+
+    const interpolator = d3v5
+      .scaleLinear()
+      .domain(palette.map((stop, index) => (1 / (palette.length - 1)) * index))
+      .range(palette.map((stop) => stop.hex));
+    const d3color = d3v5.color(interpolator(normalized));
+    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
   }
 }

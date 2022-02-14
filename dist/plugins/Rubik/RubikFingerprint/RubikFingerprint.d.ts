@@ -9,9 +9,9 @@ export declare class RubikFingerprint extends React.Component<RubikFingerprintPr
     canvasRef: React.RefObject<HTMLCanvasElement>;
     canvasContext: CanvasRenderingContext2D;
     constructor(props: RubikFingerprintProps);
-    renderToContext(): void;
     componentDidMount(): void;
     componentDidUpdate(prevProps: any): void;
+    renderToContext(): void;
     render(): JSX.Element;
 }
 export {};

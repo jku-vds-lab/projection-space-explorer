@@ -1,4 +1,4 @@
-import { ConnectedProps } from "react-redux";
+import { ConnectedProps } from 'react-redux';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     trailSettings: {
         show: boolean;

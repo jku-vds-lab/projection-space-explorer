@@ -1,4 +1,4 @@
-import { PSEPlugin } from "./PSEPlugin";
+import { PSEPlugin } from './PSEPlugin';
 export declare function getStoreDiff(storeA: any, storeB: any): {};
 export declare class PluginRegistry {
     private static instance;

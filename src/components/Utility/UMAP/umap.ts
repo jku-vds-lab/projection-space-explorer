@@ -57,12 +57,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import LM from 'ml-levenberg-marquardt';
 import * as heap from './heap';
 import * as matrix from './matrix';
 import * as nnDescent from './nn_descent';
 import * as tree from './tree';
 import * as utils from './utils';
-import LM from 'ml-levenberg-marquardt';
 
 export type DistanceFn = (x: Vector, y: Vector) => number;
 export type RandomFn = () => number;
@@ -213,37 +213,58 @@ export interface UMAPSupervisedParams {
  */
 export class UMAP {
   private learningRate = 1.0;
+
   private localConnectivity = 1.0;
+
   private minDist = 0.1;
+
   private nComponents = 2;
+
   private nEpochs = 0;
+
   private nNeighbors = 15;
+
   private negativeSampleRate = 5;
+
   private random = Math.random;
+
   private repulsionStrength = 1.0;
+
   private setOpMixRatio = 1.0;
+
   private spread = 1.0;
+
   private transformQueueSize = 4.0;
 
   // Supervised projection params
   private targetMetric = TargetMetric.categorical;
+
   private targetWeight = 0.5;
+
   private targetNNeighbors = this.nNeighbors;
 
   private distanceFn: DistanceFn = euclidean;
 
   // KNN state (can be precomputed and supplied via initializeFit)
   private knnIndices?: number[][];
+
   private knnDistances?: number[][];
 
   // Internal graph connectivity representation
   private graph!: matrix.SparseMatrix;
+
   private X!: Vectors;
+
   private isInitialized = false;
+
   private rpForest: tree.FlatTree[] = [];
+
   private initFromRandom!: nnDescent.InitFromRandomFn;
+
   private initFromTree!: nnDescent.InitFromTreeFn;
+
   private search!: nnDescent.SearchFn;
+
   private searchGraph!: matrix.SparseMatrix;
 
   // Supervised projection labels / targets
@@ -251,6 +272,7 @@ export class UMAP {
 
   // Projected embedding
   private embedding: number[][] = [];
+
   private optimizationState = new OptimizationState();
 
   constructor(params: UMAPParameters = {}) {
@@ -287,12 +309,8 @@ export class UMAP {
    * Fit the data to a projected embedding space asynchronously, with a callback
    * function invoked on every epoch of optimization.
    */
-  async fitAsync(
-    X: Vectors,
-    initialEmbedding: any,
-    callback: (epochNumber: number) => void | boolean = () => true
-  ) {
-    this.initializeFit(X ,initialEmbedding);
+  async fitAsync(X: Vectors, initialEmbedding: any, callback: (epochNumber: number) => void | boolean = () => true) {
+    this.initializeFit(X, initialEmbedding);
 
     await this.optimizeLayoutAsync(callback);
     return this.embedding;
@@ -340,11 +358,7 @@ export class UMAP {
       this.knnDistances = knnResults.knnDistances;
     }
 
-    this.graph = this.fuzzySimplicialSet(
-      X,
-      this.nNeighbors,
-      this.setOpMixRatio
-    );
+    this.graph = this.fuzzySimplicialSet(X, this.nNeighbors, this.setOpMixRatio);
 
     // Set up the search graph for subsequent transformation.
     this.makeSearchFns();
@@ -353,11 +367,7 @@ export class UMAP {
     // Check if supervised projection, then adjust the graph.
     this.processGraphForSupervisedProjection();
 
-    const {
-      head,
-      tail,
-      epochsPerSample,
-    } = this.initializeSimplicialSetEmbedding(initialEmbedding);
+    const { head, tail, epochsPerSample } = this.initializeSimplicialSetEmbedding(initialEmbedding);
 
     // Set the optimization routine state
     this.optimizationState.head = head;
@@ -373,9 +383,7 @@ export class UMAP {
   }
 
   private makeSearchFns() {
-    const { initFromTree, initFromRandom } = nnDescent.makeInitializations(
-      this.distanceFn
-    );
+    const { initFromTree, initFromRandom } = nnDescent.makeInitializations(this.distanceFn);
     this.initFromTree = initFromTree;
     this.initFromRandom = initFromRandom;
     this.search = nnDescent.makeInitializedNNSearch(this.distanceFn);
@@ -414,36 +422,19 @@ export class UMAP {
 
     let nNeighbors = Math.floor(this.nNeighbors * this.transformQueueSize);
     nNeighbors = Math.min(rawData.length, nNeighbors);
-    const init = nnDescent.initializeSearch(
-      this.rpForest,
-      rawData,
-      toTransform,
-      nNeighbors,
-      this.initFromRandom,
-      this.initFromTree,
-      this.random
-    );
+    const init = nnDescent.initializeSearch(this.rpForest, rawData, toTransform, nNeighbors, this.initFromRandom, this.initFromTree, this.random);
 
     const result = this.search(rawData, this.searchGraph, init, toTransform);
 
     let { indices, weights: distances } = heap.deheapSort(result);
 
-    indices = indices.map(x => x.slice(0, this.nNeighbors));
-    distances = distances.map(x => x.slice(0, this.nNeighbors));
+    indices = indices.map((x) => x.slice(0, this.nNeighbors));
+    distances = distances.map((x) => x.slice(0, this.nNeighbors));
 
     const adjustedLocalConnectivity = Math.max(0, this.localConnectivity - 1);
-    const { sigmas, rhos } = this.smoothKNNDistance(
-      distances,
-      this.nNeighbors,
-      adjustedLocalConnectivity
-    );
+    const { sigmas, rhos } = this.smoothKNNDistance(distances, this.nNeighbors, adjustedLocalConnectivity);
 
-    const { rows, cols, vals } = this.computeMembershipStrengths(
-      indices,
-      distances,
-      sigmas,
-      rhos
-    );
+    const { rows, cols, vals } = this.computeMembershipStrengths(indices, distances, sigmas, rhos);
 
     const size = [toTransform.length, rawData.length];
     let graph = new matrix.SparseMatrix(rows, cols, vals, size);
@@ -457,36 +448,19 @@ export class UMAP {
     const csrMatrix = matrix.getCSR(normed);
     const nPoints = toTransform.length;
 
-    const eIndices = utils.reshape2d(
-      csrMatrix.indices,
-      nPoints,
-      this.nNeighbors
-    );
+    const eIndices = utils.reshape2d(csrMatrix.indices, nPoints, this.nNeighbors);
 
-    const eWeights = utils.reshape2d(
-      csrMatrix.values,
-      nPoints,
-      this.nNeighbors
-    );
+    const eWeights = utils.reshape2d(csrMatrix.values, nPoints, this.nNeighbors);
 
     const embedding = initTransform(eIndices, eWeights, this.embedding);
 
-    const nEpochs = this.nEpochs
-      ? this.nEpochs / 3
-      : graph.nRows <= 10000
-      ? 100
-      : 30;
+    const nEpochs = this.nEpochs ? this.nEpochs / 3 : graph.nRows <= 10000 ? 100 : 30;
 
-    const graphMax = graph
-      .getValues()
-      .reduce((max, val) => (val > max ? val : max), 0);
-    graph = graph.map(value => (value < graphMax / nEpochs ? 0 : value));
+    const graphMax = graph.getValues().reduce((max, val) => (val > max ? val : max), 0);
+    graph = graph.map((value) => (value < graphMax / nEpochs ? 0 : value));
     graph = matrix.eliminateZeros(graph);
 
-    const epochsPerSample = this.makeEpochsPerSample(
-      graph.getValues(),
-      nEpochs
-    );
+    const epochsPerSample = this.makeEpochsPerSample(graph.getValues(), nEpochs);
     const head = graph.getRows();
     const tail = graph.getCols();
 
@@ -520,11 +494,7 @@ export class UMAP {
       if (this.targetMetric === TargetMetric.categorical) {
         const lt = this.targetWeight < 1.0;
         const farDist = lt ? 2.5 * (1.0 / (1.0 - this.targetWeight)) : 1.0e12;
-        this.graph = this.categoricalSimplicialSetIntersection(
-          this.graph,
-          Y,
-          farDist
-        );
+        this.graph = this.categoricalSimplicialSetIntersection(this.graph, Y, farDist);
       }
       // TODO (andycoenen@): add non-categorical supervised embeddings.
     }
@@ -570,12 +540,7 @@ export class UMAP {
     this.rpForest = tree.makeForest(X, nNeighbors, nTrees, this.random);
 
     const leafArray = tree.makeLeafArray(this.rpForest);
-    const { indices, weights } = metricNNDescent(
-      X,
-      leafArray,
-      nNeighbors,
-      nIters
-    );
+    const { indices, weights } = metricNNDescent(X, leafArray, nNeighbors, nIters);
     return { knnIndices: indices, knnDistances: weights };
   }
 
@@ -587,25 +552,12 @@ export class UMAP {
    * simplicial set for each such point, and then combining all the local
    * fuzzy simplicial sets into a global one via a fuzzy union.
    */
-  private fuzzySimplicialSet(
-    X: Vectors,
-    nNeighbors: number,
-    setOpMixRatio = 1.0
-  ) {
+  private fuzzySimplicialSet(X: Vectors, nNeighbors: number, setOpMixRatio = 1.0) {
     const { knnIndices = [], knnDistances = [], localConnectivity } = this;
 
-    const { sigmas, rhos } = this.smoothKNNDistance(
-      knnDistances,
-      nNeighbors,
-      localConnectivity
-    );
+    const { sigmas, rhos } = this.smoothKNNDistance(knnDistances, nNeighbors, localConnectivity);
 
-    const { rows, cols, vals } = this.computeMembershipStrengths(
-      knnIndices,
-      knnDistances,
-      sigmas,
-      rhos
-    );
+    const { rows, cols, vals } = this.computeMembershipStrengths(knnIndices, knnDistances, sigmas, rhos);
 
     const size = [X.length, X.length];
     const sparseMatrix = new matrix.SparseMatrix(rows, cols, vals, size);
@@ -627,18 +579,8 @@ export class UMAP {
    * data is assumed to be categorical label data (a vector of labels),
    * and this will update the fuzzy simplicial set to respect that label data.
    */
-  private categoricalSimplicialSetIntersection(
-    simplicialSet: matrix.SparseMatrix,
-    target: number[],
-    farDist: number,
-    unknownDist = 1.0
-  ) {
-    let intersection = fastIntersection(
-      simplicialSet,
-      target,
-      unknownDist,
-      farDist
-    );
+  private categoricalSimplicialSetIntersection(simplicialSet: matrix.SparseMatrix, target: number[], farDist: number, unknownDist = 1.0) {
+    let intersection = fastIntersection(simplicialSet, target, unknownDist, farDist);
     intersection = matrix.eliminateZeros(intersection);
     return resetLocalConnectivity(intersection);
   }
@@ -650,13 +592,7 @@ export class UMAP {
    * computing the distance such that the cardinality of fuzzy set we generate
    * is k.
    */
-  private smoothKNNDistance(
-    distances: Vectors,
-    k: number,
-    localConnectivity = 1.0,
-    nIter = 64,
-    bandwidth = 1.0
-  ) {
+  private smoothKNNDistance(distances: Vectors, k: number, localConnectivity = 1.0, nIter = 64, bandwidth = 1.0) {
     const target = (Math.log(k) / Math.log(2)) * bandwidth;
     const rho = utils.zeros(distances.length);
     const result = utils.zeros(distances.length);
@@ -668,16 +604,15 @@ export class UMAP {
 
       // TODO: This is very inefficient, but will do for now. FIXME
       const ithDistances = distances[i];
-      const nonZeroDists = ithDistances.filter(d => d > 0.0);
+      const nonZeroDists = ithDistances.filter((d) => d > 0.0);
 
       if (nonZeroDists.length >= localConnectivity) {
-        let index = Math.floor(localConnectivity);
-        let interpolation = localConnectivity - index;
+        const index = Math.floor(localConnectivity);
+        const interpolation = localConnectivity - index;
         if (index > 0) {
           rho[i] = nonZeroDists[index - 1];
           if (interpolation > SMOOTH_K_TOLERANCE) {
-            rho[i] +=
-              interpolation * (nonZeroDists[index] - nonZeroDists[index - 1]);
+            rho[i] += interpolation * (nonZeroDists[index] - nonZeroDists[index - 1]);
           }
         } else {
           rho[i] = interpolation * nonZeroDists[0];
@@ -743,7 +678,7 @@ export class UMAP {
     knnIndices: Vectors,
     knnDistances: Vectors,
     sigmas: number[],
-    rhos: number[]
+    rhos: number[],
   ): { rows: number[]; cols: number[]; vals: number[] } {
     const nSamples = knnIndices.length;
     const nNeighbors = knnIndices[0].length;
@@ -775,10 +710,6 @@ export class UMAP {
     return { rows, cols, vals };
   }
 
-
-
-
-
   /**
    * Initialize a fuzzy simplicial set embedding, using a specified
    * initialisation method and then minimizing the fuzzy set cross entropy
@@ -798,19 +729,18 @@ export class UMAP {
       }
     }
 
-    const graph = this.graph.map(value => {
+    const graph = this.graph.map((value) => {
       if (value < graphMax / nEpochs) {
         return 0;
-      } else {
-        return value;
       }
+      return value;
     });
 
     // We're not computing the spectral initialization in this implementation
     // until we determine a better eigenvalue/eigenvector computation
     // approach
     if (initialEmbedding) {
-      this.embedding = initialEmbedding
+      this.embedding = initialEmbedding;
     } else {
       this.embedding = utils.zeros(graph.nRows).map(() => {
         return utils.zeros(nComponents).map(() => {
@@ -818,7 +748,6 @@ export class UMAP {
         });
       });
     }
-
 
     // Get graph data in ordered way...
     const weights: number[] = [];
@@ -845,7 +774,7 @@ export class UMAP {
   private makeEpochsPerSample(weights: number[], nEpochs: number) {
     const result = utils.filled(weights.length, -1.0);
     const max = utils.max(weights);
-    const nSamples = weights.map(w => (w / max) * nEpochs);
+    const nSamples = weights.map((w) => (w / max) * nEpochs);
     nSamples.forEach((n, i) => {
       if (n > 0) result[i] = nEpochs / nSamples[i];
     });
@@ -867,18 +796,12 @@ export class UMAP {
     // Hyperparameters
     const { repulsionStrength, learningRate, negativeSampleRate } = this;
 
-    const {
-      epochsPerSample,
-      headEmbedding,
-      tailEmbedding,
-    } = this.optimizationState;
+    const { epochsPerSample, headEmbedding, tailEmbedding } = this.optimizationState;
 
     const dim = headEmbedding[0].length;
     const moveOther = headEmbedding.length === tailEmbedding.length;
 
-    const epochsPerNegativeSample = epochsPerSample.map(
-      e => e / negativeSampleRate
-    );
+    const epochsPerNegativeSample = epochsPerSample.map((e) => e / negativeSampleRate);
     const epochOfNextNegativeSample = [...epochsPerNegativeSample];
     const epochOfNextSample = [...epochsPerSample];
 
@@ -969,8 +892,8 @@ export class UMAP {
 
       let gradCoeff = 0;
       if (distSquared > 0) {
-        gradCoeff = -2.0 * a * b * Math.pow(distSquared, b - 1.0);
-        gradCoeff /= a * Math.pow(distSquared, b) + 1.0;
+        gradCoeff = -2.0 * a * b * distSquared ** (b - 1.0);
+        gradCoeff /= a * distSquared ** b + 1.0;
       }
 
       for (let d = 0; d < dim; d++) {
@@ -983,9 +906,7 @@ export class UMAP {
 
       epochOfNextSample[i] += epochsPerSample[i];
 
-      const nNegSamples = Math.floor(
-        (n - epochOfNextNegativeSample[i]) / epochsPerNegativeSample[i]
-      );
+      const nNegSamples = Math.floor((n - epochOfNextNegativeSample[i]) / epochsPerNegativeSample[i]);
 
       for (let p = 0; p < nNegSamples; p++) {
         const k = utils.tauRandInt(nVertices, this.random);
@@ -996,8 +917,7 @@ export class UMAP {
         let gradCoeff = 0.0;
         if (distSquared > 0.0) {
           gradCoeff = 2.0 * gamma * b;
-          gradCoeff /=
-            (0.001 + distSquared) * (a * Math.pow(distSquared, b) + 1);
+          gradCoeff /= (0.001 + distSquared) * (a * distSquared ** b + 1);
         } else if (j === k) {
           continue;
         }
@@ -1025,9 +945,7 @@ export class UMAP {
    * sampling edges based on their membership strength (with the (1-p) terms
    * coming from negative sampling similar to word2vec).
    */
-  private optimizeLayoutAsync(
-    epochCallback: (epochNumber: number) => void | boolean = () => true
-  ): Promise<boolean> {
+  private optimizeLayoutAsync(epochCallback: (epochNumber: number) => void | boolean = () => true): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const step = async () => {
         try {
@@ -1056,9 +974,7 @@ export class UMAP {
    * sampling edges based on their membership strength (with the (1-p) terms
    * coming from negative sampling similar to word2vec).
    */
-  private optimizeLayout(
-    epochCallback: (epochNumber: number) => void | boolean = () => true
-  ): Vectors {
+  private optimizeLayout(epochCallback: (epochNumber: number) => void | boolean = () => true): Vectors {
     let isFinished = false;
     let embedding: Vectors = [];
     while (!isFinished) {
@@ -1076,7 +992,7 @@ export class UMAP {
    * NOTE: This heuristic differs from the python version
    */
   private getNEpochs() {
-    const graph = this.graph;
+    const { graph } = this;
 
     if (this.nEpochs > 0) {
       return this.nEpochs;
@@ -1085,19 +1001,20 @@ export class UMAP {
     const length = graph.nRows;
     if (length <= 2500) {
       return 500;
-    } else if (length <= 5000) {
-      return 400;
-    } else if (length <= 7500) {
-      return 300;
-    } else {
-      return 200;
     }
+    if (length <= 5000) {
+      return 400;
+    }
+    if (length <= 7500) {
+      return 300;
+    }
+    return 200;
   }
 }
 
 // https://github.com/ecto/jaccard TODO: also for tsne and other projection methods
-export function jaccard(x: Vector, y: Vector){
-  var jaccard_dist = require('jaccard');
+export function jaccard(x: Vector, y: Vector) {
+  const jaccard_dist = require('jaccard');
   return jaccard_dist.index(x, y);
 }
 
@@ -1122,11 +1039,11 @@ export function cosine(x: Vector, y: Vector) {
 
   if (normX === 0 && normY === 0) {
     return 0;
-  } else if (normX === 0 || normY === 0) {
-    return 1.0;
-  } else {
-    return 1.0 - result / Math.sqrt(normX * normY);
   }
+  if (normX === 0 || normY === 0) {
+    return 1.0;
+  }
+  return 1.0 - result / Math.sqrt(normX * normY);
 }
 
 /**
@@ -1138,21 +1055,37 @@ class OptimizationState {
 
   // Data tracked during optimization steps.
   headEmbedding: number[][] = [];
+
   tailEmbedding: number[][] = [];
+
   head: number[] = [];
+
   tail: number[] = [];
+
   epochsPerSample: number[] = [];
+
   epochOfNextSample: number[] = [];
+
   epochOfNextNegativeSample: number[] = [];
+
   epochsPerNegativeSample: number[] = [];
+
   moveOther = true;
+
   initialAlpha = 1.0;
+
   alpha = 1.0;
+
   gamma = 1.0;
+
   a = 1.5769434603113077;
+
   b = 0.8950608779109733;
+
   dim = 2;
+
   nEpochs = 500;
+
   nVertices = 0;
 }
 
@@ -1161,8 +1094,8 @@ class OptimizationState {
  */
 function clip(x: number, clipValue: number) {
   if (x > clipValue) return clipValue;
-  else if (x < -clipValue) return -clipValue;
-  else return x;
+  if (x < -clipValue) return -clipValue;
+  return x;
 }
 
 /**
@@ -1171,7 +1104,7 @@ function clip(x: number, clipValue: number) {
 function rDist(x: number[], y: number[]) {
   let result = 0.0;
   for (let i = 0; i < x.length; i++) {
-    result += Math.pow(x[i] - y[i], 2);
+    result += (x[i] - y[i]) ** 2;
   }
   return result;
 }
@@ -1183,13 +1116,13 @@ function rDist(x: number[], y: number[]) {
  * best matches an offset exponential decay.
  */
 export function findABParams(spread: number, minDist: number) {
-  const curve = ([a, b]) => (x: number) => {
-    return 1.0 / (1.0 + a * x ** (2 * b));
-  };
+  const curve =
+    ([a, b]) =>
+    (x: number) => {
+      return 1.0 / (1.0 + a * x ** (2 * b));
+    };
 
-  const xv = utils
-    .linear(0, spread * 3, 300)
-    .map(val => (val < minDist ? 1.0 : val));
+  const xv = utils.linear(0, spread * 3, 300).map((val) => (val < minDist ? 1.0 : val));
 
   const yv = utils.zeros(xv.length).map((val, index) => {
     const gte = xv[index] >= minDist;
@@ -1217,20 +1150,15 @@ export function findABParams(spread: number, minDist: number) {
  * Under the assumption of categorical distance for the intersecting
  * simplicial set perform a fast intersection.
  */
-export function fastIntersection(
-  graph: matrix.SparseMatrix,
-  target: number[],
-  unknownDist = 1.0,
-  farDist = 5.0
-) {
+export function fastIntersection(graph: matrix.SparseMatrix, target: number[], unknownDist = 1.0, farDist = 5.0) {
   return graph.map((value, row, col) => {
     if (target[row] === -1 || target[col] === -1) {
       return value * Math.exp(-unknownDist);
-    } else if (target[row] !== target[col]) {
-      return value * Math.exp(-farDist);
-    } else {
-      return value;
     }
+    if (target[row] !== target[col]) {
+      return value * Math.exp(-farDist);
+    }
+    return value;
   });
 }
 
@@ -1244,10 +1172,7 @@ export function resetLocalConnectivity(simplicialSet: matrix.SparseMatrix) {
   simplicialSet = matrix.normalize(simplicialSet, matrix.NormType.max);
   const transpose = matrix.transpose(simplicialSet);
   const prodMatrix = matrix.pairwiseMultiply(transpose, simplicialSet);
-  simplicialSet = matrix.add(
-    simplicialSet,
-    matrix.subtract(transpose, prodMatrix)
-  );
+  simplicialSet = matrix.add(simplicialSet, matrix.subtract(transpose, prodMatrix));
   return matrix.eliminateZeros(simplicialSet);
 }
 
@@ -1256,14 +1181,8 @@ export function resetLocalConnectivity(simplicialSet: matrix.SparseMatrix) {
  * initialize the positions of new points relative to the
  * indices and weights (of their neighbors in the source data).
  */
-export function initTransform(
-  indices: number[][],
-  weights: number[][],
-  embedding: Vectors
-) {
-  const result = utils
-    .zeros(indices.length)
-    .map(z => utils.zeros(embedding[0].length));
+export function initTransform(indices: number[][], weights: number[][], embedding: Vectors) {
+  const result = utils.zeros(indices.length).map((z) => utils.zeros(embedding[0].length));
 
   for (let i = 0; i < indices.length; i++) {
     for (let j = 0; j < indices[0].length; j++) {

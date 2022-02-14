@@ -1,5 +1,6 @@
 export class ColorScheme {
   colors: any;
+
   mapping: any;
 
   constructor(colors) {

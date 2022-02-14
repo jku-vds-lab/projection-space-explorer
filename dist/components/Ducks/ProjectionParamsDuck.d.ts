@@ -1,6 +1,6 @@
-import { NormalizationMethod } from "../../model/NormalizationMethod";
-import { DistanceMetric } from "../../model/DistanceMetric";
-import { EncodingMethod } from "../../model/EncodingMethod";
+import { NormalizationMethod } from '../../model/NormalizationMethod';
+import { DistanceMetric } from '../../model/DistanceMetric';
+import { EncodingMethod } from '../../model/EncodingMethod';
 export declare const setProjectionParamsAction: (projectionParams: any) => {
     type: string;
     projectionParams: any;

@@ -1,5 +1,5 @@
 import { ConnectedProps } from 'react-redux';
-import { IVector } from "../../../model/Vector";
+import { IVector } from '../../../model/Vector';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     dataset: import("../../..").Dataset;
 }, {}>;
@@ -8,5 +8,5 @@ declare type Props = PropsFromRedux & {
     aggregate: boolean;
     selection: IVector[];
 };
-export declare var TrrackLegend: import("react-redux").ConnectedComponent<({ selection, dataset }: Props) => JSX.Element, Pick<Props, "aggregate" | "selection">>;
+export declare const TrrackLegend: import("react-redux").ConnectedComponent<({ selection }: Props) => JSX.Element, Pick<Props, "aggregate" | "selection">>;
 export {};
