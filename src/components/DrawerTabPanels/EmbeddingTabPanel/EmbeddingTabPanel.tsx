@@ -179,6 +179,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             return;
           }
 
+          stepRef.current = 0;
           setOpen(false);
           props.setProjectionColumns(selection);
           // props.setProjectionParams(params)
