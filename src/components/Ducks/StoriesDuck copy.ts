@@ -228,11 +228,11 @@ const bookSlice = createSlice({
 
       if (storyBook && storyBook.clusters) {
         ACluster.deriveVectorLabelsFromClusters(payload.vectors, Object.values(storyBook.clusters.entities));
+        state.active = storyBook.id;
       } else {
         ACluster.deriveVectorLabelsFromClusters(payload.vectors, []);
+        state.active = null;
       }
-
-      state.active = storyBook.id;
     });
 
     builder.addCase(addClusterToTrace.fulfilled, (state, { payload }) => {

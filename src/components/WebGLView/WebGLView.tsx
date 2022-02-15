@@ -45,6 +45,7 @@ import { ComponentConfig } from '../../BaseConfig';
 import { ANormalized } from '../Utility/NormalizedState';
 import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck copy';
 import { ProjectionSelectors } from '../Ducks/ProjectionDuck';
+import { Mapping } from '../Utility';
 
 type ViewState = {
   camera: Camera;
@@ -148,7 +149,7 @@ export const WebGLView = connector(
 
     pointScene: THREE.Scene;
 
-    vectorColorScheme: any;
+    vectorMapping: Mapping;
 
     prevTime: number;
 
@@ -745,14 +746,14 @@ export const WebGLView = connector(
       this.prevTime = performance.now();
     }
 
-    createVisualization(dataset, lineColorScheme, vectorColorScheme) {
+    createVisualization(dataset, lineColorScheme, vectorMapping) {
       this.disposeScene();
 
       this.scene = new THREE.Scene();
       this.pointScene = new THREE.Scene();
       this.segments = dataset.segments;
       this.lineColorScheme = lineColorScheme;
-      this.vectorColorScheme = vectorColorScheme;
+      this.vectorMapping = vectorMapping;
 
       // Update camera zoom to fit the problem
       this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight());
@@ -774,7 +775,7 @@ export const WebGLView = connector(
       }
 
       this.particles = new PointVisualization(
-        this.vectorColorScheme,
+        this.vectorMapping,
         this.props.dataset,
         window.devicePixelRatio * 8,
         this.lines?.grayedLayerSystem,
