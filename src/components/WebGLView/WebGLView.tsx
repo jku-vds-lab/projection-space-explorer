@@ -788,6 +788,9 @@ export const WebGLView = connector(
 
       // this.scene.add(this.particles.mesh);
       this.pointScene.add(this.particles.mesh);
+
+      
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
     }
 
     initializeContainerEvents() {
