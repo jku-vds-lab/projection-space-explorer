@@ -27,7 +27,7 @@ import {
   Typography,
   FormHelperText,
 } from '@mui/material';
-import { connect, ConnectedProps } from 'react-redux';
+import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -49,6 +49,7 @@ import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
 import { Dataset } from '../../../model/Dataset';
 import { StoriesActions, AStorytelling, IStorytelling, clusterAdapter } from '../../Ducks/StoriesDuck copy';
 import { ProjectionSelectors } from '../../Ducks/ProjectionDuck';
+import { ColorScalesActions } from '../../Ducks/ColorScalesDuck';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -101,6 +102,8 @@ export const ClusteringTabPanel = connector(
     baseUrl,
   }: Props) => {
     const categoryOptions = dataset?.categories;
+
+    const dispatch = useDispatch()
 
     function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory) {
       const loading_area = 'global_loading_indicator';
@@ -166,6 +169,8 @@ export const ClusteringTabPanel = connector(
 
             if (clusterAttribute) {
               setChannelColor(clusterAttribute);
+
+              dispatch(ColorScalesActions.initScaleByType(clusterAttribute.type));
             }
           })
           .catch((error) => console.log(error)),
