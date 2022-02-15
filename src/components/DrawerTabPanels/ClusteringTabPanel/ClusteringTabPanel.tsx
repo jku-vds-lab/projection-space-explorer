@@ -3,7 +3,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React = require('react');
-import { EntityId, createEntityAdapter } from '@reduxjs/toolkit';
+import { EntityId } from '@reduxjs/toolkit';
 import {
   Box,
   Button,
@@ -42,7 +42,6 @@ import { StoryPreview } from './StoryPreview';
 import * as backend_utils from '../../../utils/backend-connect';
 import { useCancellablePromise } from '../../../utils/promise-helpers';
 import { setChannelColor } from '../../Ducks/ChannelColorDuck';
-import { replaceClusterLabels } from '../../WebGLView/UtilityFunctions';
 import { GroupVisualizationMode, setGroupVisualizationMode } from '../../Ducks/GroupVisualizationMode';
 import { selectClusters } from '../../Ducks/AggregationDuck';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
@@ -103,7 +102,7 @@ export const ClusteringTabPanel = connector(
   }: Props) => {
     const categoryOptions = dataset?.categories;
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory) {
       const loading_area = 'global_loading_indicator';
@@ -136,7 +135,6 @@ export const ClusteringTabPanel = connector(
             const clusters: ICluster[] = new Array<ICluster>();
 
             dist_cluster_labels.forEach((cluster_label) => {
-              console.log(cluster_label);
               if (cluster_label >= 0) {
                 const current_cluster_vects = data_points.filter((x, i) => cluster_labels[i] === cluster_label);
                 const cluster = ACluster.fromSamples(
@@ -486,14 +484,14 @@ type ClusterPopoverProps = {
   cluster: ICluster;
   removeClusterFromStories: any;
   splitRef: any;
-  setSelectedCluster: any;
   dataset: Dataset;
 };
 
-function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeClusterFromStories, splitRef, setSelectedCluster }: ClusterPopoverProps) {
+function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeClusterFromStories, splitRef }: ClusterPopoverProps) {
   if (!cluster) return null;
 
   const [name, setName] = React.useState(cluster.label);
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     if (cluster && anchorEl) {
@@ -502,13 +500,8 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
   }, [anchorEl, cluster]);
 
   const onSave = () => {
-    cluster.label = name;
-    // Rename cluster labels in dataset
-    replaceClusterLabels(
-      cluster.indices.map((i) => dataset.vectors[i]),
-      cluster.label,
-      name,
-    );
+    dispatch(StoriesActions.changeClusterName({ cluster, name }));
+
     setAnchorEl(null);
   };
 
@@ -637,7 +630,6 @@ function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStor
         cluster={popoverCluster}
         removeClusterFromStories={removeClusterFromStories}
         splitRef={splitRef}
-        setSelectedCluster={setSelectedCluster}
       />
 
       <List>{storyItems}</List>

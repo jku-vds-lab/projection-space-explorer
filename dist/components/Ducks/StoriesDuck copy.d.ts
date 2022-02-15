@@ -98,6 +98,13 @@ export declare const StoriesActions: {
     }, {
         stories: IBook[];
     }, {}>;
+    changeClusterName: import("@reduxjs/toolkit").AsyncThunk<{
+        handle: EntityId;
+        name: string;
+    }, {
+        cluster: ICluster;
+        name: string;
+    }, {}>;
     selectSideBranch: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<number, string>;
     addEdgeToActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IEdge, string>;
     setActiveTraceState: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;

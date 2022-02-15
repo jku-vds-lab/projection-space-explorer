@@ -1378,7 +1378,6 @@ export const WebGLView = connector(
                     { x: this.mouseController.currentMousePosition.x, y: this.mouseController.currentMousePosition.y },
                     this.createTransform(),
                   );
-                  console.log(this.props.dataset.isSequential);
                   if (this.props.displayMode === DisplayMode.OnlyClusters) {
                     return;
                   }
