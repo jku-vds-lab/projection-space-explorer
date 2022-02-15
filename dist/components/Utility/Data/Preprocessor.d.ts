@@ -15,5 +15,5 @@ export declare class Preprocessor {
      * Infers the multiplicity attribute for this dataset.
      */
     inferMultiplicity(): void;
-    preprocess(ranges: any): any;
+    preprocess(ranges: any): any[];
 }

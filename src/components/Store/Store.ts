@@ -181,7 +181,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
   let channelColor;
 
   const defaultColorAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, 'color', 'algo', 'categorical');
-  if (defaultColorAttribute) {
+  if (defaultColorAttribute && !dataset.inferredColumns.includes('algo')) {
     channelColor = defaultColorAttribute;
   } else {
     channelColor = null;
@@ -218,9 +218,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
         activeTraceState: null,
       };
     } else if (dataset.isSequential) {
-      console.log('getting edges');
       const [edges] = graphLayout(dataset, clusters);
-      console.log(edges);
       if (edges.length > 0) {
         const storyArr = storyLayout(clusters, edges);
 

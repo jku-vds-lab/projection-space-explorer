@@ -264,10 +264,16 @@ export function StatesTabPanelFull({
             if (newValue && newValue !== '') {
               attribute = CategoryOptionsAPI.getCategory(categoryOptions, 'color').attributes.filter((a) => a.key === newValue)[0];
             }
+            if (attribute === undefined) {
+              attribute = null;
+            }
 
             setAdvancedColoringSelection(new Array(10000).fill(true));
             dispatch(setChannelColor(attribute));
-            dispatch(ColorScalesActions.initScaleByType(attribute.type));
+
+            if (attribute) {
+              dispatch(ColorScalesActions.initScaleByType(attribute.type));
+            }
           }}
         />
       ) : (

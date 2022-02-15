@@ -2,7 +2,6 @@
 import * as concaveman from 'concaveman';
 import * as libtess from 'libtess';
 import { isNumber } from 'util';
-import * as backend_utils from '../../utils/backend-connect';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ctx: Worker = self as any;
@@ -96,7 +95,7 @@ function processClusters(raw, xy) {
   return clusters;
 }
 
-function validKey(key: string) {
+function validKey(key: string | number) {
   if (isNumber(key) && key < 0) {
     return false;
   }
@@ -108,69 +107,7 @@ function validKey(key: string) {
  * Clustering endpoint that
  */
 self.addEventListener('message', function (e) {
-  if (e.data.type === 'point') {
-    const xy = e.data.load;
-
-    fetch(`${backend_utils.BASE_URL}/hdbscan`, {
-      method: 'POST',
-      body: JSON.stringify(xy),
-    }).then((response) => {
-      response.json().then((values) => {
-        // Get clusters
-        const clusters = processClusters(values.result, xy);
-
-        Object.keys(clusters).forEach((key) => {
-          if (!validKey(key)) return;
-          const cluster = clusters[key];
-
-          const bounds = {
-            minX: 10000,
-            maxX: -10000,
-            minY: 10000,
-            maxY: -10000,
-          };
-
-          const pts = cluster.points
-            .filter((e) => e.probability > 0.7)
-            .map((e) => {
-              const x = xy[e.meshIndex][0];
-              const y = xy[e.meshIndex][1];
-
-              if (x < bounds.minX) bounds.minX = x;
-              if (x > bounds.maxX) bounds.maxX = x;
-              if (y < bounds.minY) bounds.minY = y;
-              if (y > bounds.maxY) bounds.maxY = y;
-
-              return [x, y];
-            });
-
-          // Get hull of cluster
-          const polygon = concaveman(pts);
-
-          // Get triangulated hull for cluster
-          const triangulated = triangulate([polygon.flat()]);
-
-          cluster.hull = polygon;
-          cluster.triangulation = triangulated;
-        });
-
-        const context = self as any;
-        context.postMessage(clusters);
-      });
-    });
-  } else if (e.data.type === 'segment') {
-    const xy = e.data.load;
-
-    fetch(`${backend_utils.BASE_URL}/segmentation`, {
-      method: 'POST',
-      body: JSON.stringify(xy),
-    }).then((response) => {
-      const context = self as any;
-      response.json().then((values) => {
-        context.postMessage(values);
-      });
-    });
-  } else if (e.data.type === 'extract') {
+  if (e.data.type === 'extract') {
     // From input data [ [label], [label]... ] generate the clusters with triangulation
     const clusters = {};
 

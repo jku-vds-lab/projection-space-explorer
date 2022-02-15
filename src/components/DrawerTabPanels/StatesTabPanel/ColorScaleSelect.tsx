@@ -8,6 +8,10 @@ import { BaseColorScale } from '../../../model/Palette';
 import { APalette } from '../../../model/palettes';
 
 export function ColorScaleMenuItem({ scale }: { scale: BaseColorScale }) {
+  if (!scale) {
+    return null;
+  }
+
   const palette = typeof scale.palette === 'string' ? APalette.getByName(scale.palette) : scale.palette;
 
   if (scale.type === 'sequential') {

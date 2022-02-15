@@ -230,6 +230,8 @@ export class Dataset {
   // The edges between clusters.
   clusterEdges: IEdge[];
 
+  inferredColumns: string[];
+
   // Dictionary containing the key/value pairs for each column
   metaInformation;
 

@@ -47,7 +47,8 @@ import { GroupVisualizationMode, setGroupVisualizationMode } from '../../Ducks/G
 import { selectClusters } from '../../Ducks/AggregationDuck';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
 import { Dataset } from '../../../model/Dataset';
-import { StoriesActions, AStorytelling, IStorytelling } from '../../Ducks/StoriesDuck copy';
+import { StoriesActions, AStorytelling, IStorytelling, clusterAdapter } from '../../Ducks/StoriesDuck copy';
+import { ProjectionSelectors } from '../../Ducks/ProjectionDuck';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -55,7 +56,7 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   currentAggregation: state.currentAggregation,
   groupVisualizationMode: state.groupVisualizationMode,
-  workspace: state.projections.workspace,
+  workspace: ProjectionSelectors.getWorkspace(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -74,15 +75,12 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
   splitRef;
+  baseUrl: string;
 };
 
 const ContextPaper = styled(Paper)`
   padding: 10px;
 `;
-
-const bookAdapter = createEntityAdapter<IBook>({
-  selectId: (book) => book.id,
-});
 
 export const ClusteringTabPanel = connector(
   ({
@@ -100,6 +98,7 @@ export const ClusteringTabPanel = connector(
     groupVisualizationMode,
     setGroupVisualizationMode,
     setSelectedClusters,
+    baseUrl,
   }: Props) => {
     const categoryOptions = dataset?.categories;
 
@@ -109,15 +108,15 @@ export const ClusteringTabPanel = connector(
       const data_points =
         clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0
           ? currentAggregation.aggregation.map((i) => ({
-              ...workspace[i],
+              ...workspace.positions[i],
               meshIndex: i,
             }))
-          : dataset.vectors.map((v, i) => ({ ...workspace[i], meshIndex: i }));
+          : dataset.vectors.map((v, i) => ({ ...workspace.positions[i], meshIndex: i }));
 
       const points = data_points.map((point) => [point.x, point.y]);
 
       trackPromise(
-        cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster))
+        cancellablePromise(backend_utils.calculate_hdbscan_clusters(points, min_cluster_size, min_cluster_samples, allow_single_cluster, baseUrl))
           .then((data) => {
             const cluster_labels = data.result;
             const dist_cluster_labels = cluster_labels.filter((value, index, self) => {
@@ -130,7 +129,7 @@ export const ClusteringTabPanel = connector(
               return;
             }
 
-            const story: IBook = stories.active !== null ? AStorytelling.getActive(stories) : AStorytelling.emptyStory({ method: 'hdbscan' });
+            const story: IBook = AStorytelling.emptyStory({ method: 'hdbscan' });
             const clusters: ICluster[] = new Array<ICluster>();
 
             dist_cluster_labels.forEach((cluster_label) => {
@@ -150,11 +149,13 @@ export const ClusteringTabPanel = connector(
               }
             });
 
-            story.clusters.entities = clusters.reduce((prev, cur) => {
+            story.clusters = clusterAdapter.addMany(story.clusters, clusters);
+
+            /** story.clusters.entities = clusters.reduce((prev, cur) => {
               prev[cur.id] = cur;
               return prev;
             }, {});
-            story.clusters.ids = Object.keys(story.clusters.entities);
+            story.clusters.ids = Object.keys(story.clusters.entities); * */
 
             // if(!addClusterToCurrentStory){
             addStory(story);
