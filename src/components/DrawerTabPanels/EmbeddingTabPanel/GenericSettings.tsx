@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogTitle,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -161,6 +162,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
   return (
     <Dialog maxWidth="lg" open={open} onClose={onClose}>
       <DialogContent>
+        {domainSettings?.settings?.hideSettings ? <Container><DialogTitle>{domainSettings.name}</DialogTitle></Container> :
         <Container>
           {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && <FeaturePicker selection={selection} setSelection={setSelection} />}
 
@@ -247,7 +249,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
               </FormControl>
             </Grid>
           </Grid>
-        </Container>
+        </Container>}
       </DialogContent>
       <DialogActions>
         <Button color="primary" onClick={onClose}>

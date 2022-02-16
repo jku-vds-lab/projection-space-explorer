@@ -207,7 +207,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    // borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -228,7 +228,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -251,7 +251,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -272,7 +272,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -293,7 +293,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -316,8 +316,10 @@ export const Application = connector(
                       style={{
                         minWidth: 0,
                         flexGrow: 1,
-                        paddingTop: 16,
-                        paddingBottom: 16,
+                        padding: 12,
+                        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                        // paddingTop: 16,
+                        // paddingBottom: 16,
                       }}
                     />
                   </Tooltip>

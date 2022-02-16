@@ -12,6 +12,7 @@ export declare type EmbeddingMethod = {
     id: string;
     name: string;
     settings: {
+        hideSettings?: boolean;
         perplexity?: boolean;
         learningRate?: boolean;
         nneighbors?: boolean;
