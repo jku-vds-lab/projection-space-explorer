@@ -32,6 +32,9 @@ export declare const DEFAULT_EMBEDDINGS: {
     name: string;
     settings: {};
 }[];
+export declare type MouseInteractions = {
+    "mousemove": (coordinates: any, event_used: boolean) => void;
+};
 export declare type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
     encodings: EncodingChannel[];
@@ -47,6 +50,7 @@ export declare type ComponentConfig = Partial<{
     layers: Array<LayerSpec>;
     tabs: Array<TabSpec>;
     contextMenuItems: Array<ContextMenuItem>;
+    mouseInteractionHooks: MouseInteractions;
 }>;
 export declare type ContextMenuItem = {
     key: string;

@@ -661,8 +661,12 @@ export const WebGLView = connector(
         this.infoTimeout = setTimeout(() => {
           this.infoTimeout = null;
 
+          let event_used = false; // flag that shows, if the event already triggered sth
+          const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
+
           const cluster = this.chooseCluster(this.mouseController.currentMousePosition);
           if (cluster) {
+            event_used = true;
             if (this.currentHover !== cluster) {
               this.currentHover = cluster;
               this.props.setHoverState(cluster, UPDATER);
@@ -675,11 +679,10 @@ export const WebGLView = connector(
               this.requestRender();
             }
           } else {
-            const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
-
             const edge = this.chooseEdge(this.mouseController.currentMousePosition);
 
             if (edge) {
+              event_used = true;
               if (this.currentHover !== edge) {
                 this.currentHover = edge;
                 this.props.setHoverState(edge, UPDATER);
@@ -698,19 +701,28 @@ export const WebGLView = connector(
               }
 
               if (idx >= 0) {
+                event_used = true;
                 if (this.currentHover !== this.props.dataset.vectors[idx]) {
                   this.currentHover = this.props.dataset.vectors[idx];
 
                   this.props.setHoverState(this.props.dataset.vectors[idx], UPDATER);
                   this.requestRender();
                 }
-              } else if (this.currentHover) {
-                this.currentHover = null;
-                this.props.setHoverState(null, UPDATER);
-                this.requestRender();
-              }
+              } else{
+                if (this.currentHover) {
+                  this.currentHover = null;
+                  this.props.setHoverState(null, UPDATER);
+                  this.requestRender();
+                }
+              } 
             }
           }
+
+          // call custom hook
+          if(this.props?.overrideComponents?.mouseInteractionHooks["mousemove"] != null){
+            this.props?.overrideComponents?.mouseInteractionHooks["mousemove"](coords, event_used)
+          }
+
         }, 10);
       };
     }
