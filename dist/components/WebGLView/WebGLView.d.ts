@@ -16,6 +16,7 @@ import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
 import { DataLine } from '../../model/DataLine';
 import { ComponentConfig } from '../../BaseConfig';
+import { Mapping } from '../Utility';
 declare type ViewState = {
     camera: Camera;
     menuX: number;
@@ -59,7 +60,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
     workspace: import("../..").IBaseProjection;
     colorScales: {
-        scales: import("../Utility/NormalizedState").NormalizedDictionary<import("../..").BaseColorScale>;
+        scales: import("../Utility").NormalizedDictionary<import("../..").BaseColorScale>;
         active: string;
     };
     pointDisplay: {
@@ -112,7 +113,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         lineColorScheme: any;
         segments: DataLine[];
         pointScene: THREE.Scene;
-        vectorColorScheme: any;
+        vectorMapping: Mapping;
         prevTime: number;
         sourcePosition: any;
         targetPosition: {
@@ -176,7 +177,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
          */
         initMouseController(): void;
         setupRenderer(): void;
-        createVisualization(dataset: any, lineColorScheme: any, vectorColorScheme: any): void;
+        createVisualization(dataset: any, lineColorScheme: any, vectorMapping: any): void;
         initializeContainerEvents(): void;
         filterLines(algo: any, show: any): void;
         /**
@@ -257,7 +258,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     lineColorScheme: any;
     segments: DataLine[];
     pointScene: THREE.Scene;
-    vectorColorScheme: any;
+    vectorMapping: Mapping;
     prevTime: number;
     sourcePosition: any;
     targetPosition: {
@@ -321,7 +322,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
      */
     initMouseController(): void;
     setupRenderer(): void;
-    createVisualization(dataset: any, lineColorScheme: any, vectorColorScheme: any): void;
+    createVisualization(dataset: any, lineColorScheme: any, vectorMapping: any): void;
     initializeContainerEvents(): void;
     filterLines(algo: any, show: any): void;
     /**
@@ -415,7 +416,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
     workspace: import("../..").IBaseProjection;
     colorScales: {
-        scales: import("../Utility/NormalizedState").NormalizedDictionary<import("../..").BaseColorScale>;
+        scales: import("../Utility").NormalizedDictionary<import("../..").BaseColorScale>;
         active: string;
     };
     pointDisplay: {

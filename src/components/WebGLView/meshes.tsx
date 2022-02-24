@@ -347,7 +347,7 @@ export class PointVisualization {
 
   particleSize: any;
 
-  vectorColorScheme: Mapping;
+  vectorMapping: Mapping;
 
   dataset: Dataset;
 
@@ -373,10 +373,10 @@ export class PointVisualization {
 
   pathLengthRange: any;
 
-  constructor(vectorColorScheme, dataset: Dataset, size, lineLayerSystem: LayeringSystem, segments) {
+  constructor(vectorMapping: Mapping, dataset: Dataset, size, lineLayerSystem: LayeringSystem, segments) {
     this.highlightIndex = null;
     this.particleSize = size;
-    this.vectorColorScheme = vectorColorScheme;
+    this.vectorMapping = vectorMapping;
     this.dataset = dataset;
 
     this.showSymbols = { cross: true, square: true, circle: true, star: true };
@@ -620,12 +620,9 @@ export class PointVisualization {
     this.colorAttribute = category;
 
     if (category == null) {
-      this.vectorColorScheme = null;
-    } else if (category.type === 'categorical') {
-      this.vectorColorScheme = scale;
-    } else if (category.type !== 'categorical') {
-      this.vectorColorScheme = scale;
-      // this.vectorColorScheme = new ContinuousMapping(scale, { min: min, max: max })
+      this.vectorMapping = null;
+    } else {
+      this.vectorMapping = scale;
     }
 
     this.updateColor();
@@ -638,12 +635,12 @@ export class PointVisualization {
   }
 
   getMapping() {
-    return this.vectorColorScheme;
+    return this.vectorMapping;
   }
 
   setColorScale(colorScale) {
-    if (this.vectorColorScheme != null) {
-      this.vectorColorScheme.scale = colorScale;
+    if (this.vectorMapping != null) {
+      this.vectorMapping.scale = colorScale;
     }
   }
 
@@ -773,6 +770,7 @@ export class PointVisualization {
       let rgb = null;
 
       if (this.dataset.isSequential) {
+        // sequential
         if (this.lineLayerSystem.getValue(vector.__meta__.lineIndex)) {
           rgb = {
             r: 192.0,
@@ -780,14 +778,13 @@ export class PointVisualization {
             b: 192.0,
           };
         } else if (this.colorAttribute != null) {
-          const m = this.vectorColorScheme.map(vector[this.colorAttribute.key]);
+          const m = this.vectorMapping.map(vector[this.colorAttribute.key]);
           rgb = m.rgb;
-          // vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
 
-          if (this.vectorColorScheme instanceof ContinuousMapping) {
+          if (this.vectorMapping instanceof ContinuousMapping) {
             vector.__meta__.intrinsicColor = null;
-          } else if (this.vectorColorScheme instanceof DiscreteMapping) {
-            vector.__meta__.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key]);
+          } else if (this.vectorMapping instanceof DiscreteMapping) {
+            vector.__meta__.intrinsicColor = this.vectorMapping.index(vector[this.colorAttribute.key]);
           }
         } else {
           const col = this.vectorSegmentLookup[i].__meta__.lineMesh.material.color;
@@ -805,13 +802,13 @@ export class PointVisualization {
           b: 192.0,
         };
       } else if (this.colorAttribute != null) {
-        const m = this.vectorColorScheme.map(vector[this.colorAttribute.key]);
+        const m = this.vectorMapping.map(vector[this.colorAttribute.key]);
         rgb = m.rgb;
 
-        if (this.vectorColorScheme instanceof ContinuousMapping) {
+        if (this.vectorMapping instanceof ContinuousMapping) {
           vector.__meta__.intrinsicColor = null;
-        } else if (this.vectorColorScheme instanceof DiscreteMapping) {
-          vector.__meta__.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key]);
+        } else if (this.vectorMapping instanceof DiscreteMapping) {
+          vector.__meta__.intrinsicColor = this.vectorMapping.index(vector[this.colorAttribute.key]);
         }
       } else {
         rgb = { r: 127.0, g: 201, b: 127 };

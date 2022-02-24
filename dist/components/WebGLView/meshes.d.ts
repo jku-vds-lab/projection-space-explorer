@@ -41,7 +41,7 @@ export declare class LineVisualization {
 export declare class PointVisualization {
     highlightIndex: any;
     particleSize: any;
-    vectorColorScheme: Mapping;
+    vectorMapping: Mapping;
     dataset: Dataset;
     showSymbols: any;
     colorsChecked: any;
@@ -54,7 +54,7 @@ export declare class PointVisualization {
     grayedLayerSystem: LayeringSystem;
     lineLayerSystem: LayeringSystem;
     pathLengthRange: any;
-    constructor(vectorColorScheme: any, dataset: Dataset, size: any, lineLayerSystem: LayeringSystem, segments: any);
+    constructor(vectorMapping: Mapping, dataset: Dataset, size: any, lineLayerSystem: LayeringSystem, segments: any);
     createMesh(data: any, segments: any, onUpload: any): void;
     /**
      * Applies the gray-out effect on the particles based on the given story model

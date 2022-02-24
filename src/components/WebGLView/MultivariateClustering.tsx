@@ -154,8 +154,6 @@ export const MultivariateClustering = connector(
 
       // If we have clusters now... and are on clusters tab... create cluster visualization
       if (prevProps.stories !== this.props.stories) {
-        console.log('DESTROY STORIES');
-        console.log(this.props.stories);
         this.destroy();
         this.disposeTriangulatedMesh();
 

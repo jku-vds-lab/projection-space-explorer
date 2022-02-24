@@ -8,6 +8,7 @@ import { IEdge } from '../../model/Edge';
 import { IBook } from '../../model/Book';
 import { ObjectTypes } from '../../model/ObjectType';
 import type { RootState } from '../Store';
+import { replaceClusterLabels } from '../WebGLView/UtilityFunctions';
 
 export const bookAdapter = createEntityAdapter<IBook>({
   selectId: (book) => book.id,
@@ -65,6 +66,20 @@ const addBookAsync = createAsyncThunk('stories/addBook', async ({ book, activate
   ACluster.deriveVectorLabelsFromClusters(state.dataset.vectors, Object.values(book.clusters.entities));
 
   return { book, activate };
+});
+
+const changeClusterName = createAsyncThunk('stories/changeClusterName', async ({ cluster, name }: { cluster: ICluster; name: string }, { getState }) => {
+  const state = getState() as RootState;
+
+  //ACluster.deriveVectorLabelsFromClusters(state.dataset.vectors, Object.values(book.clusters.entities));
+  // Rename cluster labels in dataset
+  replaceClusterLabels(
+    cluster.indices.map((i) => state.dataset.vectors[i]),
+    cluster.label,
+    name,
+  );
+
+  return { handle: cluster.id, name };
 });
 
 const deleteBookAsync = createAsyncThunk('stories/deleteBook', async ({ book }: { book: EntityId }, { getState }) => {
@@ -182,6 +197,11 @@ const bookSlice = createSlice({
       }
     });
 
+    builder.addCase(changeClusterName.fulfilled, (state, { payload }) => {
+      const story = state.stories.entities[state.active];
+      story.clusters.entities[payload.handle].label = payload.name;
+    });
+
     builder.addCase(addCluster.fulfilled, (state, { payload }) => {
       const active = state.stories.entities[state.active];
 
@@ -228,11 +248,11 @@ const bookSlice = createSlice({
 
       if (storyBook && storyBook.clusters) {
         ACluster.deriveVectorLabelsFromClusters(payload.vectors, Object.values(storyBook.clusters.entities));
+        state.active = storyBook.id;
       } else {
         ACluster.deriveVectorLabelsFromClusters(payload.vectors, []);
+        state.active = null;
       }
-
-      state.active = storyBook.id;
     });
 
     builder.addCase(addClusterToTrace.fulfilled, (state, { payload }) => {
@@ -323,5 +343,15 @@ export type IStorytelling = {
   }
 }**/
 
-export const StoriesActions = { ...bookSlice.actions, addBookAsync, addCluster, deleteCluster, setActiveStoryBook, addClusterToTrace, deleteBookAsync, set };
+export const StoriesActions = {
+  ...bookSlice.actions,
+  addBookAsync,
+  addCluster,
+  deleteCluster,
+  setActiveStoryBook,
+  addClusterToTrace,
+  deleteBookAsync,
+  set,
+  changeClusterName,
+};
 export const stories = bookSlice.reducer;
