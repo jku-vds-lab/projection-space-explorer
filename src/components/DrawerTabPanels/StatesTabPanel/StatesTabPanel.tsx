@@ -62,7 +62,7 @@ export function SelectFeatureComponent({ label, default_val, categoryOptions, on
   if (categoryOptions != null) {
     autocomplete_options = autocomplete_options.concat(
       categoryOptions.attributes.map((attribute) => {
-        let group = null;
+        let group = "Default";
         if (column_info != null && attribute.key in column_info) {
           group = column_info[attribute.key].featureLabel;
         }

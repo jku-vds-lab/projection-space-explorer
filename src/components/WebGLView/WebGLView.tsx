@@ -342,6 +342,12 @@ export const WebGLView = connector(
 
     onMouseDown(event) {
       event.preventDefault();
+      
+      // call custom hook
+      if(this.props?.overrideComponents?.mouseInteractionHooks["mousedown"] != null){
+        const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
+        this.props?.overrideComponents?.mouseInteractionHooks["mousedown"](coords)
+      }
       if (this.props.dataset) this.mouseController.mouseDown(event);
     }
 
@@ -352,6 +358,12 @@ export const WebGLView = connector(
 
     onMouseUp(event: MouseEvent) {
       event.preventDefault();
+      
+      // call custom hook
+      if(this.props?.overrideComponents?.mouseInteractionHooks["mouseup"] != null){
+        const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
+        this.props?.overrideComponents?.mouseInteractionHooks["mouseup"](coords)
+      }
       if (this.props.dataset) this.mouseController.mouseUp(event);
     }
 
@@ -550,9 +562,12 @@ export const WebGLView = connector(
       };
 
       this.mouseController.onContext = (event: MouseEvent, button: number) => {
+        let event_used = false;
+
         switch (button) {
-          case 0:
+          case 0: // left-click
             if (this.props.activeLine) {
+              event_used = true;
               break;
             }
 
@@ -560,6 +575,7 @@ export const WebGLView = connector(
               const target = this.chooseCluster({ x: event.offsetX, y: event.offsetY });
 
               if (target) {
+                event_used = true;
                 const activeStory = AStorytelling.getActive(this.props.stories);
                 // We want to select a trace between 2 clusters
                 const paths = ABook.depthFirstSearch(
@@ -599,21 +615,26 @@ export const WebGLView = connector(
 
               this.traceSelect = null;
             } else if (this.currentHover && isVector(this.currentHover)) {
+              event_used = true;
               // We click on a hover target
               this.props.selectVectors([this.currentHover.__meta__.meshIndex], event.ctrlKey);
             } else if (this.currentHover && isCluster(this.currentHover)) {
+              event_used = true;
               const activeStory = AStorytelling.getActive(this.props.stories);
               this.props.setSelectedCluster(
                 [Object.keys(activeStory.clusters.entities).find((key) => activeStory.clusters.entities[key] === this.currentHover)],
                 event.ctrlKey,
               );
+            } else {
+              this.clearSelection()
             }
 
             break;
-          case 2: {
+          case 2: { // right-click
             const cluster = this.chooseCluster({ x: event.offsetX, y: event.offsetY });
 
             if (cluster) {
+              event_used = true;
               this.setState({
                 menuX: event.clientX,
                 menuY: event.clientY,
@@ -622,6 +643,7 @@ export const WebGLView = connector(
             } else {
               const edge = this.chooseEdge(this.mouseController.currentMousePosition);
               if (edge) {
+                event_used = true;
                 this.setState({
                   menuX: event.clientX,
                   menuY: event.clientY,
@@ -640,6 +662,12 @@ export const WebGLView = connector(
           }
           default:
             break;
+        }
+
+        // call custom hook
+        if(this.props?.overrideComponents?.mouseInteractionHooks["mouseclick"] != null){
+          const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
+          this.props?.overrideComponents?.mouseInteractionHooks["mouseclick"](coords, event_used, button)
         }
       };
 

@@ -17,6 +17,7 @@ export declare class MouseController {
     onDragEnd: (event: MouseEvent, button: number) => void;
     onDragMove: (event: MouseEvent, button: number) => void;
     onContext: (event: MouseEvent, button: number) => void;
+    onMouseDown: (event: MouseEvent) => void;
     onMouseUp: (event: MouseEvent) => void;
     onMouseMove: (event: MouseEvent) => void;
     onMouseLeave: (event: MouseEvent) => void;
