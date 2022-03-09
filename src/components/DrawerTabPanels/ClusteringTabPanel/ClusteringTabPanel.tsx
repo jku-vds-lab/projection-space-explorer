@@ -515,7 +515,7 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
 
     const curr_sizes = splitRef.current.split.getSizes();
     if (curr_sizes[1] < 2) {
-      splitRef.current.split.setSizes([curr_sizes[0], 70]);
+      splitRef.current.split.setSizes([30, 70]);
     }
   };
 

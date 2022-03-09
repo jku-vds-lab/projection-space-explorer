@@ -380,9 +380,9 @@ export const Application = connector(
                 {this.props.overrideComponents?.tabs?.map((tab, i) => {
                   return (
                     <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={5 + i}>
-                      {React.createElement(tab.tab, {
-                        splitRef: this.splitRef,
-                      })}
+                      {React.isValidElement(tab.tab)
+                        ? tab.tab
+                        : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i`, splitRef: this.splitRef })}
                     </FixedHeightTabPanel>
                   );
                 })}

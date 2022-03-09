@@ -182,6 +182,10 @@ const bookSlice = createSlice({
         state.trace = null;
       }
     },
+    changeBookName(state, action: PayloadAction<{ id: EntityId; name: string }>) {
+      const { id, name } = action.payload;
+      bookAdapter.updateOne(state.stories, { id, changes: { name } });
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(addBookAsync.fulfilled, (state, { payload }) => {

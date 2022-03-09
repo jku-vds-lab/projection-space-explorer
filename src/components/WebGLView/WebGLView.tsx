@@ -741,8 +741,6 @@ export const WebGLView = connector(
 
       this.containerRef.current.appendChild(this.renderer.domElement);
 
-      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
-
       this.prevTime = performance.now();
     }
 
@@ -760,6 +758,8 @@ export const WebGLView = connector(
       this.camera.position.x = 0.0;
       this.camera.position.y = 0.0;
       this.camera.updateProjectionMatrix();
+
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
 
       this.setState({
         camera: this.camera,
