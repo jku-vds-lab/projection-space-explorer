@@ -11,6 +11,7 @@ import BarChart from './BarChart';
 import VegaDensity from './VegaDensity';
 import VegaDate from './VegaDate';
 import type { RootState } from '../../../components/Store/Store';
+import { DefaultLegend } from '../../..';
 
 const useStyles = makeStyles({
   table: {
@@ -284,5 +285,8 @@ type Props = PropsFromRedux & {
 };
 
 export var CoralLegend = connector(({ selection, aggregate, legendAttributes, dataset }: Props) => {
+  if(selection.length <= 0){
+    return <DefaultLegend></DefaultLegend>
+  }
   return getTable(selection, aggregate, legendAttributes, dataset);
 });

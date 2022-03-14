@@ -6,5 +6,6 @@ declare type GenericLegendProps = {
     aggregate: boolean;
     scale?: number;
 };
+export declare const DefaultLegend: () => JSX.Element;
 export declare function GenericLegend({ type, vectors, aggregate, scale }: GenericLegendProps): JSX.Element;
 export {};

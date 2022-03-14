@@ -8,6 +8,7 @@ import { IVector } from '../../model/Vector';
 import { PluginRegistry } from '../Store/PluginScript';
 import { DatasetType } from '../../model/DatasetType';
 import { GoLegend } from '../../plugins/Go/GoLegend';
+import { Box, Typography } from '@mui/material';
 
 type GenericLegendProps = {
   type: DatasetType;
@@ -15,6 +16,8 @@ type GenericLegendProps = {
   aggregate: boolean;
   scale?: number;
 };
+
+export const DefaultLegend = () => <Box paddingLeft={2}><Typography color="textSecondary">Select Points in the Embedding Space to show a Summary Visualization.</Typography></Box>
 
 // shows single and aggregated view
 export function GenericLegend({ type, vectors, aggregate, scale = 2 }: GenericLegendProps) {

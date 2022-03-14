@@ -43,14 +43,15 @@ const SelectionClustersFull = function ({ dataset, currentAggregation, hoverStat
     setVectors(currentAggregation.aggregation.map((i) => dataset.vectors[i]));
   }, [currentAggregation]);
 
-  const genericAggregateLegend =
-    currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? (
-      <GenericLegend aggregate type={dataset.type} vectors={vectors} />
-    ) : (
-      <Box paddingLeft={2}>
-        <Typography color="textSecondary">Select Points in the Embedding Space to show a Summary Visualization.</Typography>
-      </Box>
-    );
+  // const genericAggregateLegend =
+  //   currentAggregation.aggregation && currentAggregation.aggregation.length > 0 ? (
+  //     <GenericLegend aggregate type={dataset.type} vectors={vectors} />
+  //   ) : (
+  //     <Box paddingLeft={2}>
+  //       <Typography color="textSecondary">Select Points in the Embedding Space to show a Summary Visualization.</Typography>
+  //     </Box>
+  //   );
+  const genericAggregateLegend = <GenericLegend aggregate type={dataset.type} vectors={vectors} />
 
   return (
     <div
