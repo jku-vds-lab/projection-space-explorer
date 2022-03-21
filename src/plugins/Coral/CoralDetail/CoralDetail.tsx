@@ -53,8 +53,6 @@ function mapDensityData(allData, selectedData, feature) {
 }
 
 function mapBarChartData(allData, selectedData, feature) {
-  console.log('selectedData', selectedData)
-  console.log('feature', feature)
   const selectedCounts = {};
   for (let i = 0; i < selectedData.length; i++) {
     if (selectedData[i][feature] in selectedCounts) {
@@ -63,9 +61,7 @@ function mapBarChartData(allData, selectedData, feature) {
       selectedCounts[selectedData[i][feature]] = 1;
     }
   }
-  console.log('selectedData[0][feature] :>> ', selectedData[0][feature]);
-  console.log('counts[selectedData[0][feature]] :>> ', selectedCounts[selectedData[0][feature]]);
-
+  
   const allCounts = {};
   for (let i = 0; i < allData.length; i++) {
     if (allData[i][feature] in allCounts) {
@@ -94,8 +90,6 @@ function mapBarChartData(allData, selectedData, feature) {
     categoryMap[x.category] = i
     x.id = i
   })
-  console.log('categoryMap :>> ', categoryMap);
-  console.log('selectedBarChartData :>> ', selectedBarChartData);
   const l = selectedBarChartData.length
   var idxCounter = l
 
@@ -116,7 +110,6 @@ function mapBarChartData(allData, selectedData, feature) {
 
   const barChartData = [...allBarChartData, ...selectedBarChartData];
 
-  console.log('barChartData', barChartData)
   return { values: barChartData };
 }
 
