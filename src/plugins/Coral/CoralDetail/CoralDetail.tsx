@@ -227,7 +227,6 @@ function genRows(vectors, aggregation, legendAttributes, dataset) {
         // quantitative feature
         const densityData = mapDensityData(dataset.vectors, vectors, key);
         // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
-        console.log('densityData', densityData)
         rows.push([
           key,
           '',
