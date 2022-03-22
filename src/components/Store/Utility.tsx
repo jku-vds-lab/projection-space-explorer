@@ -1,10 +1,10 @@
+import * as THREE from 'three';
 import { createLinearRangeScaler } from '../Utility/ScalingAndAxes';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { IBaseProjection } from '../../model/ProjectionInterfaces';
 import { CubicBezierCurve } from '../../model/Curves';
 import type { RootState } from './Store';
-import { ProjectionSelectors } from '../Ducks/ProjectionDuck';
-import * as THREE from 'three';
+import { ViewSelector } from '../Ducks/ViewDuck';
 
 function calcBounds(positions: IBaseProjection) {
   // Get rectangle that fits around data set
@@ -178,6 +178,8 @@ export class UtilityActions {
     try {
       const provided = ctx !== null && ctx !== undefined;
 
+      const { channelColor, channelSize, globalPointSize, pointColorMapping } = state.multiples.multiples.entities[state.multiples.active].attributes;
+
       let canvas = null;
       if (!ctx) {
         canvas = new OffscreenCanvas(width, height);
@@ -193,9 +195,9 @@ export class UtilityActions {
       ctx.closePath();
       ctx.beginPath();
 
-      const mapping = state.pointColorMapping;
+      const mapping = pointColorMapping;
 
-      const positions = ProjectionSelectors.getWorkspace(state)?.positions;
+      const positions = ViewSelector.getWorkspace(state)?.positions;
 
       const bounds = calcBounds(positions);
 
@@ -245,11 +247,11 @@ export class UtilityActions {
 
       let pointSizeScaler = null;
 
-      if (state.channelSize) {
+      if (channelSize) {
         pointSizeScaler = createLinearRangeScaler(
-          state.globalPointSize as any,
-          state.dataset.columns[state.channelSize.key].range.min,
-          state.dataset.columns[state.channelSize.key].range.max,
+          globalPointSize as any,
+          state.dataset.columns[channelSize.key].range.min,
+          state.dataset.columns[channelSize.key].range.max,
         );
       }
 
@@ -267,7 +269,7 @@ export class UtilityActions {
 
         const color = isSelected(index)
           ? mapping
-            ? (mapping.map(state.dataset.vectors[index][state.channelColor.key]) as SchemeColor)
+            ? (mapping.map(state.dataset.vectors[index][channelColor.key]) as SchemeColor)
             : new SchemeColor('#7fc97f')
           : new SchemeColor('#c0c0c0');
 
@@ -278,13 +280,7 @@ export class UtilityActions {
 
         ctx.globalAlpha = options?.pointBrightness ?? 0.5;
         ctx.moveTo(sx(x), sy(y));
-        ctx.arc(
-          sx(x),
-          sy(y),
-          (options?.pointSize ?? 4) * (state.channelSize ? pointSizeScaler(state.dataset.vectors[index][state.channelSize.key]) : 1),
-          0,
-          2 * Math.PI,
-        );
+        ctx.arc(sx(x), sy(y), (options?.pointSize ?? 4) * (channelSize ? pointSizeScaler(state.dataset.vectors[index][channelSize.key]) : 1), 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
       });

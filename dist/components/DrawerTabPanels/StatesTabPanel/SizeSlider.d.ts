@@ -2,12 +2,12 @@ export declare const SizeSliderMarks: {
     value: number;
     label: string;
 }[];
-declare function SizeSliderFull({ sizeScale, setRange }: {
-    sizeScale: any;
+declare function SizeSliderFull({ globalPointSize, setRange }: {
+    globalPointSize: any;
     setRange: any;
 }): JSX.Element;
 export declare const SizeSlider: import("react-redux").ConnectedComponent<typeof SizeSliderFull, Pick<{
-    sizeScale: any;
+    globalPointSize: any;
     setRange: any;
-}, never>>;
+}, "globalPointSize">>;
 export {};

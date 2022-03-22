@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { createSlice, PayloadAction, createEntityAdapter, EntityState, EntityId, Update, createSelector } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createEntityAdapter, EntityState, EntityId, Update, createSelector, createAsyncThunk } from '@reduxjs/toolkit';
 import { IProjection, IPosition, ProjectionMethod } from '../../model/ProjectionInterfaces';
 import type { RootState } from '../Store';
 
@@ -13,7 +13,7 @@ const initialState: ProjectionStateType = {
   workspace: undefined,
 };
 
-const projectionsSlice = createSlice({
+export const projectionsSlice = createSlice({
   name: 'projections',
   initialState,
   reducers: {
@@ -82,7 +82,7 @@ export type ProjectionStateType = {
 export const embeddings = projectionsSlice.reducer;
 export const ProjectionActions = { ...projectionsSlice.actions };
 
-export const ProjectionSelectors = {
+/**export const ProjectionSelectors = {
   getWorkspace: createSelector(
     (state: RootState) =>
       typeof state.projections.workspace === 'string' || typeof state.projections.workspace === 'number'
@@ -98,4 +98,4 @@ export const ProjectionSelectors = {
       return type !== 'string' && type !== 'number';
     },
   ),
-};
+};*/

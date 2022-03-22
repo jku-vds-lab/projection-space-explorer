@@ -4,6 +4,7 @@
 /* eslint-disable no-empty */
 /* eslint-disable react/display-name */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { EntityId } from '@reduxjs/toolkit';
 import * as React from 'react';
 import * as THREE from 'three';
 import { connect, ConnectedProps } from 'react-redux';
@@ -38,14 +39,15 @@ import { TraceSelectTool } from './TraceSelectTool';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
-import { ADataset } from '../../model/Dataset';
+import { ADataset, Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ObjectTypes } from '../../model/ObjectType';
 import { ComponentConfig } from '../../BaseConfig';
 import { ANormalized } from '../Utility/NormalizedState';
 import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck copy';
-import { ProjectionSelectors } from '../Ducks/ProjectionDuck';
 import { Mapping } from '../Utility';
+import { ViewActions, SingleMultipleAttributes, ViewSelector } from '../Ducks/ViewDuck';
+import { IPosition } from '../../model';
 
 type ViewState = {
   camera: Camera;
@@ -56,30 +58,22 @@ type ViewState = {
 
 const mapStateToProps = (state: RootState) => ({
   currentAggregation: state.currentAggregation,
-  vectorByShape: state.vectorByShape,
   dataset: state.dataset,
   highlightedSequence: state.highlightedSequence,
   activeLine: state.activeLine,
   advancedColoringSelection: state.advancedColoringSelection,
   clusterMode: state.clusterMode,
   displayMode: state.displayMode,
-  lineBrightness: state.lineBrightness,
-  pathLengthRange: state.pathLengthRange,
-  globalPointSize: state.globalPointSize,
-  globalPointBrightness: state.globalPointBrightness,
-  channelSize: state.channelSize,
-  channelColor: state.channelColor,
-  channelBrightness: state.channelBrightness,
   stories: state.stories,
   trailSettings: state.trailSettings,
   hoverState: state.hoverState,
-  workspace: ProjectionSelectors.getWorkspace(state)?.positions,
   colorScales: state.colorScales,
   pointDisplay: state.pointDisplay,
-  // viewTransform: state.viewTransform
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  activateView: (id: EntityId) => dispatch(ViewActions.activateView(id)),
+  addView: (dataset: Dataset) => dispatch(ViewActions.addView(dataset)),
   selectVectors: (vectors: number[], shiftKey: boolean) => dispatch(selectVectors(vectors, shiftKey)),
   setActiveLine: (activeLine) => dispatch(setActiveLine(activeLine)),
   setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
@@ -101,7 +95,11 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
   overrideComponents: ComponentConfig;
-};
+
+  // The id for this visualization, important for selecting the correct slice
+  multipleId: EntityId;
+  workspace: IPosition[];
+} & Omit<SingleMultipleAttributes, 'workspace'>;
 
 const UPDATER = 'scatter';
 
@@ -304,12 +302,6 @@ export const WebGLView = connector(
       };
     }
 
-    componentDidMount() {
-      this.initializeContainerEvents();
-      this.setupRenderer();
-      this.startRendering();
-    }
-
     normaliseMouse(event) {
       const vec = {
         x: (event.clientX / window.innerWidth) * 2 - 1,
@@ -342,6 +334,7 @@ export const WebGLView = connector(
 
     onMouseDown(event) {
       event.preventDefault();
+      this.props.activateView(this.props.multipleId);
       if (this.props.dataset) this.mouseController.mouseDown(event);
     }
 
@@ -352,6 +345,7 @@ export const WebGLView = connector(
 
     onMouseUp(event: MouseEvent) {
       event.preventDefault();
+      this.props.activateView(this.props.multipleId);
       if (this.props.dataset) this.mouseController.mouseUp(event);
     }
 
@@ -1050,19 +1044,44 @@ export const WebGLView = connector(
       }
     }
 
+    componentDidMount() {
+      this.initializeContainerEvents();
+      this.setupRenderer();
+      if (this.props.dataset) {
+        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, { key: 'algo' }, this.props.dataset), null);
+
+        this.particles?.updateColor();
+
+        this.particles.sizeCat(this.props.channelSize, this.props.globalPointSize);
+        this.particles.updateSize();
+
+        if (this.props.channelColor && this.props.pointColorScale) {
+          const mapping = mappingFromScale(
+            ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
+            this.props.channelColor,
+            this.props.dataset,
+          );
+          this.props.setPointColorMapping(mapping);
+
+          this.particles.colorCat(this.props.channelColor, mapping);
+        }
+      }
+      this.startRendering();
+    }
+
     componentDidUpdate(prevProps: Props, prevState) {
       if (prevProps.dataset !== this.props.dataset) {
         this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, { key: 'algo' }, this.props.dataset), null);
       }
 
       if (
-        prevProps.colorScales.active !== this.props.colorScales.active ||
+        prevProps.pointColorScale !== this.props.pointColorScale ||
         prevProps.stories !== this.props.stories ||
         prevProps.channelColor !== this.props.channelColor
       ) {
-        if (this.props.channelColor && this.props.colorScales.active) {
+        if (this.props.channelColor && this.props.pointColorScale) {
           const mapping = mappingFromScale(
-            ANormalized.get(this.props.colorScales.scales, this.props.colorScales.active),
+            ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
             this.props.channelColor,
             this.props.dataset,
           );
@@ -1094,12 +1113,15 @@ export const WebGLView = connector(
         }
       }
 
-      if (prevProps.globalPointSize !== this.props.globalPointSize && this.particles) {
+      if (prevProps.globalPointSize !== this.props.globalPointSize || (prevProps.channelSize !== this.props.channelSize && this.particles)) {
         this.particles.sizeCat(this.props.channelSize, this.props.globalPointSize);
         this.particles.updateSize();
       }
 
-      if (prevProps.globalPointBrightness !== this.props.globalPointBrightness && this.particles) {
+      if (
+        prevProps.globalPointBrightness !== this.props.globalPointBrightness ||
+        (prevProps.channelBrightness !== this.props.channelBrightness && this.particles)
+      ) {
         this.particles.transparencyCat(this.props.channelBrightness, this.props.globalPointBrightness);
         this.particles.updateColor();
         this.particles.update();
@@ -1312,9 +1334,11 @@ export const WebGLView = connector(
             tabIndex={0}
           />
 
-          <LassoLayer ref={this.selectionRef} />
+          <LassoLayer ref={this.selectionRef} viewTransform={this.props.viewTransform} />
 
           <MultivariateClustering
+            viewTransform={this.props.viewTransform}
+            globalPointSize={this.props.globalPointSize}
             onInvalidate={() => {
               this.requestRender();
             }}
@@ -1339,6 +1363,14 @@ export const WebGLView = connector(
             anchorReference="anchorPosition"
             anchorPosition={this.state.menuY !== null && this.state.menuX !== null ? { top: this.state.menuY, left: this.state.menuX } : undefined}
           >
+            <MenuItem
+              onClick={() => {
+                this.props.addView(this.props.dataset);
+              }}
+            >
+              Create View
+            </MenuItem>
+
             <MenuItem
               onClick={() => {
                 if (this.props.currentAggregation.aggregation.length > 0) {

@@ -25,7 +25,6 @@ export * from './ProjectionOpenDuck';
 export * from './ProjectionParamsDuck';
 export * from './ProjectionWorkerDuck';
 export * from './SelectedLineByDuck';
-export * from './SelectedVectorByShapeDuck';
 export * from './TrailSettingsDuck';
 export * from './VectorByShapeDuck';
 export * from './ViewTransformDuck';

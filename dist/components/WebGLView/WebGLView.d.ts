@@ -1,3 +1,4 @@
+import { EntityId } from '@reduxjs/toolkit';
 import * as React from 'react';
 import * as THREE from 'three';
 import { ConnectedProps } from 'react-redux';
@@ -14,9 +15,12 @@ import { IBook } from '../../model/Book';
 import { IEdge } from '../../model/Edge';
 import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
+import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ComponentConfig } from '../../BaseConfig';
 import { Mapping } from '../Utility';
+import { SingleMultipleAttributes } from '../Ducks/ViewDuck';
+import { IPosition } from '../../model';
 declare type ViewState = {
     camera: Camera;
     menuX: number;
@@ -26,29 +30,15 @@ declare type ViewState = {
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: import("@reduxjs/toolkit").EntityId[];
+        selectedClusters: EntityId[];
         source: "sample" | "cluster";
     };
-    vectorByShape: any;
-    dataset: import("../../model/Dataset").Dataset;
+    dataset: Dataset;
     highlightedSequence: any;
     activeLine: any;
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;
-    lineBrightness: any;
-    pathLengthRange: {
-        range: any;
-        maximum: number;
-    } | {
-        range: number[];
-        maximum: any;
-    };
-    globalPointSize: number[];
-    globalPointBrightness: number[];
-    channelSize: any;
-    channelColor: any;
-    channelBrightness: any;
     stories: import("../Ducks/StoriesDuck copy").IStorytelling;
     trailSettings: {
         show: boolean;
@@ -58,11 +48,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         length: number;
     };
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    workspace: import("../..").IBaseProjection;
-    colorScales: {
-        scales: import("../Utility").NormalizedDictionary<import("../..").BaseColorScale>;
-        active: string;
-    };
+    colorScales: import("../Ducks/ColorScalesDuck").ColorScalesType;
     pointDisplay: {
         checkedShapes: {
             star: boolean;
@@ -72,6 +58,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         };
     };
 } & {
+    activateView: (id: EntityId) => any;
+    addView: (dataset: Dataset) => any;
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
     setViewTransform: (camera: any, width: any, height: any) => any;
@@ -89,7 +77,9 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     overrideComponents: ComponentConfig;
-};
+    multipleId: EntityId;
+    workspace: IPosition[];
+} & Omit<SingleMultipleAttributes, 'workspace'>;
 export declare const WebGLView: import("react-redux").ConnectedComponent<{
     new (props: any): {
         lasso: LassoSelection;
@@ -156,7 +146,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
             x: number;
             y: number;
         };
-        componentDidMount(): void;
         normaliseMouse(event: any): {
             x: number;
             y: number;
@@ -207,6 +196,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         onClusterClicked(cluster: ICluster, shiftKey?: boolean): void;
         renderFrame(): void;
         updateItemClusterDisplay(): void;
+        componentDidMount(): void;
         componentDidUpdate(prevProps: Props, prevState: any): void;
         requestRender(): void;
         createTransform(): ViewTransformType;
@@ -301,7 +291,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         x: number;
         y: number;
     };
-    componentDidMount(): void;
     normaliseMouse(event: any): {
         x: number;
         y: number;
@@ -352,6 +341,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     onClusterClicked(cluster: ICluster, shiftKey?: boolean): void;
     renderFrame(): void;
     updateItemClusterDisplay(): void;
+    componentDidMount(): void;
     componentDidUpdate(prevProps: Props, prevState: any): void;
     requestRender(): void;
     createTransform(): ViewTransformType;
@@ -382,29 +372,15 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
 }> & {
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: import("@reduxjs/toolkit").EntityId[];
+        selectedClusters: EntityId[];
         source: "sample" | "cluster";
     };
-    vectorByShape: any;
-    dataset: import("../../model/Dataset").Dataset;
+    dataset: Dataset;
     highlightedSequence: any;
     activeLine: any;
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;
-    lineBrightness: any;
-    pathLengthRange: {
-        range: any;
-        maximum: number;
-    } | {
-        range: number[];
-        maximum: any;
-    };
-    globalPointSize: number[];
-    globalPointBrightness: number[];
-    channelSize: any;
-    channelColor: any;
-    channelBrightness: any;
     stories: import("../Ducks/StoriesDuck copy").IStorytelling;
     trailSettings: {
         show: boolean;
@@ -414,11 +390,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         length: number;
     };
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    workspace: import("../..").IBaseProjection;
-    colorScales: {
-        scales: import("../Utility").NormalizedDictionary<import("../..").BaseColorScale>;
-        active: string;
-    };
+    colorScales: import("../Ducks/ColorScalesDuck").ColorScalesType;
     pointDisplay: {
         checkedShapes: {
             star: boolean;
@@ -428,6 +400,8 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         };
     };
 } & {
+    activateView: (id: EntityId) => any;
+    addView: (dataset: Dataset) => any;
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
     setViewTransform: (camera: any, width: any, height: any) => any;
@@ -443,5 +417,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     removeEdgeFromActive: (edge: any) => any;
 } & {
     overrideComponents: ComponentConfig;
-}, "ref" | "overrideComponents" | "key">>;
+    multipleId: EntityId;
+    workspace: IPosition[];
+} & Pick<SingleMultipleAttributes, "channelColor" | "channelBrightness" | "channelSize" | "vectorByShape" | "viewTransform" | "lineBrightness" | "pointColorScale" | "pointColorMapping" | "pathLengthRange" | "globalPointSize" | "globalPointBrightness">, "channelColor" | "channelBrightness" | "channelSize" | "vectorByShape" | "viewTransform" | "lineBrightness" | "pointColorScale" | "pointColorMapping" | "pathLengthRange" | "globalPointSize" | "globalPointBrightness" | "workspace" | "ref" | "overrideComponents" | "key" | "multipleId">>;
 export {};

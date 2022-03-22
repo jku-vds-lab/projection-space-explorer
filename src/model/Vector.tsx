@@ -71,11 +71,6 @@ export class VectView {
    */
   shapeType = Shapes.Circle;
 
-  /**
-   * Base size scaling for this point
-   */
-  baseSize = 16;
-
   highlighted = false;
 
   duplicateOf = null;

@@ -5,9 +5,11 @@ export declare function ColorScaleMenuItem({ scale }: {
 /**
  * Component that lets user pick from a list of color scales.
  */
-export declare function ColorScaleSelectFull({ channelColor }: {
+export declare function ColorScaleSelectFull({ channelColor, active }: {
     channelColor: any;
+    active: any;
 }): JSX.Element;
 export declare const ColorScaleSelect: import("react-redux").ConnectedComponent<typeof ColorScaleSelectFull, Pick<{
     channelColor: any;
-}, never>>;
+    active: any;
+}, "active" | "channelColor">>;

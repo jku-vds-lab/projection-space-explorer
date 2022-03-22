@@ -3,9 +3,9 @@ import { List, ListItem, Menu, MenuItem } from '@mui/material';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../Store';
 import { ANormalized, NormalizedDictionary } from '../../Utility';
-import { ColorScalesActions } from '../../Ducks/ColorScalesDuck';
 import { BaseColorScale } from '../../../model/Palette';
 import { APalette } from '../../../model/palettes';
+import { PointColorScaleActions } from '../../Ducks';
 
 export function ColorScaleMenuItem({ scale }: { scale: BaseColorScale }) {
   if (!scale) {
@@ -38,11 +38,10 @@ export function ColorScaleMenuItem({ scale }: { scale: BaseColorScale }) {
 /**
  * Component that lets user pick from a list of color scales.
  */
-export function ColorScaleSelectFull({ channelColor }) {
+export function ColorScaleSelectFull({ channelColor, active }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const scales = useSelector<RootState, NormalizedDictionary<BaseColorScale>>((state) => state.colorScales.scales);
-  const active = useSelector<RootState, BaseColorScale>((state) => ANormalized.get(state.colorScales.scales, state.colorScales.active));
 
   const dispatch = useDispatch();
 
@@ -77,7 +76,7 @@ export function ColorScaleSelectFull({ channelColor }) {
               key={key}
               selected={active === value}
               onClick={() => {
-                dispatch(ColorScalesActions.pickScale(key));
+                dispatch(PointColorScaleActions.pickScale(key));
                 handleMenuItemClick();
               }}
             >
@@ -89,9 +88,7 @@ export function ColorScaleSelectFull({ channelColor }) {
   );
 }
 
-const mapStateToProps = (state) => ({
-  channelColor: state.channelColor,
-});
+const mapStateToProps = (state: RootState) => ({});
 
 const mapDispatchToProps = () => ({});
 

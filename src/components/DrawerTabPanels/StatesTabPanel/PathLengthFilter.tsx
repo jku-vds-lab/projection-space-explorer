@@ -38,9 +38,7 @@ export function PathLengthFilterFull({ pathLengthRange, setPathLengthRange }) {
   );
 }
 
-const mapStateToProps = (state) => ({
-  pathLengthRange: state.pathLengthRange,
-});
+const mapStateToProps = (state) => ({});
 
 const mapDispatchToProps = (dispatch) => ({
   setPathLengthRange: (pathLengthRange) => dispatch(setPathLengthRange(pathLengthRange)),
