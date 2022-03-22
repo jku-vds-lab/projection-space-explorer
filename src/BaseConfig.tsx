@@ -36,10 +36,10 @@ export const DEFAULT_EMBEDDINGS = [
 ];
 
 export type MouseInteractions = {
-  "mousedown": (coordinates: any) => void
-  "mouseup": (coordinates: any) => void
-  "mousemove": (coordinates: any, event_used: boolean) => void
-  "mouseclick": (coordinates: any, event_used: boolean, button:number) => void
+  mousedown?: (coordinates: any) => void
+  mouseup?: (coordinates: any) => void
+  mousemove?: (coordinates: any, event_used: boolean) => void
+  mouseclick?: (coordinates: any, event_used: boolean, button:number) => void
 }
 
 export type FeatureConfig = Partial<{

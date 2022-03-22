@@ -33,10 +33,10 @@ export declare const DEFAULT_EMBEDDINGS: {
     settings: {};
 }[];
 export declare type MouseInteractions = {
-    "mousedown": (coordinates: any) => void;
-    "mouseup": (coordinates: any) => void;
-    "mousemove": (coordinates: any, event_used: boolean) => void;
-    "mouseclick": (coordinates: any, event_used: boolean, button: number) => void;
+    mousedown?: (coordinates: any) => void;
+    mouseup?: (coordinates: any) => void;
+    mousemove?: (coordinates: any, event_used: boolean) => void;
+    mouseclick?: (coordinates: any, event_used: boolean, button: number) => void;
 };
 export declare type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
