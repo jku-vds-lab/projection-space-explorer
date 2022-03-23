@@ -203,8 +203,8 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
       };
     
     const cancelSearch = () => {
-    setSearched("");
-    requestSearch(searched);
+      setSearched("");
+      requestSearch(searched);
     };
 
     function rowKeyGetter(row: any) {
@@ -244,18 +244,18 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
     );
     const selectionGrid = (
             <DataGrid
-            className="rdg-light"
-            style={{flex: '1', minWidth: 900, overflowX: 'hidden'}}
-            groupBy={["group"]}
-            rowGrouper={rowGrouper}
-            rowKeyGetter={rowKeyGetter}
-            selectedRows={selectedRows}
-            onSelectedRowsChange={setSelectedRows}
-            onRowClick={rowClickHandler}
-            expandedGroupIds={expandedGroupIds}
-            onExpandedGroupIdsChange={setExpandedGroupIds}
-            columns={columnsSelected}
-            rows={rows.filter((x) => x.show)}
+              className="rdg-light"
+              style={{flex: '1', minWidth: 900, overflowX: 'hidden'}}
+              groupBy={["group"]}
+              rowGrouper={rowGrouper}
+              rowKeyGetter={rowKeyGetter}
+              selectedRows={selectedRows}
+              onSelectedRowsChange={setSelectedRows}
+              onRowClick={rowClickHandler}
+              expandedGroupIds={expandedGroupIds}
+              onExpandedGroupIdsChange={setExpandedGroupIds}
+              columns={columnsSelected}
+              rows={rows.filter((x) => x.show)}
             />
     );
 

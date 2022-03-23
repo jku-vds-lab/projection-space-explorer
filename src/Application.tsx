@@ -1,5 +1,6 @@
 /* eslint-disable react/display-name */
 import 'regenerator-runtime/runtime';
+import "./index.scss";
 import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from '@mui/material';
 import * as React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -17,7 +18,7 @@ import { DatasetTabPanel } from './components/DrawerTabPanels/DatasetTabPanel/Da
 import { DetailsTabPanel } from './components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel';
 import { setLineByOptions } from './components/Ducks/SelectedLineByDuck';
 import { setGlobalPointBrightness } from './components/Ducks/GlobalPointBrightnessDuck';
-import { setGenericFingerprintAttributes } from './components/Ducks/GenericFingerprintAttributesDuck';
+// import { setGenericFingerprintAttributes } from './components/Ducks/GenericFingerprintAttributesDuck';
 import { setGroupVisualizationMode } from './components/Ducks/GroupVisualizationMode';
 import { HoverStateOrientation } from './components/Ducks/HoverStateOrientationDuck';
 import { PluginRegistry } from './components/Store/PluginScript';
@@ -72,7 +73,7 @@ const mapDispatchToProps = (dispatch) => ({
   setOpenTab: (openTab) => dispatch(setOpenTabAction(openTab)),
   setLineByOptions: (options) => dispatch(setLineByOptions(options)),
   setGlobalPointBrightness: (value) => dispatch(setGlobalPointBrightness(value)),
-  setGenericFingerprintAttributes: (value) => dispatch(setGenericFingerprintAttributes(value)),
+  // setGenericFingerprintAttributes: (value) => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: (value) => dispatch(setGroupVisualizationMode(value)),
   setLineUpInput_visibility: (open) => dispatch(setDetailVisibility(open)),
   loadDataset: (dataset: Dataset) => dispatch(RootActions.loadDataset(dataset)),

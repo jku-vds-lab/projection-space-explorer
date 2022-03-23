@@ -1,4 +1,5 @@
 import 'regenerator-runtime/runtime';
+import "./index.scss";
 import * as React from 'react';
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from './model/Dataset';
@@ -25,7 +26,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setOpenTab: (openTab: any) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
-    setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
     setLineUpInput_visibility: (open: any) => any;
     loadDataset: (dataset: Dataset) => any;
@@ -132,7 +132,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     setOpenTab: (openTab: any) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
-    setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
     setLineUpInput_visibility: (open: any) => any;
     loadDataset: (dataset: Dataset) => any;
