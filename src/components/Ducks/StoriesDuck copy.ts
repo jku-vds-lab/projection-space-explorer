@@ -20,6 +20,9 @@ export const edgeAdapter = createEntityAdapter<IEdge>({
 
 export const clusterAdapter = createEntityAdapter<ICluster>({
   selectId: (cluster) => cluster.id,
+  sortComparer: (a, b) => {
+    return b.indices.length - a.indices.length;
+  },
 });
 
 export class AStorytelling {

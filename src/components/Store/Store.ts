@@ -32,7 +32,7 @@ import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/
 import colorScales from '../Ducks/ColorScalesDuck';
 import { BaseColorScale } from '../../model/Palette';
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
-import { multiplesSlice, multipleAdapter, defaultAttributes, projectionAdapter } from '../Ducks/ViewDuck';
+import { multiplesSlice, multipleAdapter, defaultAttributes } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
 
 const allReducers = {
@@ -274,8 +274,8 @@ export function createRootReducer(reducers: any) {
 
   return (state, action) => {
     if (action.type === RootActionTypes.RESET) {
-      const { dataset, openTab, viewTransform, datasetEntries } = state;
-      state = { dataset, openTab, viewTransform, datasetEntries };
+      const { dataset, openTab, datasetEntries } = state;
+      state = { dataset, openTab, datasetEntries };
     }
 
     if (action.type === RootActionTypes.HYDRATE) {
@@ -294,6 +294,14 @@ export function createRootReducer(reducers: any) {
       Object.assign(newState, partialRootState);
 
       return newState;
+    }
+
+    if (action.type === RootActionTypes.HARD_RESET) {
+      const clone = { ...state };
+      for (const key of Object.keys(allReducers)) {
+        clone[key] = undefined;
+      }
+      state = clone;
     }
 
     return combined(state, action);

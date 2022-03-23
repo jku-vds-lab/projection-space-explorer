@@ -370,7 +370,7 @@ export const Application = connector(
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={4}>
-                  <DetailsTabPanel />
+                  <DetailsTabPanel config={this.props.features} />
                 </FixedHeightTabPanel>
 
                 {this.props.overrideComponents?.tabs?.map((tab, i) => {

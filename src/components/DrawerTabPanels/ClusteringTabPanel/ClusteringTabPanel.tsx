@@ -592,7 +592,9 @@ function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStor
   const storyItems = new Array<JSX.Element>();
 
   if (activeStory) {
-    for (const [key, cluster] of Object.entries(activeStory.clusters.entities)) {
+    for (const key of activeStory.clusters.ids) {
+      const cluster = activeStory.clusters.entities[key];
+
       storyItems.push(
         <ListItem
           key={key}

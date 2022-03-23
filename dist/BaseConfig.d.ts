@@ -34,6 +34,7 @@ export declare const DEFAULT_EMBEDDINGS: {
 export declare type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
     encodings: EncodingChannel[];
+    showSummaryAttributes: boolean;
 }>;
 export declare type LayerSpec = {
     order: number;
