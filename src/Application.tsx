@@ -1,10 +1,9 @@
 /* eslint-disable react/display-name */
 import 'regenerator-runtime/runtime';
-import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from '@mui/material';
+import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid, Dialog } from '@mui/material';
 import * as React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Split from 'react-split';
-import { WebGLView } from './components/WebGLView/WebGLView';
 import { Dataset } from './model/Dataset';
 import { Storytelling } from './components/Overlays/Storytelling';
 import { ClusteringTabPanel } from './components/DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel';
@@ -394,9 +393,13 @@ export const Application = connector(
             }}
           >
             {this.props.overrideComponents?.appBar ? (
-              React.createElement(this.props.overrideComponents?.appBar)
+              React.isValidElement(this.props.overrideComponents.appBar) ? (
+                this.props.overrideComponents.appBar
+              ) : (
+                React.createElement(this.props.overrideComponents.appBar as () => JSX.Element)
+              )
             ) : (
-              <PseAppBar>
+              <PseAppBar style={undefined}>
                 <a href="https://jku-vds-lab.at" target="_blank" rel="noreferrer">
                   <VDSLogo style={{ height: 48, width: 48 }} />
                 </a>

@@ -42,7 +42,7 @@ export declare type LayerSpec = {
 };
 export declare type ComponentConfig = Partial<{
     datasetTab: JSX.Element | ((onDataSelected: any) => JSX.Element) | ConnectedComponent<any, any>;
-    appBar: () => JSX.Element;
+    appBar: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
     detailViews: Array<DetailViewSpec>;
     layers: Array<LayerSpec>;
     tabs: Array<TabSpec>;

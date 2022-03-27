@@ -5,8 +5,20 @@ import { EntityId, EntityState } from '@reduxjs/toolkit';
 import { IconButton, Typography } from '@mui/material';
 import { WebGLView } from '../WebGLView/WebGLView';
 import { ViewSelector, ViewActions, SingleMultiple } from '../Ducks/ViewDuck';
-import { IProjection } from '../../model/ProjectionInterfaces';
-import { projectionsSlice } from '../Ducks';
+import { IPosition, IProjection } from '../../model/ProjectionInterfaces';
+import { RootState } from '../Store';
+import { Dataset } from '../../model/Dataset';
+
+function selectPositions(dataset: Dataset, projection: IProjection) {
+  if (projection.xChannel || projection.yChannel) {
+    return dataset.vectors.map((vector) => ({
+      x: projection.xChannel ? vector[projection.xChannel] : 0,
+      y: projection.yChannel ? vector[projection.yChannel] : 0,
+    }));
+  }
+
+  return projection.positions;
+}
 
 function WebView({
   id,
@@ -25,15 +37,23 @@ function WebView({
 }) {
   const value = multiples.multiples.entities[id];
 
-  const positions =
+  const dataset = useSelector((state: RootState) => state.dataset);
+
+  const projection =
     typeof value.attributes.workspace === 'string' || typeof value.attributes.workspace === 'number'
-      ? multiples.projections.entities[value.attributes.workspace]?.positions
-      : value.attributes.workspace?.positions;
+      ? multiples.projections.entities[value.attributes.workspace]
+      : value.attributes.workspace;
+
+  const [positions, setPositions] = React.useState<IPosition[]>();
+
+  React.useEffect(() => {
+    setPositions(selectPositions(dataset, projection));
+  }, [projection.xChannel, projection.yChannel, dataset, projection]);
 
   const active = value.id === multiples.active;
   const boxShadow = '0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)';
 
-  const name = useSelector((state) => ViewSelector.getWorkspaceById(state, id)).metadata.method;
+  const name = useSelector((state: RootState) => ViewSelector.getWorkspaceById(state, id)).metadata.method;
 
   return (
     <div

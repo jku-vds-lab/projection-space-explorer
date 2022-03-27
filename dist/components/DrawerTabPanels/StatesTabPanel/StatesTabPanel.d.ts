@@ -22,7 +22,6 @@ declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     encodings: EncodingChannel[];
 };
-export declare function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info }: any): JSX.Element;
 export declare function StatesTabPanelFull({ dataset, setVectorByShape, setChannelBrightness, setGlobalPointBrightness, setChannelSize, setGlobalPointSize, encodings, setAdvancedColoringSelection, }: Props): JSX.Element;
 export declare const StatesTabPanel: import("react-redux").ConnectedComponent<typeof StatesTabPanelFull, Pick<Props, "encodings">>;
 export {};

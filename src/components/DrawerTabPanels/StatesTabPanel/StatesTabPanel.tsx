@@ -42,15 +42,7 @@ const mapDispatchToProps = (dispatch) => ({
   setAdvancedColoringSelection: (value) => dispatch(setAdvancedColoringSelectionAction(value)),
 });
 
-const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-type Props = PropsFromRedux & {
-  encodings: EncodingChannel[];
-};
-
-export function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info }: any) {
+function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info }) {
   let autocomplete_options = [{ value: 'None', inputValue: 'None', group: null }];
   let autocomplete_filterOptions = null;
   if (categoryOptions != null) {
@@ -96,12 +88,20 @@ export function SelectFeatureComponent({ label, default_val, categoryOptions, on
       isOptionEqualToValue={(option: any, value) => {
         return option.value === value.value;
       }}
-      // defaultValue={channelColor ? autocomplete_color_options.filter((option:any) => option.value == channelColor.key)[0] : {value:"", inputValue:""}}
       value={default_val ? autocomplete_options.filter((option: any) => option.value === default_val.key)[0] : autocomplete_options[0]}
       renderInput={(params) => <TextField {...params} label={`${label} by`} />}
     />
   );
 }
+
+const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux & {
+  encodings: EncodingChannel[];
+};
+
 const useStyles = makeStyles(() => ({
   root: {
     width: '100%',

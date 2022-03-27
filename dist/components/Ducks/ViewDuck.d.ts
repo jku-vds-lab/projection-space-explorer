@@ -126,6 +126,15 @@ export declare const multiplesSlice: import("@reduxjs/toolkit").Slice<{
         active: EntityId;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<Update<IProjection>>): void;
+    selectChannel(state: import("immer/dist/internal").WritableDraft<{
+        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+    }>, action: PayloadAction<{
+        dataset: Dataset;
+        channel: 'x' | 'y';
+        value: string;
+    }>): void;
 }, "multiples">;
 export declare const ViewActions: {
     addView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Dataset, string>;
@@ -140,6 +149,11 @@ export declare const ViewActions: {
     }, string>;
     remove: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
     save: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Update<IProjection>, string>;
+    selectChannel: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
+        dataset: Dataset;
+        channel: 'x' | 'y';
+        value: string;
+    }, string>;
 };
 export declare const ViewSelector: {
     selectAll: import("reselect/*").OutputSelector<import("redux").CombinedState<{

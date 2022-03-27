@@ -19,6 +19,8 @@ import { IProjection, IBaseProjection, ProjectionMethod } from '../../../model/P
 import { FeatureConfig, DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../../BaseConfig';
 import { EditProjectionDialog } from './EditProjectionDialog';
 import { ViewActions, ViewSelector } from '../../Ducks/ViewDuck';
+import { FeatureType } from '../../../model';
+import { SelectFeatureComponent } from '../StatesTabPanel/SelectFeatureComponent';
 
 const mapStateToProps = (state: RootState) => ({
   // currentAggregation: state.currentAggregation,
@@ -96,6 +98,12 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
   const workspace = useSelector(ViewSelector.getWorkspace);
   const workspaceIsTemporal = useSelector(ViewSelector.workspaceIsTemporal);
+  const dataset = useSelector((state: RootState) => state.dataset);
+
+  let numericFeatures = null;
+  if (dataset) {
+    numericFeatures = Object.keys(dataset.columns).filter((key) => dataset.columns[key].featureType === FeatureType.Quantitative);
+  }
 
   React.useEffect(() => {
     if (controller) {
@@ -260,6 +268,30 @@ export const EmbeddingTabPanel = connector((props: Props) => {
       <Box paddingLeft={2} paddingRight={2}>
         <ClusterTrailSettings />
       </Box>
+
+      {dataset && numericFeatures && workspace ? (
+        <SelectFeatureComponent
+          column_info={dataset.columns}
+          label="x channel"
+          default_val={workspace.xChannel}
+          categoryOptions={numericFeatures}
+          onChange={(newValue) => {
+            dispatch(ViewActions.selectChannel({ dataset, channel: 'x', value: newValue }));
+          }}
+        />
+      ) : null}
+
+      {dataset && numericFeatures && workspace ? (
+        <SelectFeatureComponent
+          column_info={dataset.columns}
+          label="y channel"
+          default_val={workspace.yChannel}
+          categoryOptions={numericFeatures}
+          onChange={(newValue) => {
+            dispatch(ViewActions.selectChannel({ dataset, channel: 'y', value: newValue }));
+          }}
+        />
+      ) : null}
 
       <Box padding={1}>
         <Typography variant="subtitle2" gutterBottom>

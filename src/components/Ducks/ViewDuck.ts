@@ -104,6 +104,10 @@ const initialState = {
   projections: projectionAdapter.getInitialState(),
 };
 
+function isEntityId(value: string | number | IProjection): value is EntityId {
+  return typeof value === 'string' || typeof value === 'number';
+}
+
 const singleTestReducer = combineReducers({
   channelColor,
   channelSize,
@@ -195,6 +199,29 @@ export const multiplesSlice = createSlice({
     save(state, action: PayloadAction<Update<IProjection>>) {
       projectionAdapter.updateOne(state.projections, action.payload);
     },
+    selectChannel(state, action: PayloadAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>) {
+      const active = state.multiples.entities[state.active].attributes;
+      if (isEntityId(active.workspace)) {
+        // Create new temporary projection
+
+        active.workspace = {
+          hash: uuidv4(),
+          positions: null,
+          metadata: { method: ProjectionMethod.CUSTOM },
+          name: null,
+        };
+      }
+
+      if (action.payload.channel === 'x') {
+        active.workspace.xChannel = action.payload.value;
+      } else {
+        active.workspace.yChannel = action.payload.value;
+      }
+
+      if (!active.workspace.xChannel && !active.workspace.yChannel) {
+        active.workspace.positions = action.payload.dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y }));
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addDefaultCase((state, action) => {
@@ -212,6 +239,7 @@ export const multiplesSlice = createSlice({
 const defaultSelector = (state: RootState) => state.multiples.multiples.entities[state.multiples.active];
 
 export const ViewActions = { ...multiplesSlice.actions };
+
 export const ViewSelector = {
   selectAll: createSelector(
     (state: RootState) => state.multiples,

@@ -30,7 +30,7 @@ export declare const ProjectionActions: {
     remove: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
     save: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Update<IProjection>, string>;
 };
-/**export const ProjectionSelectors = {
+/** export const ProjectionSelectors = {
   getWorkspace: createSelector(
     (state: RootState) =>
       typeof state.projections.workspace === 'string' || typeof state.projections.workspace === 'number'
@@ -46,4 +46,4 @@ export declare const ProjectionActions: {
       return type !== 'string' && type !== 'number';
     },
   ),
-};*/
+}; */
