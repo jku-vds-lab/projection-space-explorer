@@ -17,9 +17,10 @@ type AttributeTablePropsFromRedux = ConnectedProps<typeof attributeConnector>;
 type AttributeTableProps = AttributeTablePropsFromRedux & {
   attributes,
   setAttributes,
-  btnText
+  children,
+  btnFullWidth
 };
-export const AttributeSelectionTable = attributeConnector(({ attributes, setAttributes, dataset, btnText }: AttributeTableProps) => {
+export const AttributeSelectionTable = attributeConnector(({ attributes, setAttributes, dataset, btnFullWidth, children }: AttributeTableProps) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const openAttributes = (event) => {
@@ -138,7 +139,7 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
   );
 
   return <div>
-    <Button style={{ width: '100%' }} variant="outlined" onClick={openAttributes}>{btnText}</Button>
+    <Button fullWidth={btnFullWidth} variant="outlined" onClick={openAttributes}>{children}</Button>
 
     <Popover
       open={Boolean(anchorEl)}

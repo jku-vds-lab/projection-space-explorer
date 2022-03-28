@@ -221,9 +221,7 @@ function genRows(vectors, aggregation, legendAttributes, dataset) {
   for (const key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-      if (dataset.columns[key]?.metaInformation.noLineUp) {
-        // dont do anything, if column should not be shown
-      } else if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
+      if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
         const densityData = mapDensityData(dataset.vectors, vectors, key);
         // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
