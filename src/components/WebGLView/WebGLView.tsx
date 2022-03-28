@@ -857,8 +857,10 @@ export const WebGLView = connector(
         ADataset.calculateBounds(this.props.dataset);
 
         this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight());
+
         this.camera.position.x = 0.0;
         this.camera.position.y = 0.0;
+
         this.camera.updateProjectionMatrix();
 
         this.repositionClusters();
@@ -1365,6 +1367,7 @@ export const WebGLView = connector(
           >
             <MenuItem
               onClick={() => {
+                handleClose();
                 this.props.addView(this.props.dataset);
               }}
             >

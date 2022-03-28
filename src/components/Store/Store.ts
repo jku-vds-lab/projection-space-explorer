@@ -35,6 +35,11 @@ import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multiplesSlice, multipleAdapter, defaultAttributes } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
 
+/**
+ * Match all cases of view constants eg x1, y1, x2, y2...
+ */
+const viewRegexp = /^(x|y)[0-9]$/;
+
 const allReducers = {
   currentAggregation,
   stories,
@@ -222,27 +227,77 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     })[0];
   }
 
-  const multipleId = uuidv4();
+  // Load views from dataset
+  const xyChannels = {};
+
+  const maxView = Object.entries(dataset.columns).reduce((prev, [key, curr]) => {
+    try {
+      const { view } = curr.metaInformation;
+      if (Array.isArray(view)) {
+        let max = prev;
+        view.forEach((channel) => {
+          if (typeof channel === 'string' && viewRegexp.test(channel)) {
+            const vI = Number.parseInt(channel.charAt(1), 10);
+            xyChannels[channel] = key;
+
+            if (vI > max) {
+              max = vI;
+            }
+          }
+        });
+
+        return max;
+      }
+
+      return prev;
+    } catch (e) {
+      return 0;
+    }
+  }, 0);
+
   let multiplesCollection = multipleAdapter.getInitialState();
-  const defaultView = {
-    id: multipleId,
-    attributes: {
-      ...defaultAttributes(),
-      channelBrightness,
-      channelSize,
-      channelColor,
-      globalPointBrightness,
-      globalPointSize,
-      pathLengthRange,
-      pointColorScale,
-      workspace,
-    },
-  };
-  multiplesCollection = multipleAdapter.addOne(multiplesCollection, defaultView);
+
+  if (maxView > 0) {
+    for (let i = 0; i < maxView; i++) {
+      const vId = uuidv4();
+
+      const xChannel = xyChannels[`x${i + 1}`];
+      const yChannel = xyChannels[`y${i + 1}`];
+
+      const view = {
+        id: vId,
+        attributes: {
+          ...defaultAttributes(),
+          workspace: AProjection.createManualProjection(xChannel, yChannel),
+        },
+      };
+
+      multiplesCollection = multipleAdapter.addOne(multiplesCollection, view);
+    }
+  } else {
+    const multipleId = uuidv4();
+
+    const defaultView = {
+      id: multipleId,
+      attributes: {
+        ...defaultAttributes(),
+        channelBrightness,
+        channelSize,
+        channelColor,
+        globalPointBrightness,
+        globalPointSize,
+        pathLengthRange,
+        pointColorScale,
+        workspace,
+      },
+    };
+
+    multiplesCollection = multipleAdapter.addOne(multiplesCollection, defaultView);
+  }
 
   const multiples = {
     multiples: multiplesCollection,
-    active: multipleId,
+    active: multiplesCollection.ids[0],
     projections,
   };
 

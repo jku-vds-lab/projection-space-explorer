@@ -50,7 +50,7 @@ export function SelectFeatureComponent({ label, default_val, categoryOptions, on
       isOptionEqualToValue={(option: any, value) => {
         return option.value === value?.value;
       }}
-      value={default_val ? autocomplete_options.filter((option) => option.value === default_val)[0] : null}
+      value={autocomplete_options.find((option) => option.value === default_val) ?? null}
       renderInput={(params) => <TextField {...params} label={`${label} by`} />}
     />
   );

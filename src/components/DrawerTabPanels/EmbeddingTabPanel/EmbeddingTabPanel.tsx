@@ -269,29 +269,31 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         <ClusterTrailSettings />
       </Box>
 
-      {dataset && numericFeatures && workspace ? (
-        <SelectFeatureComponent
-          column_info={dataset.columns}
-          label="x channel"
-          default_val={workspace.xChannel}
-          categoryOptions={numericFeatures}
-          onChange={(newValue) => {
-            dispatch(ViewActions.selectChannel({ dataset, channel: 'x', value: newValue }));
-          }}
-        />
-      ) : null}
+      <Box paddingLeft={2} paddingRight={2} display="flex" style={{ flexDirection: 'column', gap: '8px' }}>
+        {dataset && numericFeatures && workspace ? (
+          <SelectFeatureComponent
+            column_info={dataset.columns}
+            label="x channel"
+            default_val={workspace.xChannel}
+            categoryOptions={numericFeatures}
+            onChange={(newValue) => {
+              dispatch(ViewActions.selectChannel({ dataset, channel: 'x', value: newValue }));
+            }}
+          />
+        ) : null}
 
-      {dataset && numericFeatures && workspace ? (
-        <SelectFeatureComponent
-          column_info={dataset.columns}
-          label="y channel"
-          default_val={workspace.yChannel}
-          categoryOptions={numericFeatures}
-          onChange={(newValue) => {
-            dispatch(ViewActions.selectChannel({ dataset, channel: 'y', value: newValue }));
-          }}
-        />
-      ) : null}
+        {dataset && numericFeatures && workspace ? (
+          <SelectFeatureComponent
+            column_info={dataset.columns}
+            label="y channel"
+            default_val={workspace.yChannel}
+            categoryOptions={numericFeatures}
+            onChange={(newValue) => {
+              dispatch(ViewActions.selectChannel({ dataset, channel: 'y', value: newValue }));
+            }}
+          />
+        ) : null}
+      </Box>
 
       <Box padding={1}>
         <Typography variant="subtitle2" gutterBottom>

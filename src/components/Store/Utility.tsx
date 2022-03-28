@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import { createLinearRangeScaler } from '../Utility/ScalingAndAxes';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
-import { IBaseProjection } from '../../model/ProjectionInterfaces';
+import { IBaseProjection, IProjection } from '../../model/ProjectionInterfaces';
 import { CubicBezierCurve } from '../../model/Curves';
 import type { RootState } from './Store';
 import { ViewSelector } from '../Ducks/ViewDuck';
+import { Dataset } from '../../model/Dataset';
 
 function calcBounds(positions: IBaseProjection) {
   // Get rectangle that fits around data set
@@ -175,10 +176,22 @@ export class UtilityActions {
     options: any,
     ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
   ) {
+    function selectPositions(dataset: Dataset, projection: IProjection) {
+      if (projection.xChannel || projection.yChannel) {
+        return dataset.vectors.map((vector) => ({
+          x: projection.xChannel ? vector[projection.xChannel] : 0,
+          y: projection.yChannel ? vector[projection.yChannel] : 0,
+        }));
+      }
+
+      return projection.positions;
+    }
+
     try {
       const provided = ctx !== null && ctx !== undefined;
 
-      const { channelColor, channelSize, globalPointSize, pointColorMapping } = state.multiples.multiples.entities[state.multiples.active].attributes;
+      const { channelColor, channelSize, globalPointSize, pointColorMapping, workspace } =
+        state.multiples.multiples.entities[state.multiples.active].attributes;
 
       let canvas = null;
       if (!ctx) {
@@ -197,7 +210,10 @@ export class UtilityActions {
 
       const mapping = pointColorMapping;
 
-      const positions = ViewSelector.getWorkspace(state)?.positions;
+      const positions =
+        typeof workspace === 'string' || typeof workspace === 'number'
+          ? selectPositions(state.dataset, state.multiples.projections.entities[workspace])
+          : selectPositions(state.dataset, workspace);
 
       const bounds = calcBounds(positions);
 
