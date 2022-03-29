@@ -155,9 +155,12 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
   const [selection, setSelection] = React.useState(cloneColumns(projectionColumns));
 
   const intermediateSetSelection = (selectedFeatures) => {
-    const nonNumericSelectedColumns = selectedFeatures.filter((s) => s.checked && !columns[s.name].isNumeric).map((s) => s.name)
-    
-    if(nonNumericSelectedColumns.length > 0){ // set default metric to gower, if we have mixed datatypes
+    const filteredFeatures = selectedFeatures.filter((s) => s.checked).map((s) => s.name)
+    const nonNumericSelectedColumns = filteredFeatures.filter((col) => !columns[col].isNumeric)
+
+    if(nonNumericSelectedColumns.length === filteredFeatures.length){ // set default metric to Jaccard, if only non-numeric datatypes are selected
+      changeDistanceMetric(DistanceMetric.JACCARD);
+    }else if(nonNumericSelectedColumns.length > 0){ // set default metric to gower, if we have mixed datatypes
       changeDistanceMetric(DistanceMetric.GOWER);
     }else{ // set default metric to euclidean, if we only have numeric datatypes
       changeDistanceMetric(DistanceMetric.EUCLIDEAN);
