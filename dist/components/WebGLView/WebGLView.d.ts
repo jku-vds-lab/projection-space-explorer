@@ -64,7 +64,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setActiveLine: (activeLine: any) => any;
     setViewTransform: (camera: any, width: any, height: any) => any;
     setHoverState: (hoverState: any, updater: any) => any;
-    setPointColorMapping: (mapping: any) => any;
+    setPointColorMapping: (id: EntityId, mapping: any) => any;
     removeClusterFromStories: (cluster: ICluster) => any;
     addStory: (book: IBook, activate: boolean) => any;
     addClusterToStory: (cluster: ICluster) => any;
@@ -406,7 +406,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     setActiveLine: (activeLine: any) => any;
     setViewTransform: (camera: any, width: any, height: any) => any;
     setHoverState: (hoverState: any, updater: any) => any;
-    setPointColorMapping: (mapping: any) => any;
+    setPointColorMapping: (id: EntityId, mapping: any) => any;
     removeClusterFromStories: (cluster: ICluster) => any;
     addStory: (book: IBook, activate: boolean) => any;
     addClusterToStory: (cluster: ICluster) => any;

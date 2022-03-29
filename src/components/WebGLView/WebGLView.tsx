@@ -26,7 +26,6 @@ import { MultivariateClustering } from './MultivariateClustering';
 import { DisplayMode, displayModeSupportsStates } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
 import { mappingFromScale } from '../Utility/Colors/colors';
-import { setPointColorMapping } from '../Ducks/PointColorMappingDuck';
 import type { RootState } from '../Store/Store';
 import * as nt from '../NumTs/NumTs';
 import { MouseController } from './MouseController';
@@ -78,7 +77,7 @@ const mapDispatchToProps = (dispatch) => ({
   setActiveLine: (activeLine) => dispatch(setActiveLine(activeLine)),
   setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
   setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
-  setPointColorMapping: (mapping) => dispatch(setPointColorMapping(mapping)),
+  setPointColorMapping: (id: EntityId, mapping) => dispatch(ViewActions.setPointColorMapping({ multipleId: id, value: mapping })),
   removeClusterFromStories: (cluster: ICluster) => dispatch(StoriesActions.deleteCluster({ cluster })),
   addStory: (book: IBook, activate: boolean) => dispatch(StoriesActions.addBookAsync({ book, activate })),
   addClusterToStory: (cluster: ICluster) => dispatch(StoriesActions.addCluster({ cluster })),
@@ -1063,7 +1062,7 @@ export const WebGLView = connector(
             this.props.channelColor,
             this.props.dataset,
           );
-          this.props.setPointColorMapping(mapping);
+          this.props.setPointColorMapping(this.props.multipleId, mapping);
 
           this.particles.colorCat(this.props.channelColor, mapping);
         }
@@ -1087,10 +1086,10 @@ export const WebGLView = connector(
             this.props.channelColor,
             this.props.dataset,
           );
-          this.props.setPointColorMapping(mapping);
+          this.props.setPointColorMapping(this.props.multipleId, mapping);
           this.particles.colorCat(this.props.channelColor, mapping);
         } else {
-          this.props.setPointColorMapping(null);
+          this.props.setPointColorMapping(this.props.multipleId, null);
           this.particles?.colorCat(null, null);
         }
       }

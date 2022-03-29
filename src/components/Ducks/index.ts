@@ -18,7 +18,6 @@ export * from './HoverStateOrientationDuck';
 export * from './LineBrightnessDuck';
 export * from './OpenTabDuck';
 export * from './PathLengthRange';
-export * from './PointColorMappingDuck';
 export * from './PointColorScaleDuck';
 export * from './ProjectionColumnsDuck';
 export * from './ProjectionOpenDuck';

@@ -2,8 +2,8 @@ import { EntityId, PayloadAction, Update } from '@reduxjs/toolkit';
 import { ViewTransformType } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, IPosition, Dataset } from '../../model';
+import { ContinuousMapping, DiscreteMapping } from '../Utility';
 export declare const setWorkspaceAction: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string | number | IProjection, string>;
-export declare const workspaceReducer: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string | number | IProjection>;
 export declare const projectionAdapter: import("@reduxjs/toolkit").EntityAdapter<IProjection>;
 export declare function defaultAttributes(dataset?: Dataset): {
     channelBrightness: any;
@@ -126,6 +126,14 @@ export declare const multiplesSlice: import("@reduxjs/toolkit").Slice<{
         active: EntityId;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<Update<IProjection>>): void;
+    setPointColorMapping(state: import("immer/dist/internal").WritableDraft<{
+        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+    }>, action: PayloadAction<{
+        multipleId: EntityId;
+        value: DiscreteMapping | ContinuousMapping;
+    }>): void;
     selectChannel(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
         active: EntityId;
@@ -149,6 +157,10 @@ export declare const ViewActions: {
     }, string>;
     remove: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
     save: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Update<IProjection>, string>;
+    setPointColorMapping: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
+        multipleId: EntityId;
+        value: DiscreteMapping | ContinuousMapping;
+    }, string>;
     selectChannel: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         dataset: Dataset;
         channel: 'x' | 'y';

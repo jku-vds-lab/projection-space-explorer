@@ -15,7 +15,6 @@ import channelSize from './ChannelSize';
 import channelBrightness from './ChannelBrightnessDuck';
 import vectorByShape from './VectorByShapeDuck';
 import lineBrightness from './LineBrightnessDuck';
-import pointColorMapping from './PointColorMappingDuck';
 import pointColorScale from './PointColorScaleDuck';
 import pathLengthRange from './PathLengthRange';
 import globalPointBrightness from './GlobalPointBrightnessDuck';
@@ -23,12 +22,19 @@ import globalPointSize from './GlobalPointSizeDuck';
 import { ViewTransformType, viewTransform } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, ProjectionMethod, IPosition, Dataset, AProjection } from '../../model';
+import { ContinuousMapping, DiscreteMapping } from '../Utility';
 
 export const setWorkspaceAction = createAction<EntityId | IProjection>('set/workspace');
 
-export const workspaceReducer = createReducer<EntityId | IProjection>(null, (builder) => {
+const workspaceReducer = createReducer<EntityId | IProjection>(null, (builder) => {
   builder.addCase(setWorkspaceAction, (state, action) => {
     return action.payload;
+  });
+});
+
+const pointColorMappingReducer = createReducer<DiscreteMapping | ContinuousMapping>(null, (builder) => {
+  builder.addDefaultCase((state, action) => {
+    return state;
   });
 });
 
@@ -115,7 +121,7 @@ const singleTestReducer = combineReducers({
   vectorByShape,
   viewTransform,
   lineBrightness,
-  pointColorMapping,
+  pointColorMapping: pointColorMappingReducer,
   pointColorScale,
   pathLengthRange,
   globalPointSize,
@@ -198,6 +204,11 @@ export const multiplesSlice = createSlice({
     },
     save(state, action: PayloadAction<Update<IProjection>>) {
       projectionAdapter.updateOne(state.projections, action.payload);
+    },
+    setPointColorMapping(state, action: PayloadAction<{ multipleId: EntityId; value: DiscreteMapping | ContinuousMapping }>) {
+      const { multipleId, value } = action.payload;
+      const multiple = state.multiples.entities[multipleId];
+      multiple.attributes.pointColorMapping = value;
     },
     selectChannel(state, action: PayloadAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>) {
       const active = state.multiples.entities[state.active].attributes;

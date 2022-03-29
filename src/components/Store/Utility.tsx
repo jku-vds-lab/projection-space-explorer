@@ -191,7 +191,7 @@ export class UtilityActions {
       const provided = ctx !== null && ctx !== undefined;
 
       const { channelColor, channelSize, globalPointSize, pointColorMapping, workspace } =
-        state.multiples.multiples.entities[state.multiples.active].attributes;
+        state.multiples.multiples.entities[state.multiples.multiples.ids[0]].attributes;
 
       let canvas = null;
       if (!ctx) {
@@ -321,6 +321,7 @@ export class UtilityActions {
         }
       });
     } catch (e) {
+      console.log(e);
       return new Promise<string>((resolve) => {
         resolve('');
       });
