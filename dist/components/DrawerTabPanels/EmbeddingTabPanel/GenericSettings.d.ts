@@ -16,6 +16,17 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         normalizationMethod: NormalizationMethod;
         encodingMethod: EncodingMethod;
     };
+    columns: {
+        [name: string]: {
+            distinct: any;
+            isNumeric: boolean;
+            metaInformation: any;
+            featureType: import("../../../model").FeatureType;
+            range: any;
+            featureLabel: string;
+            project: boolean;
+        };
+    };
 } & {
     setProjectionParams: (value: any) => any;
 }, {}>;
@@ -26,6 +37,6 @@ declare type Props = PropsFromRedux & {
     onClose: any;
     onStart: any;
 };
-declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns }: Props): JSX.Element;
+declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns, columns }: Props): JSX.Element;
 export declare const GenericSettings: import("react-redux").ConnectedComponent<typeof GenericSettingsComp, Pick<Props, "open" | "onClose" | "domainSettings" | "onStart">>;
 export {};

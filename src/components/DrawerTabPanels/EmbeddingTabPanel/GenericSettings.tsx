@@ -30,6 +30,7 @@ import { ProjectionMethod } from '../../../model';
 const mapState = (state: RootState) => ({
   projectionColumns: state.projectionColumns,
   projectionParams: state.projectionParams,
+  columns: state.dataset?.columns
 });
 
 const mapDispatch = (dispatch) => ({
@@ -126,7 +127,7 @@ function CustomSettings({ tempProjectionParams, setTempProjectionParams, inputDi
 //     </FormGroup>
 // }
 
-function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns }: Props) {
+function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns, columns }: Props) {
   const [tempProjectionParams, setTempProjectionParams] = React.useState({ ...projectionParams });
 
   const changeDistanceMetric = (value) => {
@@ -153,9 +154,20 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
 
   const [selection, setSelection] = React.useState(cloneColumns(projectionColumns));
 
+  const intermediateSetSelection = (selectedFeatures) => {
+    const nonNumericSelectedColumns = selectedFeatures.filter((s) => s.checked && !columns[s.name].isNumeric).map((s) => s.name)
+    
+    if(nonNumericSelectedColumns.length > 0){ // set default metric to gower, if we have mixed datatypes
+      changeDistanceMetric(DistanceMetric.GOWER);
+    }else{ // set default metric to euclidean, if we only have numeric datatypes
+      changeDistanceMetric(DistanceMetric.EUCLIDEAN);
+    }
+    setSelection(selectedFeatures)
+  }
+
   React.useEffect(() => {
     if (open) {
-      setSelection(cloneColumns(projectionColumns));
+      intermediateSetSelection(cloneColumns(projectionColumns));
     }
   }, [projectionColumns, open]);
 
@@ -164,7 +176,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
       <DialogContent>
         {domainSettings?.settings?.hideSettings ? <Container><DialogTitle>{domainSettings.name}</DialogTitle></Container> :
         <Container>
-          {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && <FeaturePicker selection={selection} setSelection={setSelection} />}
+          {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && <FeaturePicker selection={selection} setSelection={intermediateSetSelection} />}
 
           <Grid container justifyContent="center" style={{ width: '100%' }}>
             <Grid item>
