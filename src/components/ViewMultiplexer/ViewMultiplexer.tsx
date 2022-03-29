@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import CloseIcon from '@mui/icons-material/Close';
+import SplitscreenIcon from '@mui/icons-material/Splitscreen';
 import { EntityId, EntityState } from '@reduxjs/toolkit';
 import { IconButton, Typography } from '@mui/material';
 import { WebGLView } from '../WebGLView/WebGLView';
@@ -38,6 +39,7 @@ function WebView({
   const value = multiples.multiples.entities[id];
 
   const dataset = useSelector((state: RootState) => state.dataset);
+  const dispatch = useDispatch();
 
   const projection =
     typeof value.attributes.workspace === 'string' || typeof value.attributes.workspace === 'number'
@@ -78,6 +80,14 @@ function WebView({
         }}
       >
         <Typography variant="button">{name}</Typography>
+
+        <IconButton
+          size="small"
+          onClick={() => dispatch(ViewActions.addView(dataset))}
+          style={{ visibility: value.id === multiples.multiples.ids[0] ? 'visible' : 'hidden' }}
+        >
+          <SplitscreenIcon />
+        </IconButton>
 
         <IconButton style={{ visibility: value.id === multiples.multiples.ids[0] ? 'hidden' : 'visible' }} size="small" onClick={() => onCloseView(value.id)}>
           <CloseIcon />
