@@ -10,6 +10,7 @@ import type { RootState } from '../../Store/Store';
 import { VirtualColumn, VirtualTable } from '../../UI/VirtualTable';
 import { selectVectors } from '../../Ducks/AggregationDuck';
 import { AStorytelling } from '../../Ducks/StoriesDuck copy';
+import { FeatureConfig } from '../../../BaseConfig';
 
 const mapStateToProps = (state: RootState) => ({
   hoverSettings: state.hoverSettings,
@@ -29,7 +30,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & {};
+type Props = PropsFromRedux & {
+  config: FeatureConfig;
+};
 
 const strrenderer = (name: string, row: any) => {
   return row[name];
@@ -45,6 +48,7 @@ export const DetailsTabPanel = connector(
     hoverStateOrientation,
     setHoverStateOrientation,
     activeStorybook,
+    config,
   }: Props) => {
     const handleChange = (_, value) => {
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
@@ -83,7 +87,7 @@ export const DetailsTabPanel = connector(
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
-          <AttributeTable />
+          <AttributeTable config={config} />
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
@@ -128,9 +132,9 @@ const attributeConnector = connect(
 
 type AttributeTablePropsFromRedux = ConnectedProps<typeof attributeConnector>;
 
-type AttributeTableProps = AttributeTablePropsFromRedux;
+type AttributeTableProps = AttributeTablePropsFromRedux & { config: FeatureConfig };
 
-const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGenericFingerprintAttributes }: AttributeTableProps) => {
+const AttributeTable = attributeConnector(({ config, genericFingerprintAttributes, setGenericFingerprintAttributes }: AttributeTableProps) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const fingerprintAttributes = (event) => {
@@ -164,9 +168,11 @@ const AttributeTable = attributeConnector(({ genericFingerprintAttributes, setGe
 
   return (
     <div>
-      <Button style={{ width: '100%' }} variant="outlined" onClick={fingerprintAttributes}>
-        Summary Attributes
-      </Button>
+      {config?.showSummaryAttributes !== false ? (
+        <Button style={{ width: '100%' }} variant="outlined" onClick={fingerprintAttributes}>
+          Summary Attributes
+        </Button>
+      ) : null}
 
       <Popover
         open={Boolean(anchorEl)}

@@ -68,5 +68,5 @@ declare const LassoLayer: import("react-redux").ConnectedComponent<{
     UNSAFE_componentWillReceiveProps?(nextProps: Readonly<LassoLayerProps>, nextContext: any): void;
     componentWillUpdate?(nextProps: Readonly<LassoLayerProps>, nextState: Readonly<any>, nextContext: any): void;
     UNSAFE_componentWillUpdate?(nextProps: Readonly<LassoLayerProps>, nextState: Readonly<any>, nextContext: any): void;
-}> & LassoLayerProps, "ref" | "key">>;
+}> & LassoLayerProps, "viewTransform" | "ref" | "key">>;
 export { LassoLayer };

@@ -5,4 +5,4 @@ export declare function PathLengthFilterFull({ pathLengthRange, setPathLengthRan
 export declare const PathLengthFilter: import("react-redux").ConnectedComponent<typeof PathLengthFilterFull, Pick<{
     pathLengthRange: any;
     setPathLengthRange: any;
-}, never>>;
+}, "pathLengthRange">>;

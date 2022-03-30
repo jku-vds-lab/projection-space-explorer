@@ -1,13 +1,13 @@
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from '../../../model/Dataset';
-import { IBaseProjection } from '../../../model/ProjectionInterfaces';
+import { IProjection, IBaseProjection } from '../../../model/ProjectionInterfaces';
 import { FeatureConfig } from '../../../BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     stories: import("../..").IStorytelling;
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;
-    projections: import("../../Ducks/ProjectionDuck").ProjectionStateType;
+    projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     projectionParams: {
         perplexity: number;
         learningRate: number;
@@ -37,7 +37,6 @@ declare type Props = PropsFromRedux & {
     setProjectionOpen?: any;
     setProjectionWorker?: any;
     dataset?: Dataset;
-    webGLView?: any;
 };
-export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => JSX.Element, Pick<Props, "config" | "webGLView">>;
+export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => JSX.Element, Pick<Props, "config">>;
 export {};

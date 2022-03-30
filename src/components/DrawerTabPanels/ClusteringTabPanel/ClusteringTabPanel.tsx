@@ -47,8 +47,8 @@ import { selectClusters } from '../../Ducks/AggregationDuck';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
 import { Dataset } from '../../../model/Dataset';
 import { StoriesActions, AStorytelling, IStorytelling, clusterAdapter } from '../../Ducks/StoriesDuck copy';
-import { ProjectionSelectors } from '../../Ducks/ProjectionDuck';
-import { ColorScalesActions } from '../../Ducks/ColorScalesDuck';
+import { PointColorScaleActions } from '../../Ducks';
+import { ViewSelector } from '../../Ducks/ViewDuck';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -56,7 +56,7 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   currentAggregation: state.currentAggregation,
   groupVisualizationMode: state.groupVisualizationMode,
-  workspace: ProjectionSelectors.getWorkspace(state),
+  workspace: ViewSelector.getWorkspace(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -168,7 +168,7 @@ export const ClusteringTabPanel = connector(
             if (clusterAttribute) {
               setChannelColor(clusterAttribute);
 
-              dispatch(ColorScalesActions.initScaleByType(clusterAttribute.type));
+              dispatch(PointColorScaleActions.initScaleByType(clusterAttribute.type));
             }
           })
           .catch((error) => console.log(error)),
@@ -515,7 +515,7 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
 
     const curr_sizes = splitRef.current.split.getSizes();
     if (curr_sizes[1] < 2) {
-      splitRef.current.split.setSizes([curr_sizes[0], 70]);
+      splitRef.current.split.setSizes([30, 70]);
     }
   };
 
@@ -592,7 +592,9 @@ function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStor
   const storyItems = new Array<JSX.Element>();
 
   if (activeStory) {
-    for (const [key, cluster] of Object.entries(activeStory.clusters.entities)) {
+    for (const key of activeStory.clusters.ids) {
+      const cluster = activeStory.clusters.entities[key];
+
       storyItems.push(
         <ListItem
           key={key}

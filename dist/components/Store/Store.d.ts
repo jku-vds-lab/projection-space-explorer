@@ -1,19 +1,16 @@
+import { EntityState, EntityId } from '@reduxjs/toolkit';
 import { ClusterMode } from '../Ducks/ClusterModeDuck';
-import { ProjectionStateType } from '../Ducks/ProjectionDuck';
-import { Dataset } from '../../model';
-import { BaseColorScale } from '../../model/Palette';
+import { Dataset, IProjection } from '../../model';
 import { IStorytelling } from '../Ducks/StoriesDuck copy';
 export declare function createInitialReducerState(dataset: Dataset): Partial<RootState>;
 export declare const rootReducer: (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: import("@reduxjs/toolkit").EntityId[];
+        selectedClusters: EntityId[];
         source: "sample" | "cluster";
     };
     stories: IStorytelling;
     openTab: any;
-    selectedVectorByShape: any;
-    vectorByShape: any;
     pointDisplay: {
         checkedShapes: {
             star: boolean;
@@ -25,7 +22,6 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     activeLine: any;
     dataset: Dataset;
     highlightedSequence: any;
-    viewTransform: import("../Ducks/ViewTransformDuck").ViewTransformType;
     advancedColoringSelection: any;
     projectionColumns: any;
     projectionOpen: any;
@@ -44,21 +40,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     projectionWorker: Worker;
     clusterMode: ClusterMode;
     displayMode: import("../Ducks/DisplayModeDuck").DisplayMode;
-    lineBrightness: any;
-    pathLengthRange: {
-        range: any;
-        maximum: number;
-    } | {
-        range: number[];
-        maximum: any;
-    };
-    channelSize: any;
-    channelColor: any;
-    channelBrightness: any;
-    globalPointSize: number[];
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    pointColorScale: any;
-    pointColorMapping: any;
     trailSettings: {
         show: boolean;
         length: any;
@@ -67,7 +49,6 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         length: number;
     };
     differenceThreshold: any;
-    projections: ProjectionStateType;
     hoverSettings: {
         windowMode: any;
     };
@@ -78,7 +59,6 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         options: any;
         value: string;
     };
-    globalPointBrightness: number[];
     groupVisualizationMode: any;
     genericFingerprintAttributes: any[];
     hoverStateOrientation: any;
@@ -94,9 +74,11 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
             allIds: string[];
         };
     };
-    colorScales: {
-        scales: import("../Utility/NormalizedState").NormalizedDictionary<BaseColorScale>;
-        active: string;
+    colorScales: import("../Ducks/ColorScalesDuck").ColorScalesType;
+    multiples: {
+        multiples: EntityState<import("../Ducks/ViewDuck").SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
     };
 }>;
 export declare function createRootReducer(reducers: any): (state: any, action: any) => any;

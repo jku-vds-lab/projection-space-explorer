@@ -1,10 +1,11 @@
+import * as THREE from 'three';
 import { createLinearRangeScaler } from '../Utility/ScalingAndAxes';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
-import { IBaseProjection } from '../../model/ProjectionInterfaces';
+import { IBaseProjection, IProjection } from '../../model/ProjectionInterfaces';
 import { CubicBezierCurve } from '../../model/Curves';
 import type { RootState } from './Store';
-import { ProjectionSelectors } from '../Ducks/ProjectionDuck';
-import * as THREE from 'three';
+import { ViewSelector } from '../Ducks/ViewDuck';
+import { Dataset } from '../../model/Dataset';
 
 function calcBounds(positions: IBaseProjection) {
   // Get rectangle that fits around data set
@@ -175,8 +176,22 @@ export class UtilityActions {
     options: any,
     ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
   ) {
+    function selectPositions(dataset: Dataset, projection: IProjection) {
+      if (projection.xChannel || projection.yChannel) {
+        return dataset.vectors.map((vector) => ({
+          x: projection.xChannel ? vector[projection.xChannel] : 0,
+          y: projection.yChannel ? vector[projection.yChannel] : 0,
+        }));
+      }
+
+      return projection.positions;
+    }
+
     try {
       const provided = ctx !== null && ctx !== undefined;
+
+      const { channelColor, channelSize, globalPointSize, pointColorMapping, workspace } =
+        state.multiples.multiples.entities[state.multiples.multiples.ids[0]].attributes;
 
       let canvas = null;
       if (!ctx) {
@@ -193,9 +208,12 @@ export class UtilityActions {
       ctx.closePath();
       ctx.beginPath();
 
-      const mapping = state.pointColorMapping;
+      const mapping = pointColorMapping;
 
-      const positions = ProjectionSelectors.getWorkspace(state)?.positions;
+      const positions =
+        typeof workspace === 'string' || typeof workspace === 'number'
+          ? selectPositions(state.dataset, state.multiples.projections.entities[workspace])
+          : selectPositions(state.dataset, workspace);
 
       const bounds = calcBounds(positions);
 
@@ -245,11 +263,11 @@ export class UtilityActions {
 
       let pointSizeScaler = null;
 
-      if (state.channelSize) {
+      if (channelSize) {
         pointSizeScaler = createLinearRangeScaler(
-          state.globalPointSize as any,
-          state.dataset.columns[state.channelSize.key].range.min,
-          state.dataset.columns[state.channelSize.key].range.max,
+          globalPointSize as any,
+          state.dataset.columns[channelSize.key].range.min,
+          state.dataset.columns[channelSize.key].range.max,
         );
       }
 
@@ -267,7 +285,7 @@ export class UtilityActions {
 
         const color = isSelected(index)
           ? mapping
-            ? (mapping.map(state.dataset.vectors[index][state.channelColor.key]) as SchemeColor)
+            ? (mapping.map(state.dataset.vectors[index][channelColor.key]) as SchemeColor)
             : new SchemeColor('#7fc97f')
           : new SchemeColor('#c0c0c0');
 
@@ -278,13 +296,7 @@ export class UtilityActions {
 
         ctx.globalAlpha = options?.pointBrightness ?? 0.5;
         ctx.moveTo(sx(x), sy(y));
-        ctx.arc(
-          sx(x),
-          sy(y),
-          (options?.pointSize ?? 4) * (state.channelSize ? pointSizeScaler(state.dataset.vectors[index][state.channelSize.key]) : 1),
-          0,
-          2 * Math.PI,
-        );
+        ctx.arc(sx(x), sy(y), (options?.pointSize ?? 4) * (channelSize ? pointSizeScaler(state.dataset.vectors[index][channelSize.key]) : 1), 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
       });
@@ -309,6 +321,7 @@ export class UtilityActions {
         }
       });
     } catch (e) {
+      console.log(e);
       return new Promise<string>((resolve) => {
         resolve('');
       });

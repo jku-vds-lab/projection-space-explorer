@@ -2,7 +2,7 @@ import { Button, Popover } from '@mui/material';
 import React = require('react');
 import { AdvancedColoringLegend } from './AdvancedColoringLegend';
 
-export function AdvancedColoringPopover() {
+export function AdvancedColoringPopover({ pointColorMapping }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
@@ -35,7 +35,7 @@ export function AdvancedColoringPopover() {
           horizontal: 'center',
         }}
       >
-        <AdvancedColoringLegend />
+        <AdvancedColoringLegend pointColorMapping={pointColorMapping} />
       </Popover>
     </div>
   );

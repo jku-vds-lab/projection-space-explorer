@@ -2,7 +2,8 @@ import { Dataset } from '../../model';
 export declare enum RootActionTypes {
     RESET = "root/RESET",
     HYDRATE = "root/HYDRATE",
-    DATASET = "root/DATASET"
+    DATASET = "root/DATASET",
+    HARD_RESET = "root/HARD_RESET"
 }
 export declare const RootActions: {
     reset: () => {
@@ -15,5 +16,8 @@ export declare const RootActions: {
     loadDataset: (dataset: Dataset) => {
         type: RootActionTypes;
         dataset: Dataset;
+    };
+    hardReset: () => {
+        type: RootActionTypes;
     };
 };

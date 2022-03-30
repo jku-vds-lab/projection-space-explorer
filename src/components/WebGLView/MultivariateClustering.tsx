@@ -21,7 +21,7 @@ import TessyWorker from '../workers/tessy.worker';
 import { ViewTransformType } from '../Ducks';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { AStorytelling } from '../Ducks/StoriesDuck copy';
-import { ProjectionSelectors } from '../Ducks/ProjectionDuck';
+import { ViewSelector } from '../Ducks/ViewDuck';
 
 const d3v5 = require('d3v5');
 
@@ -74,12 +74,10 @@ const mapState = (state: RootState) => ({
   displayMode: state.displayMode,
   trailSettings: state.trailSettings,
   stories: state.stories,
-  globalPointSize: state.globalPointSize,
-  viewTransform: state.viewTransform,
   currentAggregation: state.currentAggregation,
   hoverState: state.hoverState,
   groupVisualizationMode: state.groupVisualizationMode,
-  workspace: ProjectionSelectors.getWorkspace(state)?.positions,
+  workspace: ViewSelector.getWorkspace(state)?.positions,
 });
 
 const connector = connect(mapState, null, null, { forwardRef: true });
@@ -89,6 +87,8 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
   // Callback that is called when a rerender should happen
   onInvalidate?: () => void;
+  viewTransform: ViewTransformType;
+  globalPointSize;
 };
 
 /**

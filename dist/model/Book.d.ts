@@ -63,6 +63,7 @@ export interface IBook {
     id: EntityId;
     clusters: EntityState<ICluster>;
     edges: EntityState<IEdge>;
+    name?: string;
     metadata?: {
         [id: string]: any;
     };

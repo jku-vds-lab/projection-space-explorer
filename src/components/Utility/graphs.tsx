@@ -10,13 +10,10 @@ import { Dataset } from '../../model/Dataset';
 import { ObjectTypes } from '../../model/ObjectType';
 import { IBook } from '../../model/Book';
 import { IEdge } from '../../model/Edge';
+import { clusterAdapter } from '../Ducks/StoriesDuck copy';
 
 const edgeAdapter = createEntityAdapter<IEdge>({
   selectId: (edge) => edge.id,
-});
-
-const clusterAdapter = createEntityAdapter<ICluster>({
-  selectId: (cluster) => cluster.id,
 });
 
 export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult: IEdge[]) {

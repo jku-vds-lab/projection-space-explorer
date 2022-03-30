@@ -5,5 +5,5 @@ declare function PathBrightnessSliderFull({ lineBrightness, setLineBrightness }:
 export declare const PathBrightnessSlider: import("react-redux").ConnectedComponent<typeof PathBrightnessSliderFull, Pick<{
     lineBrightness: any;
     setLineBrightness: any;
-}, never>>;
+}, "lineBrightness">>;
 export {};

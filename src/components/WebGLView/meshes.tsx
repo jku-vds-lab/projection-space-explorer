@@ -373,6 +373,8 @@ export class PointVisualization {
 
   pathLengthRange: any;
 
+  baseSize: number[];
+
   constructor(vectorMapping: Mapping, dataset: Dataset, size, lineLayerSystem: LayeringSystem, segments) {
     this.highlightIndex = null;
     this.particleSize = size;
@@ -383,6 +385,7 @@ export class PointVisualization {
     this.colorsChecked = null;
 
     this.grayedLayerSystem = new LayeringSystem(dataset.vectors.length);
+    this.baseSize = new Array<number>(dataset.vectors.length);
 
     // selection layer
     this.grayedLayerSystem.registerLayer(5, true);
@@ -434,7 +437,7 @@ export class PointVisualization {
           show[i] = 1.0;
 
           // color.toArray( colors, i * 4 );
-          vector.__meta__.baseSize = this.particleSize;
+          this.baseSize[vector.__meta__.meshIndex] = this.particleSize;
 
           if (vector.age === 0) {
             // Starting point
@@ -465,7 +468,7 @@ export class PointVisualization {
         selected[i] = 0.0;
 
         show[i] = 1.0;
-        vector.__meta__.baseSize = this.particleSize;
+        this.baseSize[vector.__meta__.meshIndex] = this.particleSize;
         types[i] = 2;
         vector.__meta__.shapeType = shapeFromInt(types[i]);
         vector.__meta__.highlighted = false;
@@ -698,7 +701,7 @@ export class PointVisualization {
   sizeCat(category, range) {
     if (category == null) {
       this.vectors.forEach((vector) => {
-        vector.__meta__.baseSize = this.particleSize * range[0];
+        this.baseSize[vector.__meta__.meshIndex] = this.particleSize * range[0];
       });
     } else {
       if (category.type === 'sequential') {
@@ -719,7 +722,7 @@ export class PointVisualization {
             const sizeScaler = createLinearRangeScaler(range, min, max);
 
             segment.vectors.forEach((vector) => {
-              vector.__meta__.baseSize = this.particleSize * sizeScaler(vector[category.key]);
+              this.baseSize[vector.__meta__.meshIndex] = this.particleSize * sizeScaler(vector[category.key]);
             });
           });
         } else {
@@ -738,13 +741,13 @@ export class PointVisualization {
           const sizeScaler = createLinearRangeScaler(range, min, max);
 
           this.vectors.forEach((vector) => {
-            vector.__meta__.baseSize = this.particleSize * sizeScaler(vector[category.key]);
+            this.baseSize[vector.__meta__.meshIndex] = this.particleSize * sizeScaler(vector[category.key]);
           });
         }
       }
       if (category.type === 'categorical') {
         this.vectors.forEach((vector) => {
-          vector.__meta__.baseSize = this.particleSize * category.values.filter((v) => v.from === vector[category.key])[0].to;
+          this.baseSize[vector.__meta__.meshIndex] = this.particleSize * category.values.filter((v) => v.from === vector[category.key])[0].to;
         });
       }
     }
@@ -756,7 +759,10 @@ export class PointVisualization {
     const size = this.mesh.geometry.attributes.size as BufferAttribute;
 
     this.vectors.forEach((vector) => {
-      size.setX(vector.__meta__.meshIndex, vector.__meta__.baseSize * (vector.__meta__.highlighted ? 2.0 : 1.0) * (vector.__meta__.selected ? 1.2 : 1.0));
+      size.setX(
+        vector.__meta__.meshIndex,
+        this.baseSize[vector.__meta__.meshIndex] * (vector.__meta__.highlighted ? 2.0 : 1.0) * (vector.__meta__.selected ? 1.2 : 1.0),
+      );
     });
 
     size.needsUpdate = true;

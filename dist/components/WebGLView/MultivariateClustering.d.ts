@@ -30,8 +30,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         length: number;
     };
     stories: import("../Ducks").IStorytelling;
-    globalPointSize: number[];
-    viewTransform: ViewTransformType;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: EntityId[];
@@ -44,6 +42,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     onInvalidate?: () => void;
+    viewTransform: ViewTransformType;
+    globalPointSize: any;
 };
 /**
  * Clustering visualization as a React component.
@@ -210,8 +210,6 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         length: number;
     };
     stories: import("../Ducks").IStorytelling;
-    globalPointSize: number[];
-    viewTransform: ViewTransformType;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: EntityId[];
@@ -222,5 +220,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
     workspace: import("../..").IBaseProjection;
 } & {
     onInvalidate?: () => void;
-}, "ref" | "key" | "onInvalidate">>;
+    viewTransform: ViewTransformType;
+    globalPointSize: any;
+}, "viewTransform" | "globalPointSize" | "ref" | "key" | "onInvalidate">>;
 export {};

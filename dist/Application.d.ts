@@ -9,9 +9,6 @@ import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     openTab: any;
     dataset: Dataset;
-    channelSize: any;
-    channelColor: any;
-    channelBrightness: any;
     hoverStateOrientation: any;
     datasetEntries: {
         values: {
@@ -44,7 +41,6 @@ declare type Props = PropsFromRedux & {
  */
 export declare const Application: import("react-redux").ConnectedComponent<{
     new (props: any): {
-        threeRef: any;
         splitRef: any;
         componentDidMount(): void;
         /**
@@ -80,7 +76,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     };
     contextType?: React.Context<any>;
 }, Pick<React.ClassAttributes<{
-    threeRef: any;
     splitRef: any;
     componentDidMount(): void;
     /**
@@ -116,9 +111,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
 }> & {
     openTab: any;
     dataset: Dataset;
-    channelSize: any;
-    channelColor: any;
-    channelBrightness: any;
     hoverStateOrientation: any;
     datasetEntries: {
         values: {

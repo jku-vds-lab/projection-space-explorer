@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { createEntityAdapter } from '@reduxjs/toolkit';
+import { createEntityAdapter, EntityState, EntityId } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import clone = require('fast-clone');
 import projectionOpen from '../Ducks/ProjectionOpenDuck';
@@ -10,54 +10,44 @@ import clusterMode, { ClusterMode } from '../Ducks/ClusterModeDuck';
 import advancedColoringSelection from '../Ducks/AdvancedColoringSelectionDuck';
 import projectionColumns from '../Ducks/ProjectionColumnsDuck';
 import displayMode from '../Ducks/DisplayModeDuck';
-import lineBrightness from '../Ducks/LineBrightnessDuck';
 import activeLine from '../Ducks/ActiveLineDuck';
 import currentAggregation from '../Ducks/AggregationDuck';
-import { viewTransform } from '../Ducks/ViewTransformDuck';
 import projectionParams from '../Ducks/ProjectionParamsDuck';
 import projectionWorker from '../Ducks/ProjectionWorkerDuck';
-import vectorByShape from '../Ducks/VectorByShapeDuck';
-import selectedVectorByShape from '../Ducks/SelectedVectorByShapeDuck';
-import pathLengthRange from '../Ducks/PathLengthRange';
-import channelSize from '../Ducks/ChannelSize';
-import channelColor from '../Ducks/ChannelColorDuck';
-import globalPointSize from '../Ducks/GlobalPointSizeDuck';
-import pointColorScale from '../Ducks/PointColorScaleDuck';
-import pointColorMapping from '../Ducks/PointColorMappingDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
 import { differenceThreshold } from '../Ducks/DifferenceThresholdDuck';
 import hoverSettings from '../Ducks/HoverSettingsDuck';
 import hoverState from '../Ducks/HoverStateDuck';
 import { selectedLineBy } from '../Ducks/SelectedLineByDuck';
-import globalPointBrightness from '../Ducks/GlobalPointBrightnessDuck';
-import channelBrightness from '../Ducks/ChannelBrightnessDuck';
 import groupVisualizationMode, { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
 import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 import detailView from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
-import { embeddings, ProjectionStateType } from '../Ducks/ProjectionDuck';
 import { RootActionTypes } from './RootActions';
-import { Dataset, ADataset, SegmentFN, AProjection, IBook, ProjectionMethod } from '../../model';
+import { Dataset, ADataset, SegmentFN, AProjection, IBook, ProjectionMethod, IProjection } from '../../model';
 import { CategoryOptionsAPI } from '../WebGLView/CategoryOptions';
 import { ANormalized } from '../Utility/NormalizedState';
 import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/graphs';
 import colorScales from '../Ducks/ColorScalesDuck';
 import { BaseColorScale } from '../../model/Palette';
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
+import { multiplesSlice, multipleAdapter, defaultAttributes } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
+
+/**
+ * Match all cases of view constants eg x1, y1, x2, y2...
+ */
+const viewRegexp = /^(x|y)[0-9]$/;
 
 const allReducers = {
   currentAggregation,
   stories,
   openTab,
-  selectedVectorByShape,
-  vectorByShape,
   pointDisplay: PointDisplayReducer,
   activeLine,
   dataset,
   highlightedSequence,
-  viewTransform,
   advancedColoringSelection,
   projectionColumns,
   projectionOpen,
@@ -65,27 +55,18 @@ const allReducers = {
   projectionWorker,
   clusterMode,
   displayMode,
-  lineBrightness,
-  pathLengthRange,
-  channelSize,
-  channelColor,
-  channelBrightness,
-  globalPointSize,
   hoverState,
-  pointColorScale,
-  pointColorMapping,
   trailSettings,
   differenceThreshold,
-  projections: embeddings,
   hoverSettings,
   selectedLineBy,
-  globalPointBrightness,
   groupVisualizationMode,
   genericFingerprintAttributes,
   hoverStateOrientation,
   detailView,
   datasetEntries,
   colorScales,
+  multiples: multiplesSlice.reducer,
 };
 
 const bookAdapter = createEntityAdapter<IBook>({
@@ -107,7 +88,8 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     maximum: SegmentFN.getMaxPathLength(dataset),
   };
 
-  let projections: ProjectionStateType = null;
+  let projections: EntityState<IProjection> = null;
+  let workspace: IProjection | EntityId = null;
 
   if (dataset.hasInitialScalarTypes) {
     // When the dataset has initial positions, add this as a projection
@@ -118,14 +100,11 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     );
 
     projections = {
-      values: {
-        entities: { [initialProjection.hash]: initialProjection },
-        ids: [initialProjection.hash],
-      },
-      workspace: undefined,
+      entities: { [initialProjection.hash]: initialProjection },
+      ids: [initialProjection.hash],
     };
 
-    projections.workspace = initialProjection.hash;
+    workspace = initialProjection.hash;
   } else {
     // If no initial positions -> add temporary projection
     // When the dataset has initial positions, add this as a projection
@@ -136,12 +115,11 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     );
 
     projections = {
-      values: {
-        entities: {},
-        ids: [],
-      },
-      workspace: initialProjection,
+      entities: {},
+      ids: [],
     };
+
+    workspace = initialProjection;
   }
 
   const genericFingerprintAttributes = ADataset.getColumns(dataset, true).map((column) => ({
@@ -242,28 +220,95 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
   }
 
   const colorScalesState = clone(colorScales());
+  let pointColorScale = null;
   if (channelColor) {
-    const handle = ANormalized.entries<BaseColorScale>(colorScalesState.scales).find(([, value]) => {
+    pointColorScale = ANormalized.entries<BaseColorScale>(colorScalesState.scales).find(([, value]) => {
       return value.type === channelColor.type;
     })[0];
-
-    colorScalesState.active = handle;
   }
+
+  // Load views from dataset
+  const xyChannels = {};
+
+  const maxView = Object.entries(dataset.columns).reduce((prev, [key, curr]) => {
+    try {
+      const { view } = curr.metaInformation;
+      if (Array.isArray(view)) {
+        let max = prev;
+        view.forEach((channel) => {
+          if (typeof channel === 'string' && viewRegexp.test(channel)) {
+            const vI = Number.parseInt(channel.charAt(1), 10);
+            xyChannels[channel] = key;
+
+            if (vI > max) {
+              max = vI;
+            }
+          }
+        });
+
+        return max;
+      }
+
+      return prev;
+    } catch (e) {
+      return 0;
+    }
+  }, 0);
+
+  let multiplesCollection = multipleAdapter.getInitialState();
+
+  if (maxView > 0) {
+    for (let i = 0; i < maxView; i++) {
+      const vId = uuidv4();
+
+      const xChannel = xyChannels[`x${i + 1}`];
+      const yChannel = xyChannels[`y${i + 1}`];
+
+      const view = {
+        id: vId,
+        attributes: {
+          ...defaultAttributes(),
+          workspace: AProjection.createManualProjection(xChannel, yChannel),
+        },
+      };
+
+      multiplesCollection = multipleAdapter.addOne(multiplesCollection, view);
+    }
+  } else {
+    const multipleId = uuidv4();
+
+    const defaultView = {
+      id: multipleId,
+      attributes: {
+        ...defaultAttributes(),
+        channelBrightness,
+        channelSize,
+        channelColor,
+        globalPointBrightness,
+        globalPointSize,
+        pathLengthRange,
+        pointColorScale,
+        workspace,
+      },
+    };
+
+    multiplesCollection = multipleAdapter.addOne(multiplesCollection, defaultView);
+  }
+
+  const multiples = {
+    multiples: multiplesCollection,
+    active: multiplesCollection.ids[0],
+    projections,
+  };
 
   return {
     clusterMode,
     groupVisualizationMode,
-    projections,
-    pathLengthRange,
     genericFingerprintAttributes,
     projectionColumns,
-    globalPointSize,
-    channelSize,
-    channelBrightness,
-    channelColor,
-    globalPointBrightness,
     stories,
     colorScales: colorScalesState,
+    multiples,
   };
 }
 
@@ -284,8 +329,8 @@ export function createRootReducer(reducers: any) {
 
   return (state, action) => {
     if (action.type === RootActionTypes.RESET) {
-      const { dataset, openTab, viewTransform, datasetEntries } = state;
-      state = { dataset, openTab, viewTransform, datasetEntries };
+      const { dataset, openTab, datasetEntries } = state;
+      state = { dataset, openTab, datasetEntries };
     }
 
     if (action.type === RootActionTypes.HYDRATE) {
@@ -304,6 +349,14 @@ export function createRootReducer(reducers: any) {
       Object.assign(newState, partialRootState);
 
       return newState;
+    }
+
+    if (action.type === RootActionTypes.HARD_RESET) {
+      const clone = { ...state };
+      for (const key of Object.keys(allReducers)) {
+        clone[key] = undefined;
+      }
+      state = clone;
     }
 
     return combined(state, action);

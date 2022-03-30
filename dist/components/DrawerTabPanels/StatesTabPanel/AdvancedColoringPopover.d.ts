@@ -1,1 +1,3 @@
-export declare function AdvancedColoringPopover(): JSX.Element;
+export declare function AdvancedColoringPopover({ pointColorMapping }: {
+    pointColorMapping: any;
+}): JSX.Element;
