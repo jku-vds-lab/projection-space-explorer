@@ -342,12 +342,6 @@ export const WebGLView = connector(
 
     onMouseDown(event) {
       event.preventDefault();
-      
-      // call custom hook
-      if(this.props?.overrideComponents?.mouseInteractionHooks["mousedown"] != null){
-        const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
-        this.props?.overrideComponents?.mouseInteractionHooks["mousedown"](coords)
-      }
       if (this.props.dataset) this.mouseController.mouseDown(event);
     }
 
@@ -358,12 +352,6 @@ export const WebGLView = connector(
 
     onMouseUp(event: MouseEvent) {
       event.preventDefault();
-      
-      // call custom hook
-      if(this.props?.overrideComponents?.mouseInteractionHooks["mouseup"] != null){
-        const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
-        this.props?.overrideComponents?.mouseInteractionHooks["mouseup"](coords)
-      }
       if (this.props.dataset) this.mouseController.mouseUp(event);
     }
 
@@ -665,9 +653,9 @@ export const WebGLView = connector(
         }
 
         // call custom hook
-        if(this.props?.overrideComponents?.mouseInteractionHooks["mouseclick"] != null){
+        if(this.props?.overrideComponents?.mouseInteractionCallbacks.onmouseclick != null){
           const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
-          this.props?.overrideComponents?.mouseInteractionHooks["mouseclick"](coords, event_used, button)
+          this.props?.overrideComponents?.mouseInteractionCallbacks.onmouseclick(coords, event_used, button)
         }
       };
 
@@ -748,8 +736,8 @@ export const WebGLView = connector(
           }
 
           // call custom hook
-          if(this.props?.overrideComponents?.mouseInteractionHooks["mousemove"] != null){
-            this.props?.overrideComponents?.mouseInteractionHooks["mousemove"](coords, event_used)
+          if(this.props?.overrideComponents?.mouseInteractionCallbacks.onmousemove != null){
+            this.props?.overrideComponents?.mouseInteractionCallbacks.onmousemove(coords, event_used)
           }
 
         }, 10);

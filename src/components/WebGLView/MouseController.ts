@@ -31,8 +31,6 @@ export class MouseController {
 
   onContext: (event: MouseEvent, button: number) => void;
 
-  onMouseDown: (event: MouseEvent) => void;
-
   onMouseUp: (event: MouseEvent) => void;
 
   onMouseMove: (event: MouseEvent) => void;

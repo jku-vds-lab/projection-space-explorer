@@ -24,7 +24,7 @@ import { PathBrightnessSlider } from './PathBrightnessSlider';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
 import { ColorScalesActions } from '../../Ducks/ColorScalesDuck';
 import { PointDisplayActions } from '../../Ducks/PointDisplayDuck';
-import { EncodingChannel } from '../../../model';
+import { DefaultFeatureLabel, EncodingChannel } from '../../../model';
 
 const mapStateToProps = (state: RootState) => ({
   selectedVectorByShape: state.selectedVectorByShape,
@@ -62,7 +62,7 @@ export function SelectFeatureComponent({ label, default_val, categoryOptions, on
   if (categoryOptions != null) {
     autocomplete_options = autocomplete_options.concat(
       categoryOptions.attributes.map((attribute) => {
-        let group = "Default";
+        let group = DefaultFeatureLabel;
         if (column_info != null && attribute.key in column_info) {
           group = column_info[attribute.key].featureLabel;
         }

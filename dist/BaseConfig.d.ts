@@ -32,11 +32,13 @@ export declare const DEFAULT_EMBEDDINGS: {
     name: string;
     settings: {};
 }[];
+export declare type CoordinatesType = {
+    x: number;
+    y: number;
+};
 export declare type MouseInteractions = {
-    mousedown?: (coordinates: any) => void;
-    mouseup?: (coordinates: any) => void;
-    mousemove?: (coordinates: any, event_used: boolean) => void;
-    mouseclick?: (coordinates: any, event_used: boolean, button: number) => void;
+    onmousemove?: (coordinates: CoordinatesType, event_used: boolean) => void;
+    onmouseclick?: (coordinates: CoordinatesType, event_used: boolean, button: number) => void;
 };
 export declare type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
@@ -53,7 +55,7 @@ export declare type ComponentConfig = Partial<{
     layers: Array<LayerSpec>;
     tabs: Array<TabSpec>;
     contextMenuItems: Array<ContextMenuItem>;
-    mouseInteractionHooks: MouseInteractions;
+    mouseInteractionCallbacks: MouseInteractions;
 }>;
 export declare type ContextMenuItem = {
     key: string;

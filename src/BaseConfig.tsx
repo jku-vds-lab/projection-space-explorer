@@ -35,11 +35,14 @@ export const DEFAULT_EMBEDDINGS = [
   { id: ProjectionMethod.FORCEATLAS2, name: 'ForceAtlas2', settings: DEFAULT_FA2_SETTINGS },
 ];
 
+export type CoordinatesType = {
+  x: number,
+  y: number
+}
+
 export type MouseInteractions = {
-  mousedown?: (coordinates: any) => void
-  mouseup?: (coordinates: any) => void
-  mousemove?: (coordinates: any, event_used: boolean) => void
-  mouseclick?: (coordinates: any, event_used: boolean, button:number) => void
+  onmousemove?: (coordinates: CoordinatesType, event_used: boolean) => void
+  onmouseclick?: (coordinates: CoordinatesType, event_used: boolean, button:number) => void
 }
 
 export type FeatureConfig = Partial<{
@@ -59,7 +62,7 @@ export type ComponentConfig = Partial<{
   layers: Array<LayerSpec>;
   tabs: Array<TabSpec>;
   contextMenuItems: Array<ContextMenuItem>;
-  mouseInteractionHooks: MouseInteractions;
+  mouseInteractionCallbacks: MouseInteractions;
 }>;
 
 export type ContextMenuItem = {
