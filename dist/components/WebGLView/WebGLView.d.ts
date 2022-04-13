@@ -201,7 +201,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         requestRender(): void;
         createTransform(): ViewTransformType;
         renderLasso(ctx: any): void;
-        repositionClusters(): void;
         onClusterZoom(cluster: any): void;
         render(): JSX.Element;
         context: any;
@@ -346,7 +345,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     requestRender(): void;
     createTransform(): ViewTransformType;
     renderLasso(ctx: any): void;
-    repositionClusters(): void;
     onClusterZoom(cluster: any): void;
     render(): JSX.Element;
     context: any;
