@@ -97,13 +97,15 @@ function WebView({
         </div>
 
         <div style={{ display: 'flex' }}>
-          <IconButton
-            size="small"
-            onClick={() => dispatch(ViewActions.addView(dataset))}
-            style={{ visibility: value.id === multiples.multiples.ids[0] ? 'visible' : 'hidden' }}
-          >
-            <SplitscreenIcon />
-          </IconButton>
+          {value.id === multiples.multiples.ids[0] ? (
+            <IconButton
+              size="small"
+              onClick={() => dispatch(ViewActions.addView(dataset))}
+              style={{ visibility: value.id === multiples.multiples.ids[0] ? 'visible' : 'hidden' }}
+            >
+              <SplitscreenIcon />
+            </IconButton>
+          ) : null}
 
           <IconButton disabled={value.id === multiples.multiples.ids[0]} size="small" onClick={() => onCloseView(value.id)}>
             <CloseIcon />
