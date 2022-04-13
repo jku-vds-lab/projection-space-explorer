@@ -77,7 +77,13 @@ function WebView({
           background: active ? 'lavender' : 'aliceblue',
         }}
       >
-        <div>
+        <div
+          style={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
           <Typography variant="button" component="span">
             {projection.metadata?.method}
           </Typography>
@@ -85,17 +91,12 @@ function WebView({
           {projection.name ? (
             <Typography variant="body1" component="span">
               {` - "${projection.name}"`}
-            </Typography>
-          ) : null}
-
-          {projection.xChannel || projection.yChannel ? (
-            <Typography variant="body1" component="span" sx={{ ml: 3 }}>
-              {`x: ${projection.xChannel}, y: ${projection.yChannel}`}
+              {projection.xChannel || projection.yChannel ? ` [x: ${projection.xChannel}, y: ${projection.yChannel}]` : null}
             </Typography>
           ) : null}
         </div>
 
-        <div>
+        <div style={{ display: 'flex' }}>
           <IconButton
             size="small"
             onClick={() => dispatch(ViewActions.addView(dataset))}
