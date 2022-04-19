@@ -30,8 +30,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         length: number;
     };
     stories: import("../Ducks").IStorytelling;
-    globalPointSize: number[];
-    viewTransform: ViewTransformType;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: EntityId[];
@@ -44,6 +42,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     onInvalidate?: () => void;
+    viewTransform: ViewTransformType;
+    globalPointSize: any;
 };
 /**
  * Clustering visualization as a React component.

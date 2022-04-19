@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { connect, ConnectedProps, useDispatch } from 'react-redux';
+import { connect, ConnectedProps, useDispatch, useSelector } from 'react-redux';
 import * as React from 'react';
 import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, createFilterOptions, Autocomplete, TextField } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@mui/styles';
 import { ShapeLegend } from './ShapeLegend';
-import { setSelectedVectorByShapeAction } from '../../Ducks/SelectedVectorByShapeDuck';
 import { setVectorByShapeAction } from '../../Ducks/VectorByShapeDuck';
 import type { RootState } from '../../Store/Store';
 import { setSelectedLineBy } from '../../Ducks/SelectedLineByDuck';
@@ -22,22 +21,18 @@ import { setAdvancedColoringSelectionAction } from '../../Ducks/AdvancedColoring
 import { PathLengthFilter } from './PathLengthFilter';
 import { PathBrightnessSlider } from './PathBrightnessSlider';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
-import { ColorScalesActions } from '../../Ducks/ColorScalesDuck';
 import { PointDisplayActions } from '../../Ducks/PointDisplayDuck';
-import { DefaultFeatureLabel, EncodingChannel } from '../../../model';
+import { BaseColorScale, DefaultFeatureLabel, EncodingChannel } from '../../../model';
+import { ViewSelector } from '../../Ducks/ViewDuck';
+import { ANormalized } from '../../Utility/NormalizedState';
+import { PointColorScaleActions } from '../../Ducks/PointColorScaleDuck';
 
 const mapStateToProps = (state: RootState) => ({
-  selectedVectorByShape: state.selectedVectorByShape,
   selectedLineBy: state.selectedLineBy,
-  vectorByShape: state.vectorByShape,
   dataset: state.dataset,
-  channelBrightness: state.channelBrightness,
-  channelSize: state.channelSize,
-  channelColor: state.channelColor,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setSelectedVectorByShape: (selectedVectorByShape) => dispatch(setSelectedVectorByShapeAction(selectedVectorByShape)),
   setVectorByShape: (vectorByShape) => dispatch(setVectorByShapeAction(vectorByShape)),
   setSelectedLineBy: (lineBy) => dispatch(setSelectedLineBy(lineBy)),
   setChannelBrightness: (value) => dispatch(setChannelBrightnessSelection(value)),
@@ -47,16 +42,7 @@ const mapDispatchToProps = (dispatch) => ({
   setAdvancedColoringSelection: (value) => dispatch(setAdvancedColoringSelectionAction(value)),
 });
 
-const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
-
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-type Props = PropsFromRedux & {
-  webGlView;
-  encodings: EncodingChannel[];
-};
-
-export function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info }: any) {
+function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info }) {
   let autocomplete_options = [{ value: 'None', inputValue: 'None', group: null }];
   let autocomplete_filterOptions = null;
   if (categoryOptions != null) {
@@ -102,12 +88,20 @@ export function SelectFeatureComponent({ label, default_val, categoryOptions, on
       isOptionEqualToValue={(option: any, value) => {
         return option.value === value.value;
       }}
-      // defaultValue={channelColor ? autocomplete_color_options.filter((option:any) => option.value == channelColor.key)[0] : {value:"", inputValue:""}}
       value={default_val ? autocomplete_options.filter((option: any) => option.value === default_val.key)[0] : autocomplete_options[0]}
       renderInput={(params) => <TextField {...params} label={`${label} by`} />}
     />
   );
 }
+
+const connector = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true });
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux & {
+  encodings: EncodingChannel[];
+};
+
 const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
@@ -129,25 +123,33 @@ const useStyles = makeStyles(() => ({
 }));
 
 export function StatesTabPanelFull({
-  selectedVectorByShape,
-  vectorByShape,
   dataset,
-  setSelectedVectorByShape,
   setVectorByShape,
-  webGlView,
-  channelBrightness,
   setChannelBrightness,
   setGlobalPointBrightness,
-  channelSize,
   setChannelSize,
   setGlobalPointSize,
-  channelColor,
   encodings,
   setAdvancedColoringSelection,
 }: Props) {
   if (dataset == null) {
     return null;
   }
+
+  const activeMultiple = useSelector(ViewSelector.defaultSelector);
+  const {
+    vectorByShape,
+    channelBrightness,
+    channelSize,
+    channelColor,
+    pointColorMapping,
+    pointColorScale,
+    lineBrightness,
+    pathLengthRange,
+    globalPointSize,
+    globalPointBrightness,
+  } = activeMultiple.attributes;
+  const active = useSelector<RootState, BaseColorScale>((state) => ANormalized.get(state.colorScales.scales, pointColorScale as string));
 
   const dispatch = useDispatch();
 
@@ -171,10 +173,9 @@ export function StatesTabPanelFull({
         <SelectFeatureComponent
           column_info={dataset?.columns}
           label="shape"
-          default_val={selectedVectorByShape ? { key: selectedVectorByShape } : null}
+          default_val={vectorByShape}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'shape')}
           onChange={(newValue) => {
-            setSelectedVectorByShape(newValue);
             let attribute = CategoryOptionsAPI.getCategory(categoryOptions, 'shape').attributes.filter((a) => a.key === newValue)[0];
 
             if (attribute === undefined) {
@@ -216,15 +217,13 @@ export function StatesTabPanelFull({
 
             setGlobalPointBrightness(pointBrightness);
             setChannelBrightness(attribute);
-            webGlView.current.particles.transparencyCat(attribute, pointBrightness);
-            webGlView.current.requestRender();
           }}
         />
       ) : (
         <div />
       )}
 
-      <BrightnessSlider />
+      <BrightnessSlider globalPointBrightness={globalPointBrightness} />
 
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'size') ? (
         <SelectFeatureComponent
@@ -243,15 +242,13 @@ export function StatesTabPanelFull({
             setGlobalPointSize(pointSize);
 
             setChannelSize(attribute);
-
-            webGlView.current.particles.sizeCat(attribute, pointSize);
           }}
         />
       ) : (
         <div />
       )}
 
-      <SizeSlider />
+      <SizeSlider globalPointSize={globalPointSize} />
 
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'color') ? (
         <SelectFeatureComponent
@@ -272,7 +269,7 @@ export function StatesTabPanelFull({
             dispatch(setChannelColor(attribute));
 
             if (attribute) {
-              dispatch(ColorScalesActions.initScaleByType(attribute.type));
+              dispatch(PointColorScaleActions.initScaleByType(attribute.type));
             }
           }}
         />
@@ -281,11 +278,11 @@ export function StatesTabPanelFull({
       )}
 
       <Grid item>
-        <ColorScaleSelect />
+        <ColorScaleSelect channelColor={channelColor} active={active} />
       </Grid>
 
       <Grid item style={{ padding: '16px 0px' }}>
-        {channelColor != null && channelColor.type === 'categorical' ? <AdvancedColoringPopover /> : <div />}
+        {channelColor != null && channelColor.type === 'categorical' ? <AdvancedColoringPopover pointColorMapping={pointColorMapping} /> : <div />}
       </Grid>
     </Box>
   );
@@ -316,8 +313,8 @@ export function StatesTabPanelFull({
 
               <div style={{ margin: '8px 0px' }} />
 
-              <PathLengthFilter />
-              <PathBrightnessSlider />
+              <PathLengthFilter pathLengthRange={pathLengthRange} />
+              <PathBrightnessSlider lineBrightness={lineBrightness} />
             </div>
           )}
         </AccordionDetails>

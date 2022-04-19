@@ -43,6 +43,7 @@ export declare type MouseInteractions = {
 export declare type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
     encodings: EncodingChannel[];
+    showSummaryAttributes: boolean;
 }>;
 export declare type LayerSpec = {
     order: number;
@@ -50,7 +51,7 @@ export declare type LayerSpec = {
 };
 export declare type ComponentConfig = Partial<{
     datasetTab: JSX.Element | ((onDataSelected: any) => JSX.Element) | ConnectedComponent<any, any>;
-    appBar: () => JSX.Element;
+    appBar: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
     detailViews: Array<DetailViewSpec>;
     layers: Array<LayerSpec>;
     tabs: Array<TabSpec>;
@@ -68,7 +69,7 @@ export declare type DetailViewSpec = {
 };
 export declare type TabSpec = {
     name: string;
-    tab: () => JSX.Element;
+    tab: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
     icon: () => JSX.Element;
     title: string;
     description: string;

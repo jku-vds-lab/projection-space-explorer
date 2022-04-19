@@ -17,8 +17,10 @@ import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck';
 import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController';
 import { IProjection, IBaseProjection, ProjectionMethod } from '../../../model/ProjectionInterfaces';
 import { FeatureConfig, DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../../BaseConfig';
-import { ProjectionActions, ProjectionSelectors } from '../../Ducks/ProjectionDuck';
 import { EditProjectionDialog } from './EditProjectionDialog';
+import { ViewActions, ViewSelector } from '../../Ducks/ViewDuck';
+import { FeatureType } from '../../../model';
+import { SelectFeatureComponent } from '../StatesTabPanel/SelectFeatureComponent';
 
 const mapStateToProps = (state: RootState) => ({
   // currentAggregation: state.currentAggregation,
@@ -27,7 +29,7 @@ const mapStateToProps = (state: RootState) => ({
   projectionOpen: state.projectionOpen,
   dataset: state.dataset,
   // projectionParams: state.projectionParams,
-  projections: state.projections,
+  projections: state.multiples.projections,
   projectionParams: state.projectionParams,
 });
 
@@ -37,9 +39,9 @@ const mapDispatchToProps = (dispatch) => ({
   // setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
   setProjectionColumns: (value) => dispatch(setProjectionColumns(value)),
   setTrailVisibility: (visibility) => dispatch(setTrailVisibility(visibility)),
-  addProjection: (embedding) => dispatch(ProjectionActions.add(embedding)),
-  deleteProjection: (handle: string) => dispatch(ProjectionActions.remove(handle)),
-  updateWorkspace: (workspace: IBaseProjection, metadata?) => dispatch(ProjectionActions.updateActive({ positions: workspace, metadata })),
+  addProjection: (embedding) => dispatch(ViewActions.add(embedding)),
+  deleteProjection: (handle: string) => dispatch(ViewActions.remove(handle)),
+  updateWorkspace: (workspace: IBaseProjection, metadata?) => dispatch(ViewActions.updateActive({ positions: workspace, metadata })),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -53,7 +55,6 @@ type Props = PropsFromRedux & {
   setProjectionOpen?: any;
   setProjectionWorker?: any;
   dataset?: Dataset;
-  webGLView?: any;
 };
 
 function EmbeddingMethodButtons(props: { setOpen; setDomainSettings; embeddings?: EmbeddingMethod[] }) {
@@ -95,8 +96,14 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
   const dispatch = useDispatch();
 
-  const workspace = useSelector(ProjectionSelectors.getWorkspace);
-  const workspaceIsTemporal = useSelector(ProjectionSelectors.workspaceIsTemporal);
+  const workspace = useSelector(ViewSelector.getWorkspace);
+  const workspaceIsTemporal = useSelector(ViewSelector.workspaceIsTemporal);
+  const dataset = useSelector((state: RootState) => state.dataset);
+
+  let numericFeatures = null;
+  if (dataset) {
+    numericFeatures = Object.keys(dataset.columns).filter((key) => dataset.columns[key].featureType === FeatureType.Quantitative);
+  }
 
   React.useEffect(() => {
     if (controller) {
@@ -108,11 +115,11 @@ export const EmbeddingTabPanel = connector((props: Props) => {
   }, [props.dataset]);
 
   const onSaveProjectionClick = () => {
-    dispatch(ProjectionActions.copyFromWorkspace());
+    dispatch(ViewActions.copyFromWorkspace());
   };
 
   const onProjectionClick = (projection: IProjection) => {
-    dispatch(ProjectionActions.loadById(projection.hash));
+    dispatch(ViewActions.loadById(projection.hash));
   };
 
   const onDeleteEditProjectDialog = (handle: string) => {
@@ -125,7 +132,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
   };
 
   const onSaveEditProjectionDialog = (key: EntityId, changes: any) => {
-    dispatch(ProjectionActions.save({ id: key, changes }));
+    dispatch(ViewActions.save({ id: key, changes }));
     setProjectionToEdit(null);
   };
 
@@ -264,6 +271,32 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         <ClusterTrailSettings />
       </Box>
 
+      <Box paddingLeft={2} paddingRight={2} display="flex" style={{ flexDirection: 'column', gap: '8px' }}>
+        {dataset && numericFeatures && workspace ? (
+          <SelectFeatureComponent
+            column_info={dataset.columns}
+            label="x channel"
+            default_val={workspace.xChannel}
+            categoryOptions={numericFeatures}
+            onChange={(newValue) => {
+              dispatch(ViewActions.selectChannel({ dataset, channel: 'x', value: newValue }));
+            }}
+          />
+        ) : null}
+
+        {dataset && numericFeatures && workspace ? (
+          <SelectFeatureComponent
+            column_info={dataset.columns}
+            label="y channel"
+            default_val={workspace.yChannel}
+            categoryOptions={numericFeatures}
+            onChange={(newValue) => {
+              dispatch(ViewActions.selectChannel({ dataset, channel: 'y', value: newValue }));
+            }}
+          />
+        ) : null}
+      </Box>
+
       <Box padding={1}>
         <Typography variant="subtitle2" gutterBottom>
           Visible Projection
@@ -295,8 +328,8 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
       <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
         <List dense>
-          {props.projections.values.ids.map((key) => {
-            const projection = props.projections.values.entities[key];
+          {props.projections.ids.map((key) => {
+            const projection = props.projections.entities[key];
             return (
               <ListItem
                 key={projection.hash}
@@ -313,7 +346,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
                   }
                 />
                 <ListItemSecondaryAction>
-                  <IconButton onClick={() => setProjectionToEdit(props.projections.values.entities[key])}>
+                  <IconButton onClick={() => setProjectionToEdit(props.projections.entities[key])}>
                     <SettingsIcon />
                   </IconButton>
                 </ListItemSecondaryAction>

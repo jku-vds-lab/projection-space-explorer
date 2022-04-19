@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DefaultLegend } from '../../..';
+import { DefaultLegend } from '../../../components/legends/DefaultLegend';
 import { arraysEqual } from '../../../components/WebGLView/UtilityFunctions';
 
 type RubikFingerprintProps = {
@@ -109,7 +109,7 @@ export class RubikFingerprint extends React.Component<RubikFingerprintProps> {
 
   renderToContext() {
     const { vectors } = this.props;
-    if(vectors.length <= 0){
+    if (vectors.length <= 0) {
       return;
     }
 
@@ -269,10 +269,10 @@ export class RubikFingerprint extends React.Component<RubikFingerprintProps> {
   }
 
   render() {
-    if(this.props.vectors.length <= 0){
-      return <DefaultLegend></DefaultLegend>
+    if (this.props.vectors.length <= 0) {
+      return <DefaultLegend></DefaultLegend>;
     }
-    
+
     return (
       <canvas
         className="RubikFingerprintCanvas"

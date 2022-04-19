@@ -9,9 +9,7 @@ type LassoLayerProps = {
   viewTransform: ViewTransformType;
 };
 
-const mapStateToProps = (state) => ({
-  viewTransform: state.viewTransform,
-});
+const mapStateToProps = (state) => ({});
 
 const LassoLayer = connect(mapStateToProps, null, null, { forwardRef: true })(
   class extends React.Component<LassoLayerProps, any> {

@@ -20,16 +20,11 @@ export declare type IProjection = {
     positions: IBaseProjection;
     name: string;
     hash: string;
+    xChannel?: string;
+    yChannel?: string;
     metadata?: {
         [id: string]: any;
     };
-};
-export declare type ITemporaryProjection = {
-    positions: IBaseProjection;
-    metadata?: {
-        [id: string]: any;
-    };
-    hash: string;
 };
 /**
  * Base type for projections

@@ -41,7 +41,7 @@
     "lodash": "^4.17.20",
     "material-ui-search-bar": "^1.0.0",
     "papaparse": "^5.3.1",
-    "react-data-grid": "^7.0.0-beta.8",
+    "react-data-grid": "^7.0.0-beta.11",
     "react-promise-tracker": "^2.1.0",
     "react-rnd": "^10.2.2",
     "react-split": "^2.0.9",

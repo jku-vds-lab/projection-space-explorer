@@ -3,10 +3,10 @@ import React = require('react');
 import { FormControlLabel, Checkbox, Typography, Grid } from '@mui/material';
 import { DiscreteMapping } from '../../Utility/Colors/Mapping';
 import { setAdvancedColoringSelectionAction } from '../../Ducks/AdvancedColoringSelectionDuck';
+import { RootState } from '../../Store';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: RootState) => ({
   advancedColoringSelection: state.advancedColoringSelection,
-  mapping: state.pointColorMapping,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -14,7 +14,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 type ShowColorLegendProps = {
-  mapping: any;
+  pointColorMapping: any;
   advancedColoringSelection: boolean[];
   setAdvancedColoringSelection: Function;
 };
@@ -33,16 +33,16 @@ function toLabel(value: any): string {
   return value;
 }
 
-export function AdvancedColoringLegendFull({ mapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps) {
-  if (mapping == null) {
+export function AdvancedColoringLegendFull({ pointColorMapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps) {
+  if (pointColorMapping == null) {
     return <div />;
   }
 
-  if (mapping instanceof DiscreteMapping) {
+  if (pointColorMapping instanceof DiscreteMapping) {
     return (
       <Grid container direction="column" style={{ padding: '12px 0px', minWidth: 300 }}>
-        {mapping.values.map((value, index) => {
-          const color = mapping.map(value);
+        {pointColorMapping.values.map((value, index) => {
+          const color = pointColorMapping.map(value);
           return (
             <FormControlLabel
               key={value}

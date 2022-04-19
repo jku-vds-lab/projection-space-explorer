@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function BrightnessSliderFull({ brightnessScale, setRange }) {
+function BrightnessSliderFull({ globalPointBrightness, setRange }) {
   const classes = useStyles();
 
   const marks = [
@@ -43,14 +43,12 @@ function BrightnessSliderFull({ brightnessScale, setRange }) {
       <Typography id="range-slider" gutterBottom>
         Brightness Scale
       </Typography>
-      <Slider min={0} max={1} value={brightnessScale} onChange={(_, newValue) => setRange(newValue)} step={0.05} marks={marks} valueLabelDisplay="auto" />
+      <Slider min={0} max={1} value={globalPointBrightness} onChange={(_, newValue) => setRange(newValue)} step={0.05} marks={marks} valueLabelDisplay="auto" />
     </div>
   );
 }
 
-const mapStateToProps = (state: RootState) => ({
-  brightnessScale: state.globalPointBrightness,
-});
+const mapStateToProps = (state: RootState) => ({});
 
 const mapDispatchToProps = (dispatch) => ({
   setRange: (value) => dispatch(setGlobalPointBrightness(value)),

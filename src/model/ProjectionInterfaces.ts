@@ -24,13 +24,10 @@ export type IProjection = {
   name: string;
   hash: string;
 
-  metadata?: { [id: string]: any };
-};
+  xChannel?: string;
+  yChannel?: string;
 
-export type ITemporaryProjection = {
-  positions: IBaseProjection;
   metadata?: { [id: string]: any };
-  hash: string;
 };
 
 /**

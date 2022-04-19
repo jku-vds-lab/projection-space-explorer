@@ -36,18 +36,19 @@ export const DEFAULT_EMBEDDINGS = [
 ];
 
 export type CoordinatesType = {
-  x: number,
-  y: number
-}
+  x: number;
+  y: number;
+};
 
 export type MouseInteractions = {
-  onmousemove?: (coordinates: CoordinatesType, event_used: boolean) => void
-  onmouseclick?: (coordinates: CoordinatesType, event_used: boolean, button:number) => void
-}
+  onmousemove?: (coordinates: CoordinatesType, event_used: boolean) => void;
+  onmouseclick?: (coordinates: CoordinatesType, event_used: boolean, button: number) => void;
+};
 
 export type FeatureConfig = Partial<{
   embeddings: EmbeddingMethod[]; // array can either contain strings of predefined embedding methods, or functions
   encodings: EncodingChannel[];
+  showSummaryAttributes: boolean;
 }>;
 
 export type LayerSpec = {
@@ -57,7 +58,7 @@ export type LayerSpec = {
 
 export type ComponentConfig = Partial<{
   datasetTab: JSX.Element | ((onDataSelected) => JSX.Element) | ConnectedComponent<any, any>;
-  appBar: () => JSX.Element;
+  appBar: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
   detailViews: Array<DetailViewSpec>;
   layers: Array<LayerSpec>;
   tabs: Array<TabSpec>;
@@ -78,7 +79,7 @@ export type DetailViewSpec = {
 
 export type TabSpec = {
   name: string;
-  tab: () => JSX.Element;
+  tab: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
   icon: () => JSX.Element;
   title: string;
   description: string;

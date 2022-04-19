@@ -1,6 +1,22 @@
-export declare const setPointColorScale: (pointColorScale: any) => {
-    type: string;
-    pointColorScale: any;
+import { EntityId } from '@reduxjs/toolkit';
+declare enum ActionTypes {
+    PICK_SCALE = "ducks/colorScales/PICK"
+}
+declare type PickAction = {
+    type: ActionTypes.PICK_SCALE;
+    handle: string;
 };
-declare const pointColorScale: (state: any, action: any) => any;
-export default pointColorScale;
+export declare const PointColorScaleActions: {
+    pickScale: (handle: string) => {
+        type: ActionTypes;
+        handle: string;
+    };
+    initScaleByType: (type: string) => (dispatch: any, getState: any) => any;
+};
+declare type Action = PickAction;
+/**
+ * Type for embedding state slice
+ */
+export declare type ColorScalesType = EntityId;
+export default function colorScales(state?: EntityId, action?: Action): ColorScalesType;
+export {};

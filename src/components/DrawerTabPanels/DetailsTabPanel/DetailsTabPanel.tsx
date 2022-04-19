@@ -10,8 +10,8 @@ import { selectVectors } from '../../Ducks/AggregationDuck';
 import { AStorytelling } from '../../Ducks/StoriesDuck copy';
 import './DatasetTabPanel.scss';
 import { AttributeSelectionTable } from './AttributeSelectionTable';
-import { setGenericFingerprintAttributes } from '../..';
-
+import { setGenericFingerprintAttributes } from '../../Ducks/GenericFingerprintAttributesDuck';
+import { FeatureConfig } from '../../../BaseConfig';
 
 const mapStateToProps = (state: RootState) => ({
   genericFingerprintAttributes: state.genericFingerprintAttributes,
@@ -26,17 +26,15 @@ const mapDispatchToProps = (dispatch) => ({
   setHoverWindowMode: (value) => dispatch(setHoverWindowMode(value)),
   setAggregation: (value) => dispatch(selectVectors(value, false)),
   setHoverStateOrientation: (value) => dispatch(setHoverStateOrientation(value)),
-  setGenericFingerprintAttributes: genericFingerprintAttributes => dispatch(setGenericFingerprintAttributes(genericFingerprintAttributes)),
+  setGenericFingerprintAttributes: (genericFingerprintAttributes) => dispatch(setGenericFingerprintAttributes(genericFingerprintAttributes)),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & {};
-
-const strrenderer = (name: string, row: any) => {
-  return row[name];
+type Props = PropsFromRedux & {
+  config: FeatureConfig;
 };
 
 export const DetailsTabPanel = connector(
@@ -50,8 +48,7 @@ export const DetailsTabPanel = connector(
     setHoverStateOrientation,
     activeStorybook,
     genericFingerprintAttributes,
-    setGenericFingerprintAttributes
-
+    setGenericFingerprintAttributes,
   }: Props) => {
     const handleChange = (_, value) => {
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
@@ -90,7 +87,9 @@ export const DetailsTabPanel = connector(
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
-          <AttributeSelectionTable attributes={genericFingerprintAttributes} setAttributes={setGenericFingerprintAttributes} btnFullWidth={true}>Summary Attributes</AttributeSelectionTable>
+          <AttributeSelectionTable attributes={genericFingerprintAttributes} setAttributes={setGenericFingerprintAttributes} btnFullWidth>
+            Summary Attributes
+          </AttributeSelectionTable>
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
@@ -121,5 +120,3 @@ export const DetailsTabPanel = connector(
     );
   },
 );
-
-

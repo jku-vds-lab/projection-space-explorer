@@ -1,11 +1,10 @@
 /* eslint-disable react/display-name */
 import 'regenerator-runtime/runtime';
-import "./index.scss";
+import './index.scss';
 import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from '@mui/material';
 import * as React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Split from 'react-split';
-import { WebGLView } from './components/WebGLView/WebGLView';
 import { Dataset } from './model/Dataset';
 import { Storytelling } from './components/Overlays/Storytelling';
 import { ClusteringTabPanel } from './components/DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel';
@@ -37,6 +36,7 @@ import { JSONLoader } from './components/Utility/Loaders';
 import { DatasetType } from './model/DatasetType';
 import { RootActions } from './components/Store/RootActions';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
+import { ViewMultiplexer } from './components/ViewMultiplexer/ViewMultiplexer';
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -62,9 +62,6 @@ function FixedHeightTabPanel(props) {
 const mapStateToProps = (state: RootState) => ({
   openTab: state.openTab,
   dataset: state.dataset,
-  channelSize: state.channelSize,
-  channelColor: state.channelColor,
-  channelBrightness: state.channelBrightness,
   hoverStateOrientation: state.hoverStateOrientation,
   datasetEntries: state.datasetEntries,
 });
@@ -102,14 +99,11 @@ type Props = PropsFromRedux & {
  */
 export const Application = connector(
   class extends React.Component<Props, any> {
-    threeRef: any;
-
     splitRef: any;
 
     constructor(props) {
       super(props);
 
-      this.threeRef = React.createRef();
       this.splitRef = React.createRef();
 
       this.onLineSelect = this.onLineSelect.bind(this);
@@ -143,9 +137,10 @@ export const Application = connector(
       this.props.loadDataset(dataset);
     }
 
-    onLineSelect(algo, show) {
-      this.threeRef.current.filterLines(algo, show);
-      this.threeRef.current.requestRender();
+    onLineSelect(_algo, _show) {
+      // TODO: filtering for lines should be moved to duck
+      // this.threeRef.current.filterLines(algo, show);
+      // this.threeRef.current.requestRender();
     }
 
     onChangeTab(newTab) {
@@ -365,11 +360,11 @@ export const Application = connector(
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={1}>
-                  <EmbeddingTabPanel config={this.props.features} webGLView={this.threeRef} />
+                  <EmbeddingTabPanel config={this.props.features} />
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={2}>
-                  <StatesTabPanel webGlView={this.threeRef} encodings={this.props.features?.encodings} />
+                  <StatesTabPanel encodings={this.props.features?.encodings} />
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={3}>
@@ -377,15 +372,15 @@ export const Application = connector(
                 </FixedHeightTabPanel>
 
                 <FixedHeightTabPanel value={this.props.openTab} index={4}>
-                  <DetailsTabPanel />
+                  <DetailsTabPanel config={this.props.features} />
                 </FixedHeightTabPanel>
 
                 {this.props.overrideComponents?.tabs?.map((tab, i) => {
                   return (
                     <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={5 + i}>
-                      {React.createElement(tab.tab, {
-                        splitRef: this.splitRef,
-                      })}
+                      {React.isValidElement(tab.tab)
+                        ? tab.tab
+                        : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i`, splitRef: this.splitRef })}
                     </FixedHeightTabPanel>
                   );
                 })}
@@ -401,9 +396,13 @@ export const Application = connector(
             }}
           >
             {this.props.overrideComponents?.appBar ? (
-              React.createElement(this.props.overrideComponents?.appBar)
+              React.isValidElement(this.props.overrideComponents.appBar) ? (
+                this.props.overrideComponents.appBar
+              ) : (
+                React.createElement(this.props.overrideComponents.appBar as () => JSX.Element)
+              )
             ) : (
-              <PseAppBar>
+              <PseAppBar style={undefined}>
                 <a href="https://jku-vds-lab.at" target="_blank" rel="noreferrer">
                   <VDSLogo style={{ height: 48, width: 48 }} />
                 </a>
@@ -442,8 +441,8 @@ export const Application = connector(
                   }
                 }}
               >
-                <div style={{ flexGrow: 0.9 }}>
-                  <WebGLView ref={this.threeRef} overrideComponents={this.props.overrideComponents} />
+                <div style={{ flexGrow: 0.9, display: 'flex' }}>
+                  <ViewMultiplexer overrideComponents={this.props.overrideComponents} />
                 </div>
                 <div style={{ flexGrow: 0.1 }}>
                   {React.isValidElement(this.props.overrideComponents.detailViews[0].view)
@@ -452,8 +451,8 @@ export const Application = connector(
                 </div>
               </Split>
             ) : (
-              <div style={{ flexGrow: 1 }}>
-                <WebGLView overrideComponents={this.props.overrideComponents} ref={this.threeRef} />
+              <div style={{ flexGrow: 1, display: 'flex' }}>
+                <ViewMultiplexer overrideComponents={this.props.overrideComponents} />
               </div>
             )}
           </div>

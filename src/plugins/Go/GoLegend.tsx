@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import * as React from 'react';
-import { DefaultLegend } from '../..';
+import { DefaultLegend } from '../../components/legends/DefaultLegend';
 
 /**
  * Go Legend, implemented using a canvas element and React effect hooks
@@ -16,8 +16,8 @@ const W = 20 * P;
 const H = 20 * P;
 
 export function GoLegend({ selection, aggregate }) {
-  if(selection.length <= 0){
-    return <DefaultLegend></DefaultLegend>
+  if (selection.length <= 0) {
+    return <DefaultLegend></DefaultLegend>;
   }
   if (aggregate) {
     return <div>Not applicable</div>;

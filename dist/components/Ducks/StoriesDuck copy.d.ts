@@ -110,5 +110,9 @@ export declare const StoriesActions: {
     setActiveTraceState: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
     setActiveTrace: import("@reduxjs/toolkit").ActionCreatorWithPayload<any, string>;
     removeEdgeFromActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    changeBookName: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
+        id: EntityId;
+        name: string;
+    }, string>;
 };
 export declare const stories: import("redux").Reducer<IStorytelling, import("redux").AnyAction>;

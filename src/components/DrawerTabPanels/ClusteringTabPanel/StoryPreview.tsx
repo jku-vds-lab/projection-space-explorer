@@ -1,11 +1,12 @@
 import { EntityId } from '@reduxjs/toolkit';
+import { useState } from 'react';
 import * as React from 'react';
-import { Button, FormControl, FormHelperText, Grid, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Select } from '@mui/material';
-import { connect, ConnectedProps } from 'react-redux';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select } from '@mui/material';
+import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { IBook } from '../../../model/Book';
 import type { RootState } from '../../Store/Store';
 import { StoriesActions, AStorytelling } from '../../Ducks/StoriesDuck copy';
+import { EditBookDialog } from '../EmbeddingTabPanel/EditBookDialog';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -24,6 +25,8 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
 
 export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, addStory }: Props) => {
+  const [editBook, setEditBook] = useState<IBook>(null);
+
   const deleteHandler = (story) => {
     if (stories.active === story) {
       setActiveStory(null);
@@ -35,6 +38,8 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
   const addHandler = () => {
     addStory(AStorytelling.emptyStory());
   };
+
+  const dispatch = useDispatch();
 
   return (
     <div
@@ -63,18 +68,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
               .map((story) => {
                 return (
                   <ListItem key={story.id} button {...{ value: story.id }}>
-                    <ListItemText primary="Story Book" secondary={`${Object.keys(story.clusters.entities).length} nodes`} />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => {
-                          deleteHandler(story.id);
-                        }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
+                    <ListItemText primary={story.name ?? 'Storybook'} secondary={`${Object.keys(story.clusters.entities).length} nodes`} />
                   </ListItem>
                 );
               })}
@@ -89,11 +83,40 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
           onClick={() => addHandler()}
           variant="outlined"
           size="small"
-          aria-label="move selected left"
         >
           Add Empty
         </Button>
+
+        {stories.active ? (
+          <Button
+            style={{
+              marginTop: '16px',
+            }}
+            variant="outlined"
+            size="small"
+            onClick={() => {
+              setEditBook(stories.stories.entities[stories.active]);
+            }}
+          >
+            Edit Selected
+          </Button>
+        ) : null}
       </Grid>
+
+      <EditBookDialog
+        book={editBook}
+        onClose={() => {
+          setEditBook(null);
+        }}
+        onSave={(id: EntityId, changes: any) => {
+          dispatch(StoriesActions.changeBookName({ id: editBook.id, name: changes.name }));
+          setEditBook(null);
+        }}
+        onDelete={() => {
+          deleteHandler(editBook.id);
+          setEditBook(null);
+        }}
+      />
     </div>
   );
 });

@@ -20,6 +20,9 @@ export const edgeAdapter = createEntityAdapter<IEdge>({
 
 export const clusterAdapter = createEntityAdapter<ICluster>({
   selectId: (cluster) => cluster.id,
+  sortComparer: (a, b) => {
+    return b.indices.length - a.indices.length;
+  },
 });
 
 export class AStorytelling {
@@ -181,6 +184,10 @@ const bookSlice = createSlice({
         state.activeTraceState = null;
         state.trace = null;
       }
+    },
+    changeBookName(state, action: PayloadAction<{ id: EntityId; name: string }>) {
+      const { id, name } = action.payload;
+      bookAdapter.updateOne(state.stories, { id, changes: { name } });
     },
   },
   extraReducers: (builder) => {

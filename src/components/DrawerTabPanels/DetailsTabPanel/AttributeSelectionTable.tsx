@@ -1,24 +1,26 @@
 import { Box, Button, Checkbox, Popover } from '@mui/material';
 import React = require('react');
 import { connect, ConnectedProps } from 'react-redux';
-import { RootState } from '../../Store/Store';
+
 import SearchBar from 'material-ui-search-bar';
 import DataGrid from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
+import type { RootState } from '../../Store/Store';
 
 const attributeConnector = connect(
   (state: RootState) => ({
-    dataset: state.dataset
+    dataset: state.dataset,
   }),
-  dispatch => ({
-  }),
-  null, { forwardRef: true });
+  (dispatch) => ({}),
+  null,
+  { forwardRef: true },
+);
 type AttributeTablePropsFromRedux = ConnectedProps<typeof attributeConnector>;
 type AttributeTableProps = AttributeTablePropsFromRedux & {
-  attributes,
-  setAttributes,
-  children,
-  btnFullWidth
+  attributes;
+  setAttributes;
+  children;
+  btnFullWidth;
 };
 export const AttributeSelectionTable = attributeConnector(({ attributes, setAttributes, dataset, btnFullWidth, children }: AttributeTableProps) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -35,10 +37,8 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
   const [localAttributes, setLocalAttributes] = React.useState<any>([]);
   const [rows, setRows] = React.useState<any>([]);
   const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<number>>(() => new Set());
-  const [searched, setSearched] = React.useState<string>("");
-  const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(
-    () => new Set<unknown>([])
-  );
+  const [searched, setSearched] = React.useState<string>('');
+  const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(() => new Set<unknown>([]));
 
   const columns = [
     { key: 'feature', name: 'Feature', resizable: false },
@@ -52,10 +52,10 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
 
   const groupMapping = (r, i) => {
     return {
-      'id': i,
-      'feature': r.feature,
-      'show': r.show,
-      'group': dataset.columns[r.feature].featureLabel
+      id: i,
+      feature: r.feature,
+      show: r.show,
+      group: dataset.columns[r.feature].featureLabel,
     };
   };
 
@@ -73,7 +73,8 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
         onChange={(event) => {
           row.show = event.target.checked;
           setLocalAttributes([...localAttributes]);
-        }} />
+        }}
+      />
     );
   };
 
@@ -86,7 +87,7 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
   };
 
   const cancelSearch = () => {
-    setSearched("");
+    setSearched('');
     requestSearch(searched);
   };
 
@@ -111,7 +112,7 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
       // ref={gridRef}
       className="rdg-light"
       style={{ flex: '1', minWidth: 900, overflowX: 'hidden' }}
-      groupBy={["group"]}
+      groupBy={['group']}
       rowGrouper={rowGrouper}
       rowKeyGetter={rowKeyGetter}
       selectedRows={selectedRows}
@@ -120,13 +121,14 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
       expandedGroupIds={expandedGroupIds}
       onExpandedGroupIdsChange={setExpandedGroupIds}
       columns={columns}
-      rows={rows.filter((x) => !x.show)} />
+      rows={rows.filter((x) => !x.show)}
+    />
   );
   const selectionGrid = (
     <DataGrid
       className="rdg-light"
       style={{ flex: '1', minWidth: 900, overflowX: 'hidden' }}
-      groupBy={["group"]}
+      groupBy={['group']}
       rowGrouper={rowGrouper}
       rowKeyGetter={rowKeyGetter}
       selectedRows={selectedRows}
@@ -135,39 +137,41 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
       expandedGroupIds={expandedGroupIds}
       onExpandedGroupIdsChange={setExpandedGroupIds}
       columns={columnsSelected}
-      rows={rows.filter((x) => x.show)} />
+      rows={rows.filter((x) => x.show)}
+    />
   );
 
-  return <div>
-    <Button fullWidth={btnFullWidth} variant="outlined" onClick={openAttributes}>{children}</Button>
+  return (
+    <div>
+      <Button fullWidth={btnFullWidth} variant="outlined" onClick={openAttributes}>
+        {children}
+      </Button>
 
-    <Popover
-      open={Boolean(anchorEl)}
-      anchorEl={anchorEl}
-      onClose={handleClose}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
-      }}
-    >
-      <Box margin={2}>
-        <SearchBar
-          value={searched}
-          onChange={(searchVal) => requestSearch(searchVal)}
-          onCancelSearch={() => cancelSearch()} />
-        <div style={{ display: 'flex' }}>
-          {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
-          {featureGrid}
-          {/* </div> */}
-          {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
-          {selectionGrid}
-          {/* </div> */}
-        </div>
-      </Box>
-    </Popover>
-  </div>;
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <Box margin={2}>
+          <SearchBar value={searched} onChange={(searchVal) => requestSearch(searchVal)} onCancelSearch={() => cancelSearch()} />
+          <div style={{ display: 'flex' }}>
+            {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
+            {featureGrid}
+            {/* </div> */}
+            {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
+            {selectionGrid}
+            {/* </div> */}
+          </div>
+        </Box>
+      </Popover>
+    </div>
+  );
 });

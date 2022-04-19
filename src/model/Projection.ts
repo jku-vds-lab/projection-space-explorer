@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { IBaseProjection, IProjection } from './ProjectionInterfaces';
+import { IBaseProjection, IProjection, ProjectionMethod } from './ProjectionInterfaces';
 import type { ProjectionParamsType } from '../components/Ducks/ProjectionParamsDuck';
 
 /**
@@ -28,6 +28,21 @@ export class AProjection {
       hash,
       name,
       metadata,
+    };
+  }
+
+  static createManualProjection(xChannel: string, yChannel: string): IProjection {
+    const hash = uuidv4();
+
+    return {
+      hash,
+      xChannel,
+      yChannel,
+      metadata: {
+        method: ProjectionMethod.CUSTOM,
+      },
+      positions: null,
+      name: null,
     };
   }
 }

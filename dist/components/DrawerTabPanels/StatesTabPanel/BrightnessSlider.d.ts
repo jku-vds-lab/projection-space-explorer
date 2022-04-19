@@ -1,9 +1,9 @@
-declare function BrightnessSliderFull({ brightnessScale, setRange }: {
-    brightnessScale: any;
+declare function BrightnessSliderFull({ globalPointBrightness, setRange }: {
+    globalPointBrightness: any;
     setRange: any;
 }): JSX.Element;
 export declare const BrightnessSlider: import("react-redux").ConnectedComponent<typeof BrightnessSliderFull, Pick<{
-    brightnessScale: any;
+    globalPointBrightness: any;
     setRange: any;
-}, never>>;
+}, "globalPointBrightness">>;
 export {};

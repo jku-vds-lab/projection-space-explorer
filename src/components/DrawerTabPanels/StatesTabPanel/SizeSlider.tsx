@@ -30,7 +30,7 @@ export const SizeSliderMarks = [
   },
 ];
 
-function SizeSliderFull({ sizeScale, setRange }) {
+function SizeSliderFull({ globalPointSize, setRange }) {
   return (
     <div
       style={{
@@ -42,14 +42,20 @@ function SizeSliderFull({ sizeScale, setRange }) {
         Size Scale
       </Typography>
 
-      <Slider min={0} max={5} value={sizeScale} onChange={(_, newValue) => setRange(newValue)} step={0.25} marks={SizeSliderMarks} valueLabelDisplay="auto" />
+      <Slider
+        min={0}
+        max={5}
+        value={globalPointSize}
+        onChange={(_, newValue) => setRange(newValue)}
+        step={0.25}
+        marks={SizeSliderMarks}
+        valueLabelDisplay="auto"
+      />
     </div>
   );
 }
 
-const mapStateToProps = (state) => ({
-  sizeScale: state.globalPointSize,
-});
+const mapStateToProps = (state) => ({});
 
 const mapDispatchToProps = (dispatch) => ({
   setRange: (value) => dispatch(setGlobalPointSize(value)),

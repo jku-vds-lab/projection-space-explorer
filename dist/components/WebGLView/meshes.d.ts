@@ -54,6 +54,7 @@ export declare class PointVisualization {
     grayedLayerSystem: LayeringSystem;
     lineLayerSystem: LayeringSystem;
     pathLengthRange: any;
+    baseSize: number[];
     constructor(vectorMapping: Mapping, dataset: Dataset, size: any, lineLayerSystem: LayeringSystem, segments: any);
     createMesh(data: any, segments: any, onUpload: any): void;
     /**

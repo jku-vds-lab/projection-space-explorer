@@ -4,7 +4,7 @@ import { Handler } from 'vega-tooltip';
 import TrrackScatter from './TrrackScatter';
 import { IVector } from '../../../model/Vector';
 import type { RootState } from '../../../components/Store/Store';
-import { DefaultLegend } from '../../..';
+import { DefaultLegend } from '../../../components/legends/DefaultLegend';
 
 function getScatter(vectors) {
   // init empty "data" array

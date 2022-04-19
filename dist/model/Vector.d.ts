@@ -49,10 +49,6 @@ export declare class VectView {
      * Currently displayed shape of the vector.
      */
     shapeType: Shapes;
-    /**
-     * Base size scaling for this point
-     */
-    baseSize: number;
     highlighted: boolean;
     duplicateOf: any;
     brightness: number;

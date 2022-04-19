@@ -30,7 +30,7 @@ import { ProjectionMethod } from '../../../model';
 const mapState = (state: RootState) => ({
   projectionColumns: state.projectionColumns,
   projectionParams: state.projectionParams,
-  columns: state.dataset?.columns
+  columns: state.dataset?.columns,
 });
 
 const mapDispatch = (dispatch) => ({
@@ -155,18 +155,21 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
   const [selection, setSelection] = React.useState(cloneColumns(projectionColumns));
 
   const intermediateSetSelection = (selectedFeatures) => {
-    const filteredFeatures = selectedFeatures.filter((s) => s.checked).map((s) => s.name)
-    const nonNumericSelectedColumns = filteredFeatures.filter((col) => !columns[col].isNumeric)
+    const filteredFeatures = selectedFeatures.filter((s) => s.checked).map((s) => s.name);
+    const nonNumericSelectedColumns = filteredFeatures.filter((col) => !columns[col].isNumeric);
 
-    if(nonNumericSelectedColumns.length === filteredFeatures.length){ // set default metric to Jaccard, if only non-numeric datatypes are selected
+    if (nonNumericSelectedColumns.length === filteredFeatures.length) {
+      // set default metric to Jaccard, if only non-numeric datatypes are selected
       changeDistanceMetric(DistanceMetric.JACCARD);
-    }else if(nonNumericSelectedColumns.length > 0){ // set default metric to gower, if we have mixed datatypes
+    } else if (nonNumericSelectedColumns.length > 0) {
+      // set default metric to gower, if we have mixed datatypes
       changeDistanceMetric(DistanceMetric.GOWER);
-    }else{ // set default metric to euclidean, if we only have numeric datatypes
+    } else {
+      // set default metric to euclidean, if we only have numeric datatypes
       changeDistanceMetric(DistanceMetric.EUCLIDEAN);
     }
-    setSelection(selectedFeatures)
-  }
+    setSelection(selectedFeatures);
+  };
 
   React.useEffect(() => {
     if (open) {
@@ -177,94 +180,99 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
   return (
     <Dialog maxWidth="lg" open={open} onClose={onClose}>
       <DialogContent>
-        {domainSettings?.settings?.hideSettings ? <Container><DialogTitle>{domainSettings.name}</DialogTitle></Container> :
-        <Container>
-          {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && <FeaturePicker selection={selection} setSelection={intermediateSetSelection} />}
+        {domainSettings?.settings?.hideSettings ? (
+          <Container>
+            <DialogTitle>{domainSettings.name}</DialogTitle>
+          </Container>
+        ) : (
+          <Container>
+            {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && <FeaturePicker selection={selection} setSelection={intermediateSetSelection} />}
 
-          <Grid container justifyContent="center" style={{ width: '100%' }}>
-            <Grid item>
-              <FormControl
-                sx={{
-                  '& .MuiTextField-root': { m: 1 },
-                  '& .MuiFormControlLabel-root': { m: 1 },
-                  '& .MuiFormControl-root': { m: 1 },
-                }}
-              >
-                <FormLabel component="legend">Projection Parameters</FormLabel>
-                {/* TODO: add also make parameters customizable; currently only a fixed set of parameters can set to be shown or not */}
-                <CustomSettings
-                  tempProjectionParams={tempProjectionParams}
-                  setTempProjectionParams={setTempProjectionParams}
-                  inputDict={domainSettings.settings}
-                />
-                {/* {domainSettings.id == 'umap' && <UMAPSettings tempProjectionParams={tempProjectionParams} setTempProjectionParams={setTempProjectionParams}></UMAPSettings>} */}
-                {/* {domainSettings.id == 'tsne' && <TSNESettings tempProjectionParams={tempProjectionParams} setTempProjectionParams={setTempProjectionParams}></TSNESettings>} */}
-              </FormControl>
-            </Grid>
-
-            <Grid item>
-              <FormControl>
-                <FormLabel component="legend">General Parameters</FormLabel>
-                <FormGroup
+            <Grid container justifyContent="center" style={{ width: '100%' }}>
+              <Grid item>
+                <FormControl
                   sx={{
                     '& .MuiTextField-root': { m: 1 },
                     '& .MuiFormControlLabel-root': { m: 1 },
                     '& .MuiFormControl-root': { m: 1 },
                   }}
                 >
-                  <TextField
-                    id="textIterations"
-                    label="Iterations"
-                    type="number"
-                    value={tempProjectionParams.iterations}
-                    onChange={(event) => {
-                      setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
+                  <FormLabel component="legend">Projection Parameters</FormLabel>
+                  {/* TODO: add also make parameters customizable; currently only a fixed set of parameters can set to be shown or not */}
+                  <CustomSettings
+                    tempProjectionParams={tempProjectionParams}
+                    setTempProjectionParams={setTempProjectionParams}
+                    inputDict={domainSettings.settings}
+                  />
+                  {/* {domainSettings.id == 'umap' && <UMAPSettings tempProjectionParams={tempProjectionParams} setTempProjectionParams={setTempProjectionParams}></UMAPSettings>} */}
+                  {/* {domainSettings.id == 'tsne' && <TSNESettings tempProjectionParams={tempProjectionParams} setTempProjectionParams={setTempProjectionParams}></TSNESettings>} */}
+                </FormControl>
+              </Grid>
+
+              <Grid item>
+                <FormControl>
+                  <FormLabel component="legend">General Parameters</FormLabel>
+                  <FormGroup
+                    sx={{
+                      '& .MuiTextField-root': { m: 1 },
+                      '& .MuiFormControlLabel-root': { m: 1 },
+                      '& .MuiFormControl-root': { m: 1 },
                     }}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        color="primary"
-                        checked={tempProjectionParams.seeded}
-                        onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, seeded: checked })}
-                        name="jason"
-                      />
-                    }
-                    label="Seed Position"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        color="primary"
-                        checked={tempProjectionParams.useSelection}
-                        onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, useSelection: checked })}
-                      />
-                    }
-                    label="Project Selection Only"
-                  />
-                  {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
-                    <FormControl>
-                      <InputLabel id="demo-controlled-open-select-label">Distance Metric</InputLabel>
-                      <Select
-                        labelId="demo-controlled-open-select-label"
-                        id="demo-controlled-open-select"
-                        label="Distance Metric"
-                        value={tempProjectionParams.distanceMetric}
-                        onChange={(event) => {
-                          changeDistanceMetric(event.target.value);
-                        }}
-                      >
-                        <MenuItem value={DistanceMetric.EUCLIDEAN}>Euclidean</MenuItem>
-                        <MenuItem value={DistanceMetric.JACCARD}>Jaccard</MenuItem>
-                        <MenuItem value={DistanceMetric.GOWER}>Gower</MenuItem>
-                      </Select>
-                    </FormControl>
-                  )}
-                </FormGroup>
-              </FormControl>
+                  >
+                    <TextField
+                      id="textIterations"
+                      label="Iterations"
+                      type="number"
+                      value={tempProjectionParams.iterations}
+                      onChange={(event) => {
+                        setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
+                      }}
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="primary"
+                          checked={tempProjectionParams.seeded}
+                          onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, seeded: checked })}
+                          name="jason"
+                        />
+                      }
+                      label="Seed Position"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="primary"
+                          checked={tempProjectionParams.useSelection}
+                          onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, useSelection: checked })}
+                        />
+                      }
+                      label="Project Selection Only"
+                    />
+                    {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
+                      <FormControl>
+                        <InputLabel id="demo-controlled-open-select-label">Distance Metric</InputLabel>
+                        <Select
+                          labelId="demo-controlled-open-select-label"
+                          id="demo-controlled-open-select"
+                          label="Distance Metric"
+                          value={tempProjectionParams.distanceMetric}
+                          onChange={(event) => {
+                            changeDistanceMetric(event.target.value);
+                          }}
+                        >
+                          <MenuItem value={DistanceMetric.EUCLIDEAN}>Euclidean</MenuItem>
+                          <MenuItem value={DistanceMetric.JACCARD}>Jaccard</MenuItem>
+                          <MenuItem value={DistanceMetric.GOWER}>Gower</MenuItem>
+                        </Select>
+                      </FormControl>
+                    )}
+                  </FormGroup>
+                </FormControl>
+              </Grid>
             </Grid>
-          </Grid>
-        </Container>}
+          </Container>
+        )}
       </DialogContent>
       <DialogActions>
         <Button color="primary" onClick={onClose}>

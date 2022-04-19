@@ -24,7 +24,7 @@ import BK from '../../../../textures/chess/Chess_kdt45.png';
 import BQ from '../../../../textures/chess/Chess_qdt45.png';
 // @ts-ignore
 import BP from '../../../../textures/chess/Chess_pdt45.png';
-import { DefaultLegend } from '../../..';
+import { DefaultLegend } from '../../../components/legends/DefaultLegend';
 // @ts-ignore
 
 // Lookup table for chess UNICODE symbols
@@ -81,7 +81,7 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
 
   renderToContext() {
     const { vectors } = this.props;
-    if(vectors.length <= 0){
+    if (vectors.length <= 0) {
       return;
     }
 
@@ -209,8 +209,8 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
   }
 
   render() {
-    if(this.props.vectors.length <= 0){
-      return <DefaultLegend></DefaultLegend>
+    if (this.props.vectors.length <= 0) {
+      return <DefaultLegend></DefaultLegend>;
     }
     return (
       <canvas

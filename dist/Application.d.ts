@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime';
-import "./index.scss";
+import './index.scss';
 import * as React from 'react';
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from './model/Dataset';
@@ -10,9 +10,6 @@ import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     openTab: any;
     dataset: Dataset;
-    channelSize: any;
-    channelColor: any;
-    channelBrightness: any;
     hoverStateOrientation: any;
     datasetEntries: {
         values: {
@@ -44,7 +41,6 @@ declare type Props = PropsFromRedux & {
  */
 export declare const Application: import("react-redux").ConnectedComponent<{
     new (props: any): {
-        threeRef: any;
         splitRef: any;
         componentDidMount(): void;
         /**

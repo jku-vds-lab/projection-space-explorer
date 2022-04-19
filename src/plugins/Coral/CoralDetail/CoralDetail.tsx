@@ -6,12 +6,12 @@ import './coral.scss';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import * as vegaImport from 'vega';
 import { FeatureType } from '../../../model/FeatureType';
-import { IVector } from '../../../model/Vector';
+import type { IVector } from '../../../model/Vector';
 import BarChart from './BarChart';
 import VegaDensity from './VegaDensity';
 import VegaDate from './VegaDate';
 import type { RootState } from '../../../components/Store/Store';
-import { DefaultLegend } from '../../..';
+import { DefaultLegend } from '../../../components/legends/DefaultLegend';
 
 const useStyles = makeStyles({
   table: {
@@ -61,7 +61,7 @@ function mapBarChartData(allData, selectedData, feature) {
       selectedCounts[selectedData[i][feature]] = 1;
     }
   }
-  
+
   const allCounts = {};
   for (let i = 0; i < allData.length; i++) {
     if (allData[i][feature] in allCounts) {
@@ -70,7 +70,6 @@ function mapBarChartData(allData, selectedData, feature) {
       allCounts[allData[i][feature]] = 1;
     }
   }
-  
 
   const sortCountDesc = (a, b) => {
     return b.count - a.count;
@@ -85,13 +84,13 @@ function mapBarChartData(allData, selectedData, feature) {
   selectedBarChartData.sort(sortCountDesc);
 
   // create a map for featureCategory: id
-  const categoryMap = {}
+  const categoryMap = {};
   selectedBarChartData.map((x, i) => {
-    categoryMap[x.category] = i
-    x.id = i
-  })
-  const l = selectedBarChartData.length
-  var idxCounter = l
+    categoryMap[x.category] = i;
+    x.id = i;
+  });
+  const l = selectedBarChartData.length;
+  var idxCounter = l;
 
   const allBarChartData = [];
   for (const key in allCounts) {
@@ -99,13 +98,13 @@ function mapBarChartData(allData, selectedData, feature) {
     count = isFinite(count) ? count : 0;
     // apply that mapping to allBarChartData without actually having to sort it
     // make sure to check whether category in allBarChartData even exists in map, otherwise create new entry in map for new id
-    var i = categoryMap[key]
+    var i = categoryMap[key];
     if (i == undefined) {
-      i = idxCounter
-      categoryMap[key] = i
-      idxCounter++
+      i = idxCounter;
+      categoryMap[key] = i;
+      idxCounter++;
     }
-    allBarChartData.push({ selection: 'all', category: key, count: count, id: i});
+    allBarChartData.push({ selection: 'all', category: key, count: count, id: i });
   }
 
   const barChartData = [...allBarChartData, ...selectedBarChartData];
@@ -320,8 +319,8 @@ type Props = PropsFromRedux & {
 };
 
 export var CoralLegend = connector(({ selection, aggregate, legendAttributes, dataset }: Props) => {
-  if(selection.length <= 0){
-    return <DefaultLegend></DefaultLegend>
+  if (selection.length <= 0) {
+    return <DefaultLegend></DefaultLegend>;
   }
   return getTable(selection, aggregate, legendAttributes, dataset);
 });
