@@ -21,7 +21,7 @@ import TessyWorker from '../workers/tessy.worker';
 import { ViewTransformType } from '../Ducks';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { AStorytelling } from '../Ducks/StoriesDuck copy';
-import { ViewSelector } from '../Ducks/ViewDuck';
+import { IPosition } from '../../model/ProjectionInterfaces';
 
 const d3v5 = require('d3v5');
 
@@ -62,7 +62,7 @@ type ClusterObjectType = {
   geometry: THREE.Geometry;
   material: THREE.MeshBasicMaterial;
   mesh: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>;
-  children: any[];
+  children: { sample: number; visible: boolean }[];
   trailPositions: any[];
   lineColor: any;
   triangulatedMesh: any;
@@ -77,7 +77,6 @@ const mapState = (state: RootState) => ({
   currentAggregation: state.currentAggregation,
   hoverState: state.hoverState,
   groupVisualizationMode: state.groupVisualizationMode,
-  workspace: ViewSelector.getWorkspace(state)?.positions,
 });
 
 const connector = connect(mapState, null, null, { forwardRef: true });
@@ -88,6 +87,7 @@ type Props = PropsFromRedux & {
   // Callback that is called when a rerender should happen
   onInvalidate?: () => void;
   viewTransform: ViewTransformType;
+  workspace: IPosition[];
   globalPointSize;
 };
 
@@ -146,6 +146,17 @@ export const MultivariateClustering = connector(
       this.triangulationWorker = new TessyWorker();
     }
 
+    componentDidMount() {
+      if (this.props.stories.active !== null && this.props.workspace) {
+        const activeStory = AStorytelling.getActive(this.props.stories);
+
+        if (activeStory.clusters.ids.length > 0) {
+          this.create();
+          this.createTriangulatedMesh();
+        }
+      }
+    }
+
     componentDidUpdate(prevProps: Props) {
       if (prevProps.trailSettings !== this.props.trailSettings) {
         this.trail.setVisible(this.props.trailSettings.show);
@@ -153,7 +164,7 @@ export const MultivariateClustering = connector(
       }
 
       // If we have clusters now... and are on clusters tab... create cluster visualization
-      if (prevProps.stories !== this.props.stories) {
+      if (prevProps.stories !== this.props.stories && this.props.workspace) {
         this.destroy();
         this.disposeTriangulatedMesh();
 
@@ -208,6 +219,10 @@ export const MultivariateClustering = connector(
         if (this.props.currentAggregation.source === 'cluster') {
           this.highlightCluster(this.props.currentAggregation.selectedClusters);
         }
+      }
+
+      if (prevProps.workspace !== this.props.workspace) {
+        this.updatePositions(this.props.viewTransform.zoom);
       }
 
       if (this.props.onInvalidate) {
@@ -317,7 +332,7 @@ export const MultivariateClustering = connector(
     }
 
     updatePositions(zoom: number) {
-      if (!this.scene || !this.lineMesh) {
+      if (!this.scene || !this.lineMesh || !this.props.workspace) {
         return;
       }
 
@@ -343,15 +358,15 @@ export const MultivariateClustering = connector(
 
         clusterObject.children.forEach((child) => {
           if (child.visible && this.props.displayMode === DisplayMode.StatesAndClusters) {
-            const { sample } = child;
-            const dir = new THREE.Vector2(child.sample.x - center.x, child.sample.y - center.y).normalize();
+            const { x, y } = this.props.workspace[child.sample];
+            const dir = new THREE.Vector2(x - center.x, y - center.y).normalize();
             const rigth = new Vector2(dir.y, -dir.x).multiplyScalar(this.devicePixelRatio);
             const left = new Vector2(-dir.y, dir.x).multiplyScalar(this.devicePixelRatio);
 
             lineGeometry.vertices.push(new THREE.Vector3(center.x * zoom + left.x, center.y * zoom + left.y, 0));
             lineGeometry.vertices.push(new THREE.Vector3(center.x * zoom + rigth.x, center.y * zoom + rigth.y, 0));
-            lineGeometry.vertices.push(new THREE.Vector3(sample.x * zoom + left.x, sample.y * zoom + left.y, 0));
-            lineGeometry.vertices.push(new THREE.Vector3(sample.x * zoom + rigth.x, sample.y * zoom + rigth.y, 0));
+            lineGeometry.vertices.push(new THREE.Vector3(x * zoom + left.x, y * zoom + left.y, 0));
+            lineGeometry.vertices.push(new THREE.Vector3(x * zoom + rigth.x, y * zoom + rigth.y, 0));
 
             const i = index * 4;
             lineGeometry.faces.push(new THREE.Face3(i, i + 1, i + 2, new Vector3(0, 0, -1), new THREE.Color(clusterObject.lineColor.hex)));
@@ -416,14 +431,12 @@ export const MultivariateClustering = connector(
         this.clusterObjects.push(clusterObject);
 
         // Create line geometry
-        cluster.indices
-          .map((i) => this.props.dataset.vectors[i])
-          .forEach((vector) => {
-            clusterObject.children.push({
-              sample: vector,
-              visible: false,
-            });
+        cluster.indices.forEach((i) => {
+          clusterObject.children.push({
+            sample: i,
+            visible: false,
           });
+        });
       }
     }
 
@@ -446,7 +459,7 @@ export const MultivariateClustering = connector(
             clusterObject.sampleConnection = true;
 
             clusterObject.children.forEach((child) => {
-              if (child.sample === sample) {
+              if (child.sample === sample.__meta__.meshIndex) {
                 child.visible = true;
               }
             });
