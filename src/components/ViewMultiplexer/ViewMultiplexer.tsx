@@ -55,8 +55,6 @@ function WebView({
   const active = value.id === multiples.active;
   const boxShadow = '0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)';
 
-  const name = useSelector((state: RootState) => ViewSelector.getWorkspaceById(state, id)).metadata.method;
-
   return (
     <div
       style={{
@@ -79,22 +77,43 @@ function WebView({
           background: active ? 'lavender' : 'aliceblue',
         }}
       >
-        <Typography variant="button">{name}</Typography>
-
-        <IconButton
-          size="small"
-          onClick={() => dispatch(ViewActions.addView(dataset))}
-          style={{ visibility: value.id === multiples.multiples.ids[0] ? 'visible' : 'hidden' }}
+        <div
+          style={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
         >
-          <SplitscreenIcon />
-        </IconButton>
+          <Typography variant="button" component="span">
+            {projection.metadata?.method}
+          </Typography>
 
-        <IconButton style={{ visibility: value.id === multiples.multiples.ids[0] ? 'hidden' : 'visible' }} size="small" onClick={() => onCloseView(value.id)}>
-          <CloseIcon />
-        </IconButton>
+          {projection.name ? (
+            <Typography variant="body1" component="span">
+              {` - "${projection.name}"`}
+              {projection.xChannel || projection.yChannel ? ` [x: ${projection.xChannel}, y: ${projection.yChannel}]` : null}
+            </Typography>
+          ) : null}
+        </div>
+
+        <div style={{ display: 'flex' }}>
+          {value.id === multiples.multiples.ids[0] ? (
+            <IconButton
+              size="small"
+              onClick={() => dispatch(ViewActions.addView(dataset))}
+              style={{ visibility: value.id === multiples.multiples.ids[0] ? 'visible' : 'hidden' }}
+            >
+              <SplitscreenIcon />
+            </IconButton>
+          ) : null}
+
+          <IconButton disabled={value.id === multiples.multiples.ids[0]} size="small" onClick={() => onCloseView(value.id)}>
+            <CloseIcon />
+          </IconButton>
+        </div>
       </div>
       <div style={{ flexGrow: 1 }}>
-        <WebGLView overrideComponents={overrideComponents} multipleId={id} {...value.attributes} workspace={positions} />
+        {positions ? <WebGLView overrideComponents={overrideComponents} multipleId={id} {...value.attributes} workspace={positions} /> : null}
       </div>
     </div>
   );

@@ -49,7 +49,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
          * @param json
          */
         onDataSelected(dataset: Dataset): void;
-        onLineSelect(algo: any, show: any): void;
+        onLineSelect(_algo: any, _show: any): void;
         onChangeTab(newTab: any): void;
         render(): JSX.Element;
         context: any;

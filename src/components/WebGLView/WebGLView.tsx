@@ -890,8 +890,6 @@ export const WebGLView = connector(
 
         this.camera.updateProjectionMatrix();
 
-        this.repositionClusters();
-
         this.requestRender();
       }
     }
@@ -1306,12 +1304,6 @@ export const WebGLView = connector(
       ctx.closePath();
     }
 
-    repositionClusters() {
-      this.multivariateClusterView?.current.updatePositions(this.camera.zoom);
-      this.multivariateClusterView?.current.iterateTrail(this.camera.zoom);
-      this.multivariateClusterView?.current.createTriangulatedMesh();
-    }
-
     onClusterZoom(cluster) {
       this.props.setSelectedCluster(cluster, false);
     }
@@ -1366,6 +1358,7 @@ export const WebGLView = connector(
           <LassoLayer ref={this.selectionRef} viewTransform={this.props.viewTransform} />
 
           <MultivariateClustering
+            workspace={this.props.workspace}
             viewTransform={this.props.viewTransform}
             globalPointSize={this.props.globalPointSize}
             onInvalidate={() => {

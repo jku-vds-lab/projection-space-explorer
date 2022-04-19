@@ -8,12 +8,16 @@ import { DisplayMode } from '../Ducks/DisplayModeDuck';
 import { TrailVisualization } from './TrailVisualization';
 import { IBook } from '../../model/Book';
 import { ViewTransformType } from '../Ducks';
+import { IPosition } from '../../model/ProjectionInterfaces';
 declare type ClusterObjectType = {
     cluster: EntityId;
     geometry: THREE.Geometry;
     material: THREE.MeshBasicMaterial;
     mesh: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>;
-    children: any[];
+    children: {
+        sample: number;
+        visible: boolean;
+    }[];
     trailPositions: any[];
     lineColor: any;
     triangulatedMesh: any;
@@ -37,12 +41,12 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
-    workspace: import("../..").IBaseProjection;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     onInvalidate?: () => void;
     viewTransform: ViewTransformType;
+    workspace: IPosition[];
     globalPointSize: any;
 };
 /**
@@ -65,6 +69,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         trail: TrailVisualization;
         clusterScene: THREE.Scene;
         triangulationWorker: Worker;
+        componentDidMount(): void;
         componentDidUpdate(prevProps: Props): void;
         getColorForClusterObject(clusterObject: ClusterObjectType): THREE.Color;
         updateArrows(zoom: number): void;
@@ -112,7 +117,6 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         refs: {
             [key: string]: React.ReactInstance;
         };
-        componentDidMount?(): void;
         shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): boolean;
         componentWillUnmount?(): void;
         componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
