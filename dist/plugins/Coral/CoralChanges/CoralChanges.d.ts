@@ -45,5 +45,41 @@ export declare const CoralChanges: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, Pick<any, string | number | symbol>>;
+}, Pick<React.ClassAttributes<{
+    rows: any[];
+    render(): JSX.Element;
+    context: any;
+    setState<K extends never>(state: {} | ((prevState: Readonly<{}>, props: Readonly<Props>) => {} | Pick<{}, K>) | Pick<{}, K>, callback?: () => void): void;
+    forceUpdate(callback?: () => void): void;
+    readonly props: Readonly<Props> & Readonly<{
+        children?: React.ReactNode;
+    }>;
+    state: Readonly<{}>;
+    refs: {
+        [key: string]: React.ReactInstance;
+    };
+    componentDidMount?(): void;
+    shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): boolean;
+    componentWillUnmount?(): void;
+    componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
+    getSnapshotBeforeUpdate?(prevProps: Readonly<Props>, prevState: Readonly<{}>): any;
+    componentDidUpdate?(prevProps: Readonly<Props>, prevState: Readonly<{}>, snapshot?: any): void;
+    componentWillMount?(): void;
+    UNSAFE_componentWillMount?(): void;
+    componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
+    UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
+    componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): void;
+    UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): void;
+}> & {
+    dataset: Dataset;
+    differenceThreshold: any;
+    legendAttributes: any[];
+} & {
+    width?: number;
+    height?: number;
+    vectorsA: Array<IVector>;
+    vectorsB: Array<IVector>;
+    dataset: Dataset;
+    scale: number;
+}, "width" | "height" | "ref" | "key" | "scale" | "vectorsA" | "vectorsB">>;
 export {};
