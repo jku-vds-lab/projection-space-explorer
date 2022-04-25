@@ -17,15 +17,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         encodingMethod: EncodingMethod;
     };
     columns: {
-        [name: string]: {
-            distinct: any;
-            isNumeric: boolean;
-            metaInformation: any;
-            featureType: import("../../../model").FeatureType;
-            range: any;
-            featureLabel: string;
-            project: boolean;
-        };
+        [name: string]: import("../../../model").ColumnType;
     };
 } & {
     setProjectionParams: (value: any) => any;

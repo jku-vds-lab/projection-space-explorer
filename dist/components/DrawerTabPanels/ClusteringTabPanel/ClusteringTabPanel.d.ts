@@ -16,6 +16,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     groupVisualizationMode: any;
     workspace: import("../../..").IProjection;
+    globalLabels: import("../../Ducks").GlobalLabelsState;
 } & {
     setStories: (stories: IBook[]) => any;
     setActiveStory: (book: EntityId) => any;
@@ -31,5 +32,5 @@ declare type Props = PropsFromRedux & {
     splitRef: any;
     baseUrl: string;
 };
-export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters, baseUrl, }: Props) => JSX.Element, Pick<Props, "baseUrl" | "splitRef">>;
+export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters, baseUrl, globalLabels }: Props) => JSX.Element, Pick<Props, "baseUrl" | "splitRef">>;
 export {};

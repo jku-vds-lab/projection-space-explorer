@@ -171,6 +171,7 @@ export declare const ViewSelector: {
         hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
         detailView: typeof import("./DetailViewDuck").default;
         datasetEntries: typeof import("./DatasetEntriesDuck").default;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
         colorScales: typeof import("./ColorScalesDuck").default;
         multiples: Reducer<{
             multiples: EntityState<{
@@ -280,6 +281,7 @@ export declare const ViewSelector: {
         hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
         detailView: typeof import("./DetailViewDuck").default;
         datasetEntries: typeof import("./DatasetEntriesDuck").default;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
         colorScales: typeof import("./ColorScalesDuck").default;
         multiples: Reducer<{
             multiples: EntityState<{
@@ -356,6 +358,7 @@ export declare const ViewSelector: {
         hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
         detailView: typeof import("./DetailViewDuck").default;
         datasetEntries: typeof import("./DatasetEntriesDuck").default;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
         colorScales: typeof import("./ColorScalesDuck").default;
         multiples: Reducer<{
             multiples: EntityState<{

@@ -8,3 +8,4 @@ export * from './PathLengthFilter';
 export * from './ShapeLegend';
 export * from './SizeSlider';
 export * from './StatesTabPanel';
+export * from './SelectFeatureComponent';

@@ -29,5 +29,6 @@ export * from './VectorByShapeDuck';
 export * from './ViewTransformDuck';
 export * from './DetailViewDuck';
 export * from './DatasetEntriesDuck';
+export * from './GlobalLabelsDuck';
 export * from './StoriesDuck copy';
 export * from './ViewDuck';

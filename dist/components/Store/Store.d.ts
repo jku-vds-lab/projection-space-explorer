@@ -78,6 +78,7 @@ declare const allReducers: {
     hoverStateOrientation: (state: import("../Ducks/HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
     detailView: typeof detailView;
     datasetEntries: typeof datasetEntries;
+    globalLabels: Reducer<import("../Ducks/GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
     colorScales: typeof colorScales;
     multiples: Reducer<{
         multiples: EntityState<{

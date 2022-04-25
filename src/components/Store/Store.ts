@@ -24,6 +24,7 @@ import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesD
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 import detailView from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
+import { globalLabels } from '../Ducks/GlobalLabelsDuck';
 import { RootActionTypes } from './RootActions';
 import { Dataset, ADataset, SegmentFN, AProjection, IBook, ProjectionMethod, IProjection } from '../../model';
 import { CategoryOptionsAPI } from '../WebGLView/CategoryOptions';
@@ -65,6 +66,7 @@ const allReducers = {
   hoverStateOrientation,
   detailView,
   datasetEntries,
+  globalLabels,
   colorScales,
   multiples: createViewDuckReducer().reducer,
 };
@@ -325,7 +327,7 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
 
   return (state: Parameters<typeof combined>[0] & T, action: Parameters<typeof combined>[1]) => {
     if (action.type === RootActionTypes.RESET) {
-      const { dataset, openTab, datasetEntries } = state;
+      const { dataset, openTab, datasetEntries, globalLabels } = state;
 
       for (const key in state) {
         state[key] = undefined;
@@ -334,6 +336,7 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
       state.dataset = dataset;
       state.openTab = openTab;
       state.datasetEntries = datasetEntries;
+      state.globalLabels = globalLabels;
     }
 
     if (action.type === RootActionTypes.HYDRATE) {

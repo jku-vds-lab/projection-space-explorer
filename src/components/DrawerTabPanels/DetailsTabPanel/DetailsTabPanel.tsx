@@ -20,6 +20,7 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   hoverStateOrientation: state.hoverStateOrientation,
   activeStorybook: AStorytelling.getActive(state.stories),
+  globalLabels: state.globalLabels
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -49,6 +50,7 @@ export const DetailsTabPanel = connector(
     activeStorybook,
     genericFingerprintAttributes,
     setGenericFingerprintAttributes,
+    globalLabels
   }: Props) => {
     const handleChange = (_, value) => {
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
@@ -63,7 +65,7 @@ export const DetailsTabPanel = connector(
             </Typography>
           ) : (
             <Typography color="textSecondary" variant="body2">
-              Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> items
+              Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> ${globalLabels.itemLabelPlural}
             </Typography>
           )}
         </Box>

@@ -11,7 +11,7 @@ export declare enum PrebuiltFeatures {
 export declare const EXCLUDED_COLUMNS: string[];
 export declare const EXCLUDED_COLUMNS_ALL: string[];
 export declare const DefaultFeatureLabel = "Default";
-declare type ColumnType = {
+export declare type ColumnType = {
     distinct: any;
     isNumeric: boolean;
     metaInformation: any;
@@ -96,4 +96,3 @@ export declare class Dataset {
         attributes: any[];
     }[];
 }
-export {};

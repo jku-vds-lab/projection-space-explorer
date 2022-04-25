@@ -22,7 +22,7 @@ export const DefaultFeatureLabel = 'Default';
 
 const shapes = ['circle', 'star', 'square', 'cross'];
 
-type ColumnType = {
+export type ColumnType = {
   distinct: any;
   isNumeric: boolean;
   metaInformation: any;

@@ -1338,7 +1338,7 @@ export const WebGLView = connector(
               .map((layer) => {
                 return React.isValidElement(layer.component)
                   ? layer.component
-                  : React.createElement(layer.component as () => JSX.Element, { key: `layer${layer.order}` });
+                  : React.createElement(layer.component as () => JSX.Element, { key: `layer${layer.order}`, multipleId: this.props.multipleId });
               })
           }
 
@@ -1374,7 +1374,7 @@ export const WebGLView = connector(
               .map((layer) => {
                 return React.isValidElement(layer.component)
                   ? layer.component
-                  : React.createElement(layer.component as () => JSX.Element, { key: `layer${layer.order}` });
+                  : React.createElement(layer.component as () => JSX.Element, { key: `layer${layer.order}`, multipleId: this.props.multipleId });
               })
           }
 
