@@ -1,5 +1,5 @@
 import { Reducer, Store } from 'redux';
-import { RootState } from './Store';
+import type { RootState } from './Store';
 /**
  * Main api class for PSE.
  */

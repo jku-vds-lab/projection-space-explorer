@@ -32,7 +32,7 @@ import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/
 import colorScales from '../Ducks/ColorScalesDuck';
 import { BaseColorScale } from '../../model/Palette';
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
-import { multiplesSlice, multipleAdapter, defaultAttributes } from '../Ducks/ViewDuck';
+import { multipleAdapter, defaultAttributes, createViewDuckReducer } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
 
 /**
@@ -66,7 +66,7 @@ const allReducers = {
   detailView,
   datasetEntries,
   colorScales,
-  multiples: multiplesSlice.reducer,
+  multiples: createViewDuckReducer().reducer,
 };
 
 const bookAdapter = createEntityAdapter<IBook>({

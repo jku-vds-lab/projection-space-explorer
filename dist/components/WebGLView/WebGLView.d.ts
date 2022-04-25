@@ -35,7 +35,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     dataset: Dataset;
     highlightedSequence: any;
-    activeLine: any;
+    activeLine: string;
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;

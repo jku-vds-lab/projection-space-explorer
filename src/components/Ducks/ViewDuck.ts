@@ -134,8 +134,22 @@ const allReducers = {
 
 const singleTestReducer = combineReducers(allReducers);
 
-export function createViewDuckReducer<T>(additionalViewReducer: ReducersMapObject<T, any>) {
-  const viewReducer = combineReducers({ ...allReducers, ...additionalViewReducer }) as Reducer<any>;
+const addView = createAction<Dataset>('view/addView');
+const activateView = createAction<EntityId>('view/activateView');
+const deleteView = createAction<EntityId>('view/deleteView');
+const loadById = createAction<EntityId>('view/loadById');
+const add = createAction<IProjection>('view/add');
+const copyFromWorkspace = createAction('view/copyFromWorkspace');
+const updateActive = createAction<{ positions: IPosition[]; metadata: any }>('view/updateActive');
+const remove = createAction<EntityId>('view/remove');
+const save = createAction<Update<IProjection>>('view/save');
+const setPointColorMapping = createAction<{ multipleId: EntityId; value: DiscreteMapping | ContinuousMapping }>('view/setPointColorMapping');
+const selectChannel = createAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>('view/selectChannel');
+
+export function createViewDuckReducer<T>(additionalViewReducer?: ReducersMapObject<T, any>) {
+  const viewReducer = additionalViewReducer
+    ? combineReducers({ ...allReducers, ...additionalViewReducer })
+    : (combineReducers({ ...allReducers }) as Reducer<any>);
 
   return createSlice({
     name: 'multiples',
@@ -144,243 +158,136 @@ export function createViewDuckReducer<T>(additionalViewReducer: ReducersMapObjec
       active: EntityId;
       projections: EntityState<IProjection>;
     },
-    reducers: {
-      addView(state, action: PayloadAction<Dataset>) {
-        multipleAdapter.addOne(state.multiples, {
-          id: uuidv4(),
-          attributes: viewReducer(defaultAttributes(action.payload), { type: '' }),
-        });
-      },
-      activateView(state, action: PayloadAction<EntityId>) {
-        state.active = action.payload;
-      },
-      deleteView(state, action: PayloadAction<EntityId>) {
-        multipleAdapter.removeOne(state.multiples, action.payload);
-        if (action.payload === state.active) {
-          state.active = state.multiples.ids[0];
-        }
-      },
-
-      loadById(state, action: PayloadAction<EntityId>) {
-        const active = state.multiples.entities[state.active];
-        active.attributes.workspace = action.payload;
-      },
-      add(state, action: PayloadAction<IProjection>) {
-        projectionAdapter.addOne(state.projections, action.payload);
-      },
-      copyFromWorkspace(state) {
-        const active = state.multiples.entities[state.active];
-
-        const deriveName = (metadata) => {
-          if (metadata?.method === ProjectionMethod.RANDOM) {
-            return 'Random Initialisation';
-          }
-          const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
-
-          return `${metadata?.method} at ${time}`;
-        };
-
-        if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
-          const workspace = state.projections.entities[active.attributes.workspace];
-          const hash = uuidv4();
-          projectionAdapter.addOne(state.projections, { ...workspace, hash });
-          active.attributes.workspace = hash;
-        } else {
-          const { workspace } = active.attributes;
-          projectionAdapter.addOne(state.projections, { ...workspace, name: deriveName(workspace.metadata) });
-          active.attributes.workspace = workspace.hash;
-        }
-      },
-      updateActive(state, action: PayloadAction<{ positions: IPosition[]; metadata: any }>) {
-        const active = state.multiples.entities[state.active];
-
-        if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
-          active.attributes.workspace = {
-            hash: uuidv4(),
-            positions: action.payload.positions,
-            metadata: action.payload.metadata,
-            name: null,
-          };
-        } else {
-          active.attributes.workspace.positions = action.payload.positions;
-          active.attributes.workspace.metadata = action.payload.metadata;
-        }
-      },
-      remove(state, action: PayloadAction<EntityId>) {
-        const active = state.multiples.entities[state.active];
-
-        if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
-          active.attributes.workspace = { ...state.projections.entities[active.attributes.workspace], hash: uuidv4() };
-        }
-        projectionAdapter.removeOne(state.projections, action.payload);
-      },
-      save(state, action: PayloadAction<Update<IProjection>>) {
-        projectionAdapter.updateOne(state.projections, action.payload);
-      },
-      setPointColorMapping(state, action: PayloadAction<{ multipleId: EntityId; value: DiscreteMapping | ContinuousMapping }>) {
-        const { multipleId, value } = action.payload;
-        const multiple = state.multiples.entities[multipleId];
-        multiple.attributes.pointColorMapping = value;
-      },
-      selectChannel(state, action: PayloadAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>) {
-        const active = state.multiples.entities[state.active].attributes;
-        if (isEntityId(active.workspace)) {
-          // Create new temporary projection
-
-          active.workspace = {
-            hash: uuidv4(),
-            positions: null,
-            metadata: { method: ProjectionMethod.CUSTOM },
-            name: null,
-          };
-        }
-
-        if (action.payload.channel === 'x') {
-          active.workspace.xChannel = action.payload.value;
-        } else {
-          active.workspace.yChannel = action.payload.value;
-        }
-
-        if (!active.workspace.xChannel && !active.workspace.yChannel) {
-          active.workspace.positions = action.payload.dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y }));
-        }
-      },
-    },
+    reducers: {},
     extraReducers: (builder) => {
-      builder.addDefaultCase((state, action) => {
-        if (state.active !== null) {
+      builder
+        .addCase(addView, (state, action) => {
+          multipleAdapter.addOne(state.multiples, {
+            id: uuidv4(),
+            attributes: viewReducer(defaultAttributes(action.payload), { type: '' }),
+          });
+        })
+        .addCase(activateView, (state, action) => {
+          state.active = action.payload;
+        })
+        .addCase(deleteView, (state, action) => {
+          multipleAdapter.removeOne(state.multiples, action.payload);
+          if (action.payload === state.active) {
+            state.active = state.multiples.ids[0];
+          }
+        })
+        .addCase(loadById, (state, action) => {
           const active = state.multiples.entities[state.active];
-          active.attributes = viewReducer(active.attributes, action);
-        } else if (state.multiples.ids.length > 0) {
-          const active = state.multiples.entities[state.multiples.ids[0]];
-          active.attributes = viewReducer(active.attributes, action);
-        }
-      });
+          active.attributes.workspace = action.payload;
+        })
+        .addCase(add, (state, action) => {
+          projectionAdapter.addOne(state.projections, action.payload);
+        })
+        .addCase(copyFromWorkspace, (state) => {
+          const active = state.multiples.entities[state.active];
+
+          const deriveName = (metadata) => {
+            if (metadata?.method === ProjectionMethod.RANDOM) {
+              return 'Random Initialisation';
+            }
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
+
+            return `${metadata?.method} at ${time}`;
+          };
+
+          if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
+            const workspace = state.projections.entities[active.attributes.workspace];
+            const hash = uuidv4();
+            projectionAdapter.addOne(state.projections, { ...workspace, hash });
+            active.attributes.workspace = hash;
+          } else {
+            const { workspace } = active.attributes;
+            projectionAdapter.addOne(state.projections, { ...workspace, name: deriveName(workspace.metadata) });
+            active.attributes.workspace = workspace.hash;
+          }
+        })
+        .addCase(updateActive, (state, action: PayloadAction<{ positions: IPosition[]; metadata: any }>) => {
+          const active = state.multiples.entities[state.active];
+
+          if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
+            active.attributes.workspace = {
+              hash: uuidv4(),
+              positions: action.payload.positions,
+              metadata: action.payload.metadata,
+              name: null,
+            };
+          } else {
+            active.attributes.workspace.positions = action.payload.positions;
+            active.attributes.workspace.metadata = action.payload.metadata;
+          }
+        })
+        .addCase(remove, (state, action: PayloadAction<EntityId>) => {
+          const active = state.multiples.entities[state.active];
+
+          if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
+            active.attributes.workspace = { ...state.projections.entities[active.attributes.workspace], hash: uuidv4() };
+          }
+          projectionAdapter.removeOne(state.projections, action.payload);
+        })
+        .addCase(save, (state, action: PayloadAction<Update<IProjection>>) => {
+          projectionAdapter.updateOne(state.projections, action.payload);
+        })
+        .addCase(setPointColorMapping, (state, action: PayloadAction<{ multipleId: EntityId; value: DiscreteMapping | ContinuousMapping }>) => {
+          const { multipleId, value } = action.payload;
+          const multiple = state.multiples.entities[multipleId];
+          multiple.attributes.pointColorMapping = value;
+        })
+        .addCase(selectChannel, (state, action: PayloadAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>) => {
+          const active = state.multiples.entities[state.active].attributes;
+          if (isEntityId(active.workspace)) {
+            // Create new temporary projection
+
+            active.workspace = {
+              hash: uuidv4(),
+              positions: null,
+              metadata: { method: ProjectionMethod.CUSTOM },
+              name: null,
+            };
+          }
+
+          if (action.payload.channel === 'x') {
+            active.workspace.xChannel = action.payload.value;
+          } else {
+            active.workspace.yChannel = action.payload.value;
+          }
+
+          if (!active.workspace.xChannel && !active.workspace.yChannel) {
+            active.workspace.positions = action.payload.dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y }));
+          }
+        })
+        .addDefaultCase((state, action) => {
+          if (state.active !== null) {
+            const active = state.multiples.entities[state.active];
+            active.attributes = viewReducer(active.attributes, action);
+          } else if (state.multiples.ids.length > 0) {
+            const active = state.multiples.entities[state.multiples.ids[0]];
+            active.attributes = viewReducer(active.attributes, action);
+          }
+        });
     },
   });
 }
 
-export const multiplesSlice = createSlice({
-  name: 'multiples',
-  initialState,
-  reducers: {
-    addView(state, action: PayloadAction<Dataset>) {
-      multipleAdapter.addOne(state.multiples, {
-        id: uuidv4(),
-        attributes: defaultAttributes(action.payload),
-      });
-    },
-    activateView(state, action: PayloadAction<EntityId>) {
-      state.active = action.payload;
-    },
-    deleteView(state, action: PayloadAction<EntityId>) {
-      multipleAdapter.removeOne(state.multiples, action.payload);
-      if (action.payload === state.active) {
-        state.active = state.multiples.ids[0];
-      }
-    },
-
-    loadById(state, action: PayloadAction<EntityId>) {
-      const active = state.multiples.entities[state.active];
-      active.attributes.workspace = action.payload;
-    },
-    add(state, action: PayloadAction<IProjection>) {
-      projectionAdapter.addOne(state.projections, action.payload);
-    },
-    copyFromWorkspace(state) {
-      const active = state.multiples.entities[state.active];
-
-      const deriveName = (metadata) => {
-        if (metadata?.method === ProjectionMethod.RANDOM) {
-          return 'Random Initialisation';
-        }
-        const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
-
-        return `${metadata?.method} at ${time}`;
-      };
-
-      if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
-        const workspace = state.projections.entities[active.attributes.workspace];
-        const hash = uuidv4();
-        projectionAdapter.addOne(state.projections, { ...workspace, hash });
-        active.attributes.workspace = hash;
-      } else {
-        const { workspace } = active.attributes;
-        projectionAdapter.addOne(state.projections, { ...workspace, name: deriveName(workspace.metadata) });
-        active.attributes.workspace = workspace.hash;
-      }
-    },
-    updateActive(state, action: PayloadAction<{ positions: IPosition[]; metadata: any }>) {
-      const active = state.multiples.entities[state.active];
-
-      if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
-        active.attributes.workspace = {
-          hash: uuidv4(),
-          positions: action.payload.positions,
-          metadata: action.payload.metadata,
-          name: null,
-        };
-      } else {
-        active.attributes.workspace.positions = action.payload.positions;
-        active.attributes.workspace.metadata = action.payload.metadata;
-      }
-    },
-    remove(state, action: PayloadAction<EntityId>) {
-      const active = state.multiples.entities[state.active];
-
-      if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
-        active.attributes.workspace = { ...state.projections.entities[active.attributes.workspace], hash: uuidv4() };
-      }
-      projectionAdapter.removeOne(state.projections, action.payload);
-    },
-    save(state, action: PayloadAction<Update<IProjection>>) {
-      projectionAdapter.updateOne(state.projections, action.payload);
-    },
-    setPointColorMapping(state, action: PayloadAction<{ multipleId: EntityId; value: DiscreteMapping | ContinuousMapping }>) {
-      const { multipleId, value } = action.payload;
-      const multiple = state.multiples.entities[multipleId];
-      multiple.attributes.pointColorMapping = value;
-    },
-    selectChannel(state, action: PayloadAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>) {
-      const active = state.multiples.entities[state.active].attributes;
-      if (isEntityId(active.workspace)) {
-        // Create new temporary projection
-
-        active.workspace = {
-          hash: uuidv4(),
-          positions: null,
-          metadata: { method: ProjectionMethod.CUSTOM },
-          name: null,
-        };
-      }
-
-      if (action.payload.channel === 'x') {
-        active.workspace.xChannel = action.payload.value;
-      } else {
-        active.workspace.yChannel = action.payload.value;
-      }
-
-      if (!active.workspace.xChannel && !active.workspace.yChannel) {
-        active.workspace.positions = action.payload.dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y }));
-      }
-    },
-  },
-  extraReducers: (builder) => {
-    builder.addDefaultCase((state, action) => {
-      if (state.active !== null) {
-        const active = state.multiples.entities[state.active];
-        active.attributes = singleTestReducer(active.attributes, action);
-      } else if (state.multiples.ids.length > 0) {
-        const active = state.multiples.entities[state.multiples.ids[0]];
-        active.attributes = singleTestReducer(active.attributes, action);
-      }
-    });
-  },
-});
-
 const defaultSelector = (state: RootState) => state.multiples.multiples.entities[state.multiples.active];
 
-export const ViewActions = { ...multiplesSlice.actions };
+export const ViewActions = {
+  addView,
+  activateView,
+  deleteView,
+  loadById,
+  add,
+  copyFromWorkspace,
+  updateActive,
+  remove,
+  save,
+  setPointColorMapping,
+  selectChannel,
+};
 
 export const ViewSelector = {
   selectAll: createSelector(
