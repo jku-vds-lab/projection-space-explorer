@@ -37,6 +37,7 @@ import { DatasetType } from './model/DatasetType';
 import { RootActions } from './components/Store/RootActions';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 import { ViewMultiplexer } from './components/ViewMultiplexer/ViewMultiplexer';
+import { capitalizeFirstLetter, toSentenceCase } from './utils/helpers';
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -64,6 +65,7 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   hoverStateOrientation: state.hoverStateOrientation,
   datasetEntries: state.datasetEntries,
+  globalLabels: state.globalLabels
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -277,8 +279,8 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
-                    <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
+                    <Typography variant="subtitle2">{`Hover ${capitalizeFirstLetter(this.props.globalLabels.itemLabel)} and Selection Summary`}</Typography>
+                    <Typography variant="body2">{toSentenceCase(`Contains information about the currently hovered ${this.props.globalLabels.itemLabel} and the currently selected summary.`)}</Typography>
                   </>
                 }
               >

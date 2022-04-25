@@ -14,6 +14,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     dataset: import("../../..").Dataset;
     hoverStateOrientation: any;
     activeStorybook: import("../../..").IBook;
+    globalLabels: import("../..").GlobalLabelsState;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
@@ -24,5 +25,5 @@ declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {
     config: FeatureConfig;
 };
-export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook, genericFingerprintAttributes, setGenericFingerprintAttributes, }: Props) => JSX.Element, Pick<Props, "config">>;
+export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook, genericFingerprintAttributes, setGenericFingerprintAttributes, globalLabels }: Props) => JSX.Element, Pick<Props, "config">>;
 export {};

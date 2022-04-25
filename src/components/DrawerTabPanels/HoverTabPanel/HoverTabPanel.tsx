@@ -10,6 +10,7 @@ const mapStateToProps = (state: RootState) => ({
   hoverSettings: state.hoverSettings,
   currentAggregation: state.currentAggregation,
   dataset: state.dataset,
+  globalLabels: state.globalLabels,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -23,7 +24,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
-export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset }: Props) => {
+export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, globalLabels }: Props) => {
   const handleChange = (_, value) => {
     setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
   };
@@ -34,7 +35,7 @@ export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, set
         {/* TODO: Cluster count not working */}
         {/* in <b>{currentAggregation.selectedClusters.length}</b> Groups */}
         <Typography color="textSecondary" variant="body2">
-          Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset && dataset.vectors.length}</b> items
+          Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset && dataset.vectors.length}</b> ${globalLabels.itemLabelPlural}
         </Typography>
 
         <FormControlLabel

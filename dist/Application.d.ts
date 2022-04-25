@@ -19,6 +19,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
             allIds: string[];
         };
     };
+    globalLabels: import("./components").GlobalLabelsState;
 } & {
     setOpenTab: (openTab: any) => any;
     setLineByOptions: (options: any) => any;
@@ -120,6 +121,7 @@ export declare const Application: import("react-redux").ConnectedComponent<{
             allIds: string[];
         };
     };
+    globalLabels: import("./components").GlobalLabelsState;
 } & {
     setOpenTab: (openTab: any) => any;
     setLineByOptions: (options: any) => any;

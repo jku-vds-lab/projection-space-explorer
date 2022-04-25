@@ -74,6 +74,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
             allIds: string[];
         };
     };
+    globalLabels: import("../Ducks/GlobalLabelsDuck").GlobalLabelsState;
     colorScales: import("../Ducks/ColorScalesDuck").ColorScalesType;
     multiples: {
         multiples: EntityState<import("../Ducks/ViewDuck").SingleMultiple>;

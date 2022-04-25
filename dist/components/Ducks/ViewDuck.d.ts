@@ -239,6 +239,7 @@ export declare const ViewSelector: {
                 allIds: string[];
             };
         };
+        globalLabels: import("./GlobalLabelsDuck").GlobalLabelsState;
         colorScales: import("./ColorScalesDuck").ColorScalesType;
         multiples: {
             multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
@@ -335,6 +336,7 @@ export declare const ViewSelector: {
                 allIds: string[];
             };
         };
+        globalLabels: import("./GlobalLabelsDuck").GlobalLabelsState;
         colorScales: import("./ColorScalesDuck").ColorScalesType;
         multiples: {
             multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
@@ -413,6 +415,7 @@ export declare const ViewSelector: {
                 allIds: string[];
             };
         };
+        globalLabels: import("./GlobalLabelsDuck").GlobalLabelsState;
         colorScales: import("./ColorScalesDuck").ColorScalesType;
         multiples: {
             multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;

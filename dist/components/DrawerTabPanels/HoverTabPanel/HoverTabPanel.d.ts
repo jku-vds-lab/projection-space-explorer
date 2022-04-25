@@ -9,13 +9,14 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;
+    globalLabels: import("../..").GlobalLabelsState;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {};
-export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset }: Props) => JSX.Element, Pick<{
+export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, globalLabels }: Props) => JSX.Element, Pick<{
     hoverSettings: {
         windowMode: any;
     };
@@ -25,6 +26,7 @@ export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ 
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;
+    globalLabels: import("../..").GlobalLabelsState;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;

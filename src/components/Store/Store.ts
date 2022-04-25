@@ -24,6 +24,7 @@ import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesD
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 import detailView from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
+import { globalLabels } from '../Ducks/GlobalLabelsDuck';
 import { RootActionTypes } from './RootActions';
 import { Dataset, ADataset, SegmentFN, AProjection, IBook, ProjectionMethod, IProjection } from '../../model';
 import { CategoryOptionsAPI } from '../WebGLView/CategoryOptions';
@@ -65,6 +66,7 @@ const allReducers = {
   hoverStateOrientation,
   detailView,
   datasetEntries,
+  globalLabels,
   colorScales,
   multiples: multiplesSlice.reducer,
 };
@@ -314,8 +316,8 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
 
 export const rootReducer = (state, action) => {
   if (action.type === RootActionTypes.RESET) {
-    const { dataset, openTab, viewTransform, datasetEntries } = state;
-    state = { dataset, openTab, viewTransform, datasetEntries };
+    const { dataset, openTab, viewTransform, datasetEntries, globalLabels } = state;
+    state = { dataset, openTab, viewTransform, datasetEntries, globalLabels };
   }
 
   return appReducer(state, action);
@@ -329,8 +331,8 @@ export function createRootReducer(reducers: any) {
 
   return (state, action) => {
     if (action.type === RootActionTypes.RESET) {
-      const { dataset, openTab, datasetEntries } = state;
-      state = { dataset, openTab, datasetEntries };
+      const { dataset, openTab, datasetEntries, globalLabels } = state;
+      state = { dataset, openTab, datasetEntries, globalLabels };
     }
 
     if (action.type === RootActionTypes.HYDRATE) {
