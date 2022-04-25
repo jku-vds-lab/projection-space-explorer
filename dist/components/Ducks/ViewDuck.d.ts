@@ -1,4 +1,4 @@
-import { EntityId, PayloadAction, Update } from '@reduxjs/toolkit';
+import { EntityId, PayloadAction, Update, ReducersMapObject, EntityState } from '@reduxjs/toolkit';
 import { ViewTransformType } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, IPosition, Dataset } from '../../model';
@@ -73,71 +73,178 @@ export declare type SingleMultiple = {
     attributes: SingleMultipleAttributes;
 };
 export declare const multipleAdapter: import("@reduxjs/toolkit").EntityAdapter<SingleMultiple>;
-export declare const multiplesSlice: import("@reduxjs/toolkit").Slice<{
-    multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+export declare function createViewDuckReducer<T>(additionalViewReducer: ReducersMapObject<T, any>): import("@reduxjs/toolkit").Slice<{
+    multiples: EntityState<{
+        id: EntityId;
+        attributes: SingleMultipleAttributes & T;
+    }>;
     active: EntityId;
-    projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+    projections: EntityState<IProjection>;
 }, {
     addView(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<Dataset>): void;
     activateView(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<EntityId>): void;
     deleteView(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<EntityId>): void;
     loadById(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<EntityId>): void;
     add(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<IProjection>): void;
     copyFromWorkspace(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>): void;
     updateActive(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<{
         positions: IPosition[];
         metadata: any;
     }>): void;
     remove(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<EntityId>): void;
     save(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<Update<IProjection>>): void;
     setPointColorMapping(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<{
         multipleId: EntityId;
         value: DiscreteMapping | ContinuousMapping;
     }>): void;
     selectChannel(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<{
+            id: EntityId;
+            attributes: SingleMultipleAttributes & T;
+        }>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<{
+        dataset: Dataset;
+        channel: 'x' | 'y';
+        value: string;
+    }>): void;
+}, "multiples">;
+export declare const multiplesSlice: import("@reduxjs/toolkit").Slice<{
+    multiples: EntityState<SingleMultiple>;
+    active: EntityId;
+    projections: EntityState<IProjection>;
+}, {
+    addView(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<Dataset>): void;
+    activateView(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<EntityId>): void;
+    deleteView(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<EntityId>): void;
+    loadById(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<EntityId>): void;
+    add(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<IProjection>): void;
+    copyFromWorkspace(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>): void;
+    updateActive(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<{
+        positions: IPosition[];
+        metadata: any;
+    }>): void;
+    remove(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<EntityId>): void;
+    save(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<Update<IProjection>>): void;
+    setPointColorMapping(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
+    }>, action: PayloadAction<{
+        multipleId: EntityId;
+        value: DiscreteMapping | ContinuousMapping;
+    }>): void;
+    selectChannel(state: import("immer/dist/internal").WritableDraft<{
+        multiples: EntityState<SingleMultiple>;
+        active: EntityId;
+        projections: EntityState<IProjection>;
     }>, action: PayloadAction<{
         dataset: Dataset;
         channel: 'x' | 'y';
@@ -241,28 +348,28 @@ export declare const ViewSelector: {
         };
         colorScales: import("./ColorScalesDuck").ColorScalesType;
         multiples: {
-            multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+            multiples: EntityState<SingleMultiple>;
             active: EntityId;
-            projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+            projections: EntityState<IProjection>;
         };
     }>, {
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<SingleMultiple>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }, (res: {
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<SingleMultiple>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }) => {
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<SingleMultiple>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }>;
     defaultSelector: (state: RootState) => SingleMultiple;
     getWorkspaceById: import("reselect/*").OutputParametricSelector<any, EntityId, IProjection, (res1: {
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+        multiples: EntityState<SingleMultiple>;
         active: EntityId;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+        projections: EntityState<IProjection>;
     }, res2: EntityId) => IProjection>;
     getWorkspace: import("reselect/*").OutputSelector<import("redux").CombinedState<{
         currentAggregation: {
@@ -337,9 +444,9 @@ export declare const ViewSelector: {
         };
         colorScales: import("./ColorScalesDuck").ColorScalesType;
         multiples: {
-            multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+            multiples: EntityState<SingleMultiple>;
             active: EntityId;
-            projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+            projections: EntityState<IProjection>;
         };
     }>, IProjection, (res: IProjection) => IProjection>;
     workspaceIsTemporal: import("reselect/*").OutputSelector<import("redux").CombinedState<{
@@ -415,9 +522,9 @@ export declare const ViewSelector: {
         };
         colorScales: import("./ColorScalesDuck").ColorScalesType;
         multiples: {
-            multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
+            multiples: EntityState<SingleMultiple>;
             active: EntityId;
-            projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+            projections: EntityState<IProjection>;
         };
     }>, boolean, (res: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean>;
 };

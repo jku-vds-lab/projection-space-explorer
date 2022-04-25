@@ -9,6 +9,9 @@ import {
   createAction,
   Update,
   createSelector,
+  ReducersMapObject,
+  EntityState,
+  Reducer,
 } from '@reduxjs/toolkit';
 import channelColor from './ChannelColorDuck';
 import channelSize from './ChannelSize';
@@ -114,7 +117,7 @@ function isEntityId(value: string | number | IProjection): value is EntityId {
   return typeof value === 'string' || typeof value === 'number';
 }
 
-const singleTestReducer = combineReducers({
+const allReducers = {
   channelColor,
   channelSize,
   channelBrightness,
@@ -127,7 +130,135 @@ const singleTestReducer = combineReducers({
   globalPointSize,
   globalPointBrightness,
   workspace: workspaceReducer,
-});
+};
+
+const singleTestReducer = combineReducers(allReducers);
+
+export function createViewDuckReducer<T>(additionalViewReducer: ReducersMapObject<T, any>) {
+  const viewReducer = combineReducers({ ...allReducers, ...additionalViewReducer }) as Reducer<any>;
+
+  return createSlice({
+    name: 'multiples',
+    initialState: initialState as {
+      multiples: EntityState<{ id: EntityId; attributes: SingleMultipleAttributes & T }>;
+      active: EntityId;
+      projections: EntityState<IProjection>;
+    },
+    reducers: {
+      addView(state, action: PayloadAction<Dataset>) {
+        multipleAdapter.addOne(state.multiples, {
+          id: uuidv4(),
+          attributes: viewReducer(defaultAttributes(action.payload), { type: '' }),
+        });
+      },
+      activateView(state, action: PayloadAction<EntityId>) {
+        state.active = action.payload;
+      },
+      deleteView(state, action: PayloadAction<EntityId>) {
+        multipleAdapter.removeOne(state.multiples, action.payload);
+        if (action.payload === state.active) {
+          state.active = state.multiples.ids[0];
+        }
+      },
+
+      loadById(state, action: PayloadAction<EntityId>) {
+        const active = state.multiples.entities[state.active];
+        active.attributes.workspace = action.payload;
+      },
+      add(state, action: PayloadAction<IProjection>) {
+        projectionAdapter.addOne(state.projections, action.payload);
+      },
+      copyFromWorkspace(state) {
+        const active = state.multiples.entities[state.active];
+
+        const deriveName = (metadata) => {
+          if (metadata?.method === ProjectionMethod.RANDOM) {
+            return 'Random Initialisation';
+          }
+          const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
+
+          return `${metadata?.method} at ${time}`;
+        };
+
+        if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
+          const workspace = state.projections.entities[active.attributes.workspace];
+          const hash = uuidv4();
+          projectionAdapter.addOne(state.projections, { ...workspace, hash });
+          active.attributes.workspace = hash;
+        } else {
+          const { workspace } = active.attributes;
+          projectionAdapter.addOne(state.projections, { ...workspace, name: deriveName(workspace.metadata) });
+          active.attributes.workspace = workspace.hash;
+        }
+      },
+      updateActive(state, action: PayloadAction<{ positions: IPosition[]; metadata: any }>) {
+        const active = state.multiples.entities[state.active];
+
+        if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
+          active.attributes.workspace = {
+            hash: uuidv4(),
+            positions: action.payload.positions,
+            metadata: action.payload.metadata,
+            name: null,
+          };
+        } else {
+          active.attributes.workspace.positions = action.payload.positions;
+          active.attributes.workspace.metadata = action.payload.metadata;
+        }
+      },
+      remove(state, action: PayloadAction<EntityId>) {
+        const active = state.multiples.entities[state.active];
+
+        if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
+          active.attributes.workspace = { ...state.projections.entities[active.attributes.workspace], hash: uuidv4() };
+        }
+        projectionAdapter.removeOne(state.projections, action.payload);
+      },
+      save(state, action: PayloadAction<Update<IProjection>>) {
+        projectionAdapter.updateOne(state.projections, action.payload);
+      },
+      setPointColorMapping(state, action: PayloadAction<{ multipleId: EntityId; value: DiscreteMapping | ContinuousMapping }>) {
+        const { multipleId, value } = action.payload;
+        const multiple = state.multiples.entities[multipleId];
+        multiple.attributes.pointColorMapping = value;
+      },
+      selectChannel(state, action: PayloadAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>) {
+        const active = state.multiples.entities[state.active].attributes;
+        if (isEntityId(active.workspace)) {
+          // Create new temporary projection
+
+          active.workspace = {
+            hash: uuidv4(),
+            positions: null,
+            metadata: { method: ProjectionMethod.CUSTOM },
+            name: null,
+          };
+        }
+
+        if (action.payload.channel === 'x') {
+          active.workspace.xChannel = action.payload.value;
+        } else {
+          active.workspace.yChannel = action.payload.value;
+        }
+
+        if (!active.workspace.xChannel && !active.workspace.yChannel) {
+          active.workspace.positions = action.payload.dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y }));
+        }
+      },
+    },
+    extraReducers: (builder) => {
+      builder.addDefaultCase((state, action) => {
+        if (state.active !== null) {
+          const active = state.multiples.entities[state.active];
+          active.attributes = viewReducer(active.attributes, action);
+        } else if (state.multiples.ids.length > 0) {
+          const active = state.multiples.entities[state.multiples.ids[0]];
+          active.attributes = viewReducer(active.attributes, action);
+        }
+      });
+    },
+  });
+}
 
 export const multiplesSlice = createSlice({
   name: 'multiples',

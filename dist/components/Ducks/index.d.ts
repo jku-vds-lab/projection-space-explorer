@@ -30,3 +30,4 @@ export * from './ViewTransformDuck';
 export * from './DetailViewDuck';
 export * from './DatasetEntriesDuck';
 export * from './StoriesDuck copy';
+export * from './ViewDuck';
