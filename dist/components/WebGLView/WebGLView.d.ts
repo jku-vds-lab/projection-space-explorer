@@ -35,7 +35,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     dataset: Dataset;
     highlightedSequence: any;
-    activeLine: any;
+    activeLine: string;
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;
@@ -375,7 +375,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     };
     dataset: Dataset;
     highlightedSequence: any;
-    activeLine: any;
+    activeLine: string;
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;
@@ -417,5 +417,5 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     overrideComponents: ComponentConfig;
     multipleId: EntityId;
     workspace: IPosition[];
-} & Pick<SingleMultipleAttributes, "channelColor" | "channelBrightness" | "channelSize" | "vectorByShape" | "viewTransform" | "lineBrightness" | "pointColorScale" | "pointColorMapping" | "pathLengthRange" | "globalPointSize" | "globalPointBrightness">, "channelColor" | "channelBrightness" | "channelSize" | "vectorByShape" | "viewTransform" | "lineBrightness" | "pointColorScale" | "pointColorMapping" | "pathLengthRange" | "globalPointSize" | "globalPointBrightness" | "workspace" | "ref" | "overrideComponents" | "key" | "multipleId">>;
+} & Pick<SingleMultipleAttributes, "channelColor" | "channelBrightness" | "channelSize" | "vectorByShape" | "viewTransform" | "lineBrightness" | "pointColorScale" | "pointColorMapping" | "pathLengthRange" | "globalPointSize" | "globalPointBrightness">, "ref" | "overrideComponents" | "key" | "workspace" | "channelColor" | "channelBrightness" | "channelSize" | "vectorByShape" | "viewTransform" | "lineBrightness" | "pointColorScale" | "pointColorMapping" | "pathLengthRange" | "globalPointSize" | "globalPointBrightness" | "multipleId">>;
 export {};

@@ -1,5 +1,5 @@
 import { Reducer, Store } from 'redux';
-import { RootState } from './Store';
+import type { RootState } from './Store';
 /**
  * Main api class for PSE.
  */
@@ -13,7 +13,7 @@ export declare class API<T extends RootState> {
      * @param dump the dump which contains parts of store state
      * @param reducer the root reducer of the store, MUST be created with PSE´s inbuilt createRootReducer method.
      */
-    constructor(dump: any, reducer: Reducer);
+    constructor(dump: any, reducer: Reducer<T>);
     /**
      * Performs a partial store change.
      * This operation can have side effects depending on which parts you change that can break the app

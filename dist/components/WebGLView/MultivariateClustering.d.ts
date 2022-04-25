@@ -226,5 +226,5 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
     viewTransform: ViewTransformType;
     workspace: IPosition[];
     globalPointSize: any;
-}, "viewTransform" | "globalPointSize" | "workspace" | "ref" | "key" | "onInvalidate">>;
+}, "ref" | "key" | "workspace" | "viewTransform" | "globalPointSize" | "onInvalidate">>;
 export {};

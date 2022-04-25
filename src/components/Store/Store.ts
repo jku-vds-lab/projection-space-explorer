@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { createEntityAdapter, EntityState, EntityId } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
+import { combineReducers, Reducer, ReducersMapObject } from 'redux';
 import clone = require('fast-clone');
 import projectionOpen from '../Ducks/ProjectionOpenDuck';
 import highlightedSequence from '../Ducks/HighlightedSequenceDuck';
@@ -33,7 +33,7 @@ import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/
 import colorScales from '../Ducks/ColorScalesDuck';
 import { BaseColorScale } from '../../model/Palette';
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
-import { multiplesSlice, multipleAdapter, defaultAttributes } from '../Ducks/ViewDuck';
+import { multipleAdapter, defaultAttributes, createViewDuckReducer } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
 
 /**
@@ -68,14 +68,16 @@ const allReducers = {
   datasetEntries,
   globalLabels,
   colorScales,
-  multiples: multiplesSlice.reducer,
+  multiples: createViewDuckReducer().reducer,
 };
 
 const bookAdapter = createEntityAdapter<IBook>({
   selectId: (book) => book.id,
 });
 
-const appReducer = combineReducers(allReducers);
+export type ReducerValues<T extends ReducersMapObject> = {
+  [K in keyof T]: ReturnType<T[K]>;
+};
 
 export function createInitialReducerState(dataset: Dataset): Partial<RootState> {
   const clusterMode = dataset.multivariateLabels ? ClusterMode.Multivariate : ClusterMode.Univariate;
@@ -314,25 +316,27 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
   };
 }
 
-export const rootReducer = (state, action) => {
-  if (action.type === RootActionTypes.RESET) {
-    const { dataset, openTab, viewTransform, datasetEntries, globalLabels } = state;
-    state = { dataset, openTab, viewTransform, datasetEntries, globalLabels };
-  }
+/**
+ * Utility function that creates the global reducer for PSE.
+ *
+ * @param reducers A list of additional reducers that can be passed to the internal PSE state.
+ * @returns a reducer that includes all additional reducers alongside PSE´s internal ones.
+ */
+export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Reducer<RootState & T> {
+  const combined = combineReducers(reducers ? { ...allReducers, ...reducers } : { ...allReducers });
 
-  return appReducer(state, action);
-};
-
-export function createRootReducer(reducers: any) {
-  const root = { ...allReducers };
-  Object.assign(root, reducers);
-
-  const combined = combineReducers(root);
-
-  return (state, action) => {
+  return (state: Parameters<typeof combined>[0] & T, action: Parameters<typeof combined>[1]) => {
     if (action.type === RootActionTypes.RESET) {
       const { dataset, openTab, datasetEntries, globalLabels } = state;
-      state = { dataset, openTab, datasetEntries, globalLabels };
+
+      for (const key in state) {
+        state[key] = undefined;
+      }
+
+      state.dataset = dataset;
+      state.openTab = openTab;
+      state.datasetEntries = datasetEntries;
+      state.globalLabels = globalLabels;
     }
 
     if (action.type === RootActionTypes.HYDRATE) {
@@ -361,8 +365,8 @@ export function createRootReducer(reducers: any) {
       state = clone;
     }
 
-    return combined(state, action);
+    return combined(state, action) as RootState & T;
   };
 }
 
-export type RootState = ReturnType<typeof rootReducer>;
+export type RootState = ReducerValues<typeof allReducers>;
