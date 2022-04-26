@@ -1,4 +1,4 @@
-import { EntityId, Update, ReducersMapObject, EntityState, Reducer } from '@reduxjs/toolkit';
+import { EntityId, Update, ReducersMapObject, EntityState, Reducer, ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { ViewTransformType } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, IPosition, Dataset } from '../../model';
@@ -73,7 +73,14 @@ export declare type SingleMultiple = {
     attributes: SingleMultipleAttributes;
 };
 export declare const multipleAdapter: import("@reduxjs/toolkit").EntityAdapter<SingleMultiple>;
-export declare function createViewDuckReducer<T>(additionalViewReducer?: ReducersMapObject<T, any>): import("@reduxjs/toolkit").Slice<{
+export declare function createViewDuckReducer<T>(additionalViewReducer?: ReducersMapObject<T, any>, additionalCustomCases?: (builder: ActionReducerMapBuilder<{
+    multiples: EntityState<{
+        id: EntityId;
+        attributes: SingleMultipleAttributes & T;
+    }>;
+    active: EntityId;
+    projections: EntityState<IProjection>;
+}>) => void): import("@reduxjs/toolkit").Slice<{
     multiples: EntityState<{
         id: EntityId;
         attributes: SingleMultipleAttributes & T;

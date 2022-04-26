@@ -12,6 +12,7 @@ import {
   ReducersMapObject,
   EntityState,
   Reducer,
+  ActionReducerMapBuilder,
 } from '@reduxjs/toolkit';
 import channelColor from './ChannelColorDuck';
 import channelSize from './ChannelSize';
@@ -146,7 +147,16 @@ const save = createAction<Update<IProjection>>('view/save');
 const setPointColorMapping = createAction<{ multipleId: EntityId; value: DiscreteMapping | ContinuousMapping }>('view/setPointColorMapping');
 const selectChannel = createAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>('view/selectChannel');
 
-export function createViewDuckReducer<T>(additionalViewReducer?: ReducersMapObject<T, any>) {
+export function createViewDuckReducer<T>(
+  additionalViewReducer?: ReducersMapObject<T, any>, 
+  additionalCustomCases?: (builder: ActionReducerMapBuilder<{
+    multiples: EntityState<{ 
+      id: EntityId; 
+      attributes: SingleMultipleAttributes & T 
+    }>;
+    active: EntityId;
+    projections: EntityState<IProjection>;
+  }>) => void) {
   const viewReducer = additionalViewReducer
     ? combineReducers({ ...allReducers, ...additionalViewReducer })
     : (combineReducers({ ...allReducers }) as Reducer<any>);
@@ -160,11 +170,18 @@ export function createViewDuckReducer<T>(additionalViewReducer?: ReducersMapObje
     },
     reducers: {},
     extraReducers: (builder) => {
+      if(additionalCustomCases)
+        additionalCustomCases(builder);
+      
       builder
         .addCase(addView, (state, action) => {
+          let defaultAtts = defaultAttributes(action.payload)
+          if(state.multiples.ids.length > 0){ // if there is a default view, initialize the viewTransform with those
+            defaultAtts.viewTransform = state.multiples.entities[state.multiples.ids[0]].attributes.viewTransform
+          }
           multipleAdapter.addOne(state.multiples, {
             id: uuidv4(),
-            attributes: viewReducer(defaultAttributes(action.payload), { type: '' }),
+            attributes: viewReducer(defaultAtts, { type: '' }),
           });
         })
         .addCase(activateView, (state, action) => {
