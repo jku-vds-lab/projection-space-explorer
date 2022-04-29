@@ -59,6 +59,7 @@ function WebView({
     <div
       style={{
         flexGrow: 1,
+        height: 0,
         display: 'flex',
         flexDirection: 'column',
         border: `1px solid ${active ? '#007dad' : 'rgba(0.12, 0.12, 0.12, 0.12)'}`,
@@ -132,7 +133,7 @@ export function ViewMultiplexer({ overrideComponents }) {
   return (
     <div style={{ width: '100%', height: 'calc(100% - 8px)', display: 'flex', gap: '4px', margin: '4px' }}>
       {count > 0 ? (
-        <div style={{ flexGrow: 1, display: 'flex', width: 0 }}>
+        <div style={{ flexGrow: 1, display: 'flex', width: 0, flexDirection: 'column' }}>
           <WebView id={multiples.multiples.ids[0]} multiples={multiples} overrideComponents={overrideComponents} onCloseView={onCloseView} />
         </div>
       ) : null}

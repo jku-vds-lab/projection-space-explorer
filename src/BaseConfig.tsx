@@ -2,6 +2,7 @@ import { ConnectedComponent } from 'react-redux';
 import { EncodingChannel } from './model/EncodingChannel';
 import { EmbeddingController } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingController';
 import { ProjectionMethod } from './model';
+import { EntityId } from '@reduxjs/toolkit';
 
 export type BaseConfig = Partial<{
   baseUrl: string;

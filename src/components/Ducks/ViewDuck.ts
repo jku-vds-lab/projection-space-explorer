@@ -176,9 +176,9 @@ export function createViewDuckReducer<T>(
       builder
         .addCase(addView, (state, action) => {
           let defaultAtts = defaultAttributes(action.payload)
-          if(state.multiples.ids.length > 0){ // if there is a default view, initialize the viewTransform with those
-            defaultAtts.viewTransform = state.multiples.entities[state.multiples.ids[0]].attributes.viewTransform
-          }
+          // if(state.multiples.ids.length > 0){ // if there is a default view, initialize the viewTransform with those
+          //   defaultAtts.viewTransform = state.multiples.entities[state.multiples.ids[0]].attributes.viewTransform
+          // }
           multipleAdapter.addOne(state.multiples, {
             id: uuidv4(),
             attributes: viewReducer(defaultAtts, { type: '' }),
@@ -278,7 +278,10 @@ export function createViewDuckReducer<T>(
           }
         })
         .addDefaultCase((state, action) => {
-          if (state.active !== null) {
+          if("multipleId" in action){
+            const active = state.multiples.entities[action["multipleId"]];
+            active.attributes = viewReducer(active.attributes, action);
+          }else if (state.active !== null) {
             const active = state.multiples.entities[state.active];
             active.attributes = viewReducer(active.attributes, action);
           } else if (state.multiples.ids.length > 0) {
