@@ -73,21 +73,15 @@ export declare type SingleMultiple = {
     attributes: SingleMultipleAttributes;
 };
 export declare const multipleAdapter: import("@reduxjs/toolkit").EntityAdapter<SingleMultiple>;
-export declare function createViewDuckReducer<T>(additionalViewReducer?: ReducersMapObject<T, any>, additionalCustomCases?: (builder: ActionReducerMapBuilder<{
+declare type StateType<T> = {
     multiples: EntityState<{
         id: EntityId;
         attributes: SingleMultipleAttributes & T;
     }>;
     active: EntityId;
     projections: EntityState<IProjection>;
-}>) => void): import("@reduxjs/toolkit").Slice<{
-    multiples: EntityState<{
-        id: EntityId;
-        attributes: SingleMultipleAttributes & T;
-    }>;
-    active: EntityId;
-    projections: EntityState<IProjection>;
-}, {}, "multiples">;
+};
+export declare function createViewDuckReducer<T>(additionalViewReducer?: ReducersMapObject<T, any>, additionalCustomCases?: (builder: ActionReducerMapBuilder<StateType<T>>) => void): import("@reduxjs/toolkit").Slice<StateType<T>, {}, "multiples">;
 export declare const ViewActions: {
     addView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Dataset, string>;
     activateView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
@@ -176,52 +170,20 @@ export declare const ViewSelector: {
         groupVisualizationMode: (state: import("./GroupVisualizationMode").GroupVisualizationMode, action: any) => any;
         genericFingerprintAttributes: (state: any[], action: any) => any[];
         hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
-        detailView: typeof import("./DetailViewDuck").default;
+        detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+            open: boolean;
+            active: number;
+        }>;
         datasetEntries: typeof import("./DatasetEntriesDuck").default;
         globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
         colorScales: typeof import("./ColorScalesDuck").default;
-        multiples: Reducer<{
-            multiples: EntityState<{
-                id: EntityId;
-                attributes: SingleMultipleAttributes;
-            }>;
-            active: EntityId;
-            projections: EntityState<IProjection>;
-        }, import("redux").AnyAction>;
-    }>, {
-        multiples: EntityState<{
-            id: EntityId;
-            attributes: SingleMultipleAttributes;
-        }>;
-        active: EntityId;
-        projections: EntityState<IProjection>;
-    }, (res: {
-        multiples: EntityState<{
-            id: EntityId;
-            attributes: SingleMultipleAttributes;
-        }>;
-        active: EntityId;
-        projections: EntityState<IProjection>;
-    }) => {
-        multiples: EntityState<{
-            id: EntityId;
-            attributes: SingleMultipleAttributes;
-        }>;
-        active: EntityId;
-        projections: EntityState<IProjection>;
-    }>;
+        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
+    }>, StateType<unknown>, (res: StateType<unknown>) => StateType<unknown>>;
     defaultSelector: (state: RootState) => {
         id: EntityId;
         attributes: SingleMultipleAttributes;
     };
-    getWorkspaceById: import("reselect/*").OutputParametricSelector<any, EntityId, IProjection, (res1: {
-        multiples: EntityState<{
-            id: EntityId;
-            attributes: SingleMultipleAttributes;
-        }>;
-        active: EntityId;
-        projections: EntityState<IProjection>;
-    }, res2: EntityId) => IProjection>;
+    getWorkspaceById: import("reselect/*").OutputParametricSelector<any, EntityId, IProjection, (res1: StateType<unknown>, res2: EntityId) => IProjection>;
     getWorkspace: import("reselect/*").OutputSelector<import("../Store").ReducerValues<{
         currentAggregation: (state: {
             aggregation: number[];
@@ -286,18 +248,14 @@ export declare const ViewSelector: {
         groupVisualizationMode: (state: import("./GroupVisualizationMode").GroupVisualizationMode, action: any) => any;
         genericFingerprintAttributes: (state: any[], action: any) => any[];
         hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
-        detailView: typeof import("./DetailViewDuck").default;
+        detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+            open: boolean;
+            active: number;
+        }>;
         datasetEntries: typeof import("./DatasetEntriesDuck").default;
         globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
         colorScales: typeof import("./ColorScalesDuck").default;
-        multiples: Reducer<{
-            multiples: EntityState<{
-                id: EntityId;
-                attributes: SingleMultipleAttributes;
-            }>;
-            active: EntityId;
-            projections: EntityState<IProjection>;
-        }, import("redux").AnyAction>;
+        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
     }>, IProjection, (res: IProjection) => IProjection>;
     workspaceIsTemporal: import("reselect/*").OutputSelector<import("../Store").ReducerValues<{
         currentAggregation: (state: {
@@ -363,17 +321,14 @@ export declare const ViewSelector: {
         groupVisualizationMode: (state: import("./GroupVisualizationMode").GroupVisualizationMode, action: any) => any;
         genericFingerprintAttributes: (state: any[], action: any) => any[];
         hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
-        detailView: typeof import("./DetailViewDuck").default;
+        detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+            open: boolean;
+            active: number;
+        }>;
         datasetEntries: typeof import("./DatasetEntriesDuck").default;
         globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
         colorScales: typeof import("./ColorScalesDuck").default;
-        multiples: Reducer<{
-            multiples: EntityState<{
-                id: EntityId;
-                attributes: SingleMultipleAttributes;
-            }>;
-            active: EntityId;
-            projections: EntityState<IProjection>;
-        }, import("redux").AnyAction>;
+        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
     }>, boolean, (res: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean>;
 };
+export {};

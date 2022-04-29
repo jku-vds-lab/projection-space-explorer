@@ -209,9 +209,6 @@ export class ChessFingerprint extends React.Component<ChessFingerprintProps> {
   }
 
   render() {
-    if (this.props.vectors.length <= 0) {
-      return <DefaultLegend></DefaultLegend>;
-    }
     return (
       <canvas
         className="ChessFingerprintCanvas"

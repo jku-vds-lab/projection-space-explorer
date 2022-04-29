@@ -269,10 +269,6 @@ export class RubikFingerprint extends React.Component<RubikFingerprintProps> {
   }
 
   render() {
-    if (this.props.vectors.length <= 0) {
-      return <DefaultLegend></DefaultLegend>;
-    }
-
     return (
       <canvas
         className="RubikFingerprintCanvas"

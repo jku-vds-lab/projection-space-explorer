@@ -7,7 +7,6 @@ import projectionWorker from '../Ducks/ProjectionWorkerDuck';
 import trailSettings from '../Ducks/TrailSettingsDuck';
 import { selectedLineBy } from '../Ducks/SelectedLineByDuck';
 import { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
-import detailView from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
 import { Dataset, IProjection } from '../../model';
 import colorScales from '../Ducks/ColorScalesDuck';
@@ -76,7 +75,10 @@ declare const allReducers: {
     groupVisualizationMode: (state: GroupVisualizationMode, action: any) => any;
     genericFingerprintAttributes: (state: any[], action: any) => any[];
     hoverStateOrientation: (state: import("../Ducks/HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
-    detailView: typeof detailView;
+    detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+        open: boolean;
+        active: number;
+    }>;
     datasetEntries: typeof datasetEntries;
     globalLabels: Reducer<import("../Ducks/GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
     colorScales: typeof colorScales;

@@ -50,10 +50,10 @@ export const projectionAdapter = createEntityAdapter<IProjection>({
 export function defaultAttributes(dataset?: Dataset) {
   const workspace = dataset
     ? AProjection.createProjection(
-        dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y })),
-        'Random Initialisation',
-        { method: ProjectionMethod.RANDOM },
-      )
+      dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y })),
+      'Random Initialisation',
+      { method: ProjectionMethod.RANDOM },
+    )
     : null;
 
   return {
@@ -133,8 +133,6 @@ const allReducers = {
   workspace: workspaceReducer,
 };
 
-const singleTestReducer = combineReducers(allReducers);
-
 const addView = createAction<Dataset>('view/addView');
 const activateView = createAction<EntityId>('view/activateView');
 const deleteView = createAction<EntityId>('view/deleteView');
@@ -147,36 +145,36 @@ const save = createAction<Update<IProjection>>('view/save');
 const setPointColorMapping = createAction<{ multipleId: EntityId; value: DiscreteMapping | ContinuousMapping }>('view/setPointColorMapping');
 const selectChannel = createAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>('view/selectChannel');
 
+
+type StateType<T> = {
+  multiples: EntityState<{
+    id: EntityId;
+    attributes: SingleMultipleAttributes & T
+  }>;
+  active: EntityId;
+  projections: EntityState<IProjection>;
+}
+
+
 export function createViewDuckReducer<T>(
-  additionalViewReducer?: ReducersMapObject<T, any>, 
-  additionalCustomCases?: (builder: ActionReducerMapBuilder<{
-    multiples: EntityState<{ 
-      id: EntityId; 
-      attributes: SingleMultipleAttributes & T 
-    }>;
-    active: EntityId;
-    projections: EntityState<IProjection>;
-  }>) => void) {
+  additionalViewReducer?: ReducersMapObject<T, any>,
+  additionalCustomCases?: (builder: ActionReducerMapBuilder<StateType<T>>) => void) {
   const viewReducer = additionalViewReducer
     ? combineReducers({ ...allReducers, ...additionalViewReducer })
     : (combineReducers({ ...allReducers }) as Reducer<any>);
 
   return createSlice({
     name: 'multiples',
-    initialState: initialState as {
-      multiples: EntityState<{ id: EntityId; attributes: SingleMultipleAttributes & T }>;
-      active: EntityId;
-      projections: EntityState<IProjection>;
-    },
+    initialState: initialState as StateType<T>,
     reducers: {},
     extraReducers: (builder) => {
-      if(additionalCustomCases)
+      if (additionalCustomCases)
         additionalCustomCases(builder);
-      
+
       builder
         .addCase(addView, (state, action) => {
           let defaultAtts = defaultAttributes(action.payload)
-          if(state.multiples.ids.length > 0){ // if there is a default view, initialize the viewTransform with those
+          if (state.multiples.ids.length > 0) { // if there is a default view, initialize the viewTransform with those
             defaultAtts.viewTransform = state.multiples.entities[state.multiples.ids[0]].attributes.viewTransform
           }
           multipleAdapter.addOne(state.multiples, {

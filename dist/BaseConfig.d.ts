@@ -65,7 +65,8 @@ export declare type ContextMenuItem = {
 };
 export declare type DetailViewSpec = {
     name: string;
-    view: () => JSX.Element;
+    view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
+    settings: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
 };
 export declare type TabSpec = {
     name: string;

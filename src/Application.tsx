@@ -17,7 +17,6 @@ import { DatasetTabPanel } from './components/DrawerTabPanels/DatasetTabPanel/Da
 import { DetailsTabPanel } from './components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel';
 import { setLineByOptions } from './components/Ducks/SelectedLineByDuck';
 import { setGlobalPointBrightness } from './components/Ducks/GlobalPointBrightnessDuck';
-// import { setGenericFingerprintAttributes } from './components/Ducks/GenericFingerprintAttributesDuck';
 import { setGroupVisualizationMode } from './components/Ducks/GroupVisualizationMode';
 import { HoverStateOrientation } from './components/Ducks/HoverStateOrientationDuck';
 import { PluginRegistry } from './components/Store/PluginScript';
@@ -26,7 +25,6 @@ import { RubikPlugin } from './plugins/Rubik/RubikPlugin';
 import { ChessPlugin } from './plugins/Chess/ChessPlugin';
 import { GoPlugin } from './plugins/Go/GoPlugin';
 import { PseAppBar } from './components/PseAppBar';
-import { setDetailVisibility } from './components/Ducks/DetailViewDuck';
 import { PSEIcons } from './utils/PSEIcons';
 // @ts-ignore
 import VDSLogo from '../textures/vds-lab-logo-notext.svg';
@@ -38,6 +36,9 @@ import { RootActions } from './components/Store/RootActions';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 import { ViewMultiplexer } from './components/ViewMultiplexer/ViewMultiplexer';
 import { capitalizeFirstLetter, toSentenceCase } from './utils/helpers';
+import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChooser';
+import { DetailViewActions } from './components/Ducks/DetailViewDuck';
+import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -72,9 +73,8 @@ const mapDispatchToProps = (dispatch) => ({
   setOpenTab: (openTab) => dispatch(setOpenTabAction(openTab)),
   setLineByOptions: (options) => dispatch(setLineByOptions(options)),
   setGlobalPointBrightness: (value) => dispatch(setGlobalPointBrightness(value)),
-  // setGenericFingerprintAttributes: (value) => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: (value) => dispatch(setGroupVisualizationMode(value)),
-  setLineUpInput_visibility: (open) => dispatch(setDetailVisibility(open)),
+  setLineUpInput_visibility: (open) => dispatch(DetailViewActions.setDetailVisibility(open)),
   loadDataset: (dataset: Dataset) => dispatch(RootActions.loadDataset(dataset)),
 });
 
@@ -296,6 +296,32 @@ export const Application = connector(
                 />
               </Tooltip>
 
+
+              {
+                this.props.overrideComponents.detailViews?.length > 0 ?
+                  <Tooltip
+                    placement="right"
+                    title={
+                      <>
+                        <Typography variant="subtitle2">Views</Typography>
+                        <Typography variant="body2">Contains settings about the bottom views.</Typography>
+                      </>
+                    }
+                  >
+                    <Tab
+                      value={5}
+                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Clusters} />}
+                      style={{
+                        minWidth: 0,
+                        flexGrow: 1,
+                        padding: 12,
+                        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                      }}
+                    />
+                  </Tooltip> : null
+              }
+
+
               {this.props.overrideComponents?.tabs?.map((tab, i) => {
                 return (
                   <Tooltip
@@ -309,7 +335,7 @@ export const Application = connector(
                     }
                   >
                     <Tab
-                      value={5 + i}
+                      value={6 + i}
                       icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon} />}
                       style={{
                         minWidth: 0,
@@ -377,9 +403,17 @@ export const Application = connector(
                   <DetailsTabPanel config={this.props.features} />
                 </FixedHeightTabPanel>
 
+                {
+                  this.props.overrideComponents.detailViews?.length > 0 ?
+                    <FixedHeightTabPanel value={this.props.openTab} index={5}>
+                      <ViewsTabPanel overrideComponents={this.props.overrideComponents} />
+                    </FixedHeightTabPanel> : null
+                }
+
+
                 {this.props.overrideComponents?.tabs?.map((tab, i) => {
                   return (
-                    <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={5 + i}>
+                    <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={6 + i}>
                       {React.isValidElement(tab.tab)
                         ? tab.tab
                         : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i`, splitRef: this.splitRef })}
@@ -447,9 +481,8 @@ export const Application = connector(
                   <ViewMultiplexer overrideComponents={this.props.overrideComponents} />
                 </div>
                 <div style={{ flexGrow: 0.1 }}>
-                  {React.isValidElement(this.props.overrideComponents.detailViews[0].view)
-                    ? this.props.overrideComponents.detailViews[0].view
-                    : React.createElement(this.props.overrideComponents.detailViews[0].view, {})}
+                  <DetailViewChooser overrideComponents={this.props.overrideComponents} />
+
                 </div>
               </Split>
             ) : (
