@@ -1,8 +1,9 @@
-export declare const setViewTransform: (camera: any, width: any, height: any) => {
+export declare const setViewTransform: (camera: any, width: any, height: any, multipleId: any) => {
     type: string;
     camera: any;
     width: any;
     height: any;
+    multipleId: any;
 };
 export declare const invalidateTransform: () => {
     type: string;

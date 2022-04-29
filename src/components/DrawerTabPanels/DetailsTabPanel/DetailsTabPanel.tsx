@@ -65,7 +65,7 @@ export const DetailsTabPanel = connector(
             </Typography>
           ) : (
             <Typography color="textSecondary" variant="body2">
-              Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> ${globalLabels.itemLabelPlural}
+              Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> {globalLabels.itemLabelPlural}
             </Typography>
           )}
         </Box>

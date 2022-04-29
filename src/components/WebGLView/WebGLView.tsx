@@ -75,7 +75,7 @@ const mapDispatchToProps = (dispatch) => ({
   addView: (dataset: Dataset) => dispatch(ViewActions.addView(dataset)),
   selectVectors: (vectors: number[], shiftKey: boolean) => dispatch(selectVectors(vectors, shiftKey)),
   setActiveLine: (activeLine) => dispatch(setActiveLine(activeLine)),
-  setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
+  setViewTransform: (camera, width, height, multipleId) => dispatch(setViewTransform(camera, width, height, multipleId)),
   setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
   setPointColorMapping: (id: EntityId, mapping) => dispatch(ViewActions.setPointColorMapping({ multipleId: id, value: mapping })),
   removeClusterFromStories: (cluster: ICluster) => dispatch(StoriesActions.deleteCluster({ cluster })),
@@ -319,7 +319,7 @@ export const WebGLView = connector(
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(width, height);
 
-      this.props.setViewTransform(this.camera, width, height);
+      this.props.setViewTransform(this.camera, width, height, this.props.multipleId);
 
       this.requestRender();
     }
@@ -402,7 +402,7 @@ export const WebGLView = connector(
       // Update projection matrix
       this.camera.updateProjectionMatrix();
 
-      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId);
 
       this.requestRender();
     }
@@ -532,7 +532,7 @@ export const WebGLView = connector(
             this.camera.position.y = this.camera.position.y + CameraTransformations.pixelToWorldCoordinates(event.movementY, this.createTransform());
 
             this.camera.updateProjectionMatrix();
-            this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
+            this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId);
 
             this.requestRender();
             break;
@@ -761,6 +761,7 @@ export const WebGLView = connector(
       this.containerRef.current.appendChild(this.renderer.domElement);
 
       this.prevTime = performance.now();
+      
     }
 
     createVisualization(dataset, lineColorScheme, vectorMapping) {
@@ -778,7 +779,7 @@ export const WebGLView = connector(
       this.camera.position.y = 0.0;
       this.camera.updateProjectionMatrix();
 
-      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId); //TODO: setViewTransform is twice in one function -> see below
 
       this.setState({
         camera: this.camera,
@@ -809,7 +810,7 @@ export const WebGLView = connector(
       // this.scene.add(this.particles.mesh);
       this.pointScene.add(this.particles.mesh);
 
-      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId); //TODO: setViewTransform is twice in one function -> see above
     }
 
     initializeContainerEvents() {
