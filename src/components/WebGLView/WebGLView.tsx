@@ -1450,23 +1450,24 @@ export const WebGLView = connector(
               </MenuItem>
             )}
 
-            {this.props.overrideComponents?.contextMenuItems?.map((item) => (
-              <MenuItem
-                key={item.key}
-                onClick={() => {
-                  const coords = CameraTransformations.screenToWorld(
-                    {
-                      x: this.mouseController.currentMousePosition.x,
-                      y: this.mouseController.currentMousePosition.y,
-                    },
-                    this.createTransform(),
-                  );
-                  item.function(coords);
-                  handleClose();
-                }}
-              >
-                {item.title}
-              </MenuItem>
+            {this.props.overrideComponents?.contextMenuItems?.map((item, i) => (
+              React.createElement(item, { key: `contextmenuitem${i}`, pos_x: this.mouseController.currentMousePosition.x, pos_y: this.mouseController.currentMousePosition.y, handleClose: handleClose })
+              // <MenuItem
+              //   key={item.key}
+              //   onClick={() => {
+              //     const coords = CameraTransformations.screenToWorld(
+              //       {
+              //         x: this.mouseController.currentMousePosition.x,
+              //         y: this.mouseController.currentMousePosition.y,
+              //       },
+              //       this.createTransform(),
+              //     );
+              //     item.function(coords);
+              //     handleClose();
+              //   }}
+              // >
+              //   {item.title}
+              // </MenuItem>
             ))}
           </Menu>
 

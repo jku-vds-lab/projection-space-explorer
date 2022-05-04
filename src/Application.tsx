@@ -101,7 +101,7 @@ type Props = PropsFromRedux & {
  */
 export const Application = connector(
   class extends React.Component<Props, any> {
-    splitRef: any;
+    splitRef: React.RefObject<unknown>;
 
     constructor(props) {
       super(props);
@@ -310,7 +310,7 @@ export const Application = connector(
                   >
                     <Tab
                       value={5}
-                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Clusters} />}
+                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.PseLineup} />}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,
@@ -406,7 +406,7 @@ export const Application = connector(
                 {
                   this.props.overrideComponents.detailViews?.length > 0 ?
                     <FixedHeightTabPanel value={this.props.openTab} index={5}>
-                      <ViewsTabPanel overrideComponents={this.props.overrideComponents} />
+                      <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} />
                     </FixedHeightTabPanel> : null
                 }
 
@@ -416,7 +416,7 @@ export const Application = connector(
                     <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={6 + i}>
                       {React.isValidElement(tab.tab)
                         ? tab.tab
-                        : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i`, splitRef: this.splitRef })}
+                        : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i` })}
                     </FixedHeightTabPanel>
                   );
                 })}

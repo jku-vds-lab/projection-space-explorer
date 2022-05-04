@@ -12,18 +12,19 @@ import StarIcon from '@mui/icons-material/Star';
 import { over } from 'lodash';
 
 type DetailViewChooserProps = {
-    overrideComponents: ComponentConfig
+    overrideComponents: ComponentConfig,
+    splitRef: React.RefObject<unknown>
 }
 
-function instantiateElement(view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>) {
+function instantiateElement(view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>, splitRef: React.RefObject<unknown>) {
     if (!view) return null;
 
     return React.isValidElement(view)
         ? view
-        : React.createElement(view as React.FunctionComponent, {})
+        : React.createElement(view as () => JSX.Element, {splitRef: splitRef})
 }
 
-export function ViewsTabPanel({ overrideComponents }: DetailViewChooserProps) {
+export function ViewsTabPanel({ overrideComponents, splitRef }: DetailViewChooserProps) {
     const dispatch = useDispatch();
 
     const detailView = useSelector((state: RootState) => state.detailView);
@@ -41,11 +42,11 @@ export function ViewsTabPanel({ overrideComponents }: DetailViewChooserProps) {
     return <div style={{ display: 'flex', flexDirection: 'column' }}>
         <List
             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-            aria-label="contacts"
+            aria-label="tableviews"
         >
             {
                 overrideComponents.detailViews.map((dv, i) => {
-                    return <ListItem disablePadding>
+                    return <ListItem disablePadding key={dv.name}>
                         <ListItemButton selected={detailView.active === i} onClick={() => onViewChange(dv.name)}>
                             {detailView.active === i ? <ListItemIcon>
                                 <StarIcon />
@@ -58,7 +59,7 @@ export function ViewsTabPanel({ overrideComponents }: DetailViewChooserProps) {
 
         </List>
         {
-            instantiateElement(view)
+            instantiateElement(view, splitRef)
         }
     </div>
 }

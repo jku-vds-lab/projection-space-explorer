@@ -55,14 +55,13 @@ export declare type ComponentConfig = Partial<{
     detailViews: Array<DetailViewSpec>;
     layers: Array<LayerSpec>;
     tabs: Array<TabSpec>;
-    contextMenuItems: Array<ContextMenuItem>;
+    contextMenuItems: Array<(props: {
+        handleClose: () => void;
+        pos_x: number;
+        pos_y: number;
+    }) => JSX.Element>;
     mouseInteractionCallbacks: MouseInteractions;
 }>;
-export declare type ContextMenuItem = {
-    key: string;
-    title: string;
-    function: (coords: any) => void;
-};
 export declare type DetailViewSpec = {
     name: string;
     view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;

@@ -225,9 +225,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-<<<<<<< HEAD
-}, Pick<any, string | number | symbol>>;
-=======
 }, Pick<React.ClassAttributes<{
     lasso: LassoSelection;
     clusterDrag: ClusterDragTool;
@@ -421,5 +418,4 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
     multipleId: EntityId;
     workspace: IPosition[];
 } & Pick<SingleMultipleAttributes, "channelColor" | "channelBrightness" | "channelSize" | "vectorByShape" | "viewTransform" | "lineBrightness" | "pointColorScale" | "pointColorMapping" | "pathLengthRange" | "globalPointSize" | "globalPointBrightness">, "ref" | "overrideComponents" | "key" | "workspace" | "channelColor" | "channelBrightness" | "channelSize" | "vectorByShape" | "viewTransform" | "lineBrightness" | "pointColorScale" | "pointColorMapping" | "pathLengthRange" | "globalPointSize" | "globalPointBrightness" | "multipleId">>;
->>>>>>> 53dab5342546c9c634c214312ec062cf48473c8a
 export {};

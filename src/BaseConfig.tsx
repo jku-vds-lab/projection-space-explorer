@@ -63,15 +63,16 @@ export type ComponentConfig = Partial<{
   detailViews: Array<DetailViewSpec>;
   layers: Array<LayerSpec>;
   tabs: Array<TabSpec>;
-  contextMenuItems: Array<ContextMenuItem>;
+  // contextMenuItems: Array<ContextMenuItem>;
+  contextMenuItems: Array<(props: {handleClose: () => void, pos_x: number, pos_y: number}) => JSX.Element>
   mouseInteractionCallbacks: MouseInteractions;
 }>;
 
-export type ContextMenuItem = {
-  key: string;
-  title: string;
-  function: (coords) => void;
-};
+// export type ContextMenuItem = {
+//   key: string;
+//   title: string;
+//   function: (coords) => void;
+// };
 
 export type DetailViewSpec = {
   name: string;
