@@ -632,11 +632,22 @@ export const WebGLView = connector(
                   menuTarget: edge,
                 });
               } else {
-                this.setState({
-                  menuX: event.clientX,
-                  menuY: event.clientY,
-                  menuTarget: null,
-                });
+                const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
+                const idx = this.choose(coords);
+                if(idx >= 0){
+                  this.setState({
+                    menuX: event.clientX,
+                    menuY: event.clientY,
+                    menuTarget: this.props.dataset.vectors[idx],
+                  });
+                  
+                }else{
+                  this.setState({
+                    menuX: event.clientX,
+                    menuY: event.clientY,
+                    menuTarget: null,
+                  });
+                }
               }
             }
 
@@ -1381,7 +1392,7 @@ export const WebGLView = connector(
 
           <Menu
             keepMounted
-            open={this.state.menuY !== null && !this.state.menuTarget}
+            open={this.state.menuY !== null && (!this.state.menuTarget || isVector(this.state.menuTarget))}
             onClose={handleClose}
             anchorReference="anchorPosition"
             anchorPosition={this.state.menuY !== null && this.state.menuX !== null ? { top: this.state.menuY, left: this.state.menuX } : undefined}
@@ -1451,7 +1462,7 @@ export const WebGLView = connector(
             )}
 
             {this.props.overrideComponents?.contextMenuItems?.map((item, i) => (
-              React.createElement(item, { key: `contextmenuitem${i}`, pos_x: this.mouseController.currentMousePosition.x, pos_y: this.mouseController.currentMousePosition.y, handleClose: handleClose })
+              React.createElement(item, { key: `contextmenuitem${i}`, menuTarget: this.state.menuTarget, pos_x: this.mouseController.currentMousePosition.x, pos_y: this.mouseController.currentMousePosition.y, handleClose: handleClose })
               // <MenuItem
               //   key={item.key}
               //   onClick={() => {

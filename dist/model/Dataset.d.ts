@@ -16,7 +16,10 @@ export declare type ColumnType = {
     isNumeric: boolean;
     metaInformation: any;
     featureType: FeatureType;
-    range: any;
+    range: {
+        max: number;
+        min: number;
+    };
     featureLabel: string;
     project: boolean;
 };

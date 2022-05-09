@@ -1,7 +1,7 @@
 import { ConnectedComponent } from 'react-redux';
 import { EncodingChannel } from './model/EncodingChannel';
 import { EmbeddingController } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingController';
-import { ProjectionMethod } from './model';
+import { ProjectionMethod, TypedObject } from './model';
 import { EntityId } from '@reduxjs/toolkit';
 
 export type BaseConfig = Partial<{
@@ -64,7 +64,7 @@ export type ComponentConfig = Partial<{
   layers: Array<LayerSpec>;
   tabs: Array<TabSpec>;
   // contextMenuItems: Array<ContextMenuItem>;
-  contextMenuItems: Array<(props: {handleClose: () => void, pos_x: number, pos_y: number}) => JSX.Element>
+  contextMenuItems: Array<(props: {handleClose: () => void, pos_x: number, pos_y: number, menuTarget: TypedObject}) => JSX.Element>
   mouseInteractionCallbacks: MouseInteractions;
 }>;
 

@@ -278,13 +278,19 @@ export function createViewDuckReducer<T>(
         .addDefaultCase((state, action) => {
           if("multipleId" in action){
             const active = state.multiples.entities[action["multipleId"]];
-            active.attributes = viewReducer(active.attributes, action);
+            if(active != null){
+              active.attributes = viewReducer(active.attributes, action);
+            }
           }else if (state.active !== null) {
             const active = state.multiples.entities[state.active];
-            active.attributes = viewReducer(active.attributes, action);
+            if(active != null){
+              active.attributes = viewReducer(active.attributes, action);
+            }
           } else if (state.multiples.ids.length > 0) {
             const active = state.multiples.entities[state.multiples.ids[0]];
-            active.attributes = viewReducer(active.attributes, action);
+            if(active != null){
+              active.attributes = viewReducer(active.attributes, action);
+            }
           }
         });
     },

@@ -1,6 +1,7 @@
 import { ConnectedComponent } from 'react-redux';
 import { EncodingChannel } from './model/EncodingChannel';
 import { EmbeddingController } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingController';
+import { TypedObject } from './model';
 export declare type BaseConfig = Partial<{
     baseUrl: string;
     preselect: Partial<{
@@ -59,6 +60,7 @@ export declare type ComponentConfig = Partial<{
         handleClose: () => void;
         pos_x: number;
         pos_y: number;
+        menuTarget: TypedObject;
     }) => JSX.Element>;
     mouseInteractionCallbacks: MouseInteractions;
 }>;
