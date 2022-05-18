@@ -11,7 +11,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     dataset: Dataset;
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     groupVisualizationMode: any;

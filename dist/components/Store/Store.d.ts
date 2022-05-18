@@ -1,4 +1,4 @@
-import { EntityState, EntityId } from '@reduxjs/toolkit';
+import { EntityState } from '@reduxjs/toolkit';
 import { ClusterMode } from '../Ducks/ClusterModeDuck';
 import { Dataset, IProjection } from '../../model';
 import { IStorytelling } from '../Ducks/StoriesDuck copy';
@@ -6,7 +6,7 @@ export declare function createInitialReducerState(dataset: Dataset): Partial<Roo
 export declare const rootReducer: (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     stories: IStorytelling;
@@ -77,7 +77,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     colorScales: import("../Ducks/ColorScalesDuck").ColorScalesType;
     multiples: {
         multiples: EntityState<import("../Ducks/ViewDuck").SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: EntityState<IProjection>;
     };
 }>;

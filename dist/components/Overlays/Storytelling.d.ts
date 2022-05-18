@@ -8,7 +8,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     stories: IStorytelling;
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     genericFingerprintAttributes: any[];

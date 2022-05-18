@@ -5,7 +5,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: import("@reduxjs/toolkit").EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;
@@ -21,7 +21,7 @@ export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ 
     };
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: import("@reduxjs/toolkit").EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;

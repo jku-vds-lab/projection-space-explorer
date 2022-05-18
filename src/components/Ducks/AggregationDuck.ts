@@ -74,7 +74,7 @@ export const selectVectors = (selection: number[], shiftKey = false) => {
   };
 };
 
-export const selectClusters = (selection: EntityId[], shiftKey = false) => {
+export const selectClusters = (selection: (number | string)[], shiftKey = false) => {
   return (dispatch, getState): ThunkAction<any, RootState, unknown, AnyAction> => {
     const state: RootState = getState();
 
@@ -106,7 +106,7 @@ export const selectClusters = (selection: EntityId[], shiftKey = false) => {
 
 const initialState = {
   aggregation: [] as number[],
-  selectedClusters: [] as EntityId[],
+  selectedClusters: [] as (number | string)[],
   source: 'sample' as 'sample' | 'cluster',
 };
 

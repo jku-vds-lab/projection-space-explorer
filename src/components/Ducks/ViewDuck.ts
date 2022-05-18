@@ -87,16 +87,16 @@ export type SingleMultipleAttributes = {
   vectorByShape;
   viewTransform: ViewTransformType;
   lineBrightness: number;
-  pointColorScale: EntityId;
+  pointColorScale: number | string;
   pointColorMapping;
   pathLengthRange: { range: number[]; maximum: number };
   globalPointSize: number[];
   globalPointBrightness: number[];
-  workspace: EntityId | IProjection;
+  workspace: number | string | IProjection;
 };
 
 export type SingleMultiple = {
-  id: EntityId;
+  id: number | string;
   attributes: SingleMultipleAttributes;
 };
 
@@ -106,7 +106,7 @@ export const multipleAdapter = createEntityAdapter<SingleMultiple>({
 
 const initialState = {
   multiples: multipleAdapter.getInitialState(),
-  active: null as EntityId,
+  active: null as number | string,
   projections: projectionAdapter.getInitialState(),
 };
 

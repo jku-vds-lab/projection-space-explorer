@@ -6,7 +6,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: import("@reduxjs/toolkit").EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;

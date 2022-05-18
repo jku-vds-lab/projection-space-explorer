@@ -58,7 +58,7 @@ export declare type SingleMultipleAttributes = {
     vectorByShape: any;
     viewTransform: ViewTransformType;
     lineBrightness: number;
-    pointColorScale: EntityId;
+    pointColorScale: number | string;
     pointColorMapping: any;
     pathLengthRange: {
         range: number[];
@@ -66,51 +66,51 @@ export declare type SingleMultipleAttributes = {
     };
     globalPointSize: number[];
     globalPointBrightness: number[];
-    workspace: EntityId | IProjection;
+    workspace: number | string | IProjection;
 };
 export declare type SingleMultiple = {
-    id: EntityId;
+    id: number | string;
     attributes: SingleMultipleAttributes;
 };
 export declare const multipleAdapter: import("@reduxjs/toolkit").EntityAdapter<SingleMultiple>;
 export declare const multiplesSlice: import("@reduxjs/toolkit").Slice<{
     multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-    active: EntityId;
+    active: string | number;
     projections: import("@reduxjs/toolkit").EntityState<IProjection>;
 }, {
     addView(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<Dataset>): void;
     activateView(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<EntityId>): void;
     deleteView(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<EntityId>): void;
     loadById(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<EntityId>): void;
     add(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<IProjection>): void;
     copyFromWorkspace(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>): void;
     updateActive(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<{
         positions: IPosition[];
@@ -118,17 +118,17 @@ export declare const multiplesSlice: import("@reduxjs/toolkit").Slice<{
     }>): void;
     remove(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<EntityId>): void;
     save(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<Update<IProjection>>): void;
     setPointColorMapping(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<{
         multipleId: EntityId;
@@ -136,7 +136,7 @@ export declare const multiplesSlice: import("@reduxjs/toolkit").Slice<{
     }>): void;
     selectChannel(state: import("immer/dist/internal").WritableDraft<{
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>, action: PayloadAction<{
         dataset: Dataset;
@@ -146,16 +146,16 @@ export declare const multiplesSlice: import("@reduxjs/toolkit").Slice<{
 }, "multiples">;
 export declare const ViewActions: {
     addView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Dataset, string>;
-    activateView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
-    deleteView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
-    loadById: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    activateView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string | number, string>;
+    deleteView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string | number, string>;
+    loadById: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string | number, string>;
     add: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IProjection, string>;
     copyFromWorkspace: import("@reduxjs/toolkit").ActionCreatorWithoutPayload<string>;
     updateActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         positions: IPosition[];
         metadata: any;
     }, string>;
-    remove: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    remove: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string | number, string>;
     save: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Update<IProjection>, string>;
     setPointColorMapping: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         multipleId: EntityId;
@@ -171,7 +171,7 @@ export declare const ViewSelector: {
     selectAll: import("reselect/*").OutputSelector<import("redux").CombinedState<{
         currentAggregation: {
             aggregation: number[];
-            selectedClusters: EntityId[];
+            selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
         stories: import("./StoriesDuck copy").IStorytelling;
@@ -242,32 +242,32 @@ export declare const ViewSelector: {
         colorScales: import("./ColorScalesDuck").ColorScalesType;
         multiples: {
             multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-            active: EntityId;
+            active: string | number;
             projections: import("@reduxjs/toolkit").EntityState<IProjection>;
         };
     }>, {
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }, (res: {
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }) => {
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     }>;
     defaultSelector: (state: RootState) => SingleMultiple;
-    getWorkspaceById: import("reselect/*").OutputParametricSelector<any, EntityId, IProjection, (res1: {
+    getWorkspaceById: import("reselect/*").OutputParametricSelector<any, string | number, IProjection, (res1: {
         multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: EntityId;
+        active: string | number;
         projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }, res2: EntityId) => IProjection>;
+    }, res2: string | number) => IProjection>;
     getWorkspace: import("reselect/*").OutputSelector<import("redux").CombinedState<{
         currentAggregation: {
             aggregation: number[];
-            selectedClusters: EntityId[];
+            selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
         stories: import("./StoriesDuck copy").IStorytelling;
@@ -338,14 +338,14 @@ export declare const ViewSelector: {
         colorScales: import("./ColorScalesDuck").ColorScalesType;
         multiples: {
             multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-            active: EntityId;
+            active: string | number;
             projections: import("@reduxjs/toolkit").EntityState<IProjection>;
         };
     }>, IProjection, (res: IProjection) => IProjection>;
     workspaceIsTemporal: import("reselect/*").OutputSelector<import("redux").CombinedState<{
         currentAggregation: {
             aggregation: number[];
-            selectedClusters: EntityId[];
+            selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
         stories: import("./StoriesDuck copy").IStorytelling;
@@ -416,7 +416,7 @@ export declare const ViewSelector: {
         colorScales: import("./ColorScalesDuck").ColorScalesType;
         multiples: {
             multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-            active: EntityId;
+            active: string | number;
             projections: import("@reduxjs/toolkit").EntityState<IProjection>;
         };
     }>, boolean, (res: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean>;
