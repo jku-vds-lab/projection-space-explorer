@@ -45,7 +45,7 @@ function WebView({
     typeof value.attributes.workspace === 'string' || typeof value.attributes.workspace === 'number'
       ? multiples.projections.entities[value.attributes.workspace]
       : value.attributes.workspace;
-
+  
   const [positions, setPositions] = React.useState<IPosition[]>();
 
   React.useEffect(() => {
