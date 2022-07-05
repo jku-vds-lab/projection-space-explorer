@@ -76,7 +76,7 @@ export class CSVLoader implements Loader {
           hull: t.hull,
           triangulation: t.triangulation,
           label: k,
-          name: k,
+          // name: k,
         });
       });
 
@@ -226,30 +226,28 @@ export class CSVLoader implements Loader {
         });
 
         dataset.categories = dataset.extractEncodingFeatures(ranges);
-        console.log("---metainfo")
-        console.log(metaInformation)
-        // check whether clusterEdges are defined in metaInformation of groupLabel column
-        // if(metaInformation["edges"] != null){
-        //   const edges = [];
-        //   metaInformation["edges"].data.forEach((row) => {
-        //     const nameIndex = metaInformation["edges"].columns.indexOf('name');
-      
-        //     const edge: IEdge = {
-        //       id: uuidv4(),
-        //       source: clusters.findIndex((cluster) => cluster.label === row[1]).toString(),
-        //       destination: clusters.findIndex((cluster) => cluster.label === row[2]).toString(),
-        //       objectType: ObjectTypes.Edge,
-        //     };
-      
-        //     if (nameIndex >= 0) {
-        //       edge.name = row[nameIndex];
-        //     }
-      
-        //     edges.push(edge);
-        //   });
 
-        //   dataset.clusterEdges = edges;
-        // }
+        // check whether clusterEdges are defined in metaInformation of groupLabel column
+        if(metaInformation["groupLabel"] != null && metaInformation["groupLabel"].edges != null){
+          const edges = [];
+          metaInformation["groupLabel"].edges.data.forEach((row) => {
+            const nameIndex = metaInformation["groupLabel"].edges.columns.indexOf('name');
+      
+            const edge: IEdge = {
+              id: uuidv4(),
+              source: clusters.findIndex((cluster) => cluster.label+"" === row[1]+"").toString(),
+              destination: clusters.findIndex((cluster) => cluster.label+"" === row[2]+"").toString(),
+              objectType: ObjectTypes.Edge,
+            };
+      
+            if (nameIndex >= 0) {
+              edge.name = row[nameIndex];
+            }
+      
+            edges.push(edge);
+          });
+          dataset.clusterEdges = edges;
+        }
         
 
         resolve(dataset);
