@@ -12,6 +12,7 @@ import { ICluster } from '../../../model/ICluster';
 import { ObjectTypes } from '../../../model/ObjectType';
 import WorkerCluster from '../../workers/cluster.worker';
 import { DatasetEntry } from '../../../model/DatasetEntry';
+import { IEdge } from '../../../model';
 
 function convertFromCSV(vectors) {
   return vectors.map((vector) => {
@@ -72,9 +73,10 @@ export class CSVLoader implements Loader {
           id: uuidv4(),
           objectType: ObjectTypes.Cluster,
           indices: t.points.map((i) => i.meshIndex),
-          hull: t.hull,
-          triangulation: t.triangulation,
+          // hull: t.hull,
+          // triangulation: t.triangulation,
           label: k,
+          name: k,
         });
       });
 
@@ -220,10 +222,35 @@ export class CSVLoader implements Loader {
 
         // Reset cluster label after extraction
         dataset.vectors.forEach((vector) => {
-          vector.groupLabel = [];
+          // vector.groupLabel = [];
         });
 
         dataset.categories = dataset.extractEncodingFeatures(ranges);
+        console.log("---metainfo")
+        console.log(metaInformation)
+        // check whether clusterEdges are defined in metaInformation of groupLabel column
+        // if(metaInformation["edges"] != null){
+        //   const edges = [];
+        //   metaInformation["edges"].data.forEach((row) => {
+        //     const nameIndex = metaInformation["edges"].columns.indexOf('name');
+      
+        //     const edge: IEdge = {
+        //       id: uuidv4(),
+        //       source: clusters.findIndex((cluster) => cluster.label === row[1]).toString(),
+        //       destination: clusters.findIndex((cluster) => cluster.label === row[2]).toString(),
+        //       objectType: ObjectTypes.Edge,
+        //     };
+      
+        //     if (nameIndex >= 0) {
+        //       edge.name = row[nameIndex];
+        //     }
+      
+        //     edges.push(edge);
+        //   });
+
+        //   dataset.clusterEdges = edges;
+        // }
+        
 
         resolve(dataset);
 

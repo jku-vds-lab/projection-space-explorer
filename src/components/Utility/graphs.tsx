@@ -16,7 +16,7 @@ const edgeAdapter = createEntityAdapter<IEdge>({
   selectId: (edge) => edge.id,
 });
 
-export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult: IEdge[]) {
+export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult?: IEdge[]) {
   const story: IBook = {
     id: uuidv4(),
     clusters: clusterAdapter.getInitialState(),
@@ -28,21 +28,25 @@ export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult:
 
     story.clusters.entities[handle] = cluster;
 
-    edgeResult.forEach((edge) => {
-      if (edge.source === clusterIndex.toString()) {
-        edge.source = handle;
-      }
-      if (edge.destination === clusterIndex.toString()) {
-        edge.destination = handle;
-      }
+    if(edgeResult != null){
+      edgeResult.forEach((edge) => {
+        if (edge.source === clusterIndex.toString()) {
+          edge.source = handle;
+        }
+        if (edge.destination === clusterIndex.toString()) {
+          edge.destination = handle;
+        }
+      });
+    }
+  });
+
+  if(edgeResult != null){
+    edgeResult.forEach((edge, i) => {
+      const handle = i;
+  
+      story.edges.entities[handle] = edge;
     });
-  });
-
-  edgeResult.forEach((edge, i) => {
-    const handle = i;
-
-    story.edges.entities[handle] = edge;
-  });
+  }
 
   story.clusters.ids = Object.keys(story.clusters.entities);
   story.edges.ids = Object.keys(story.edges.entities);

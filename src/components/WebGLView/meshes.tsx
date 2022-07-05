@@ -862,7 +862,6 @@ export class PointVisualization {
       ) {
         z = -0.1;
       }
-      // console.log(projection[i])
       position.setXYZ(vector.__meta__.meshIndex, projection[i].x, projection[i].y, z);
       // new THREE.Vector3().toArray(position, vector.__meta__.meshIndex * 3);
     });

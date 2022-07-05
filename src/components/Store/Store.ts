@@ -218,6 +218,23 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
           activeTraceState: null,
         };
       }
+    } else{
+      // if we don't have clusteredges, we want to create stories without connections
+
+      const story = transformIndicesToHandles(dataset.clusters);
+      const init = bookAdapter.getInitialState();
+      init.entities = {
+        [story.id]: story,
+      };
+      init.ids = [story.id];
+
+      stories = {
+        stories: init,
+        active: story.id,
+        trace: null,
+        activeTraceState: null,
+      };
+      
     }
   } else {
     stories = AStorytelling.createEmpty();

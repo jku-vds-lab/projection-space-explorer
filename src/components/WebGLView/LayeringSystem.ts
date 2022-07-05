@@ -63,8 +63,6 @@ export class LayeringSystem {
           .find((key) => this.layers[this.layerDictionary[key]].active)
       ];
 
-    // console.log(activeLayerIndex)
-
     if (activeLayerIndex === undefined || activeLayerIndex < 0) {
       return false;
     }

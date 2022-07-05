@@ -5,7 +5,7 @@ import { ICluster } from '../../model/ICluster';
 import { Dataset } from '../../model/Dataset';
 import { IBook } from '../../model/Book';
 import { IEdge } from '../../model/Edge';
-export declare function transformIndicesToHandles(clusterResult: ICluster[], edgeResult: IEdge[]): IBook;
+export declare function transformIndicesToHandles(clusterResult: ICluster[], edgeResult?: IEdge[]): IBook;
 /**
  * Performs a basic path bundling algorithm and tries to extract
  * the most prominent edges between clusters.
