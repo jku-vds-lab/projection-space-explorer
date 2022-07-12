@@ -477,6 +477,6 @@ def merge_embeddings_with_duplicate_states(dup_df, drop_dup_df, embedding):
     dup_df.insert(1, 'y', ys, True)
 
     concat_df = pd.concat([drop_dup_df, dup_df])
-    concat_df.sort_index()
+    concat_df.sort_index(inplace=True)
     return concat_df
     
