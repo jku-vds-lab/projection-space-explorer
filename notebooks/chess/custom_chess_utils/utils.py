@@ -180,6 +180,28 @@ def get_games_with_eval_and_clk(split_games):
     return split_games
 
 
+def get_games_played_by(games, player_name):
+    return [g for g in games if '[White "'+player_name+'"]' in g or '[Black "'+player_name+'"]' in g]
+
+
+def get_games_with_eval_and_clk(split_games, player_name):
+    # only games that contain clk and eval metadata for moves
+    filtered = []
+    for game in split_games:
+        if '%eval' in game and '%clk' in game:
+            filtered.append(game)
+    split_games = filtered
+
+    # sometimes there are individual turns that only have a clk but no eval, discard those games
+    filtered = []
+    for game in split_games:
+        m = re.findall(r'{ \[%clk(.*?) (.*?)\] }', game)
+        if len(m) == 0:
+            filtered.append(game)
+    split_games = filtered
+    return split_games
+
+
 def store_games_as_pgn(split_games, destination):
     for i in range(len(split_games)):
         with open(destination+'/game-{:05d}.pgn'.format(i+1),'w') as f:
