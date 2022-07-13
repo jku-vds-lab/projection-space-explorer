@@ -184,7 +184,7 @@ def get_games_played_by(games, player_name):
     return [g for g in games if '[White "'+player_name+'"]' in g or '[Black "'+player_name+'"]' in g]
 
 
-def get_games_with_eval_and_clk(split_games, player_name):
+def get_games_with_eval_and_clk(split_games):
     # only games that contain clk and eval metadata for moves
     filtered = []
     for game in split_games:
