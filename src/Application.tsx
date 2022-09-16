@@ -168,7 +168,7 @@ export const Application = connector(
             }}
             PaperProps={{
               style: {
-                position: 'relative',
+                position: 'initial',
                 overflow: 'hidden',
                 border: 'none',
               },
