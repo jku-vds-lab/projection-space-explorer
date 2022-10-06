@@ -1,3 +1,4 @@
+/// <reference types="offscreencanvas" />
 import { CubicBezierCurve } from '../../model/Curves';
 import type { RootState } from './Store';
 /**

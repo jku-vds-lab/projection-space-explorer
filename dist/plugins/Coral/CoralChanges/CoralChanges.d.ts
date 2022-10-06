@@ -45,5 +45,5 @@ export declare const CoralChanges: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, Pick<any, string | number | symbol>>;
+}, import("react-redux").Omit<any, "dataset" | "differenceThreshold" | "legendAttributes">>;
 export {};

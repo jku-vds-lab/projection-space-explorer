@@ -15,7 +15,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux;
-export declare const SelectionClusters: import("react-redux").ConnectedComponent<({ dataset, currentAggregation, hoverState, hoverSettings, setHoverWindowMode }: Props) => JSX.Element, Pick<{
+export declare const SelectionClusters: import("react-redux").ConnectedComponent<({ dataset, currentAggregation, hoverState, hoverSettings, setHoverWindowMode }: Props) => JSX.Element, import("react-redux").Omit<{
     currentAggregation: {
         aggregation: number[];
         selectedClusters: (string | number)[];
@@ -28,5 +28,5 @@ export declare const SelectionClusters: import("react-redux").ConnectedComponent
     };
 } & {
     setHoverWindowMode: (value: any) => any;
-}, never>>;
+}, "currentAggregation" | "dataset" | "hoverState" | "hoverSettings" | "setHoverWindowMode">>;
 export {};

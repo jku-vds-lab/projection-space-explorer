@@ -6,5 +6,5 @@ declare type GenericChangesType = {
     dataset: Dataset;
     scale: number;
 };
-export declare const GenericChanges: import("react-redux").ConnectedComponent<({ vectorsA, vectorsB, dataset, scale }: GenericChangesType) => JSX.Element, Pick<GenericChangesType, "scale" | "vectorsA" | "vectorsB">>;
+export declare const GenericChanges: import("react-redux").ConnectedComponent<({ vectorsA, vectorsB, dataset, scale }: GenericChangesType) => JSX.Element, import("react-redux").Omit<GenericChangesType, "dataset">>;
 export {};

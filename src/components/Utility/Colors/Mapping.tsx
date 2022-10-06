@@ -1,10 +1,8 @@
+import * as d3v5 from 'd3v5';
 import { SchemeColor } from './SchemeColor';
 import { ShallowSet } from '../ShallowSet';
 import { BaseColorScale } from '../../../model/Palette';
 import { APalette } from '../../../model/palettes';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const d3v5 = require('d3v5');
 
 export abstract class Mapping {
   scale: BaseColorScale;

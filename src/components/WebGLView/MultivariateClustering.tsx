@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-/* eslint-disable @typescript-eslint/no-var-requires */
+import * as d3v5 from 'd3v5';
 import { Scene, Vector2, Vector3 } from 'three';
 import { EntityId } from '@reduxjs/toolkit';
 import THREE = require('three');
@@ -22,8 +22,6 @@ import { ViewTransformType } from '../Ducks';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { AStorytelling } from '../Ducks/StoriesDuck copy';
 import { IPosition } from '../../model/ProjectionInterfaces';
-
-const d3v5 = require('d3v5');
 
 const SELECTED_COLOR = 0x007dad;
 const DEFAULT_COLOR = 0x808080;

@@ -8,5 +8,10 @@ declare type Props = PropsFromRedux & {
     aggregate: boolean;
     selection: IVector[];
 };
-export declare const TrrackLegend: import("react-redux").ConnectedComponent<({ selection }: Props) => JSX.Element, Pick<Props, "aggregate" | "selection">>;
+export declare const TrrackLegend: import("react-redux").ConnectedComponent<({ selection }: Props) => JSX.Element, import("react-redux").Omit<{
+    dataset: import("../../..").Dataset;
+} & {
+    aggregate: boolean;
+    selection: IVector[];
+}, "dataset">>;
 export {};

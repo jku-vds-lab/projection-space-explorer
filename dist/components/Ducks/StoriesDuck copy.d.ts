@@ -79,7 +79,7 @@ export declare const StoriesActions: {
         cluster: ICluster;
     }, {}>;
     setActiveStoryBook: import("@reduxjs/toolkit").AsyncThunk<{
-        book: string | number;
+        book: EntityId;
         vectors: import("../..").IVector[];
     }, {
         book: EntityId;
@@ -99,7 +99,7 @@ export declare const StoriesActions: {
         stories: IBook[];
     }, {}>;
     changeClusterName: import("@reduxjs/toolkit").AsyncThunk<{
-        handle: string | number;
+        handle: EntityId;
         name: string;
     }, {
         cluster: ICluster;
@@ -107,12 +107,12 @@ export declare const StoriesActions: {
     }, {}>;
     selectSideBranch: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<number, string>;
     addEdgeToActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IEdge, string>;
-    setActiveTraceState: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string | number, string>;
+    setActiveTraceState: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
     setActiveTrace: import("@reduxjs/toolkit").ActionCreatorWithPayload<any, string>;
-    removeEdgeFromActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string | number, string>;
+    removeEdgeFromActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
     changeBookName: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         id: EntityId;
         name: string;
     }, string>;
 };
-export declare const stories: import("redux").Reducer<IStorytelling, import("redux").AnyAction>;
+export declare const stories: import("redux").Reducer<import("immer/dist/internal").WritableDraft<IStorytelling>, import("redux").AnyAction>;

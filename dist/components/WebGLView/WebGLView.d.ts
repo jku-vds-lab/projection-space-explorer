@@ -39,7 +39,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;
-    stories: import("../Ducks/StoriesDuck copy").IStorytelling;
+    stories: import("immer/dist/internal").WritableDraft<import("../Ducks/StoriesDuck copy").IStorytelling>;
     trailSettings: {
         show: boolean;
         length: any;
@@ -204,7 +204,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         onClusterZoom(cluster: any): void;
         render(): JSX.Element;
         context: any;
-        setState<K extends "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
+        setState<K extends keyof ViewState>(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
         forceUpdate(callback?: () => void): void;
         readonly props: Readonly<Props> & Readonly<{
             children?: React.ReactNode;
@@ -225,5 +225,5 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, Pick<any, string | number | symbol>>;
+}, import("react-redux").Omit<any, "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "addView" | "activateView" | "setPointColorMapping" | "currentAggregation" | "activeLine" | "dataset" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "selectVectors" | "setViewTransform" | "setHoverState" | "addClusterToStory">>;
 export {};

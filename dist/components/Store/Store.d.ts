@@ -9,7 +9,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
-    stories: IStorytelling;
+    stories: import("immer/dist/internal").WritableDraft<IStorytelling>;
     openTab: any;
     pointDisplay: {
         checkedShapes: {
@@ -75,11 +75,11 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         };
     };
     colorScales: import("../Ducks/ColorScalesDuck").ColorScalesType;
-    multiples: {
+    multiples: import("immer/dist/internal").WritableDraft<{
         multiples: EntityState<import("../Ducks/ViewDuck").SingleMultiple>;
         active: string | number;
         projections: EntityState<IProjection>;
-    };
+    }>;
 }>;
 export declare function createRootReducer(reducers: any): (state: any, action: any) => any;
 export declare type RootState = ReturnType<typeof rootReducer>;

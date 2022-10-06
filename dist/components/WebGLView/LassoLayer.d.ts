@@ -37,5 +37,5 @@ declare const LassoLayer: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<LassoLayerProps>, nextState: Readonly<any>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, Pick<any, string | number | symbol>>;
+}, import("react-redux").Omit<any, "dispatch">>;
 export { LassoLayer };

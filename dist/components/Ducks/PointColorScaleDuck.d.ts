@@ -18,5 +18,5 @@ declare type Action = PickAction;
  * Type for embedding state slice
  */
 export declare type ColorScalesType = EntityId;
-export default function colorScales(state?: string | number, action?: Action): ColorScalesType;
+export default function colorScales(state?: EntityId, action?: Action): ColorScalesType;
 export {};

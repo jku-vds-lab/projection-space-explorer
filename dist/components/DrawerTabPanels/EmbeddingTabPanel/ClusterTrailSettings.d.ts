@@ -13,7 +13,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 }, {}>;
 declare type PropsFromRedux = ConnectedProps<typeof connector>;
 declare type Props = PropsFromRedux & {};
-export declare const ClusterTrailSettings: import("react-redux").ConnectedComponent<({ trailSettings, setTrailVisibility, setTrailLength }: Props) => JSX.Element, Pick<{
+export declare const ClusterTrailSettings: import("react-redux").ConnectedComponent<({ trailSettings, setTrailVisibility, setTrailLength }: Props) => JSX.Element, import("react-redux").Omit<{
     trailSettings: {
         show: boolean;
         length: any;
@@ -24,5 +24,5 @@ export declare const ClusterTrailSettings: import("react-redux").ConnectedCompon
 } & {
     setTrailVisibility: (visibility: any) => any;
     setTrailLength: (length: any) => any;
-}, never>>;
+}, "trailSettings" | "setTrailVisibility" | "setTrailLength">>;
 export {};

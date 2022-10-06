@@ -33,7 +33,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         show: any;
         length: number;
     };
-    stories: import("../Ducks").IStorytelling;
+    stories: import("immer/dist/internal").WritableDraft<import("../Ducks").IStorytelling>;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: (string | number)[];
@@ -129,5 +129,5 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, Pick<any, string | number | symbol>>;
+}, import("react-redux").Omit<any, "stories" | "currentAggregation" | "dataset" | "displayMode" | "hoverState" | "trailSettings" | "groupVisualizationMode" | "dispatch">>;
 export {};

@@ -4,5 +4,5 @@ declare type ShowColorLegendProps = {
     setAdvancedColoringSelection: Function;
 };
 export declare function AdvancedColoringLegendFull({ pointColorMapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps): JSX.Element;
-export declare const AdvancedColoringLegend: import("react-redux").ConnectedComponent<typeof AdvancedColoringLegendFull, Pick<ShowColorLegendProps, "pointColorMapping">>;
+export declare const AdvancedColoringLegend: import("react-redux").ConnectedComponent<typeof AdvancedColoringLegendFull, import("react-redux").Omit<ShowColorLegendProps, "advancedColoringSelection" | "setAdvancedColoringSelection">>;
 export {};

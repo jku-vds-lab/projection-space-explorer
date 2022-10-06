@@ -9,7 +9,7 @@ export declare function ColorScaleSelectFull({ channelColor, active }: {
     channelColor: any;
     active: any;
 }): JSX.Element;
-export declare const ColorScaleSelect: import("react-redux").ConnectedComponent<typeof ColorScaleSelectFull, Pick<{
+export declare const ColorScaleSelect: import("react-redux").ConnectedComponent<typeof ColorScaleSelectFull, import("react-redux").Omit<{
     channelColor: any;
     active: any;
-}, "active" | "channelColor">>;
+}, never>>;
