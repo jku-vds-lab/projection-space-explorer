@@ -6,7 +6,7 @@
 /* eslint-disable no-lonely-if */
 /* eslint-disable no-param-reassign */
 
-const Graph = require('graphology');
+import * as Graph from 'graphology';
 
 /* eslint no-constant-condition: 0 */
 /**

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import THREE = require('three');
+import THREE from 'three';
 
 // @ts-ignore
 import WhiteSq from '../../../textures/sprites/square_white.png';

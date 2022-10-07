@@ -2,7 +2,7 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-loop-func */
 import './VirtualTable.scss';
-import React = require('react');
+import * as React from 'react';
 
 type VirtualTableProps = {
   rows: any;

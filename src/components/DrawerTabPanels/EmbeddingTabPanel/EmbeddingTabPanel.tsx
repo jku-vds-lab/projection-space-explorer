@@ -1,5 +1,5 @@
 import { connect, ConnectedProps, useDispatch, useSelector } from 'react-redux';
-import React = require('react');
+import * as React from 'react';
 import { Box, Button, Chip, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { EntityId } from '@reduxjs/toolkit';

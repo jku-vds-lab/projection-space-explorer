@@ -120,5 +120,16 @@
     "test": "jest",
     "lint": "eslint src/**/*.ts{,x}",
     "lint:fix": "eslint --fix src/**/*.ts{,x}"
+  },
+  "visyn": {
+    "entries": {
+      "app": {
+        "js": "src/index.ts",
+        "template": "src/template.html",
+        "html": "index.html",
+        "chunkName": "app",
+        "excludeChunks": []
+      }
+    }
   }
 }

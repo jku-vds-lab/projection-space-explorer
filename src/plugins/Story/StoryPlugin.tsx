@@ -1,4 +1,4 @@
-import React = require('react');
+import * as React from 'react';
 import { IVector } from '../../model/Vector';
 import { DatasetType } from '../../model/DatasetType';
 import { PSEPlugin } from '../../components/Store/PSEPlugin';

@@ -1,7 +1,7 @@
 /* eslint-disable spaced-comment */
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable new-cap */
-import Graph = require('graphology');
+import * as Graph from 'graphology';
 import { DataLine } from '../../../model/DataLine';
 import { Dataset } from '../../../model/Dataset';
 import { EmbeddingController } from './EmbeddingController';

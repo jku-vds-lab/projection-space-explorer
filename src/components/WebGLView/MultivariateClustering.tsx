@@ -2,8 +2,8 @@
 import * as d3v5 from 'd3v5';
 import { Scene, Vector2, Vector3 } from 'three';
 import { EntityId } from '@reduxjs/toolkit';
-import THREE = require('three');
-import React = require('react');
+import THREE from 'three';
+import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Typography } from '@mui/material';
 import { IVector } from '../../model/Vector';

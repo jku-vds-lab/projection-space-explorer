@@ -5,7 +5,7 @@ import { IEdge } from './Edge';
 import { ICluster } from './ICluster';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const Graph = require('graphology');
+import * as Graph from 'graphology';
 
 /**
 

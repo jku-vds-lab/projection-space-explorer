@@ -1,4 +1,4 @@
-import React = require('react');
+import * as React from 'react';
 import { List, ListItem, Menu, MenuItem } from '@mui/material';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../Store';

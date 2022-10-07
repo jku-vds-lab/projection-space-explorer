@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Box, Button, Checkbox, Divider, FormControl, FormControlLabel, FormHelperText, MenuItem, Popover, Select, Switch, Typography } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { setGenericFingerprintAttributes } from '../../Ducks/GenericFingerprintAttributesDuck';
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck';

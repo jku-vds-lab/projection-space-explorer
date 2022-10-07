@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import React = require('react');
+import * as React from 'react';
 import { FormControlLabel, Checkbox, Typography, Grid } from '@mui/material';
 import { DiscreteMapping } from '../../Utility/Colors/Mapping';
 import { setAdvancedColoringSelectionAction } from '../../Ducks/AdvancedColoringSelectionDuck';
