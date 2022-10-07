@@ -167,5 +167,3 @@ self.addEventListener('message', function (e) {
     context.postMessage(clusters);
   }
 });
-
-export default null as any;

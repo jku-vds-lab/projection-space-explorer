@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import THREE from 'three';
+import * as THREE from 'three';
 
 // @ts-ignore
 import WhiteSq from '../../../textures/sprites/square_white.png';
 
-const fragmentShader = require('../../shaders/trail_fragment.glsl');
-const vertexShader = require('../../shaders/trail_vertex.glsl');
+// @ts-ignore
+import fragmentShader from '../../shaders/trail_fragment.glsl?raw';
+// @ts-ignore
+import vertexShader from '../../shaders/trail_vertex.glsl?raw';
 
 export class TrailVisualization {
   mesh: THREE.Points<THREE.BufferGeometry, THREE.Material>;

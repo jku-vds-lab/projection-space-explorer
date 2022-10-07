@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import { createLinearRangeScaler } from '../Utility/ScalingAndAxes';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { IBaseProjection, IProjection } from '../../model/ProjectionInterfaces';

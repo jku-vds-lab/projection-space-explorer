@@ -26,5 +26,3 @@ self.addEventListener(
   },
   false,
 );
-
-export default null as any;

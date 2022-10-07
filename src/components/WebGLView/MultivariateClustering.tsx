@@ -2,7 +2,7 @@
 import * as d3v5 from 'd3v5';
 import { Scene, Vector2, Vector3 } from 'three';
 import { EntityId } from '@reduxjs/toolkit';
-import THREE from 'three';
+import * as THREE from 'three';
 import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Typography } from '@mui/material';
@@ -17,7 +17,6 @@ import { IBook } from '../../model/Book';
 import * as nt from '../NumTs/NumTs';
 
 import { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
-import TessyWorker from '../workers/tessy.worker';
 import { ViewTransformType } from '../Ducks';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { AStorytelling } from '../Ducks/StoriesDuck copy';
@@ -141,7 +140,7 @@ export const MultivariateClustering = connector(
       this.trail.create();
       this.scene.add(this.trail.mesh);
 
-      this.triangulationWorker = new TessyWorker();
+      this.triangulationWorker = new Worker(new URL('../workers/tessy.worker', import.meta.url));
     }
 
     componentDidMount() {

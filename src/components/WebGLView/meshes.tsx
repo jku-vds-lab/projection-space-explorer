@@ -16,10 +16,12 @@ import { createLinearRangeScaler } from '../Utility/ScalingAndAxes';
 import { Shapes } from './Shapes';
 import { IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
 
-const fragmentShader = require('../../shaders/fragment.glsl');
-const vertexShader = require('../../shaders/vertex.glsl');
+// @ts-ignore
+import fragmentShader from '../../shaders/fragment.glsl?raw';
+// @ts-ignore
+import vertexShader from '../../shaders/vertex.glsl?raw';
 
-const override = require('./meshline');
+import override from './meshline';
 
 export function imageFromShape(value) {
   switch (value) {
