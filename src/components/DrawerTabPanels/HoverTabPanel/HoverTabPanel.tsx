@@ -1,5 +1,5 @@
 import { Box, Button, FormControlLabel, Switch, Typography } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { selectVectors } from '../../Ducks/AggregationDuck';
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck';

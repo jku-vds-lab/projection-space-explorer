@@ -110,11 +110,11 @@ const initialState = {
   projections: projectionAdapter.getInitialState(),
 };
 
-function isEntityId(value: string | number | IProjection): value is EntityId {
+export function isEntityId(value: string | number | IProjection): value is EntityId {
   return typeof value === 'string' || typeof value === 'number';
 }
 
-const singleTestReducer = combineReducers({
+export const singleTestReducer = combineReducers({
   channelColor,
   channelSize,
   channelBrightness,
@@ -182,22 +182,30 @@ export const multiplesSlice = createSlice({
     updateActive(state, action: PayloadAction<{ positions: IPosition[]; metadata: any }>) {
       const active = state.multiples.entities[state.active];
 
+      const bounds = AProjection.calculateBounds(undefined, undefined, undefined, action.payload.positions);
+
       if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
         active.attributes.workspace = {
           hash: uuidv4(),
           positions: action.payload.positions,
           metadata: action.payload.metadata,
           name: null,
+          xChannel: undefined,
+          yChannel: undefined,
+          bounds,
         };
       } else {
         active.attributes.workspace.positions = action.payload.positions;
         active.attributes.workspace.metadata = action.payload.metadata;
+        active.attributes.workspace.xChannel = undefined;
+        active.attributes.workspace.yChannel = undefined;
+        active.attributes.workspace.bounds = bounds;
       }
     },
     remove(state, action: PayloadAction<EntityId>) {
       const active = state.multiples.entities[state.active];
 
-      if (typeof active.attributes.workspace === 'string' || typeof active.attributes.workspace === 'number') {
+      if (isEntityId(active.attributes.workspace)) {
         active.attributes.workspace = { ...state.projections.entities[active.attributes.workspace], hash: uuidv4() };
       }
       projectionAdapter.removeOne(state.projections, action.payload);
@@ -212,6 +220,7 @@ export const multiplesSlice = createSlice({
     },
     selectChannel(state, action: PayloadAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>) {
       const active = state.multiples.entities[state.active].attributes;
+
       if (isEntityId(active.workspace)) {
         // Create new temporary projection
 
@@ -225,12 +234,15 @@ export const multiplesSlice = createSlice({
 
       if (action.payload.channel === 'x') {
         active.workspace.xChannel = action.payload.value;
+        active.workspace.bounds = AProjection.calculateBounds(action.payload.dataset, action.payload.value, undefined, undefined);
       } else {
         active.workspace.yChannel = action.payload.value;
+        active.workspace.bounds = AProjection.calculateBounds(action.payload.dataset, undefined, action.payload.value, undefined);
       }
 
       if (!active.workspace.xChannel && !active.workspace.yChannel) {
         active.workspace.positions = action.payload.dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y }));
+        active.workspace.bounds = AProjection.calculateBounds(action.payload.dataset, undefined, undefined, active.workspace.positions);
       }
     },
   },

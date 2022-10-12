@@ -1,4 +1,4 @@
-import React = require('react');
+import * as React from 'react';
 import { IVector } from '../../../model/Vector';
 import { arraysEqual } from '../../../components/WebGLView/UtilityFunctions';
 

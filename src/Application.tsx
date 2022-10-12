@@ -138,8 +138,8 @@ export const Application = connector(
 
     onLineSelect(algo, show) {
       // TODO: filtering for lines should be moved to duck
-      //this.threeRef.current.filterLines(algo, show);
-      //this.threeRef.current.requestRender();
+      // this.threeRef.current.filterLines(algo, show);
+      // this.threeRef.current.requestRender();
     }
 
     onChangeTab(newTab) {
@@ -197,7 +197,7 @@ export const Application = connector(
               >
                 <Tab
                   value={0}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Dataset} />}
+                  icon={<img src={PSEIcons.Dataset} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -218,7 +218,7 @@ export const Application = connector(
               >
                 <Tab
                   value={1}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Project} />}
+                  icon={<img src={PSEIcons.Project} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -241,7 +241,7 @@ export const Application = connector(
               >
                 <Tab
                   value={2}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Encoding} />}
+                  icon={<img src={PSEIcons.Encoding} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -262,7 +262,7 @@ export const Application = connector(
               >
                 <Tab
                   value={3}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Clusters} />}
+                  icon={<img src={PSEIcons.Clusters} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -283,7 +283,7 @@ export const Application = connector(
               >
                 <Tab
                   value={4}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Details} />}
+                  icon={<img src={PSEIcons.Details} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -307,7 +307,7 @@ export const Application = connector(
                   >
                     <Tab
                       value={5 + i}
-                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon} />}
+                      icon={React.isValidElement(tab.icon) ? tab.icon : ''}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,
@@ -401,7 +401,7 @@ export const Application = connector(
             ) : (
               <PseAppBar style={undefined}>
                 <a href="https://jku-vds-lab.at" target="_blank" rel="noreferrer">
-                  <VDSLogo style={{ height: 48, width: 48 }} />
+                  <img src={VDSLogo} style={{ height: 48, width: 48 }} />
                 </a>
                 <Typography variant="h6" style={{ marginLeft: 48, color: 'rgba(0, 0, 0, 0.54)' }}>
                   Projection Space Explorer

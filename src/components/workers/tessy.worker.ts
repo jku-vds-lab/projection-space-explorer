@@ -88,5 +88,3 @@ self.addEventListener('message', function (e) {
     postMessage(Y);
   }
 });
-
-export default null as any;

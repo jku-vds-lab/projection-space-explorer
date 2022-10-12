@@ -1,7 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import * as concaveman from 'concaveman';
 import * as libtess from 'libtess';
-import { isNumber } from 'util';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ctx: Worker = self as any;
@@ -96,7 +95,7 @@ function processClusters(raw, xy) {
 }
 
 function validKey(key: string | number) {
-  if (isNumber(key) && key < 0) {
+  if (typeof key === 'number' && key < 0) {
     return false;
   }
 
@@ -167,5 +166,3 @@ self.addEventListener('message', function (e) {
     context.postMessage(clusters);
   }
 });
-
-export default null as any;

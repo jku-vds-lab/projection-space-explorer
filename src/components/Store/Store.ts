@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { createEntityAdapter, EntityState, EntityId } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-import clone = require('fast-clone');
+import clone from 'fast-clone';
 import projectionOpen from '../Ducks/ProjectionOpenDuck';
 import highlightedSequence from '../Ducks/HighlightedSequenceDuck';
 import dataset from '../Ducks/DatasetDuck';
@@ -268,7 +268,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
         id: vId,
         attributes: {
           ...defaultAttributes(),
-          workspace: AProjection.createManualProjection(xChannel, yChannel),
+          workspace: AProjection.createManualProjection(dataset, xChannel, yChannel),
         },
       };
 

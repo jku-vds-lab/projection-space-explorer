@@ -1,5 +1,5 @@
 import { FormControlLabel, FormGroup, Slider, Switch, Typography } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { setTrailLength, setTrailVisibility } from '../../Ducks/TrailSettingsDuck';
 import type { RootState } from '../../Store/Store';

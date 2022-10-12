@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React = require('react');
+import * as React from 'react';
 import { EntityId } from '@reduxjs/toolkit';
 import {
   Box,

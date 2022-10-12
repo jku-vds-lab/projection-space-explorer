@@ -1,4 +1,4 @@
-import React = require('react');
+import * as React from 'react';
 import { Typography, Slider } from '@mui/material';
 import { connect } from 'react-redux';
 import { setPathLengthRange } from '../../Ducks/PathLengthRange';

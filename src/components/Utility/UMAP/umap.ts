@@ -63,6 +63,7 @@ import * as matrix from './matrix';
 import * as nnDescent from './nn_descent';
 import * as tree from './tree';
 import * as utils from './utils';
+import * as jaccard_dist from 'jaccard';
 
 export type DistanceFn = (x: Vector, y: Vector) => number;
 export type RandomFn = () => number;
@@ -1014,7 +1015,6 @@ export class UMAP {
 
 // https://github.com/ecto/jaccard TODO: also for tsne and other projection methods
 export function jaccard(x: Vector, y: Vector) {
-  const jaccard_dist = require('jaccard');
   return jaccard_dist.index(x, y);
 }
 

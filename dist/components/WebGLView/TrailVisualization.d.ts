@@ -1,4 +1,4 @@
-import THREE = require('three');
+import * as THREE from 'three';
 export declare class TrailVisualization {
     mesh: THREE.Points<THREE.BufferGeometry, THREE.Material>;
     maxLength: number;

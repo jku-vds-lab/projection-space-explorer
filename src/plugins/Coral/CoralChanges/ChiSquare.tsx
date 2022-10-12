@@ -1,4 +1,4 @@
-const jStat = require('jstat');
+import * as jStat from 'jstat';
 
 export class ChiSquareTest {
   public calc(setA: any[], setB: any[]) {

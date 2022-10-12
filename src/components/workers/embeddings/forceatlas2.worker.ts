@@ -6,7 +6,7 @@
 /* eslint-disable no-lonely-if */
 /* eslint-disable no-param-reassign */
 
-const Graph = require('graphology');
+import Graph from 'graphology';
 
 /* eslint no-constant-condition: 0 */
 /**
@@ -915,5 +915,3 @@ self.addEventListener('message', function (e) {
     progress: 0,
   });
 });
-
-export default null as any;

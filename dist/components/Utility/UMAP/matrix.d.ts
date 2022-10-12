@@ -73,15 +73,15 @@ export declare function multiplyScalar(a: SparseMatrix, scalar: number): SparseM
  * Returns a new matrix with zero entries removed.
  */
 export declare function eliminateZeros(m: SparseMatrix): SparseMatrix;
-/**
- * Normalization of a sparse matrix.
- */
-export declare function normalize(m: SparseMatrix, normType?: NormType): SparseMatrix;
 export declare const enum NormType {
     max = "max",
     l1 = "l1",
     l2 = "l2"
 }
+/**
+ * Normalization of a sparse matrix.
+ */
+export declare function normalize(m: SparseMatrix, normType?: NormType): SparseMatrix;
 /**
  * Helper function for getting data, indices, and inptr arrays from a sparse
  * matrix to follow csr matrix conventions. Super inefficient (and kind of

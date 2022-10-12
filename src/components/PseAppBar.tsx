@@ -1,5 +1,5 @@
 import { AppBar, Toolbar } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 
 export function PseAppBar({ children, style }) {
   return (

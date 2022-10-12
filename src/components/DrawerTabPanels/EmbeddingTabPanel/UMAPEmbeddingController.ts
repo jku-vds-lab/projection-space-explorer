@@ -1,14 +1,13 @@
 import { Dataset, ADataset } from '../../../model/Dataset';
 import { EmbeddingController } from './EmbeddingController';
 
-import UmapWorker from '../../workers/embeddings/umap.worker';
 import { IBaseProjection } from '../../../model/ProjectionInterfaces';
 
 export class UMAPEmbeddingController extends EmbeddingController {
   targetBounds: any;
 
   init(dataset: Dataset, selection: any, params: any, workspace: IBaseProjection) {
-    this.worker = new UmapWorker();
+    this.worker = new Worker(new URL('../../workers/embeddings/umap.worker', import.meta.url));
     const tensor = ADataset.asTensor(
       dataset,
       selection.filter((e) => e.checked),

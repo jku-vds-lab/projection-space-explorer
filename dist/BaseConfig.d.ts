@@ -60,7 +60,7 @@ export declare type DetailViewSpec = {
 export declare type TabSpec = {
     name: string;
     tab: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
-    icon: () => JSX.Element;
+    icon: JSX.Element | (() => JSX.Element);
     title: string;
     description: string;
 };

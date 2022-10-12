@@ -1,12 +1,12 @@
 import { connect, ConnectedProps, useDispatch, useSelector } from 'react-redux';
-import React = require('react');
+import * as React from 'react';
 import { Box, Button, Chip, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { EntityId } from '@reduxjs/toolkit';
 import { ProjectionControlCard } from './ProjectionControlCard';
 import { setProjectionOpenAction } from '../../Ducks/ProjectionOpenDuck';
 import { setProjectionWorkerAction } from '../../Ducks/ProjectionWorkerDuck';
-import { Dataset } from '../../../model/Dataset';
+import { ADataset, Dataset } from '../../../model/Dataset';
 import { GenericSettings } from './GenericSettings';
 import type { RootState } from '../../Store/Store';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
@@ -15,12 +15,13 @@ import { UMAPEmbeddingController } from './UMAPEmbeddingController';
 import { ClusterTrailSettings } from './ClusterTrailSettings';
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck';
 import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController';
-import { IProjection, IBaseProjection, ProjectionMethod } from '../../../model/ProjectionInterfaces';
+import { IProjection, IBaseProjection, ProjectionMethod, IPosition } from '../../../model/ProjectionInterfaces';
 import { FeatureConfig, DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../../BaseConfig';
 import { EditProjectionDialog } from './EditProjectionDialog';
 import { ViewActions, ViewSelector } from '../../Ducks/ViewDuck';
 import { FeatureType } from '../../../model';
 import { SelectFeatureComponent } from '../StatesTabPanel/SelectFeatureComponent';
+import { projection } from 'vega';
 
 const mapStateToProps = (state: RootState) => ({
   // currentAggregation: state.currentAggregation,
@@ -189,12 +190,15 @@ export const EmbeddingTabPanel = connector((props: Props) => {
           stepRef.current = 0;
           setOpen(false);
           props.setProjectionColumns(selection);
+
+          let seed = ADataset.getSpatialData(dataset, workspace.xChannel, workspace.yChannel, workspace.positions);
+
           // props.setProjectionParams(params)
 
           switch (domainSettings.id) {
             case ProjectionMethod.TSNE: {
               const controller = new TSNEEmbeddingController();
-              controller.init(props.dataset, selection, params, workspace?.positions);
+              controller.init(props.dataset, selection, params, seed);
               const paramsCopy = { ...params };
               controller.stepper = (Y) => {
                 const workspace = Y.map((y) => ({ x: y[0], y: y[1] }));
@@ -206,9 +210,10 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             }
 
             case ProjectionMethod.UMAP: {
+              console.log(workspace);
               const controller = new UMAPEmbeddingController();
               const paramsCopy = { ...params };
-              controller.init(props.dataset, selection, params, workspace?.positions);
+              controller.init(props.dataset, selection, params, seed);
               controller.stepper = (Y) => {
                 const workspace = props.dataset.vectors.map((sample, i) => {
                   return {

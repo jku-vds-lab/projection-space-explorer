@@ -1,5 +1,5 @@
 import { Button, Popover } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import { AdvancedColoringLegend } from './AdvancedColoringLegend';
 
 export function AdvancedColoringPopover({ pointColorMapping }) {
