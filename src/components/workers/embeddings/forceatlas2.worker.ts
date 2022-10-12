@@ -915,3 +915,5 @@ self.addEventListener('message', function (e) {
     progress: 0,
   });
 });
+
+export default null as any;

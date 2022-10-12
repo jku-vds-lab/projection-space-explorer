@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 
 module.exports = {
   mode: "development",
@@ -32,6 +31,15 @@ module.exports = {
       {
         resourceQuery: /raw/,
         type: 'asset/source',
+      },
+      {
+        test: /\.worker\.ts$/,
+        loader: 'worker-loader',
+        options: { inline: "no-fallback" }
+      },
+      {
+        resourceQuery: /inline/,
+        type: 'asset/inline',
       },
       {
         test: /\.svg(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,

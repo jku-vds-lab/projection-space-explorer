@@ -21,6 +21,7 @@ import { ViewTransformType } from '../Ducks';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { AStorytelling } from '../Ducks/StoriesDuck copy';
 import { IPosition } from '../../model/ProjectionInterfaces';
+import tessyWorker from '../workers/tessy.worker';
 
 const SELECTED_COLOR = 0x007dad;
 const DEFAULT_COLOR = 0x808080;
@@ -140,7 +141,8 @@ export const MultivariateClustering = connector(
       this.trail.create();
       this.scene.add(this.trail.mesh);
 
-      this.triangulationWorker = new Worker(new URL('../workers/tessy.worker', import.meta.url));
+      this.triangulationWorker = new Worker(new URL('../workers/tessy.worker?inline', import.meta.url));
+      // this.triangulationWorker = new tessyWorker();
     }
 
     componentDidMount() {

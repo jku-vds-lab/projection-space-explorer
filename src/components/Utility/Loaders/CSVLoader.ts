@@ -11,6 +11,7 @@ import { Loader } from './Loader';
 import { ICluster } from '../../../model/ICluster';
 import { ObjectTypes } from '../../../model/ObjectType';
 import { DatasetEntry } from '../../../model/DatasetEntry';
+import clusterWorker from '../../workers/cluster.worker';
 
 function convertFromCSV(vectors) {
   return vectors.map((vector) => {
@@ -60,7 +61,8 @@ export class CSVLoader implements Loader {
   }
 
   getClusters(vectors: IVector[], callback) {
-    const worker = new Worker(new URL('../../workers/cluster.worker', import.meta.url));
+    const worker = new Worker(new URL('../../workers/cluster.worker?inline', import.meta.url));
+    // const worker = new clusterWorker();
 
     worker.onmessage = (e) => {
       // Point clustering

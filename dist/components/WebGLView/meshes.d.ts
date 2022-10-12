@@ -68,12 +68,12 @@ export declare class PointVisualization {
     /**
      * @param {*} category a feature to select the shape for
      */
-    shapeCat(category: any): void;
-    colorCat(category: any, scale: any): void;
+    setShapeByChannel(category: any): void;
+    setColorByChannel(category: any, scale: any): void;
     colorFilter(colorsChecked: any): void;
     getMapping(): Mapping;
     setColorScale(colorScale: any): void;
-    transparencyCat(category: any, range: any): void;
+    setBrightnessByChannel(channel: any, range: any): void;
     sizeCat(category: any, range: any): void;
     updateSize(): void;
     updateColor(): void;
@@ -87,7 +87,7 @@ export declare class PointVisualization {
     /**
      * Updates the zoom level.
      */
-    zoom(zoom: any): void;
+    zoom(zoom: any, projection: any): void;
     /**
      * Cleans this object.
      */

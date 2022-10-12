@@ -2,10 +2,13 @@ import { Dataset, ADataset } from '../../../model/Dataset';
 import { EmbeddingController } from './EmbeddingController';
 
 import { IBaseProjection } from '../../../model/ProjectionInterfaces';
+import tsneWorker from '../../workers/embeddings/tsne.worker';
 
 export class TSNEEmbeddingController extends EmbeddingController {
   init(dataset: Dataset, selection: any, params: any, workspace: IBaseProjection) {
-    this.worker = new Worker(new URL('../../workers/embeddings/tsne.worker', import.meta.url));
+    this.worker = new Worker(new URL('../../workers/embeddings/tsne.worker?inline', import.meta.url));
+    // this.worker = new tsneWorker();
+
     const tensor = ADataset.asTensor(
       dataset,
       selection.filter((e) => e.checked),

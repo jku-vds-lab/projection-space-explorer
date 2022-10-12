@@ -7,6 +7,7 @@ import { Dataset } from '../../../model/Dataset';
 import { EmbeddingController } from './EmbeddingController';
 
 import { IVector } from '../../../model/Vector';
+import forceatlas2Worker from '../../workers/embeddings/forceatlas2.worker';
 
 export class ForceAtlas2EmbeddingController extends EmbeddingController {
   nodes: any;
@@ -67,7 +68,8 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
       graph.addEdge(edge.source, edge.destination);
     });
 
-    this.worker = new Worker(new URL('../../workers/embeddings/forceatlas2.worker', import.meta.url));
+    this.worker = new Worker(new URL('../../workers/embeddings/forceatlas2.worker?inline', import.meta.url));
+    // this.worker = new forceatlas2Worker();
 
     const self = this;
     this.worker.onmessage = function (e) {
