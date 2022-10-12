@@ -218,8 +218,14 @@ export const MultivariateClustering = connector(
         }
       }
 
-      if (prevProps.workspace !== this.props.workspace) {
-        this.updatePositions(this.props.viewTransform.zoom);
+      if (prevProps.workspace !== this.props.workspace && this.props.workspace) {
+        // TODO: check performance implications
+        // this.updatePositions(this.props.viewTransform.zoom);
+        //this.destroy();
+        //this.disposeTriangulatedMesh();
+
+        //this.create();
+        //this.createTriangulatedMesh();
       }
 
       if (this.props.onInvalidate) {
@@ -477,10 +483,10 @@ export const MultivariateClustering = connector(
       });
       if (this.clusterVis) {
         this.clusterVis.lineMeshes.forEach((mesh) => {
-          mesh.visible = false;
+          //mesh.visible = false;
         });
         this.clusterVis.clusterMeshes?.forEach((mesh) => {
-          mesh.visible = false;
+          //mesh.visible = false;
         });
       }
     }
@@ -555,11 +561,13 @@ export const MultivariateClustering = connector(
 
           const contours = d3v5
             .contourDensity()
-            .x((d) => xAxis(d.x))
-            .y((d) => yAxis(d.y))
+            .x((d) => xAxis(d[0]))
+            .y((d) => yAxis(d[1]))
             .bandwidth(10)
             .thresholds(10)
-            .size([100, bounds.width === 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])(cluster.indices.map((i) => this.props.workspace[i]));
+            .size([100, bounds.width === 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])(
+            cluster.indices.map((i) => [this.props.workspace[i].x, this.props.workspace[i].y]),
+          );
 
           const clusterObject = this.clusterObjects.find((e) => activeStory.clusters.entities[e.cluster].label === cluster.label);
 

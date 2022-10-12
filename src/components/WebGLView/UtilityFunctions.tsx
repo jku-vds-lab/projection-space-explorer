@@ -1,53 +1,37 @@
+import { ADataset, ColumnType, Dataset, IBaseProjection } from '../../model';
 import { IVector } from '../../model/Vector';
 
 /**
  * Calculates the default zoom factor by examining the bounds of the data set
  * and then dividing it by the height of the viewport.
  */
-export function getDefaultZoom(vectors, width, height) {
+export function getDefaultZoom(dataset: Dataset, width, height, xChannel: string, yChannel: string, workspace: IBaseProjection) {
   // Get rectangle that fits around data set
   let minX = 1000;
   let maxX = -1000;
   let minY = 1000;
   let maxY = -1000;
-  vectors.forEach((vector) => {
-    minX = Math.min(minX, vector.x);
-    maxX = Math.max(maxX, vector.x);
-    minY = Math.min(minY, vector.y);
-    maxY = Math.max(maxY, vector.y);
+
+  const spatial = ADataset.getSpatialData(dataset, xChannel, yChannel, workspace);
+
+  spatial.forEach((s) => {
+    minX = Math.min(minX, s.x);
+    maxX = Math.max(maxX, s.x);
+    minY = Math.min(minY, s.y);
+    maxY = Math.max(maxY, s.y);
   });
 
-  // Get biggest scale
-  const horizontal = Math.max(Math.abs(minX), Math.abs(maxX));
-  const vertical = Math.max(Math.abs(minY), Math.abs(maxY));
-
-  // Divide the height/width through the biggest axis of the data points
-  return Math.min(width, height) / Math.max(horizontal, vertical) / 2;
-}
-
-/**
- * Calculates the default zoom factor by examining the bounds of the data set
- * and then dividing it by the height of the viewport.
- */
-export function generateZoomForSet(vectors, width, height) {
-  // Get rectangle that fits around data set
-  let minX = 1000;
-  let maxX = -1000;
-  let minY = 1000;
-  let maxY = -1000;
-  vectors.forEach((vector) => {
-    minX = Math.min(minX, vector.x);
-    maxX = Math.max(maxX, vector.x);
-    minY = Math.min(minY, vector.y);
-    maxY = Math.max(maxY, vector.y);
-  });
+  const x = (maxX + minX) / 2;
+  const y = (maxY + minY) / 2;
 
   // Get biggest scale
-  const horizontal = maxX - minX;
-  const vertical = maxY - minY;
+  const maxAbsX = Math.abs(maxX - x);
+  const maxAbsY = Math.abs(maxY - y);
 
-  // Divide the height/width through the biggest axis of the data points
-  return Math.min(width, height) / Math.max(horizontal, vertical) / 2;
+  const horizontal = width / maxAbsX;
+  const vertical = height / maxAbsY;
+
+  return { zoom: Math.min(horizontal / 2, vertical / 2), x, y };
 }
 
 export function interpolateLinear(min, max, k) {
@@ -182,4 +166,25 @@ export function replaceClusterLabels(vectors: IVector[], from: any, to: any) {
       vector.groupLabel.push(to);
     }
   });
+}
+
+export function getMinMaxOfChannel(dataset: Dataset, key: string, segment?) {
+  let min = null;
+  let max = null;
+  if (dataset.columns[key].range) {
+    min = dataset.columns[key].range.min;
+    max = dataset.columns[key].range.max;
+  } else {
+    if (dataset.isSequential && segment) {
+      const filtered = segment.vectors.map((vector) => vector[key]);
+      max = Math.max(...filtered);
+      min = Math.min(...filtered);
+    } else {
+      const filtered = dataset.vectors.map((vector) => vector[key]);
+      max = Math.max(...filtered);
+      min = Math.min(...filtered);
+    }
+  }
+
+  return { min, max };
 }

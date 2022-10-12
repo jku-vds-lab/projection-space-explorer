@@ -1,7 +1,7 @@
 import { Scene } from 'three';
 import { EntityId } from '@reduxjs/toolkit';
-import THREE = require('three');
-import React = require('react');
+import * as THREE from 'three';
+import * as React from 'react';
 import { ConnectedProps } from 'react-redux';
 import { IVector } from '../../model/Vector';
 import { DisplayMode } from '../Ducks/DisplayModeDuck';

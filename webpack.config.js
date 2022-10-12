@@ -30,9 +30,14 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.worker\.ts$/,
-        loader: 'worker-loader',
-        options: { inline: "no-fallback" }
+        resourceQuery: /raw/,
+        type: 'asset/source',
+      },
+      {
+        test: /\.svg(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        // css-loader is messing up SVGs: https://github.com/webpack/webpack/issues/13835
+        // Pin css-loader and always load them as file-resource.
+        type: 'asset/resource',
       },
       { test: /\.scss$/, use: [
         "style-loader",
@@ -41,14 +46,6 @@ module.exports = {
       ] },
       { test: /\.tsx?$/, loader: "babel-loader" },
       { test: /\.tsx?$/, loader: "ts-loader" },
-      {
-        test: /\.(glsl|vs|fs)$/,
-        loader: 'shader-loader'
-      },
-      {
-        test: /\.svg$/,
-        use: ['@svgr/webpack'],
-      },
       {
         test: /\.(png|jpg)$/i,
         use: [

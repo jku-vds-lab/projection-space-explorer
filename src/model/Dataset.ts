@@ -10,6 +10,7 @@ import type { IVector } from './Vector';
 import { mean, std } from '../components/NumTs/NumTs';
 import { EncodingMethod } from './EncodingMethod';
 import { NormalizationMethod } from './NormalizationMethod';
+import { IBaseProjection } from '.';
 
 export enum PrebuiltFeatures {
   Line = 'line',
@@ -22,7 +23,7 @@ export const DefaultFeatureLabel = 'Default';
 
 const shapes = ['circle', 'star', 'square', 'cross'];
 
-type ColumnType = {
+export type ColumnType = {
   distinct: any;
   isNumeric: boolean;
   metaInformation: any;
@@ -46,33 +47,16 @@ export class SegmentFN {
 
 export class ADataset {
   /**
-   * Calculates the dataset bounds for this set, eg the minimum and maximum x,y values
-   * which is needed for the zoom to work correctly
+   * Reads out spatial information using the supplied channels.
    */
-  static calculateBounds(dataset: Dataset) {
-    const xAxis = dataset.vectors.map((vector) => vector.x);
-    const yAxis = dataset.vectors.map((vector) => vector.y);
-
-    const minX = Math.min(...xAxis);
-    const maxX = Math.max(...xAxis);
-    const minY = Math.min(...yAxis);
-    const maxY = Math.max(...yAxis);
-
-    const scaleBase = 100;
-    const absoluteMaximum = Math.max(Math.abs(minX), Math.abs(maxX), Math.abs(minY), Math.abs(maxY));
-
-    dataset.bounds = {
-      scaleBase,
-      scaleFactor: absoluteMaximum / scaleBase,
-      x: {
-        min: minX,
-        max: maxX,
-      },
-      y: {
-        min: minY,
-        max: maxY,
-      },
-    };
+  static getSpatialData(dataset: Dataset, xChannel?: string, yChannel?: string, positions?: IBaseProjection) {
+    if (positions) {
+      return positions;
+    }
+    return dataset.vectors.map((vector) => ({
+      x: xChannel ? vector[xChannel] : 0,
+      y: yChannel ? vector[yChannel] : 0,
+    }));
   }
 
   /**
@@ -207,8 +191,6 @@ export class Dataset {
 
   segments: DataLine[];
 
-  bounds: { x; y; scaleBase; scaleFactor };
-
   info: { path: string; type: DatasetType };
 
   columns: { [name: string]: ColumnType };
@@ -245,7 +227,6 @@ export class Dataset {
     this.metaInformation = metaInformation;
     this.hasInitialScalarTypes = false;
 
-    ADataset.calculateBounds(this);
     this.calculateColumnTypes(ranges, featureTypes, metaInformation);
     this.checkLabels();
 

@@ -54,8 +54,11 @@ export class ContinuousMapping extends Mapping {
     const interpolator = d3v5
       .scaleLinear()
       .domain(palette.map((stop, index) => (1 / (palette.length - 1)) * index))
+      // @ts-ignore
       .range(palette.map((stop) => stop.hex));
+    // @ts-ignore
     const d3color = d3v5.color(interpolator(normalized));
+    // @ts-ignore
     return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
   }
 }

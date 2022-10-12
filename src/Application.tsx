@@ -138,8 +138,8 @@ export const Application = connector(
 
     onLineSelect(algo, show) {
       // TODO: filtering for lines should be moved to duck
-      //this.threeRef.current.filterLines(algo, show);
-      //this.threeRef.current.requestRender();
+      // this.threeRef.current.filterLines(algo, show);
+      // this.threeRef.current.requestRender();
     }
 
     onChangeTab(newTab) {
@@ -307,7 +307,7 @@ export const Application = connector(
                   >
                     <Tab
                       value={5 + i}
-                      icon={tab.icon}
+                      icon={React.isValidElement(tab.icon) ? tab.icon : ''}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,

@@ -1,5 +1,5 @@
 import './VirtualTable.scss';
-import React = require('react');
+import * as React from 'react';
 declare type VirtualTableProps = {
     rows: any;
     rowHeight: number;

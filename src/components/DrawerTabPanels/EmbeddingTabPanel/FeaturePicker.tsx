@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import * as React from 'react';
 import { AutoSizer, Column, Table, defaultTableRowRenderer } from 'react-virtualized';
 import clsx from 'clsx';
-import * as clone from 'fast-clone';
+import clone from 'fast-clone';
 import { withStyles } from '@mui/styles';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { setProjectionOpenAction } from '../../Ducks/ProjectionOpenDuck';

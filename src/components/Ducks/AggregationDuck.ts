@@ -6,7 +6,7 @@ import { ICluster } from '../../model/ICluster';
 import { IVector } from '../../model/Vector';
 import { AStorytelling } from './StoriesDuck copy';
 
-const THUNK_SET_VECTORS = 'ducks/THUNK_SET';
+const THUNK_SET_VECTORS = 'ducks/THUNK_SET_VECTORS';
 const THUNK_SET_CLUSTERS = 'ducks/THUNK_SET_CLUSTERS';
 
 function deriveFromClusters(clusters: ICluster[]): number[] {
