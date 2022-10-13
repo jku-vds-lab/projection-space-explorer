@@ -68,7 +68,6 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         };
         trail: TrailVisualization;
         clusterScene: THREE.Scene;
-        triangulationWorker: Worker;
         componentDidMount(): void;
         componentDidUpdate(prevProps: Props): void;
         getColorForClusterObject(clusterObject: ClusterObjectType): THREE.Color;

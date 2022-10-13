@@ -37,7 +37,6 @@
     "jaccard": "^0.4.0",
     "jsfive": "^0.2.1",
     "jstat": "^1.9.4",
-    "libtess": "^1.2.2",
     "lodash": "^4.17.20",
     "papaparse": "^5.3.1",
     "react-data-grid": "7.0.0-beta.11",
@@ -60,8 +59,7 @@
     "url-loader": "^4.1.1",
     "vega": "5.17.0",
     "vega-lite": "4.16.8",
-    "vega-typings": "0.19.1",
-    "worker-loader": "^3.0.8"
+    "vega-typings": "0.19.1"
   },
   "devDependencies": {
     "@babel/core": "^7.10.2",
@@ -100,7 +98,8 @@
     "ts-loader": "^8.2.0",
     "typescript": "^4.7.4",
     "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0"
+    "webpack-cli": "^4.10.0",
+    "worker-loader": "^3.0.8"
   },
   "peerDependencies": {
     "@emotion/react": "^11.5.0",
@@ -113,7 +112,7 @@
     "redux": "^4.0.5"
   },
   "scripts": {
-    "webpack:dev": "npx webpack --config webpack.config.js --stats-children",
+    "build": "npx webpack --config webpack.config.js --stats-children",
     "test": "jest",
     "lint": "eslint src/**/*.ts{,x}",
     "lint:fix": "eslint --fix src/**/*.ts{,x}"
