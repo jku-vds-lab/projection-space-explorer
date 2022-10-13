@@ -25,6 +25,12 @@ export declare type IProjection = {
     metadata?: {
         [id: string]: any;
     };
+    bounds?: {
+        x: any;
+        y: any;
+        scaleBase: any;
+        scaleFactor: any;
+    };
 };
 /**
  * Base type for projections

@@ -20,7 +20,7 @@ import { DataLine } from '../../model/DataLine';
 import { ComponentConfig } from '../../BaseConfig';
 import { Mapping } from '../Utility';
 import { SingleMultipleAttributes } from '../Ducks/ViewDuck';
-import { IPosition } from '../../model';
+import { IPosition, IProjection } from '../../model';
 declare type ViewState = {
     camera: Camera;
     menuX: number;
@@ -79,6 +79,7 @@ declare type Props = PropsFromRedux & {
     overrideComponents: ComponentConfig;
     multipleId: EntityId;
     workspace: IPosition[];
+    projection: IProjection;
 } & Omit<SingleMultipleAttributes, 'workspace'>;
 export declare const WebGLView: import("react-redux").ConnectedComponent<{
     new (props: any): {
@@ -94,9 +95,9 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         mouseDownPosition: any;
         initialMousePosition: any;
         currentHover: TypedObject;
-        camera: any;
+        camera: THREE.OrthographicCamera;
         vectors: IVector[];
-        renderer: any;
+        renderer: THREE.WebGLRenderer;
         lines: LineVisualization;
         scene: THREE.Scene;
         dataset: any;

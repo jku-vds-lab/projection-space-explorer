@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as d3v5 from 'd3v5';
 import { v4 as uuidv4 } from 'uuid';
+// @ts-ignore
+import clusterWorker from 'worker-loader?inline=no-fallback!../../workers/cluster.worker';
 import { FeatureType } from '../../../model/FeatureType';
 import { DatasetType } from '../../../model/DatasetType';
 import { IVector, AVector } from '../../../model/Vector';
@@ -60,7 +62,9 @@ export class CSVLoader implements Loader {
   }
 
   getClusters(vectors: IVector[], callback) {
-    const worker = new Worker(new URL('../../workers/cluster.worker', import.meta.url));
+    // const worker = new Worker(new URL('../../workers/cluster.worker', import.meta.url));
+    // eslint-disable-next-line new-cap
+    const worker = new clusterWorker();
 
     worker.onmessage = (e) => {
       // Point clustering
@@ -72,7 +76,6 @@ export class CSVLoader implements Loader {
           objectType: ObjectTypes.Cluster,
           indices: t.points.map((i) => i.meshIndex),
           hull: t.hull,
-          triangulation: t.triangulation,
           label: k,
         });
       });

@@ -4,6 +4,7 @@ import { FeatureType } from './FeatureType';
 import { DatasetType } from './DatasetType';
 import { DataLine } from './DataLine';
 import type { IVector } from './Vector';
+import { IBaseProjection } from '.';
 export declare enum PrebuiltFeatures {
     Line = "line",
     ClusterLabel = "groupLabel"
@@ -11,7 +12,7 @@ export declare enum PrebuiltFeatures {
 export declare const EXCLUDED_COLUMNS: string[];
 export declare const EXCLUDED_COLUMNS_ALL: string[];
 export declare const DefaultFeatureLabel = "Default";
-declare type ColumnType = {
+export declare type ColumnType = {
     distinct: any;
     isNumeric: boolean;
     metaInformation: any;
@@ -28,10 +29,12 @@ export declare class SegmentFN {
 }
 export declare class ADataset {
     /**
-     * Calculates the dataset bounds for this set, eg the minimum and maximum x,y values
-     * which is needed for the zoom to work correctly
+     * Reads out spatial information using the supplied channels.
      */
-    static calculateBounds(dataset: Dataset): void;
+    static getSpatialData(dataset: Dataset, xChannel?: string, yChannel?: string, positions?: IBaseProjection): {
+        x: any;
+        y: any;
+    }[];
     /**
      * Returns an array of columns that are available in the vectors
      */
@@ -51,12 +54,6 @@ export declare class ADataset {
 export declare class Dataset {
     vectors: IVector[];
     segments: DataLine[];
-    bounds: {
-        x: any;
-        y: any;
-        scaleBase: any;
-        scaleFactor: any;
-    };
     info: {
         path: string;
         type: DatasetType;
@@ -96,4 +93,3 @@ export declare class Dataset {
         attributes: any[];
     }[];
 }
-export {};

@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 
 module.exports = {
   mode: "development",
@@ -34,10 +33,14 @@ module.exports = {
         type: 'asset/source',
       },
       {
+        resourceQuery: /inline/,
+        type: 'asset/inline',
+      },
+      {
         test: /\.svg(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         // css-loader is messing up SVGs: https://github.com/webpack/webpack/issues/13835
         // Pin css-loader and always load them as file-resource.
-        type: 'asset/resource',
+        type: 'asset/inline',
       },
       { test: /\.scss$/, use: [
         "style-loader",

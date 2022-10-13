@@ -2,6 +2,9 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable new-cap */
 import * as Graph from 'graphology';
+
+// @ts-ignore
+import forceatlas2Worker from 'worker-loader?inline=no-fallback!../../workers/embeddings/forceatlas2.worker';
 import { DataLine } from '../../../model/DataLine';
 import { Dataset } from '../../../model/Dataset';
 import { EmbeddingController } from './EmbeddingController';
@@ -67,7 +70,8 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
       graph.addEdge(edge.source, edge.destination);
     });
 
-    this.worker = new Worker(new URL('../../workers/embeddings/forceatlas2.worker', import.meta.url));
+    // this.worker = new Worker(new URL('../../workers/embeddings/forceatlas2.worker', import.meta.url));
+    this.worker = new forceatlas2Worker();
 
     const self = this;
     this.worker.onmessage = function (e) {

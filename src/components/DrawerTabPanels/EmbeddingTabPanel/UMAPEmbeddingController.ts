@@ -1,3 +1,5 @@
+// @ts-ignore
+import umapWorker from 'worker-loader?inline=no-fallback!../../workers/embeddings/umap.worker';
 import { Dataset, ADataset } from '../../../model/Dataset';
 import { EmbeddingController } from './EmbeddingController';
 
@@ -7,7 +9,10 @@ export class UMAPEmbeddingController extends EmbeddingController {
   targetBounds: any;
 
   init(dataset: Dataset, selection: any, params: any, workspace: IBaseProjection) {
-    this.worker = new Worker(new URL('../../workers/embeddings/umap.worker', import.meta.url));
+    // this.worker = new Worker(new URL('../../workers/embeddings/umap.worker', import.meta.url));
+    // eslint-disable-next-line new-cap
+    this.worker = new umapWorker();
+
     const tensor = ADataset.asTensor(
       dataset,
       selection.filter((e) => e.checked),

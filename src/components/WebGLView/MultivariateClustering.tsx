@@ -116,8 +116,6 @@ export const MultivariateClustering = connector(
 
     clusterScene: THREE.Scene;
 
-    triangulationWorker: Worker;
-
     constructor(props) {
       super(props);
 
@@ -139,8 +137,6 @@ export const MultivariateClustering = connector(
       this.trail = new TrailVisualization();
       this.trail.create();
       this.scene.add(this.trail.mesh);
-
-      this.triangulationWorker = new Worker(new URL('../workers/tessy.worker', import.meta.url));
     }
 
     componentDidMount() {
@@ -221,11 +217,11 @@ export const MultivariateClustering = connector(
       if (prevProps.workspace !== this.props.workspace && this.props.workspace) {
         // TODO: check performance implications
         // this.updatePositions(this.props.viewTransform.zoom);
-        //this.destroy();
-        //this.disposeTriangulatedMesh();
+        this.destroy();
+        this.disposeTriangulatedMesh();
 
-        //this.create();
-        //this.createTriangulatedMesh();
+        this.create();
+        this.createTriangulatedMesh();
       }
 
       if (this.props.onInvalidate) {
@@ -483,10 +479,10 @@ export const MultivariateClustering = connector(
       });
       if (this.clusterVis) {
         this.clusterVis.lineMeshes.forEach((mesh) => {
-          //mesh.visible = false;
+          mesh.visible = false;
         });
         this.clusterVis.clusterMeshes?.forEach((mesh) => {
-          //mesh.visible = false;
+          mesh.visible = false;
         });
       }
     }
