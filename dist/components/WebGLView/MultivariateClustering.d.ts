@@ -61,11 +61,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         clusterObjects: ClusterObjectType[];
         devicePixelRatio: number;
         scalingScene: Scene;
-        length: number;
-        clusterVis: {
-            clusterMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
-            lineMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
-        };
+        clusterVis: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
         trail: TrailVisualization;
         clusterScene: THREE.Scene;
         componentDidMount(): void;
@@ -128,5 +124,5 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "stories" | "currentAggregation" | "dataset" | "displayMode" | "hoverState" | "trailSettings" | "groupVisualizationMode" | "dispatch">>;
+}, import("react-redux").Omit<any, "dataset" | "stories" | "currentAggregation" | "displayMode" | "hoverState" | "trailSettings" | "groupVisualizationMode" | "dispatch">>;
 export {};

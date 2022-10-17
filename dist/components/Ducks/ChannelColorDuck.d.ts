@@ -1,6 +1,3 @@
-declare const channelColor: (state: any, action: any) => any;
-export declare const setChannelColor: (channelColor: any) => {
-    type: string;
-    channelColor: any;
-};
-export default channelColor;
+import { CategoryOption } from '../WebGLView/CategoryOptions';
+export declare const setChannelColor: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<CategoryOption, string>;
+export declare const channelColor: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<CategoryOption>;

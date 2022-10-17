@@ -8,7 +8,7 @@ import { ShapeLegend } from './ShapeLegend';
 import { setVectorByShapeAction } from '../../Ducks/VectorByShapeDuck';
 import type { RootState } from '../../Store/Store';
 import { setSelectedLineBy } from '../../Ducks/SelectedLineByDuck';
-import { setChannelBrightnessSelection } from '../../Ducks/ChannelBrightnessDuck';
+import { setChannelBrightnessAction } from '../../Ducks/ChannelBrightnessDuck';
 import { setGlobalPointBrightness } from '../../Ducks/GlobalPointBrightnessDuck';
 import { BrightnessSlider } from './BrightnessSlider';
 import { setChannelSize } from '../../Ducks/ChannelSize';
@@ -35,7 +35,7 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = (dispatch) => ({
   setVectorByShape: (vectorByShape) => dispatch(setVectorByShapeAction(vectorByShape)),
   setSelectedLineBy: (lineBy) => dispatch(setSelectedLineBy(lineBy)),
-  setChannelBrightness: (value) => dispatch(setChannelBrightnessSelection(value)),
+  setChannelBrightness: (value) => dispatch(setChannelBrightnessAction(value)),
   setGlobalPointBrightness: (value) => dispatch(setGlobalPointBrightness(value)),
   setChannelSize: (value) => dispatch(setChannelSize(value)),
   setGlobalPointSize: (value) => dispatch(setGlobalPointSize(value)),
@@ -214,7 +214,7 @@ export function StatesTabPanelFull({
             }
 
             const pointBrightness = attribute ? [0.25, 1] : [1];
-
+            console.log(attribute);
             setGlobalPointBrightness(pointBrightness);
             setChannelBrightness(attribute);
           }}

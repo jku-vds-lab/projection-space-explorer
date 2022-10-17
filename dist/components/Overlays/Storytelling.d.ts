@@ -40,5 +40,5 @@ export declare const Storytelling: import("react-redux").ConnectedComponent<({ d
     setSelectedCluster: (clusters: EntityId[], shift: any) => any;
 } & {
     dataset: Dataset;
-}, "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "currentAggregation" | "dataset" | "genericFingerprintAttributes" | "addClusterToTrace" | "setSelectedCluster">>;
+}, "dataset" | "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "currentAggregation" | "genericFingerprintAttributes" | "addClusterToTrace" | "setSelectedCluster">>;
 export {};

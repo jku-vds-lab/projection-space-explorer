@@ -10,9 +10,9 @@ import {
   Update,
   createSelector,
 } from '@reduxjs/toolkit';
-import channelColor from './ChannelColorDuck';
-import channelSize from './ChannelSize';
-import channelBrightness from './ChannelBrightnessDuck';
+import { channelColor } from './ChannelColorDuck';
+import { channelSize } from './ChannelSize';
+import { channelBrightness } from './ChannelBrightnessDuck';
 import vectorByShape from './VectorByShapeDuck';
 import lineBrightness from './LineBrightnessDuck';
 import pointColorScale from './PointColorScaleDuck';

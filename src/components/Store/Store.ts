@@ -10,7 +10,7 @@ import clusterMode, { ClusterMode } from '../Ducks/ClusterModeDuck';
 import advancedColoringSelection from '../Ducks/AdvancedColoringSelectionDuck';
 import projectionColumns from '../Ducks/ProjectionColumnsDuck';
 import displayMode from '../Ducks/DisplayModeDuck';
-import activeLine from '../Ducks/ActiveLineDuck';
+import { activeLine } from '../Ducks/ActiveLineDuck';
 import currentAggregation from '../Ducks/AggregationDuck';
 import projectionParams from '../Ducks/ProjectionParamsDuck';
 import projectionWorker from '../Ducks/ProjectionWorkerDuck';

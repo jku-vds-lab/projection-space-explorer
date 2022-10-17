@@ -19,7 +19,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
             square: boolean;
         };
     };
-    activeLine: any;
+    activeLine: string;
     dataset: Dataset;
     highlightedSequence: any;
     advancedColoringSelection: any;
