@@ -26,6 +26,7 @@ import { EncodingChannel, BaseColorScale } from '../../../model';
 import { ViewSelector } from '../../Ducks/ViewDuck';
 import { PointColorScaleActions } from '../../Ducks';
 import { ANormalized } from '../../Utility/NormalizedState';
+import { DivergingMapping } from '../../Utility';
 
 const mapStateToProps = (state: RootState) => ({
   selectedLineBy: state.selectedLineBy,
@@ -281,9 +282,11 @@ export function StatesTabPanelFull({
         <ColorScaleSelect channelColor={channelColor} active={active} />
       </Grid>
 
-      <Grid item style={{ padding: '16px 0px' }}>
-        {channelColor != null && channelColor.type === 'categorical' ? <AdvancedColoringPopover pointColorMapping={pointColorMapping} /> : <div />}
-      </Grid>
+      {channelColor != null ? <Grid item style={{ padding: '16px 0px' }}>
+        {channelColor.type === 'categorical' ? <AdvancedColoringPopover pointColorMapping={pointColorMapping} /> : null}
+        {active.type === 'diverging' && pointColorMapping instanceof DivergingMapping ? <DivergingInput scale={active} mapping={pointColorMapping} /> : null}
+      </Grid> : null}
+
     </Box>
   );
 
@@ -330,6 +333,10 @@ export function StatesTabPanelFull({
   );
 
   return <div>{dataset && dataset.isSequential ? accordion : points_box}</div>;
+}
+
+function DivergingInput({ scale, mapping } : { scale: BaseColorScale, mapping: DivergingMapping }) {
+  return <div>test</div>;
 }
 
 export const StatesTabPanel = connector(StatesTabPanelFull);

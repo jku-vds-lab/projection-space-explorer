@@ -23,6 +23,7 @@ import { ViewTransformType, viewTransform } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, ProjectionMethod, IPosition, Dataset, AProjection } from '../../model';
 import { ContinuousMapping, DiscreteMapping } from '../Utility';
+import { CategoryOption } from '../WebGLView';
 
 export const setWorkspaceAction = createAction<EntityId | IProjection>('set/workspace');
 
@@ -81,10 +82,10 @@ export const attributesSlice = createSlice({
 });
 
 export type SingleMultipleAttributes = {
-  channelColor;
-  channelBrightness;
-  channelSize;
-  vectorByShape;
+  channelColor: CategoryOption;
+  channelBrightness: CategoryOption;
+  channelSize: CategoryOption;
+  vectorByShape: CategoryOption;
   viewTransform: ViewTransformType;
   lineBrightness: number;
   pointColorScale: number | string;

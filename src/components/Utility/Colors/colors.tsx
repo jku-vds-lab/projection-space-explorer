@@ -1,8 +1,9 @@
 /* eslint-disable prefer-destructuring */
-import { DiscreteMapping, ContinuousMapping } from './Mapping';
+import { DiscreteMapping, ContinuousMapping, DivergingMapping } from './Mapping';
 import { ShallowSet } from '../ShallowSet';
 import { Dataset } from '../../../model/Dataset';
 import { BaseColorScale } from '../../../model/Palette';
+import { getMinMaxOfChannel } from '../../WebGLView/UtilityFunctions';
 
 export const mappingFromScale = (scale: BaseColorScale, attribute, dataset: Dataset) => {
   if (scale.type === 'categorical') {
@@ -10,18 +11,14 @@ export const mappingFromScale = (scale: BaseColorScale, attribute, dataset: Data
     return new DiscreteMapping(scale, new ShallowSet(dataset.vectors.map((vector) => vector[attribute.key])));
   }
   if (scale.type === 'sequential') {
-    let min = null;
-    let max = null;
-    if (dataset.columns[attribute.key].range) {
-      min = dataset.columns[attribute.key].range.min;
-      max = dataset.columns[attribute.key].range.max;
-    } else {
-      const filtered = dataset.vectors.map((vector) => vector[attribute.key]);
-      max = Math.max(...filtered);
-      min = Math.min(...filtered);
-    }
+    const { min, max } = getMinMaxOfChannel(dataset, attribute.key)
 
     return new ContinuousMapping(scale, { min, max });
+  }
+  if (scale.type === 'diverging') {
+    const { min, max } = getMinMaxOfChannel(dataset, attribute.key)
+
+    return new DivergingMapping(scale, [min, (min + max) / 2, max]);
   }
   return null;
 };

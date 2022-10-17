@@ -1096,8 +1096,6 @@ export const WebGLView = connector(
     }
 
     componentDidUpdate(prevProps: Props, prevState) {
-      // console.log(this.props.workspace);
-      // console.log(this.props.xChannel);
       if (prevProps.dataset !== this.props.dataset) {
         this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, { key: 'algo' }, this.props.dataset), null);
       }

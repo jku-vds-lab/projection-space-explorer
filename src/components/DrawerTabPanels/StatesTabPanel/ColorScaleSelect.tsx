@@ -6,6 +6,7 @@ import { ANormalized, NormalizedDictionary } from '../../Utility';
 import { BaseColorScale } from '../../../model/Palette';
 import { APalette } from '../../../model/palettes';
 import { PointColorScaleActions } from '../../Ducks';
+import { CategoryOption } from '../../WebGLView/CategoryOptions';
 
 export function ColorScaleMenuItem({ scale }: { scale: BaseColorScale }) {
   if (!scale) {
@@ -14,7 +15,7 @@ export function ColorScaleMenuItem({ scale }: { scale: BaseColorScale }) {
 
   const palette = typeof scale.palette === 'string' ? APalette.getByName(scale.palette) : scale.palette;
 
-  if (scale.type === 'sequential') {
+  if (scale.type === 'sequential' || scale.type === 'diverging') {
     return (
       <div
         style={{ width: '100%', minWidth: '15rem', height: '1rem', backgroundImage: `linear-gradient(to right, ${palette.map((stop) => stop.hex).join(',')})` }}
@@ -38,7 +39,7 @@ export function ColorScaleMenuItem({ scale }: { scale: BaseColorScale }) {
 /**
  * Component that lets user pick from a list of color scales.
  */
-export function ColorScaleSelectFull({ channelColor, active }) {
+export function ColorScaleSelectFull({ channelColor, active }: { channelColor: CategoryOption; active }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const scales = useSelector<RootState, NormalizedDictionary<BaseColorScale>>((state) => state.colorScales.scales);
@@ -61,6 +62,11 @@ export function ColorScaleSelectFull({ channelColor, active }) {
     return null;
   }
 
+  const scaleFilter =
+    channelColor.type === 'categorical'
+      ? (value: BaseColorScale) => value.type === 'categorical'
+      : (value: BaseColorScale) => value.type === 'diverging' || value.type === 'sequential';
+
   return (
     <div>
       <List component="nav" aria-label="Device settings">
@@ -70,7 +76,7 @@ export function ColorScaleSelectFull({ channelColor, active }) {
       </List>
       <Menu id="lock-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
         {ANormalized.entries(scales)
-          .filter(([, value]) => value.type === channelColor.type)
+          .filter(([, value]) => scaleFilter(value))
           .map(([key, value]) => (
             <MenuItem
               key={key}

@@ -62,3 +62,32 @@ export class ContinuousMapping extends Mapping {
     return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
   }
 }
+
+export class DivergingMapping extends Mapping {
+  range: [number, number, number];
+
+  constructor(scale, range: [number, number, number]) {
+    super(scale);
+
+    this.range = range;
+  }
+
+  map(value): SchemeColor {
+    const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette;
+
+    if (this.range[0] === this.range[1]) {
+      return palette[1];
+    }
+
+    const interpolator = d3v5
+      .scaleDiverging(d3v5.interpolateBrBG)
+      .domain(this.range)
+
+    const d3color = d3v5.color(interpolator(value));
+    // @ts-ignore
+    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
+  }
+}
+
+
+

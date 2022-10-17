@@ -124,6 +124,9 @@ export class CSVLoader implements Loader {
 
     let index = 0;
     const types = {};
+
+    console.log("CSV LOADER");
+
     // decide the type of each feature - categorical/quantitative/date
     header.forEach(() => {
       const current_key = Object.keys(metaInformation)[index];

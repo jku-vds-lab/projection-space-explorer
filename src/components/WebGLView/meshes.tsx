@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { BufferAttribute } from 'three';
 import { getMinMaxOfChannel, valueInRange } from './UtilityFunctions';
-import { ContinuousMapping, DiscreteMapping, Mapping } from '../Utility/Colors/Mapping';
+import { ContinuousMapping, DiscreteMapping, DivergingMapping, Mapping } from '../Utility/Colors/Mapping';
 import { DataLine } from '../../model/DataLine';
 import { IVector } from '../../model/Vector';
 import { Dataset } from '../../model/Dataset';
@@ -22,6 +22,7 @@ import fragmentShader from '../../shaders/fragment.glsl?raw';
 import vertexShader from '../../shaders/vertex.glsl?raw';
 
 import override from './meshline';
+import { CategoryOption } from './CategoryOptions';
 
 export function imageFromShape(value) {
   switch (value) {
@@ -578,7 +579,7 @@ export class PointVisualization {
   /**
    * @param {*} category a feature to select the shape for
    */
-  setShapeByChannel(category) {
+  setShapeByChannel(category: CategoryOption) {
     const type = this.mesh.geometry.attributes.type as BufferAttribute;
 
     // default shapes used
@@ -621,7 +622,7 @@ export class PointVisualization {
     type.needsUpdate = true;
   }
 
-  setColorByChannel(category, scale) {
+  setColorByChannel(category: CategoryOption, scale) {
     this.colorAttribute = category;
 
     if (category == null) {
@@ -649,7 +650,7 @@ export class PointVisualization {
     }
   }
 
-  setBrightnessByChannel(channel, range) {
+  setBrightnessByChannel(channel: CategoryOption, range) {
     // var color = this.mesh.geometry.attributes.customColor.array
 
     if (channel == null) {
@@ -682,38 +683,31 @@ export class PointVisualization {
     this.updateColor();
   }
 
-  sizeCat(category, range) {
+  sizeCat(category: CategoryOption, range) {
     if (category == null) {
       this.vectors.forEach((vector) => {
         this.baseSize[vector.__meta__.meshIndex] = this.particleSize * range[0];
       });
-    } else {
-      if (category.type === 'sequential') {
-        if (this.dataset.isSequential) {
-          // dataset with lines, we have segments
-          this.segments.forEach((segment) => {
-            const { min, max } = getMinMaxOfChannel(this.dataset, category.key, segment);
-
-            const sizeScaler = createLinearRangeScaler(range, min, max);
-
-            segment.vectors.forEach((vector) => {
-              this.baseSize[vector.__meta__.meshIndex] = this.particleSize * sizeScaler(vector[category.key]);
-            });
-          });
-        } else {
-          // for state based data, min and max is based on whole dataset
-          const { min, max } = getMinMaxOfChannel(this.dataset, category.key);
+    } else if (category.type === 'sequential') {
+      if (this.dataset.isSequential) {
+        // dataset with lines, we have segments
+        this.segments.forEach((segment) => {
+          const { min, max } = getMinMaxOfChannel(this.dataset, category.key, segment);
 
           const sizeScaler = createLinearRangeScaler(range, min, max);
 
-          this.vectors.forEach((vector) => {
+          segment.vectors.forEach((vector) => {
             this.baseSize[vector.__meta__.meshIndex] = this.particleSize * sizeScaler(vector[category.key]);
           });
-        }
-      }
-      if (category.type === 'categorical') {
+        });
+      } else {
+        // for state based data, min and max is based on whole dataset
+        const { min, max } = getMinMaxOfChannel(this.dataset, category.key);
+
+        const sizeScaler = createLinearRangeScaler(range, min, max);
+
         this.vectors.forEach((vector) => {
-          this.baseSize[vector.__meta__.meshIndex] = this.particleSize * category.values.filter((v) => v.from === vector[category.key])[0].to;
+          this.baseSize[vector.__meta__.meshIndex] = this.particleSize * sizeScaler(vector[category.key]);
         });
       }
     }
@@ -757,6 +751,8 @@ export class PointVisualization {
             vector.__meta__.intrinsicColor = null;
           } else if (this.vectorMapping instanceof DiscreteMapping) {
             vector.__meta__.intrinsicColor = this.vectorMapping.index(vector[this.colorAttribute.key]);
+          } else if (this.vectorMapping instanceof DivergingMapping) {
+            vector.__meta__.intrinsicColor = null;
           }
         } else {
           const col = this.vectorSegmentLookup[i].__meta__.lineMesh.material.color;

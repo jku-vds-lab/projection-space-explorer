@@ -399,7 +399,7 @@ export class Dataset {
             shape_options.push({
               key,
               name: key,
-              type: 'categorical', // TODO: is there difference for binary?
+              type: 'categorical',
               values: columns[key].distinct.map((value, index) => {
                 return {
                   from: value,
