@@ -174,16 +174,14 @@ export function getMinMaxOfChannel(dataset: Dataset, key: string, segment?) {
   if (dataset.columns[key].range) {
     min = dataset.columns[key].range.min;
     max = dataset.columns[key].range.max;
+  } else if (dataset.isSequential && segment) {
+    const filtered = segment.vectors.map((vector) => vector[key]);
+    max = Math.max(...filtered);
+    min = Math.min(...filtered);
   } else {
-    if (dataset.isSequential && segment) {
-      const filtered = segment.vectors.map((vector) => vector[key]);
-      max = Math.max(...filtered);
-      min = Math.min(...filtered);
-    } else {
-      const filtered = dataset.vectors.map((vector) => vector[key]);
-      max = Math.max(...filtered);
-      min = Math.min(...filtered);
-    }
+    const filtered = dataset.vectors.map((vector) => vector[key]);
+    max = Math.max(...filtered);
+    min = Math.min(...filtered);
   }
 
   return { min, max };

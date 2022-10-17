@@ -574,7 +574,7 @@ export const MultivariateClustering = connector(
           });
           const line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points), material);
 
-          line.visible = this.props.currentAggregation.source === 'cluster' && this.props.currentAggregation.selectedClusters.includes(clusterObject.cluster)
+          line.visible = this.props.currentAggregation.source === 'cluster' && this.props.currentAggregation.selectedClusters.includes(clusterObject.cluster);
 
           this.scalingScene.add(line);
 
