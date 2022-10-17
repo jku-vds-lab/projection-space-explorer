@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Box, Button, Chip, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { EntityId } from '@reduxjs/toolkit';
+import { projection } from 'vega';
 import { ProjectionControlCard } from './ProjectionControlCard';
 import { setProjectionOpenAction } from '../../Ducks/ProjectionOpenDuck';
 import { setProjectionWorkerAction } from '../../Ducks/ProjectionWorkerDuck';
@@ -21,7 +22,6 @@ import { EditProjectionDialog } from './EditProjectionDialog';
 import { ViewActions, ViewSelector } from '../../Ducks/ViewDuck';
 import { FeatureType } from '../../../model';
 import { SelectFeatureComponent } from '../StatesTabPanel/SelectFeatureComponent';
-import { projection } from 'vega';
 
 const mapStateToProps = (state: RootState) => ({
   // currentAggregation: state.currentAggregation,
@@ -191,7 +191,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
           setOpen(false);
           props.setProjectionColumns(selection);
 
-          let seed = ADataset.getSpatialData(dataset, workspace.xChannel, workspace.yChannel, workspace.positions);
+          const seed = ADataset.getSpatialData(dataset, workspace.xChannel, workspace.yChannel, workspace.positions);
 
           // props.setProjectionParams(params)
 

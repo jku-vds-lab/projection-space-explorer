@@ -54,5 +54,5 @@ export declare const ClusteringTabPanel: import("react-redux").ConnectedComponen
 } & {
     splitRef: any;
     baseUrl: string;
-}, "dataset" | "stories" | "workspace" | "currentAggregation" | "displayMode" | "groupVisualizationMode" | "setGroupVisualizationMode" | "setChannelColor" | "setStories" | "setDisplayMode" | "addStory" | "removeClusterFromStories" | "setSelectedClusters" | "setActiveStory">>;
+}, "stories" | "workspace" | "currentAggregation" | "dataset" | "displayMode" | "groupVisualizationMode" | "setGroupVisualizationMode" | "setChannelColor" | "setStories" | "setDisplayMode" | "addStory" | "removeClusterFromStories" | "setSelectedClusters" | "setActiveStory">>;
 export {};

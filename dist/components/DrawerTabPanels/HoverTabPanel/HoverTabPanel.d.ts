@@ -28,5 +28,5 @@ export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ 
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
-}, "dataset" | "currentAggregation" | "hoverSettings" | "setHoverWindowMode" | "setAggregation">>;
+}, "currentAggregation" | "dataset" | "hoverSettings" | "setHoverWindowMode" | "setAggregation">>;
 export {};
