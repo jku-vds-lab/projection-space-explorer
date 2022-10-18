@@ -4,7 +4,7 @@ import { FeatureType } from './FeatureType';
 import { DatasetType } from './DatasetType';
 import { DataLine } from './DataLine';
 import type { IVector } from './Vector';
-import { IBaseProjection } from '.';
+import { IBaseProjection } from './ProjectionInterfaces';
 export declare enum PrebuiltFeatures {
     Line = "line",
     ClusterLabel = "groupLabel"

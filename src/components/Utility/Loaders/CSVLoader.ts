@@ -75,7 +75,6 @@ export class CSVLoader implements Loader {
           id: uuidv4(),
           objectType: ObjectTypes.Cluster,
           indices: t.points.map((i) => i.meshIndex),
-          hull: t.hull,
           label: k,
         });
       });

@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/jsx-key */
 import { EntityId } from '@reduxjs/toolkit';
 import * as React from 'react';
 import { Card, Typography, Tooltip, IconButton, CardHeader } from '@mui/material';

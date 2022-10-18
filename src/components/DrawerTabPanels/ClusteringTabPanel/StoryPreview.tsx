@@ -41,7 +41,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
   };
 
   const dispatch = useDispatch();
-  
+
   return (
     <div
       style={{

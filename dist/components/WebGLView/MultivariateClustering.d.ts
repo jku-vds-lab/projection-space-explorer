@@ -61,11 +61,7 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         clusterObjects: ClusterObjectType[];
         devicePixelRatio: number;
         scalingScene: Scene;
-        length: number;
-        clusterVis: {
-            clusterMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
-            lineMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
-        };
+        clusterVis: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
         trail: TrailVisualization;
         clusterScene: THREE.Scene;
         componentDidMount(): void;

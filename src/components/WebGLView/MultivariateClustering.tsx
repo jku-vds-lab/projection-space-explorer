@@ -108,9 +108,7 @@ export const MultivariateClustering = connector(
 
     scalingScene: Scene;
 
-    length: number;
-
-    clusterVis: { clusterMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[]; lineMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[] };
+    clusterVis: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
 
     trail: TrailVisualization;
 
@@ -216,11 +214,7 @@ export const MultivariateClustering = connector(
 
       if (prevProps.workspace !== this.props.workspace && this.props.workspace) {
         // TODO: check performance implications
-        // this.updatePositions(this.props.viewTransform.zoom);
-        this.destroy();
-        this.disposeTriangulatedMesh();
-
-        this.create();
+        this.updatePositions(this.props.viewTransform.zoom);
         this.createTriangulatedMesh();
       }
 
@@ -478,10 +472,7 @@ export const MultivariateClustering = connector(
         });
       });
       if (this.clusterVis) {
-        this.clusterVis.lineMeshes.forEach((mesh) => {
-          mesh.visible = false;
-        });
-        this.clusterVis.clusterMeshes?.forEach((mesh) => {
+        this.clusterVis.forEach((mesh) => {
           mesh.visible = false;
         });
       }
@@ -500,8 +491,7 @@ export const MultivariateClustering = connector(
         }
 
         if (this.clusterVis && this.props.groupVisualizationMode === GroupVisualizationMode.ConvexHull) {
-          this.clusterVis.clusterMeshes[index].visible = visible;
-          this.clusterVis.lineMeshes[index].visible = visible;
+          this.clusterVis[index].visible = visible;
         }
       });
     }
@@ -539,7 +529,6 @@ export const MultivariateClustering = connector(
         return;
       }
 
-      const clusterMeshes = [];
       const lineMeshes = [];
 
       if (this.props.stories.active !== null) {
@@ -585,15 +574,15 @@ export const MultivariateClustering = connector(
           });
           const line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points), material);
 
-          line.visible = false;
+          line.visible = this.props.currentAggregation.source === 'cluster' && this.props.currentAggregation.selectedClusters.includes(clusterObject.cluster);
+
           this.scalingScene.add(line);
 
           lineMeshes.push(line);
-          clusterMeshes.push(line);
         }
       }
 
-      this.clusterVis = { clusterMeshes, lineMeshes };
+      this.clusterVis = lineMeshes;
     }
 
     /**
@@ -601,12 +590,7 @@ export const MultivariateClustering = connector(
      */
     disposeTriangulatedMesh() {
       if (this.clusterVis != null) {
-        const { clusterMeshes, lineMeshes } = this.clusterVis;
-        clusterMeshes?.forEach((mesh) => {
-          mesh.geometry.dispose();
-          mesh.material.dispose();
-          this.scalingScene.remove(mesh);
-        });
+        const lineMeshes = this.clusterVis;
         lineMeshes?.forEach((mesh) => {
           mesh.geometry.dispose();
           mesh.material.dispose();

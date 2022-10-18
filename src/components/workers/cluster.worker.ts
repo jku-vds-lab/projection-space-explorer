@@ -1,18 +1,3 @@
-/* @refresh reset */
-/* eslint-disable no-restricted-globals */
-import * as concaveman from 'concaveman';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ctx: Worker = self as any;
-
-function validKey(key: string | number) {
-  if (typeof key === 'number' && key < 0) {
-    return false;
-  }
-
-  return true;
-}
-
 /**
  * Clustering endpoint that
  */
@@ -40,34 +25,6 @@ self.addEventListener('message', function (e) {
       });
     });
 
-    Object.keys(clusters).forEach((key) => {
-      if (!validKey(key)) return;
-      const cluster = clusters[key];
-
-      const bounds = {
-        minX: 10000,
-        maxX: -10000,
-        minY: 10000,
-        maxY: -10000,
-      };
-
-      const pts = cluster.points.map((point) => {
-        const { x } = point;
-        const { y } = point;
-
-        if (x < bounds.minX) bounds.minX = x;
-        if (x > bounds.maxX) bounds.maxX = x;
-        if (y < bounds.minY) bounds.minY = y;
-        if (y > bounds.maxY) bounds.maxY = y;
-
-        return [x, y];
-      });
-
-      // Get hull of cluster
-      const polygon = concaveman(pts);
-
-      cluster.hull = polygon;
-    });
 
     const context = self as any;
     context.postMessage(clusters);
