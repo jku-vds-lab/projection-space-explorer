@@ -3,7 +3,7 @@ import * as d3v5 from 'd3v5';
 import { v4 as uuidv4 } from 'uuid';
 // @ts-ignore
 import clusterWorker from 'worker-loader?inline=no-fallback!../../workers/cluster.worker';
-import { FeatureType } from '../../../model/FeatureType';
+import { FeatureType, stringToFeatureType } from '../../../model/FeatureType';
 import { DatasetType } from '../../../model/DatasetType';
 import { IVector, AVector } from '../../../model/Vector';
 import { InferCategory } from '../Data/InferCategory';
@@ -13,6 +13,23 @@ import { Loader } from './Loader';
 import { ICluster } from '../../../model/ICluster';
 import { ObjectTypes } from '../../../model/ObjectType';
 import { DatasetEntry } from '../../../model/DatasetEntry';
+
+class Profiler {
+  t0: number;
+  count: number;
+
+  constructor() {
+    this.t0 = Date.now();
+    this.count = 0;
+  }
+
+  profile(label: string) {
+    this.count = this.count + 1;
+    const t = Date.now();
+    console.log(`${this.count} ${label}: ${(t - this.t0) / 1000}`)
+    this.t0 = t;
+  }
+}
 
 function convertFromCSV(vectors) {
   return vectors.map((vector) => {
@@ -91,6 +108,8 @@ export class CSVLoader implements Loader {
   async resolve(finished, vectors, datasetType, entry: DatasetEntry): Promise<Dataset> {
     const header = Object.keys(vectors[0]);
 
+    const profiler = new Profiler();
+
     let ranges = header.reduce((map, value) => {
       const matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/);
       if (matches != null) {
@@ -122,41 +141,25 @@ export class CSVLoader implements Loader {
       return map;
     }, {});
 
+    profiler.profile("Parse meta information");
+
     let index = 0;
     const types = {};
-
-    console.log("CSV LOADER");
 
     // decide the type of each feature - categorical/quantitative/date
     header.forEach(() => {
       const current_key = Object.keys(metaInformation)[index];
       const col_meta = metaInformation[current_key];
+
       if (col_meta?.dtype) {
-        switch (col_meta.dtype) {
-          case 'numerical':
-            types[current_key] = FeatureType.Quantitative;
-            break;
-          case 'date':
-            types[current_key] = FeatureType.Date;
-            break;
-          case 'categorical':
-            types[current_key] = FeatureType.Categorical;
-            break;
-          case 'string':
-            types[current_key] = FeatureType.String;
-            break;
-          case 'array':
-            types[current_key] = FeatureType.Array;
-            break;
-          default:
-            types[current_key] = FeatureType.String;
-            break;
-        }
+        // In case the datatype was specified in the JSON attribute, take it from there instead of inferring it
+        types[current_key] = stringToFeatureType(col_meta.dtype);
       } else {
-        // infer for each feature whether it contains numeric, date, or arbitrary values
+        // Infer the datatype of the feature from the first N rows
         const contains_number = {};
         const contains_date = {};
         const contains_arbitrary = {};
+
         vectors.forEach((r) => {
           const type = this.getFeatureType(r[current_key]);
           if (type === 'number') {
@@ -179,8 +182,11 @@ export class CSVLoader implements Loader {
           types[current_key] = FeatureType.Categorical;
         }
       }
+      
       index++;
     });
+
+    profiler.profile("Getting data types")
 
     // replace date features by their numeric timestamp equivalent
     // and fix all quantitative features to be numbers
@@ -207,16 +213,22 @@ export class CSVLoader implements Loader {
       });
     }
 
+    profiler.profile("Replace numerical values and dates")
+
     const preprocessor = new Preprocessor(vectors);
     let inferredColumns = [];
-    const hasScalarTypes = preprocessor.hasScalarTypes();
+    const hasScalarTypes = header.includes('x') && header.includes('y');
 
     [ranges, inferredColumns] = preprocessor.preprocess(ranges);
+
+    profiler.profile("Preprocessing")
 
     const dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation);
 
     dataset.hasInitialScalarTypes = hasScalarTypes;
     dataset.inferredColumns = inferredColumns;
+
+    profiler.profile("Creating dataset")
 
     const promise = new Promise<Dataset>((resolve) => {
       this.getClusters(vectors, (clusters) => {
@@ -228,6 +240,8 @@ export class CSVLoader implements Loader {
         });
 
         dataset.categories = dataset.extractEncodingFeatures(ranges);
+
+        profiler.profile("Extract encoding features")
 
         resolve(dataset);
 

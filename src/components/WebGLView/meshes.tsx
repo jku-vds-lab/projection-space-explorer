@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { BufferAttribute } from 'three';
 import { getMinMaxOfChannel, valueInRange } from './UtilityFunctions';
-import { ContinuousMapping, DiscreteMapping, DivergingMapping, Mapping } from '../Utility/Colors/Mapping';
+import { isNumericMapping, Mapping, mapValueToColor } from '../Utility/Colors/Mapping';
 import { DataLine } from '../../model/DataLine';
 import { IVector } from '../../model/Vector';
 import { Dataset } from '../../model/Dataset';
@@ -731,6 +731,9 @@ export class PointVisualization {
   updateColor() {
     const color = this.mesh.geometry.attributes.customColor as BufferAttribute;
 
+    const gray = { r: 192, g: 192, b: 192 };
+    const defaultColor = { r: 127.0, g: 201, b: 127 };
+
     this.vectors.forEach((vector) => {
       const i = vector.__meta__.meshIndex;
       let rgb = null;
@@ -738,21 +741,15 @@ export class PointVisualization {
       if (this.dataset.isSequential) {
         // sequential
         if (this.lineLayerSystem.getValue(vector.__meta__.lineIndex)) {
-          rgb = {
-            r: 192.0,
-            g: 192.0,
-            b: 192.0,
-          };
+          rgb = gray;
         } else if (this.colorAttribute != null) {
-          const m = this.vectorMapping.map(vector[this.colorAttribute.key]);
+          const m = mapValueToColor(this.vectorMapping, vector[this.colorAttribute.key]);
           rgb = m.rgb;
 
-          if (this.vectorMapping instanceof ContinuousMapping) {
+          if (isNumericMapping(this.vectorMapping)) {
             vector.__meta__.intrinsicColor = null;
-          } else if (this.vectorMapping instanceof DiscreteMapping) {
-            vector.__meta__.intrinsicColor = this.vectorMapping.index(vector[this.colorAttribute.key]);
-          } else if (this.vectorMapping instanceof DivergingMapping) {
-            vector.__meta__.intrinsicColor = null;
+          } else {
+            vector.__meta__.intrinsicColor = this.vectorMapping.values.indexOf(vector[this.colorAttribute.key]);
           }
         } else {
           const col = this.vectorSegmentLookup[i].__meta__.lineMesh.material.color;
@@ -764,22 +761,18 @@ export class PointVisualization {
           vector.__meta__.intrinsicColor = null;
         }
       } else if (this.grayedLayerSystem.getValue(vector.__meta__.meshIndex)) {
-        rgb = {
-          r: 192.0,
-          g: 192.0,
-          b: 192.0,
-        };
+        rgb = gray;
       } else if (this.colorAttribute != null) {
-        const m = this.vectorMapping.map(vector[this.colorAttribute.key]);
+        const m = mapValueToColor(this.vectorMapping, vector[this.colorAttribute.key]);
         rgb = m.rgb;
 
-        if (this.vectorMapping instanceof ContinuousMapping) {
+        if (isNumericMapping(this.vectorMapping)) {
           vector.__meta__.intrinsicColor = null;
-        } else if (this.vectorMapping instanceof DiscreteMapping) {
-          vector.__meta__.intrinsicColor = this.vectorMapping.index(vector[this.colorAttribute.key]);
+        } else {
+          vector.__meta__.intrinsicColor = this.vectorMapping.values.indexOf(vector[this.colorAttribute.key]);
         }
       } else {
-        rgb = { r: 127.0, g: 201, b: 127 };
+        rgb = defaultColor;
       }
 
       color.setXYZ(i, rgb.r / 255.0, rgb.g / 255.0, rgb.b / 255.0);

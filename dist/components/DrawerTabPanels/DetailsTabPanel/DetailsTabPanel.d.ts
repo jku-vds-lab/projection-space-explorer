@@ -39,5 +39,5 @@ export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<(
     setHoverStateOrientation: (value: any) => any;
 } & {
     config: FeatureConfig;
-}, "currentAggregation" | "dataset" | "hoverSettings" | "hoverStateOrientation" | "setHoverWindowMode" | "setAggregation" | "setHoverStateOrientation" | "activeStorybook">>;
+}, "dataset" | "currentAggregation" | "hoverSettings" | "hoverStateOrientation" | "setHoverWindowMode" | "setAggregation" | "setHoverStateOrientation" | "activeStorybook">>;
 export {};

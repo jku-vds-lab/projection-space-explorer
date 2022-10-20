@@ -34,6 +34,7 @@ import { BaseColorScale } from '../../model/Palette';
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multiplesSlice, multipleAdapter, defaultAttributes } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
+import { useSelector } from 'react-redux';
 
 /**
  * Match all cases of view constants eg x1, y1, x2, y2...
@@ -364,3 +365,5 @@ export function createRootReducer(reducers: any) {
 }
 
 export type RootState = ReturnType<typeof rootReducer>;
+
+export const usePSESelector = <T>(fn: (state: RootState) => T) => useSelector<RootState, T>(fn);

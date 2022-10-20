@@ -3,91 +3,129 @@ import { SchemeColor } from './SchemeColor';
 import { ShallowSet } from '../ShallowSet';
 import { BaseColorScale } from '../../../model/Palette';
 import { APalette } from '../../../model/palettes';
+import { getMinMaxOfChannel } from '../../WebGLView/UtilityFunctions';
+import { Dataset } from '../../../model/Dataset';
 
-export abstract class Mapping {
+export class DiscreteMapping {
   scale: BaseColorScale;
-
-  constructor(scale) {
-    this.scale = scale;
-  }
-
-  abstract map(value): any;
-}
-
-export class DiscreteMapping extends Mapping {
   values: ShallowSet;
-
-  constructor(scale, values) {
-    super(scale);
-
-    this.values = values;
-  }
-
-  index(value) {
-    return this.values.indexOf(value);
-  }
-
-  map(value) {
-    const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette;
-    return palette[this.values.indexOf(value) % palette.length];
-  }
+  type: 'categorical';
 }
 
-export class ContinuousMapping extends Mapping {
-  range: any;
-
-  constructor(scale, range) {
-    super(scale);
-
-    this.range = range;
-  }
-
-  map(value): SchemeColor {
-    const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette;
-
-    if (this.range.max === this.range.min) {
-      return palette[0];
-    }
-
-    const normalized = (value - this.range.min) / (this.range.max - this.range.min);
-
-    const interpolator = d3v5
-      .scaleLinear()
-      .domain(palette.map((stop, index) => (1 / (palette.length - 1)) * index))
-      // @ts-ignore
-      .range(palette.map((stop) => stop.hex));
-    // @ts-ignore
-    const d3color = d3v5.color(interpolator(normalized));
-    // @ts-ignore
-    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
-  }
+export interface ContinuousMapping {
+  scale: BaseColorScale;
+  type: 'sequential';
+  range: [number, number];
 }
 
-export class DivergingMapping extends Mapping {
+export interface DivergingMapping {
+  scale: BaseColorScale;
   range: [number, number, number];
+  type: 'diverging';
+}
 
-  constructor(scale, range: [number, number, number]) {
-    super(scale);
+/**
+ * Helper function that maps a value to a color using a mapping
+ *
+ * @param mapping a mapping object
+ * @param value any value
+ * @returns a color
+ */
+export function mapValueToColor(mapping: ContinuousMapping | DivergingMapping | DiscreteMapping, value): SchemeColor {
+  switch (mapping.type) {
+    case 'sequential': {
+      const [min, max] = mapping.range;
 
-    this.range = range;
-  }
+      const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
 
-  map(value): SchemeColor {
-    const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette;
+      if (min === max) {
+        return palette[0];
+      }
 
-    if (this.range[0] === this.range[1]) {
-      return palette[1];
+      const normalized = (value - min) / (max - min);
+
+      const interpolator = d3v5
+        .scaleLinear()
+        .domain(palette.map((stop, index) => (1 / (palette.length - 1)) * index))
+        // @ts-ignore
+        .range(palette.map((stop) => stop.hex));
+      // @ts-ignore
+      const d3color = d3v5.color(interpolator(normalized));
+      // @ts-ignore
+      return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
     }
+    case 'diverging': {
+      const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
 
-    const interpolator = d3v5
-      .scaleDiverging(d3v5.interpolateBrBG)
-      .domain(this.range)
+      if (mapping.range[0] === mapping.range[1]) {
+        return palette[1];
+      }
 
-    const d3color = d3v5.color(interpolator(value));
-    // @ts-ignore
-    return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
+      const paletteInterpolate = d3v5
+        .scaleLinear()
+        .domain(palette.map((stop, index) => (1 / (palette.length - 1)) * index))
+        // @ts-ignore
+        .range(palette.map((stop) => stop.hex));
+
+      const interpolator = d3v5.scaleDiverging(paletteInterpolate).domain(mapping.range);
+
+      const d3color = d3v5.color(interpolator(value)) as d3v5.RGBColor;
+
+      return d3color ? SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b) : new SchemeColor('#000000');
+    }
+    case 'categorical': {
+      const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
+      return palette[mapping.values.indexOf(value) % palette.length];
+    }
   }
 }
 
+/**
+ * Helper type that contains a union over all mappings
+ */
+export type Mapping = DiscreteMapping | DivergingMapping | ContinuousMapping;
 
+/**
+ *
+ * @param scale the color scale
+ * @param key the key for the data values
+ * @param dataset the dataset
+ * @returns a mapping object
+ */
+export const mappingFromScale = (scale: BaseColorScale, key: string, dataset: Dataset) => {
+  if (scale.type === 'categorical') {
+    return {
+      scale,
+      values: new ShallowSet(dataset.vectors.map((vector) => vector[key])),
+      type: 'categorical',
+    } as DiscreteMapping;
+  }
+  if (scale.type === 'sequential') {
+    const { min, max } = getMinMaxOfChannel(dataset, key);
 
+    return {
+      scale,
+      type: 'sequential',
+      range: [min, max],
+    } as ContinuousMapping;
+  }
+  if (scale.type === 'diverging') {
+    const { min, max } = getMinMaxOfChannel(dataset, key);
+
+    return {
+      scale,
+      type: 'diverging',
+      range: [min, (min + max) / 2, max],
+    } as DivergingMapping;
+  }
+  return null;
+};
+
+/**
+ *
+ * @param mapping a mapping object
+ * @returns true if the given value is a numeric one
+ */
+export function isNumericMapping(mapping: Mapping): mapping is DivergingMapping | ContinuousMapping {
+  return mapping?.type === 'diverging' || mapping?.type === 'sequential';
+}

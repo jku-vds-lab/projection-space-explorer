@@ -34,3 +34,18 @@ export enum FeatureType {
    */
   Array = 'Array',
 }
+
+export function stringToFeatureType(value: string) {
+  switch (value.toLowerCase()) {
+    case 'array':
+      return FeatureType.Array;
+    case 'date':
+      return FeatureType.Date;
+    case 'categorical':
+      return FeatureType.Categorical;
+    case 'quantitative':
+      return FeatureType.Quantitative;
+    default:
+      return FeatureType.String;
+  }
+}

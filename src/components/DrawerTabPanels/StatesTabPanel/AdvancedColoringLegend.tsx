@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import * as React from 'react';
 import { FormControlLabel, Checkbox, Typography, Grid } from '@mui/material';
-import { DiscreteMapping } from '../../Utility/Colors/Mapping';
+import { Mapping, mapValueToColor } from '../../Utility/Colors/Mapping';
 import { setAdvancedColoringSelectionAction } from '../../Ducks/AdvancedColoringSelectionDuck';
 import { RootState } from '../../Store';
 
@@ -14,7 +14,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 type ShowColorLegendProps = {
-  pointColorMapping: any;
+  pointColorMapping: Mapping;
   advancedColoringSelection: boolean[];
   setAdvancedColoringSelection: Function;
 };
@@ -38,11 +38,11 @@ export function AdvancedColoringLegendFull({ pointColorMapping, advancedColoring
     return <div />;
   }
 
-  if (pointColorMapping instanceof DiscreteMapping) {
+  if (pointColorMapping.type === 'categorical') {
     return (
       <Grid container direction="column" style={{ padding: '12px 0px', minWidth: 300 }}>
         {pointColorMapping.values.map((value, index) => {
-          const color = pointColorMapping.map(value);
+          const color = mapValueToColor(pointColorMapping, value);
           return (
             <FormControlLabel
               key={value}
