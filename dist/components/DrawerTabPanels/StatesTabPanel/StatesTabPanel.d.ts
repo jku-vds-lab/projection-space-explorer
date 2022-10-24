@@ -23,10 +23,6 @@ declare type Props = PropsFromRedux & {
     encodings: EncodingChannel[];
 };
 export declare function StatesTabPanelFull({ dataset, setVectorByShape, setChannelBrightness, setGlobalPointBrightness, setChannelSize, setGlobalPointSize, encodings, setAdvancedColoringSelection, }: Props): JSX.Element;
-export default function NumberInput({ value, setValue }: {
-    value: number;
-    setValue: (_: number) => void;
-}): JSX.Element;
 export declare const StatesTabPanel: import("react-redux").ConnectedComponent<typeof StatesTabPanelFull, import("react-redux").Omit<{
     selectedLineBy: {
         options: any[];

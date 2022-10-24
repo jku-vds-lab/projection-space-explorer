@@ -13,23 +13,7 @@ import { Loader } from './Loader';
 import { ICluster } from '../../../model/ICluster';
 import { ObjectTypes } from '../../../model/ObjectType';
 import { DatasetEntry } from '../../../model/DatasetEntry';
-
-class Profiler {
-  t0: number;
-  count: number;
-
-  constructor() {
-    this.t0 = Date.now();
-    this.count = 0;
-  }
-
-  profile(label: string) {
-    this.count = this.count + 1;
-    const t = Date.now();
-    console.log(`${this.count} ${label}: ${(t - this.t0) / 1000}`)
-    this.t0 = t;
-  }
-}
+import { Profiler } from './Profiler';
 
 function convertFromCSV(vectors) {
   return vectors.map((vector) => {
@@ -105,10 +89,13 @@ export class CSVLoader implements Loader {
     });
   }
 
-  async resolve(finished, vectors, datasetType, entry: DatasetEntry): Promise<Dataset> {
+  async resolve(finished, vectors, datasetType, entry: DatasetEntry, p_metaInformation?): Promise<Dataset> {
+    const profiler = new Profiler();
+    profiler.profile("start")
+
     const header = Object.keys(vectors[0]);
 
-    const profiler = new Profiler();
+    profiler.profile("getting header");
 
     let ranges = header.reduce((map, value) => {
       const matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/);
@@ -124,8 +111,10 @@ export class CSVLoader implements Loader {
       return map;
     }, {});
 
+    profiler.profile('parse ranges')
+
     // Check for JSON header inside column, store it as key/value pair
-    const metaInformation = header.reduce((map, value) => {
+    const metaInformation = p_metaInformation ? p_metaInformation : header.reduce((map, value) => {
       const json = value.match(/[{].*[}]/);
       if (json != null) {
         const cutHeader = value.substring(0, value.length - json[0].length);

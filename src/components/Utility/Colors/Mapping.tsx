@@ -6,7 +6,10 @@ import { APalette } from '../../../model/palettes';
 import { getMinMaxOfChannel } from '../../WebGLView/UtilityFunctions';
 import { Dataset } from '../../../model/Dataset';
 
-export class DiscreteMapping {
+// Color to use when the mapping is incomplete or impossible to map
+const FALLBACK_COLOR = new SchemeColor('#000000');
+
+export interface DiscreteMapping {
   scale: BaseColorScale;
   values: ShallowSet;
   type: 'categorical';
@@ -52,7 +55,7 @@ export function mapValueToColor(mapping: ContinuousMapping | DivergingMapping | 
       // @ts-ignore
       const d3color = d3v5.color(interpolator(normalized));
       // @ts-ignore
-      return SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b);
+      return d3color ? SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b) : FALLBACK_COLOR;
     }
     case 'diverging': {
       const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
@@ -69,13 +72,17 @@ export function mapValueToColor(mapping: ContinuousMapping | DivergingMapping | 
 
       const interpolator = d3v5.scaleDiverging(paletteInterpolate).domain(mapping.range);
 
+      // @ts-ignore
       const d3color = d3v5.color(interpolator(value)) as d3v5.RGBColor;
 
-      return d3color ? SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b) : new SchemeColor('#000000');
+      return d3color ? SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b) : FALLBACK_COLOR;
     }
     case 'categorical': {
       const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
       return palette[mapping.values.indexOf(value) % palette.length];
+    }
+    default: {
+      return FALLBACK_COLOR;
     }
   }
 }

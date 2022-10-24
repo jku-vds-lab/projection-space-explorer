@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Button, List, ListItem, Menu, MenuItem, Slider, TextField } from '@mui/material';
 import { connect, useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../Store';
 import { styled } from '@mui/material/styles';
+import { clone } from 'lodash';
+import * as d3v5 from 'd3v5';
+import { RootState } from '../../Store';
 import { ANormalized, ContinuousMapping, DivergingMapping, isNumericMapping, Mapping, mapValueToColor, NormalizedDictionary } from '../../Utility';
 import { BaseColorScale } from '../../../model/Palette';
 import { APalette } from '../../../model/palettes';
-import { clone } from 'lodash';
-import * as d3v5 from 'd3v5';
 import { PointColorScaleActions } from '../../Ducks';
 import { CategoryOption } from '../../WebGLView/CategoryOptions';
 import { ViewActions, ViewSelector } from '../../Ducks/ViewDuck';
@@ -62,9 +62,7 @@ export function ColorScaleMenuItem({ scale, skew }: { scale: BaseColorScale; ske
           width: '100%',
           minWidth: 200,
           height: '1rem',
-          backgroundImage: `linear-gradient(to right, ${palette
-            .map((stop, i) => `${stop.hex} ${i === 1 ? (skew ? skew : 50) : i === 0 ? 0 : 100}%`)
-            .join(',')})`,
+          backgroundImage: `linear-gradient(to right, ${palette.map((stop, i) => `${stop.hex} ${i === 1 ? skew ?? 50 : i === 0 ? 0 : 100}%`).join(',')})`,
         }}
       />
     );
@@ -91,7 +89,7 @@ export default function NumberInput({ value, setValue, label }: { value: number;
       value={value}
       InputProps={{ inputProps: { min: -100000, max: 100000 } }}
       onChange={(e) => {
-        var value = parseFloat(e.target.value);
+        const value = parseFloat(e.target.value);
 
         if (!Number.isNaN(value)) {
           setValue(value);
@@ -139,9 +137,9 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
   const mapping = useSelector(ViewSelector.defaultSelector).attributes.pointColorMapping as Mapping;
 
   const [tempMapping, setTempMapping] = React.useState<[number, number, number]>([0, 0, 0]);
-  let min = 0,
-    max = 0,
-    mid = 0;
+  let min = 0;
+  let max = 0;
+  let mid = 0;
   if (tempMapping.length === 3) {
     [min, mid, max] = tempMapping;
   } else {
@@ -157,29 +155,31 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
   }, [mapping]);
 
   React.useEffect(() => {
-    var svg = d3v5.select(`#${SVG_ID}`);
+    const svg = d3v5.select(`#${SVG_ID}`);
+
     if (!(channelColor && active && isNumericMapping(mapping))) {
       svg.selectAll('*').remove();
 
       return;
     }
 
-    var x = d3v5
+    const x = d3v5
       .scaleLinear()
       .domain([min, max])
       .range([0, 288 - 32]);
 
-    var histogram = d3v5
+    const histogram = d3v5
       .histogram()
       .value(function (d) {
         return d[channelColor.key];
       })
-      .domain(x.domain())
+      .domain(x.domain() as [number, number])
       .thresholds(x.ticks(70));
 
-    var bins = histogram(dataset.vectors);
+    // @ts-ignore
+    const bins = histogram(dataset.vectors);
 
-    var y = d3v5.scaleLinear().range([height, 0]);
+    const y = d3v5.scaleLinear().range([height, 0]);
     y.domain([
       0,
       d3v5.max(bins, function (d) {
@@ -191,7 +191,6 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
       .selectAll('rect')
       .data(bins)
       .join('rect')
-      //.append('rect')
       .attr('x', 1)
       .attr('transform', function (d) {
         return 'translate(' + x(d.x0) + ',' + y(d.length) + ')';
@@ -209,7 +208,7 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
       return;
     }
 
-    var svg = d3v5.select(`#${SVG_ID}`);
+    const svg = d3v5.select(`#${SVG_ID}`);
     const newMapping = clone(mapping) as DivergingMapping | ContinuousMapping;
 
     if (mapping.type === 'diverging') {
@@ -219,9 +218,10 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
     }
 
     svg.selectAll('rect').style('fill', (d) => {
+      // @ts-ignore
       return mapValueToColor(newMapping, d.x0).hex;
     });
-  }, [min, mid, max]);
+  }, [min, mid, max, mapping]);
 
   const dispatch = useDispatch();
 
@@ -275,7 +275,7 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
             ))}
         </Menu>
 
-        {mapping?.type == 'diverging' ? (
+        {mapping?.type === 'diverging' ? (
           <ThumbSlider
             min={min}
             max={max}

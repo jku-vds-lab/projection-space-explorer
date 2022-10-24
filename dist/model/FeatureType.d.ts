@@ -28,3 +28,4 @@ export declare enum FeatureType {
      */
     Array = "Array"
 }
+export declare function stringToFeatureType(value: string): FeatureType.String | FeatureType.Quantitative | FeatureType.Categorical | FeatureType.Date | FeatureType.Array;
