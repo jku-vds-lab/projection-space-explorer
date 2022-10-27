@@ -23,7 +23,7 @@ import { selectedLineBy } from '../Ducks/SelectedLineByDuck';
 import groupVisualizationMode, { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
 import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
-import detailView from '../Ducks/DetailViewDuck';
+import { detailView } from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
 import { RootActionTypes } from './RootActions';
 import { Dataset, ADataset, SegmentFN, AProjection, IBook, ProjectionMethod, IProjection } from '../../model';
