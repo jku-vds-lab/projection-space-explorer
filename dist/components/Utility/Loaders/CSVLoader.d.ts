@@ -16,5 +16,5 @@ export declare class CSVLoader implements Loader {
     resolveVectors(vectors: any, finished: any): void;
     getFeatureType(x: any): "date" | "number" | "arbitrary";
     getClusters(vectors: IVector[], callback: any): void;
-    resolve(finished: any, vectors: any, datasetType: any, entry: DatasetEntry): Promise<Dataset>;
+    resolve(finished: any, vectors: any, datasetType: any, entry: DatasetEntry, p_metaInformation?: any): Promise<Dataset>;
 }

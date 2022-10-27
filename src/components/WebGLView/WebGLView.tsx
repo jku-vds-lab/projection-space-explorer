@@ -42,7 +42,7 @@ import { DataLine } from '../../model/DataLine';
 import { ObjectTypes } from '../../model/ObjectType';
 import { ComponentConfig } from '../../BaseConfig';
 import { ANormalized } from '../Utility/NormalizedState';
-import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck copy';
+import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck';
 import { Mapping, mappingFromScale } from '../Utility';
 import { ViewActions, SingleMultipleAttributes } from '../Ducks/ViewDuck';
 import { IPosition, IProjection } from '../../model';

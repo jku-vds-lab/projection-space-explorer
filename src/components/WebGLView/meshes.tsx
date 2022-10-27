@@ -14,7 +14,7 @@ import SpriteAtlas from '../../../textures/sprites/atlas.png';
 import { IBaseProjection } from '../../model/ProjectionInterfaces';
 import { createLinearRangeScaler } from '../Utility/ScalingAndAxes';
 import { Shapes } from './Shapes';
-import { IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
+import { IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 
 // @ts-ignore
 import fragmentShader from '../../shaders/fragment.glsl?raw';
@@ -763,6 +763,9 @@ export class PointVisualization {
       } else if (this.grayedLayerSystem.getValue(vector.__meta__.meshIndex)) {
         rgb = gray;
       } else if (this.colorAttribute != null) {
+        //console.log(this.vectorMapping);
+        //console.log(vector[this.colorAttribute.key]);
+
         const m = mapValueToColor(this.vectorMapping, vector[this.colorAttribute.key]);
         rgb = m.rgb;
 

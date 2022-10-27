@@ -79,7 +79,7 @@ export function mapValueToColor(mapping: ContinuousMapping | DivergingMapping | 
     }
     case 'categorical': {
       const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
-      return palette[mapping.values.indexOf(value) % palette.length];
+      return palette[mapping.values.indexOf(value) % palette.length] ?? FALLBACK_COLOR;
     }
     default: {
       return FALLBACK_COLOR;

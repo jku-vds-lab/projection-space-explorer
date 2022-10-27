@@ -11,7 +11,6 @@ import { mean, std } from '../components/NumTs/NumTs';
 import { EncodingMethod } from './EncodingMethod';
 import { NormalizationMethod } from './NormalizationMethod';
 import { IBaseProjection } from './ProjectionInterfaces';
-import dataset from '../components/Ducks/DatasetDuck';
 
 export enum PrebuiltFeatures {
   Line = 'line',

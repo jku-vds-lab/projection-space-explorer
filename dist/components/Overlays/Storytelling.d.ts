@@ -1,7 +1,7 @@
 import { EntityId } from '@reduxjs/toolkit';
 import { ConnectedProps } from 'react-redux';
 import { Dataset } from '../../model/Dataset';
-import { IStorytelling } from '../Ducks/StoriesDuck copy';
+import { IStorytelling } from '../Ducks/StoriesDuck';
 import { ICluster } from '../../model/ICluster';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     dataset: Dataset;
@@ -40,5 +40,5 @@ export declare const Storytelling: import("react-redux").ConnectedComponent<({ d
     setSelectedCluster: (clusters: EntityId[], shift: any) => any;
 } & {
     dataset: Dataset;
-}, "dataset" | "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "currentAggregation" | "genericFingerprintAttributes" | "addClusterToTrace" | "setSelectedCluster">>;
+}, "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "currentAggregation" | "dataset" | "genericFingerprintAttributes" | "addClusterToTrace" | "setSelectedCluster">>;
 export {};

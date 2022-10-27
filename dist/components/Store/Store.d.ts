@@ -1,7 +1,7 @@
 import { EntityState } from '@reduxjs/toolkit';
 import { ClusterMode } from '../Ducks/ClusterModeDuck';
 import { Dataset, IProjection } from '../../model';
-import { IStorytelling } from '../Ducks/StoriesDuck copy';
+import { IStorytelling } from '../Ducks/StoriesDuck';
 export declare function createInitialReducerState(dataset: Dataset): Partial<RootState>;
 export declare const rootReducer: (state: any, action: any) => import("redux").CombinedState<{
     currentAggregation: {

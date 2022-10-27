@@ -19,7 +19,7 @@ import * as nt from '../NumTs/NumTs';
 import { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
 import { ViewTransformType } from '../Ducks';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
-import { AStorytelling } from '../Ducks/StoriesDuck copy';
+import { AStorytelling } from '../Ducks/StoriesDuck';
 import { IPosition } from '../../model/ProjectionInterfaces';
 
 const SELECTED_COLOR = 0x007dad;

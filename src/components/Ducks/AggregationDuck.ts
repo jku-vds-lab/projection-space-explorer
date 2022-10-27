@@ -4,7 +4,7 @@ import { ThunkAction } from 'redux-thunk';
 import type { RootState } from '../Store/Store';
 import { ICluster } from '../../model/ICluster';
 import { IVector } from '../../model/Vector';
-import { AStorytelling } from './StoriesDuck copy';
+import { AStorytelling } from './StoriesDuck';
 
 const THUNK_SET_VECTORS = 'ducks/THUNK_SET_VECTORS';
 const THUNK_SET_CLUSTERS = 'ducks/THUNK_SET_CLUSTERS';
