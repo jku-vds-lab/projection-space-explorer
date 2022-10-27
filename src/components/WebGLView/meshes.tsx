@@ -763,8 +763,8 @@ export class PointVisualization {
       } else if (this.grayedLayerSystem.getValue(vector.__meta__.meshIndex)) {
         rgb = gray;
       } else if (this.colorAttribute != null) {
-        //console.log(this.vectorMapping);
-        //console.log(vector[this.colorAttribute.key]);
+        // console.log(this.vectorMapping);
+        // console.log(vector[this.colorAttribute.key]);
 
         const m = mapValueToColor(this.vectorMapping, vector[this.colorAttribute.key]);
         rgb = m.rgb;

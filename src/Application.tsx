@@ -105,7 +105,6 @@ export const Application = connector(
 
       this.splitRef = React.createRef();
 
-      this.onLineSelect = this.onLineSelect.bind(this);
       this.onDataSelected = this.onDataSelected.bind(this);
     }
 
@@ -134,12 +133,6 @@ export const Application = connector(
      */
     onDataSelected(dataset: Dataset) {
       this.props.loadDataset(dataset);
-    }
-
-    onLineSelect(algo, show) {
-      // TODO: filtering for lines should be moved to duck
-      // this.threeRef.current.filterLines(algo, show);
-      // this.threeRef.current.requestRender();
     }
 
     onChangeTab(newTab) {

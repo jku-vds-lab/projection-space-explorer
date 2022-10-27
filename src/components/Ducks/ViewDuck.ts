@@ -23,7 +23,7 @@ import { ViewTransformType, viewTransform } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, ProjectionMethod, IPosition, Dataset, AProjection } from '../../model';
 import { Mapping } from '../Utility';
-import { CategoryOption } from '../WebGLView';
+import { CategoryOption } from '../WebGLView/CategoryOptions';
 
 export const setWorkspaceAction = createAction<EntityId | IProjection>('set/workspace');
 

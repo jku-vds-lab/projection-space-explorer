@@ -4,7 +4,6 @@ import { SchemeColor } from '../Utility/Colors/SchemeColor';
 import { IBaseProjection, IProjection } from '../../model/ProjectionInterfaces';
 import { CubicBezierCurve } from '../../model/Curves';
 import type { RootState } from './Store';
-import { ViewSelector } from '../Ducks/ViewDuck';
 import { Dataset } from '../../model/Dataset';
 import { mapValueToColor } from '../Utility';
 
@@ -286,7 +285,7 @@ export class UtilityActions {
 
         const color = isSelected(index)
           ? mapping
-            ? (mapValueToColor(mapping, state.dataset.vectors[index][channelColor.key]))
+            ? mapValueToColor(mapping, state.dataset.vectors[index][channelColor.key])
             : new SchemeColor('#7fc97f')
           : new SchemeColor('#c0c0c0');
 

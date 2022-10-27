@@ -3,6 +3,7 @@
  */
 export class Profiler {
   t0: number;
+
   count: number;
 
   constructor() {
@@ -11,7 +12,7 @@ export class Profiler {
   }
 
   profile(label: string) {
-    this.count = this.count + 1;
+    this.count += 1;
     const t = Date.now();
     console.log(`${this.count} ${label}: ${(t - this.t0) / 1000}`);
     this.t0 = t;

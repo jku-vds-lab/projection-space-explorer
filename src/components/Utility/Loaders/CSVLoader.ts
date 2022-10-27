@@ -91,11 +91,11 @@ export class CSVLoader implements Loader {
 
   async resolve(finished, vectors, datasetType, entry: DatasetEntry, p_metaInformation?): Promise<Dataset> {
     const profiler = new Profiler();
-    profiler.profile("start")
+    profiler.profile('start');
 
     const header = Object.keys(vectors[0]);
 
-    profiler.profile("getting header");
+    profiler.profile('getting header');
 
     let ranges = header.reduce((map, value) => {
       const matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/);
@@ -111,26 +111,28 @@ export class CSVLoader implements Loader {
       return map;
     }, {});
 
-    profiler.profile('parse ranges')
+    profiler.profile('parse ranges');
 
     // Check for JSON header inside column, store it as key/value pair
-    const metaInformation = p_metaInformation ? p_metaInformation : header.reduce((map, value) => {
-      const json = value.match(/[{].*[}]/);
-      if (json != null) {
-        const cutHeader = value.substring(0, value.length - json[0].length);
+    const metaInformation =
+      p_metaInformation ||
+      header.reduce((map, value) => {
+        const json = value.match(/[{].*[}]/);
+        if (json != null) {
+          const cutHeader = value.substring(0, value.length - json[0].length);
 
-        vectors.forEach((vector) => {
-          vector[cutHeader] = vector[value];
-          delete vector[value];
-        });
-        map[cutHeader] = JSON.parse(json[0]);
-      } else {
-        map[value] = { featureLabel: DefaultFeatureLabel };
-      }
-      return map;
-    }, {});
+          vectors.forEach((vector) => {
+            vector[cutHeader] = vector[value];
+            delete vector[value];
+          });
+          map[cutHeader] = JSON.parse(json[0]);
+        } else {
+          map[value] = { featureLabel: DefaultFeatureLabel };
+        }
+        return map;
+      }, {});
 
-    profiler.profile("Parse meta information");
+    profiler.profile('Parse meta information');
 
     let index = 0;
     const types = {};
@@ -171,11 +173,11 @@ export class CSVLoader implements Loader {
           types[current_key] = FeatureType.Categorical;
         }
       }
-      
+
       index++;
     });
 
-    profiler.profile("Getting data types")
+    profiler.profile('Getting data types');
 
     // replace date features by their numeric timestamp equivalent
     // and fix all quantitative features to be numbers
@@ -202,7 +204,7 @@ export class CSVLoader implements Loader {
       });
     }
 
-    profiler.profile("Replace numerical values and dates")
+    profiler.profile('Replace numerical values and dates');
 
     const preprocessor = new Preprocessor(vectors);
     let inferredColumns = [];
@@ -210,14 +212,14 @@ export class CSVLoader implements Loader {
 
     [ranges, inferredColumns] = preprocessor.preprocess(ranges);
 
-    profiler.profile("Preprocessing")
+    profiler.profile('Preprocessing');
 
     const dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation);
 
     dataset.hasInitialScalarTypes = hasScalarTypes;
     dataset.inferredColumns = inferredColumns;
 
-    profiler.profile("Creating dataset")
+    profiler.profile('Creating dataset');
 
     const promise = new Promise<Dataset>((resolve) => {
       this.getClusters(vectors, (clusters) => {
@@ -230,7 +232,7 @@ export class CSVLoader implements Loader {
 
         dataset.categories = dataset.extractEncodingFeatures(ranges);
 
-        profiler.profile("Extract encoding features")
+        profiler.profile('Extract encoding features');
 
         resolve(dataset);
 

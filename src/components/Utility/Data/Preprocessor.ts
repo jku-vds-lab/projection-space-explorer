@@ -25,7 +25,6 @@ export class Preprocessor {
     return Object.keys(vector).filter((e) => e !== '__meta__');
   }
 
-
   /**
    * Returns a unique array of distinct line values.
    */

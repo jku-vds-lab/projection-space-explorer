@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, List, ListItem, Menu, MenuItem, Slider, TextField } from '@mui/material';
 import { connect, useSelector, useDispatch } from 'react-redux';
-import { styled } from '@mui/material/styles';
+import { css, styled } from '@mui/material/styles';
 import { clone } from 'lodash';
 import * as d3v5 from 'd3v5';
 import { RootState } from '../../Store';
@@ -15,7 +15,11 @@ import { Dataset } from '../../../model/Dataset';
 import { getMinMaxOfChannel } from '../../WebGLView/UtilityFunctions';
 
 const SVG_ID = 'mapping_svghistogram';
+const WIDTH = 288 - 32;
 
+/**
+ * Custom styled slider that is positioned over a color scale to adjust the center.
+ */
 export const ThumbSlider = styled(Slider)(({ theme }) => ({
   color: theme.palette.mode === 'dark' ? '#3880ff' : '#3880ff',
   height: 2,
@@ -44,6 +48,15 @@ export const ThumbSlider = styled(Slider)(({ theme }) => ({
   },
 }));
 
+const BaseScale = styled('div')({
+  width: '100%',
+  minWidth: 200,
+  height: '1rem',
+});
+
+/**
+ * Renders one color scale with an optional center point.
+ */
 export function ColorScaleMenuItem({ scale, skew }: { scale: BaseColorScale; skew?: number }) {
   if (!scale) {
     return null;
@@ -51,35 +64,30 @@ export function ColorScaleMenuItem({ scale, skew }: { scale: BaseColorScale; ske
 
   const palette = typeof scale.palette === 'string' ? APalette.getByName(scale.palette) : scale.palette;
 
-  if (scale.type === 'sequential') {
-    return <div style={{ width: '100%', height: '1rem', backgroundImage: `linear-gradient(to right, ${palette.map((stop) => stop.hex).join(',')})` }} />;
+  switch (scale.type) {
+    case 'sequential':
+      return <BaseScale style={{ backgroundImage: `linear-gradient(to right, ${palette.map((stop) => stop.hex).join(',')})` }} />;
+    case 'diverging':
+      return (
+        <BaseScale
+          style={{
+            backgroundImage: `linear-gradient(to right, ${palette.map((stop, i) => `${stop.hex} ${i === 1 ? skew ?? 50 : i === 0 ? 0 : 100}%`).join(',')})`,
+          }}
+        />
+      );
+    case 'categorical':
+      return (
+        <BaseScale
+          style={{
+            backgroundImage: `linear-gradient(to right, ${palette
+              .map((stop, index) => `${stop.hex} ${(index / palette.length) * 100.0}%, ${stop.hex} ${((index + 1) / palette.length) * 100.0}%`)
+              .join(',')})`,
+          }}
+        />
+      );
+    default:
+      return null;
   }
-
-  if (scale.type === 'diverging') {
-    return (
-      <div
-        style={{
-          width: '100%',
-          minWidth: 200,
-          height: '1rem',
-          backgroundImage: `linear-gradient(to right, ${palette.map((stop, i) => `${stop.hex} ${i === 1 ? skew ?? 50 : i === 0 ? 0 : 100}%`).join(',')})`,
-        }}
-      />
-    );
-  }
-
-  return (
-    <div
-      style={{
-        width: '100%',
-        minWidth: 200,
-        height: '1rem',
-        backgroundImage: `linear-gradient(to right, ${palette
-          .map((stop, index) => `${stop.hex} ${(index / palette.length) * 100.0}%, ${stop.hex} ${((index + 1) / palette.length) * 100.0}%`)
-          .join(',')})`,
-      }}
-    />
-  );
 }
 
 export default function NumberInput({ value, setValue, label }: { value: number; setValue: (_: number) => void; label: string }) {
@@ -102,15 +110,7 @@ export default function NumberInput({ value, setValue, label }: { value: number;
   );
 }
 
-function DivergingInput({
-  scale,
-  mapping,
-  setMapping,
-}: {
-  scale: BaseColorScale;
-  mapping: [number, number, number] | [number, number];
-  setMapping: (value) => void;
-}) {
+function DivergingInput({ mapping, setMapping }: { mapping: [number, number, number] | [number, number]; setMapping: (value) => void }) {
   const alterMapping = (index: number, value: number) => {
     const newVal = clone(mapping);
     newVal[index] = value;
@@ -163,10 +163,7 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
       return;
     }
 
-    const x = d3v5
-      .scaleLinear()
-      .domain([min, max])
-      .range([0, 288 - 32]);
+    const x = d3v5.scaleLinear().domain([min, max]).range([0, WIDTH]);
 
     const histogram = d3v5
       .histogram()
@@ -179,13 +176,15 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
     // @ts-ignore
     const bins = histogram(dataset.vectors);
 
-    const y = d3v5.scaleLinear().range([height, 0]);
-    y.domain([
-      0,
-      d3v5.max(bins, function (d) {
-        return d.length;
-      }),
-    ]);
+    const y = d3v5
+      .scaleLinear()
+      .range([height, 0])
+      .domain([
+        0,
+        d3v5.max(bins, function (d) {
+          return d.length;
+        }),
+      ]);
 
     svg
       .selectAll('rect')
@@ -193,15 +192,15 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
       .join('rect')
       .attr('x', 1)
       .attr('transform', function (d) {
-        return 'translate(' + x(d.x0) + ',' + y(d.length) + ')';
+        return `translate(${x(d.x0)},${y(d.length)})`;
       })
       .attr('width', function (d) {
-        return x(d.x1) - x(d.x0) - 1;
+        return Math.max(0, x(d.x1) - x(d.x0) - 1);
       })
       .attr('height', function (d) {
-        return 100 - y(d.length);
+        return height - y(d.length);
       });
-  }, [min, max, channelColor, mapping]);
+  }, [min, max, channelColor, mapping, dataset.vectors, active]);
 
   React.useEffect(() => {
     if (!(channelColor && active && isNumericMapping(mapping))) {
@@ -221,7 +220,7 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
       // @ts-ignore
       return mapValueToColor(newMapping, d.x0).hex;
     });
-  }, [min, mid, max, mapping]);
+  }, [min, mid, max, mapping, active, channelColor]);
 
   const dispatch = useDispatch();
 
@@ -249,7 +248,7 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
   return (
     <>
       {isNumericMapping(mapping) ? (
-        <svg id={SVG_ID} width={288 - 32} height={height} style={{ marginRight: 16, marginLeft: 16, marginBottom: 4, marginTop: 8 }} />
+        <svg id={SVG_ID} width={WIDTH} height={height} style={{ marginRight: 16, marginLeft: 16, marginBottom: 4, marginTop: 8 }} />
       ) : null}
 
       <div style={{ position: 'relative', marginRight: 16, marginLeft: 16 }}>
@@ -279,6 +278,7 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
           <ThumbSlider
             min={min}
             max={max}
+            step={0.01}
             value={tempMapping[1]}
             onChange={(_, newValue: number) => {
               setTempMapping([min, newValue, max]);
@@ -288,7 +288,7 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
 
         {isNumericMapping(mapping) ? (
           <>
-            <DivergingInput scale={active} setMapping={setTempMapping} mapping={tempMapping} />
+            <DivergingInput setMapping={setTempMapping} mapping={tempMapping} />
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 8 }}>
               <Button
