@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { connect, ConnectedProps, useDispatch, useSelector } from 'react-redux';
 import * as React from 'react';
-import { Grid, Typography, Box, Button, Accordion, AccordionSummary, AccordionDetails, createFilterOptions, Autocomplete, TextField } from '@mui/material';
+import { Grid, Typography, Box, Accordion, AccordionSummary, AccordionDetails, createFilterOptions, Autocomplete, TextField } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { makeStyles } from '@mui/styles';
 import { ShapeLegend } from './ShapeLegend';
@@ -23,12 +23,9 @@ import { PathBrightnessSlider } from './PathBrightnessSlider';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
 import { PointDisplayActions } from '../../Ducks/PointDisplayDuck';
 import { EncodingChannel, BaseColorScale } from '../../../model';
-import { ViewActions, ViewSelector } from '../../Ducks/ViewDuck';
+import { ViewSelector } from '../../Ducks/ViewDuck';
 import { PointColorScaleActions } from '../../Ducks';
 import { ANormalized } from '../../Utility/NormalizedState';
-import { DivergingMapping } from '../../Utility';
-import { useState } from 'react';
-import { dispatch } from 'd3v5';
 
 const mapStateToProps = (state: RootState) => ({
   selectedLineBy: state.selectedLineBy,
@@ -335,6 +332,5 @@ export function StatesTabPanelFull({
 
   return <div>{dataset && dataset.isSequential ? accordion : points_box}</div>;
 }
-
 
 export const StatesTabPanel = connector(StatesTabPanelFull);

@@ -11,5 +11,5 @@ declare type StateSequenceDrawerProps = {
  * the user wants to navigate the sequence of one line only.
  */
 declare function StateSequenceDrawer({ activeLine, setHighlightedSequence, dataset, setActiveLine, setCurrentAggregation }: StateSequenceDrawerProps): JSX.Element;
-export declare const StateSequenceDrawerRedux: import("react-redux").ConnectedComponent<typeof StateSequenceDrawer, import("react-redux").Omit<StateSequenceDrawerProps, "activeLine" | "dataset" | "setHighlightedSequence" | "setActiveLine" | "setCurrentAggregation">>;
+export declare const StateSequenceDrawerRedux: import("react-redux").ConnectedComponent<typeof StateSequenceDrawer, import("react-redux").Omit<StateSequenceDrawerProps, "activeLine" | "dataset" | "setActiveLine" | "setHighlightedSequence" | "setCurrentAggregation">>;
 export {};
