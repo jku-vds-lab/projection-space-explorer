@@ -39,7 +39,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;
-    stories: import("immer/dist/internal").WritableDraft<import("../Ducks/StoriesDuck copy").IStorytelling>;
+    stories: import("immer/dist/internal").WritableDraft<import("../Ducks/StoriesDuck").IStorytelling>;
     trailSettings: {
         show: boolean;
         length: any;
@@ -226,5 +226,5 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "addView" | "activateView" | "setPointColorMapping" | "currentAggregation" | "activeLine" | "dataset" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "selectVectors" | "setViewTransform" | "setHoverState" | "addClusterToStory">>;
+}, import("react-redux").Omit<any, "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "addView" | "activateView" | "setPointColorMapping" | "currentAggregation" | "activeLine" | "dataset" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "selectVectors" | "setActiveLine" | "setViewTransform" | "setHoverState" | "removeClusterFromStories" | "addStory" | "addClusterToStory" | "setOpenTab" | "setSelectedCluster">>;
 export {};

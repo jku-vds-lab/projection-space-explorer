@@ -17,7 +17,7 @@ import { DatasetType } from '../../model/DatasetType';
 import { GenericLegend } from '../legends/Generic';
 import { ACluster } from '../../model/Cluster';
 import { selectClusters } from '../Ducks/AggregationDuck';
-import { StoriesActions, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
+import { StoriesActions, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 import { ICluster } from '../../model/ICluster';
 
 const mainColor = '#007dad';

@@ -9,7 +9,7 @@ import { SelectionClusters } from '../../Overlays/SelectionClusters';
 import type { RootState } from '../../Store/Store';
 import { VirtualColumn, VirtualTable } from '../../UI/VirtualTable';
 import { selectVectors } from '../../Ducks/AggregationDuck';
-import { AStorytelling } from '../../Ducks/StoriesDuck copy';
+import { AStorytelling } from '../../Ducks/StoriesDuck';
 import { FeatureConfig } from '../../../BaseConfig';
 
 const mapStateToProps = (state: RootState) => ({

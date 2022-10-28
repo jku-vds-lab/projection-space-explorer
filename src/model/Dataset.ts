@@ -11,7 +11,6 @@ import { mean, std } from '../components/NumTs/NumTs';
 import { EncodingMethod } from './EncodingMethod';
 import { NormalizationMethod } from './NormalizationMethod';
 import { IBaseProjection } from './ProjectionInterfaces';
-import dataset from '../components/Ducks/DatasetDuck';
 
 export enum PrebuiltFeatures {
   Line = 'line',
@@ -399,7 +398,7 @@ export class Dataset {
             shape_options.push({
               key,
               name: key,
-              type: 'categorical', // TODO: is there difference for binary?
+              type: 'categorical',
               values: columns[key].distinct.map((value, index) => {
                 return {
                   from: value,

@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createEntityAdapter, EntityState, EntityId } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import clone from 'fast-clone';
+import { useSelector } from 'react-redux';
 import projectionOpen from '../Ducks/ProjectionOpenDuck';
 import highlightedSequence from '../Ducks/HighlightedSequenceDuck';
 import dataset from '../Ducks/DatasetDuck';
@@ -22,7 +23,7 @@ import { selectedLineBy } from '../Ducks/SelectedLineByDuck';
 import groupVisualizationMode, { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
 import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
-import detailView from '../Ducks/DetailViewDuck';
+import { detailView } from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
 import { RootActionTypes } from './RootActions';
 import { Dataset, ADataset, SegmentFN, AProjection, IBook, ProjectionMethod, IProjection } from '../../model';
@@ -33,7 +34,7 @@ import colorScales from '../Ducks/ColorScalesDuck';
 import { BaseColorScale } from '../../model/Palette';
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multiplesSlice, multipleAdapter, defaultAttributes } from '../Ducks/ViewDuck';
-import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
+import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 
 /**
  * Match all cases of view constants eg x1, y1, x2, y2...
@@ -364,3 +365,5 @@ export function createRootReducer(reducers: any) {
 }
 
 export type RootState = ReturnType<typeof rootReducer>;
+
+export const usePSESelector = <T>(fn: (state: RootState) => T) => useSelector<RootState, T>(fn);

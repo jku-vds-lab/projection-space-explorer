@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import 'regenerator-runtime/runtime';
-import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid, Dialog } from '@mui/material';
+import { Divider, Drawer, Paper, Tooltip, Typography, Tab, Tabs, Box, Grid } from '@mui/material';
 import * as React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Split from 'react-split';
@@ -25,7 +25,7 @@ import { RubikPlugin } from './plugins/Rubik/RubikPlugin';
 import { ChessPlugin } from './plugins/Chess/ChessPlugin';
 import { GoPlugin } from './plugins/Go/GoPlugin';
 import { PseAppBar } from './components/PseAppBar';
-import { setDetailVisibility } from './components/Ducks/DetailViewDuck';
+import { setVisibility } from './components/Ducks/DetailViewDuck';
 import { PSEIcons } from './utils/PSEIcons';
 // @ts-ignore
 import VDSLogo from '../textures/vds-lab-logo-notext.svg';
@@ -71,7 +71,7 @@ const mapDispatchToProps = (dispatch) => ({
   setGlobalPointBrightness: (value) => dispatch(setGlobalPointBrightness(value)),
   setGenericFingerprintAttributes: (value) => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: (value) => dispatch(setGroupVisualizationMode(value)),
-  setLineUpInput_visibility: (open) => dispatch(setDetailVisibility(open)),
+  setLineUpInput_visibility: (open) => dispatch(setVisibility(open)),
   loadDataset: (dataset: Dataset) => dispatch(RootActions.loadDataset(dataset)),
 });
 
@@ -105,7 +105,6 @@ export const Application = connector(
 
       this.splitRef = React.createRef();
 
-      this.onLineSelect = this.onLineSelect.bind(this);
       this.onDataSelected = this.onDataSelected.bind(this);
     }
 
@@ -134,12 +133,6 @@ export const Application = connector(
      */
     onDataSelected(dataset: Dataset) {
       this.props.loadDataset(dataset);
-    }
-
-    onLineSelect(algo, show) {
-      // TODO: filtering for lines should be moved to duck
-      // this.threeRef.current.filterLines(algo, show);
-      // this.threeRef.current.requestRender();
     }
 
     onChangeTab(newTab) {

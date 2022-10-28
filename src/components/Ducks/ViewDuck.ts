@@ -22,7 +22,8 @@ import globalPointSize from './GlobalPointSizeDuck';
 import { ViewTransformType, viewTransform } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, ProjectionMethod, IPosition, Dataset, AProjection } from '../../model';
-import { ContinuousMapping, DiscreteMapping } from '../Utility';
+import { Mapping } from '../Utility';
+import { CategoryOption } from '../WebGLView/CategoryOptions';
 
 export const setWorkspaceAction = createAction<EntityId | IProjection>('set/workspace');
 
@@ -32,7 +33,7 @@ const workspaceReducer = createReducer<EntityId | IProjection>(null, (builder) =
   });
 });
 
-const pointColorMappingReducer = createReducer<DiscreteMapping | ContinuousMapping>(null, (builder) => {
+const pointColorMappingReducer = createReducer<Mapping>(null, (builder) => {
   builder.addDefaultCase((state, action) => {
     return state;
   });
@@ -81,14 +82,14 @@ export const attributesSlice = createSlice({
 });
 
 export type SingleMultipleAttributes = {
-  channelColor;
-  channelBrightness;
-  channelSize;
-  vectorByShape;
+  channelColor: CategoryOption;
+  channelBrightness: CategoryOption;
+  channelSize: CategoryOption;
+  vectorByShape: CategoryOption;
   viewTransform: ViewTransformType;
   lineBrightness: number;
   pointColorScale: number | string;
-  pointColorMapping;
+  pointColorMapping: Mapping;
   pathLengthRange: { range: number[]; maximum: number };
   globalPointSize: number[];
   globalPointBrightness: number[];
@@ -213,10 +214,16 @@ export const multiplesSlice = createSlice({
     save(state, action: PayloadAction<Update<IProjection>>) {
       projectionAdapter.updateOne(state.projections, action.payload);
     },
-    setPointColorMapping(state, action: PayloadAction<{ multipleId: EntityId; value: DiscreteMapping | ContinuousMapping }>) {
+    setPointColorMapping(state, action: PayloadAction<{ multipleId: EntityId; value: Mapping }>) {
       const { multipleId, value } = action.payload;
       const multiple = state.multiples.entities[multipleId];
       multiple.attributes.pointColorMapping = value;
+    },
+    changeDivergingRange(state, action: PayloadAction<[number, number, number] | [number, number]>) {
+      const active = state.multiples.entities[state.active].attributes;
+      if (active.pointColorMapping.type === 'diverging' || active.pointColorMapping.type === 'sequential') {
+        active.pointColorMapping.range = action.payload;
+      }
     },
     selectChannel(state, action: PayloadAction<{ dataset: Dataset; channel: 'x' | 'y'; value: string }>) {
       const active = state.multiples.entities[state.active].attributes;

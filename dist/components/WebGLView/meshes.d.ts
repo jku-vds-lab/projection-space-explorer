@@ -5,7 +5,8 @@ import { IVector } from '../../model/Vector';
 import { Dataset } from '../../model/Dataset';
 import { LayeringSystem } from './LayeringSystem';
 import { IBaseProjection } from '../../model/ProjectionInterfaces';
-import { IStorytelling } from '../Ducks/StoriesDuck copy';
+import { IStorytelling } from '../Ducks/StoriesDuck';
+import { CategoryOption } from './CategoryOptions';
 export declare function imageFromShape(value: any): "" | "./textures/sprites/cross.png" | "./textures/sprites/square.png" | "./textures/sprites/circle.png" | "./textures/sprites/star.png";
 export declare class LineVisualization {
     segments: DataLine[];
@@ -68,13 +69,13 @@ export declare class PointVisualization {
     /**
      * @param {*} category a feature to select the shape for
      */
-    setShapeByChannel(category: any): void;
-    setColorByChannel(category: any, scale: any): void;
+    setShapeByChannel(category: CategoryOption): void;
+    setColorByChannel(category: CategoryOption, scale: any): void;
     colorFilter(colorsChecked: any): void;
     getMapping(): Mapping;
     setColorScale(colorScale: any): void;
-    setBrightnessByChannel(channel: any, range: any): void;
-    sizeCat(category: any, range: any): void;
+    setBrightnessByChannel(channel: CategoryOption, range: any): void;
+    sizeCat(category: CategoryOption, range: any): void;
     updateSize(): void;
     updateColor(): void;
     isPointVisible(vector: IVector): boolean;

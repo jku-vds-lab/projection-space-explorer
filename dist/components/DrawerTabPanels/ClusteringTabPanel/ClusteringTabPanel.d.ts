@@ -4,7 +4,7 @@ import { ICluster } from '../../../model/ICluster';
 import { IBook } from '../../../model/Book';
 import { DisplayMode } from '../../Ducks/DisplayModeDuck';
 import { Dataset } from '../../../model/Dataset';
-import { IStorytelling } from '../../Ducks/StoriesDuck copy';
+import { IStorytelling } from '../../Ducks/StoriesDuck';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     stories: import("immer/dist/internal").WritableDraft<IStorytelling>;
     displayMode: DisplayMode;
@@ -54,5 +54,5 @@ export declare const ClusteringTabPanel: import("react-redux").ConnectedComponen
 } & {
     splitRef: any;
     baseUrl: string;
-}, "stories" | "workspace" | "currentAggregation" | "dataset" | "displayMode" | "groupVisualizationMode" | "setGroupVisualizationMode" | "setChannelColor" | "setStories" | "setDisplayMode" | "addStory" | "removeClusterFromStories" | "setSelectedClusters" | "setActiveStory">>;
+}, "stories" | "workspace" | "currentAggregation" | "dataset" | "displayMode" | "groupVisualizationMode" | "removeClusterFromStories" | "addStory" | "setActiveStory" | "setGroupVisualizationMode" | "setChannelColor" | "setStories" | "setDisplayMode" | "setSelectedClusters">>;
 export {};

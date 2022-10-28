@@ -214,7 +214,6 @@ export function StatesTabPanelFull({
             }
 
             const pointBrightness = attribute ? [0.25, 1] : [1];
-            console.log(attribute);
             setGlobalPointBrightness(pointBrightness);
             setChannelBrightness(attribute);
           }}
@@ -281,9 +280,11 @@ export function StatesTabPanelFull({
         <ColorScaleSelect channelColor={channelColor} active={active} />
       </Grid>
 
-      <Grid item style={{ padding: '16px 0px' }}>
-        {channelColor != null && channelColor.type === 'categorical' ? <AdvancedColoringPopover pointColorMapping={pointColorMapping} /> : <div />}
-      </Grid>
+      {channelColor != null ? (
+        <Grid item style={{ padding: '16px 0px' }}>
+          {channelColor.type === 'categorical' ? <AdvancedColoringPopover pointColorMapping={pointColorMapping} /> : null}
+        </Grid>
+      ) : null}
     </Box>
   );
 

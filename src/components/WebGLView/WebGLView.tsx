@@ -25,7 +25,6 @@ import { LineVisualization, PointVisualization } from './meshes';
 import { MultivariateClustering } from './MultivariateClustering';
 import { DisplayMode, displayModeSupportsStates } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
-import { mappingFromScale } from '../Utility/Colors/colors';
 import type { RootState } from '../Store/Store';
 import * as nt from '../NumTs/NumTs';
 import { MouseController } from './MouseController';
@@ -38,15 +37,15 @@ import { TraceSelectTool } from './TraceSelectTool';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
-import { ADataset, Dataset } from '../../model/Dataset';
+import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ObjectTypes } from '../../model/ObjectType';
 import { ComponentConfig } from '../../BaseConfig';
 import { ANormalized } from '../Utility/NormalizedState';
-import { StoriesActions, AStorytelling, bookAdapter } from '../Ducks/StoriesDuck copy';
-import { Mapping } from '../Utility';
-import { ViewActions, SingleMultipleAttributes, ViewSelector } from '../Ducks/ViewDuck';
-import { AProjection, IPosition, IProjection } from '../../model';
+import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck';
+import { Mapping, mappingFromScale } from '../Utility';
+import { ViewActions, SingleMultipleAttributes } from '../Ducks/ViewDuck';
+import { IPosition, IProjection } from '../../model';
 
 type ViewState = {
   camera: Camera;
@@ -1074,7 +1073,7 @@ export const WebGLView = connector(
       this.initializeContainerEvents();
       this.setupRenderer();
       if (this.props.dataset) {
-        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, { key: 'algo' }, this.props.dataset), null);
+        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset), null);
 
         this.particles?.updateColor();
 
@@ -1084,7 +1083,7 @@ export const WebGLView = connector(
         if (this.props.channelColor && this.props.pointColorScale) {
           const mapping = mappingFromScale(
             ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
-            this.props.channelColor,
+            this.props.channelColor.key,
             this.props.dataset,
           );
           this.props.setPointColorMapping(this.props.multipleId, mapping);
@@ -1096,10 +1095,8 @@ export const WebGLView = connector(
     }
 
     componentDidUpdate(prevProps: Props, prevState) {
-      // console.log(this.props.workspace);
-      // console.log(this.props.xChannel);
       if (prevProps.dataset !== this.props.dataset) {
-        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, { key: 'algo' }, this.props.dataset), null);
+        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset), null);
       }
 
       if (
@@ -1110,15 +1107,17 @@ export const WebGLView = connector(
         if (this.props.channelColor && this.props.pointColorScale) {
           const mapping = mappingFromScale(
             ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
-            this.props.channelColor,
+            this.props.channelColor.key,
             this.props.dataset,
           );
           this.props.setPointColorMapping(this.props.multipleId, mapping);
-          this.particles.setColorByChannel(this.props.channelColor, mapping);
         } else {
           this.props.setPointColorMapping(this.props.multipleId, null);
-          this.particles?.setColorByChannel(null, null);
         }
+      }
+
+      if (prevProps.pointColorMapping !== this.props.pointColorMapping) {
+        this.particles?.setColorByChannel(this.props.channelColor, this.props.pointColorMapping);
       }
 
       if (prevProps.stories !== this.props.stories) {

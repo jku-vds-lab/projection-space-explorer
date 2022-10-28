@@ -3,10 +3,9 @@ import { useState } from 'react';
 import * as React from 'react';
 import { Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { IBook } from '../../../model/Book';
 import type { RootState } from '../../Store/Store';
-import { StoriesActions, AStorytelling } from '../../Ducks/StoriesDuck copy';
+import { StoriesActions, AStorytelling } from '../../Ducks/StoriesDuck';
 import { EditBookDialog } from '../EmbeddingTabPanel/EditBookDialog';
 
 const mapStateToProps = (state: RootState) => ({
