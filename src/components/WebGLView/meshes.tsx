@@ -23,6 +23,7 @@ import vertexShader from '../../shaders/vertex.glsl?raw';
 
 import override from './meshline';
 import { CategoryOption } from './CategoryOptions';
+import { AShallowSet } from '../Utility/ShallowSet';
 
 export function imageFromShape(value) {
   switch (value) {
@@ -749,7 +750,8 @@ export class PointVisualization {
           if (isNumericMapping(this.vectorMapping)) {
             vector.__meta__.intrinsicColor = null;
           } else {
-            vector.__meta__.intrinsicColor = this.vectorMapping.values.indexOf(vector[this.colorAttribute.key]);
+            vector.__meta__.intrinsicColor = AShallowSet.indexOf(this.vectorMapping.values, vector[this.colorAttribute.key]);
+            console.log(vector.__meta__.intrinsicColor)
           }
         } else {
           const col = this.vectorSegmentLookup[i].__meta__.lineMesh.material.color;
@@ -772,7 +774,7 @@ export class PointVisualization {
         if (isNumericMapping(this.vectorMapping)) {
           vector.__meta__.intrinsicColor = null;
         } else {
-          vector.__meta__.intrinsicColor = this.vectorMapping.values.indexOf(vector[this.colorAttribute.key]);
+          vector.__meta__.intrinsicColor = AShallowSet.indexOf(this.vectorMapping.values, vector[this.colorAttribute.key]);
         }
       } else {
         rgb = defaultColor;

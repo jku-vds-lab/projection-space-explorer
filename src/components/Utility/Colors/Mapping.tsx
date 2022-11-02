@@ -1,6 +1,6 @@
 import * as d3v5 from 'd3v5';
 import { SchemeColor } from './SchemeColor';
-import { ShallowSet } from '../ShallowSet';
+import { AShallowSet } from '../ShallowSet';
 import { BaseColorScale } from '../../../model/Palette';
 import { APalette } from '../../../model/palettes';
 import { getMinMaxOfChannel } from '../../WebGLView/UtilityFunctions';
@@ -11,7 +11,7 @@ const FALLBACK_COLOR = new SchemeColor('#000000');
 
 export interface DiscreteMapping {
   scale: BaseColorScale;
-  values: ShallowSet;
+  values: any[];
   type: 'categorical';
 }
 
@@ -79,7 +79,7 @@ export function mapValueToColor(mapping: ContinuousMapping | DivergingMapping | 
     }
     case 'categorical': {
       const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
-      return palette[mapping.values.indexOf(value) % palette.length] ?? FALLBACK_COLOR;
+      return palette[AShallowSet.indexOf(mapping.values, value) % palette.length] ?? FALLBACK_COLOR;
     }
     default: {
       return FALLBACK_COLOR;
@@ -103,7 +103,7 @@ export const mappingFromScale = (scale: BaseColorScale, key: string, dataset: Da
   if (scale.type === 'categorical') {
     return {
       scale,
-      values: new ShallowSet(dataset.vectors.map((vector) => vector[key])),
+      values: AShallowSet.create(dataset.vectors.map((vector) => vector[key])),
       type: 'categorical',
     } as DiscreteMapping;
   }
