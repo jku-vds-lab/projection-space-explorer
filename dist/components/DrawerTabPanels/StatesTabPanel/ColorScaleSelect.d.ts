@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { BaseColorScale } from '../../../model/Palette';
 import { CategoryOption } from '../../WebGLView/CategoryOptions';
+/**
+ * Custom styled slider that is positioned over a color scale to adjust the center.
+ */
 export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
     color?: "primary" | "secondary";
     classes?: Partial<import("@mui/base").SliderUnstyledClasses> & {
@@ -16,6 +19,9 @@ export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
 } & import("@mui/base").SliderUnstyledOwnProps & Omit<Pick<React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, "key" | keyof React.HTMLAttributes<HTMLSpanElement>> & {
     ref?: React.Ref<HTMLSpanElement>;
 }, "size" | "color" | "sx" | keyof import("@mui/base").SliderUnstyledOwnProps> & import("@mui/system").MUIStyledCommonProps<import("@mui/material").Theme>, {}, {}>;
+/**
+ * Renders one color scale with an optional center point.
+ */
 export declare function ColorScaleMenuItem({ scale, skew }: {
     scale: BaseColorScale;
     skew?: number;

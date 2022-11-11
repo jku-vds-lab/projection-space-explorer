@@ -49,7 +49,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
          * @param json
          */
         onDataSelected(dataset: Dataset): void;
-        onLineSelect(algo: any, show: any): void;
         onChangeTab(newTab: any): void;
         render(): JSX.Element;
         context: any;
@@ -75,5 +74,5 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setGlobalPointBrightness" | "setOpenTab" | "setLineByOptions" | "setGenericFingerprintAttributes" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
+}, import("react-redux").Omit<any, "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGenericFingerprintAttributes" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
 export {};
