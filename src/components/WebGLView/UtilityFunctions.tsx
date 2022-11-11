@@ -171,18 +171,23 @@ export function replaceClusterLabels(vectors: IVector[], from: any, to: any) {
 export function getMinMaxOfChannel(dataset: Dataset, key: string, segment?) {
   let min = null;
   let max = null;
+  let center = null;
+
   if (dataset.columns[key].range) {
     min = dataset.columns[key].range.min;
     max = dataset.columns[key].range.max;
+    center = dataset.columns[key].range.center;
   } else if (dataset.isSequential && segment) {
     const filtered = segment.vectors.map((vector) => vector[key]);
     max = Math.max(...filtered);
     min = Math.min(...filtered);
+    center = (min + max) / 2;
   } else {
     const filtered = dataset.vectors.map((vector) => vector[key]);
     max = Math.max(...filtered);
     min = Math.min(...filtered);
+    center = (min + max) / 2;
   }
 
-  return { min, max };
+  return { min, max, center };
 }

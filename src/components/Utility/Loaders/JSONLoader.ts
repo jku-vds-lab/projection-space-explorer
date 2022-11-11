@@ -201,7 +201,7 @@ export class JSONLoader implements Loader {
     dataset.clusters = clusters;
     dataset.clusterEdges = edges;
     dataset.inferredColumns = inferredColumns;
-    dataset.categories = dataset.extractEncodingFeatures(ranges);
+    dataset.categories = dataset.extractEncodingFeatures();
 
     finished(dataset);
   }

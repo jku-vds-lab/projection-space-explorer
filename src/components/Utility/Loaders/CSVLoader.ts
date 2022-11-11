@@ -97,6 +97,8 @@ export class CSVLoader implements Loader {
 
     profiler.profile('getting header');
 
+    // TODO: really not used anymore, let it here for backwards compatibility
+    // The correct way now is to supply it in the metadata json
     let ranges = header.reduce((map, value) => {
       const matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/);
       if (matches != null) {
@@ -131,6 +133,19 @@ export class CSVLoader implements Loader {
         }
         return map;
       }, {});
+
+    console.log(metaInformation);
+
+    // Set the ranges from the domains
+    for (const key in metaInformation) {
+      const val = metaInformation[key];
+
+      if (val.domain) {
+        ranges[key] = { min: val.domain[0], max: val.domain[val.domain.length - 1], center: val.domain.length === 3 ? val.domain[1] : null };
+      }
+    }
+
+    console.log(ranges);
 
     profiler.profile('Parse meta information');
 
@@ -230,7 +245,7 @@ export class CSVLoader implements Loader {
           vector.groupLabel = [];
         });
 
-        dataset.categories = dataset.extractEncodingFeatures(ranges);
+        dataset.categories = dataset.extractEncodingFeatures();
 
         profiler.profile('Extract encoding features');
 

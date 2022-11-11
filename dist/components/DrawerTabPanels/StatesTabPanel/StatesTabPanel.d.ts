@@ -42,5 +42,5 @@ export declare const StatesTabPanel: import("react-redux").ConnectedComponent<ty
     setAdvancedColoringSelection: (value: any) => any;
 } & {
     encodings: EncodingChannel[];
-}, "dataset" | "selectedLineBy" | "setVectorByShape" | "setChannelBrightness" | "setGlobalPointBrightness" | "setChannelSize" | "setGlobalPointSize" | "setAdvancedColoringSelection" | "setSelectedLineBy">>;
+}, "dataset" | "selectedLineBy" | "setGlobalPointBrightness" | "setVectorByShape" | "setSelectedLineBy" | "setChannelBrightness" | "setChannelSize" | "setGlobalPointSize" | "setAdvancedColoringSelection">>;
 export {};

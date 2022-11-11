@@ -365,7 +365,7 @@ export class Dataset {
    * categorical, sequential or continuous attribues.
    * @param {*} ranges
    */
-  extractEncodingFeatures(ranges) {
+  extractEncodingFeatures() {
     if (this.vectors.length <= 0) {
       return [];
     }

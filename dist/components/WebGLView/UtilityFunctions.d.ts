@@ -32,4 +32,5 @@ export declare function replaceClusterLabels(vectors: IVector[], from: any, to: 
 export declare function getMinMaxOfChannel(dataset: Dataset, key: string, segment?: any): {
     min: any;
     max: any;
+    center: any;
 };

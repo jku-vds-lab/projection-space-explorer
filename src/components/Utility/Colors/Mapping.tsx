@@ -117,12 +117,12 @@ export const mappingFromScale = (scale: BaseColorScale, key: string, dataset: Da
     } as ContinuousMapping;
   }
   if (scale.type === 'diverging') {
-    const { min, max } = getMinMaxOfChannel(dataset, key);
+    const { min, max, center } = getMinMaxOfChannel(dataset, key);
 
     return {
       scale,
       type: 'diverging',
-      range: [min, (min + max) / 2, max],
+      range: [min, center ?? (min + max) / 2, max],
     } as DivergingMapping;
   }
   return null;

@@ -1,10 +1,9 @@
 import { SchemeColor } from './SchemeColor';
-import { ShallowSet } from '../ShallowSet';
 import { BaseColorScale } from '../../../model/Palette';
 import { Dataset } from '../../../model/Dataset';
 export interface DiscreteMapping {
     scale: BaseColorScale;
-    values: ShallowSet;
+    values: any[];
     type: 'categorical';
 }
 export interface ContinuousMapping {

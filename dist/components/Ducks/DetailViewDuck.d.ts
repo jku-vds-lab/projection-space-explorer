@@ -1,13 +1,6 @@
-export declare function setDetailVisibility(open: boolean): {
-    type: string;
-    open: boolean;
-};
-declare const initialState: {
+export declare const setVisibility: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<boolean, string>;
+export declare const setActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string, string>;
+export declare const detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
     open: boolean;
     active: string;
-};
-export default function detailView(state: {
-    open: boolean;
-    active: string;
-}, action: any): typeof initialState;
-export {};
+}>;

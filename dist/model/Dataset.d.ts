@@ -88,7 +88,7 @@ export declare class Dataset {
      * categorical, sequential or continuous attribues.
      * @param {*} ranges
      */
-    extractEncodingFeatures(ranges: any): {
+    extractEncodingFeatures(): {
         category: string;
         attributes: any[];
     }[];
