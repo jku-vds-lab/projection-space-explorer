@@ -134,8 +134,6 @@ export class CSVLoader implements Loader {
         return map;
       }, {});
 
-    console.log(metaInformation);
-
     // Set the ranges from the domains
     for (const key in metaInformation) {
       const val = metaInformation[key];
@@ -144,8 +142,6 @@ export class CSVLoader implements Loader {
         ranges[key] = { min: val.domain[0], max: val.domain[val.domain.length - 1], center: val.domain.length === 3 ? val.domain[1] : null };
       }
     }
-
-    console.log(ranges);
 
     profiler.profile('Parse meta information');
 
