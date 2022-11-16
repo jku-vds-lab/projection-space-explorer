@@ -49,4 +49,8 @@ export class PluginRegistry {
   public registerReducer(reducer: any) {
     this.reducers.push(reducer);
   }
+
+  public removePlugin(type: string) {
+    this.plugins = this.plugins.filter((plugin) => plugin.type !== type);
+  }
 }

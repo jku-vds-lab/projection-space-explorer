@@ -3,6 +3,7 @@ import { IVector } from '../../model/Vector';
 import { DatasetType } from '../../model/DatasetType';
 import { RubikFingerprint } from './RubikFingerprint/RubikFingerprint';
 import { PSEPlugin } from '../../components/Store/PSEPlugin';
+import { Dataset } from '../../model/Dataset';
 
 export class RubikPlugin extends PSEPlugin {
   type = DatasetType.Rubik;
@@ -68,7 +69,7 @@ export class RubikPlugin extends PSEPlugin {
     return this.hasLayout(header, requiredRubikColumns);
   }
 
-  createFingerprint(vectors: IVector[], scale = 1, aggregate: boolean): JSX.Element {
+  createFingerprint(dataset: Dataset, vectors: IVector[], scale = 1, aggregate: boolean): JSX.Element {
     return <RubikFingerprint vectors={vectors} width={81 * scale} height={108 * scale} />;
   }
 }

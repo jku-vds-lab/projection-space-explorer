@@ -9,4 +9,5 @@ export declare class PluginRegistry {
     getPlugin(type: string): PSEPlugin;
     registerPlugin(plugin: PSEPlugin): void;
     registerReducer(reducer: any): void;
+    removePlugin(type: string): void;
 }
