@@ -124,5 +124,5 @@ export declare const MultivariateClustering: import("react-redux").ConnectedComp
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<{}>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "dataset" | "stories" | "currentAggregation" | "displayMode" | "hoverState" | "trailSettings" | "groupVisualizationMode" | "dispatch">>;
+}, import("react-redux").Omit<any, "stories" | "currentAggregation" | "dataset" | "displayMode" | "hoverState" | "trailSettings" | "groupVisualizationMode" | "dispatch">>;
 export {};
