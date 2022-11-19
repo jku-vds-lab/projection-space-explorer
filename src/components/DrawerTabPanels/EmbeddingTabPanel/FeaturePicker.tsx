@@ -1,5 +1,7 @@
 /* eslint-disable react/static-property-placement */
 /* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable react/no-this-in-sfc */
+/* eslint-disable react/function-component-definition */
 import { Checkbox, TableCell } from '@mui/material';
 import { connect, ConnectedProps } from 'react-redux';
 import * as React from 'react';

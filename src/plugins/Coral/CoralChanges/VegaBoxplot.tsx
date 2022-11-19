@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createClassFromSpec, VisualizationSpec, VegaLite } from 'react-vega';
+import { VisualizationSpec, VegaLite } from 'react-vega';
 import { VegaLiteProps } from 'react-vega/lib/VegaLite';
 
 const spec: VisualizationSpec = {
