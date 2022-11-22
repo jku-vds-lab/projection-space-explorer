@@ -76,7 +76,7 @@ export class CSVLoader implements Loader {
           hull: t.hull,
           triangulation: t.triangulation,
           label: k,
-          // name: k,
+          name: k,
         });
       });
 
