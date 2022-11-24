@@ -19,8 +19,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 } & {
     setProjectionParams: (value: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     domainSettings: any;
     open: boolean;
     onClose: any;

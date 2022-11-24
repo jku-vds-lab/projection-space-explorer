@@ -19,8 +19,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setActiveTrace: (trace: number) => any;
     setSelectedCluster: (clusters: EntityId[], shift: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     dataset: Dataset;
 };
 export declare const Storytelling: import("react-redux").ConnectedComponent<({ dataset, stories, currentAggregation, addClusterToTrace, setActiveTraceState, setActiveTrace, selectSideBranch, setSelectedCluster, }: Props) => JSX.Element, import("react-redux").Omit<{

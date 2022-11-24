@@ -11,7 +11,7 @@ export declare const invalidateTransform: () => {
  * Type specifying the camera transformation that all components should use.
  * From this an orthographic projection can be constructed.
  */
-export declare type ViewTransformType = {
+export type ViewTransformType = {
     width: number;
     height: number;
     centerX: number;

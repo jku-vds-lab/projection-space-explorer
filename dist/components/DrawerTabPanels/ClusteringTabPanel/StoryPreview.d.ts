@@ -8,8 +8,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     deleteStory: (book: EntityId) => any;
     addStory: (book: IBook) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux;
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux;
 export declare const StoryPreview: import("react-redux").ConnectedComponent<({ stories, setActiveStory, deleteStory, addStory }: Props) => JSX.Element, import("react-redux").Omit<{
     stories: import("immer/dist/internal").WritableDraft<import("../../Ducks/StoriesDuck").IStorytelling>;
 } & {

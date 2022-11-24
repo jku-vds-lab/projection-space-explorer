@@ -1,4 +1,3 @@
-/// <reference types="offscreencanvas" />
 import { Reducer, Store } from 'redux';
 import { RootState } from './Store';
 /**

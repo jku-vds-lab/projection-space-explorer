@@ -6,7 +6,7 @@ export declare enum WindowMode {
     Embedded = 0,
     Extern = 1
 }
-declare type HoverSettingsType = {
+type HoverSettingsType = {
     windowMode: WindowMode;
 };
 declare const hoverSettings: (state: HoverSettingsType, action: any) => {

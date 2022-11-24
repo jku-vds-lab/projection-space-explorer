@@ -29,8 +29,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     deleteProjection: (handle: string) => any;
     updateWorkspace: (workspace: IBaseProjection, metadata?: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     config: FeatureConfig;
     projectionWorker?: Worker;
     projectionOpen?: boolean;

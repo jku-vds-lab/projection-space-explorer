@@ -17,8 +17,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setAggregation: (value: any) => any;
     setHoverStateOrientation: (value: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     config: FeatureConfig;
 };
 export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook, config, }: Props) => JSX.Element, import("react-redux").Omit<{

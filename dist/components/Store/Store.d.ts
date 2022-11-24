@@ -82,5 +82,5 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     }>;
 }>;
 export declare function createRootReducer(reducers: any): (state: any, action: any) => any;
-export declare type RootState = ReturnType<typeof rootReducer>;
+export type RootState = ReturnType<typeof rootReducer>;
 export declare const usePSESelector: <T>(fn: (state: RootState) => T) => T;

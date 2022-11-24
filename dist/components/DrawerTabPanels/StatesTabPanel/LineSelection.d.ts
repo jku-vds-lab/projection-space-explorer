@@ -6,11 +6,11 @@ export declare function Checky({ checked, onChange, id, name, comp }: {
     name: any;
     comp: any;
 }): JSX.Element;
-declare type LegendState = {
+type LegendState = {
     lineChecks: any;
     type: string;
 };
-declare type LegendProps = {
+type LegendProps = {
     onLineSelect: any;
 };
 export declare class Legend extends React.Component<LegendProps, LegendState> {

@@ -12,7 +12,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         };
     };
 }, {}>;
-declare type Props = ConnectedProps<typeof connector> & {
+type Props = ConnectedProps<typeof connector> & {
     onChange: any;
 };
 export declare const PredefinedDatasets: import("react-redux").ConnectedComponent<({ onChange, datasetEntries }: Props) => JSX.Element, import("react-redux").Omit<{

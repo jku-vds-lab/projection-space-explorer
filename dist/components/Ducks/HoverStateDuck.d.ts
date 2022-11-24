@@ -7,7 +7,7 @@ export declare const setHoverState: (hoverState: any, updater: any) => {
         updater: any;
     };
 };
-export declare type HoverStateType = {
+export type HoverStateType = {
     data: IVector | ICluster;
     updater: string;
 };

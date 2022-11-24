@@ -1,5 +1,5 @@
 import { Dataset } from '../../model/Dataset';
-declare type StateSequenceDrawerProps = {
+type StateSequenceDrawerProps = {
     activeLine: string;
     setHighlightedSequence: any;
     dataset: Dataset;

@@ -21,7 +21,7 @@ import { ComponentConfig } from '../../BaseConfig';
 import { Mapping } from '../Utility';
 import { SingleMultipleAttributes } from '../Ducks/ViewDuck';
 import { IPosition, IProjection } from '../../model';
-declare type ViewState = {
+type ViewState = {
     camera: Camera;
     menuX: number;
     menuY: number;
@@ -74,8 +74,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
     removeEdgeFromActive: (edge: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     overrideComponents: ComponentConfig;
     multipleId: EntityId;
     workspace: IPosition[];

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import type { ViewTransformType } from '../Ducks';
-declare type LassoLayerProps = {
+type LassoLayerProps = {
     viewTransform: ViewTransformType;
 };
 declare const LassoLayer: import("react-redux").ConnectedComponent<{

@@ -27,7 +27,7 @@ export declare function mapValueToColor(mapping: ContinuousMapping | DivergingMa
 /**
  * Helper type that contains a union over all mappings
  */
-export declare type Mapping = DiscreteMapping | DivergingMapping | ContinuousMapping;
+export type Mapping = DiscreteMapping | DivergingMapping | ContinuousMapping;
 /**
  *
  * @param scale the color scale

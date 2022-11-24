@@ -18,8 +18,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setGlobalPointSize: (value: any) => any;
     setAdvancedColoringSelection: (value: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     encodings: EncodingChannel[];
 };
 export declare function StatesTabPanelFull({ dataset, setVectorByShape, setChannelBrightness, setGlobalPointBrightness, setChannelSize, setGlobalPointSize, encodings, setAdvancedColoringSelection, }: Props): JSX.Element;

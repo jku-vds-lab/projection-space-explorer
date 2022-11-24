@@ -7,8 +7,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setProjectionOpen: (projectionOpen: any) => any;
     setProjectionColumns: (value: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     selection: any;
     setSelection: any;
 };

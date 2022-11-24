@@ -26,8 +26,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setGroupVisualizationMode: (groupVisualizationMode: any) => any;
     setSelectedClusters: (clusters: string[], shift: boolean) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     splitRef: any;
     baseUrl: string;
 };

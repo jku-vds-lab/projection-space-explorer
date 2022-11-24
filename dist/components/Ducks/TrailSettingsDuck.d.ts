@@ -1,4 +1,4 @@
-declare type TrailSettingsState = {
+type TrailSettingsState = {
     length: number;
     show: boolean;
 };

@@ -1,5 +1,5 @@
 import { Mapping } from '../../Utility/Colors/Mapping';
-declare type ShowColorLegendProps = {
+type ShowColorLegendProps = {
     pointColorMapping: Mapping;
     advancedColoringSelection: boolean[];
     setAdvancedColoringSelection: Function;
