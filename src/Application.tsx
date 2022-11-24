@@ -293,28 +293,7 @@ export const Application = connector(
                 />
               </Tooltip>
 
-              {this.props.overrideComponents.detailViews?.length > 0 ? (
-                <Tooltip
-                  placement="right"
-                  title={
-                    <>
-                      <Typography variant="subtitle2">Views</Typography>
-                      <Typography variant="body2">Contains settings about the bottom views.</Typography>
-                    </>
-                  }
-                >
-                  <Tab
-                    value={5}
-                    icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.PseLineup} />}
-                    style={{
-                      minWidth: 0,
-                      flexGrow: 1,
-                      padding: 12,
-                      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-                    }}
-                  />
-                </Tooltip>
-              ) : null}
+
 
               {this.props.overrideComponents?.tabs?.map((tab, i) => {
                 return (
@@ -397,7 +376,7 @@ export const Application = connector(
                   <DetailsTabPanel config={this.props.features} />
                 </FixedHeightTabPanel>
 
-                {this.props.overrideComponents.detailViews?.length > 0 ? (
+                {this.props.overrideComponents?.detailViews?.length > 0 ? (
                   <FixedHeightTabPanel value={this.props.openTab} index={5}>
                     <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} />
                   </FixedHeightTabPanel>
@@ -422,10 +401,10 @@ export const Application = connector(
             }}
           >
             {this.props.overrideComponents?.appBar ? (
-              React.isValidElement(this.props.overrideComponents.appBar) ? (
-                this.props.overrideComponents.appBar
+              React.isValidElement(this.props.overrideComponents?.appBar) ? (
+                this.props.overrideComponents?.appBar
               ) : (
-                React.createElement(this.props.overrideComponents.appBar as () => JSX.Element)
+                React.createElement(this.props.overrideComponents?.appBar as () => JSX.Element)
               )
             ) : (
               <PseAppBar style={undefined}>
