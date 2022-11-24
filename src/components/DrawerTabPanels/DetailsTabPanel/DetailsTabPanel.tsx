@@ -55,7 +55,7 @@ export const DetailsTabPanel = connector(
     };
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
+      <div key={dataset?.info?.path} style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
         <Box paddingX={2} paddingTop={1}>
           {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ? (
             <Typography color="textSecondary" variant="body2">

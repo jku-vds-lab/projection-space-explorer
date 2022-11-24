@@ -22,9 +22,10 @@ export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
 /**
  * Renders one color scale with an optional center point.
  */
-export declare function ColorScaleMenuItem({ scale, skew }: {
+export declare function ColorScaleMenuItem({ scale, skew, deadzone }: {
     scale: BaseColorScale;
     skew?: number;
+    deadzone?: number;
 }): JSX.Element;
 export default function NumberInput({ value, setValue, label }: {
     value: number;

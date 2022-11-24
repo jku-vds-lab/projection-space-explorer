@@ -1,7 +1,11 @@
+import { debounce } from 'lodash';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-function copyStyles(sourceDoc, targetDoc) {
+function copyStyles(sourceDoc: Document, targetDoc: Document) {
+  Array.from(targetDoc.querySelectorAll('style')).forEach((e) => e.remove());
+  Array.from(targetDoc.querySelectorAll('link')).forEach((e) => e.remove());
+
   Array.from(sourceDoc.styleSheets).forEach((styleSheet) => {
     // @ts-ignore
     if (styleSheet.href) {
@@ -43,6 +47,34 @@ export class MyWindowPortal extends React.PureComponent<any> {
 
     copyStyles(document, this.externalWindow.document);
 
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: true, childList: true, subtree: true };
+
+    // Callback function to execute when mutations are observed
+    const callback = debounce(
+      (mutationList, observer) => {
+        copyStyles(document, this.externalWindow.document);
+
+        for (const mutation of mutationList) {
+          if (mutation.type === 'childList') {
+            console.log(mutation);
+          }
+        }
+      },
+      50,
+      { leading: true, trailing: true },
+    );
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(document.head, config);
+
+    // Later, you can stop observing
+    // TODO: unmount
+    // observer.disconnect();
+
     this.externalWindow.addEventListener('beforeunload', () => {
       this.props.onClose();
     });
@@ -60,10 +92,6 @@ export class MyWindowPortal extends React.PureComponent<any> {
   }
 
   render() {
-    if (this.externalWindow?.document) {
-      copyStyles(document, this.externalWindow.document);
-    }
-
     // STEP 2: append props.children to the container <div> that isn't mounted anywhere yet
     return ReactDOM.createPortal(this.props.children, this.containerEl);
   }

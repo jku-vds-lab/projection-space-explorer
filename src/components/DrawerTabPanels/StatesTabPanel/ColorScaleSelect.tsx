@@ -57,24 +57,39 @@ const BaseScale = styled('div')({
 /**
  * Renders one color scale with an optional center point.
  */
-export function ColorScaleMenuItem({ scale, skew }: { scale: BaseColorScale; skew?: number }) {
+export function ColorScaleMenuItem({ scale, skew, deadzone }: { scale: BaseColorScale; skew?: number; deadzone?: number }) {
   if (!scale) {
     return null;
   }
 
+  const center = skew ?? 50;
   const palette = typeof scale.palette === 'string' ? APalette.getByName(scale.palette) : scale.palette;
 
   switch (scale.type) {
     case 'sequential':
       return <BaseScale style={{ backgroundImage: `linear-gradient(to right, ${palette.map((stop) => stop.hex).join(',')})` }} />;
-    case 'diverging':
+    case 'diverging': {
+      const i0 = Math.floor(palette.length / 2);
+      const i1 = palette.length / 2 + 0.5;
+      const t0 = center - (deadzone ?? 0) * 100;
+      const t1 = center + (deadzone ?? 0) * 100;
+
+      const gradient = `${palette
+        .slice(0, i0)
+        .map((stop, i) => `${stop.hex} ${i * (t0 / i0)}%`)
+        .join(',')}, ${palette[Math.floor(palette.length / 2)].hex} ${t0}%, ${palette[Math.floor(palette.length / 2)].hex} ${t1}%, ${palette
+        .slice(i1, palette.length)
+        .map((stop, i) => `${stop.hex} ${t1 + (i + 1) * ((100 - t1) / i0)}%`)
+        .join(',')}`;
+
       return (
         <BaseScale
           style={{
-            backgroundImage: `linear-gradient(to right, ${palette.map((stop, i) => `${stop.hex} ${i === 1 ? skew ?? 50 : i === 0 ? 0 : 100}%`).join(',')})`,
+            backgroundImage: `linear-gradient(to right, ${gradient})`,
           }}
         />
       );
+    }
     case 'categorical':
       return (
         <BaseScale
