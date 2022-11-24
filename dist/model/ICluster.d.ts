@@ -7,7 +7,6 @@ export interface ICluster extends TypedObject {
     id: EntityId;
     label: any;
     hull?: number[][];
-    triangulation?: number[];
     name?: string;
     metadata?: {
         [id: string]: any;

@@ -224,6 +224,12 @@ export function eliminateZeros(m: SparseMatrix) {
   return new SparseMatrix(nextRows, nextCols, nextValues, m.getDims());
 }
 
+export const enum NormType {
+  max = 'max',
+  l1 = 'l1',
+  l2 = 'l2',
+}
+
 /**
  * Normalization of a sparse matrix.
  */
@@ -279,12 +285,6 @@ const normFns: NormFns = {
     return xs.map((x) => Math.sqrt(x ** 2 / sum));
   },
 };
-
-export const enum NormType {
-  max = 'max',
-  l1 = 'l1',
-  l2 = 'l2',
-}
 
 /**
  * Helper function for element-wise operations.

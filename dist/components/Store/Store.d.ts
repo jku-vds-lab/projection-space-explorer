@@ -10,18 +10,18 @@ import { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
 import { Dataset, IProjection } from '../../model';
 import colorScales from '../Ducks/ColorScalesDuck';
-import { IStorytelling } from '../Ducks/StoriesDuck copy';
+import { IStorytelling } from '../Ducks/StoriesDuck';
 declare const allReducers: {
     currentAggregation: (state: {
         aggregation: number[];
-        selectedClusters: EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     }, action: any) => {
         aggregation: number[];
-        selectedClusters: EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
-    stories: Reducer<IStorytelling, import("redux").AnyAction>;
+    stories: Reducer<import("immer/dist/internal").WritableDraft<IStorytelling>, import("redux").AnyAction>;
     openTab: (state: number, action: any) => any;
     pointDisplay: Reducer<{
         checkedShapes: {
@@ -31,7 +31,7 @@ declare const allReducers: {
             square: boolean;
         };
     }, import("redux").AnyAction>;
-    activeLine: (state: any, action: any) => string;
+    activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
     dataset: typeof dataset;
     highlightedSequence: (state: any, action: any) => any;
     advancedColoringSelection: (state: any[], action: any) => any;
@@ -91,7 +91,7 @@ declare const allReducers: {
         projections: EntityState<IProjection>;
     }, import("redux").AnyAction>;
 };
-export declare type ReducerValues<T extends ReducersMapObject> = {
+export type ReducerValues<T extends ReducersMapObject> = {
     [K in keyof T]: ReturnType<T[K]>;
 };
 export declare function createInitialReducerState(dataset: Dataset): Partial<RootState>;
@@ -102,5 +102,6 @@ export declare function createInitialReducerState(dataset: Dataset): Partial<Roo
  * @returns a reducer that includes all additional reducers alongside PSE´s internal ones.
  */
 export declare function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Reducer<RootState & T>;
-export declare type RootState = ReducerValues<typeof allReducers>;
+export type RootState = ReducerValues<typeof allReducers>;
+export declare const usePSESelector: <T>(fn: (state: RootState) => T) => T;
 export {};

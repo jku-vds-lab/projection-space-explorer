@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React = require('react');
+import * as React from 'react';
 import { EntityId } from '@reduxjs/toolkit';
 import {
   Box,
@@ -35,7 +35,7 @@ import { trackPromise } from 'react-promise-tracker';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { ACluster } from '../../../model/Cluster';
 import { ICluster } from '../../../model/ICluster';
-import { IBook, ABook } from '../../../model/Book';
+import { IBook } from '../../../model/Book';
 import { DisplayMode, setDisplayMode } from '../../Ducks/DisplayModeDuck';
 import type { RootState } from '../../Store/Store';
 import { StoryPreview } from './StoryPreview';
@@ -46,7 +46,7 @@ import { GroupVisualizationMode, setGroupVisualizationMode } from '../../Ducks/G
 import { selectClusters } from '../../Ducks/AggregationDuck';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
 import { Dataset } from '../../../model/Dataset';
-import { StoriesActions, AStorytelling, IStorytelling, clusterAdapter } from '../../Ducks/StoriesDuck copy';
+import { StoriesActions, AStorytelling, IStorytelling, clusterAdapter } from '../../Ducks/StoriesDuck';
 import { PointColorScaleActions } from '../../Ducks';
 import { ViewSelector } from '../../Ducks/ViewDuck';
 import { capitalizeFirstLetter } from '../../../utils/helpers';

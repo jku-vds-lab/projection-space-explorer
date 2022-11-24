@@ -1,7 +1,8 @@
-import { applyMiddleware, createStore, Reducer, Store } from 'redux';
+import { Reducer, Store } from 'redux';
 import thunk from 'redux-thunk';
 import { v4 as uuidv4 } from 'uuid';
 import type { RootState } from './Store';
+import { configureStore } from '@reduxjs/toolkit';
 import { getStoreDiff } from './PluginScript';
 import { RootActions } from './RootActions';
 import { UtilityActions } from './Utility';
@@ -23,13 +24,20 @@ export class API<T extends RootState> {
    * @param dump the dump which contains parts of store state
    * @param reducer the root reducer of the store, MUST be created with PSE´s inbuilt createRootReducer method.
    */
-  constructor(dump: any, reducer: Reducer<T>) {
+  constructor(dump: any, reducer: Reducer, middleware?: any[]) {
     this.id = uuidv4();
 
     if (dump) {
-      this.store = createStore(reducer || createRootReducer(), dump, applyMiddleware(this.differenceMiddleware, thunk));
+      this.store = configureStore({
+        reducer: reducer || createRootReducer(),
+        preloadedState: dump,
+        middleware: middleware ? [this.differenceMiddleware, thunk, ...middleware] : [this.differenceMiddleware, thunk],
+      });
     } else {
-      this.store = createStore(reducer || createRootReducer(), applyMiddleware(this.differenceMiddleware, thunk));
+      this.store = configureStore({
+        reducer: reducer || createRootReducer(),
+        middleware: middleware ? [this.differenceMiddleware, thunk, ...middleware] : [this.differenceMiddleware, thunk],
+      });
     }
   }
 

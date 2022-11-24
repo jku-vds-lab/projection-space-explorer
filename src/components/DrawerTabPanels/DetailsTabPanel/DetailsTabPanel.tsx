@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Box, Button, Divider, FormControl, FormControlLabel, FormHelperText, MenuItem, Select, Switch, Typography } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck';
 import { HoverStateOrientation, setHoverStateOrientation } from '../../Ducks/HoverStateOrientationDuck';
 import { SelectionClusters } from '../../Overlays/SelectionClusters';
 import type { RootState } from '../../Store/Store';
 import { selectVectors } from '../../Ducks/AggregationDuck';
-import { AStorytelling } from '../../Ducks/StoriesDuck copy';
 import './DatasetTabPanel.scss';
 import { AttributeSelectionTable } from './AttributeSelectionTable';
 import { setGenericFingerprintAttributes } from '../../Ducks/GenericFingerprintAttributesDuck';
+import { AStorytelling } from '../../Ducks/StoriesDuck';
 import { FeatureConfig } from '../../../BaseConfig';
 
 const mapStateToProps = (state: RootState) => ({
@@ -20,7 +20,7 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   hoverStateOrientation: state.hoverStateOrientation,
   activeStorybook: AStorytelling.getActive(state.stories),
-  globalLabels: state.globalLabels
+  globalLabels: state.globalLabels,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -50,14 +50,14 @@ export const DetailsTabPanel = connector(
     activeStorybook,
     genericFingerprintAttributes,
     setGenericFingerprintAttributes,
-    globalLabels
+    globalLabels,
   }: Props) => {
     const handleChange = (_, value) => {
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
     };
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
+      <div key={dataset?.info?.path} style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
         <Box paddingX={2} paddingTop={1}>
           {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ? (
             <Typography color="textSecondary" variant="body2">

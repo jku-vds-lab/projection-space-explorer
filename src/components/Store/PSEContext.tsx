@@ -1,6 +1,6 @@
 import { createTheme, ThemeProvider } from '@mui/material';
 import { PropsWithChildren } from 'react';
-import React = require('react');
+import * as React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 import type { RootState } from '.';

@@ -1,8 +1,9 @@
-import React = require('react');
+import * as React from 'react';
 import { IVector } from '../../model/Vector';
 import { DatasetType } from '../../model/DatasetType';
 import { PSEPlugin } from '../../components/Store/PSEPlugin';
 import { ChessFingerprint } from './ChessFingerprint/ChessFingerprint';
+import { Dataset } from '../../model/Dataset';
 
 export class ChessPlugin extends PSEPlugin {
   type = DatasetType.Chess;
@@ -19,7 +20,7 @@ export class ChessPlugin extends PSEPlugin {
     return this.hasLayout(header, requiredChessColumns);
   }
 
-  createFingerprint(vectors: IVector[], scale: number, aggregate: boolean): JSX.Element {
+  createFingerprint(dataset: Dataset, vectors: IVector[], scale: number, aggregate: boolean): JSX.Element {
     return <ChessFingerprint vectors={vectors} width={144 * scale} height={144 * scale} />;
   }
 }

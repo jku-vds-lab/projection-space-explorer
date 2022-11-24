@@ -2,8 +2,9 @@ import { EntityId, Update, ReducersMapObject, EntityState, Reducer, ActionReduce
 import { ViewTransformType } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, IPosition, Dataset } from '../../model';
-import { ContinuousMapping, DiscreteMapping } from '../Utility';
-export declare const setWorkspaceAction: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string | number | IProjection, string>;
+import { ContinuousMapping, DiscreteMapping, Mapping } from '../Utility';
+import { CategoryOption } from '../WebGLView/CategoryOptions';
+export declare const setWorkspaceAction: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId | IProjection, string>;
 export declare const projectionAdapter: import("@reduxjs/toolkit").EntityAdapter<IProjection>;
 export declare function defaultAttributes(dataset?: Dataset): {
     channelBrightness: any;
@@ -51,29 +52,30 @@ export declare const attributesSlice: import("@reduxjs/toolkit").Slice<{
     globalPointSize: number[];
     workspace: IProjection;
 }, {}, "attributes">;
-export declare type SingleMultipleAttributes = {
-    channelColor: any;
-    channelBrightness: any;
-    channelSize: any;
-    vectorByShape: any;
+export type SingleMultipleAttributes = {
+    channelColor: CategoryOption;
+    channelBrightness: CategoryOption;
+    channelSize: CategoryOption;
+    vectorByShape: CategoryOption;
     viewTransform: ViewTransformType;
     lineBrightness: number;
-    pointColorScale: EntityId;
-    pointColorMapping: any;
+    pointColorScale: number | string;
+    pointColorMapping: Mapping;
     pathLengthRange: {
         range: number[];
         maximum: number;
     };
     globalPointSize: number[];
     globalPointBrightness: number[];
-    workspace: EntityId | IProjection;
+    workspace: number | string | IProjection;
 };
-export declare type SingleMultiple = {
-    id: EntityId;
+export type SingleMultiple = {
+    id: number | string;
     attributes: SingleMultipleAttributes;
 };
 export declare const multipleAdapter: import("@reduxjs/toolkit").EntityAdapter<SingleMultiple>;
-declare type StateType<T> = {
+export declare function isEntityId(value: string | number | IProjection): value is EntityId;
+type StateType<T> = {
     multiples: EntityState<{
         id: EntityId;
         attributes: SingleMultipleAttributes & T;
@@ -104,19 +106,20 @@ export declare const ViewActions: {
         channel: 'x' | 'y';
         value: string;
     }, string>;
+    changeDivergingRange: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<[number, number, number] | [number, number], string>;
 };
 export declare const ViewSelector: {
-    selectAll: import("reselect/*").OutputSelector<import("../Store").ReducerValues<{
+    selectAll: ((state: import("../Store").ReducerValues<{
         currentAggregation: (state: {
             aggregation: number[];
-            selectedClusters: EntityId[];
+            selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         }, action: any) => {
             aggregation: number[];
-            selectedClusters: EntityId[];
+            selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: Reducer<import("./StoriesDuck copy").IStorytelling, import("redux").AnyAction>;
+        stories: Reducer<import("immer/dist/internal").WritableDraft<import("./StoriesDuck").IStorytelling>, import("redux").AnyAction>;
         openTab: (state: number, action: any) => any;
         pointDisplay: Reducer<{
             checkedShapes: {
@@ -126,7 +129,7 @@ export declare const ViewSelector: {
                 square: boolean;
             };
         }, import("redux").AnyAction>;
-        activeLine: (state: any, action: any) => string;
+        activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
         dataset: typeof import("./DatasetDuck").default;
         highlightedSequence: (state: any, action: any) => any;
         advancedColoringSelection: (state: any[], action: any) => any;
@@ -178,23 +181,31 @@ export declare const ViewSelector: {
         globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
         colorScales: typeof import("./ColorScalesDuck").default;
         multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
-    }>, StateType<unknown>, (res: StateType<unknown>) => StateType<unknown>>;
+    }>) => StateType<unknown>) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>) => StateType<unknown> & {
+        clearCache: () => void;
+    }> & {
+        clearCache: () => void;
+    };
     defaultSelector: (state: RootState) => {
         id: EntityId;
         attributes: SingleMultipleAttributes;
     };
-    getWorkspaceById: import("reselect/*").OutputParametricSelector<any, EntityId, IProjection, (res1: StateType<unknown>, res2: EntityId) => IProjection>;
-    getWorkspace: import("reselect/*").OutputSelector<import("../Store").ReducerValues<{
+    getWorkspaceById: ((state: any, multipleId: EntityId) => IProjection) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>, args_1: EntityId) => IProjection & {
+        clearCache: () => void;
+    }> & {
+        clearCache: () => void;
+    };
+    getWorkspace: ((state: import("../Store").ReducerValues<{
         currentAggregation: (state: {
             aggregation: number[];
-            selectedClusters: EntityId[];
+            selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         }, action: any) => {
             aggregation: number[];
-            selectedClusters: EntityId[];
+            selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: Reducer<import("./StoriesDuck copy").IStorytelling, import("redux").AnyAction>;
+        stories: Reducer<import("immer/dist/internal").WritableDraft<import("./StoriesDuck").IStorytelling>, import("redux").AnyAction>;
         openTab: (state: number, action: any) => any;
         pointDisplay: Reducer<{
             checkedShapes: {
@@ -204,7 +215,7 @@ export declare const ViewSelector: {
                 square: boolean;
             };
         }, import("redux").AnyAction>;
-        activeLine: (state: any, action: any) => string;
+        activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
         dataset: typeof import("./DatasetDuck").default;
         highlightedSequence: (state: any, action: any) => any;
         advancedColoringSelection: (state: any[], action: any) => any;
@@ -256,18 +267,22 @@ export declare const ViewSelector: {
         globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
         colorScales: typeof import("./ColorScalesDuck").default;
         multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
-    }>, IProjection, (res: IProjection) => IProjection>;
-    workspaceIsTemporal: import("reselect/*").OutputSelector<import("../Store").ReducerValues<{
+    }>) => IProjection) & import("reselect").OutputSelectorFields<(args_0: IProjection) => IProjection & {
+        clearCache: () => void;
+    }> & {
+        clearCache: () => void;
+    };
+    workspaceIsTemporal: ((state: import("../Store").ReducerValues<{
         currentAggregation: (state: {
             aggregation: number[];
-            selectedClusters: EntityId[];
+            selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         }, action: any) => {
             aggregation: number[];
-            selectedClusters: EntityId[];
+            selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: Reducer<import("./StoriesDuck copy").IStorytelling, import("redux").AnyAction>;
+        stories: Reducer<import("immer/dist/internal").WritableDraft<import("./StoriesDuck").IStorytelling>, import("redux").AnyAction>;
         openTab: (state: number, action: any) => any;
         pointDisplay: Reducer<{
             checkedShapes: {
@@ -277,7 +292,7 @@ export declare const ViewSelector: {
                 square: boolean;
             };
         }, import("redux").AnyAction>;
-        activeLine: (state: any, action: any) => string;
+        activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
         dataset: typeof import("./DatasetDuck").default;
         highlightedSequence: (state: any, action: any) => any;
         advancedColoringSelection: (state: any[], action: any) => any;
@@ -329,6 +344,10 @@ export declare const ViewSelector: {
         globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
         colorScales: typeof import("./ColorScalesDuck").default;
         multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
-    }>, boolean, (res: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean>;
+    }>) => boolean) & import("reselect").OutputSelectorFields<(args_0: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean & {
+        clearCache: () => void;
+    }> & {
+        clearCache: () => void;
+    };
 };
 export {};

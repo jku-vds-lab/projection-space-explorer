@@ -28,6 +28,8 @@ export type IProjection = {
   yChannel?: string;
 
   metadata?: { [id: string]: any };
+
+  bounds?: { x; y; scaleBase; scaleFactor };
 };
 
 /**

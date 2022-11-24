@@ -1,5 +1,5 @@
 import { Box, Button, Checkbox, Popover } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import SearchBar from 'material-ui-search-bar';

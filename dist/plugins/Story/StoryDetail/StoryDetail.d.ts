@@ -5,7 +5,7 @@ export declare function YearComp({ oldYear, newYear }: {
     oldYear: any;
     newYear: any;
 }): JSX.Element;
-declare type StoryLegendProps = {
+type StoryLegendProps = {
     selection: any[];
 };
 export declare function StoryLegend({ selection }: StoryLegendProps): JSX.Element;

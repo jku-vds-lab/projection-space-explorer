@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import type { RootState } from '.';
 import { API } from './API';
-declare type PSEContextProps<T extends RootState> = {
+type PSEContextProps<T extends RootState> = {
     context?: API<T>;
     onStateChanged?: (values: any, keys: any) => void;
 };

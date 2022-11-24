@@ -1,11 +1,11 @@
 import './VirtualTable.scss';
-import React = require('react');
-declare type VirtualTableProps = {
+import * as React from 'react';
+type VirtualTableProps = {
     rows: any;
     rowHeight: number;
     tableHeight: number;
 };
-declare type VirtualColumnProps = {
+type VirtualColumnProps = {
     width: number;
     name: string;
     renderer: (row: any) => any;

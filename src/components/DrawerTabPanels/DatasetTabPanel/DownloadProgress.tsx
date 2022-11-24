@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { DownloadJob } from './DownloadJob';
 

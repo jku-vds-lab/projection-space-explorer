@@ -16,9 +16,9 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import clone = require('fast-clone');
+import clone from 'fast-clone';
 import type { RootState } from '../../Store/Store';
 import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';

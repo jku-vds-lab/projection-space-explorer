@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Card } from '@mui/material';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactDOM = require('react-dom');
+import * as ReactDOM from 'react-dom';
 import { GenericLegend } from '../legends/Generic';
 import { setHoverWindowMode, WindowMode } from '../Ducks/HoverSettingsDuck';
 

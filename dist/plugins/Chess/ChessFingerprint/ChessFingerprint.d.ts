@@ -2,7 +2,7 @@ import * as React from 'react';
 export declare const CHESS_TILE_BLACK = "#edeeef";
 export declare const CHESS_TILE_WHITE = "#ffffff";
 export declare const requiredChessColumns: any[];
-declare type ChessFingerprintProps = {
+type ChessFingerprintProps = {
     vectors: Array<any>;
     width?: number;
     height?: number;

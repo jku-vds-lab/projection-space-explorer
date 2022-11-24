@@ -1,6 +1,5 @@
-import { filter } from 'lodash';
-import React = require('react');
-import { createClassFromSpec, VisualizationSpec, VegaLite } from 'react-vega';
+import * as React from 'react';
+import { VisualizationSpec, VegaLite } from 'react-vega';
 import { VegaLiteProps } from 'react-vega/lib/VegaLite';
 
 const spec: VisualizationSpec = {

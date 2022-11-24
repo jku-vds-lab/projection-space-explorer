@@ -1,11 +1,13 @@
 /* eslint-disable react/static-property-placement */
 /* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable react/no-this-in-sfc */
+/* eslint-disable react/function-component-definition */
 import { Checkbox, TableCell } from '@mui/material';
 import { connect, ConnectedProps } from 'react-redux';
-import React = require('react');
+import * as React from 'react';
 import { AutoSizer, Column, Table, defaultTableRowRenderer } from 'react-virtualized';
 import clsx from 'clsx';
-import clone = require('fast-clone');
+import clone from 'fast-clone';
 import { withStyles } from '@mui/styles';
 import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { setProjectionOpenAction } from '../../Ducks/ProjectionOpenDuck';

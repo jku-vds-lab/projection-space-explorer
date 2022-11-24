@@ -18,6 +18,14 @@ export class CategoryOptionsAPI {
   }
 }
 
+export type CategoryOption = {
+  key: string;
+  name: string;
+  type: 'sequential' | 'categorical';
+  range;
+  values;
+};
+
 /**
  * Helper class that manages the attribute categories.
  * These options are a top-level representation of all attributes eg
@@ -25,4 +33,4 @@ export class CategoryOptionsAPI {
  * size by (att1, att2...)
  * brightness by ...
  */
-export type CategoryOptions = any[];
+export type CategoryOptions = { category: string; attributes: CategoryOption[] }[];

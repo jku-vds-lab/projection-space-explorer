@@ -16,4 +16,4 @@
  * limitations under the License.
  * ==============================================================================
  */
-export { UMAP, UMAPParameters } from './umap';
+export { UMAP } from './umap';

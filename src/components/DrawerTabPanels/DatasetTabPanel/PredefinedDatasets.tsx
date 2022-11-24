@@ -1,5 +1,5 @@
 import { Grid, List, ListItem, ListItemText, ListSubheader, ListItemIcon, SvgIcon } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ShareIcon from '@mui/icons-material/Share';
 import WidgetsIcon from '@mui/icons-material/Widgets';

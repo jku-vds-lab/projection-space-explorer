@@ -2,7 +2,7 @@ import { EntityId } from '@reduxjs/toolkit';
 declare enum ActionTypes {
     PICK_SCALE = "ducks/colorScales/PICK"
 }
-declare type PickAction = {
+type PickAction = {
     type: ActionTypes.PICK_SCALE;
     handle: string;
 };
@@ -13,10 +13,10 @@ export declare const PointColorScaleActions: {
     };
     initScaleByType: (type: string) => (dispatch: any, getState: any) => any;
 };
-declare type Action = PickAction;
+type Action = PickAction;
 /**
  * Type for embedding state slice
  */
-export declare type ColorScalesType = EntityId;
+export type ColorScalesType = EntityId;
 export default function colorScales(state?: EntityId, action?: Action): ColorScalesType;
 export {};

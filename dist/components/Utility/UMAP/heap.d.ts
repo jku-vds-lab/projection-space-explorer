@@ -55,7 +55,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 import { RandomFn } from './umap';
-export declare type Heap = number[][][];
+export type Heap = number[][][];
 /**
  *  Constructor for the heap objects. The heaps are used
  * for approximate nearest neighbor search, maintaining a list of potential

@@ -1,4 +1,4 @@
-import React = require('react');
+import * as React from 'react';
 
 /**
  * Base component for layers behind and in front of the webgl view.
