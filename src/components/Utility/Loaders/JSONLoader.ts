@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+import * as d3v5 from 'd3v5';
 import { v4 as uuidv4 } from 'uuid';
 import { Loader } from './Loader';
 import { FeatureType } from '../../../model/FeatureType';
@@ -10,9 +10,6 @@ import { Dataset } from '../../../model/Dataset';
 import { ICluster } from '../../../model/ICluster';
 import { IEdge } from '../../../model/Edge';
 import { ObjectTypes } from '../../../model/ObjectType';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const d3v5 = require('d3v5');
 
 export class JSONLoader implements Loader {
   vectors: IVector[];
@@ -195,7 +192,7 @@ export class JSONLoader implements Loader {
     }
     let inferredColumns = [];
     const preprocessor = new Preprocessor(this.vectors);
-    const hasScalarTypes = preprocessor.hasScalarTypes();
+    const hasScalarTypes = header.includes('x') && header.includes('y');
     [ranges, inferredColumns] = preprocessor.preprocess(ranges);
 
     const dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation);
@@ -204,7 +201,7 @@ export class JSONLoader implements Loader {
     dataset.clusters = clusters;
     dataset.clusterEdges = edges;
     dataset.inferredColumns = inferredColumns;
-    dataset.categories = dataset.extractEncodingFeatures(ranges);
+    dataset.categories = dataset.extractEncodingFeatures();
 
     finished(dataset);
   }

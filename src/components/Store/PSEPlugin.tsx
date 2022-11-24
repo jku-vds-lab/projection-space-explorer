@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Dataset } from '../../model/Dataset';
 import { IVector } from '../../model/Vector';
 
 export abstract class PSEPlugin {
@@ -8,7 +9,7 @@ export abstract class PSEPlugin {
     return false;
   }
 
-  abstract createFingerprint(vectors: IVector[], scale: number, aggregate: boolean): JSX.Element;
+  abstract createFingerprint(dataset: Dataset, vectors: IVector[], scale: number, aggregate: boolean): JSX.Element;
 
   // Checks if the header has all the required columns
   hasLayout(header: string[], columns: string[]) {

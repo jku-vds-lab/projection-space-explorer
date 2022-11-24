@@ -2,9 +2,9 @@ import { ConnectedProps } from 'react-redux';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     globalLabels: import("..").GlobalLabelsState;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {};
-export declare var DefaultLegend: import("react-redux").ConnectedComponent<({ globalLabels }: Props) => JSX.Element, Pick<{
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {};
+export declare var DefaultLegend: import("react-redux").ConnectedComponent<({ globalLabels }: Props) => JSX.Element, import("react-redux").Omit<{
     globalLabels: import("..").GlobalLabelsState;
-}, never>>;
+}, "globalLabels">>;
 export {};

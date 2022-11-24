@@ -1,6 +1,6 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import { EntityId } from '@reduxjs/toolkit';
 import type { IProjection } from '../../../model';
 

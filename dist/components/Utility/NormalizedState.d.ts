@@ -1,7 +1,7 @@
 /**
  * Base type for normalized dictionaries
  */
-export declare type NormalizedDictionary<T> = {
+export type NormalizedDictionary<T> = {
     byId: {
         [id: string]: T;
     };

@@ -1,12 +1,16 @@
+// @ts-ignore
+import tsneWorker from 'worker-loader?inline=no-fallback!../../workers/embeddings/tsne.worker';
 import { Dataset, ADataset } from '../../../model/Dataset';
 import { EmbeddingController } from './EmbeddingController';
 
-import TsneWorker from '../../workers/embeddings/tsne.worker';
 import { IBaseProjection } from '../../../model/ProjectionInterfaces';
 
 export class TSNEEmbeddingController extends EmbeddingController {
   init(dataset: Dataset, selection: any, params: any, workspace: IBaseProjection) {
-    this.worker = new TsneWorker();
+    // this.worker = new Worker(new URL('../../workers/embeddings/tsne.worker', import.meta.url));
+    // eslint-disable-next-line new-cap
+    this.worker = new tsneWorker();
+
     const tensor = ADataset.asTensor(
       dataset,
       selection.filter((e) => e.checked),

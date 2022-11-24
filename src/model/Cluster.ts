@@ -19,6 +19,7 @@ export class ACluster {
     let maxX = -1000;
     let minY = 1000;
     let maxY = -1000;
+
     samples.forEach((sample) => {
       minX = Math.min(minX, sample.x);
       maxX = Math.max(maxX, sample.x);

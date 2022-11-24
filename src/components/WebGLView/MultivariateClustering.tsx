@@ -1,9 +1,9 @@
 /* eslint-disable react/display-name */
-/* eslint-disable @typescript-eslint/no-var-requires */
+import * as d3v5 from 'd3v5';
 import { Scene, Vector2, Vector3 } from 'three';
 import { EntityId } from '@reduxjs/toolkit';
-import THREE = require('three');
-import React = require('react');
+import * as THREE from 'three';
+import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Typography } from '@mui/material';
 import { IVector } from '../../model/Vector';
@@ -17,13 +17,10 @@ import { IBook } from '../../model/Book';
 import * as nt from '../NumTs/NumTs';
 
 import { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
-import TessyWorker from '../workers/tessy.worker';
 import { ViewTransformType } from '../Ducks';
 import { SchemeColor } from '../Utility/Colors/SchemeColor';
-import { AStorytelling } from '../Ducks/StoriesDuck copy';
+import { AStorytelling } from '../Ducks/StoriesDuck';
 import { IPosition } from '../../model/ProjectionInterfaces';
-
-const d3v5 = require('d3v5');
 
 const SELECTED_COLOR = 0x007dad;
 const DEFAULT_COLOR = 0x808080;
@@ -111,15 +108,11 @@ export const MultivariateClustering = connector(
 
     scalingScene: Scene;
 
-    length: number;
-
-    clusterVis: { clusterMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[]; lineMeshes: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[] };
+    clusterVis: THREE.Mesh<THREE.Geometry, THREE.MeshBasicMaterial>[];
 
     trail: TrailVisualization;
 
     clusterScene: THREE.Scene;
-
-    triangulationWorker: Worker;
 
     constructor(props) {
       super(props);
@@ -142,8 +135,6 @@ export const MultivariateClustering = connector(
       this.trail = new TrailVisualization();
       this.trail.create();
       this.scene.add(this.trail.mesh);
-
-      this.triangulationWorker = new TessyWorker();
     }
 
     componentDidMount() {
@@ -221,8 +212,10 @@ export const MultivariateClustering = connector(
         }
       }
 
-      if (prevProps.workspace !== this.props.workspace) {
+      if (prevProps.workspace !== this.props.workspace && this.props.workspace) {
+        // TODO: check performance implications
         this.updatePositions(this.props.viewTransform.zoom);
+        this.createTriangulatedMesh();
       }
 
       if (this.props.onInvalidate) {
@@ -479,10 +472,7 @@ export const MultivariateClustering = connector(
         });
       });
       if (this.clusterVis) {
-        this.clusterVis.lineMeshes.forEach((mesh) => {
-          mesh.visible = false;
-        });
-        this.clusterVis.clusterMeshes?.forEach((mesh) => {
+        this.clusterVis.forEach((mesh) => {
           mesh.visible = false;
         });
       }
@@ -501,8 +491,7 @@ export const MultivariateClustering = connector(
         }
 
         if (this.clusterVis && this.props.groupVisualizationMode === GroupVisualizationMode.ConvexHull) {
-          this.clusterVis.clusterMeshes[index].visible = visible;
-          this.clusterVis.lineMeshes[index].visible = visible;
+          this.clusterVis[index].visible = visible;
         }
       });
     }
@@ -540,7 +529,6 @@ export const MultivariateClustering = connector(
         return;
       }
 
-      const clusterMeshes = [];
       const lineMeshes = [];
 
       if (this.props.stories.active !== null) {
@@ -558,11 +546,13 @@ export const MultivariateClustering = connector(
 
           const contours = d3v5
             .contourDensity()
-            .x((d) => xAxis(d.x))
-            .y((d) => yAxis(d.y))
+            .x((d) => xAxis(d[0]))
+            .y((d) => yAxis(d[1]))
             .bandwidth(10)
             .thresholds(10)
-            .size([100, bounds.width === 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])(cluster.indices.map((i) => this.props.workspace[i]));
+            .size([100, bounds.width === 0 ? 1 : Math.floor(100 * (bounds.height / bounds.width))])(
+            cluster.indices.map((i) => [this.props.workspace[i].x, this.props.workspace[i].y]),
+          );
 
           const clusterObject = this.clusterObjects.find((e) => activeStory.clusters.entities[e.cluster].label === cluster.label);
 
@@ -584,15 +574,15 @@ export const MultivariateClustering = connector(
           });
           const line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points), material);
 
-          line.visible = false;
+          line.visible = this.props.currentAggregation.source === 'cluster' && this.props.currentAggregation.selectedClusters.includes(clusterObject.cluster);
+
           this.scalingScene.add(line);
 
           lineMeshes.push(line);
-          clusterMeshes.push(line);
         }
       }
 
-      this.clusterVis = { clusterMeshes, lineMeshes };
+      this.clusterVis = lineMeshes;
     }
 
     /**
@@ -600,12 +590,7 @@ export const MultivariateClustering = connector(
      */
     disposeTriangulatedMesh() {
       if (this.clusterVis != null) {
-        const { clusterMeshes, lineMeshes } = this.clusterVis;
-        clusterMeshes?.forEach((mesh) => {
-          mesh.geometry.dispose();
-          mesh.material.dispose();
-          this.scalingScene.remove(mesh);
-        });
+        const lineMeshes = this.clusterVis;
         lineMeshes?.forEach((mesh) => {
           mesh.geometry.dispose();
           mesh.material.dispose();

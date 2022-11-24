@@ -2,14 +2,14 @@ import { ConnectedComponent } from 'react-redux';
 import { EncodingChannel } from './model/EncodingChannel';
 import { EmbeddingController } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingController';
 import { TypedObject } from './model';
-export declare type BaseConfig = Partial<{
+export type BaseConfig = Partial<{
     baseUrl: string;
     preselect: Partial<{
         url: string;
         initOnMount: boolean;
     }>;
 }>;
-export declare type EmbeddingMethod = {
+export type EmbeddingMethod = {
     id: string;
     name: string;
     settings: {
@@ -33,24 +33,24 @@ export declare const DEFAULT_EMBEDDINGS: {
     name: string;
     settings: {};
 }[];
-export declare type CoordinatesType = {
+export type CoordinatesType = {
     x: number;
     y: number;
 };
-export declare type MouseInteractions = {
+export type MouseInteractions = {
     onmousemove?: (coordinates: CoordinatesType, event_used: boolean) => void;
     onmouseclick?: (coordinates: CoordinatesType, event_used: boolean, button: number) => void;
 };
-export declare type FeatureConfig = Partial<{
+export type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
     encodings: EncodingChannel[];
     showSummaryAttributes: boolean;
 }>;
-export declare type LayerSpec = {
+export type LayerSpec = {
     order: number;
     component: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
 };
-export declare type ComponentConfig = Partial<{
+export type ComponentConfig = Partial<{
     datasetTab: JSX.Element | ((onDataSelected: any) => JSX.Element) | ConnectedComponent<any, any>;
     appBar: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
     detailViews: Array<DetailViewSpec>;
@@ -64,15 +64,15 @@ export declare type ComponentConfig = Partial<{
     }) => JSX.Element>;
     mouseInteractionCallbacks: MouseInteractions;
 }>;
-export declare type DetailViewSpec = {
+export type DetailViewSpec = {
     name: string;
     view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
     settings: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
 };
-export declare type TabSpec = {
+export type TabSpec = {
     name: string;
     tab: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
-    icon: () => JSX.Element;
+    icon: JSX.Element | (() => JSX.Element);
     title: string;
     description: string;
 };

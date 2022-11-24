@@ -1,6 +1,3 @@
-declare const channelSize: (state: any, action: any) => any;
-export declare const setChannelSize: (channelSize: any) => {
-    type: string;
-    channelSize: any;
-};
-export default channelSize;
+import { CategoryOption } from '../WebGLView/CategoryOptions';
+export declare const setChannelSize: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<CategoryOption, string>;
+export declare const channelSize: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<CategoryOption>;

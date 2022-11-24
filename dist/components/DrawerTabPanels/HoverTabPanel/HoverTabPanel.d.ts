@@ -5,7 +5,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     };
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: import("@reduxjs/toolkit").EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;
@@ -14,15 +14,15 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {};
-export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, globalLabels }: Props) => JSX.Element, Pick<{
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {};
+export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, globalLabels }: Props) => JSX.Element, import("react-redux").Omit<{
     hoverSettings: {
         windowMode: any;
     };
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: import("@reduxjs/toolkit").EntityId[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;
@@ -30,5 +30,5 @@ export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ 
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
-}, never>>;
+}, "globalLabels" | "currentAggregation" | "dataset" | "hoverSettings" | "setHoverWindowMode" | "setAggregation">>;
 export {};

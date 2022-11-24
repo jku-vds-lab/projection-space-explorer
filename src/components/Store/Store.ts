@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { createEntityAdapter, EntityState, EntityId } from '@reduxjs/toolkit';
 import { combineReducers, Reducer, ReducersMapObject } from 'redux';
-import clone = require('fast-clone');
+import clone from 'fast-clone';
+import { useSelector } from 'react-redux';
 import projectionOpen from '../Ducks/ProjectionOpenDuck';
 import highlightedSequence from '../Ducks/HighlightedSequenceDuck';
 import dataset from '../Ducks/DatasetDuck';
@@ -10,7 +11,7 @@ import clusterMode, { ClusterMode } from '../Ducks/ClusterModeDuck';
 import advancedColoringSelection from '../Ducks/AdvancedColoringSelectionDuck';
 import projectionColumns from '../Ducks/ProjectionColumnsDuck';
 import displayMode from '../Ducks/DisplayModeDuck';
-import activeLine from '../Ducks/ActiveLineDuck';
+import { activeLine } from '../Ducks/ActiveLineDuck';
 import currentAggregation from '../Ducks/AggregationDuck';
 import projectionParams from '../Ducks/ProjectionParamsDuck';
 import projectionWorker from '../Ducks/ProjectionWorkerDuck';
@@ -34,7 +35,7 @@ import colorScales from '../Ducks/ColorScalesDuck';
 import { BaseColorScale } from '../../model/Palette';
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multipleAdapter, defaultAttributes, createViewDuckReducer } from '../Ducks/ViewDuck';
-import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck copy';
+import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 
 /**
  * Match all cases of view constants eg x1, y1, x2, y2...
@@ -289,7 +290,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
         id: vId,
         attributes: {
           ...defaultAttributes(),
-          workspace: AProjection.createManualProjection(xChannel, yChannel),
+          workspace: AProjection.createManualProjection(dataset, xChannel, yChannel),
         },
       };
 
@@ -387,3 +388,4 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
 }
 
 export type RootState = ReducerValues<typeof allReducers>;
+export const usePSESelector = <T>(fn: (state: RootState) => T) => useSelector<RootState, T>(fn);

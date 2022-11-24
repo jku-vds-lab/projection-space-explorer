@@ -1,6 +1,6 @@
 import { IVector } from '../../model/Vector';
 import { DatasetType } from '../../model/DatasetType';
-declare type GenericLegendProps = {
+type GenericLegendProps = {
     type: DatasetType;
     vectors: IVector[];
     aggregate: boolean;

@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as d3v5 from 'd3v5';
 import { v4 as uuidv4 } from 'uuid';
-import { FeatureType } from '../../../model/FeatureType';
+// @ts-ignore
+import clusterWorker from 'worker-loader?inline=no-fallback!../../workers/cluster.worker';
+import { FeatureType, stringToFeatureType } from '../../../model/FeatureType';
 import { DatasetType } from '../../../model/DatasetType';
 import { IVector, AVector } from '../../../model/Vector';
 import { InferCategory } from '../Data/InferCategory';
@@ -10,9 +12,9 @@ import { Dataset, DefaultFeatureLabel } from '../../../model/Dataset';
 import { Loader } from './Loader';
 import { ICluster } from '../../../model/ICluster';
 import { ObjectTypes } from '../../../model/ObjectType';
-import WorkerCluster from '../../workers/cluster.worker';
 import { DatasetEntry } from '../../../model/DatasetEntry';
 import { IEdge } from '../../../model';
+import { Profiler } from './Profiler';
 
 function convertFromCSV(vectors) {
   return vectors.map((vector) => {
@@ -62,7 +64,9 @@ export class CSVLoader implements Loader {
   }
 
   getClusters(vectors: IVector[], callback) {
-    const worker = new WorkerCluster();
+    // const worker = new Worker(new URL('../../workers/cluster.worker', import.meta.url));
+    // eslint-disable-next-line new-cap
+    const worker = new clusterWorker();
 
     worker.onmessage = (e) => {
       // Point clustering
@@ -73,8 +77,6 @@ export class CSVLoader implements Loader {
           id: uuidv4(),
           objectType: ObjectTypes.Cluster,
           indices: t.points.map((i) => i.meshIndex),
-          hull: t.hull,
-          triangulation: t.triangulation,
           label: k,
           // name: k,
         });
@@ -89,9 +91,16 @@ export class CSVLoader implements Loader {
     });
   }
 
-  async resolve(finished, vectors, datasetType, entry: DatasetEntry): Promise<Dataset> {
+  async resolve(finished, vectors, datasetType, entry: DatasetEntry, p_metaInformation?): Promise<Dataset> {
+    const profiler = new Profiler();
+    profiler.profile('start');
+
     const header = Object.keys(vectors[0]);
 
+    profiler.profile('getting header');
+
+    // TODO: really not used anymore, let it here for backwards compatibility
+    // The correct way now is to supply it in the metadata json
     let ranges = header.reduce((map, value) => {
       const matches = value.match(/\[-?\d+\.?\d* *; *-?\d+\.?\d* *;? *.*\]/);
       if (matches != null) {
@@ -106,55 +115,55 @@ export class CSVLoader implements Loader {
       return map;
     }, {});
 
-    // Check for JSON header inside column, store it as key/value pair
-    const metaInformation = header.reduce((map, value) => {
-      const json = value.match(/[{].*[}]/);
-      if (json != null) {
-        const cutHeader = value.substring(0, value.length - json[0].length);
+    profiler.profile('parse ranges');
 
-        vectors.forEach((vector) => {
-          vector[cutHeader] = vector[value];
-          delete vector[value];
-        });
-        map[cutHeader] = JSON.parse(json[0]);
-      } else {
-        map[value] = { featureLabel: DefaultFeatureLabel };
+    // Check for JSON header inside column, store it as key/value pair
+    const metaInformation =
+      p_metaInformation ||
+      header.reduce((map, value) => {
+        const json = value.match(/[{].*[}]/);
+        if (json != null) {
+          const cutHeader = value.substring(0, value.length - json[0].length);
+
+          vectors.forEach((vector) => {
+            vector[cutHeader] = vector[value];
+            delete vector[value];
+          });
+          map[cutHeader] = JSON.parse(json[0]);
+        } else {
+          map[value] = { featureLabel: DefaultFeatureLabel };
+        }
+        return map;
+      }, {});
+
+    // Set the ranges from the domains
+    for (const key in metaInformation) {
+      const val = metaInformation[key];
+
+      if (val.domain) {
+        ranges[key] = { min: val.domain[0], max: val.domain[val.domain.length - 1], center: val.domain.length === 3 ? val.domain[1] : null };
       }
-      return map;
-    }, {});
+    }
+
+    profiler.profile('Parse meta information');
 
     let index = 0;
     const types = {};
+
     // decide the type of each feature - categorical/quantitative/date
     header.forEach(() => {
       const current_key = Object.keys(metaInformation)[index];
       const col_meta = metaInformation[current_key];
+
       if (col_meta?.dtype) {
-        switch (col_meta.dtype) {
-          case 'numerical':
-            types[current_key] = FeatureType.Quantitative;
-            break;
-          case 'date':
-            types[current_key] = FeatureType.Date;
-            break;
-          case 'categorical':
-            types[current_key] = FeatureType.Categorical;
-            break;
-          case 'string':
-            types[current_key] = FeatureType.String;
-            break;
-          case 'array':
-            types[current_key] = FeatureType.Array;
-            break;
-          default:
-            types[current_key] = FeatureType.String;
-            break;
-        }
+        // In case the datatype was specified in the JSON attribute, take it from there instead of inferring it
+        types[current_key] = stringToFeatureType(col_meta.dtype);
       } else {
-        // infer for each feature whether it contains numeric, date, or arbitrary values
+        // Infer the datatype of the feature from the first N rows
         const contains_number = {};
         const contains_date = {};
         const contains_arbitrary = {};
+
         vectors.forEach((r) => {
           const type = this.getFeatureType(r[current_key]);
           if (type === 'number') {
@@ -177,8 +186,11 @@ export class CSVLoader implements Loader {
           types[current_key] = FeatureType.Categorical;
         }
       }
+
       index++;
     });
+
+    profiler.profile('Getting data types');
 
     // replace date features by their numeric timestamp equivalent
     // and fix all quantitative features to be numbers
@@ -205,16 +217,22 @@ export class CSVLoader implements Loader {
       });
     }
 
+    profiler.profile('Replace numerical values and dates');
+
     const preprocessor = new Preprocessor(vectors);
     let inferredColumns = [];
-    const hasScalarTypes = preprocessor.hasScalarTypes();
+    const hasScalarTypes = header.includes('x') && header.includes('y');
 
     [ranges, inferredColumns] = preprocessor.preprocess(ranges);
+
+    profiler.profile('Preprocessing');
 
     const dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation);
 
     dataset.hasInitialScalarTypes = hasScalarTypes;
     dataset.inferredColumns = inferredColumns;
+
+    profiler.profile('Creating dataset');
 
     const promise = new Promise<Dataset>((resolve) => {
       this.getClusters(vectors, (clusters) => {
@@ -225,30 +243,31 @@ export class CSVLoader implements Loader {
           // vector.groupLabel = [];
         });
 
-        dataset.categories = dataset.extractEncodingFeatures(ranges);
+        dataset.categories = dataset.extractEncodingFeatures();
+
+        profiler.profile('Extract encoding features');
 
         // check whether clusterEdges are defined in metaInformation of groupLabel column
-        if(metaInformation["groupLabel"] != null && metaInformation["groupLabel"].edges != null){
+        if (metaInformation.groupLabel != null && metaInformation.groupLabel.edges != null) {
           const edges = [];
-          metaInformation["groupLabel"].edges.data.forEach((row) => {
-            const nameIndex = metaInformation["groupLabel"].edges.columns.indexOf('name');
-      
+          metaInformation.groupLabel.edges.data.forEach((row) => {
+            const nameIndex = metaInformation.groupLabel.edges.columns.indexOf('name');
+
             const edge: IEdge = {
               id: uuidv4(),
-              source: clusters.findIndex((cluster) => cluster.label+"" === row[1]+"").toString(),
-              destination: clusters.findIndex((cluster) => cluster.label+"" === row[2]+"").toString(),
+              source: clusters.findIndex((cluster) => `${cluster.label}` === `${row[1]}`).toString(),
+              destination: clusters.findIndex((cluster) => `${cluster.label}` === `${row[2]}`).toString(),
               objectType: ObjectTypes.Edge,
             };
-      
+
             if (nameIndex >= 0) {
               edge.name = row[nameIndex];
             }
-      
+
             edges.push(edge);
           });
           dataset.clusterEdges = edges;
         }
-        
 
         resolve(dataset);
 

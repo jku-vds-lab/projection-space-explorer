@@ -8,6 +8,7 @@ import { IVector } from '../../model/Vector';
 import { PluginRegistry } from '../Store/PluginScript';
 import { DatasetType } from '../../model/DatasetType';
 import { GoLegend } from '../../plugins/Go/GoLegend';
+import { usePSESelector } from '../Store';
 
 type GenericLegendProps = {
   type: DatasetType;
@@ -18,10 +19,12 @@ type GenericLegendProps = {
 
 // shows single and aggregated view
 export function GenericLegend({ type, vectors, aggregate, scale = 2 }: GenericLegendProps) {
+  const dataset = usePSESelector((state) => state.dataset);
+
   const plugin = PluginRegistry.getInstance().getPlugin(type);
   if (plugin) {
     // use plugin before defaults
-    return plugin.createFingerprint(vectors, scale, aggregate);
+    return plugin.createFingerprint(dataset, vectors, scale, aggregate);
   }
   // --deprecated-- defaults... in case no plugin is specific
   switch (type) {

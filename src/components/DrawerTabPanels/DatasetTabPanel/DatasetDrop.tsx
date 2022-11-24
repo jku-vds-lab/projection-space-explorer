@@ -1,6 +1,6 @@
 import { Grid } from '@mui/material';
-import React = require('react');
-import Papa = require('papaparse');
+import * as React from 'react';
+import * as Papa from 'papaparse';
 import type { Dataset } from '../../..';
 import { CSVLoader } from '../../Utility/Loaders/CSVLoader';
 import { JSONLoader } from '../../Utility/Loaders/JSONLoader';

@@ -25,7 +25,6 @@ import { LineVisualization, PointVisualization } from './meshes';
 import { MultivariateClustering } from './MultivariateClustering';
 import { DisplayMode, displayModeSupportsStates } from '../Ducks/DisplayModeDuck';
 import { setActiveLine } from '../Ducks/ActiveLineDuck';
-import { mappingFromScale } from '../Utility/Colors/colors';
 import type { RootState } from '../Store/Store';
 import * as nt from '../NumTs/NumTs';
 import { MouseController } from './MouseController';
@@ -38,15 +37,15 @@ import { TraceSelectTool } from './TraceSelectTool';
 import { setOpenTabAction } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
-import { ADataset, Dataset } from '../../model/Dataset';
+import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ObjectTypes } from '../../model/ObjectType';
 import { ComponentConfig } from '../../BaseConfig';
 import { ANormalized } from '../Utility/NormalizedState';
-import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck copy';
-import { Mapping } from '../Utility';
-import { ViewActions, SingleMultipleAttributes, ViewSelector } from '../Ducks/ViewDuck';
-import { IPosition } from '../../model';
+import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck';
+import { Mapping, mappingFromScale } from '../Utility';
+import { ViewActions, SingleMultipleAttributes } from '../Ducks/ViewDuck';
+import { IPosition, IProjection } from '../../model';
 
 type ViewState = {
   camera: Camera;
@@ -98,6 +97,7 @@ type Props = PropsFromRedux & {
   // The id for this visualization, important for selecting the correct slice
   multipleId: EntityId;
   workspace: IPosition[];
+  projection: IProjection;
 } & Omit<SingleMultipleAttributes, 'workspace'>;
 
 const UPDATER = 'scatter';
@@ -128,11 +128,11 @@ export const WebGLView = connector(
 
     currentHover: TypedObject;
 
-    camera: any;
+    camera: THREE.OrthographicCamera;
 
     vectors: IVector[];
 
-    renderer: any;
+    renderer: THREE.WebGLRenderer;
 
     lines: LineVisualization;
 
@@ -377,14 +377,16 @@ export const WebGLView = connector(
 
       const normalized = normalizeWheel(event);
 
+      // AProjection.calculateBounds(this.props.dataset, this.props.projection.xChannel, this.props.projection.yChannel, this.props.workspace);
+
       // Store world position under mouse
       const bounds = this.containerRef.current.getBoundingClientRect();
       const worldBefore = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform());
       const screenBefore = this.relativeMousePosition(event);
 
-      const newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.props.dataset.bounds.scaleFactor;
-      if (newZoom < 1.0 / this.props.dataset.bounds.scaleFactor) {
-        this.camera.zoom = 1.0 / this.props.dataset.bounds.scaleFactor;
+      const newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.props.projection.bounds.scaleFactor;
+      if (newZoom < 1.0 / this.props.projection.bounds.scaleFactor) {
+        this.camera.zoom = 1.0 / this.props.projection.bounds.scaleFactor;
       } else {
         this.camera.zoom = newZoom;
       }
@@ -393,7 +395,7 @@ export const WebGLView = connector(
       this.restoreCamera(worldBefore, screenBefore);
 
       // Adjust mesh zoom levels
-      this.particles.zoom(this.camera.zoom);
+      this.particles.zoom(this.camera.zoom, this.props.projection);
 
       if (this.props.dataset.isSequential) {
         this.lines.setZoom(this.camera.zoom);
@@ -758,10 +760,13 @@ export const WebGLView = connector(
       this.renderer.setSize(this.getWidth(), this.getHeight());
       this.renderer.setClearColor(0x000000, 0);
       this.renderer.sortObjects = false;
+      this.renderer.localClippingEnabled = false;
 
-      this.camera = new THREE.OrthographicCamera(this.getWidth() / -2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / -2, 1, 1000);
+      this.camera = new THREE.OrthographicCamera(this.getWidth() / -2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / -2, 0, 1000);
       this.camera.position.z = 1;
       this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+      this.camera.near = 0;
+      this.camera.far = 100000;
 
       // this.camera.position.x = this.props.viewTransform.centerX
       // this.camera.position.y = this.props.viewTransform.centerY
@@ -784,10 +789,20 @@ export const WebGLView = connector(
       this.lineColorScheme = lineColorScheme;
       this.vectorMapping = vectorMapping;
 
+      const { zoom, x, y } = getDefaultZoom(
+        dataset,
+        this.getWidth(),
+        this.getHeight(),
+        this.props.projection.xChannel,
+        this.props.projection.yChannel,
+        this.props.workspace,
+      );
+
       // Update camera zoom to fit the problem
-      this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight());
-      this.camera.position.x = 0.0;
-      this.camera.position.y = 0.0;
+      this.camera.zoom = zoom;
+      this.camera.position.x = x;
+      this.camera.position.y = y;
+      this.camera.position.z = 10;
       this.camera.updateProjectionMatrix();
 
       this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId); //TODO: setViewTransform is twice in one function -> see below
@@ -813,9 +828,10 @@ export const WebGLView = connector(
         this.segments,
       );
       this.particles.createMesh(this.props.dataset.vectors, this.segments, () => {
+        this.updateXY();
         this.requestRender();
       });
-      this.particles.zoom(this.camera.zoom);
+      this.particles.zoom(this.camera.zoom, this.props.projection);
       this.particles.update();
 
       // this.scene.add(this.particles.mesh);
@@ -893,12 +909,22 @@ export const WebGLView = connector(
           this.lines.updatePosition(this.props.workspace);
         }
 
-        ADataset.calculateBounds(this.props.dataset);
+        // AProjection.calculateBounds(this.props.dataset, this.props.projection.xChannel, this.props.projection.yChannel, this.props.workspace);
+        // ADataset.calculateBounds(this.props.dataset, this.props.projection.xChannel, this.props.projection.yChannel, this.props.workspace);
 
-        this.camera.zoom = getDefaultZoom(this.props.dataset.vectors, this.getWidth(), this.getHeight());
+        const { zoom, x, y } = getDefaultZoom(
+          this.props.dataset,
+          this.getWidth(),
+          this.getHeight(),
+          this.props.projection.xChannel,
+          this.props.projection.yChannel,
+          this.props.workspace,
+        );
 
-        this.camera.position.x = 0.0;
-        this.camera.position.y = 0.0;
+        this.camera.zoom = zoom;
+
+        this.camera.position.x = x;
+        this.camera.position.y = y;
 
         this.camera.updateProjectionMatrix();
 
@@ -1087,7 +1113,7 @@ export const WebGLView = connector(
       this.initializeContainerEvents();
       this.setupRenderer();
       if (this.props.dataset) {
-        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, { key: 'algo' }, this.props.dataset), null);
+        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset), null);
 
         this.particles?.updateColor();
 
@@ -1097,12 +1123,12 @@ export const WebGLView = connector(
         if (this.props.channelColor && this.props.pointColorScale) {
           const mapping = mappingFromScale(
             ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
-            this.props.channelColor,
+            this.props.channelColor.key,
             this.props.dataset,
           );
           this.props.setPointColorMapping(this.props.multipleId, mapping);
 
-          this.particles.colorCat(this.props.channelColor, mapping);
+          this.particles.setColorByChannel(this.props.channelColor, mapping);
         }
       }
       this.startRendering();
@@ -1110,7 +1136,7 @@ export const WebGLView = connector(
 
     componentDidUpdate(prevProps: Props, prevState) {
       if (prevProps.dataset !== this.props.dataset) {
-        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, { key: 'algo' }, this.props.dataset), null);
+        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset), null);
       }
 
       if (
@@ -1121,15 +1147,17 @@ export const WebGLView = connector(
         if (this.props.channelColor && this.props.pointColorScale) {
           const mapping = mappingFromScale(
             ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
-            this.props.channelColor,
+            this.props.channelColor.key,
             this.props.dataset,
           );
           this.props.setPointColorMapping(this.props.multipleId, mapping);
-          this.particles.colorCat(this.props.channelColor, mapping);
         } else {
           this.props.setPointColorMapping(this.props.multipleId, null);
-          this.particles?.colorCat(null, null);
         }
+      }
+
+      if (prevProps.pointColorMapping !== this.props.pointColorMapping) {
+        this.particles?.setColorByChannel(this.props.channelColor, this.props.pointColorMapping);
       }
 
       if (prevProps.stories !== this.props.stories) {
@@ -1161,7 +1189,7 @@ export const WebGLView = connector(
         prevProps.globalPointBrightness !== this.props.globalPointBrightness ||
         (prevProps.channelBrightness !== this.props.channelBrightness && this.particles)
       ) {
-        this.particles.transparencyCat(this.props.channelBrightness, this.props.globalPointBrightness);
+        this.particles.setBrightnessByChannel(this.props.channelBrightness, this.props.globalPointBrightness);
         this.particles.updateColor();
         this.particles.update();
       }
@@ -1235,7 +1263,7 @@ export const WebGLView = connector(
 
       if (prevProps.vectorByShape !== this.props.vectorByShape && this.particles) {
         this.filterPoints({ star: true, cross: true, circle: true, square: true });
-        this.particles.shapeCat(this.props.vectorByShape);
+        this.particles.setShapeByChannel(this.props.vectorByShape);
       }
 
       if (prevProps.pointDisplay.checkedShapes !== this.props.pointDisplay.checkedShapes && this.particles) {
@@ -1424,6 +1452,7 @@ export const WebGLView = connector(
                         entities: {},
                         ids: [],
                       },
+                      metadata: { method: 'custom' },
                     };
 
                     this.props.addStory(story, true);

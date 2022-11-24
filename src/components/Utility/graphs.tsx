@@ -10,7 +10,7 @@ import { Dataset } from '../../model/Dataset';
 import { ObjectTypes } from '../../model/ObjectType';
 import { IBook } from '../../model/Book';
 import { IEdge } from '../../model/Edge';
-import { clusterAdapter } from '../Ducks/StoriesDuck copy';
+import { clusterAdapter } from '../Ducks/StoriesDuck';
 
 const edgeAdapter = createEntityAdapter<IEdge>({
   selectId: (edge) => edge.id,

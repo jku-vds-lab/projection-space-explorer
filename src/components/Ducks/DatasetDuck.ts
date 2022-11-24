@@ -1,4 +1,4 @@
-import { Dataset } from '../../model/Dataset';
+import type { Dataset } from '../../model/Dataset';
 
 const initialState: Dataset = null;
 

@@ -6,7 +6,7 @@ import { EntityId, EntityState } from '@reduxjs/toolkit';
 import { IconButton, Typography } from '@mui/material';
 import { WebGLView } from '../WebGLView/WebGLView';
 import { ViewSelector, ViewActions, SingleMultiple } from '../Ducks/ViewDuck';
-import { IPosition, IProjection } from '../../model/ProjectionInterfaces';
+import { IProjection } from '../../model/ProjectionInterfaces';
 import type { RootState } from '../Store';
 import { Dataset } from '../../model/Dataset';
 
@@ -45,12 +45,10 @@ function WebView({
     typeof value.attributes.workspace === 'string' || typeof value.attributes.workspace === 'number'
       ? multiples.projections.entities[value.attributes.workspace]
       : value.attributes.workspace;
-  
-  const [positions, setPositions] = React.useState<IPosition[]>();
 
-  React.useEffect(() => {
-    setPositions(selectPositions(dataset, projection));
-  }, [projection.xChannel, projection.yChannel, dataset, projection]);
+  const positions = React.useMemo(() => {
+    return selectPositions(dataset, projection);
+  }, [dataset, projection]);
 
   const active = value.id === multiples.active;
   const boxShadow = '0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)';
@@ -89,12 +87,10 @@ function WebView({
             {projection.metadata?.method}
           </Typography>
 
-          {projection.name ? (
-            <Typography variant="body1" component="span">
-              {` - "${projection.name}"`}
-              {projection.xChannel || projection.yChannel ? ` [x: ${projection.xChannel}, y: ${projection.yChannel}]` : null}
-            </Typography>
-          ) : null}
+          <Typography variant="body1" component="span">
+            {projection.name ? ` - "${projection.name}"` : ''}
+            {projection.xChannel || projection.yChannel ? ` [x: ${projection.xChannel}, y: ${projection.yChannel}]` : null}
+          </Typography>
         </div>
 
         <div style={{ display: 'flex' }}>
@@ -114,7 +110,17 @@ function WebView({
         </div>
       </div>
       <div style={{ flexGrow: 1 }}>
-        {positions ? <WebGLView overrideComponents={overrideComponents} multipleId={id} {...value.attributes} workspace={positions} /> : null}
+        {positions && projection ? (
+          <WebGLView
+            overrideComponents={overrideComponents}
+            multipleId={id}
+            {...value.attributes}
+            projection={projection}
+            workspace={positions}
+            xChannel={projection.xChannel}
+            yChannel={projection.yChannel}
+          />
+        ) : null}
       </div>
     </div>
   );

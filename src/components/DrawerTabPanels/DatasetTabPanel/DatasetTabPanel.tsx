@@ -1,5 +1,5 @@
 import { Box, Typography, Button } from '@mui/material';
-import React = require('react');
+import * as React from 'react';
 import * as d3v5 from 'd3v5';
 import { Dataset } from '../../../model/Dataset';
 import { AVector } from '../../../model/Vector';

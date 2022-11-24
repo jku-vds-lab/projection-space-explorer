@@ -1,5 +1,5 @@
 import { DatasetType } from './DatasetType';
-export declare type DatasetEntry = {
+export type DatasetEntry = {
     display: string;
     path: string;
     type: DatasetType;

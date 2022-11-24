@@ -4,9 +4,9 @@ import { ThunkAction } from 'redux-thunk';
 import type { RootState } from '../Store/Store';
 import { ICluster } from '../../model/ICluster';
 import { IVector } from '../../model/Vector';
-import { AStorytelling } from './StoriesDuck copy';
+import { AStorytelling } from './StoriesDuck';
 
-const THUNK_SET_VECTORS = 'ducks/THUNK_SET';
+const THUNK_SET_VECTORS = 'ducks/THUNK_SET_VECTORS';
 const THUNK_SET_CLUSTERS = 'ducks/THUNK_SET_CLUSTERS';
 
 function deriveFromClusters(clusters: ICluster[]): number[] {
@@ -74,7 +74,7 @@ export const selectVectors = (selection: number[], shiftKey = false) => {
   };
 };
 
-export const selectClusters = (selection: EntityId[], shiftKey = false) => {
+export const selectClusters = (selection: (number | string)[], shiftKey = false) => {
   return (dispatch, getState): ThunkAction<any, RootState, unknown, AnyAction> => {
     const state: RootState = getState();
 
@@ -106,7 +106,7 @@ export const selectClusters = (selection: EntityId[], shiftKey = false) => {
 
 const initialState = {
   aggregation: [] as number[],
-  selectedClusters: [] as EntityId[],
+  selectedClusters: [] as (number | string)[],
   source: 'sample' as 'sample' | 'cluster',
 };
 

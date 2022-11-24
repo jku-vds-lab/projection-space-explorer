@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import React = require('react');
+import * as React from 'react';
 import { DatasetType } from '../../model/DatasetType';
 import { IVector } from '../../model/Vector';
 import { Dataset } from '../../model/Dataset';

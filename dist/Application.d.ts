@@ -2,6 +2,7 @@ import 'regenerator-runtime/runtime';
 import './index.scss';
 import * as React from 'react';
 import { ConnectedProps } from 'react-redux';
+import Split from 'react-split';
 import { Dataset } from './model/Dataset';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 /**
@@ -31,8 +32,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 /**
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
  */
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     config?: BaseConfig;
     features?: FeatureConfig;
     overrideComponents?: ComponentConfig;
@@ -42,7 +43,7 @@ declare type Props = PropsFromRedux & {
  */
 export declare const Application: import("react-redux").ConnectedComponent<{
     new (props: any): {
-        splitRef: React.RefObject<unknown>;
+        splitRef: React.LegacyRef<Split>;
         componentDidMount(): void;
         /**
          * Main callback when the dataset changes
@@ -50,7 +51,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
          * @param json
          */
         onDataSelected(dataset: Dataset): void;
-        onLineSelect(_algo: any, _show: any): void;
         onChangeTab(newTab: any): void;
         render(): JSX.Element;
         context: any;
@@ -76,62 +76,5 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, Pick<React.ClassAttributes<{
-    splitRef: React.RefObject<unknown>;
-    componentDidMount(): void;
-    /**
-     * Main callback when the dataset changes
-     * @param dataset
-     * @param json
-     */
-    onDataSelected(dataset: Dataset): void;
-    onLineSelect(_algo: any, _show: any): void;
-    onChangeTab(newTab: any): void;
-    render(): JSX.Element;
-    context: any;
-    setState<K extends string | number | symbol>(state: any, callback?: () => void): void;
-    forceUpdate(callback?: () => void): void;
-    readonly props: Readonly<Props> & Readonly<{
-        children?: React.ReactNode;
-    }>;
-    state: Readonly<any>;
-    refs: {
-        [key: string]: React.ReactInstance;
-    };
-    shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): boolean;
-    componentWillUnmount?(): void;
-    componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
-    getSnapshotBeforeUpdate?(prevProps: Readonly<Props>, prevState: Readonly<any>): any;
-    componentDidUpdate?(prevProps: Readonly<Props>, prevState: Readonly<any>, snapshot?: any): void;
-    componentWillMount?(): void;
-    UNSAFE_componentWillMount?(): void;
-    componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
-    UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
-    componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
-    UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
-}> & {
-    openTab: any;
-    dataset: Dataset;
-    hoverStateOrientation: any;
-    datasetEntries: {
-        values: {
-            byId: {
-                [id: string]: import("./model").DatasetEntry;
-            };
-            allIds: string[];
-        };
-    };
-    globalLabels: import(".").GlobalLabelsState;
-} & {
-    setOpenTab: (openTab: any) => any;
-    setLineByOptions: (options: any) => any;
-    setGlobalPointBrightness: (value: any) => any;
-    setGroupVisualizationMode: (value: any) => any;
-    setLineUpInput_visibility: (open: any) => any;
-    loadDataset: (dataset: Dataset) => any;
-} & {
-    config?: BaseConfig;
-    features?: FeatureConfig;
-    overrideComponents?: ComponentConfig;
-}, "ref" | "config" | "features" | "overrideComponents" | "key">>;
+}, import("react-redux").Omit<any, "globalLabels" | "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
 export {};

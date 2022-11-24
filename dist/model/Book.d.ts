@@ -1,4 +1,5 @@
 import { EntityId, EntityState } from '@reduxjs/toolkit';
+import Graph from 'graphology';
 import { IEdge } from './Edge';
 import { ICluster } from './ICluster';
 /**
@@ -48,7 +49,7 @@ export declare class ABook {
     /**
      * Converts this story to a graphology instance.
      */
-    static toGraph(story: IBook): any;
+    static toGraph(story: IBook): Graph;
     /**
      * Returns a list of paths that have a common start point.
      *

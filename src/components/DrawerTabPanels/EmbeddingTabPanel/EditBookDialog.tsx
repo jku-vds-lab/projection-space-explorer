@@ -32,7 +32,7 @@ export function EditBookDialog({
   return (
     <Dialog open={book !== null} onClose={onClose}>
       <Box component="form" onSubmit={onSubmit}>
-        <DialogTitle>{`Edit Projection ${book?.name}`}</DialogTitle>
+        <DialogTitle>{`Edit story book ${book?.name ? book.name : ''}`}</DialogTitle>
 
         <DialogContent>
           <TextField required label="Name" fullWidth value={name ?? ''} onChange={(event) => setName(event.target.value)} sx={{ mt: 1 }} />

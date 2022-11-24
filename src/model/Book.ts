@@ -1,12 +1,11 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { EntityId, EntityState } from '@reduxjs/toolkit';
+import Graph from 'graphology';
 import { IEdge } from './Edge';
 import { ICluster } from './ICluster';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const Graph = require('graphology');
-
 /**
 
 function* labelGenerator() {

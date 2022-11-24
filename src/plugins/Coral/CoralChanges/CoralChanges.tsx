@@ -1,3 +1,4 @@
+import * as d3v5 from 'd3v5';
 import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Handler } from 'vega-tooltip';
@@ -11,8 +12,6 @@ import type { RootState } from '../../../components/Store/Store';
 import Boxplot from './VegaBoxplot';
 import BarChanges from './VegaBarChanges';
 import { ChiSquareTest } from './ChiSquare';
-
-const d3v5 = require('d3v5');
 
 const useStyles = makeStyles({
   table: {

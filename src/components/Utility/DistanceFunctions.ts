@@ -1,5 +1,4 @@
-import jaccard_dist = require('jaccard');
-
+import * as jaccard_dist from 'jaccard';
 import { DistanceMetric } from '../../model/DistanceMetric';
 import { FeatureType } from '../../model/FeatureType';
 

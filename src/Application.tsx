@@ -66,7 +66,7 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   hoverStateOrientation: state.hoverStateOrientation,
   datasetEntries: state.datasetEntries,
-  globalLabels: state.globalLabels
+  globalLabels: state.globalLabels,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -101,14 +101,13 @@ type Props = PropsFromRedux & {
  */
 export const Application = connector(
   class extends React.Component<Props, any> {
-    splitRef: React.RefObject<unknown>;
+    splitRef: React.LegacyRef<Split>;
 
     constructor(props) {
       super(props);
 
       this.splitRef = React.createRef();
 
-      this.onLineSelect = this.onLineSelect.bind(this);
       this.onDataSelected = this.onDataSelected.bind(this);
     }
 
@@ -139,12 +138,6 @@ export const Application = connector(
       this.props.loadDataset(dataset);
     }
 
-    onLineSelect(_algo, _show) {
-      // TODO: filtering for lines should be moved to duck
-      // this.threeRef.current.filterLines(algo, show);
-      // this.threeRef.current.requestRender();
-    }
-
     onChangeTab(newTab) {
       if (newTab === this.props.openTab) {
         this.props.setOpenTab(false);
@@ -171,7 +164,7 @@ export const Application = connector(
             }}
             PaperProps={{
               style: {
-                position: 'relative',
+                position: 'initial',
                 overflow: 'hidden',
                 border: 'none',
               },
@@ -200,7 +193,7 @@ export const Application = connector(
               >
                 <Tab
                   value={0}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Dataset} />}
+                  icon={<img src={PSEIcons.Dataset} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -221,7 +214,7 @@ export const Application = connector(
               >
                 <Tab
                   value={1}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Project} />}
+                  icon={<img src={PSEIcons.Project} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -244,7 +237,7 @@ export const Application = connector(
               >
                 <Tab
                   value={2}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Encoding} />}
+                  icon={<img src={PSEIcons.Encoding} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -265,7 +258,7 @@ export const Application = connector(
               >
                 <Tab
                   value={3}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Clusters} />}
+                  icon={<img src={PSEIcons.Clusters} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -280,13 +273,17 @@ export const Application = connector(
                 title={
                   <>
                     <Typography variant="subtitle2">{`Hover ${capitalizeFirstLetter(this.props.globalLabels.itemLabel)} and Selection Summary`}</Typography>
-                    <Typography variant="body2">{toSentenceCase(`Contains information about the currently hovered ${this.props.globalLabels.itemLabel} and the currently selected summary.`)}</Typography>
+                    <Typography variant="body2">
+                      {toSentenceCase(
+                        `Contains information about the currently hovered ${this.props.globalLabels.itemLabel} and the currently selected summary.`,
+                      )}
+                    </Typography>
                   </>
                 }
               >
                 <Tab
                   value={4}
-                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Details} />}
+                  icon={<img src={PSEIcons.Details} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -296,31 +293,28 @@ export const Application = connector(
                 />
               </Tooltip>
 
-
-              {
-                this.props.overrideComponents.detailViews?.length > 0 ?
-                  <Tooltip
-                    placement="right"
-                    title={
-                      <>
-                        <Typography variant="subtitle2">Views</Typography>
-                        <Typography variant="body2">Contains settings about the bottom views.</Typography>
-                      </>
-                    }
-                  >
-                    <Tab
-                      value={5}
-                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.PseLineup} />}
-                      style={{
-                        minWidth: 0,
-                        flexGrow: 1,
-                        padding: 12,
-                        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-                      }}
-                    />
-                  </Tooltip> : null
-              }
-
+              {this.props.overrideComponents.detailViews?.length > 0 ? (
+                <Tooltip
+                  placement="right"
+                  title={
+                    <>
+                      <Typography variant="subtitle2">Views</Typography>
+                      <Typography variant="body2">Contains settings about the bottom views.</Typography>
+                    </>
+                  }
+                >
+                  <Tab
+                    value={5}
+                    icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.PseLineup} />}
+                    style={{
+                      minWidth: 0,
+                      flexGrow: 1,
+                      padding: 12,
+                      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                    }}
+                  />
+                </Tooltip>
+              ) : null}
 
               {this.props.overrideComponents?.tabs?.map((tab, i) => {
                 return (
@@ -336,7 +330,7 @@ export const Application = connector(
                   >
                     <Tab
                       value={6 + i}
-                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon} />}
+                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon as any} />}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,
@@ -403,20 +397,16 @@ export const Application = connector(
                   <DetailsTabPanel config={this.props.features} />
                 </FixedHeightTabPanel>
 
-                {
-                  this.props.overrideComponents.detailViews?.length > 0 ?
-                    <FixedHeightTabPanel value={this.props.openTab} index={5}>
-                      <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} />
-                    </FixedHeightTabPanel> : null
-                }
-
+                {this.props.overrideComponents.detailViews?.length > 0 ? (
+                  <FixedHeightTabPanel value={this.props.openTab} index={5}>
+                    <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} />
+                  </FixedHeightTabPanel>
+                ) : null}
 
                 {this.props.overrideComponents?.tabs?.map((tab, i) => {
                   return (
                     <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={6 + i}>
-                      {React.isValidElement(tab.tab)
-                        ? tab.tab
-                        : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i` })}
+                      {React.isValidElement(tab.tab) ? tab.tab : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i` })}
                     </FixedHeightTabPanel>
                   );
                 })}
@@ -440,7 +430,7 @@ export const Application = connector(
             ) : (
               <PseAppBar style={undefined}>
                 <a href="https://jku-vds-lab.at" target="_blank" rel="noreferrer">
-                  <VDSLogo style={{ height: 48, width: 48 }} />
+                  <img src={VDSLogo} style={{ height: 48, width: 48 }} />
                 </a>
                 <Typography variant="h6" style={{ marginLeft: 48, color: 'rgba(0, 0, 0, 0.54)' }}>
                   Projection Space Explorer
@@ -482,7 +472,6 @@ export const Application = connector(
                 </div>
                 <div style={{ flexGrow: 0.1 }}>
                   <DetailViewChooser overrideComponents={this.props.overrideComponents} />
-
                 </div>
               </Split>
             ) : (
