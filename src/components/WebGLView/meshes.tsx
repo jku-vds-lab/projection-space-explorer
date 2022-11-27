@@ -623,7 +623,7 @@ export class PointVisualization {
     type.needsUpdate = true;
   }
 
-  setColorByChannel(category: CategoryOption, scale) {
+  setColorByChannel(category: CategoryOption, scale, additionalColumns?) {
     this.colorAttribute = category;
 
     if (category == null) {
@@ -632,7 +632,7 @@ export class PointVisualization {
       this.vectorMapping = scale;
     }
 
-    this.updateColor();
+    this.updateColor(additionalColumns);
   }
 
   colorFilter(colorsChecked) {
@@ -729,7 +729,7 @@ export class PointVisualization {
     size.needsUpdate = true;
   }
 
-  updateColor() {
+  updateColor(additionalColumns?: {[key: string]: {[key: number]: number[]}}) {
     const color = this.mesh.geometry.attributes.customColor as BufferAttribute;
 
     const gray = { r: 192, g: 192, b: 192 };
@@ -739,18 +739,26 @@ export class PointVisualization {
       const i = vector.__meta__.meshIndex;
       let rgb = null;
 
+      let vectorValue;
+      
+      if (additionalColumns && this.colorAttribute && additionalColumns[this.colorAttribute.key]) {
+        vectorValue = additionalColumns[this.colorAttribute.key][i]
+      } else if (this.colorAttribute) {
+        vectorValue = vector[this.colorAttribute.key]
+      }
+
       if (this.dataset.isSequential) {
         // sequential
         if (this.lineLayerSystem.getValue(vector.__meta__.lineIndex)) {
           rgb = gray;
         } else if (this.colorAttribute != null) {
-          const m = mapValueToColor(this.vectorMapping, vector[this.colorAttribute.key]);
+          const m = mapValueToColor(this.vectorMapping, vectorValue);
           rgb = m.rgb;
 
           if (isNumericMapping(this.vectorMapping)) {
             vector.__meta__.intrinsicColor = null;
           } else {
-            vector.__meta__.intrinsicColor = AShallowSet.indexOf(this.vectorMapping.values, vector[this.colorAttribute.key]);
+            vector.__meta__.intrinsicColor = AShallowSet.indexOf(this.vectorMapping.values, vectorValue);
           }
         } else {
           const col = this.vectorSegmentLookup[i].__meta__.lineMesh.material.color;
@@ -764,13 +772,13 @@ export class PointVisualization {
       } else if (this.grayedLayerSystem.getValue(vector.__meta__.meshIndex)) {
         rgb = gray;
       } else if (this.colorAttribute != null) {
-        const m = mapValueToColor(this.vectorMapping, vector[this.colorAttribute.key]);
+        const m = mapValueToColor(this.vectorMapping, vectorValue);
         rgb = m.rgb;
 
         if (isNumericMapping(this.vectorMapping)) {
           vector.__meta__.intrinsicColor = null;
         } else {
-          vector.__meta__.intrinsicColor = AShallowSet.indexOf(this.vectorMapping.values, vector[this.colorAttribute.key]);
+          vector.__meta__.intrinsicColor = AShallowSet.indexOf(this.vectorMapping.values, vectorValue);
         }
       } else {
         rgb = defaultColor;

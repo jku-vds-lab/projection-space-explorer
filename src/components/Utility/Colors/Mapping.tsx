@@ -99,13 +99,23 @@ export type Mapping = DiscreteMapping | DivergingMapping | ContinuousMapping;
  * @param dataset the dataset
  * @returns a mapping object
  */
-export const mappingFromScale = (scale: BaseColorScale, key: string, dataset: Dataset) => {
+export const mappingFromScale = (scale: BaseColorScale, key: string, dataset: Dataset, additionalColumns?: {[key: string]: {[key: number]: number[]}}) => {
   if (scale.type === 'categorical') {
-    return {
-      scale,
-      values: AShallowSet.create(dataset.vectors.map((vector) => vector[key])),
-      type: 'categorical',
-    } as DiscreteMapping;
+    if (additionalColumns && key in additionalColumns) {
+      let elements = additionalColumns[key]
+
+      return {
+        scale,
+        values: AShallowSet.create(dataset.vectors.map((vector) => elements[vector.__meta__.meshIndex])),
+        type: 'categorical',
+      } as DiscreteMapping;
+    } else {
+      return {
+        scale,
+        values: AShallowSet.create(dataset.vectors.map((vector) => vector[key])),
+        type: 'categorical',
+      } as DiscreteMapping;
+    }
   }
   if (scale.type === 'sequential') {
     const { min, max } = getMinMaxOfChannel(dataset, key);

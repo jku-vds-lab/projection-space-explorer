@@ -77,9 +77,9 @@ const mapDispatchToProps = (dispatch) => ({
   setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
   setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
   setPointColorMapping: (id: EntityId, mapping) => dispatch(ViewActions.setPointColorMapping({ multipleId: id, value: mapping })),
-  removeClusterFromStories: (cluster: ICluster) => dispatch(StoriesActions.deleteCluster({ cluster })),
+  removeClusterFromStories: (cluster: ICluster) => dispatch(StoriesActions.deleteCluster(cluster)),
   addStory: (book: IBook, activate: boolean) => dispatch(StoriesActions.addBookAsync({ book, activate })),
-  addClusterToStory: (cluster: ICluster) => dispatch(StoriesActions.addCluster({ cluster })),
+  addClusterToStory: (cluster: ICluster) => dispatch(StoriesActions.addCluster(cluster)),
   addEdgeToActive: (edge: IEdge) => dispatch(StoriesActions.addEdgeToActive(edge)),
   setActiveTrace: (trace) => dispatch(StoriesActions.setActiveTrace(trace)),
   setOpenTab: (tab) => dispatch(setOpenTabAction(tab)),
@@ -365,7 +365,7 @@ export const WebGLView = connector(
 
       this.props.selectVectors([], false);
 
-      this.particles?.updateColor();
+      this.particles?.updateColor(this.createAdditionalColumns());
     }
 
     onWheel(event) {
@@ -1069,13 +1069,19 @@ export const WebGLView = connector(
       }
     }
 
+    createAdditionalColumns() {
+      return {
+        'groupLabel': this.props.stories.groupLabel
+      }
+    }
+
     componentDidMount() {
       this.initializeContainerEvents();
       this.setupRenderer();
       if (this.props.dataset) {
-        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset), null);
+        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset, this.createAdditionalColumns()), null);
 
-        this.particles?.updateColor();
+        this.particles?.updateColor(this.createAdditionalColumns());
 
         this.particles.sizeCat(this.props.channelSize, this.props.globalPointSize);
         this.particles.updateSize();
@@ -1088,7 +1094,7 @@ export const WebGLView = connector(
           );
           this.props.setPointColorMapping(this.props.multipleId, mapping);
 
-          this.particles.setColorByChannel(this.props.channelColor, mapping);
+          this.particles.setColorByChannel(this.props.channelColor, mapping, this.createAdditionalColumns());
         }
       }
       this.startRendering();
@@ -1096,7 +1102,7 @@ export const WebGLView = connector(
 
     componentDidUpdate(prevProps: Props, prevState) {
       if (prevProps.dataset !== this.props.dataset) {
-        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset), null);
+        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset, this.createAdditionalColumns()), null);
       }
 
       if (
@@ -1109,6 +1115,7 @@ export const WebGLView = connector(
             ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
             this.props.channelColor.key,
             this.props.dataset,
+            this.createAdditionalColumns()
           );
           this.props.setPointColorMapping(this.props.multipleId, mapping);
         } else {
@@ -1117,7 +1124,7 @@ export const WebGLView = connector(
       }
 
       if (prevProps.pointColorMapping !== this.props.pointColorMapping) {
-        this.particles?.setColorByChannel(this.props.channelColor, this.props.pointColorMapping);
+        this.particles?.setColorByChannel(this.props.channelColor, this.props.pointColorMapping, this.createAdditionalColumns());
       }
 
       if (prevProps.stories !== this.props.stories) {
@@ -1128,7 +1135,7 @@ export const WebGLView = connector(
           this.lines?.update();
 
           this.particles?.update();
-          this.particles?.updateColor();
+          this.particles?.updateColor(this.createAdditionalColumns());
         } else {
           this.particles?.storyTelling(null);
 
@@ -1136,7 +1143,7 @@ export const WebGLView = connector(
           this.lines?.update();
 
           this.particles?.update();
-          this.particles?.updateColor();
+          this.particles?.updateColor(this.createAdditionalColumns());
         }
       }
 
@@ -1150,7 +1157,7 @@ export const WebGLView = connector(
         (prevProps.channelBrightness !== this.props.channelBrightness && this.particles)
       ) {
         this.particles.setBrightnessByChannel(this.props.channelBrightness, this.props.globalPointBrightness);
-        this.particles.updateColor();
+        this.particles.updateColor(this.createAdditionalColumns());
         this.particles.update();
       }
 
@@ -1181,7 +1188,7 @@ export const WebGLView = connector(
         });
 
         this.particles.update();
-        this.particles.updateColor();
+        this.particles.updateColor(this.createAdditionalColumns());
       }
 
       if (prevProps.hoverState !== this.props.hoverState) {
@@ -1218,7 +1225,7 @@ export const WebGLView = connector(
 
         this.lines.update();
         this.particles.update();
-        this.particles.updateColor();
+        this.particles.updateColor(this.createAdditionalColumns());
       }
 
       if (prevProps.vectorByShape !== this.props.vectorByShape && this.particles) {
@@ -1236,7 +1243,7 @@ export const WebGLView = connector(
         } else {
           this.lines.highlight([], this.getWidth(), this.getHeight(), this.scene, true);
           this.particles.update();
-          this.particles.updateColor();
+          this.particles.updateColor(this.createAdditionalColumns());
         }
       }
 
@@ -1398,7 +1405,6 @@ export const WebGLView = connector(
               onClick={() => {
                 if (this.props.currentAggregation.aggregation.length > 0) {
                   const cluster = ACluster.fromSamples(this.props.dataset, this.props.currentAggregation.aggregation);
-
                   if (this.props.stories.active === null) {
                     const story: IBook = {
                       id: uuidv4(),
@@ -1414,7 +1420,6 @@ export const WebGLView = connector(
                       },
                       metadata: { method: 'custom' },
                     };
-
                     this.props.addStory(story, true);
                   } else {
                     this.props.addClusterToStory(cluster);
