@@ -27,7 +27,7 @@ export declare function mapValueToColor(mapping: ContinuousMapping | DivergingMa
 /**
  * Helper type that contains a union over all mappings
  */
-export declare type Mapping = DiscreteMapping | DivergingMapping | ContinuousMapping;
+export type Mapping = DiscreteMapping | DivergingMapping | ContinuousMapping;
 /**
  *
  * @param scale the color scale
@@ -35,7 +35,11 @@ export declare type Mapping = DiscreteMapping | DivergingMapping | ContinuousMap
  * @param dataset the dataset
  * @returns a mapping object
  */
-export declare const mappingFromScale: (scale: BaseColorScale, key: string, dataset: Dataset) => DiscreteMapping | DivergingMapping | ContinuousMapping;
+export declare const mappingFromScale: (scale: BaseColorScale, key: string, dataset: Dataset, additionalColumns?: {
+    [key: string]: {
+        [key: number]: number[];
+    };
+}) => DiscreteMapping | DivergingMapping | ContinuousMapping;
 /**
  *
  * @param mapping a mapping object

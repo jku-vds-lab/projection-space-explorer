@@ -1,9 +1,9 @@
 import * as React from 'react';
-export declare type DragAndDropProps = {
+export type DragAndDropProps = {
     handleDrop: Function;
     accept: string;
 };
-export declare type DragAndDropState = {
+export type DragAndDropState = {
     drag: boolean;
 };
 export declare class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropState> {

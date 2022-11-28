@@ -1,14 +1,14 @@
 import { ConnectedComponent } from 'react-redux';
 import { EncodingChannel } from './model/EncodingChannel';
 import { EmbeddingController } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingController';
-export declare type BaseConfig = Partial<{
+export type BaseConfig = Partial<{
     baseUrl: string;
     preselect: Partial<{
         url: string;
         initOnMount: boolean;
     }>;
 }>;
-export declare type EmbeddingMethod = {
+export type EmbeddingMethod = {
     id: string;
     name: string;
     settings: {
@@ -31,16 +31,16 @@ export declare const DEFAULT_EMBEDDINGS: {
     name: string;
     settings: {};
 }[];
-export declare type FeatureConfig = Partial<{
+export type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
     encodings: EncodingChannel[];
     showSummaryAttributes: boolean;
 }>;
-export declare type LayerSpec = {
+export type LayerSpec = {
     order: number;
     component: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
 };
-export declare type ComponentConfig = Partial<{
+export type ComponentConfig = Partial<{
     datasetTab: JSX.Element | ((onDataSelected: any) => JSX.Element) | ConnectedComponent<any, any>;
     appBar: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
     detailViews: Array<DetailViewSpec>;
@@ -48,16 +48,16 @@ export declare type ComponentConfig = Partial<{
     tabs: Array<TabSpec>;
     contextMenuItems: Array<ContextMenuItem>;
 }>;
-export declare type ContextMenuItem = {
+export type ContextMenuItem = {
     key: string;
     title: string;
     function: (coords: any) => void;
 };
-export declare type DetailViewSpec = {
+export type DetailViewSpec = {
     name: string;
     view: () => JSX.Element;
 };
-export declare type TabSpec = {
+export type TabSpec = {
     name: string;
     tab: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
     icon: JSX.Element | (() => JSX.Element);

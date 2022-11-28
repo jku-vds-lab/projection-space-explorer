@@ -21,7 +21,7 @@ import { ComponentConfig } from '../../BaseConfig';
 import { Mapping } from '../Utility';
 import { SingleMultipleAttributes } from '../Ducks/ViewDuck';
 import { IPosition, IProjection } from '../../model';
-declare type ViewState = {
+type ViewState = {
     camera: Camera;
     menuX: number;
     menuY: number;
@@ -39,7 +39,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;
-    stories: import("immer/dist/internal").WritableDraft<import("../Ducks/StoriesDuck").IStorytelling>;
+    stories: import("../Ducks/StoriesDuck").IStorytelling;
     trailSettings: {
         show: boolean;
         length: any;
@@ -74,8 +74,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
     removeEdgeFromActive: (edge: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     overrideComponents: ComponentConfig;
     multipleId: EntityId;
     workspace: IPosition[];
@@ -197,6 +197,11 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         onClusterClicked(cluster: ICluster, shiftKey?: boolean): void;
         renderFrame(): void;
         updateItemClusterDisplay(): void;
+        createAdditionalColumns(): {
+            groupLabel: {
+                [key: number]: number[];
+            };
+        };
         componentDidMount(): void;
         componentDidUpdate(prevProps: Props, prevState: any): void;
         requestRender(): void;

@@ -9,14 +9,14 @@ export declare const ProjectionMethod: {
 /**
  * position type containing x and y coordinates.
  */
-export declare type IPosition = {
+export type IPosition = {
     x: number;
     y: number;
 };
 /**
  * Projection item that also contains a name and a hash
  */
-export declare type IProjection = {
+export type IProjection = {
     positions: IBaseProjection;
     name: string;
     hash: string;
@@ -35,4 +35,4 @@ export declare type IProjection = {
 /**
  * Base type for projections
  */
-export declare type IBaseProjection = IPosition[];
+export type IBaseProjection = IPosition[];

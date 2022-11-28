@@ -9,7 +9,7 @@ import { TrailVisualization } from './TrailVisualization';
 import { IBook } from '../../model/Book';
 import { ViewTransformType } from '../Ducks';
 import { IPosition } from '../../model/ProjectionInterfaces';
-declare type ClusterObjectType = {
+type ClusterObjectType = {
     cluster: EntityId;
     geometry: THREE.Geometry;
     material: THREE.MeshBasicMaterial;
@@ -33,7 +33,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         show: any;
         length: number;
     };
-    stories: import("immer/dist/internal").WritableDraft<import("../Ducks").IStorytelling>;
+    stories: import("../Ducks").IStorytelling;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: (string | number)[];
@@ -42,8 +42,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     hoverState: import("../Ducks").HoverStateType;
     groupVisualizationMode: any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     onInvalidate?: () => void;
     viewTransform: ViewTransformType;
     workspace: IPosition[];

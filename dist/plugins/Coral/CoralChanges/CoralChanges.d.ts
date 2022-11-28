@@ -8,8 +8,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     differenceThreshold: any;
     legendAttributes: any[];
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     width?: number;
     height?: number;
     vectorsA: Array<IVector>;

@@ -30,8 +30,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 /**
  * Type that holds the props we declared above in mapStateToProps and mapDispatchToProps
  */
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     config?: BaseConfig;
     features?: FeatureConfig;
     overrideComponents?: ComponentConfig;

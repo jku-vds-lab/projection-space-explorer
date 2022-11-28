@@ -1,7 +1,6 @@
-import { Reducer, Store } from 'redux';
+import { Reducer, Store, configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 import { v4 as uuidv4 } from 'uuid';
-import { configureStore } from '@reduxjs/toolkit';
 import { rootReducer, RootState } from './Store';
 import { getStoreDiff } from './PluginScript';
 import { RootActions } from './RootActions';

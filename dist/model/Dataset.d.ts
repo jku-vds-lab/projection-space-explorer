@@ -12,7 +12,7 @@ export declare enum PrebuiltFeatures {
 export declare const EXCLUDED_COLUMNS: string[];
 export declare const EXCLUDED_COLUMNS_ALL: string[];
 export declare const DefaultFeatureLabel = "Default";
-export declare type ColumnType = {
+export type ColumnType = {
     distinct: any;
     isNumeric: boolean;
     metaInformation: any;

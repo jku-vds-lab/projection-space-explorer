@@ -5,8 +5,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     legendAttributes: any[];
     dataset: import("../../..").Dataset;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     aggregate: boolean;
     selection: IVector[];
 };

@@ -6,6 +6,26 @@ import { CategoryOption } from '../../WebGLView/CategoryOptions';
  */
 export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
     color?: "primary" | "secondary";
+    components?: {
+        Root?: React.ElementType<any>;
+        Track?: React.ElementType<any>;
+        Rail?: React.ElementType<any>;
+        Thumb?: React.ElementType<any>;
+        Mark?: React.ElementType<any>;
+        MarkLabel?: React.ElementType<any>;
+        ValueLabel?: React.ElementType<any>;
+        Input?: React.ElementType<any>;
+    };
+    componentsProps?: {
+        root?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
+        track?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
+        rail?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
+        thumb?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
+        mark?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
+        markLabel?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
+        valueLabel?: import("@mui/base").SlotComponentProps<typeof import("@mui/base").SliderValueLabelUnstyled, import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
+        input?: import("@mui/base").SlotComponentProps<"input", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
+    };
     classes?: Partial<import("@mui/base").SliderUnstyledClasses> & {
         colorPrimary?: string;
         colorSecondary?: string;
@@ -18,7 +38,7 @@ export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
     sx?: import("@mui/material").SxProps<import("@mui/material").Theme>;
 } & import("@mui/base").SliderUnstyledOwnProps & Omit<Pick<React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, "key" | keyof React.HTMLAttributes<HTMLSpanElement>> & {
     ref?: React.Ref<HTMLSpanElement>;
-}, "size" | "color" | "sx" | keyof import("@mui/base").SliderUnstyledOwnProps> & import("@mui/system").MUIStyledCommonProps<import("@mui/material").Theme>, {}, {}>;
+}, "size" | "color" | "sx" | "components" | "componentsProps" | keyof import("@mui/base").SliderUnstyledOwnProps> & import("@mui/system").MUIStyledCommonProps<import("@mui/material").Theme>, {}, {}>;
 /**
  * Renders one color scale with an optional center point.
  */

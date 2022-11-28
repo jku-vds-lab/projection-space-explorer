@@ -9,7 +9,7 @@ declare class simpleSlider extends React.Component<Props> {
     componentDidUpdate(prevProps: any): void;
     render(): JSX.Element;
 }
-declare type Props = ConnectedProps<typeof connector>;
+type Props = ConnectedProps<typeof connector>;
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     differenceThreshold: any;
 } & {

@@ -3,7 +3,7 @@ import { Dataset } from '../../../model/Dataset';
 import { IProjection, IBaseProjection } from '../../../model/ProjectionInterfaces';
 import { FeatureConfig } from '../../../BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    stories: import("immer/dist/internal").WritableDraft<import("../..").IStorytelling>;
+    stories: import("../..").IStorytelling;
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;
@@ -29,8 +29,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     deleteProjection: (handle: string) => any;
     updateWorkspace: (workspace: IBaseProjection, metadata?: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     config: FeatureConfig;
     projectionWorker?: Worker;
     projectionOpen?: boolean;
@@ -39,7 +39,7 @@ declare type Props = PropsFromRedux & {
     dataset?: Dataset;
 };
 export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => JSX.Element, import("react-redux").Omit<{
-    stories: import("immer/dist/internal").WritableDraft<import("../..").IStorytelling>;
+    stories: import("../..").IStorytelling;
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;

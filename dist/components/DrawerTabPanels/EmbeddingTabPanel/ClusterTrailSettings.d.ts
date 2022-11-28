@@ -11,8 +11,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setTrailVisibility: (visibility: any) => any;
     setTrailLength: (length: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {};
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {};
 export declare const ClusterTrailSettings: import("react-redux").ConnectedComponent<({ trailSettings, setTrailVisibility, setTrailLength }: Props) => JSX.Element, import("react-redux").Omit<{
     trailSettings: {
         show: boolean;

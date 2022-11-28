@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { API } from './API';
-declare type PSEContextProps = {
+type PSEContextProps = {
     context?: API<any>;
     onStateChanged?: (values: any, keys: any) => void;
 };

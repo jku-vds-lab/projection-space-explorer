@@ -1,5 +1,5 @@
 import * as React from 'react';
-declare type RubikFingerprintProps = {
+type RubikFingerprintProps = {
     vectors: Array<any>;
     width?: number;
     height?: number;

@@ -17,7 +17,7 @@ declare const initialState: {
     normalizationMethod: NormalizationMethod;
     encodingMethod: EncodingMethod;
 };
-export declare type ProjectionParamsType = typeof initialState;
+export type ProjectionParamsType = typeof initialState;
 declare const projectionParams: (state: {
     perplexity: number;
     learningRate: number;

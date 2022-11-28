@@ -6,7 +6,7 @@ export declare function setDatasetEntriesAction(pdatasetEntries: Array<DatasetEn
     allIds: string[];
     type: string;
 };
-declare type InitialType = {
+type InitialType = {
     values: {
         byId: {
             [id: string]: DatasetEntry;

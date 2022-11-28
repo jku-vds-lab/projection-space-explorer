@@ -9,7 +9,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
-    stories: import("immer/dist/internal").WritableDraft<IStorytelling>;
+    stories: IStorytelling;
     openTab: any;
     pointDisplay: {
         checkedShapes: {
@@ -82,5 +82,5 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     }>;
 }>;
 export declare function createRootReducer(reducers: any): (state: any, action: any) => any;
-export declare type RootState = ReturnType<typeof rootReducer>;
+export type RootState = ReturnType<typeof rootReducer>;
 export declare const usePSESelector: <T>(fn: (state: RootState) => T) => T;
