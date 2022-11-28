@@ -1071,15 +1071,19 @@ export const WebGLView = connector(
 
     createAdditionalColumns() {
       return {
-        'groupLabel': this.props.stories.groupLabel
-      }
+        groupLabel: this.props.stories.groupLabel,
+      };
     }
 
     componentDidMount() {
       this.initializeContainerEvents();
       this.setupRenderer();
       if (this.props.dataset) {
-        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset, this.createAdditionalColumns()), null);
+        this.createVisualization(
+          this.props.dataset,
+          mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset, this.createAdditionalColumns()),
+          null,
+        );
 
         this.particles?.updateColor(this.createAdditionalColumns());
 
@@ -1102,7 +1106,11 @@ export const WebGLView = connector(
 
     componentDidUpdate(prevProps: Props, prevState) {
       if (prevProps.dataset !== this.props.dataset) {
-        this.createVisualization(this.props.dataset, mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset, this.createAdditionalColumns()), null);
+        this.createVisualization(
+          this.props.dataset,
+          mappingFromScale({ type: 'categorical', palette: 'dark2' }, 'algo', this.props.dataset, this.createAdditionalColumns()),
+          null,
+        );
       }
 
       if (
@@ -1115,7 +1123,7 @@ export const WebGLView = connector(
             ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
             this.props.channelColor.key,
             this.props.dataset,
-            this.createAdditionalColumns()
+            this.createAdditionalColumns(),
           );
           this.props.setPointColorMapping(this.props.multipleId, mapping);
         } else {

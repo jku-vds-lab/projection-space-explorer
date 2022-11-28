@@ -729,7 +729,7 @@ export class PointVisualization {
     size.needsUpdate = true;
   }
 
-  updateColor(additionalColumns?: {[key: string]: {[key: number]: number[]}}) {
+  updateColor(additionalColumns?: { [key: string]: { [key: number]: number[] } }) {
     const color = this.mesh.geometry.attributes.customColor as BufferAttribute;
 
     const gray = { r: 192, g: 192, b: 192 };
@@ -740,11 +740,11 @@ export class PointVisualization {
       let rgb = null;
 
       let vectorValue;
-      
+
       if (additionalColumns && this.colorAttribute && additionalColumns[this.colorAttribute.key]) {
-        vectorValue = additionalColumns[this.colorAttribute.key][i]
+        vectorValue = additionalColumns[this.colorAttribute.key][i];
       } else if (this.colorAttribute) {
-        vectorValue = vector[this.colorAttribute.key]
+        vectorValue = vector[this.colorAttribute.key];
       }
 
       if (this.dataset.isSequential) {
