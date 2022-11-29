@@ -33,10 +33,128 @@ export type IStorytelling = {
     };
 };
 export declare const StoriesActions: {
+<<<<<<< HEAD
     changeClusterName: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         cluster: EntityId;
         name: string;
     }, "stories/changeClusterName">;
+=======
+    addBookAsync: import("@reduxjs/toolkit").AsyncThunk<{
+        book: IBook;
+        activate: boolean;
+    }, {
+        book: IBook;
+        activate: boolean;
+    }, {
+        state?: unknown;
+        dispatch?: import("redux").Dispatch<import("redux").AnyAction>;
+        extra?: unknown;
+        rejectValue?: unknown;
+        serializedErrorType?: unknown;
+        pendingMeta?: unknown;
+        fulfilledMeta?: unknown;
+        rejectedMeta?: unknown;
+    }>;
+    addCluster: import("@reduxjs/toolkit").AsyncThunk<ICluster, {
+        cluster: ICluster;
+    }, {
+        state?: unknown;
+        dispatch?: import("redux").Dispatch<import("redux").AnyAction>;
+        extra?: unknown;
+        rejectValue?: unknown;
+        serializedErrorType?: unknown;
+        pendingMeta?: unknown;
+        fulfilledMeta?: unknown;
+        rejectedMeta?: unknown;
+    }>;
+    deleteCluster: import("@reduxjs/toolkit").AsyncThunk<{
+        cluster: ICluster;
+        vectors: import("../..").IVector[];
+    }, {
+        cluster: ICluster;
+    }, {
+        state?: unknown;
+        dispatch?: import("redux").Dispatch<import("redux").AnyAction>;
+        extra?: unknown;
+        rejectValue?: unknown;
+        serializedErrorType?: unknown;
+        pendingMeta?: unknown;
+        fulfilledMeta?: unknown;
+        rejectedMeta?: unknown;
+    }>;
+    setActiveStoryBook: import("@reduxjs/toolkit").AsyncThunk<{
+        book: EntityId;
+        vectors: import("../..").IVector[];
+    }, {
+        book: EntityId;
+    }, {
+        state?: unknown;
+        dispatch?: import("redux").Dispatch<import("redux").AnyAction>;
+        extra?: unknown;
+        rejectValue?: unknown;
+        serializedErrorType?: unknown;
+        pendingMeta?: unknown;
+        fulfilledMeta?: unknown;
+        rejectedMeta?: unknown;
+    }>;
+    addClusterToTrace: import("@reduxjs/toolkit").AsyncThunk<{
+        cluster: ICluster;
+    }, {
+        cluster: ICluster;
+    }, {
+        state?: unknown;
+        dispatch?: import("redux").Dispatch<import("redux").AnyAction>;
+        extra?: unknown;
+        rejectValue?: unknown;
+        serializedErrorType?: unknown;
+        pendingMeta?: unknown;
+        fulfilledMeta?: unknown;
+        rejectedMeta?: unknown;
+    }>;
+    deleteBookAsync: import("@reduxjs/toolkit").AsyncThunk<string | number, {
+        book: EntityId;
+    }, {
+        state?: unknown;
+        dispatch?: import("redux").Dispatch<import("redux").AnyAction>;
+        extra?: unknown;
+        rejectValue?: unknown;
+        serializedErrorType?: unknown;
+        pendingMeta?: unknown;
+        fulfilledMeta?: unknown;
+        rejectedMeta?: unknown;
+    }>;
+    set: import("@reduxjs/toolkit").AsyncThunk<{
+        stories: IBook[];
+        vectors: import("../..").IVector[];
+    }, {
+        stories: IBook[];
+    }, {
+        state?: unknown;
+        dispatch?: import("redux").Dispatch<import("redux").AnyAction>;
+        extra?: unknown;
+        rejectValue?: unknown;
+        serializedErrorType?: unknown;
+        pendingMeta?: unknown;
+        fulfilledMeta?: unknown;
+        rejectedMeta?: unknown;
+    }>;
+    changeClusterName: import("@reduxjs/toolkit").AsyncThunk<{
+        handle: EntityId;
+        name: string;
+    }, {
+        cluster: ICluster;
+        name: string;
+    }, {
+        state?: unknown;
+        dispatch?: import("redux").Dispatch<import("redux").AnyAction>;
+        extra?: unknown;
+        rejectValue?: unknown;
+        serializedErrorType?: unknown;
+        pendingMeta?: unknown;
+        fulfilledMeta?: unknown;
+        rejectedMeta?: unknown;
+    }>;
+>>>>>>> develop
     selectSideBranch: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<number, "stories/selectSideBranch">;
     addEdgeToActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IEdge, "stories/addEdgeToActive">;
     setActiveTraceState: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "stories/setActiveTraceState">;
@@ -46,6 +164,7 @@ export declare const StoriesActions: {
         id: EntityId;
         name: string;
     }, "stories/changeBookName">;
+<<<<<<< HEAD
     addBookAsync: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         book: any;
         activate: any;
@@ -56,5 +175,7 @@ export declare const StoriesActions: {
     setActiveStoryBook: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "stories/setActiveStoryBook">;
     addClusterToTrace: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<ICluster, "stories/addClusterToTrace">;
     set: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IBook[], "stories/set">;
+=======
+>>>>>>> develop
 };
 export declare const stories: import("redux").Reducer<IStorytelling, import("redux").AnyAction>;
