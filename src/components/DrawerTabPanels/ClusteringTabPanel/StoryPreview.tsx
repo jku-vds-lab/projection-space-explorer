@@ -13,8 +13,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setActiveStory: (book: EntityId) => dispatch(StoriesActions.setActiveStoryBook({ book })),
-  deleteStory: (book: EntityId) => dispatch(StoriesActions.deleteBookAsync({ book })),
+  setActiveStory: (book: EntityId) => dispatch(StoriesActions.setActiveStoryBook(book)),
+  deleteStory: (book: EntityId) => dispatch(StoriesActions.deleteBookAsync(book)),
   addStory: (book: IBook) => dispatch(StoriesActions.addBookAsync({ book, activate: true })),
 });
 

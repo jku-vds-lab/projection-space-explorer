@@ -60,11 +60,11 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setStories: (stories: IBook[]) => dispatch(StoriesActions.set({ stories })),
-  setActiveStory: (book: EntityId) => dispatch(StoriesActions.setActiveStoryBook({ book })),
+  setStories: (stories: IBook[]) => dispatch(StoriesActions.set(stories)),
+  setActiveStory: (book: EntityId) => dispatch(StoriesActions.setActiveStoryBook(book)),
   setDisplayMode: (displayMode) => dispatch(setDisplayMode(displayMode)),
   addStory: (book: IBook) => dispatch(StoriesActions.addBookAsync({ book, activate: true })),
-  removeClusterFromStories: (cluster: ICluster) => dispatch(StoriesActions.deleteCluster({ cluster })),
+  removeClusterFromStories: (cluster: ICluster) => dispatch(StoriesActions.deleteCluster(cluster)),
   setChannelColor: (col) => dispatch(setChannelColor(col)),
   setGroupVisualizationMode: (groupVisualizationMode) => dispatch(setGroupVisualizationMode(groupVisualizationMode)),
   setSelectedClusters: (clusters: string[], shift: boolean) => dispatch(selectClusters(clusters, shift)),
@@ -500,7 +500,7 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
   }, [anchorEl, cluster]);
 
   const onSave = () => {
-    dispatch(StoriesActions.changeClusterName({ cluster, name }));
+    dispatch(StoriesActions.changeClusterName({ cluster: cluster.id, name }));
 
     setAnchorEl(null);
   };

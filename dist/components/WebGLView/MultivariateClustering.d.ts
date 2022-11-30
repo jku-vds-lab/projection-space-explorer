@@ -33,7 +33,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         show: any;
         length: number;
     };
-    stories: import("immer/dist/internal").WritableDraft<import("../Ducks").IStorytelling>;
+    stories: import("../Ducks").IStorytelling;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: (string | number)[];

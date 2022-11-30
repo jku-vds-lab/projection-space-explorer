@@ -1,4 +1,4 @@
-import { AnyAction } from 'redux';
+import { AnyAction } from '@reduxjs/toolkit';
 import { ThunkAction } from 'redux-thunk';
 import type { RootState } from '../Store/Store';
 export declare const selectVectors: (selection: number[], shiftKey?: boolean) => (dispatch: any, getState: any) => ThunkAction<any, RootState, unknown, AnyAction>;

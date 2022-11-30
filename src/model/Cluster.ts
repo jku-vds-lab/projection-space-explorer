@@ -49,28 +49,6 @@ export class ACluster {
     };
   }
 
-  /**
-   * Resets the labeling for given vectors based on given clusters
-   *
-   * @param vectors The vectors to relabel
-   * @param clusters The clusters to take the label from
-   */
-  static deriveVectorLabelsFromClusters(vectors: IVector[], clusters: ICluster[]) {
-    // Clear all cluster labels from vectors
-    vectors.forEach((vector) => {
-      vector.groupLabel = [];
-    });
-
-    // Create new labels from clusters
-    clusters.forEach((cluster) => {
-      cluster.indices
-        .map((i) => vectors[i])
-        .forEach((vector) => {
-          vector.groupLabel.push(cluster.label);
-        });
-    });
-  }
-
   static getCenterFromWorkspace(positions: IBaseProjection, cluster: ICluster) {
     let x = 0;
     let y = 0;

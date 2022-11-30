@@ -5,6 +5,7 @@ export class AShallowSet {
     if (value instanceof Array) {
       return set.findIndex((e) => arraysEqual(e, value));
     }
+
     return set.indexOf(value);
   }
 
@@ -12,6 +13,7 @@ export class AShallowSet {
     if (value instanceof Array) {
       return set.find((e) => arraysEqual(e, value));
     }
+
     return set.includes(value);
   }
 
