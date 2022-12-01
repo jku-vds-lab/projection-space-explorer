@@ -2,7 +2,7 @@ import { createTheme, ThemeProvider } from '@mui/material';
 import { PropsWithChildren } from 'react';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { Store } from 'redux';
+import { Store } from '@reduxjs/toolkit';
 import { API } from './API';
 
 type PSEContextProps = {

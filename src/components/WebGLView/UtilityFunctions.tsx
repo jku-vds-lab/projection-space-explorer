@@ -158,16 +158,6 @@ export function valueInRange(value, range) {
   return value >= range[0] && value <= range[1];
 }
 
-export function replaceClusterLabels(vectors: IVector[], from: any, to: any) {
-  vectors.forEach((vector) => {
-    const i = vector.groupLabel.findIndex((e) => e === from);
-    if (i >= 0) {
-      vector.groupLabel.splice(i, 1);
-      vector.groupLabel.push(to);
-    }
-  });
-}
-
 export function getMinMaxOfChannel(dataset: Dataset, key: string, segment?) {
   let min = null;
   let max = null;

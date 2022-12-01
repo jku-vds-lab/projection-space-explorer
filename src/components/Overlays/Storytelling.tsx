@@ -30,7 +30,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatch = (dispatch) => ({
-  addClusterToTrace: (cluster: ICluster) => dispatch(StoriesActions.addClusterToTrace({ cluster })),
+  addClusterToTrace: (cluster: ICluster) => dispatch(StoriesActions.addClusterToTrace(cluster)),
   setActiveTraceState: (cluster: EntityId) => dispatch(StoriesActions.setActiveTraceState(cluster)),
   selectSideBranch: (index: number) => dispatch(StoriesActions.selectSideBranch(index)),
   setActiveTrace: (trace: number) => dispatch(StoriesActions.setActiveTrace(trace)),

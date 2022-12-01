@@ -209,7 +209,7 @@ export declare const ViewSelector: {
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: import("immer/dist/internal").WritableDraft<import("./StoriesDuck").IStorytelling>;
+        stories: import("./StoriesDuck").IStorytelling;
         openTab: any;
         pointDisplay: {
             checkedShapes: {
@@ -313,7 +313,7 @@ export declare const ViewSelector: {
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: import("immer/dist/internal").WritableDraft<import("./StoriesDuck").IStorytelling>;
+        stories: import("./StoriesDuck").IStorytelling;
         openTab: any;
         pointDisplay: {
             checkedShapes: {
@@ -395,7 +395,7 @@ export declare const ViewSelector: {
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: import("immer/dist/internal").WritableDraft<import("./StoriesDuck").IStorytelling>;
+        stories: import("./StoriesDuck").IStorytelling;
         openTab: any;
         pointDisplay: {
             checkedShapes: {

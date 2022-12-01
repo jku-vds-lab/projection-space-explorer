@@ -35,7 +35,11 @@ export type Mapping = DiscreteMapping | DivergingMapping | ContinuousMapping;
  * @param dataset the dataset
  * @returns a mapping object
  */
-export declare const mappingFromScale: (scale: BaseColorScale, key: string, dataset: Dataset) => DiscreteMapping | DivergingMapping | ContinuousMapping;
+export declare const mappingFromScale: (scale: BaseColorScale, key: string, dataset: Dataset, additionalColumns?: {
+    [key: string]: {
+        [key: number]: number[];
+    };
+}) => DiscreteMapping | DivergingMapping | ContinuousMapping;
 /**
  *
  * @param mapping a mapping object

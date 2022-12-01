@@ -1,5 +1,4 @@
 import { Dataset, IBaseProjection } from '../../model';
-import { IVector } from '../../model/Vector';
 /**
  * Calculates the default zoom factor by examining the bounds of the data set
  * and then dividing it by the height of the viewport.
@@ -28,7 +27,6 @@ export declare function normalizeWheel(/* object */ event: any): {
     pixelY: number;
 };
 export declare function valueInRange(value: any, range: any): boolean;
-export declare function replaceClusterLabels(vectors: IVector[], from: any, to: any): void;
 export declare function getMinMaxOfChannel(dataset: Dataset, key: string, segment?: any): {
     min: any;
     max: any;
