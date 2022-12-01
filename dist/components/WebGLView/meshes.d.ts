@@ -70,14 +70,18 @@ export declare class PointVisualization {
      * @param {*} category a feature to select the shape for
      */
     setShapeByChannel(category: CategoryOption): void;
-    setColorByChannel(category: CategoryOption, scale: any): void;
+    setColorByChannel(category: CategoryOption, scale: any, additionalColumns?: any): void;
     colorFilter(colorsChecked: any): void;
     getMapping(): Mapping;
     setColorScale(colorScale: any): void;
     setBrightnessByChannel(channel: CategoryOption, range: any): void;
     sizeCat(category: CategoryOption, range: any): void;
     updateSize(): void;
-    updateColor(): void;
+    updateColor(additionalColumns?: {
+        [key: string]: {
+            [key: number]: number[];
+        };
+    }): void;
     isPointVisible(vector: IVector): boolean;
     updatePosition(projection: IBaseProjection): void;
     update(): void;

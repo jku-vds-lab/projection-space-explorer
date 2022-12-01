@@ -21,7 +21,7 @@ declare const allReducers: {
         selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
-    stories: Reducer<import("immer/dist/internal").WritableDraft<IStorytelling>, import("redux").AnyAction>;
+    stories: Reducer<IStorytelling, import("redux").AnyAction>;
     openTab: (state: number, action: any) => any;
     pointDisplay: Reducer<{
         checkedShapes: {

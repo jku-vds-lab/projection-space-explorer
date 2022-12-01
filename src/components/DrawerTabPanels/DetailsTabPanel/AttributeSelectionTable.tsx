@@ -3,7 +3,7 @@ import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import SearchBar from 'material-ui-search-bar';
-import DataGrid from 'react-data-grid';
+// import DataGrid from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
 import type { RootState } from '../../Store/Store';
 
@@ -107,39 +107,39 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
   //     width: 500,
   //     '& .rdg-cell:': { className: 'anotherfixedname', boxShadow: 'none !important' }
   //   });
-  const featureGrid = (
-    <DataGrid
-      // ref={gridRef}
-      className="rdg-light"
-      style={{ flex: '1', minWidth: 900, overflowX: 'hidden' }}
-      groupBy={['group']}
-      rowGrouper={rowGrouper}
-      rowKeyGetter={rowKeyGetter}
-      selectedRows={selectedRows}
-      onSelectedRowsChange={setSelectedRows}
-      onRowClick={rowClickHandler}
-      expandedGroupIds={expandedGroupIds}
-      onExpandedGroupIdsChange={setExpandedGroupIds}
-      columns={columns}
-      rows={rows.filter((x) => !x.show)}
-    />
-  );
-  const selectionGrid = (
-    <DataGrid
-      className="rdg-light"
-      style={{ flex: '1', minWidth: 900, overflowX: 'hidden' }}
-      groupBy={['group']}
-      rowGrouper={rowGrouper}
-      rowKeyGetter={rowKeyGetter}
-      selectedRows={selectedRows}
-      onSelectedRowsChange={setSelectedRows}
-      onRowClick={rowClickHandler}
-      expandedGroupIds={expandedGroupIds}
-      onExpandedGroupIdsChange={setExpandedGroupIds}
-      columns={columnsSelected}
-      rows={rows.filter((x) => x.show)}
-    />
-  );
+  // const featureGrid = (
+  //   <DataGrid
+  //     // ref={gridRef}
+  //     className="rdg-light"
+  //     style={{ flex: '1', minWidth: 900, overflowX: 'hidden' }}
+  //     groupBy={['group']}
+  //     rowGrouper={rowGrouper}
+  //     rowKeyGetter={rowKeyGetter}
+  //     selectedRows={selectedRows}
+  //     onSelectedRowsChange={setSelectedRows}
+  //     onRowClick={rowClickHandler}
+  //     expandedGroupIds={expandedGroupIds}
+  //     onExpandedGroupIdsChange={setExpandedGroupIds}
+  //     columns={columns}
+  //     rows={rows.filter((x) => !x.show)}
+  //   />
+  // );
+  // const selectionGrid = (
+  //   <DataGrid
+  //     className="rdg-light"
+  //     style={{ flex: '1', minWidth: 900, overflowX: 'hidden' }}
+  //     groupBy={['group']}
+  //     rowGrouper={rowGrouper}
+  //     rowKeyGetter={rowKeyGetter}
+  //     selectedRows={selectedRows}
+  //     onSelectedRowsChange={setSelectedRows}
+  //     onRowClick={rowClickHandler}
+  //     expandedGroupIds={expandedGroupIds}
+  //     onExpandedGroupIdsChange={setExpandedGroupIds}
+  //     columns={columnsSelected}
+  //     rows={rows.filter((x) => x.show)}
+  //   />
+  // );
 
   return (
     <div>
@@ -164,10 +164,10 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
           <SearchBar value={searched} onChange={(searchVal) => requestSearch(searchVal)} onCancelSearch={() => cancelSearch()} />
           <div style={{ display: 'flex' }}>
             {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
-            {featureGrid}
+            {/* {featureGrid} */}
             {/* </div> */}
             {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
-            {selectionGrid}
+            {/* {selectionGrid} */}
             {/* </div> */}
           </div>
         </Box>

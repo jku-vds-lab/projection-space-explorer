@@ -119,7 +119,7 @@ export declare const ViewSelector: {
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: Reducer<import("immer/dist/internal").WritableDraft<import("./StoriesDuck").IStorytelling>, import("redux").AnyAction>;
+        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
         openTab: (state: number, action: any) => any;
         pointDisplay: Reducer<{
             checkedShapes: {
@@ -205,7 +205,7 @@ export declare const ViewSelector: {
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: Reducer<import("immer/dist/internal").WritableDraft<import("./StoriesDuck").IStorytelling>, import("redux").AnyAction>;
+        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
         openTab: (state: number, action: any) => any;
         pointDisplay: Reducer<{
             checkedShapes: {
@@ -282,7 +282,7 @@ export declare const ViewSelector: {
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: Reducer<import("immer/dist/internal").WritableDraft<import("./StoriesDuck").IStorytelling>, import("redux").AnyAction>;
+        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
         openTab: (state: number, action: any) => any;
         pointDisplay: Reducer<{
             checkedShapes: {

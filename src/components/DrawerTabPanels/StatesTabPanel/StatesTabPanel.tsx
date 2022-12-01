@@ -71,6 +71,7 @@ function SelectFeatureComponent({ label, default_val, categoryOptions, onChange,
       id={`vectorBySelect_${label}`}
       filterOptions={autocomplete_filterOptions}
       onChange={(event, newValue) => {
+        // @ts-ignore
         if (newValue) onChange(newValue.value);
       }}
       options={autocomplete_options.sort((a, b) => {
@@ -88,6 +89,7 @@ function SelectFeatureComponent({ label, default_val, categoryOptions, onChange,
       isOptionEqualToValue={(option: any, value) => {
         return option.value === value.value;
       }}
+      // @ts-ignore
       value={default_val ? autocomplete_options.filter((option: any) => option.value === default_val.key)[0] : autocomplete_options[0]}
       renderInput={(params) => <TextField {...params} label={`${label} by`} />}
     />

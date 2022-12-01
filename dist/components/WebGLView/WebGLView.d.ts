@@ -39,7 +39,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;
-    stories: import("immer/dist/internal").WritableDraft<import("../Ducks/StoriesDuck").IStorytelling>;
+    stories: import("../Ducks/StoriesDuck").IStorytelling;
     trailSettings: {
         show: boolean;
         length: any;
@@ -197,6 +197,11 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         onClusterClicked(cluster: ICluster, shiftKey?: boolean): void;
         renderFrame(): void;
         updateItemClusterDisplay(): void;
+        createAdditionalColumns(): {
+            groupLabel: {
+                [key: number]: number[];
+            };
+        };
         componentDidMount(): void;
         componentDidUpdate(prevProps: Props, prevState: any): void;
         requestRender(): void;

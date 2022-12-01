@@ -6,7 +6,7 @@ import { DisplayMode } from '../../Ducks/DisplayModeDuck';
 import { Dataset } from '../../../model/Dataset';
 import { IStorytelling } from '../../Ducks/StoriesDuck';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    stories: import("immer/dist/internal").WritableDraft<IStorytelling>;
+    stories: IStorytelling;
     displayMode: DisplayMode;
     dataset: Dataset;
     currentAggregation: {
@@ -33,7 +33,7 @@ type Props = PropsFromRedux & {
     baseUrl: string;
 };
 export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters, baseUrl, globalLabels }: Props) => JSX.Element, import("react-redux").Omit<{
-    stories: import("immer/dist/internal").WritableDraft<IStorytelling>;
+    stories: IStorytelling;
     displayMode: DisplayMode;
     dataset: Dataset;
     currentAggregation: {

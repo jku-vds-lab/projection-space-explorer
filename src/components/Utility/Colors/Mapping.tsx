@@ -99,8 +99,17 @@ export type Mapping = DiscreteMapping | DivergingMapping | ContinuousMapping;
  * @param dataset the dataset
  * @returns a mapping object
  */
-export const mappingFromScale = (scale: BaseColorScale, key: string, dataset: Dataset) => {
+export const mappingFromScale = (scale: BaseColorScale, key: string, dataset: Dataset, additionalColumns?: { [key: string]: { [key: number]: number[] } }) => {
   if (scale.type === 'categorical') {
+    if (additionalColumns && key in additionalColumns) {
+      const elements = additionalColumns[key];
+
+      return {
+        scale,
+        values: AShallowSet.create(dataset.vectors.map((vector) => elements[vector.__meta__.meshIndex])),
+        type: 'categorical',
+      } as DiscreteMapping;
+    }
     return {
       scale,
       values: AShallowSet.create(dataset.vectors.map((vector) => vector[key])),
