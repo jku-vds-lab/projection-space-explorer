@@ -9,7 +9,7 @@ export abstract class PSEPlugin {
     return false;
   }
 
-  abstract createFingerprint(dataset: Dataset, vectors: IVector[], scale: number, aggregate: boolean): JSX.Element;
+  abstract y(dataset: Dataset, vectors: IVector[], scale: number, aggregate: boolean): JSX.Element;
 
   // Checks if the header has all the required columns
   hasLayout(header: string[], columns: string[]) {
