@@ -191,6 +191,7 @@ export const Application = connector(
                 <Tab
                   value={0}
                   icon={<img src={PSEIcons.Dataset} />}
+                  data-cy="datasettab"
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -211,6 +212,7 @@ export const Application = connector(
               >
                 <Tab
                   value={1}
+                  data-cy="projectiontab"
                   icon={<img src={PSEIcons.Project} />}
                   style={{
                     minWidth: 0,
@@ -234,6 +236,7 @@ export const Application = connector(
               >
                 <Tab
                   value={2}
+                  data-cy="encodingtab"
                   icon={<img src={PSEIcons.Encoding} />}
                   style={{
                     minWidth: 0,
@@ -255,6 +258,7 @@ export const Application = connector(
               >
                 <Tab
                   value={3}
+                  data-cy="groupstab"
                   icon={<img src={PSEIcons.Clusters} />}
                   style={{
                     minWidth: 0,
@@ -276,6 +280,7 @@ export const Application = connector(
               >
                 <Tab
                   value={4}
+                  data-cy="detailstab"
                   icon={<img src={PSEIcons.Details} />}
                   style={{
                     minWidth: 0,
