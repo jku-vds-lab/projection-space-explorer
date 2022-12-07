@@ -195,6 +195,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
         active: null,
         trace: null,
         activeTraceState: null,
+        groupLabel: {},
       };
     } else if (dataset.isSequential) {
       const [edges] = graphLayout(dataset, clusters);
@@ -213,6 +214,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
           active: null,
           trace: null,
           activeTraceState: null,
+          groupLabel: {},
         };
       }
     }

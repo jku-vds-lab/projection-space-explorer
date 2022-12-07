@@ -1,5 +1,4 @@
-import { EntityId } from '@reduxjs/toolkit';
-import { AnyAction } from 'redux';
+import { EntityId, AnyAction } from '@reduxjs/toolkit';
 import { ThunkAction } from 'redux-thunk';
 import type { RootState } from '../Store/Store';
 import { ICluster } from '../../model/ICluster';

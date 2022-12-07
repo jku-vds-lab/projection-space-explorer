@@ -5,7 +5,7 @@ import { IStorytelling } from '../Ducks/StoriesDuck';
 import { ICluster } from '../../model/ICluster';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     dataset: Dataset;
-    stories: import("immer/dist/internal").WritableDraft<IStorytelling>;
+    stories: IStorytelling;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: (string | number)[];
@@ -25,7 +25,7 @@ type Props = PropsFromRedux & {
 };
 export declare const Storytelling: import("react-redux").ConnectedComponent<({ dataset, stories, currentAggregation, addClusterToTrace, setActiveTraceState, setActiveTrace, selectSideBranch, setSelectedCluster, }: Props) => JSX.Element, import("react-redux").Omit<{
     dataset: Dataset;
-    stories: import("immer/dist/internal").WritableDraft<IStorytelling>;
+    stories: IStorytelling;
     currentAggregation: {
         aggregation: number[];
         selectedClusters: (string | number)[];
@@ -40,5 +40,5 @@ export declare const Storytelling: import("react-redux").ConnectedComponent<({ d
     setSelectedCluster: (clusters: EntityId[], shift: any) => any;
 } & {
     dataset: Dataset;
-}, "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "currentAggregation" | "dataset" | "genericFingerprintAttributes" | "addClusterToTrace" | "setSelectedCluster">>;
+}, "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "addClusterToTrace" | "currentAggregation" | "dataset" | "genericFingerprintAttributes" | "setSelectedCluster">>;
 export {};

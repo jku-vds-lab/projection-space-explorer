@@ -348,6 +348,7 @@ export class Dataset {
       // Check data type
       if (columnName in ranges) {
         this.columns[columnName].range = ranges[columnName];
+        this.columns[columnName].isNumeric = true;
       } else if (this.columns[columnName].featureType === FeatureType.Array) {
         this.columns[columnName].isNumeric = false;
       } else if (this.vectors.find((vector) => Number.isNaN(vector[columnName])) || this.columns[columnName].featureType === FeatureType.Categorical) {

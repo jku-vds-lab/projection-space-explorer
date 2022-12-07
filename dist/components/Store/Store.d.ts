@@ -9,7 +9,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
         selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
-    stories: import("immer/dist/internal").WritableDraft<IStorytelling>;
+    stories: IStorytelling;
     openTab: any;
     pointDisplay: {
         checkedShapes: {
