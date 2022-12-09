@@ -8,7 +8,7 @@ function handle_errors(response) {
 }
 function handle_errors_json(data) {
   if (Object.keys(data).includes('error')) {
-    alert(data.error);
+    // alert(data.error);
   }
   return data;
 }
@@ -27,7 +27,7 @@ export async function calculate_hdbscan_clusters(X, min_cluster_size, min_cluste
     .then((response) => response.json())
     .then(handle_errors_json)
     .catch((error) => {
-      alert('error when calculating clusters');
+      // alert('error when calculating clusters');
       console.log(error);
     });
 }

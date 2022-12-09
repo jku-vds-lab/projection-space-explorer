@@ -1,53 +1,37 @@
-import { Box, Button, Checkbox, Popover } from '@mui/material';
+import { Box, Button, Dialog, DialogContent, DialogTitle, DialogActions } from '@mui/material';
 import * as React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
-
-import SearchBar from 'material-ui-search-bar';
-// import DataGrid from 'react-data-grid';
+import { useDispatch } from 'react-redux';
+import DataGrid, { SelectColumn } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
-import type { RootState } from '../../Store/Store';
+import { RootState, usePSESelector } from '../../Store/Store';
+import genericFingerprintAttributes, { setGenericFingerprintAttributes } from '../../Ducks/GenericFingerprintAttributesDuck';
+import { DefaultFeatureLabel } from '../../../model';
 
-const attributeConnector = connect(
-  (state: RootState) => ({
-    dataset: state.dataset,
-  }),
-  (dispatch) => ({}),
-  null,
-  { forwardRef: true },
-);
-type AttributeTablePropsFromRedux = ConnectedProps<typeof attributeConnector>;
-type AttributeTableProps = AttributeTablePropsFromRedux & {
-  attributes;
-  setAttributes;
-  children;
-  btnFullWidth;
-};
-export const AttributeSelectionTable = attributeConnector(({ attributes, setAttributes, dataset, btnFullWidth, children }: AttributeTableProps) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+export const AttributeSelectionTable = () => {
+  const [open, setOpen] = React.useState(false);
+
+  const dataset = usePSESelector((state) => state.dataset);
+  const attributes = usePSESelector((state) => state.genericFingerprintAttributes);
+  const dispatch = useDispatch();
 
   const openAttributes = (event) => {
-    setAnchorEl(event.currentTarget);
+    setOpen(true);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
-    setAttributes([...localAttributes]);
+    setOpen(false);
+    dispatch(setGenericFingerprintAttributes([...localAttributes]));
   };
 
   const [localAttributes, setLocalAttributes] = React.useState<any>([]);
   const [rows, setRows] = React.useState<any>([]);
   const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<number>>(() => new Set());
-  const [searched, setSearched] = React.useState<string>('');
   const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(() => new Set<unknown>([]));
 
-  const columns = [
-    { key: 'feature', name: 'Feature', resizable: false },
-    { key: 'group', name: 'Group', resizable: false },
-  ];
-
   const columnsSelected = [
-    { key: 'feature', name: 'Selected', resizable: false },
-    { key: 'group', name: 'Group', resizable: false },
+    SelectColumn,
+    { key: 'feature', name: 'Selected' },
+    { key: 'group', name: 'Group'},
   ];
 
   const groupMapping = (r, i) => {
@@ -55,7 +39,7 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
       id: i,
       feature: r.feature,
       show: r.show,
-      group: dataset.columns[r.feature].featureLabel,
+      group: dataset.columns[r.feature].featureLabel ? dataset.columns[r.feature].featureLabel : DefaultFeatureLabel,
     };
   };
 
@@ -64,114 +48,43 @@ export const AttributeSelectionTable = attributeConnector(({ attributes, setAttr
     setRows(attributes.map(groupMapping));
   }, [attributes]);
 
-  const booleanRenderer = (row: any) => {
-    return (
-      <Checkbox
-        color="primary"
-        disableRipple
-        checked={row.show}
-        onChange={(event) => {
-          row.show = event.target.checked;
-          setLocalAttributes([...localAttributes]);
-        }}
-      />
-    );
-  };
-
-  const requestSearch = (searchedVal: string) => {
-    const filteredRows = localAttributes.filter((row) => {
-      return row?.feature?.toLowerCase().includes(searchedVal?.toLowerCase());
-    });
-
-    setRows(filteredRows);
-  };
-
-  const cancelSearch = () => {
-    setSearched('');
-    requestSearch(searched);
-  };
-
   function rowKeyGetter(row: any) {
     return row.feature;
   }
 
-  function rowClickHandler(row: any, column: any) {
-    localAttributes[row.id].show = !row.show;
-    setLocalAttributes([...localAttributes]);
-    row.show = localAttributes[row.id].show;
-  }
+  console.log(dataset?.columns);
+  console.log(genericFingerprintAttributes);
+  console.log(rows)
 
-  // const gridRef = React.useRef<DataGridHandle>(null);
-  // const NoBoxShadowComponent = styled('div')({
-  //     className: 'fixedname',
-  //     width: 500,
-  //     '& .rdg-cell:': { className: 'anotherfixedname', boxShadow: 'none !important' }
-  //   });
-  // const featureGrid = (
-  //   <DataGrid
-  //     // ref={gridRef}
-  //     className="rdg-light"
-  //     style={{ flex: '1', minWidth: 900, overflowX: 'hidden' }}
-  //     groupBy={['group']}
-  //     rowGrouper={rowGrouper}
-  //     rowKeyGetter={rowKeyGetter}
-  //     selectedRows={selectedRows}
-  //     onSelectedRowsChange={setSelectedRows}
-  //     onRowClick={rowClickHandler}
-  //     expandedGroupIds={expandedGroupIds}
-  //     onExpandedGroupIdsChange={setExpandedGroupIds}
-  //     columns={columns}
-  //     rows={rows.filter((x) => !x.show)}
-  //   />
-  // );
-  // const selectionGrid = (
-  //   <DataGrid
-  //     className="rdg-light"
-  //     style={{ flex: '1', minWidth: 900, overflowX: 'hidden' }}
-  //     groupBy={['group']}
-  //     rowGrouper={rowGrouper}
-  //     rowKeyGetter={rowKeyGetter}
-  //     selectedRows={selectedRows}
-  //     onSelectedRowsChange={setSelectedRows}
-  //     onRowClick={rowClickHandler}
-  //     expandedGroupIds={expandedGroupIds}
-  //     onExpandedGroupIdsChange={setExpandedGroupIds}
-  //     columns={columnsSelected}
-  //     rows={rows.filter((x) => x.show)}
-  //   />
-  // );
-
-  return (
-    <div>
-      <Button fullWidth={btnFullWidth} variant="outlined" onClick={openAttributes}>
-        {children}
+  return <div>
+      <Button fullWidth variant="outlined" onClick={openAttributes}>
+        Summary Attributes
       </Button>
 
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
+      <Dialog
+        fullWidth
+        maxWidth="xl"
+        open={open}
         onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
       >
-        <Box margin={2}>
-          <SearchBar value={searched} onChange={(searchVal) => requestSearch(searchVal)} onCancelSearch={() => cancelSearch()} />
-          <div style={{ display: 'flex' }}>
-            {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
-            {/* {featureGrid} */}
-            {/* </div> */}
-            {/* <div style={{flex: '1', minWidth: 400, overflowX: 'hidden'}}> */}
-            {/* {selectionGrid} */}
-            {/* </div> */}
-          </div>
-        </Box>
-      </Popover>
+        <DialogTitle>Select features you want to be present in the selection view</DialogTitle>
+        <DialogContent>
+          <DataGrid
+            className="rdg-light"
+            groupBy={['group']}
+            rowGrouper={rowGrouper}
+            rowKeyGetter={rowKeyGetter}
+            selectedRows={selectedRows}
+            onSelectedRowsChange={setSelectedRows}
+            expandedGroupIds={expandedGroupIds}
+            onExpandedGroupIdsChange={setExpandedGroupIds}
+            columns={columnsSelected}
+            rows={rows}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Save</Button>
+        </DialogActions>
+      </Dialog>
     </div>
-  );
-});
+}

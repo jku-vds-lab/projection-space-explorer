@@ -636,14 +636,13 @@ export const WebGLView = connector(
               } else {
                 const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
                 const idx = this.choose(coords);
-                if(idx >= 0){
+                if (idx >= 0) {
                   this.setState({
                     menuX: event.clientX,
                     menuY: event.clientY,
                     menuTarget: this.props.dataset.vectors[idx],
                   });
-                  
-                }else{
+                } else {
                   this.setState({
                     menuX: event.clientX,
                     menuY: event.clientY,
@@ -660,9 +659,9 @@ export const WebGLView = connector(
         }
 
         // call custom hook
-        if (this.props?.overrideComponents?.mouseInteractionCallbacks.onmouseclick != null) {
+        if (this.props?.overrideComponents?.mouseInteractionCallbacks?.onmouseclick) {
           const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
-          this.props?.overrideComponents?.mouseInteractionCallbacks.onmouseclick(coords, event_used, button);
+          this.props.overrideComponents.mouseInteractionCallbacks.onmouseclick(coords, event_used, button);
         }
       };
 
@@ -741,8 +740,8 @@ export const WebGLView = connector(
           }
 
           // call custom hook
-          if (this.props?.overrideComponents?.mouseInteractionCallbacks.onmousemove != null) {
-            this.props?.overrideComponents?.mouseInteractionCallbacks.onmousemove(coords, event_used);
+          if (this.props?.overrideComponents?.mouseInteractionCallbacks?.onmousemove) {
+            this.props.overrideComponents.mouseInteractionCallbacks.onmousemove(coords, event_used);
           }
         }, 10);
       };
@@ -777,7 +776,6 @@ export const WebGLView = connector(
       this.containerRef.current.appendChild(this.renderer.domElement);
 
       this.prevTime = performance.now();
-      
     }
 
     createVisualization(dataset, lineColorScheme, vectorMapping) {
@@ -1504,8 +1502,15 @@ export const WebGLView = connector(
               </MenuItem>
             )}
 
-            {this.props.overrideComponents?.contextMenuItems?.map((item, i) => (
-              React.createElement(item, { key: `contextmenuitem${i}`, menuTarget: this.state.menuTarget, pos_x: this.mouseController.currentMousePosition.x, pos_y: this.mouseController.currentMousePosition.y, handleClose: handleClose })
+            {this.props.overrideComponents?.contextMenuItems?.map(
+              (item, i) =>
+                React.createElement(item, {
+                  key: `contextmenuitem${i}`,
+                  menuTarget: this.state.menuTarget,
+                  pos_x: this.mouseController.currentMousePosition.x,
+                  pos_y: this.mouseController.currentMousePosition.y,
+                  handleClose: handleClose,
+                }),
               // <MenuItem
               //   key={item.key}
               //   onClick={() => {
@@ -1522,7 +1527,7 @@ export const WebGLView = connector(
               // >
               //   {item.title}
               // </MenuItem>
-            ))}
+            )}
           </Menu>
 
           <Menu
