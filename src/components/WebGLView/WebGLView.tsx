@@ -660,9 +660,9 @@ export const WebGLView = connector(
         }
 
         // call custom hook
-        if (this.props?.overrideComponents?.mouseInteractionCallbacks.onmouseclick != null) {
+        if (this.props?.overrideComponents?.mouseInteractionCallbacks?.onmouseclick != null) {
           const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
-          this.props?.overrideComponents?.mouseInteractionCallbacks.onmouseclick(coords, event_used, button);
+          this.props?.overrideComponents?.mouseInteractionCallbacks?.onmouseclick(coords, event_used, button);
         }
       };
 
@@ -741,8 +741,8 @@ export const WebGLView = connector(
           }
 
           // call custom hook
-          if (this.props?.overrideComponents?.mouseInteractionCallbacks.onmousemove != null) {
-            this.props?.overrideComponents?.mouseInteractionCallbacks.onmousemove(coords, event_used);
+          if (this.props?.overrideComponents?.mouseInteractionCallbacks?.onmousemove != null) {
+            this.props?.overrideComponents?.mouseInteractionCallbacks?.onmousemove(coords, event_used);
           }
         }, 10);
       };
