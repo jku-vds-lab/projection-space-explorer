@@ -1373,6 +1373,7 @@ export const WebGLView = connector(
 
       return (
         <div
+          data-cy="smallmultiple"
           onContextMenu={(event) => {
             event.preventDefault();
           }}

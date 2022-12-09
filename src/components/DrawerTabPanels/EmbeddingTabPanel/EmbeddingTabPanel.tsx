@@ -66,6 +66,7 @@ function EmbeddingMethodButtons(props: { setOpen; setDomainSettings; embeddings?
       {embeddings.map((emb) => (
         <Grid key={emb.id} item>
           <Button
+            data-cy={`embedding-${emb.id}`}
             style={{
               width: '100%',
             }}
