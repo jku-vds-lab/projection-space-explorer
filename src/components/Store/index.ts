@@ -5,3 +5,4 @@ export * from './PSEPlugin';
 export * from './API';
 export * from './RootActions';
 export * from './Utility';
+export * from './PSESelector';
