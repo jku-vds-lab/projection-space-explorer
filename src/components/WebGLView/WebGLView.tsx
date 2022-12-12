@@ -1411,6 +1411,7 @@ export const WebGLView = connector(
             </MenuItem>
 
             <MenuItem
+              data-cy="creategroupfromselection"
               onClick={() => {
                 if (this.props.currentAggregation.aggregation.length > 0) {
                   const cluster = ACluster.fromSamples(this.props.dataset, this.props.currentAggregation.aggregation);

@@ -74,6 +74,7 @@ function CustomSettings({ tempProjectionParams, setTempProjectionParams, inputDi
       {inputDict.nneighbors && (
         <TextField
           id="textNNeighbors"
+          data-cy="textnneighbors"
           label="n Neighbors"
           type="number"
           value={tempProjectionParams.nNeighbors}
@@ -195,15 +196,16 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                     '& .MuiFormControl-root': { m: 1 },
                   }}
                 >
-                  <TextField
-                    id="textIterations"
-                    label="Iterations"
-                    type="number"
-                    value={tempProjectionParams.iterations}
-                    onChange={(event) => {
-                      setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
-                    }}
-                  />
+                    <TextField
+                      id="textIterations"
+                      data-cy="textiterations"
+                      label="Iterations"
+                      type="number"
+                      value={tempProjectionParams.iterations}
+                      onChange={(event) => {
+                        setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
+                      }}
+                    />
                   <FormControlLabel
                     control={
                       <Checkbox
