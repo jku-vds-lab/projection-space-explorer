@@ -42,7 +42,7 @@ const mapDispatchToProps = (dispatch) => ({
   setAdvancedColoringSelection: (value) => dispatch(setAdvancedColoringSelectionAction(value)),
 });
 
-function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info }) {
+function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info, datacy }) {
   let autocomplete_options = [{ value: 'None', inputValue: 'None', group: null }];
   let autocomplete_filterOptions = null;
   if (categoryOptions != null) {
@@ -69,6 +69,7 @@ function SelectFeatureComponent({ label, default_val, categoryOptions, onChange,
   return (
     <Autocomplete
       id={`vectorBySelect_${label}`}
+      data-cy={datacy}
       filterOptions={autocomplete_filterOptions}
       onChange={(event, newValue) => {
         // @ts-ignore
@@ -174,6 +175,7 @@ export function StatesTabPanelFull({
       {(!encodings || encodings.includes(EncodingChannel.Shape)) && categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'shape') ? (
         <SelectFeatureComponent
           column_info={dataset?.columns}
+          datacy="shapeencoding"
           label="shape"
           default_val={vectorByShape}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'shape')}
@@ -205,6 +207,7 @@ export function StatesTabPanelFull({
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'transparency') ? (
         <SelectFeatureComponent
           column_info={dataset?.columns}
+          datacy="brightnessencoding"
           label="brightness"
           default_val={channelBrightness}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'transparency')}
@@ -229,6 +232,7 @@ export function StatesTabPanelFull({
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'size') ? (
         <SelectFeatureComponent
           column_info={dataset?.columns}
+          datacy="sizeencoding"
           label="size"
           default_val={channelSize}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'size')}
@@ -254,6 +258,7 @@ export function StatesTabPanelFull({
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'color') ? (
         <SelectFeatureComponent
           column_info={dataset?.columns}
+          datacy="colorencoding"
           label="color"
           default_val={channelColor}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'color')}

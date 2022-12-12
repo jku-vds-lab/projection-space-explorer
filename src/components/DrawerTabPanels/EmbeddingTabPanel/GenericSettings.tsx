@@ -76,6 +76,7 @@ function CustomSettings({ tempProjectionParams, setTempProjectionParams, inputDi
       {inputDict.nneighbors && (
         <TextField
           id="textNNeighbors"
+          data-cy="textnneighbors"
           label="n Neighbors"
           type="number"
           value={tempProjectionParams.nNeighbors}
@@ -197,12 +198,36 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                     '& .MuiFormControl-root': { m: 1 },
                   }}
                 >
-                  <FormLabel component="legend">Projection Parameters</FormLabel>
-                  {/* TODO: add also make parameters customizable; currently only a fixed set of parameters can set to be shown or not */}
-                  <CustomSettings
-                    tempProjectionParams={tempProjectionParams}
-                    setTempProjectionParams={setTempProjectionParams}
-                    inputDict={domainSettings.settings}
+                    <TextField
+                      id="textIterations"
+                      data-cy="textiterations"
+                      label="Iterations"
+                      type="number"
+                      value={tempProjectionParams.iterations}
+                      onChange={(event) => {
+                        setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
+                      }}
+                    />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        color="primary"
+                        checked={tempProjectionParams.seeded}
+                        onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, seeded: checked })}
+                        name="jason"
+                      />
+                    }
+                    label="Seed Position"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        color="primary"
+                        checked={tempProjectionParams.useSelection}
+                        onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, useSelection: checked })}
+                      />
+                    }
+                    label="Project Selection Only"
                   />
                   {/* {domainSettings.id == 'umap' && <UMAPSettings tempProjectionParams={tempProjectionParams} setTempProjectionParams={setTempProjectionParams}></UMAPSettings>} */}
                   {/* {domainSettings.id == 'tsne' && <TSNESettings tempProjectionParams={tempProjectionParams} setTempProjectionParams={setTempProjectionParams}></TSNESettings>} */}
