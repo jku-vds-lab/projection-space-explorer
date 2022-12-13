@@ -1333,7 +1333,7 @@ export const WebGLView = connector(
 
       return (
         <div
-          data-cy="smallmultiple"
+          data-cy="small-multiple-container"
           onContextMenu={(event) => {
             event.preventDefault();
           }}
@@ -1411,7 +1411,7 @@ export const WebGLView = connector(
             </MenuItem>
 
             <MenuItem
-              data-cy="creategroupfromselection"
+              data-cy="create-group-from-selection-context-entry"
               onClick={() => {
                 if (this.props.currentAggregation.aggregation.length > 0) {
                   const cluster = ACluster.fromSamples(this.props.dataset, this.props.currentAggregation.aggregation);

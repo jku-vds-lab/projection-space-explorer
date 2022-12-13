@@ -74,7 +74,7 @@ function CustomSettings({ tempProjectionParams, setTempProjectionParams, inputDi
       {inputDict.nneighbors && (
         <TextField
           id="textNNeighbors"
-          data-cy="textnneighbors"
+          data-cy="projection-neighbors-number-input"
           label="n Neighbors"
           type="number"
           value={tempProjectionParams.nNeighbors}
@@ -198,7 +198,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                 >
                     <TextField
                       id="textIterations"
-                      data-cy="textiterations"
+                      data-cy="projection-iterations-number-input"
                       label="Iterations"
                       type="number"
                       value={tempProjectionParams.iterations}
