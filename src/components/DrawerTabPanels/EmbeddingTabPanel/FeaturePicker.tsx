@@ -3,19 +3,10 @@
 /* eslint-disable react/no-this-in-sfc */
 /* eslint-disable react/function-component-definition */
 import * as React from 'react';
-import { Checkbox } from '@mui/material';
-import DataGrid, { SelectColumn, SelectCellFormatter, GroupFormatterProps, Column, CheckboxFormatterProps } from 'react-data-grid';
+import DataGrid, { SelectColumn, SelectCellFormatter, GroupFormatterProps, Column } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
 import { DefaultFeatureLabel } from '../../../model/Dataset';
 import { ProjectionColumn } from '../../Ducks';
-
-function checkboxFormatter({ onChange, checked, ...props }: CheckboxFormatterProps, ref: React.RefObject<HTMLInputElement>) {
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    onChange(e.target.checked, (e.nativeEvent as MouseEvent).shiftKey);
-  }
-
-  return <Checkbox disableRipple size="small" checked={checked} />;
-}
 
 export function FeaturePicker({
   selection,
@@ -92,9 +83,6 @@ export function FeaturePicker({
       onRowsChange={setSelection}
       rows={selection}
       columns={columns}
-      renderers={{
-        checkboxFormatter,
-      }}
     />
   );
 }

@@ -23,6 +23,10 @@ module.exports = {
     libraryTarget: 'umd'
   },
   resolve: {
+    alias: {
+      "react/jsx-dev-runtime": "react/jsx-dev-runtime.js",
+      "react/jsx-runtime": "react/jsx-runtime.js",
+    },
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
   devtool: "source-map",

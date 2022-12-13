@@ -108,6 +108,7 @@
     "react-redux": "^7.2.0",
     "redux": "^4.0.5"
   },
+  
   "scripts": {
     "build": "npx webpack --config webpack.config.js --stats-children",
     "test": "jest",

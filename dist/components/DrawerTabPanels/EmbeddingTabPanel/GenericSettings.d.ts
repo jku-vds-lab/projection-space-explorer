@@ -2,8 +2,9 @@ import { ConnectedProps } from 'react-redux';
 import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';
 import { EncodingMethod } from '../../../model/EncodingMethod';
+import { ProjectionColumn } from '../../Ducks';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    projectionColumns: any;
+    projectionColumns: ProjectionColumn[];
     projectionParams: {
         perplexity: number;
         learningRate: number;
@@ -28,7 +29,7 @@ type Props = PropsFromRedux & {
 };
 declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns }: Props): JSX.Element;
 export declare const GenericSettings: import("react-redux").ConnectedComponent<typeof GenericSettingsComp, import("react-redux").Omit<{
-    projectionColumns: any;
+    projectionColumns: ProjectionColumn[];
     projectionParams: {
         perplexity: number;
         learningRate: number;
