@@ -158,7 +158,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
   React.useEffect(() => {
     if (open) {
       setSelection(cloneColumns(projectionColumns));
-      setSelectedRows(new Set(selection.filter((row) => row.checked).map((row) => row.name)));
+      setSelectedRows(new Set(projectionColumns.filter((row) => row.checked).map((row) => row.name)));
     }
   }, [projectionColumns, open]);
 
@@ -166,7 +166,9 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
     <Dialog maxWidth="xl" open={open} onClose={onClose} fullWidth>
       <DialogContent>
         <Container>
-          {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && <FeaturePicker selection={selection} setSelection={setSelection} selectedRows={selectedRows} setSelectedRows={setSelectedRows} />}
+          {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
+            <FeaturePicker selection={selection} setSelection={setSelection} selectedRows={selectedRows} setSelectedRows={setSelectedRows} />
+          )}
 
           <Grid container justifyContent="center" style={{ width: '100%' }}>
             <Grid item>
@@ -199,16 +201,16 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                     '& .MuiFormControl-root': { m: 1 },
                   }}
                 >
-                    <TextField
-                      id="textIterations"
-                      data-cy="projection-iterations-number-input"
-                      label="Iterations"
-                      type="number"
-                      value={tempProjectionParams.iterations}
-                      onChange={(event) => {
-                        setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
-                      }}
-                    />
+                  <TextField
+                    id="textIterations"
+                    data-cy="projection-iterations-number-input"
+                    label="Iterations"
+                    type="number"
+                    value={tempProjectionParams.iterations}
+                    onChange={(event) => {
+                      setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
+                    }}
+                  />
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -263,8 +265,8 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
           onClick={() => {
             selection.forEach((row) => {
               row.checked = selectedRows.has(row.name);
-            })
-            
+            });
+
             tempProjectionParams.method = domainSettings.id;
             setProjectionParams(tempProjectionParams);
             onStart(tempProjectionParams, selection);
