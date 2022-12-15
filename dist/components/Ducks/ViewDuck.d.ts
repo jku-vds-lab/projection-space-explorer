@@ -223,7 +223,7 @@ export declare const ViewSelector: {
         dataset: Dataset;
         highlightedSequence: any;
         advancedColoringSelection: any;
-        projectionColumns: any;
+        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
         projectionOpen: any;
         projectionParams: {
             perplexity: number;
@@ -327,7 +327,7 @@ export declare const ViewSelector: {
         dataset: Dataset;
         highlightedSequence: any;
         advancedColoringSelection: any;
-        projectionColumns: any;
+        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
         projectionOpen: any;
         projectionParams: {
             perplexity: number;
@@ -409,7 +409,7 @@ export declare const ViewSelector: {
         dataset: Dataset;
         highlightedSequence: any;
         advancedColoringSelection: any;
-        projectionColumns: any;
+        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
         projectionOpen: any;
         projectionParams: {
             perplexity: number;

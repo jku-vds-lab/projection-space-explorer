@@ -3,14 +3,12 @@ import * as React from 'react';
 import { Box, Button, Chip, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { EntityId } from '@reduxjs/toolkit';
-import { projection } from 'vega';
 import { ProjectionControlCard } from './ProjectionControlCard';
 import { setProjectionOpenAction } from '../../Ducks/ProjectionOpenDuck';
 import { setProjectionWorkerAction } from '../../Ducks/ProjectionWorkerDuck';
 import { ADataset, Dataset } from '../../../model/Dataset';
 import { GenericSettings } from './GenericSettings';
 import type { RootState } from '../../Store/Store';
-import { setProjectionColumns } from '../../Ducks/ProjectionColumnsDuck';
 import { TSNEEmbeddingController } from './TSNEEmbeddingController';
 import { UMAPEmbeddingController } from './UMAPEmbeddingController';
 import { ClusterTrailSettings } from './ClusterTrailSettings';
@@ -22,6 +20,7 @@ import { EditProjectionDialog } from './EditProjectionDialog';
 import { ViewActions, ViewSelector } from '../../Ducks/ViewDuck';
 import { FeatureType } from '../../../model';
 import { SelectFeatureComponent } from '../StatesTabPanel/SelectFeatureComponent';
+import { setProjectionColumnsAction } from '../../Ducks';
 
 const mapStateToProps = (state: RootState) => ({
   // currentAggregation: state.currentAggregation,
@@ -38,7 +37,7 @@ const mapDispatchToProps = (dispatch) => ({
   setProjectionOpen: (value) => dispatch(setProjectionOpenAction(value)),
   setProjectionWorker: (value) => dispatch(setProjectionWorkerAction(value)),
   // setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
-  setProjectionColumns: (value) => dispatch(setProjectionColumns(value)),
+  setProjectionColumns: (value) => dispatch(setProjectionColumnsAction(value)),
   setTrailVisibility: (visibility) => dispatch(setTrailVisibility(visibility)),
   addProjection: (embedding) => dispatch(ViewActions.add(embedding)),
   deleteProjection: (handle: string) => dispatch(ViewActions.remove(handle)),

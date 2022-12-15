@@ -22,9 +22,10 @@ import type { RootState } from '../../Store/Store';
 import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';
 import { EncodingMethod } from '../../../model/EncodingMethod';
-import FeaturePicker from './FeaturePicker';
+import { FeaturePicker } from './FeaturePicker';
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck';
 import { ProjectionMethod } from '../../../model';
+import { ProjectionColumn } from '../../Ducks';
 
 const mapState = (state: RootState) => ({
   projectionColumns: state.projectionColumns,
@@ -151,19 +152,23 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
     });
   };
 
-  const [selection, setSelection] = React.useState(cloneColumns(projectionColumns));
+  const [selection, setSelection] = React.useState(cloneColumns(projectionColumns) as ProjectionColumn[]);
+  const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<string>>(() => new Set(selection.filter((row) => row.checked).map((row) => row.name)));
 
   React.useEffect(() => {
     if (open) {
       setSelection(cloneColumns(projectionColumns));
+      setSelectedRows(new Set(projectionColumns.filter((row) => row.checked).map((row) => row.name)));
     }
   }, [projectionColumns, open]);
 
   return (
-    <Dialog maxWidth="lg" open={open} onClose={onClose}>
+    <Dialog maxWidth="xl" open={open} onClose={onClose} fullWidth>
       <DialogContent>
         <Container>
-          {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && <FeaturePicker selection={selection} setSelection={setSelection} />}
+          {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
+            <FeaturePicker selection={selection} setSelection={setSelection} selectedRows={selectedRows} setSelectedRows={setSelectedRows} />
+          )}
 
           <Grid container justifyContent="center" style={{ width: '100%' }}>
             <Grid item>
@@ -196,16 +201,16 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                     '& .MuiFormControl-root': { m: 1 },
                   }}
                 >
-                    <TextField
-                      id="textIterations"
-                      data-cy="projection-iterations-number-input"
-                      label="Iterations"
-                      type="number"
-                      value={tempProjectionParams.iterations}
-                      onChange={(event) => {
-                        setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
-                      }}
-                    />
+                  <TextField
+                    id="textIterations"
+                    data-cy="projection-iterations-number-input"
+                    label="Iterations"
+                    type="number"
+                    value={tempProjectionParams.iterations}
+                    onChange={(event) => {
+                      setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
+                    }}
+                  />
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -258,6 +263,10 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
         <Button
           color="primary"
           onClick={() => {
+            selection.forEach((row) => {
+              row.checked = selectedRows.has(row.name);
+            });
+
             tempProjectionParams.method = domainSettings.id;
             setProjectionParams(tempProjectionParams);
             onStart(tempProjectionParams, selection);

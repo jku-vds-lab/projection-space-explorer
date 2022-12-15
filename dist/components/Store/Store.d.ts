@@ -23,7 +23,7 @@ export declare const rootReducer: (state: any, action: any) => import("redux").C
     dataset: Dataset;
     highlightedSequence: any;
     advancedColoringSelection: any;
-    projectionColumns: any;
+    projectionColumns: import("../Ducks/ProjectionColumnsDuck").ProjectionColumn[];
     projectionOpen: any;
     projectionParams: {
         perplexity: number;
