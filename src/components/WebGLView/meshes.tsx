@@ -273,7 +273,7 @@ export class LineVisualization {
     const lines = [];
 
     this.segments.forEach((segment, index) => {
-      segment.__meta__.intrinsicColor = this.lineColorScheme.map(segment.vectors[0].algo);
+      segment.__meta__.intrinsicColor = mapValueToColor(this.lineColorScheme, segment.vectors[0].algo);
 
       const geometry = new THREE.Geometry();
       const material = new THREE.LineBasicMaterial({
