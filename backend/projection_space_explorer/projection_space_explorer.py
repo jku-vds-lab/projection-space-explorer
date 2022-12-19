@@ -1,8 +1,6 @@
 from flask import Blueprint, request
 import numpy as np
 import hdbscan
-import json
-from sklearn import metrics
 
 
 pse_api = Blueprint('projection-space-explorer', __name__)

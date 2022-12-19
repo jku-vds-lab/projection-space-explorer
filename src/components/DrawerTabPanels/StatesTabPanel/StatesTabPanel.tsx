@@ -175,7 +175,7 @@ export function StatesTabPanelFull({
       {(!encodings || encodings.includes(EncodingChannel.Shape)) && categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'shape') ? (
         <SelectFeatureComponent
           column_info={dataset?.columns}
-          datacy="shapeencoding"
+          datacy="shape-encoding-select"
           label="shape"
           default_val={vectorByShape}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'shape')}
@@ -207,7 +207,7 @@ export function StatesTabPanelFull({
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'transparency') ? (
         <SelectFeatureComponent
           column_info={dataset?.columns}
-          datacy="brightnessencoding"
+          datacy="brightness-encoding-select"
           label="brightness"
           default_val={channelBrightness}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'transparency')}
@@ -232,7 +232,7 @@ export function StatesTabPanelFull({
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'size') ? (
         <SelectFeatureComponent
           column_info={dataset?.columns}
-          datacy="sizeencoding"
+          datacy="size-encoding-select"
           label="size"
           default_val={channelSize}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'size')}
@@ -258,7 +258,7 @@ export function StatesTabPanelFull({
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'color') ? (
         <SelectFeatureComponent
           column_info={dataset?.columns}
-          datacy="colorencoding"
+          datacy="color-encoding-select"
           label="color"
           default_val={channelColor}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'color')}
