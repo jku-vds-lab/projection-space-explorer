@@ -7,7 +7,7 @@ import { RootState, usePSESelector } from '../../Store/Store';
 import genericFingerprintAttributes, { setGenericFingerprintAttributes } from '../../Ducks/GenericFingerprintAttributesDuck';
 import { DefaultFeatureLabel } from '../../../model';
 
-export const AttributeSelectionTable = () => {
+export function AttributeSelectionTable() {
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);
@@ -28,11 +28,7 @@ export const AttributeSelectionTable = () => {
   const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<number>>(() => new Set());
   const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(() => new Set<unknown>([]));
 
-  const columnsSelected = [
-    SelectColumn,
-    { key: 'feature', name: 'Selected' },
-    { key: 'group', name: 'Group'},
-  ];
+  const columnsSelected = [SelectColumn, { key: 'feature', name: 'Selected' }, { key: 'group', name: 'Group' }];
 
   const groupMapping = (r, i) => {
     return {
@@ -54,19 +50,15 @@ export const AttributeSelectionTable = () => {
 
   console.log(dataset?.columns);
   console.log(genericFingerprintAttributes);
-  console.log(rows)
+  console.log(rows);
 
-  return <div>
+  return (
+    <div>
       <Button fullWidth variant="outlined" onClick={openAttributes}>
         Summary Attributes
       </Button>
 
-      <Dialog
-        fullWidth
-        maxWidth="xl"
-        open={open}
-        onClose={handleClose}
-      >
+      <Dialog fullWidth maxWidth="xl" open={open} onClose={handleClose}>
         <DialogTitle>Select features you want to be present in the selection view</DialogTitle>
         <DialogContent>
           <DataGrid
@@ -87,4 +79,5 @@ export const AttributeSelectionTable = () => {
         </DialogActions>
       </Dialog>
     </div>
+  );
 }

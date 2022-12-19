@@ -803,7 +803,7 @@ export const WebGLView = connector(
       this.camera.position.z = 10;
       this.camera.updateProjectionMatrix();
 
-      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId); //TODO: setViewTransform is twice in one function -> see below
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId); // TODO: setViewTransform is twice in one function -> see below
 
       this.setState({
         camera: this.camera,
@@ -835,7 +835,7 @@ export const WebGLView = connector(
       // this.scene.add(this.particles.mesh);
       this.pointScene.add(this.particles.mesh);
 
-      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId); //TODO: setViewTransform is twice in one function -> see above
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId); // TODO: setViewTransform is twice in one function -> see above
     }
 
     initializeContainerEvents() {
@@ -1510,7 +1510,7 @@ export const WebGLView = connector(
                   menuTarget: this.state.menuTarget,
                   pos_x: this.mouseController.currentMousePosition.x,
                   pos_y: this.mouseController.currentMousePosition.y,
-                  handleClose: handleClose,
+                  handleClose,
                 }),
               // <MenuItem
               //   key={item.key}

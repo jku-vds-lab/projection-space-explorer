@@ -1,1 +1,1 @@
-export const PSESelector = {}
+export const PSESelector = {};

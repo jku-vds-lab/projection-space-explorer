@@ -6,7 +6,7 @@ export const setViewTransform = (camera, width, height, multipleId) => ({
   camera,
   width,
   height,
-  multipleId
+  multipleId,
 });
 
 export const invalidateTransform = () => ({
