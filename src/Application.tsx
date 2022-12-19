@@ -313,7 +313,7 @@ export const Application = connector(
                     }
                   >
                     <Tab
-                      value={6 + i}
+                      value={5 + i}
                       icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon as any} />}
                       style={{
                         minWidth: 0,
