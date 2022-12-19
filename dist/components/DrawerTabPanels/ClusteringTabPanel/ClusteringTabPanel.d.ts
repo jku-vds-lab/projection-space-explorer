@@ -32,7 +32,7 @@ type Props = PropsFromRedux & {
     splitRef: any;
     baseUrl: string;
 };
-export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters, baseUrl, globalLabels }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters, baseUrl, globalLabels, }: Props) => JSX.Element, import("react-redux").Omit<{
     stories: IStorytelling;
     displayMode: DisplayMode;
     dataset: Dataset;

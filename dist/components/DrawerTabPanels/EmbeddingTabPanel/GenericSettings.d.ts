@@ -2,7 +2,7 @@ import { ConnectedProps } from 'react-redux';
 import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';
 import { EncodingMethod } from '../../../model/EncodingMethod';
-import { ProjectionColumn } from '../../Ducks';
+import type { ProjectionColumn } from '../../Ducks';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     projectionColumns: ProjectionColumn[];
     projectionParams: {

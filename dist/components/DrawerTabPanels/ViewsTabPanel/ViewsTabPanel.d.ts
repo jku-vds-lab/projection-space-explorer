@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { ComponentConfig } from '../../../BaseConfig';
 import Split from 'react-split';
+import { ComponentConfig } from '../../../BaseConfig';
 type DetailViewChooserProps = {
     overrideComponents: ComponentConfig;
     splitRef: React.LegacyRef<Split>;

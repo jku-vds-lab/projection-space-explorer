@@ -1,1 +1,1 @@
-export declare const AttributeSelectionTable: () => JSX.Element;
+export declare function AttributeSelectionTable(): JSX.Element;

@@ -128,13 +128,12 @@ export declare const ViewSelector: {
                 circle: boolean;
                 square: boolean;
             };
-<<<<<<< HEAD
         }, import("redux").AnyAction>;
         activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
         dataset: typeof import("./DatasetDuck").default;
         highlightedSequence: (state: any, action: any) => any;
         advancedColoringSelection: (state: any[], action: any) => any;
-        projectionColumns: (state: any[], action: any) => any;
+        projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("./ProjectionColumnsDuck").ProjectionColumn[]>;
         projectionOpen: (state: boolean, action: any) => any;
         projectionParams: (state: {
             perplexity: number;
@@ -148,16 +147,6 @@ export declare const ViewSelector: {
             normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
             encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
         }, action: any) => {
-=======
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
->>>>>>> develop
             perplexity: number;
             learningRate: number;
             nNeighbors: number;
@@ -225,13 +214,12 @@ export declare const ViewSelector: {
                 circle: boolean;
                 square: boolean;
             };
-<<<<<<< HEAD
         }, import("redux").AnyAction>;
         activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
         dataset: typeof import("./DatasetDuck").default;
         highlightedSequence: (state: any, action: any) => any;
         advancedColoringSelection: (state: any[], action: any) => any;
-        projectionColumns: (state: any[], action: any) => any;
+        projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("./ProjectionColumnsDuck").ProjectionColumn[]>;
         projectionOpen: (state: boolean, action: any) => any;
         projectionParams: (state: {
             perplexity: number;
@@ -245,16 +233,6 @@ export declare const ViewSelector: {
             normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
             encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
         }, action: any) => {
-=======
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
->>>>>>> develop
             perplexity: number;
             learningRate: number;
             nNeighbors: number;
@@ -313,13 +291,12 @@ export declare const ViewSelector: {
                 circle: boolean;
                 square: boolean;
             };
-<<<<<<< HEAD
         }, import("redux").AnyAction>;
         activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
         dataset: typeof import("./DatasetDuck").default;
         highlightedSequence: (state: any, action: any) => any;
         advancedColoringSelection: (state: any[], action: any) => any;
-        projectionColumns: (state: any[], action: any) => any;
+        projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("./ProjectionColumnsDuck").ProjectionColumn[]>;
         projectionOpen: (state: boolean, action: any) => any;
         projectionParams: (state: {
             perplexity: number;
@@ -333,16 +310,6 @@ export declare const ViewSelector: {
             normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
             encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
         }, action: any) => {
-=======
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
->>>>>>> develop
             perplexity: number;
             learningRate: number;
             nNeighbors: number;

@@ -30,13 +30,12 @@ declare const allReducers: {
             circle: boolean;
             square: boolean;
         };
-<<<<<<< HEAD
     }, import("redux").AnyAction>;
     activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
     dataset: typeof dataset;
     highlightedSequence: (state: any, action: any) => any;
     advancedColoringSelection: (state: any[], action: any) => any;
-    projectionColumns: (state: any[], action: any) => any;
+    projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("../Ducks/ProjectionColumnsDuck").ProjectionColumn[]>;
     projectionOpen: (state: boolean, action: any) => any;
     projectionParams: (state: {
         perplexity: number;
@@ -50,16 +49,6 @@ declare const allReducers: {
         normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
         encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
     }, action: any) => {
-=======
-    };
-    activeLine: string;
-    dataset: Dataset;
-    highlightedSequence: any;
-    advancedColoringSelection: any;
-    projectionColumns: import("../Ducks/ProjectionColumnsDuck").ProjectionColumn[];
-    projectionOpen: any;
-    projectionParams: {
->>>>>>> develop
         perplexity: number;
         learningRate: number;
         nNeighbors: number;
