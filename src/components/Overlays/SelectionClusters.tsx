@@ -64,7 +64,7 @@ const SelectionClustersFull = function ({ dataset, currentAggregation, hoverStat
       {hoverState && hoverState.data && isVector(hoverState.data) && (
         <HoverItemPortal>
           <Card
-            data-cy="hovercard"
+            data-cy="hover-card-container"
             elevation={24}
             style={{
               width: 300,

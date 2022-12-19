@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { DefaultLegend } from '../../../components/legends/DefaultLegend';
 import { arraysEqual } from '../../../components/WebGLView/UtilityFunctions';
 
 type RubikFingerprintProps = {

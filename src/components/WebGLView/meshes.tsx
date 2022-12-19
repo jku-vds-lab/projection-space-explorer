@@ -272,8 +272,9 @@ export class LineVisualization {
   createMesh(lineBrightness: number) {
     const lines = [];
 
+    console.log(this.lineColorScheme);
     this.segments.forEach((segment, index) => {
-      segment.__meta__.intrinsicColor = this.lineColorScheme.map(segment.vectors[0].algo);
+      segment.__meta__.intrinsicColor = mapValueToColor(this.lineColorScheme, segment.vectors[0].algo);
 
       const geometry = new THREE.Geometry();
       const material = new THREE.LineBasicMaterial({

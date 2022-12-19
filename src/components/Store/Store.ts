@@ -27,7 +27,7 @@ import { detailView } from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
 import { globalLabels } from '../Ducks/GlobalLabelsDuck';
 import { RootActionTypes } from './RootActions';
-import { Dataset, ADataset, SegmentFN, AProjection, IBook, ProjectionMethod, IProjection } from '../../model';
+import { Dataset, ADataset, SegmentFN, AProjection, IBook, ProjectionMethod, IProjection, DefaultFeatureLabel } from '../../model';
 import { CategoryOptionsAPI } from '../WebGLView/CategoryOptions';
 import { ANormalized } from '../Utility/NormalizedState';
 import { storyLayout, graphLayout, transformIndicesToHandles } from '../Utility/graphs';
@@ -145,7 +145,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     checked: dataset.columns[column].project,
     normalized: true,
     range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : 'unknown',
-    featureLabel: dataset.columns[column].featureLabel,
+    featureLabel: dataset.columns[column].featureLabel ? dataset.columns[column].featureLabel : DefaultFeatureLabel,
   }));
 
   const defaultSizeAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, 'size', 'multiplicity', 'sequential');

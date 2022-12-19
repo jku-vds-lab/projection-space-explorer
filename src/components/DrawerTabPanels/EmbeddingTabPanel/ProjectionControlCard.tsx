@@ -147,7 +147,7 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
         <div className={classes.controls}>
           <IconButton
             aria-label="play/pause"
-            data-cy="playpause"
+            data-cy="projection-card-play-pause-button"
             onClick={() => {
               const newVal = !computing;
               setComputing(newVal);

@@ -23,9 +23,10 @@ import type { RootState } from '../../Store/Store';
 import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';
 import { EncodingMethod } from '../../../model/EncodingMethod';
-import FeaturePicker from './FeaturePicker';
+import { FeaturePicker } from './FeaturePicker';
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck';
 import { ProjectionMethod } from '../../../model';
+import type { ProjectionColumn } from '../../Ducks';
 
 const mapState = (state: RootState) => ({
   projectionColumns: state.projectionColumns,
@@ -76,6 +77,7 @@ function CustomSettings({ tempProjectionParams, setTempProjectionParams, inputDi
       {inputDict.nneighbors && (
         <TextField
           id="textNNeighbors"
+          data-cy="projection-neighbors-number-input"
           label="n Neighbors"
           type="number"
           value={tempProjectionParams.nNeighbors}
@@ -152,7 +154,8 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
     });
   };
 
-  const [selection, setSelection] = React.useState(cloneColumns(projectionColumns));
+  const [selection, setSelection] = React.useState(cloneColumns(projectionColumns) as ProjectionColumn[]);
+  const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<string>>(() => new Set(selection.filter((row) => row.checked).map((row) => row.name)));
 
   const intermediateSetSelection = (selectedFeatures) => {
     const filteredFeatures = selectedFeatures.filter((s) => s.checked).map((s) => s.name);
@@ -171,14 +174,18 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
     setSelection(selectedFeatures);
   };
 
+  const ref = React.useRef<any>();
+  ref.current = intermediateSetSelection;
+
   React.useEffect(() => {
     if (open) {
-      intermediateSetSelection(cloneColumns(projectionColumns));
+      ref.current(cloneColumns(projectionColumns));
+      setSelectedRows(new Set(projectionColumns.filter((row) => row.checked).map((row) => row.name)));
     }
   }, [projectionColumns, open]);
 
   return (
-    <Dialog maxWidth="lg" open={open} onClose={onClose}>
+    <Dialog maxWidth="xl" open={open} onClose={onClose} fullWidth>
       <DialogContent>
         {domainSettings?.settings?.hideSettings ? (
           <Container>
@@ -186,7 +193,9 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
           </Container>
         ) : (
           <Container>
-            {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && <FeaturePicker selection={selection} setSelection={intermediateSetSelection} />}
+            {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
+              <FeaturePicker selection={selection} setSelection={intermediateSetSelection} setSelectedRows={setSelectedRows} selectedRows={selectedRows} />
+            )}
 
             <Grid container justifyContent="center" style={{ width: '100%' }}>
               <Grid item>
@@ -281,6 +290,10 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
         <Button
           color="primary"
           onClick={() => {
+            selection.forEach((row) => {
+              row.checked = selectedRows.has(row.name);
+            });
+
             tempProjectionParams.method = domainSettings.id;
             setProjectionParams(tempProjectionParams);
             onStart(tempProjectionParams, selection);
