@@ -6,7 +6,7 @@ import * as React from 'react';
 import DataGrid, { SelectColumn, SelectCellFormatter, GroupFormatterProps, Column } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
 import { DefaultFeatureLabel } from '../../../model/Dataset';
-import { ProjectionColumn } from '../../Ducks';
+import type { ProjectionColumn } from '../../Ducks';
 
 export function FeaturePicker({
   selection,

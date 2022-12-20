@@ -62,7 +62,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     addView: (dataset: Dataset) => any;
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
-    setViewTransform: (camera: any, width: any, height: any) => any;
+    setViewTransform: (camera: any, width: any, height: any, multipleId: any) => any;
     setHoverState: (hoverState: any, updater: any) => any;
     setPointColorMapping: (id: EntityId, mapping: any) => any;
     removeClusterFromStories: (cluster: ICluster) => any;
@@ -231,5 +231,5 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "addView" | "activateView" | "setPointColorMapping" | "currentAggregation" | "activeLine" | "dataset" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "selectVectors" | "setViewTransform" | "setHoverState" | "addClusterToStory">>;
+}, import("react-redux").Omit<any, "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "currentAggregation" | "activeLine" | "dataset" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "activateView" | "addView" | "selectVectors" | "setViewTransform" | "setHoverState" | "setPointColorMapping" | "addClusterToStory">>;
 export {};

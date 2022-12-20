@@ -2,7 +2,7 @@ import { ConnectedProps } from 'react-redux';
 import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';
 import { EncodingMethod } from '../../../model/EncodingMethod';
-import { ProjectionColumn } from '../../Ducks';
+import type { ProjectionColumn } from '../../Ducks';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     projectionColumns: ProjectionColumn[];
     projectionParams: {
@@ -17,6 +17,9 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         normalizationMethod: NormalizationMethod;
         encodingMethod: EncodingMethod;
     };
+    columns: {
+        [name: string]: import("../../../model").ColumnType;
+    };
 } & {
     setProjectionParams: (value: any) => any;
 }, {}>;
@@ -27,7 +30,7 @@ type Props = PropsFromRedux & {
     onClose: any;
     onStart: any;
 };
-declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns }: Props): JSX.Element;
+declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns, columns }: Props): JSX.Element;
 export declare const GenericSettings: import("react-redux").ConnectedComponent<typeof GenericSettingsComp, import("react-redux").Omit<{
     projectionColumns: ProjectionColumn[];
     projectionParams: {
@@ -42,6 +45,9 @@ export declare const GenericSettings: import("react-redux").ConnectedComponent<t
         normalizationMethod: NormalizationMethod;
         encodingMethod: EncodingMethod;
     };
+    columns: {
+        [name: string]: import("../../../model").ColumnType;
+    };
 } & {
     setProjectionParams: (value: any) => any;
 } & {
@@ -49,5 +55,5 @@ export declare const GenericSettings: import("react-redux").ConnectedComponent<t
     open: boolean;
     onClose: any;
     onStart: any;
-}, "projectionColumns" | "projectionParams" | "setProjectionParams">>;
+}, "projectionColumns" | "projectionParams" | "columns" | "setProjectionParams">>;
 export {};

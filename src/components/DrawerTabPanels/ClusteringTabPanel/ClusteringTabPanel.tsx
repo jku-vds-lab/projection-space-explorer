@@ -49,6 +49,7 @@ import { Dataset } from '../../../model/Dataset';
 import { StoriesActions, AStorytelling, IStorytelling, clusterAdapter } from '../../Ducks/StoriesDuck';
 import { PointColorScaleActions } from '../../Ducks';
 import { ViewSelector } from '../../Ducks/ViewDuck';
+import { capitalizeFirstLetter } from '../../../utils/helpers';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -57,6 +58,7 @@ const mapStateToProps = (state: RootState) => ({
   currentAggregation: state.currentAggregation,
   groupVisualizationMode: state.groupVisualizationMode,
   workspace: ViewSelector.getWorkspace(state),
+  globalLabels: state.globalLabels,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -99,6 +101,7 @@ export const ClusteringTabPanel = connector(
     setGroupVisualizationMode,
     setSelectedClusters,
     baseUrl,
+    globalLabels,
   }: Props) => {
     const categoryOptions = dataset?.categories;
 
@@ -284,7 +287,7 @@ export const ClusteringTabPanel = connector(
         <Box paddingLeft={2} paddingRight={2}>
           <FormControlLabel
             control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyClusters && displayMode !== DisplayMode.None} onChange={onCheckItems} />}
-            label="Show Items"
+            label={`Show ${capitalizeFirstLetter(globalLabels.itemLabelPlural)}`}
           />
           <FormControlLabel
             control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyStates && displayMode !== DisplayMode.None} onChange={onCheckClusters} />}
@@ -365,7 +368,7 @@ export const ClusteringTabPanel = connector(
                       name="selectionClustering"
                     />
                   }
-                  label="Cluster only Selected Items"
+                  label={`Cluster only Selected ${capitalizeFirstLetter(globalLabels.itemLabelPlural)}`}
                 />
               </Box>
               <Box>
@@ -471,6 +474,7 @@ export const ClusteringTabPanel = connector(
             stories={stories}
             splitRef={splitRef}
             setSelectedCluster={setSelectedClusters}
+            globalLabels={globalLabels}
           />
         </div>
       </div>
@@ -581,9 +585,10 @@ type ClusterListProps = {
   splitRef;
   setSelectedCluster;
   dataset;
+  globalLabels;
 };
 
-function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStories, splitRef, setSelectedCluster }: ClusterListProps) {
+function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStories, splitRef, setSelectedCluster, globalLabels }: ClusterListProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [popoverCluster, setPopoverCluster] = React.useState<ICluster>(null);
 
@@ -604,7 +609,10 @@ function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStor
             setSelectedCluster([key], event.ctrlKey);
           }}
         >
-          <ListItemText primary={ACluster.getTextRepresentation(cluster)} secondary={`${cluster.indices.length} Items`} />
+          <ListItemText
+            primary={ACluster.getTextRepresentation(cluster)}
+            secondary={`${cluster.indices.length} ${capitalizeFirstLetter(globalLabels.itemLabelPlural)}`}
+          />
           <ListItemSecondaryAction>
             <IconButton
               edge="end"

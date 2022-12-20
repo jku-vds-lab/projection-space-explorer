@@ -74,7 +74,7 @@ const mapDispatchToProps = (dispatch) => ({
   addView: (dataset: Dataset) => dispatch(ViewActions.addView(dataset)),
   selectVectors: (vectors: number[], shiftKey: boolean) => dispatch(selectVectors(vectors, shiftKey)),
   setActiveLine: (activeLine) => dispatch(setActiveLine(activeLine)),
-  setViewTransform: (camera, width, height) => dispatch(setViewTransform(camera, width, height)),
+  setViewTransform: (camera, width, height, multipleId) => dispatch(setViewTransform(camera, width, height, multipleId)),
   setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
   setPointColorMapping: (id: EntityId, mapping) => dispatch(ViewActions.setPointColorMapping({ multipleId: id, value: mapping })),
   removeClusterFromStories: (cluster: ICluster) => dispatch(StoriesActions.deleteCluster(cluster)),
@@ -319,7 +319,7 @@ export const WebGLView = connector(
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(width, height);
 
-      this.props.setViewTransform(this.camera, width, height);
+      this.props.setViewTransform(this.camera, width, height, this.props.multipleId);
 
       this.requestRender();
     }
@@ -404,7 +404,7 @@ export const WebGLView = connector(
       // Update projection matrix
       this.camera.updateProjectionMatrix();
 
-      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId);
 
       this.requestRender();
     }
@@ -534,7 +534,7 @@ export const WebGLView = connector(
             this.camera.position.y = this.camera.position.y + CameraTransformations.pixelToWorldCoordinates(event.movementY, this.createTransform());
 
             this.camera.updateProjectionMatrix();
-            this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
+            this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId);
 
             this.requestRender();
             break;
@@ -545,9 +545,12 @@ export const WebGLView = connector(
       };
 
       this.mouseController.onContext = (event: MouseEvent, button: number) => {
+        let event_used = false;
+
         switch (button) {
-          case 0:
+          case 0: // left-click
             if (this.props.activeLine) {
+              event_used = true;
               break;
             }
 
@@ -555,6 +558,7 @@ export const WebGLView = connector(
               const target = this.chooseCluster({ x: event.offsetX, y: event.offsetY });
 
               if (target) {
+                event_used = true;
                 const activeStory = AStorytelling.getActive(this.props.stories);
                 // We want to select a trace between 2 clusters
                 const paths = ABook.depthFirstSearch(
@@ -594,21 +598,27 @@ export const WebGLView = connector(
 
               this.traceSelect = null;
             } else if (this.currentHover && isVector(this.currentHover)) {
+              event_used = true;
               // We click on a hover target
               this.props.selectVectors([this.currentHover.__meta__.meshIndex], event.ctrlKey);
             } else if (this.currentHover && isCluster(this.currentHover)) {
+              event_used = true;
               const activeStory = AStorytelling.getActive(this.props.stories);
               this.props.setSelectedCluster(
                 [Object.keys(activeStory.clusters.entities).find((key) => activeStory.clusters.entities[key] === this.currentHover)],
                 event.ctrlKey,
               );
+            } else {
+              this.clearSelection();
             }
 
             break;
           case 2: {
+            // right-click
             const cluster = this.chooseCluster({ x: event.offsetX, y: event.offsetY });
 
             if (cluster) {
+              event_used = true;
               this.setState({
                 menuX: event.clientX,
                 menuY: event.clientY,
@@ -617,17 +627,28 @@ export const WebGLView = connector(
             } else {
               const edge = this.chooseEdge(this.mouseController.currentMousePosition);
               if (edge) {
+                event_used = true;
                 this.setState({
                   menuX: event.clientX,
                   menuY: event.clientY,
                   menuTarget: edge,
                 });
               } else {
-                this.setState({
-                  menuX: event.clientX,
-                  menuY: event.clientY,
-                  menuTarget: null,
-                });
+                const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
+                const idx = this.choose(coords);
+                if (idx >= 0) {
+                  this.setState({
+                    menuX: event.clientX,
+                    menuY: event.clientY,
+                    menuTarget: this.props.dataset.vectors[idx],
+                  });
+                } else {
+                  this.setState({
+                    menuX: event.clientX,
+                    menuY: event.clientY,
+                    menuTarget: null,
+                  });
+                }
               }
             }
 
@@ -635,6 +656,12 @@ export const WebGLView = connector(
           }
           default:
             break;
+        }
+
+        // call custom hook
+        if (this.props?.overrideComponents?.mouseInteractionCallbacks?.onmouseclick) {
+          const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
+          this.props.overrideComponents.mouseInteractionCallbacks.onmouseclick(coords, event_used, button);
         }
       };
 
@@ -657,8 +684,12 @@ export const WebGLView = connector(
         this.infoTimeout = setTimeout(() => {
           this.infoTimeout = null;
 
+          let event_used = false; // flag that shows, if the event already triggered sth
+          const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
+
           const cluster = this.chooseCluster(this.mouseController.currentMousePosition);
           if (cluster) {
+            event_used = true;
             if (this.currentHover !== cluster) {
               this.currentHover = cluster;
               this.props.setHoverState(cluster, UPDATER);
@@ -671,11 +702,10 @@ export const WebGLView = connector(
               this.requestRender();
             }
           } else {
-            const coords = CameraTransformations.screenToWorld(this.mouseController.currentMousePosition, this.createTransform());
-
             const edge = this.chooseEdge(this.mouseController.currentMousePosition);
 
             if (edge) {
+              event_used = true;
               if (this.currentHover !== edge) {
                 this.currentHover = edge;
                 this.props.setHoverState(edge, UPDATER);
@@ -694,6 +724,7 @@ export const WebGLView = connector(
               }
 
               if (idx >= 0) {
+                event_used = true;
                 if (this.currentHover !== this.props.dataset.vectors[idx]) {
                   this.currentHover = this.props.dataset.vectors[idx];
 
@@ -706,6 +737,11 @@ export const WebGLView = connector(
                 this.requestRender();
               }
             }
+          }
+
+          // call custom hook
+          if (this.props?.overrideComponents?.mouseInteractionCallbacks?.onmousemove) {
+            this.props.overrideComponents.mouseInteractionCallbacks.onmousemove(coords, event_used);
           }
         }, 10);
       };
@@ -767,7 +803,7 @@ export const WebGLView = connector(
       this.camera.position.z = 10;
       this.camera.updateProjectionMatrix();
 
-      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight());
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId); // TODO: setViewTransform is twice in one function -> see below
 
       this.setState({
         camera: this.camera,
@@ -798,6 +834,8 @@ export const WebGLView = connector(
 
       // this.scene.add(this.particles.mesh);
       this.pointScene.add(this.particles.mesh);
+
+      this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId); // TODO: setViewTransform is twice in one function -> see above
     }
 
     initializeContainerEvents() {
@@ -1354,7 +1392,7 @@ export const WebGLView = connector(
               .map((layer) => {
                 return React.isValidElement(layer.component)
                   ? layer.component
-                  : React.createElement(layer.component as () => JSX.Element, { key: `layer${layer.order}` });
+                  : React.createElement(layer.component as () => JSX.Element, { key: `layer${layer.order}`, multipleId: this.props.multipleId });
               })
           }
 
@@ -1390,13 +1428,13 @@ export const WebGLView = connector(
               .map((layer) => {
                 return React.isValidElement(layer.component)
                   ? layer.component
-                  : React.createElement(layer.component as () => JSX.Element, { key: `layer${layer.order}` });
+                  : React.createElement(layer.component as () => JSX.Element, { key: `layer${layer.order}`, multipleId: this.props.multipleId });
               })
           }
 
           <Menu
             keepMounted
-            open={this.state.menuY !== null && !this.state.menuTarget}
+            open={this.state.menuY !== null && (!this.state.menuTarget || isVector(this.state.menuTarget))}
             onClose={handleClose}
             anchorReference="anchorPosition"
             anchorPosition={this.state.menuY !== null && this.state.menuX !== null ? { top: this.state.menuY, left: this.state.menuX } : undefined}
@@ -1465,24 +1503,32 @@ export const WebGLView = connector(
               </MenuItem>
             )}
 
-            {this.props.overrideComponents?.contextMenuItems?.map((item) => (
-              <MenuItem
-                key={item.key}
-                onClick={() => {
-                  const coords = CameraTransformations.screenToWorld(
-                    {
-                      x: this.mouseController.currentMousePosition.x,
-                      y: this.mouseController.currentMousePosition.y,
-                    },
-                    this.createTransform(),
-                  );
-                  item.function(coords);
-                  handleClose();
-                }}
-              >
-                {item.title}
-              </MenuItem>
-            ))}
+            {this.props.overrideComponents?.contextMenuItems?.map(
+              (item, i) =>
+                React.createElement(item, {
+                  key: `contextmenuitem${i}`,
+                  menuTarget: this.state.menuTarget,
+                  pos_x: this.mouseController.currentMousePosition.x,
+                  pos_y: this.mouseController.currentMousePosition.y,
+                  handleClose,
+                }),
+              // <MenuItem
+              //   key={item.key}
+              //   onClick={() => {
+              //     const coords = CameraTransformations.screenToWorld(
+              //       {
+              //         x: this.mouseController.currentMousePosition.x,
+              //         y: this.mouseController.currentMousePosition.y,
+              //       },
+              //       this.createTransform(),
+              //     );
+              //     item.function(coords);
+              //     handleClose();
+              //   }}
+              // >
+              //   {item.title}
+              // </MenuItem>
+            )}
           </Menu>
 
           <Menu

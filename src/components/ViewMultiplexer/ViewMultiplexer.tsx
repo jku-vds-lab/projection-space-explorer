@@ -6,8 +6,8 @@ import { EntityId, EntityState } from '@reduxjs/toolkit';
 import { IconButton, Typography } from '@mui/material';
 import { WebGLView } from '../WebGLView/WebGLView';
 import { ViewSelector, ViewActions, SingleMultiple } from '../Ducks/ViewDuck';
-import { IPosition, IProjection } from '../../model/ProjectionInterfaces';
-import { RootState } from '../Store';
+import { IProjection } from '../../model/ProjectionInterfaces';
+import type { RootState } from '../Store';
 import { Dataset } from '../../model/Dataset';
 
 function selectPositions(dataset: Dataset, projection: IProjection) {
@@ -57,6 +57,7 @@ function WebView({
     <div
       style={{
         flexGrow: 1,
+        height: 0,
         display: 'flex',
         flexDirection: 'column',
         border: `1px solid ${active ? '#007dad' : 'rgba(0.12, 0.12, 0.12, 0.12)'}`,
@@ -138,7 +139,7 @@ export function ViewMultiplexer({ overrideComponents }) {
   return (
     <div style={{ width: '100%', height: 'calc(100% - 8px)', display: 'flex', gap: '4px', margin: '4px' }}>
       {count > 0 ? (
-        <div style={{ flexGrow: 1, display: 'flex', width: 0 }}>
+        <div style={{ flexGrow: 1, display: 'flex', width: 0, flexDirection: 'column' }}>
           <WebView id={multiples.multiples.ids[0]} multiples={multiples} overrideComponents={overrideComponents} onCloseView={onCloseView} />
         </div>
       ) : null}

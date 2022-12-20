@@ -169,8 +169,10 @@ export const EmbeddingTabPanel = connector((props: Props) => {
           }}
           onComputingChanged={() => {}}
           onStep={(step) => {
-            stepRef.current += 1;
-            setStep(stepRef.current);
+            // stepRef.current += 1;
+            // setStep(stepRef.current);
+            stepRef.current = step;
+            setStep(step);
           }}
         />
       </Box>

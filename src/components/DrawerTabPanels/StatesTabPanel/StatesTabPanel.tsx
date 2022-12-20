@@ -22,10 +22,10 @@ import { PathLengthFilter } from './PathLengthFilter';
 import { PathBrightnessSlider } from './PathBrightnessSlider';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
 import { PointDisplayActions } from '../../Ducks/PointDisplayDuck';
-import { EncodingChannel, BaseColorScale } from '../../../model';
+import { BaseColorScale, DefaultFeatureLabel, EncodingChannel } from '../../../model';
 import { ViewSelector } from '../../Ducks/ViewDuck';
-import { PointColorScaleActions } from '../../Ducks';
 import { ANormalized } from '../../Utility/NormalizedState';
+import { PointColorScaleActions } from '../../Ducks/PointColorScaleDuck';
 
 const mapStateToProps = (state: RootState) => ({
   selectedLineBy: state.selectedLineBy,
@@ -48,7 +48,7 @@ function SelectFeatureComponent({ label, default_val, categoryOptions, onChange,
   if (categoryOptions != null) {
     autocomplete_options = autocomplete_options.concat(
       categoryOptions.attributes.map((attribute) => {
-        let group = null;
+        let group = DefaultFeatureLabel;
         if (column_info != null && attribute.key in column_info) {
           group = column_info[attribute.key].featureLabel;
         }

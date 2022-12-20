@@ -2,11 +2,12 @@ import { createTheme, ThemeProvider } from '@mui/material';
 import { PropsWithChildren } from 'react';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { Store } from '@reduxjs/toolkit';
+import { Store } from 'redux';
+import type { RootState } from '.';
 import { API } from './API';
 
-type PSEContextProps = {
-  context?: API<any>;
+type PSEContextProps<T extends RootState> = {
+  context?: API<T>;
   onStateChanged?: (values: any, keys: any) => void;
 };
 
@@ -22,7 +23,7 @@ const theme = createTheme({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function PSEContextProvider({ context, children, onStateChanged }: PropsWithChildren<PSEContextProps>) {
+export function PSEContextProvider({ context, children, onStateChanged }: PropsWithChildren<PSEContextProps<any>>) {
   const [store, setStore] = React.useState<Store>(null);
 
   React.useEffect(() => {

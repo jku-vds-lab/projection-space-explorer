@@ -12,6 +12,7 @@ export declare enum DatasetType {
     Chem = "chem",
     Trrack = "trrack",
     None = "none",
+    Custom = "custom",
     Subsampled = "subsampled",
     Experiments_Only = "experiments_only",
     Subsampled_with_Sugestions = "subsampled_with_suggestions",

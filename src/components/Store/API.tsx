@@ -1,7 +1,7 @@
 import { Reducer, Store, configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 import { v4 as uuidv4 } from 'uuid';
-import { rootReducer, RootState } from './Store';
+import { RootState, createRootReducer } from './Store';
 import { getStoreDiff } from './PluginScript';
 import { RootActions } from './RootActions';
 import { UtilityActions } from './Utility';
@@ -27,13 +27,13 @@ export class API<T extends RootState> {
 
     if (dump) {
       this.store = configureStore({
-        reducer: reducer || rootReducer,
+        reducer: reducer || createRootReducer(),
         preloadedState: dump,
         middleware: middleware ? [this.differenceMiddleware, thunk, ...middleware] : [this.differenceMiddleware, thunk],
       });
     } else {
       this.store = configureStore({
-        reducer: reducer || rootReducer,
+        reducer: reducer || createRootReducer(),
         middleware: middleware ? [this.differenceMiddleware, thunk, ...middleware] : [this.differenceMiddleware, thunk],
       });
     }

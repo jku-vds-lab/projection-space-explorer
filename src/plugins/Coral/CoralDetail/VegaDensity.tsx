@@ -5,7 +5,7 @@ import { VegaLiteProps } from 'react-vega/lib/VegaLite';
 const spec: VisualizationSpec = {
   width: 50,
   height: 50,
-  transform: [{ density: 'feature', groupby: ['selection'], bandwidth: 0.3, steps: 15 }],
+  transform: [{ density: 'feature', groupby: ['selection']}],
   mark: { type: 'area', tooltip: true },
   encoding: {
     x: { field: 'value', title: 'feature', type: 'quantitative', axis: null },

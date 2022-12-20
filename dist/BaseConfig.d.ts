@@ -1,6 +1,7 @@
 import { ConnectedComponent } from 'react-redux';
 import { EncodingChannel } from './model/EncodingChannel';
 import { EmbeddingController } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingController';
+import { TypedObject } from './model';
 export type BaseConfig = Partial<{
     baseUrl: string;
     preselect: Partial<{
@@ -12,6 +13,7 @@ export type EmbeddingMethod = {
     id: string;
     name: string;
     settings: {
+        hideSettings?: boolean;
         perplexity?: boolean;
         learningRate?: boolean;
         nneighbors?: boolean;
@@ -31,6 +33,14 @@ export declare const DEFAULT_EMBEDDINGS: {
     name: string;
     settings: {};
 }[];
+export type CoordinatesType = {
+    x: number;
+    y: number;
+};
+export type MouseInteractions = {
+    onmousemove?: (coordinates: CoordinatesType, event_used: boolean) => void;
+    onmouseclick?: (coordinates: CoordinatesType, event_used: boolean, button: number) => void;
+};
 export type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
     encodings: EncodingChannel[];
@@ -46,16 +56,18 @@ export type ComponentConfig = Partial<{
     detailViews: Array<DetailViewSpec>;
     layers: Array<LayerSpec>;
     tabs: Array<TabSpec>;
-    contextMenuItems: Array<ContextMenuItem>;
+    contextMenuItems: Array<(props: {
+        handleClose: () => void;
+        pos_x: number;
+        pos_y: number;
+        menuTarget: TypedObject;
+    }) => JSX.Element>;
+    mouseInteractionCallbacks: MouseInteractions;
 }>;
-export type ContextMenuItem = {
-    key: string;
-    title: string;
-    function: (coords: any) => void;
-};
 export type DetailViewSpec = {
     name: string;
-    view: () => JSX.Element;
+    view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
+    settings: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
 };
 export type TabSpec = {
     name: string;

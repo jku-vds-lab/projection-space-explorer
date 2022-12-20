@@ -819,7 +819,6 @@ export class PointVisualization {
 
   updatePosition(projection: IBaseProjection) {
     const position = this.mesh.geometry.attributes.position as BufferAttribute;
-
     this.vectors.forEach((vector, i) => {
       let z = 0.0;
       if (
@@ -828,7 +827,6 @@ export class PointVisualization {
       ) {
         z = -0.1;
       }
-
       position.setXYZ(vector.__meta__.meshIndex, projection[i].x, projection[i].y, z);
       // new THREE.Vector3().toArray(position, vector.__meta__.meshIndex * 3);
     });

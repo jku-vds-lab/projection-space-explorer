@@ -1,8 +1,8 @@
-import { EntityId, PayloadAction, Update } from '@reduxjs/toolkit';
+import { EntityId, Update, ReducersMapObject, EntityState, Reducer, ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { ViewTransformType } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, IPosition, Dataset } from '../../model';
-import { Mapping } from '../Utility';
+import { ContinuousMapping, DiscreteMapping, Mapping } from '../Utility';
 import { CategoryOption } from '../WebGLView/CategoryOptions';
 export declare const setWorkspaceAction: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId | IProjection, string>;
 export declare const projectionAdapter: import("@reduxjs/toolkit").EntityAdapter<IProjection>;
@@ -75,157 +75,78 @@ export type SingleMultiple = {
 };
 export declare const multipleAdapter: import("@reduxjs/toolkit").EntityAdapter<SingleMultiple>;
 export declare function isEntityId(value: string | number | IProjection): value is EntityId;
-export declare const singleTestReducer: import("redux").Reducer<import("redux").CombinedState<{
-    channelColor: CategoryOption;
-    channelSize: CategoryOption;
-    channelBrightness: CategoryOption;
-    vectorByShape: any;
-    viewTransform: ViewTransformType;
-    lineBrightness: any;
-    pointColorMapping: Mapping;
-    pointColorScale: EntityId;
-    pathLengthRange: {
-        range: any;
-        maximum: number;
-    } | {
-        range: number[];
-        maximum: any;
-    };
-    globalPointSize: number[];
-    globalPointBrightness: number[];
-    workspace: EntityId | IProjection;
-}>, import("redux").AnyAction>;
-export declare const multiplesSlice: import("@reduxjs/toolkit").Slice<import("immer/dist/internal").WritableDraft<{
-    multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-    active: string | number;
-    projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-}>, {
-    addView(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<Dataset>): void;
-    activateView(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<EntityId>): void;
-    deleteView(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<EntityId>): void;
-    loadById(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<EntityId>): void;
-    add(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<IProjection>): void;
-    copyFromWorkspace(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>): void;
-    updateActive(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<{
-        positions: IPosition[];
-        metadata: any;
-    }>): void;
-    remove(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<EntityId>): void;
-    save(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<Update<IProjection>>): void;
-    setPointColorMapping(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<{
-        multipleId: EntityId;
-        value: Mapping;
-    }>): void;
-    changeDivergingRange(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<[
-        number,
-        number,
-        number
-    ] | [
-        number,
-        number
-    ]>): void;
-    selectChannel(state: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, action: PayloadAction<{
-        dataset: Dataset;
-        channel: 'x' | 'y';
-        value: string;
-    }>): void;
-}, "multiples">;
+type StateType<T> = {
+    multiples: EntityState<{
+        id: EntityId;
+        attributes: SingleMultipleAttributes & T;
+    }>;
+    active: EntityId;
+    projections: EntityState<IProjection>;
+};
+export declare function createViewDuckReducer<T>(additionalViewReducer?: ReducersMapObject<T, any>, additionalCustomCases?: (builder: ActionReducerMapBuilder<StateType<T>>) => void): import("@reduxjs/toolkit").Slice<StateType<T>, {}, "multiples">;
 export declare const ViewActions: {
-    addView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Dataset, "multiples/addView">;
-    activateView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "multiples/activateView">;
-    deleteView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "multiples/deleteView">;
-    loadById: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "multiples/loadById">;
-    add: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IProjection, "multiples/add">;
-    copyFromWorkspace: import("@reduxjs/toolkit").ActionCreatorWithoutPayload<"multiples/copyFromWorkspace">;
+    addView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Dataset, string>;
+    activateView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    deleteView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    loadById: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    add: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IProjection, string>;
+    copyFromWorkspace: import("@reduxjs/toolkit").ActionCreatorWithoutPayload<"view/copyFromWorkspace">;
     updateActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         positions: IPosition[];
         metadata: any;
-    }, "multiples/updateActive">;
-    remove: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "multiples/remove">;
-    save: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Update<IProjection>, "multiples/save">;
+    }, string>;
+    remove: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    save: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<Update<IProjection>, string>;
     setPointColorMapping: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         multipleId: EntityId;
-        value: Mapping;
-    }, "multiples/setPointColorMapping">;
-    changeDivergingRange: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<[number, number, number] | [number, number], "multiples/changeDivergingRange">;
+        value: DiscreteMapping | ContinuousMapping;
+    }, string>;
     selectChannel: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         dataset: Dataset;
         channel: 'x' | 'y';
         value: string;
-    }, "multiples/selectChannel">;
+    }, string>;
+    changeDivergingRange: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<[number, number, number] | [number, number], string>;
 };
 export declare const ViewSelector: {
-    selectAll: ((state: import("redux").EmptyObject & {
-        currentAggregation: {
+    selectAll: ((state: import("../Store").ReducerValues<{
+        currentAggregation: (state: {
+            aggregation: number[];
+            selectedClusters: (string | number)[];
+            source: "sample" | "cluster";
+        }, action: any) => {
             aggregation: number[];
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: import("./StoriesDuck").IStorytelling;
-        openTab: any;
-        pointDisplay: {
+        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
+        openTab: (state: number, action: any) => any;
+        pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
                 cross: boolean;
                 circle: boolean;
                 square: boolean;
             };
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
+        }, import("redux").AnyAction>;
+        activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
+        dataset: typeof import("./DatasetDuck").default;
+        highlightedSequence: (state: any, action: any) => any;
+        advancedColoringSelection: (state: any[], action: any) => any;
+        projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("./ProjectionColumnsDuck").ProjectionColumn[]>;
+        projectionOpen: (state: boolean, action: any) => any;
+        projectionParams: (state: {
+            perplexity: number;
+            learningRate: number;
+            nNeighbors: number;
+            iterations: number;
+            seeded: boolean;
+            useSelection: boolean;
+            method: string;
+            distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
+            normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
+            encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
+        }, action: any) => {
             perplexity: number;
             learningRate: number;
             nNeighbors: number;
@@ -237,99 +158,81 @@ export declare const ViewSelector: {
             normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
             encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
         };
-        projectionWorker: Worker;
-        clusterMode: import("./ClusterModeDuck").ClusterMode;
-        displayMode: import("./DisplayModeDuck").DisplayMode;
-        hoverState: import("./HoverStateDuck").HoverStateType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        differenceThreshold: any;
-        hoverSettings: {
+        projectionWorker: typeof import("./ProjectionWorkerDuck").default;
+        clusterMode: typeof import("./ClusterModeDuck").default;
+        displayMode: typeof import("./DisplayModeDuck").default;
+        hoverState: (state: import("./HoverStateDuck").HoverStateType, action: any) => import("./HoverStateDuck").HoverStateType;
+        trailSettings: typeof import("./TrailSettingsDuck").default;
+        differenceThreshold: (state: number, action: any) => any;
+        hoverSettings: (state: {
+            windowMode: import("./HoverSettingsDuck").WindowMode;
+        }, action: any) => {
             windowMode: any;
         };
-        selectedLineBy: {
-            options: any[];
-            value: any;
-        } | {
-            options: any;
-            value: string;
-        };
-        groupVisualizationMode: any;
-        genericFingerprintAttributes: any[];
-        hoverStateOrientation: any;
-        detailView: {
+        selectedLineBy: typeof import("./SelectedLineByDuck").selectedLineBy;
+        groupVisualizationMode: (state: import("./GroupVisualizationMode").GroupVisualizationMode, action: any) => any;
+        genericFingerprintAttributes: (state: any[], action: any) => any[];
+        hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
+        detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             open: boolean;
-            active: string;
-        };
-        datasetEntries: {
-            values: {
-                byId: {
-                    [id: string]: import("../../model").DatasetEntry;
-                };
-                allIds: string[];
-            };
-        };
-        colorScales: import("./ColorScalesDuck").ColorScalesType;
-        multiples: import("immer/dist/internal").WritableDraft<{
-            multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-            active: string | number;
-            projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+            active: number;
         }>;
-    }) => import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>) & import("reselect").OutputSelectorFields<(args_0: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>) => import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }> & {
+        datasetEntries: typeof import("./DatasetEntriesDuck").default;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+        colorScales: typeof import("./ColorScalesDuck").default;
+        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
+    }>) => StateType<unknown>) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>) => StateType<unknown> & {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
     };
-    defaultSelector: (state: RootState) => import("immer/dist/internal").WritableDraft<SingleMultiple>;
-    getWorkspaceById: ((state: any, multipleId: EntityId) => import("immer/dist/internal").WritableDraft<IProjection>) & import("reselect").OutputSelectorFields<(args_0: import("immer/dist/internal").WritableDraft<{
-        multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-        active: string | number;
-        projections: import("@reduxjs/toolkit").EntityState<IProjection>;
-    }>, args_1: EntityId) => import("immer/dist/internal").WritableDraft<IProjection> & {
+    defaultSelector: (state: RootState) => {
+        id: EntityId;
+        attributes: SingleMultipleAttributes;
+    };
+    getWorkspaceById: ((state: any, multipleId: EntityId) => IProjection) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>, args_1: EntityId) => IProjection & {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
     };
-    getWorkspace: ((state: import("redux").EmptyObject & {
-        currentAggregation: {
+    getWorkspace: ((state: import("../Store").ReducerValues<{
+        currentAggregation: (state: {
+            aggregation: number[];
+            selectedClusters: (string | number)[];
+            source: "sample" | "cluster";
+        }, action: any) => {
             aggregation: number[];
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: import("./StoriesDuck").IStorytelling;
-        openTab: any;
-        pointDisplay: {
+        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
+        openTab: (state: number, action: any) => any;
+        pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
                 cross: boolean;
                 circle: boolean;
                 square: boolean;
             };
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
+        }, import("redux").AnyAction>;
+        activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
+        dataset: typeof import("./DatasetDuck").default;
+        highlightedSequence: (state: any, action: any) => any;
+        advancedColoringSelection: (state: any[], action: any) => any;
+        projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("./ProjectionColumnsDuck").ProjectionColumn[]>;
+        projectionOpen: (state: boolean, action: any) => any;
+        projectionParams: (state: {
+            perplexity: number;
+            learningRate: number;
+            nNeighbors: number;
+            iterations: number;
+            seeded: boolean;
+            useSelection: boolean;
+            method: string;
+            distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
+            normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
+            encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
+        }, action: any) => {
             perplexity: number;
             learningRate: number;
             nNeighbors: number;
@@ -341,77 +244,72 @@ export declare const ViewSelector: {
             normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
             encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
         };
-        projectionWorker: Worker;
-        clusterMode: import("./ClusterModeDuck").ClusterMode;
-        displayMode: import("./DisplayModeDuck").DisplayMode;
-        hoverState: import("./HoverStateDuck").HoverStateType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        differenceThreshold: any;
-        hoverSettings: {
+        projectionWorker: typeof import("./ProjectionWorkerDuck").default;
+        clusterMode: typeof import("./ClusterModeDuck").default;
+        displayMode: typeof import("./DisplayModeDuck").default;
+        hoverState: (state: import("./HoverStateDuck").HoverStateType, action: any) => import("./HoverStateDuck").HoverStateType;
+        trailSettings: typeof import("./TrailSettingsDuck").default;
+        differenceThreshold: (state: number, action: any) => any;
+        hoverSettings: (state: {
+            windowMode: import("./HoverSettingsDuck").WindowMode;
+        }, action: any) => {
             windowMode: any;
         };
-        selectedLineBy: {
-            options: any[];
-            value: any;
-        } | {
-            options: any;
-            value: string;
-        };
-        groupVisualizationMode: any;
-        genericFingerprintAttributes: any[];
-        hoverStateOrientation: any;
-        detailView: {
+        selectedLineBy: typeof import("./SelectedLineByDuck").selectedLineBy;
+        groupVisualizationMode: (state: import("./GroupVisualizationMode").GroupVisualizationMode, action: any) => any;
+        genericFingerprintAttributes: (state: any[], action: any) => any[];
+        hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
+        detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             open: boolean;
-            active: string;
-        };
-        datasetEntries: {
-            values: {
-                byId: {
-                    [id: string]: import("../../model").DatasetEntry;
-                };
-                allIds: string[];
-            };
-        };
-        colorScales: import("./ColorScalesDuck").ColorScalesType;
-        multiples: import("immer/dist/internal").WritableDraft<{
-            multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-            active: string | number;
-            projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+            active: number;
         }>;
-    }) => import("immer/dist/internal").WritableDraft<IProjection>) & import("reselect").OutputSelectorFields<(args_0: import("immer/dist/internal").WritableDraft<IProjection>) => import("immer/dist/internal").WritableDraft<IProjection> & {
+        datasetEntries: typeof import("./DatasetEntriesDuck").default;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+        colorScales: typeof import("./ColorScalesDuck").default;
+        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
+    }>) => IProjection) & import("reselect").OutputSelectorFields<(args_0: IProjection) => IProjection & {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
     };
-    workspaceIsTemporal: ((state: import("redux").EmptyObject & {
-        currentAggregation: {
+    workspaceIsTemporal: ((state: import("../Store").ReducerValues<{
+        currentAggregation: (state: {
+            aggregation: number[];
+            selectedClusters: (string | number)[];
+            source: "sample" | "cluster";
+        }, action: any) => {
             aggregation: number[];
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: import("./StoriesDuck").IStorytelling;
-        openTab: any;
-        pointDisplay: {
+        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
+        openTab: (state: number, action: any) => any;
+        pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
                 cross: boolean;
                 circle: boolean;
                 square: boolean;
             };
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
+        }, import("redux").AnyAction>;
+        activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
+        dataset: typeof import("./DatasetDuck").default;
+        highlightedSequence: (state: any, action: any) => any;
+        advancedColoringSelection: (state: any[], action: any) => any;
+        projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("./ProjectionColumnsDuck").ProjectionColumn[]>;
+        projectionOpen: (state: boolean, action: any) => any;
+        projectionParams: (state: {
+            perplexity: number;
+            learningRate: number;
+            nNeighbors: number;
+            iterations: number;
+            seeded: boolean;
+            useSelection: boolean;
+            method: string;
+            distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
+            normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
+            encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
+        }, action: any) => {
             perplexity: number;
             learningRate: number;
             nNeighbors: number;
@@ -423,52 +321,33 @@ export declare const ViewSelector: {
             normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
             encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
         };
-        projectionWorker: Worker;
-        clusterMode: import("./ClusterModeDuck").ClusterMode;
-        displayMode: import("./DisplayModeDuck").DisplayMode;
-        hoverState: import("./HoverStateDuck").HoverStateType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        differenceThreshold: any;
-        hoverSettings: {
+        projectionWorker: typeof import("./ProjectionWorkerDuck").default;
+        clusterMode: typeof import("./ClusterModeDuck").default;
+        displayMode: typeof import("./DisplayModeDuck").default;
+        hoverState: (state: import("./HoverStateDuck").HoverStateType, action: any) => import("./HoverStateDuck").HoverStateType;
+        trailSettings: typeof import("./TrailSettingsDuck").default;
+        differenceThreshold: (state: number, action: any) => any;
+        hoverSettings: (state: {
+            windowMode: import("./HoverSettingsDuck").WindowMode;
+        }, action: any) => {
             windowMode: any;
         };
-        selectedLineBy: {
-            options: any[];
-            value: any;
-        } | {
-            options: any;
-            value: string;
-        };
-        groupVisualizationMode: any;
-        genericFingerprintAttributes: any[];
-        hoverStateOrientation: any;
-        detailView: {
+        selectedLineBy: typeof import("./SelectedLineByDuck").selectedLineBy;
+        groupVisualizationMode: (state: import("./GroupVisualizationMode").GroupVisualizationMode, action: any) => any;
+        genericFingerprintAttributes: (state: any[], action: any) => any[];
+        hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
+        detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             open: boolean;
-            active: string;
-        };
-        datasetEntries: {
-            values: {
-                byId: {
-                    [id: string]: import("../../model").DatasetEntry;
-                };
-                allIds: string[];
-            };
-        };
-        colorScales: import("./ColorScalesDuck").ColorScalesType;
-        multiples: import("immer/dist/internal").WritableDraft<{
-            multiples: import("@reduxjs/toolkit").EntityState<SingleMultiple>;
-            active: string | number;
-            projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+            active: number;
         }>;
-    }) => boolean) & import("reselect").OutputSelectorFields<(args_0: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean & {
+        datasetEntries: typeof import("./DatasetEntriesDuck").default;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+        colorScales: typeof import("./ColorScalesDuck").default;
+        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
+    }>) => boolean) & import("reselect").OutputSelectorFields<(args_0: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean & {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
     };
 };
+export {};

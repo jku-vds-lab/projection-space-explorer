@@ -1,20 +1,24 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 
-export const setVisibility = createAction<boolean>('detailView/setvisibility');
-export const setActive = createAction<string>('detailView/setActive');
+const setDetailVisibility = createAction<boolean>('detailview/setvisibielity');
+const setDetailView = createAction<number>('detailview/setview');
 
-export const detailView = createReducer(
-  {
-    open: false,
-    active: '',
-  },
-  (builder) => {
-    builder
-      .addCase(setVisibility, (state, action) => {
-        state.open = action.payload;
-      })
-      .addCase(setActive, (state, action) => {
-        state.active = action.payload;
-      });
-  },
-);
+const initialState = {
+  open: false,
+  active: 0,
+};
+
+export const detailView = createReducer(initialState, (builder) => {
+  builder
+    .addCase(setDetailVisibility, (state, action) => {
+      state.open = action.payload;
+    })
+    .addCase(setDetailView, (state, action) => {
+      state.active = action.payload;
+    });
+});
+
+export const DetailViewActions = {
+  setDetailVisibility,
+  setDetailView,
+};

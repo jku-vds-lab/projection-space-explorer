@@ -7,7 +7,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;
-    projections: import("immer/dist/internal").WritableDraft<import("@reduxjs/toolkit").EntityState<IProjection>>;
+    projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     projectionParams: {
         perplexity: number;
         learningRate: number;
@@ -43,7 +43,7 @@ export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;
-    projections: import("immer/dist/internal").WritableDraft<import("@reduxjs/toolkit").EntityState<IProjection>>;
+    projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     projectionParams: {
         perplexity: number;
         learningRate: number;
@@ -71,5 +71,5 @@ export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent
     setProjectionOpen?: any;
     setProjectionWorker?: any;
     dataset?: Dataset;
-}, "stories" | "projections" | "dataset" | "projectionOpen" | "projectionParams" | "projectionWorker" | "setProjectionOpen" | "setProjectionWorker" | "setProjectionColumns" | "setTrailVisibility" | "addProjection" | "deleteProjection" | "updateWorkspace">>;
+}, "stories" | "dataset" | "projectionOpen" | "projectionParams" | "projectionWorker" | "projections" | "setProjectionOpen" | "setProjectionWorker" | "setProjectionColumns" | "setTrailVisibility" | "addProjection" | "deleteProjection" | "updateWorkspace">>;
 export {};

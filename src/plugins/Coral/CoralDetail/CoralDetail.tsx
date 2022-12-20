@@ -6,11 +6,12 @@ import './coral.scss';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import * as vegaImport from 'vega';
 import { FeatureType } from '../../../model/FeatureType';
-import { IVector } from '../../../model/Vector';
+import type { IVector } from '../../../model/Vector';
 import BarChart from './BarChart';
 import VegaDensity from './VegaDensity';
 import VegaDate from './VegaDate';
 import type { RootState } from '../../../components/Store/Store';
+import { DefaultLegend } from '../../../components/legends/DefaultLegend';
 
 const useStyles = makeStyles({
   table: {
@@ -51,13 +52,22 @@ function mapDensityData(allData, selectedData, feature) {
   return { values: mapped };
 }
 
-function mapBarChartData(data, feature) {
-  const counts = {};
-  for (let i = 0; i < data.length; i++) {
-    if (data[i][feature] in counts) {
-      counts[data[i][feature]] += 1;
+function mapBarChartData(allData, selectedData, feature) {
+  const selectedCounts = {};
+  for (let i = 0; i < selectedData.length; i++) {
+    if (selectedData[i][feature] in selectedCounts) {
+      selectedCounts[selectedData[i][feature]] += 1;
     } else {
-      counts[data[i][feature]] = 1;
+      selectedCounts[selectedData[i][feature]] = 1;
+    }
+  }
+
+  const allCounts = {};
+  for (let i = 0; i < allData.length; i++) {
+    if (allData[i][feature] in allCounts) {
+      allCounts[allData[i][feature]] += 1;
+    } else {
+      allCounts[allData[i][feature]] = 1;
     }
   }
 
@@ -65,13 +75,40 @@ function mapBarChartData(data, feature) {
     return b.count - a.count;
   };
 
-  const barChartData = [];
-  for (const key in counts) {
-    let count = counts[key] / data.length;
+  const selectedBarChartData = [];
+  for (const key in selectedCounts) {
+    let count = selectedCounts[key] / selectedData.length;
     count = isFinite(count) ? count : 0;
-    barChartData.push({ category: key, count });
+    selectedBarChartData.push({ selection: 'selected', category: key, count: count });
   }
-  barChartData.sort(sortCountDesc);
+  selectedBarChartData.sort(sortCountDesc);
+
+  // create a map for featureCategory: id
+  const categoryMap = {};
+  selectedBarChartData.map((x, i) => {
+    categoryMap[x.category] = i;
+    x.id = i;
+  });
+  const l = selectedBarChartData.length;
+  var idxCounter = l;
+
+  const allBarChartData = [];
+  for (const key in allCounts) {
+    let count = allCounts[key] / allData.length;
+    count = isFinite(count) ? count : 0;
+    // apply that mapping to allBarChartData without actually having to sort it
+    // make sure to check whether category in allBarChartData even exists in map, otherwise create new entry in map for new id
+    var i = categoryMap[key];
+    if (i == undefined) {
+      i = idxCounter;
+      categoryMap[key] = i;
+      idxCounter++;
+    }
+    allBarChartData.push({ selection: 'all', category: key, count: count, id: i });
+  }
+
+  const barChartData = [...allBarChartData, ...selectedBarChartData];
+
   return { values: barChartData };
 }
 
@@ -183,9 +220,7 @@ function genRows(vectors, aggregation, legendAttributes, dataset) {
   for (const key in dictOfArrays) {
     // filter for preselect features
     if (preselect.indexOf(key) > -1) {
-      if (dataset.columns[key]?.metaInformation.noLineUp) {
-        // dont do anything, if column should not be shown
-      } else if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
+      if (dataset.columns[key]?.featureType === FeatureType.Quantitative) {
         // quantitative feature
         const densityData = mapDensityData(dataset.vectors, vectors, key);
         // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
@@ -197,7 +232,7 @@ function genRows(vectors, aggregation, legendAttributes, dataset) {
         ]);
       } else if (dataset.columns[key]?.featureType === FeatureType.Categorical) {
         // categorical feature
-        const barData = mapBarChartData(vectors, key);
+        const barData = mapBarChartData(dataset.vectors, vectors, key);
         var barChart;
         if (Object.keys(barData.values).length != 1) {
           // logLevel={vegaImport.Debug} | {vegaImport.Warn} | {vegaImport.Error} | {vegaImport.None} | {vegaImport.Info}
@@ -234,7 +269,7 @@ function genRows(vectors, aggregation, legendAttributes, dataset) {
 function getTable(vectors, aggregation, legendAttributes, dataset) {
   const classes = useStyles();
   const rows = genRows(vectors, aggregation, legendAttributes, dataset);
-
+  
   return (
     <div style={{ width: '100%', maxHeight: '100%', overflowY: 'scroll' }}>
       <div
@@ -284,5 +319,8 @@ type Props = PropsFromRedux & {
 };
 
 export var CoralLegend = connector(({ selection, aggregate, legendAttributes, dataset }: Props) => {
+  if (selection.length <= 0) {
+    return <DefaultLegend></DefaultLegend>;
+  }
   return getTable(selection, aggregate, legendAttributes, dataset);
 });

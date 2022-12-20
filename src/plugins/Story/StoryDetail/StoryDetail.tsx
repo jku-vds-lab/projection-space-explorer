@@ -2,6 +2,7 @@ import * as React from 'react';
 import { createTheme, Divider, Grid, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import { makeStyles, ThemeProvider } from '@mui/styles';
 import { getCountryCode } from '../../../components/Utility/CountryCodes';
+import { DefaultLegend } from '../../../components/legends/DefaultLegend';
 
 const HEIGHT = 32;
 const WIDTH = 44;
@@ -222,6 +223,10 @@ type StoryLegendProps = {
 };
 
 export function StoryLegend({ selection }: StoryLegendProps) {
+  if(selection.length <= 0){
+    return <DefaultLegend></DefaultLegend>
+  }
+
   const classes = useStyles();
 
   if (selection == null) {

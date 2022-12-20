@@ -15,7 +15,8 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         source: "sample" | "cluster";
     };
     groupVisualizationMode: any;
-    workspace: import("immer/dist/internal").WritableDraft<import("../../..").IProjection>;
+    workspace: import("../../..").IProjection;
+    globalLabels: import("../../Ducks").GlobalLabelsState;
 } & {
     setStories: (stories: IBook[]) => any;
     setActiveStory: (book: EntityId) => any;
@@ -31,7 +32,7 @@ type Props = PropsFromRedux & {
     splitRef: any;
     baseUrl: string;
 };
-export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters, baseUrl, }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const ClusteringTabPanel: import("react-redux").ConnectedComponent<({ setChannelColor, setStories, dataset, stories, setDisplayMode, displayMode, addStory, removeClusterFromStories, workspace, currentAggregation, splitRef, groupVisualizationMode, setGroupVisualizationMode, setSelectedClusters, baseUrl, globalLabels, }: Props) => JSX.Element, import("react-redux").Omit<{
     stories: IStorytelling;
     displayMode: DisplayMode;
     dataset: Dataset;
@@ -41,7 +42,8 @@ export declare const ClusteringTabPanel: import("react-redux").ConnectedComponen
         source: "sample" | "cluster";
     };
     groupVisualizationMode: any;
-    workspace: import("immer/dist/internal").WritableDraft<import("../../..").IProjection>;
+    workspace: import("../../..").IProjection;
+    globalLabels: import("../../Ducks").GlobalLabelsState;
 } & {
     setStories: (stories: IBook[]) => any;
     setActiveStory: (book: EntityId) => any;
@@ -54,5 +56,5 @@ export declare const ClusteringTabPanel: import("react-redux").ConnectedComponen
 } & {
     splitRef: any;
     baseUrl: string;
-}, "stories" | "workspace" | "currentAggregation" | "dataset" | "displayMode" | "groupVisualizationMode" | "setGroupVisualizationMode" | "setChannelColor" | "setStories" | "setDisplayMode" | "addStory" | "removeClusterFromStories" | "setSelectedClusters" | "setActiveStory">>;
+}, "stories" | "globalLabels" | "currentAggregation" | "dataset" | "displayMode" | "groupVisualizationMode" | "setGroupVisualizationMode" | "workspace" | "setChannelColor" | "setStories" | "setDisplayMode" | "addStory" | "removeClusterFromStories" | "setSelectedClusters" | "setActiveStory">>;
 export {};

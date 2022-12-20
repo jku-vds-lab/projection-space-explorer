@@ -17,7 +17,11 @@ export type ColumnType = {
     isNumeric: boolean;
     metaInformation: any;
     featureType: FeatureType;
-    range: any;
+    range: {
+        max: number;
+        min: number;
+        center?: number;
+    };
     featureLabel: string;
     project: boolean;
 };

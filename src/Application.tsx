@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 import 'regenerator-runtime/runtime';
-import { Divider, Drawer, Paper, Tooltip, Typography, Tab, Tabs, Box, Grid } from '@mui/material';
+import './index.scss';
+import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from '@mui/material';
 import * as React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Split from 'react-split';
@@ -16,7 +17,6 @@ import { DatasetTabPanel } from './components/DrawerTabPanels/DatasetTabPanel/Da
 import { DetailsTabPanel } from './components/DrawerTabPanels/DetailsTabPanel/DetailsTabPanel';
 import { setLineByOptions } from './components/Ducks/SelectedLineByDuck';
 import { setGlobalPointBrightness } from './components/Ducks/GlobalPointBrightnessDuck';
-import { setGenericFingerprintAttributes } from './components/Ducks/GenericFingerprintAttributesDuck';
 import { setGroupVisualizationMode } from './components/Ducks/GroupVisualizationMode';
 import { HoverStateOrientation } from './components/Ducks/HoverStateOrientationDuck';
 import { PluginRegistry } from './components/Store/PluginScript';
@@ -25,7 +25,6 @@ import { RubikPlugin } from './plugins/Rubik/RubikPlugin';
 import { ChessPlugin } from './plugins/Chess/ChessPlugin';
 import { GoPlugin } from './plugins/Go/GoPlugin';
 import { PseAppBar } from './components/PseAppBar';
-import { setVisibility } from './components/Ducks/DetailViewDuck';
 import { PSEIcons } from './utils/PSEIcons';
 // @ts-ignore
 import VDSLogo from '../textures/vds-lab-logo-notext.svg';
@@ -36,6 +35,10 @@ import { DatasetType } from './model/DatasetType';
 import { RootActions } from './components/Store/RootActions';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 import { ViewMultiplexer } from './components/ViewMultiplexer/ViewMultiplexer';
+import { capitalizeFirstLetter, toSentenceCase } from './utils/helpers';
+import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChooser';
+import { DetailViewActions } from './components/Ducks/DetailViewDuck';
+import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -63,15 +66,15 @@ const mapStateToProps = (state: RootState) => ({
   dataset: state.dataset,
   hoverStateOrientation: state.hoverStateOrientation,
   datasetEntries: state.datasetEntries,
+  globalLabels: state.globalLabels,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setOpenTab: (openTab) => dispatch(setOpenTabAction(openTab)),
   setLineByOptions: (options) => dispatch(setLineByOptions(options)),
   setGlobalPointBrightness: (value) => dispatch(setGlobalPointBrightness(value)),
-  setGenericFingerprintAttributes: (value) => dispatch(setGenericFingerprintAttributes(value)),
   setGroupVisualizationMode: (value) => dispatch(setGroupVisualizationMode(value)),
-  setLineUpInput_visibility: (open) => dispatch(setVisibility(open)),
+  setLineUpInput_visibility: (open) => dispatch(DetailViewActions.setDetailVisibility(open)),
   loadDataset: (dataset: Dataset) => dispatch(RootActions.loadDataset(dataset)),
 });
 
@@ -98,7 +101,7 @@ type Props = PropsFromRedux & {
  */
 export const Application = connector(
   class extends React.Component<Props, any> {
-    splitRef: any;
+    splitRef: React.LegacyRef<Split>;
 
     constructor(props) {
       super(props);
@@ -196,7 +199,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    // borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -218,7 +221,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -242,7 +245,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -264,7 +267,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -273,8 +276,12 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">Hover Item and Selection Summary</Typography>
-                    <Typography variant="body2">Contains information about the currently hovered item and the currently selected summary.</Typography>
+                    <Typography variant="subtitle2">{`Hover ${capitalizeFirstLetter(this.props.globalLabels.itemLabel)} and Selection Summary`}</Typography>
+                    <Typography variant="body2">
+                      {toSentenceCase(
+                        `Contains information about the currently hovered ${this.props.globalLabels.itemLabel} and the currently selected summary.`,
+                      )}
+                    </Typography>
                   </>
                 }
               >
@@ -286,7 +293,7 @@ export const Application = connector(
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
               </Tooltip>
@@ -305,12 +312,14 @@ export const Application = connector(
                   >
                     <Tab
                       value={5 + i}
-                      icon={React.isValidElement(tab.icon) ? tab.icon : ''}
+                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon as any} />}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,
-                        paddingTop: 16,
-                        paddingBottom: 16,
+                        padding: 12,
+                        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                        // paddingTop: 16,
+                        // paddingBottom: 16,
                       }}
                     />
                   </Tooltip>
@@ -370,12 +379,16 @@ export const Application = connector(
                   <DetailsTabPanel config={this.props.features} />
                 </FixedHeightTabPanel>
 
+                {this.props.overrideComponents?.detailViews?.length > 0 ? (
+                  <FixedHeightTabPanel value={this.props.openTab} index={5}>
+                    <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} />
+                  </FixedHeightTabPanel>
+                ) : null}
+
                 {this.props.overrideComponents?.tabs?.map((tab, i) => {
                   return (
-                    <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={5 + i}>
-                      {React.isValidElement(tab.tab)
-                        ? tab.tab
-                        : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i`, splitRef: this.splitRef })}
+                    <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={6 + i}>
+                      {React.isValidElement(tab.tab) ? tab.tab : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i` })}
                     </FixedHeightTabPanel>
                   );
                 })}
@@ -391,10 +404,10 @@ export const Application = connector(
             }}
           >
             {this.props.overrideComponents?.appBar ? (
-              React.isValidElement(this.props.overrideComponents.appBar) ? (
-                this.props.overrideComponents.appBar
+              React.isValidElement(this.props.overrideComponents?.appBar) ? (
+                this.props.overrideComponents?.appBar
               ) : (
-                React.createElement(this.props.overrideComponents.appBar as () => JSX.Element)
+                React.createElement(this.props.overrideComponents?.appBar as () => JSX.Element)
               )
             ) : (
               <PseAppBar style={undefined}>
@@ -440,9 +453,7 @@ export const Application = connector(
                   <ViewMultiplexer overrideComponents={this.props.overrideComponents} />
                 </div>
                 <div style={{ flexGrow: 0.1 }}>
-                  {React.isValidElement(this.props.overrideComponents.detailViews[0].view)
-                    ? this.props.overrideComponents.detailViews[0].view
-                    : React.createElement(this.props.overrideComponents.detailViews[0].view, {})}
+                  <DetailViewChooser overrideComponents={this.props.overrideComponents} />
                 </div>
               </Split>
             ) : (

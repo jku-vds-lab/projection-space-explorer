@@ -4,6 +4,7 @@ import { Handler } from 'vega-tooltip';
 import TrrackScatter from './TrrackScatter';
 import { IVector } from '../../../model/Vector';
 import type { RootState } from '../../../components/Store/Store';
+import { DefaultLegend } from '../../../components/legends/DefaultLegend';
 
 function getScatter(vectors) {
   // init empty "data" array
@@ -50,5 +51,8 @@ type Props = PropsFromRedux & {
 };
 
 export const TrrackLegend = connector(({ selection }: Props) => {
+  if(selection.length <= 0){
+    return <DefaultLegend></DefaultLegend>
+  }
   return getScatter(selection);
 });

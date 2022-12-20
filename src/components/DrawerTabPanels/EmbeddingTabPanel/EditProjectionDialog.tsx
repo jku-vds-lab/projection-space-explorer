@@ -4,7 +4,7 @@ import * as React from 'react';
 import { EntityId } from '@reduxjs/toolkit';
 import type { IProjection } from '../../../model';
 
-function FeatureList({ features }: { features: any[] }) {
+function FeatureList({}) {
   return null;
 }
 
@@ -42,7 +42,7 @@ export function EditProjectionDialog({
           <TextField required label="Name" fullWidth value={name} onChange={(event) => setName(event.target.value)} sx={{ mt: 1 }} />
         </DialogContent>
 
-        <FeatureList features={projection?.metadata?.features} />
+        <FeatureList />
 
         <DialogActions>
           <IconButton onClick={() => onDelete(projection?.hash)}>

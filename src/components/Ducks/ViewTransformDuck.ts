@@ -1,11 +1,12 @@
 const SET = 'ducks/viewTransform/SET';
 const INVALIDATE = 'ducks/viewTransform/INVALIDATE';
 
-export const setViewTransform = (camera, width, height) => ({
+export const setViewTransform = (camera, width, height, multipleId) => ({
   type: SET,
   camera,
   width,
   height,
+  multipleId,
 });
 
 export const invalidateTransform = () => ({

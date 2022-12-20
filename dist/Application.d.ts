@@ -1,6 +1,8 @@
 import 'regenerator-runtime/runtime';
+import './index.scss';
 import * as React from 'react';
 import { ConnectedProps } from 'react-redux';
+import Split from 'react-split';
 import { Dataset } from './model/Dataset';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 /**
@@ -18,11 +20,11 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
             allIds: string[];
         };
     };
+    globalLabels: import(".").GlobalLabelsState;
 } & {
     setOpenTab: (openTab: any) => any;
     setLineByOptions: (options: any) => any;
     setGlobalPointBrightness: (value: any) => any;
-    setGenericFingerprintAttributes: (value: any) => any;
     setGroupVisualizationMode: (value: any) => any;
     setLineUpInput_visibility: (open: any) => any;
     loadDataset: (dataset: Dataset) => any;
@@ -41,7 +43,7 @@ type Props = PropsFromRedux & {
  */
 export declare const Application: import("react-redux").ConnectedComponent<{
     new (props: any): {
-        splitRef: any;
+        splitRef: React.LegacyRef<Split>;
         componentDidMount(): void;
         /**
          * Main callback when the dataset changes
@@ -74,5 +76,5 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGenericFingerprintAttributes" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
+}, import("react-redux").Omit<any, "globalLabels" | "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
 export {};

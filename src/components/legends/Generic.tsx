@@ -26,7 +26,7 @@ export function GenericLegend({ type, vectors, aggregate, scale = 2 }: GenericLe
     // use plugin before defaults
     return plugin.createFingerprint(dataset, vectors, scale, aggregate);
   }
-  // defaults... in case no plugin is specific
+  // --deprecated-- defaults... in case no plugin is specific
   switch (type) {
     case DatasetType.Story:
       return <StoryLegend selection={vectors} />;

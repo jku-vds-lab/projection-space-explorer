@@ -13,6 +13,7 @@ import { Loader } from './Loader';
 import { ICluster } from '../../../model/ICluster';
 import { ObjectTypes } from '../../../model/ObjectType';
 import { DatasetEntry } from '../../../model/DatasetEntry';
+import { IEdge } from '../../../model';
 import { Profiler } from './Profiler';
 
 function convertFromCSV(vectors) {
@@ -77,6 +78,7 @@ export class CSVLoader implements Loader {
           objectType: ObjectTypes.Cluster,
           indices: t.points.map((i) => i.meshIndex),
           label: k,
+          name: k,
         });
       });
 
@@ -238,12 +240,34 @@ export class CSVLoader implements Loader {
 
         // Reset cluster label after extraction
         dataset.vectors.forEach((vector) => {
-          vector.groupLabel = [];
+          // vector.groupLabel = [];
         });
 
         dataset.categories = dataset.extractEncodingFeatures();
 
         profiler.profile('Extract encoding features');
+
+        // check whether clusterEdges are defined in metaInformation of groupLabel column
+        if (metaInformation.groupLabel != null && metaInformation.groupLabel.edges != null) {
+          const edges = [];
+          metaInformation.groupLabel.edges.data.forEach((row) => {
+            const nameIndex = metaInformation.groupLabel.edges.columns.indexOf('name');
+
+            const edge: IEdge = {
+              id: uuidv4(),
+              source: clusters.findIndex((cluster) => `${cluster.label}` === `${row[1]}`).toString(),
+              destination: clusters.findIndex((cluster) => `${cluster.label}` === `${row[2]}`).toString(),
+              objectType: ObjectTypes.Edge,
+            };
+
+            if (nameIndex >= 0) {
+              edge.name = row[nameIndex];
+            }
+
+            edges.push(edge);
+          });
+          dataset.clusterEdges = edges;
+        }
 
         resolve(dataset);
 
