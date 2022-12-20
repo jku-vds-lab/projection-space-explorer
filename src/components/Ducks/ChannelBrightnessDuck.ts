@@ -1,17 +1,10 @@
-const SET_SELECTION = "ducks/channelBrightness/SET_SELECTION"
+import { createAction, createReducer } from '@reduxjs/toolkit';
+import { CategoryOption } from '../WebGLView/CategoryOptions';
 
-const channelBrightness = (state = null, action) => {
-    switch (action.type) {
-        case SET_SELECTION:
-            return action.selection;
-        default:
-            return state;
-    }
-};
+export const setChannelBrightnessAction = createAction<CategoryOption>('ducks/channelBrightness/SET_SELECTION');
 
-export const setChannelBrightnessSelection = selection => ({
-    type: SET_SELECTION,
-    selection: selection
-})
-
-export default channelBrightness
+export const channelBrightness = createReducer<CategoryOption>(null, (builder) => {
+  builder.addCase(setChannelBrightnessAction, (_, action) => {
+    return action.payload;
+  });
+});

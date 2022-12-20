@@ -1,7 +1,7 @@
-import React = require("react");
-import { Typography, Slider } from "@mui/material";
-import { connect, ConnectedProps } from 'react-redux'
-import { setDifferenceThreshold } from "../../../components/Ducks/DifferenceThresholdDuck";
+import * as React from 'react';
+import { Typography, Slider } from '@mui/material';
+import { connect, ConnectedProps } from 'react-redux';
+import { setDifferenceThreshold } from '../../../components/Ducks/DifferenceThresholdDuck';
 
 class simpleSlider extends React.Component<Props> {
   state = {
@@ -9,7 +9,7 @@ class simpleSlider extends React.Component<Props> {
   };
 
   constructor(props) {
-    super(props)
+    super(props);
   }
 
   handleChange = (event, value) => {
@@ -17,16 +17,16 @@ class simpleSlider extends React.Component<Props> {
   };
 
   componentDidUpdate(prevProps) {
-    if ((this.props.differenceThreshold !== prevProps.differenceThreshold) && this.props.differenceThreshold) {
-      setDifferenceThreshold(this.props.differenceThreshold)
-      const value = this.props.differenceThreshold
-      this.setState({ value })
-      this.render()
+    if (this.props.differenceThreshold !== prevProps.differenceThreshold && this.props.differenceThreshold) {
+      setDifferenceThreshold(this.props.differenceThreshold);
+      const value = this.props.differenceThreshold;
+      this.setState({ value });
+      this.render();
     }
-}
+  }
 
   render() {
-    const { differenceThreshold, setDifferenceThreshold } = this.props
+    const { differenceThreshold, setDifferenceThreshold } = this.props;
     const { value } = this.state;
 
     const marks = [
@@ -54,7 +54,9 @@ class simpleSlider extends React.Component<Props> {
 
     return (
       <div style={{ margin: '0 16px', padding: '0 8px' }}>
-        <Typography id="range-slider" align="center">Filter Threshold</Typography>
+        <Typography id="range-slider" align="center">
+          Filter Threshold
+        </Typography>
         <Slider
           value={value}
           min={0.01}
@@ -64,7 +66,7 @@ class simpleSlider extends React.Component<Props> {
           aria-labelledby="label"
           onChange={this.handleChange}
           onChangeCommitted={(_, newValue) => {
-            setDifferenceThreshold(newValue)
+            setDifferenceThreshold(newValue);
           }}
         />
       </div>
@@ -72,16 +74,16 @@ class simpleSlider extends React.Component<Props> {
   }
 }
 
-type Props = ConnectedProps<typeof connector>
+type Props = ConnectedProps<typeof connector>;
 
-const mapStateToProps = state => ({
-  differenceThreshold: state.differenceThreshold
-})
+const mapStateToProps = (state) => ({
+  differenceThreshold: state.differenceThreshold,
+});
 
-const mapDispatchToProps = dispatch => ({
-  setDifferenceThreshold: differenceThreshold => dispatch(setDifferenceThreshold(differenceThreshold))
-})
+const mapDispatchToProps = (dispatch) => ({
+  setDifferenceThreshold: (differenceThreshold) => dispatch(setDifferenceThreshold(differenceThreshold)),
+});
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-export const DifferenceThresholdSlider = connector(simpleSlider) 
+export const DifferenceThresholdSlider = connector(simpleSlider);

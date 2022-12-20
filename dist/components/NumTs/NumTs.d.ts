@@ -9,7 +9,7 @@
 export declare function euclideanDistance(x1: number, y1: number, x2: number, y2: number): number;
 export declare function euclideanDistanceVec(v1: VectorType, v2: VectorType): number;
 export declare function getSyncNodesAlt(nodes1: any[], nodes2: any[]): any[];
-export declare type VectorType = {
+export type VectorType = {
     x: number;
     y: number;
 };

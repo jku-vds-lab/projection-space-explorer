@@ -1,8 +1,8 @@
-import { ConnectedProps } from "react-redux";
-import { DownloadJob } from "./DownloadJob";
+import { ConnectedProps } from 'react-redux';
+import { DownloadJob } from './DownloadJob';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{}, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     job: DownloadJob;
     onFinish: any;
     onCancel: any;

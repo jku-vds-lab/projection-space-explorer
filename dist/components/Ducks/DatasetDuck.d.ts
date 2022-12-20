@@ -1,2 +1,2 @@
-import { Dataset } from "../../model/Dataset";
+import type { Dataset } from '../../model/Dataset';
 export default function dataset(state?: Dataset): Dataset;

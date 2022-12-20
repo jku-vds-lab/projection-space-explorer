@@ -1,22 +1,27 @@
-import { LassoSelection } from './tools';
-import * as React from "react";
+import { EntityId } from '@reduxjs/toolkit';
+import * as React from 'react';
 import * as THREE from 'three';
-import { ICluster } from '../../model/Cluster';
-import { TypedObject } from "../../model/TypedObject";
 import { ConnectedProps } from 'react-redux';
-import { IVector } from "../../model/Vector";
-import { ViewTransformType } from "../Ducks/ViewTransformDuck";
 import { Camera } from 'three';
+import { LassoSelection } from './tools';
+import { ICluster } from '../../model/ICluster';
+import { TypedObject } from '../../model/TypedObject';
+import { IVector } from '../../model/Vector';
+import { ViewTransformType } from '../Ducks/ViewTransformDuck';
 import { LineVisualization, PointVisualization } from './meshes';
 import { DisplayMode } from '../Ducks/DisplayModeDuck';
 import { MouseController } from './MouseController';
 import { IBook } from '../../model/Book';
-import { IEdge } from "../../model/Edge";
+import { IEdge } from '../../model/Edge';
 import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
+import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
-import { ComponentConfig } from '../../Application';
-declare type ViewState = {
+import { ComponentConfig } from '../../BaseConfig';
+import { Mapping } from '../Utility';
+import { SingleMultipleAttributes } from '../Ducks/ViewDuck';
+import { IPosition, IProjection } from '../../model';
+type ViewState = {
     camera: Camera;
     menuX: number;
     menuY: number;
@@ -25,29 +30,15 @@ declare type ViewState = {
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: string[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
-    vectorByShape: any;
-    dataset: import("../../model/Dataset").Dataset;
+    dataset: Dataset;
     highlightedSequence: any;
-    activeLine: any;
+    activeLine: string;
     advancedColoringSelection: any;
     clusterMode: import("..").ClusterMode;
     displayMode: DisplayMode;
-    lineBrightness: any;
-    pathLengthRange: {
-        range: any;
-        maximum: number;
-    } | {
-        range: number[];
-        maximum: any;
-    };
-    globalPointSize: number[];
-    globalPointBrightness: number[];
-    channelSize: any;
-    channelColor: any;
-    channelBrightness: any;
     stories: import("../Ducks/StoriesDuck").IStorytelling;
     trailSettings: {
         show: boolean;
@@ -57,11 +48,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         length: number;
     };
     hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    workspace: import("../..").IBaseProjection;
-    colorScales: {
-        scales: import("../Utility/NormalizedState").NormalizedDictionary<import("../Ducks/ColorScalesDuck").BaseColorScale>;
-        active: string;
-    };
+    colorScales: import("../Ducks/ColorScalesDuck").ColorScalesType;
     pointDisplay: {
         checkedShapes: {
             star: boolean;
@@ -71,24 +58,29 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         };
     };
 } & {
+    activateView: (id: EntityId) => any;
+    addView: (dataset: Dataset) => any;
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
-    setViewTransform: (camera: any, width: any, height: any) => any;
+    setViewTransform: (camera: any, width: any, height: any, multipleId: any) => any;
     setHoverState: (hoverState: any, updater: any) => any;
-    setPointColorMapping: (mapping: any) => any;
+    setPointColorMapping: (id: EntityId, mapping: any) => any;
     removeClusterFromStories: (cluster: ICluster) => any;
-    addStory: (story: IBook, activate: boolean) => any;
-    addClusterToStory: (cluster: any) => any;
+    addStory: (book: IBook, activate: boolean) => any;
+    addClusterToStory: (cluster: ICluster) => any;
     addEdgeToActive: (edge: IEdge) => any;
     setActiveTrace: (trace: any) => any;
     setOpenTab: (tab: any) => any;
     setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
     removeEdgeFromActive: (edge: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     overrideComponents: ComponentConfig;
-};
+    multipleId: EntityId;
+    workspace: IPosition[];
+    projection: IProjection;
+} & Omit<SingleMultipleAttributes, 'workspace'>;
 export declare const WebGLView: import("react-redux").ConnectedComponent<{
     new (props: any): {
         lasso: LassoSelection;
@@ -103,16 +95,16 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         mouseDownPosition: any;
         initialMousePosition: any;
         currentHover: TypedObject;
-        camera: any;
+        camera: THREE.OrthographicCamera;
         vectors: IVector[];
-        renderer: any;
+        renderer: THREE.WebGLRenderer;
         lines: LineVisualization;
         scene: THREE.Scene;
         dataset: any;
         lineColorScheme: any;
         segments: DataLine[];
         pointScene: THREE.Scene;
-        vectorColorScheme: any;
+        vectorMapping: Mapping;
         prevTime: number;
         sourcePosition: any;
         targetPosition: {
@@ -135,10 +127,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         multivariateClusterView: any;
         invalidated: boolean;
         mouseController: MouseController;
-        /**
-         * Initializes the callbacks for the MouseController.
-         */
-        initMouseController(): void;
         chooseCluster(screenPosition: {
             x: number;
             y: number;
@@ -159,7 +147,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
             x: number;
             y: number;
         };
-        componentDidMount(): void;
         normaliseMouse(event: any): {
             x: number;
             y: number;
@@ -175,8 +162,12 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         restoreCamera(world: any, screen: any): void;
         getWidth(): any;
         getHeight(): any;
+        /**
+         * Initializes the callbacks for the MouseController.
+         */
+        initMouseController(): void;
         setupRenderer(): void;
-        createVisualization(dataset: any, lineColorScheme: any, vectorColorScheme: any): void;
+        createVisualization(dataset: any, lineColorScheme: any, vectorMapping: any): void;
         initializeContainerEvents(): void;
         filterLines(algo: any, show: any): void;
         /**
@@ -189,13 +180,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
          * recalculate the optimal camera zoom level.
          */
         updateXY(): void;
-        /**
-         * This functions sets the zoom target for a given set of points.
-         * This function only needs to be called once to set the target, the view
-         * will then slowly adjust the zoom value and position of the camera depending on
-         * the speed value supplied.
-         */
-        setZoomTarget(vectors: any, speed: any): void;
         filterPoints(checkboxes: any): void;
         disposeScene(): void;
         /**
@@ -213,15 +197,20 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         onClusterClicked(cluster: ICluster, shiftKey?: boolean): void;
         renderFrame(): void;
         updateItemClusterDisplay(): void;
+        createAdditionalColumns(): {
+            groupLabel: {
+                [key: number]: number[];
+            };
+        };
+        componentDidMount(): void;
         componentDidUpdate(prevProps: Props, prevState: any): void;
         requestRender(): void;
         createTransform(): ViewTransformType;
         renderLasso(ctx: any): void;
-        repositionClusters(): void;
         onClusterZoom(cluster: any): void;
         render(): JSX.Element;
         context: any;
-        setState<K extends "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
+        setState<K extends keyof ViewState>(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
         forceUpdate(callback?: () => void): void;
         readonly props: Readonly<Props> & Readonly<{
             children?: React.ReactNode;
@@ -242,219 +231,5 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, Pick<React.ClassAttributes<{
-    lasso: LassoSelection;
-    clusterDrag: ClusterDragTool;
-    traceSelect: TraceSelectTool;
-    particles: PointVisualization;
-    containerRef: any;
-    selectionRef: any;
-    mouseDown: any;
-    physicsRef: any;
-    mouse: any;
-    mouseDownPosition: any;
-    initialMousePosition: any;
-    currentHover: TypedObject;
-    camera: any;
-    vectors: IVector[];
-    renderer: any;
-    lines: LineVisualization;
-    scene: THREE.Scene;
-    dataset: any;
-    lineColorScheme: any;
-    segments: DataLine[];
-    pointScene: THREE.Scene;
-    vectorColorScheme: any;
-    prevTime: number;
-    sourcePosition: any;
-    targetPosition: {
-        x: number;
-        y: number;
-    };
-    sourceZoom: any;
-    targetZoom: number;
-    transitionTime: number;
-    trees: any[];
-    edgeClusters: any;
-    lastTime: number;
-    mouseMoveListener: any;
-    mouseDownListener: any;
-    mouseLeaveListener: any;
-    keyDownListener: any;
-    wheelListener: any;
-    mouseUpListener: any;
-    infoTimeout: any;
-    multivariateClusterView: any;
-    invalidated: boolean;
-    mouseController: MouseController;
-    /**
-     * Initializes the callbacks for the MouseController.
-     */
-    initMouseController(): void;
-    chooseCluster(screenPosition: {
-        x: number;
-        y: number;
-    }): ICluster;
-    chooseEdge(position: any): IEdge;
-    /**
-     * Gives the index of the nearest sample.
-     *
-     * @param position - The position to pick a sample from
-     * @returns The index of a sample
-     */
-    choose(position: any): number;
-    /**
-     * Converts mouse coordinates to world coordinates.
-     * @param {*} event a dom mouse event.
-     */
-    relativeMousePosition(event: any): {
-        x: number;
-        y: number;
-    };
-    componentDidMount(): void;
-    normaliseMouse(event: any): {
-        x: number;
-        y: number;
-    };
-    resize(width: any, height: any): void;
-    onKeyDown(event: any): void;
-    onMouseLeave(event: any): void;
-    onMouseDown(event: any): void;
-    onMouseMove(event: any): void;
-    onMouseUp(event: MouseEvent): void;
-    clearSelection(): void;
-    onWheel(event: any): void;
-    restoreCamera(world: any, screen: any): void;
-    getWidth(): any;
-    getHeight(): any;
-    setupRenderer(): void;
-    createVisualization(dataset: any, lineColorScheme: any, vectorColorScheme: any): void;
-    initializeContainerEvents(): void;
-    filterLines(algo: any, show: any): void;
-    /**
-     *
-     * @param checked
-     */
-    setLineFilter(checked: any): void;
-    /**
-     * Updates the x,y coordinates of the visualization only. This will also
-     * recalculate the optimal camera zoom level.
-     */
-    updateXY(): void;
-    /**
-     * This functions sets the zoom target for a given set of points.
-     * This function only needs to be called once to set the target, the view
-     * will then slowly adjust the zoom value and position of the camera depending on
-     * the speed value supplied.
-     */
-    setZoomTarget(vectors: any, speed: any): void;
-    filterPoints(checkboxes: any): void;
-    disposeScene(): void;
-    /**
-     * Starts the render loop
-     */
-    startRendering(): void;
-    updateZoom(deltaTime: any): void;
-    /**
-     * Render function that gets called with the display refresh rate.
-     * Only render overlays here like the lasso selection etc.
-     * The rendering of the states + lines and stuff that does not need to be
-     * re-rendered for animations should be put in 'requestRender'
-     */
-    renderLoop(): void;
-    onClusterClicked(cluster: ICluster, shiftKey?: boolean): void;
-    renderFrame(): void;
-    updateItemClusterDisplay(): void;
-    componentDidUpdate(prevProps: Props, prevState: any): void;
-    requestRender(): void;
-    createTransform(): ViewTransformType;
-    renderLasso(ctx: any): void;
-    repositionClusters(): void;
-    onClusterZoom(cluster: any): void;
-    render(): JSX.Element;
-    context: any;
-    setState<K extends "camera" | "menuX" | "menuY" | "menuTarget">(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;
-    forceUpdate(callback?: () => void): void;
-    readonly props: Readonly<Props> & Readonly<{
-        children?: React.ReactNode;
-    }>;
-    state: Readonly<ViewState>;
-    refs: {
-        [key: string]: React.ReactInstance;
-    };
-    shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): boolean;
-    componentWillUnmount?(): void;
-    componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
-    getSnapshotBeforeUpdate?(prevProps: Readonly<Props>, prevState: Readonly<ViewState>): any;
-    componentWillMount?(): void;
-    UNSAFE_componentWillMount?(): void;
-    componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
-    UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
-    componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
-    UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
-}> & {
-    currentAggregation: {
-        aggregation: number[];
-        selectedClusters: string[];
-        source: "sample" | "cluster";
-    };
-    vectorByShape: any;
-    dataset: import("../../model/Dataset").Dataset;
-    highlightedSequence: any;
-    activeLine: any;
-    advancedColoringSelection: any;
-    clusterMode: import("..").ClusterMode;
-    displayMode: DisplayMode;
-    lineBrightness: any;
-    pathLengthRange: {
-        range: any;
-        maximum: number;
-    } | {
-        range: number[];
-        maximum: any;
-    };
-    globalPointSize: number[];
-    globalPointBrightness: number[];
-    channelSize: any;
-    channelColor: any;
-    channelBrightness: any;
-    stories: import("../Ducks/StoriesDuck").IStorytelling;
-    trailSettings: {
-        show: boolean;
-        length: any;
-    } | {
-        show: any;
-        length: number;
-    };
-    hoverState: import("../Ducks/HoverStateDuck").HoverStateType;
-    workspace: import("../..").IBaseProjection;
-    colorScales: {
-        scales: import("../Utility/NormalizedState").NormalizedDictionary<import("../Ducks/ColorScalesDuck").BaseColorScale>;
-        active: string;
-    };
-    pointDisplay: {
-        checkedShapes: {
-            star: boolean;
-            cross: boolean;
-            circle: boolean;
-            square: boolean;
-        };
-    };
-} & {
-    selectVectors: (vectors: number[], shiftKey: boolean) => any;
-    setActiveLine: (activeLine: any) => any;
-    setViewTransform: (camera: any, width: any, height: any) => any;
-    setHoverState: (hoverState: any, updater: any) => any;
-    setPointColorMapping: (mapping: any) => any;
-    removeClusterFromStories: (cluster: ICluster) => any;
-    addStory: (story: IBook, activate: boolean) => any;
-    addClusterToStory: (cluster: any) => any;
-    addEdgeToActive: (edge: IEdge) => any;
-    setActiveTrace: (trace: any) => any;
-    setOpenTab: (tab: any) => any;
-    setSelectedCluster: (clusters: string[], shiftKey: boolean) => any;
-    removeEdgeFromActive: (edge: any) => any;
-} & {
-    overrideComponents: ComponentConfig;
-}, "ref" | "overrideComponents" | "key">>;
+}, import("react-redux").Omit<any, "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "currentAggregation" | "activeLine" | "dataset" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "activateView" | "addView" | "selectVectors" | "setViewTransform" | "setHoverState" | "setPointColorMapping" | "addClusterToStory">>;
 export {};

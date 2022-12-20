@@ -1,17 +1,13 @@
 import { ConnectedProps } from 'react-redux';
-import { Dataset } from "../../../model/Dataset";
-import { IProjection, IBaseProjection } from '../../../model/Projection';
-import { FeatureConfig } from '../../../Application';
+import { Dataset } from '../../../model/Dataset';
+import { IProjection, IBaseProjection } from '../../../model/ProjectionInterfaces';
+import { FeatureConfig } from '../../../BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    currentAggregation: {
-        aggregation: number[];
-        selectedClusters: string[];
-        source: "sample" | "cluster";
-    };
-    stories: import("../..").IStorytelling;
+    stories: import("../../Ducks").IStorytelling;
     projectionWorker: Worker;
     projectionOpen: any;
     dataset: Dataset;
+    projections: import("@reduxjs/toolkit").EntityState<IProjection>;
     projectionParams: {
         perplexity: number;
         learningRate: number;
@@ -24,33 +20,56 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         normalizationMethod: import("../../../model/NormalizationMethod").NormalizationMethod;
         encodingMethod: import("../../../model/EncodingMethod").EncodingMethod;
     };
-    projections: {
-        byId: {
-            [id: string]: IProjection;
-        };
-        allIds: string[];
-        workspace: IBaseProjection;
-    };
-    workspace: IBaseProjection;
 } & {
     setProjectionOpen: (value: any) => any;
     setProjectionWorker: (value: any) => any;
-    setProjectionParams: (value: any) => any;
     setProjectionColumns: (value: any) => any;
     setTrailVisibility: (visibility: any) => any;
     addProjection: (embedding: any) => any;
     deleteProjection: (handle: string) => any;
-    updateWorkspace: (workspace: IBaseProjection) => any;
+    updateWorkspace: (workspace: IBaseProjection, metadata?: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {
     config: FeatureConfig;
     projectionWorker?: Worker;
     projectionOpen?: boolean;
     setProjectionOpen?: any;
     setProjectionWorker?: any;
     dataset?: Dataset;
-    webGLView?: any;
 };
-export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => JSX.Element, Pick<Props, "config" | "webGLView">>;
+export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => JSX.Element, import("react-redux").Omit<{
+    stories: import("../../Ducks").IStorytelling;
+    projectionWorker: Worker;
+    projectionOpen: any;
+    dataset: Dataset;
+    projections: import("@reduxjs/toolkit").EntityState<IProjection>;
+    projectionParams: {
+        perplexity: number;
+        learningRate: number;
+        nNeighbors: number;
+        iterations: number;
+        seeded: boolean;
+        useSelection: boolean;
+        method: string;
+        distanceMetric: import("../../../model/DistanceMetric").DistanceMetric;
+        normalizationMethod: import("../../../model/NormalizationMethod").NormalizationMethod;
+        encodingMethod: import("../../../model/EncodingMethod").EncodingMethod;
+    };
+} & {
+    setProjectionOpen: (value: any) => any;
+    setProjectionWorker: (value: any) => any;
+    setProjectionColumns: (value: any) => any;
+    setTrailVisibility: (visibility: any) => any;
+    addProjection: (embedding: any) => any;
+    deleteProjection: (handle: string) => any;
+    updateWorkspace: (workspace: IBaseProjection, metadata?: any) => any;
+} & {
+    config: FeatureConfig;
+    projectionWorker?: Worker;
+    projectionOpen?: boolean;
+    setProjectionOpen?: any;
+    setProjectionWorker?: any;
+    dataset?: Dataset;
+}, "stories" | "dataset" | "projectionOpen" | "projectionParams" | "projectionWorker" | "projections" | "setProjectionOpen" | "setProjectionWorker" | "setProjectionColumns" | "setTrailVisibility" | "addProjection" | "deleteProjection" | "updateWorkspace">>;
 export {};

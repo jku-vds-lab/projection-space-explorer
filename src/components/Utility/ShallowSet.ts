@@ -1,51 +1,33 @@
-import { arraysEqual } from "../WebGLView/UtilityFunctions"
+import { arraysEqual } from '../WebGLView/UtilityFunctions';
 
-
-/**
- * Custom set implementation that can handle array types as well
- */
-export class ShallowSet {
-    values = []
-
-    constructor(values) {
-        values.forEach(element => {
-            this.add(element)
-        })
+export class AShallowSet {
+  static indexOf(set: any[], value) {
+    if (value instanceof Array) {
+      return set.findIndex((e) => arraysEqual(e, value));
     }
 
-    has(value) {
-        if (value instanceof Array) {
-            return this.values.find(e => arraysEqual(e, value))
-        } else {
-            return this.values.includes(value)
-        }
+    return set.indexOf(value);
+  }
+
+  static has(set: any[], value) {
+    if (value instanceof Array) {
+      return set.find((e) => arraysEqual(e, value));
     }
 
-    add(value) {
-        if (this.has(value)) {
-            return;
-        }
+    return set.includes(value);
+  }
 
-        this.values.push(value)
-    }
+  static create(values: any[]) {
+    const set = [];
 
-    get(index: number) {
-        return this.values[index]
-    }
+    values.forEach((element) => {
+      if (AShallowSet.has(set, element)) {
+        return;
+      }
 
-    indexOf(value) {
-        if (value instanceof Array) {
-            return this.values.findIndex(e => arraysEqual(e, value))
-        } else {
-            return this.values.indexOf(value)
-        }
-    }
+      set.push(element);
+    });
 
-    map(callbackfn) {
-        return this.values.map(callbackfn)
-    }
-
-    filter(callbackfn){
-        return this.values.filter(callbackfn)
-    }
+    return set;
+  }
 }

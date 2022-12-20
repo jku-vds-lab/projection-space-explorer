@@ -1,17 +1,17 @@
-var d3v5 = require('d3v5')
-import * as React from 'react'
-import { connect, ConnectedProps } from 'react-redux'
+import * as d3v5 from 'd3v5';
+import * as React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { Handler } from 'vega-tooltip';
 import { makeStyles } from '@mui/styles';
 import './coral.scss';
-import { ChiSquareTest } from './ChiSquare'
-import BarChanges from './VegaBarChanges';
-import Boxplot from './VegaBoxplot';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { Dataset } from '../../../model/Dataset';
 import { IVector } from '../../../model/Vector';
 import { FeatureType } from '../../../model/FeatureType';
-import { RootState } from '../../../components/Store/Store';
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import type { RootState } from '../../../components/Store/Store';
+import Boxplot from './VegaBoxplot';
+import BarChanges from './VegaBarChanges';
+import { ChiSquareTest } from './ChiSquare';
 
 const useStyles = makeStyles({
   table: {
@@ -21,25 +21,25 @@ const useStyles = makeStyles({
 
 function getProjectionColumns(legendAttributes) {
   if (legendAttributes === null) {
-    return []
+    return [];
   }
-  const pcol = []
-  for (var i = 0; i <= legendAttributes.length; i++) {
-    if (legendAttributes[i] !== undefined && legendAttributes[i]['show']) {
-      pcol.push(legendAttributes[i]['feature'])
+  const pcol = [];
+  for (let i = 0; i <= legendAttributes.length; i++) {
+    if (legendAttributes[i] !== undefined && legendAttributes[i].show) {
+      pcol.push(legendAttributes[i].feature);
     }
   }
-  return pcol
+  return pcol;
 }
 
 function getCounts(arr) {
   // ["asd", "asd", "asd", "qwe", "yxc"] -> [["asd","qwe","yxc"], [[3,1,1]]
-  var a = [],
-    b = [],
-    prev;
+  const a = [];
+  const b = [];
+  let prev;
 
   arr.sort();
-  for (var i = 0; i < arr.length; i++) {
+  for (let i = 0; i < arr.length; i++) {
     if (arr[i] !== prev) {
       a.push(arr[i]);
       b.push(1);
@@ -52,99 +52,95 @@ function getCounts(arr) {
 }
 
 function dictionary(list) {
-  var map = {}
-  for (var i = 0; i < list.length; ++i) {
-    for (var key in list[i]) {
+  const map = {};
+  for (let i = 0; i < list.length; ++i) {
+    for (const key in list[i]) {
       if (key in map) {
-        map[key].push(list[i][key])
+        map[key].push(list[i][key]);
       } else {
-        map[key] = [list[i][key]]
+        map[key] = [list[i][key]];
       }
     }
   }
-  return map
+  return map;
 }
 
 function sortByScore(a, b) {
-  if (a['score'] === b['score']) {
+  if (a.score === b.score) {
     return 0;
   }
-  else {
-    return (a['score'] < b['score']) ? 1 : -1;
-  }
+
+  return a.score < b.score ? 1 : -1;
 }
 
 function createData(feature, category, score, char, difference) {
-  return { feature, category, score, char, difference }
+  return { feature, category, score, char, difference };
 }
 
 function getBins(a, n = 10) {
-  const bin = d3v5.histogram()
-    .thresholds(n - 1)
-  return bin(a)
+  const bin = d3v5.histogram().thresholds(n - 1);
+  return bin(a);
 }
 
 function getMaxDif(a, b) {
+  const aSum = a.reduce((x, y) => x + y, 0);
+  const bSum = b.reduce((x, y) => x + y, 0);
 
-  const aSum = a.reduce((x, y) => x + y, 0)
-  const bSum = b.reduce((x, y) => x + y, 0)
-  
   // get index where 2 arrays a and b differ the most + value
-  var maxDif = 0
-  var maxDifIndex = 0
+  let maxDif = 0;
+  let maxDifIndex = 0;
 
-  var x = a.map(function (item, index) {
-    // In this case item corresponds to currentValue of array a, 
+  const x = a.map(function (item, index) {
+    // In this case item corresponds to currentValue of array a,
     // using index to get value from array b
     // const dif = Math.abs(item - b[index])
-    const dif = Math.abs(item/aSum - b[index]/bSum)
-    maxDifIndex = dif > maxDif ? index : maxDifIndex
-    maxDif = dif > maxDif ? dif : maxDif
-    return dif
-  })
-  return [maxDif, maxDifIndex]
+    const dif = Math.abs(item / aSum - b[index] / bSum);
+    maxDifIndex = dif > maxDif ? index : maxDifIndex;
+    maxDif = dif > maxDif ? dif : maxDif;
+    return dif;
+  });
+  return [maxDif, maxDifIndex];
 }
 
 function getCombinedCounts(a, b) {
   // a = [["qwe","asd"][3,1]], b = [["asd","yxc"],"2,2"]
   // -> [["qwe","asd","yxc"],[3,1,0],[0,2,2]]
-  const featuresA = a[0]
-  const valuesA = a[1]
-  const featuresB = b[0]
-  const valuesB = b[1]
-  const featureDictA = []
-  const featureDictB = []
+  const featuresA = a[0];
+  const valuesA = a[1];
+  const featuresB = b[0];
+  const valuesB = b[1];
+  const featureDictA = [];
+  const featureDictB = [];
 
   for (let i = 0; i < a.length; i++) {
-    var key = featuresA[i]
-    var value = valuesA[i]
-    featureDictA[key] = value
-    featureDictB[key] = 0
+    var key = featuresA[i];
+    var value = valuesA[i];
+    featureDictA[key] = value;
+    featureDictB[key] = 0;
   }
 
   for (let i = 0; i < a.length; i++) {
-    var key = featuresB[i]
-    var value = valuesB[i]
-    featureDictB[key] = value
-    if (!(key in featureDictA))
-      featureDictA[key] = 0
+    var key = featuresB[i];
+    var value = valuesB[i];
+    featureDictB[key] = value;
+    if (!(key in featureDictA)) featureDictA[key] = 0;
   }
 
-  return [Object.keys(featureDictA), Object.values(featureDictA), Object.values(featureDictB)]
+  return [Object.keys(featureDictA), Object.values(featureDictA), Object.values(featureDictB)];
 }
 
 function getFeaturesCounts(a, b) {
   // data like ["asd", "asd", "qwe", ...]
   // turn into ["asd", "qwe", ...], [2, 43, ...]
-  var countsA = getCounts(a)
-  var countsB = getCounts(b)
+  const countsA = getCounts(a);
+  const countsB = getCounts(b);
   // add missing features that didn't occur in respectively other array
-  const combinedCounts = getCombinedCounts(countsA, countsB)
-  return combinedCounts
+  const combinedCounts = getCombinedCounts(countsA, countsB);
+  return combinedCounts;
 }
 
 function isInBin(x, i, lowerBounds, upperBounds) {
-  return x >= lowerBounds[i] && x <= upperBounds[i]
+  return x >= lowerBounds[i] && x <= upperBounds[i];
 }
 
 function getFlattenedBins(a, b) {
@@ -155,54 +151,50 @@ function getFlattenedBins(a, b) {
   // similar for b
 
   // find sensible bins for both a,b together
-  const bin = d3v5.histogram()
-    .thresholds(10 - 1)
-  const binned = bin(a.concat(b))
-  const lowerBounds = []
-  const upperBounds = []
-  binned.forEach(e => {
-    lowerBounds.push(e.x0)
-    upperBounds.push(e.x1)
+  const bin = d3v5.histogram().thresholds(10 - 1);
+  const binned = bin(a.concat(b));
+  const lowerBounds = [];
+  const upperBounds = [];
+  binned.forEach((e) => {
+    lowerBounds.push(e.x0);
+    upperBounds.push(e.x1);
   });
 
-  a = a.sort()
-  b = b.sort()
+  a = a.sort();
+  b = b.sort();
 
-  const retA = []
-  const retB = []
+  const retA = [];
+  const retB = [];
 
-  var binIdx = 0
+  let binIdx = 0;
 
   // go over each element of a
   for (var i = 0; i < a.length; i++) {
-    const e = a[i]
+    const e = a[i];
     // starting at lowest bin, go to next bin until current element fits in
     while (!isInBin(e, binIdx, lowerBounds, upperBounds) && binIdx < lowerBounds.length) {
-      binIdx++
+      binIdx++;
     }
-    retA.push(binIdx)
-    
+    retA.push(binIdx);
   }
 
-  binIdx = 0
+  binIdx = 0;
 
   // go over each element of b
   for (var i = 0; i < b.length; i++) {
-    const e = b[i]
+    const e = b[i];
     // starting at lowest bin, go to next bin until current element fits in
     while (!isInBin(e, binIdx, lowerBounds, upperBounds) && binIdx < lowerBounds.length) {
-      binIdx++
+      binIdx++;
     }
-    retB.push(binIdx)
-    
+    retB.push(binIdx);
   }
 
-  return [retA, retB]
+  return [retA, retB];
 }
 
-
 function getMostDifferingCategory(setA, setB): [number, string] {
-  const data = []
+  const data = [];
 
   const setACategories = setA.filter((item, index, self) => self.indexOf(item) === index);
   const setBCategories = setB.filter((item, index, self) => self.indexOf(item) === index);
@@ -213,36 +205,36 @@ function getMostDifferingCategory(setA, setB): [number, string] {
   const overallSize = setASize + setBSize;
 
   for (const currCat of allCategories) {
-    const amountSetA = setA.filter((item) => (item === currCat)).length;
-    const amountSetB = setB.filter((item) => (item === currCat)).length;
+    const amountSetA = setA.filter((item) => item === currCat).length;
+    const amountSetB = setB.filter((item) => item === currCat).length;
 
     // const relDif = (amountSetB - amountSetA) / amountSetA
-    const relDif = (amountSetB/setBSize - amountSetA/setASize)
-    data.push({'category': currCat, 'difference': relDif})
+    const relDif = amountSetB / setBSize - amountSetA / setASize;
+    data.push({ category: currCat, difference: relDif });
   }
 
-  const sorted = data.sort(sortByAbsDifference)
+  const sorted = data.sort(sortByAbsDifference);
 
-  return [sorted[0]['difference'], sorted[0]['category']]
+  return [sorted[0].difference, sorted[0].category];
 }
 
 function oldGetMostDifferingCategory(a, b): [number, string] {
   // return max dif value, max dif index
   if (!a || !b) {
-    return [0, ""]
+    return [0, ''];
   }
-  const featuresCounts = getFeaturesCounts(a, b)
-  const features = featuresCounts[0]
-  a = featuresCounts[1]
-  b = featuresCounts[2]
-  const ret = getMaxDif(a, b)
+  const featuresCounts = getFeaturesCounts(a, b);
+  const features = featuresCounts[0];
+  a = featuresCounts[1];
+  b = featuresCounts[2];
+  const ret = getMaxDif(a, b);
 
-  return [ret[0], features[ret[1]]]
+  return [ret[0], features[ret[1]]];
 }
 
 function getDifference(a, b, type): [number, string, number] {
-  if(!a || !b) {
-    return [0, "", 0]
+  if (!a || !b) {
+    return [0, '', 0];
   }
 
   // a, b are arrays of values of the same feature for both selections A and B
@@ -251,49 +243,48 @@ function getDifference(a, b, type): [number, string, number] {
   //  a = [1, 1, 1, 1, 1, 1, 1, 2.3, 2.3, 2.3, ...]
   // determine difference score
 
-  var maxDifFeature = ""
-  var maxDifVal = 0
+  let maxDifFeature = '';
+  let maxDifVal = 0;
 
   if (type !== FeatureType.Categorical) {
     // bin continuous data and turn into categorical data using bin numbers
-    const flatBins = getFlattenedBins(a, b)
-    a = flatBins[0]
-    b = flatBins[1]
+    const flatBins = getFlattenedBins(a, b);
+    a = flatBins[0];
+    b = flatBins[1];
   } else {
     // find most differing category
-    [maxDifVal, maxDifFeature] = getMostDifferingCategory(a, b)
+    [maxDifVal, maxDifFeature] = getMostDifferingCategory(a, b);
   }
 
   // calculate chi-sqaure score
-  const test = new ChiSquareTest()
-  const dif = test.calc(a, b)
+  const test = new ChiSquareTest();
+  const dif = test.calc(a, b);
 
   // for quantitative data use score avlue as difference
   if (type !== FeatureType.Categorical) {
-    maxDifVal = dif.scoreValue
+    maxDifVal = dif.scoreValue;
   }
 
-  return [dif.scoreValue, maxDifFeature, maxDifVal]
+  return [dif.scoreValue, maxDifFeature, maxDifVal];
 }
 
 function sortByAbsDifference(a, b) {
-  if (Math.abs(a['difference']) === Math.abs(b['difference'])) {
-      return 0;
+  if (Math.abs(a.difference) === Math.abs(b.difference)) {
+    return 0;
   }
-  else {
-      return (Math.abs(a['difference']) < Math.abs(b['difference'])) ? 1 : -1;
-  }
+
+  return Math.abs(a.difference) < Math.abs(b.difference) ? 1 : -1;
 }
 
 function mapCategoricalChangesData(setA, setB, feature) {
   if (!setA || !setB) {
-    return {'values': []}
+    return { values: [] };
   }
   // a, b like ["qwe","qwe","asd"], ...
   // turn into {'values': [{'category': 'qwe', 'difference': 0.8}, {'category': 'asd', 'difference': -0.6}]
   // should be sorted by absolute difference
 
-  const data = []
+  const data = [];
 
   const setACategories = setA.filter((item, index, self) => self.indexOf(item) === index);
   const setBCategories = setB.filter((item, index, self) => self.indexOf(item) === index);
@@ -304,120 +295,127 @@ function mapCategoricalChangesData(setA, setB, feature) {
   const overallSize = setASize + setBSize;
 
   for (const currCat of allCategories) {
-    const amountSetA = setA.filter((item) => (item === currCat)).length;
-    const amountSetB = setB.filter((item) => (item === currCat)).length;
+    const amountSetA = setA.filter((item) => item === currCat).length;
+    const amountSetB = setB.filter((item) => item === currCat).length;
 
     // const relDif = (amountSetB - amountSetA) / amountSetA
-    const relDif = (amountSetB/setBSize - amountSetA/setASize)
-    data.push({'category': currCat, 'difference': relDif})
+    const relDif = amountSetB / setBSize - amountSetA / setASize;
+    data.push({ category: currCat, difference: relDif });
   }
 
-  const sorted = data.sort(sortByAbsDifference)
+  const sorted = data.sort(sortByAbsDifference);
   for (let i = 0; i < sorted.length; i++) {
-    sorted[i]['rank'] = (i+1)
+    sorted[i].rank = i + 1;
   }
 
-  return {'values': sorted}
+  return { values: sorted };
 }
 
 function getCategoricalVis(a, b, feature) {
-  const data = mapCategoricalChangesData(a, b, feature)
-  return <div><b>{feature}</b><br/><BarChanges data={data} actions={false} tooltip={new Handler().call}/></div>
+  const data = mapCategoricalChangesData(a, b, feature);
+  return (
+    <div>
+      <b>{feature}</b>
+      <br />
+      <BarChanges data={data} actions={false} tooltip={new Handler().call} />
+    </div>
+  );
 }
 
 function mapContinuousChangesData(a, b, feature) {
-  const data = []
-  a.forEach(e => {
-    data.push({'val': e, 'selection': 'A'})
+  const data = [];
+  a.forEach((e) => {
+    data.push({ val: e, selection: 'A' });
   });
-  b.forEach(e => {
-    data.push({'val': e, 'selection': 'B'})
+  b.forEach((e) => {
+    data.push({ val: e, selection: 'B' });
   });
-  return {'values': data}
+  return { values: data };
 }
 
 function getContinuousVis(a, b, feature) {
-  const data = mapContinuousChangesData(a, b, feature)
-  return <div><b>{feature}</b><br/><Boxplot data={data} actions={false} tooltip={new Handler().call}/></div>
+  const data = mapContinuousChangesData(a, b, feature);
+  return (
+    <div>
+      <b>{feature}</b>
+      <br />
+      <Boxplot data={data} actions={false} tooltip={new Handler().call} />
+    </div>
+  );
 }
 
 function getVis(a, b, type, feature) {
   if (type === FeatureType.Categorical) {
-    return getCategoricalVis(a, b, feature)
-  } else {
-    return getContinuousVis(a, b, feature)
-  } 
+    return getCategoricalVis(a, b, feature);
+  }
+  return getContinuousVis(a, b, feature);
 }
 
 function genRows(vectorsA, vectorsB, legendAttributes, dataset) {
-
   if (dataset === undefined) {
-    return []
+    return [];
   }
-  const rows = []
-  const dictOfArraysA = dictionary(vectorsA)
-  const dictOfArraysB = dictionary(vectorsB)
-  const preselect = getProjectionColumns(legendAttributes)
+  const rows = [];
+  const dictOfArraysA = dictionary(vectorsA);
+  const dictOfArraysB = dictionary(vectorsB);
+  const preselect = getProjectionColumns(legendAttributes);
 
   // for each feature in preselect
-  preselect.forEach(key => {
-    var type = dataset.columns[key]?.featureType
-    var valuesA = dictOfArraysA[key]
-    var valuesB = dictOfArraysB[key]
+  preselect.forEach((key) => {
+    const type = dataset.columns[key]?.featureType;
+    const valuesA = dictOfArraysA[key];
+    const valuesB = dictOfArraysB[key];
     // calc difference between A and B and
-    var [difScore, mostDifCat, difVal] = getDifference(valuesA, valuesB, type)    
-    
+    const [difScore, mostDifCat, difVal] = getDifference(valuesA, valuesB, type);
+
     // append dif to rows
     // create visualization for those features and append to rows
-    var vis = getVis(valuesA, valuesB, type, key)
+    const vis = getVis(valuesA, valuesB, type, key);
 
     // append to rows: key, most differing category, dif score, vis, difVal
-    if(dataset.columns[key]?.metaInformation.noLineUp){
-      //dont do anything, if column should not be shown
-    } else{
-      rows.push([key, mostDifCat, difScore, vis, difVal])
+    if (dataset.columns[key]?.metaInformation.noLineUp) {
+      // dont do anything, if column should not be shown
+    } else {
+      rows.push([key, mostDifCat, difScore, vis, difVal]);
     }
-    
   });
 
   // turn into array of dicts
-  const ret = []
-  for (var i = 0; i < rows.length; i++) {
-    ret.push(createData(rows[i][0], rows[i][1], rows[i][2], rows[i][3], rows[i][4]))
+  const ret = [];
+  for (let i = 0; i < rows.length; i++) {
+    ret.push(createData(rows[i][0], rows[i][1], rows[i][2], rows[i][3], rows[i][4]));
   }
 
   // sort rows by score
-  ret.sort(sortByScore)
+  ret.sort(sortByScore);
 
-  return ret
+  return ret;
 }
 
 const mapStateToProps = (state: RootState) => {
-  return ({
+  return {
     dataset: state.dataset,
     differenceThreshold: state.differenceThreshold,
-    legendAttributes: state.genericFingerprintAttributes
-  })
-}
+    legendAttributes: state.genericFingerprintAttributes,
+  };
+};
 
-const mapDispatch = dispatch => ({
+const mapDispatch = (dispatch) => ({
   // legendAttributes and dataset should not be changed from within this component
-})
+});
 
 const connector = connect(mapStateToProps, mapDispatch);
 
-type PropsFromRedux = ConnectedProps<typeof connector>
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
-
-  width?: number
-  height?: number
-  vectorsA: Array<IVector>
-  vectorsB: Array<IVector>
-  dataset: Dataset
-  scale: number
-}
-
+  width?: number;
+  height?: number;
+  vectorsA: Array<IVector>;
+  vectorsB: Array<IVector>;
+  dataset: Dataset;
+  scale: number;
+};
 
 /**
  * filter rows within vega specs according to threshold
@@ -426,49 +424,45 @@ type Props = PropsFromRedux & {
  * @param dataset dataset from props to lookup feature type
  */
 function filterReactVega(rows, threshold, dataset) {
-  for(var i = 0; i < rows.length; i++) {
-
-    const type = dataset.columns[rows[i].feature]?.featureType
+  for (let i = 0; i < rows.length; i++) {
+    const type = dataset.columns[rows[i].feature]?.featureType;
 
     if (type === FeatureType.Categorical) {
-      rows[i].char.props.children[2].props.data.values = rows[i].char.props.children[2].props.data.values.filter(v => {
-        return Math.abs(v.difference) >= threshold
-      })
-      
+      rows[i].char.props.children[2].props.data.values = rows[i].char.props.children[2].props.data.values.filter((v) => {
+        return Math.abs(v.difference) >= threshold;
+      });
     }
   }
-  return rows
+  return rows;
 }
 
+export const CoralChanges = connector(
+  class extends React.Component<Props> {
+    rows: any[];
 
-export const CoralChanges = connector(class extends React.Component<Props> {
-  rows: any[]
+    constructor(props) {
+      super(props);
+    }
 
-  constructor(props) {
-    super(props)
-  }
-  
-  
+    render() {
+      // generate rows including vega specs for table div
+      this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.legendAttributes, this.props.dataset);
+      // filter entire vega specs with threshold
+      this.rows = this.rows.filter((r) => {
+        return Math.abs(r.difference) >= this.props.differenceThreshold;
+      });
+      // filter individual categorical vega spec bars with threshold
+      this.rows = filterReactVega(this.rows, this.props.differenceThreshold, this.props.dataset);
 
-  render() {
-    // generate rows including vega specs for table div
-    this.rows = genRows(this.props.vectorsA, this.props.vectorsB, this.props.legendAttributes, this.props.dataset);
-    // filter entire vega specs with threshold
-    this.rows = this.rows.filter(r => {
-      return Math.abs(r.difference) >= this.props.differenceThreshold
-    })
-    // filter individual categorical vega spec bars with threshold
-    this.rows = filterReactVega(this.rows, this.props.differenceThreshold, this.props.dataset)
-
-    return (
-        <div style={{
-          width: "100%",
-          maxHeight: '100%',
-          
-        }}>
-          <Table aria-label="simple table" size={'small'}>
-            <TableHead>
-            </TableHead>
+      return (
+        <div
+          style={{
+            width: '100%',
+            maxHeight: '100%',
+          }}
+        >
+          <Table aria-label="simple table" size="small">
+            <TableHead />
             <TableBody>
               {this.rows.map((row) => (
                 <TableRow key={row.feature}>
@@ -478,6 +472,7 @@ export const CoralChanges = connector(class extends React.Component<Props> {
             </TableBody>
           </Table>
         </div>
-    );
-  }
-})
+      );
+    }
+  },
+);

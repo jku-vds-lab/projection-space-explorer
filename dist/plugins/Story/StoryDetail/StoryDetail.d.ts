@@ -1,12 +1,12 @@
-export declare var YearAggComp: ({ selection }: {
+export declare function YearAggComp({ selection }: {
     selection: any;
-}) => JSX.Element;
-export declare var YearComp: ({ oldYear, newYear }: {
+}): JSX.Element;
+export declare function YearComp({ oldYear, newYear }: {
     oldYear: any;
     newYear: any;
-}) => JSX.Element;
-declare type StoryLegendProps = {
+}): JSX.Element;
+type StoryLegendProps = {
     selection: any[];
 };
-export declare var StoryLegend: ({ selection }: StoryLegendProps) => JSX.Element;
+export declare function StoryLegend({ selection }: StoryLegendProps): JSX.Element;
 export {};

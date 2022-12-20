@@ -1,11 +1,11 @@
-import { Reducer, Store } from "redux";
-import { RootState } from "../Store/Store";
+import { Reducer, Store } from '@reduxjs/toolkit';
+import { RootState } from './Store';
 /**
  * Main api class for PSE.
  */
 export declare class API<T extends RootState> {
     store: Store<T>;
-    onStateChanged: (newState: T, difference: Partial<T>) => void;
+    onStateChanged: (newState: T, difference: Partial<T>, action: any) => void;
     id: string;
     /**
      * Creates a PSE API (store).
@@ -13,7 +13,7 @@ export declare class API<T extends RootState> {
      * @param dump the dump which contains parts of store state
      * @param reducer the root reducer of the store, MUST be created with PSE´s inbuilt createRootReducer method.
      */
-    constructor(dump: any, reducer: Reducer);
+    constructor(dump: any, reducer: Reducer, middleware?: any[]);
     /**
      * Performs a partial store change.
      * This operation can have side effects depending on which parts you change that can break the app
@@ -27,5 +27,5 @@ export declare class API<T extends RootState> {
      */
     partialDump(excluded: string[]): any;
     differenceMiddleware: (store: any) => (next: any) => (action: any) => any;
-    generateImage(): void;
+    generateImage(width: number, height: number, padding: number, options: any, ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): Promise<string>;
 }

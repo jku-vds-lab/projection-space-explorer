@@ -1,12 +1,12 @@
 import { DatasetEntry } from '../../model/DatasetEntry';
-export declare function setDatasetEntriesAction(datasetEntries: Array<DatasetEntry>): {
+export declare function setDatasetEntriesAction(pdatasetEntries: Array<DatasetEntry>): {
     byId: {
         [id: string]: DatasetEntry;
     };
     allIds: string[];
     type: string;
 };
-declare type InitialType = {
+type InitialType = {
     values: {
         byId: {
             [id: string]: DatasetEntry;

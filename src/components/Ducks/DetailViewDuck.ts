@@ -1,26 +1,24 @@
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
-const SET_VISIBILITY = 'setvisibility'
-
-
-export function setDetailVisibility(open: boolean) {
-    return {
-        type: SET_VISIBILITY,
-        open: open
-    }
-}
-
-
+const setDetailVisibility = createAction<boolean>('detailview/setvisibielity');
+const setDetailView = createAction<number>('detailview/setview');
 
 const initialState = {
-    open: false,
-    active: ''
-}
+  open: false,
+  active: 0,
+};
 
-export default function detailView(state = initialState, action): typeof initialState {
-    switch (action.type) {
-        case SET_VISIBILITY:
-            return {...state, open: action.open}
-        default:
-            return state
-    }
-}
+export const detailView = createReducer(initialState, (builder) => {
+  builder
+    .addCase(setDetailVisibility, (state, action) => {
+      state.open = action.payload;
+    })
+    .addCase(setDetailView, (state, action) => {
+      state.active = action.payload;
+    });
+});
+
+export const DetailViewActions = {
+  setDetailVisibility,
+  setDetailView,
+};

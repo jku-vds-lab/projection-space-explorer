@@ -1,11 +1,11 @@
-import React = require("react");
 import './VirtualTable.scss';
-declare type VirtualTableProps = {
+import * as React from 'react';
+type VirtualTableProps = {
     rows: any;
     rowHeight: number;
     tableHeight: number;
 };
-declare type VirtualColumnProps = {
+type VirtualColumnProps = {
     width: number;
     name: string;
     renderer: (row: any) => any;
@@ -13,7 +13,6 @@ declare type VirtualColumnProps = {
 export declare class VirtualColumn extends React.Component<VirtualColumnProps, any> {
 }
 export declare class VirtualTable extends React.Component<VirtualTableProps, any> {
-    scrollInterval: any;
     constructor(props: any);
     onScroll({ target }: {
         target: any;

@@ -1,42 +1,74 @@
-import React = require('react');
-import {createClassFromSpec, VisualizationSpec} from 'react-vega';
-import {VegaLite } from 'react-vega'
+import * as React from 'react';
+import { VisualizationSpec, VegaLite } from 'react-vega';
 import { VegaLiteProps } from 'react-vega/lib/VegaLite';
 
 const spec: VisualizationSpec = {
   "width": 50,
   "height": 50,
   "transform": [
+    {"filter": "datum.id < 10"}
+  ],
+  "layer": [
     {
-      "window": [{
-        "op": "row_number",
-        "as": "rank"
+      "transform": [{
+        "filter": "datum.selection == 'selected'"
       }],
-      "sort": [{ "field": "count", "order": "descending" }]
-    }, {
-      "filter": "datum.rank <= 5"
+      "mark": {"type": "bar", "tooltip": true},
+      "encoding": {
+        "x": {
+          "field": "category",
+          "type": "ordinal",
+          "axis": null,
+          "sort": {"field": "id", "order": "ascending"}
+        },
+        "y": {
+          "field": "count",
+          "type": "quantitative",
+          "axis": null,
+          "stack": null
+        },
+        "color": {
+          "condition": {
+            "test": "indexof(['null', 'undefined', 'unknown', 'none', 'Null', 'Undefined', 'Unknown', 'None', 'NULL', 'UNDEFINED', 'UNKNOWN', 'NONE'], datum.category) >= 0 || datum.category === null",
+            "value": "#aaaaaa"
+          },
+          "value": "#007dad"
+        }
+      }
+    },
+    {
+      "transform": [{
+        "filter": "datum.selection == 'all'"
+      }],
+      "mark": {"type": "bar", "tooltip": true, "stroke": "black", "fillOpacity": 0},
+      "encoding": {
+        "x": {
+          "field": "category",
+          "type": "ordinal",
+          "axis": null,
+          "sort": {"field": "id", "order": "ascending"}
+        },
+        "y": {
+          "field": "count",
+          "type": "quantitative",
+          "axis": null,
+          "stack": null
+        },
+        "color": {
+          "condition": {
+            "test": "indexof(['null', 'undefined', 'unknown', 'none', 'Null', 'Undefined', 'Unknown', 'None', 'NULL', 'UNDEFINED', 'UNKNOWN', 'NONE'], datum.category) >= 0 || datum.category === null",
+            "value": "#aaaaaa"
+          },
+        }
+      }
     }
   ],
-  "mark": {"type": "bar", "tooltip": true},
-  "encoding": {
-    "x": {"field": "category", "type": "ordinal", "axis": null, "sort": "-y"},
-    "y": {"field": "count", "type": "quantitative", "axis": null},
-    "color": {
-      "condition": {
-        "test": "indexof(['null', 'undefined', 'unknown', 'none', 'Null', 'Undefined', 'Unknown', 'None', 'NULL', 'UNDEFINED', 'UNKNOWN', 'NONE'], datum.category) >= 0 || datum.category === null",
-        "value": "#aaaaaa"
-      },
-      "value": "#007dad",
-      "legend": null
-    }
-  },
-  data: { name: 'values' }
+  data: { name: 'values' },
+};
+
+export default function (props: Omit<VegaLiteProps, 'spec'>) {
+  return <VegaLite {...props} spec={spec} />;
 }
 
-
-export default function(props: Omit<VegaLiteProps, 'spec'>) {
-  return <VegaLite {...props} spec={spec}></VegaLite>
-}
-
-//, "scale": {"domain": [0, 1]}
+// , "scale": {"domain": [0, 1]}
 // rank != 1 and switching color scale range would be a workaround to make sure when there is only 1 datapoint it has the rank 1 colour

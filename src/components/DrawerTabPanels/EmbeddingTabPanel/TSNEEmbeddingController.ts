@@ -1,33 +1,44 @@
-import { Dataset, ADataset } from "../../../model/Dataset";
-import { EmbeddingController } from "./EmbeddingController"
+// @ts-ignore
+import tsneWorker from 'worker-loader?inline=no-fallback!../../workers/embeddings/tsne.worker';
+import { Dataset, ADataset } from '../../../model/Dataset';
+import { EmbeddingController } from './EmbeddingController';
 
-import TsneWorker from "../../workers/embeddings/tsne.worker";
-import { IBaseProjection } from "../../../model/Projection";
+import { IBaseProjection } from '../../../model/ProjectionInterfaces';
 
-export class TSNEEmbeddingController extends EmbeddingController { 
-    
-    
-    init(dataset: Dataset, selection: any, params: any, workspace: IBaseProjection) {
-        this.worker = new TsneWorker()
-        var tensor = ADataset.asTensor(dataset, selection.filter(e => e.checked), params.encodingMethod, params.normalizationMethod) // for gower, we don't need one-hot-encoding
-        this.worker.postMessage({
-            messageType: 'init',
-            input: tensor.tensor,
-            seed: dataset.vectors.map((vec, i) => [workspace[i].x, workspace[i].y]),
-            params: params,
-            featureTypes: tensor.featureTypes
-        })
+export class TSNEEmbeddingController extends EmbeddingController {
+  init(dataset: Dataset, selection: any, params: any, workspace: IBaseProjection) {
+    // this.worker = new Worker(new URL('../../workers/embeddings/tsne.worker', import.meta.url));
+    // eslint-disable-next-line new-cap
+    this.worker = new tsneWorker();
 
-        this.worker.addEventListener('message', (e) => {
-            var Y = e.data
-            this.stepper(Y)
-            this.notifier()
-        }, false);
-    }
+    const tensor = ADataset.asTensor(
+      dataset,
+      selection.filter((e) => e.checked),
+      params.encodingMethod,
+      params.normalizationMethod,
+    ); // for gower, we don't need one-hot-encoding
+    this.worker.postMessage({
+      messageType: 'init',
+      input: tensor.tensor,
+      seed: dataset.vectors.map((vec, i) => [workspace[i].x, workspace[i].y]),
+      params,
+      featureTypes: tensor.featureTypes,
+    });
 
-    step() {
-        this.worker.postMessage({
-            messageType: 'step'
-        })
-    }
+    this.worker.addEventListener(
+      'message',
+      (e) => {
+        const Y = e.data;
+        this.stepper(Y);
+        this.notifier();
+      },
+      false,
+    );
+  }
+
+  step() {
+    this.worker.postMessage({
+      messageType: 'step',
+    });
+  }
 }

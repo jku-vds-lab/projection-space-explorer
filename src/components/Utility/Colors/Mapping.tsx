@@ -1,55 +1,147 @@
-import { ShallowSet } from "../ShallowSet";
-import { ScaleUtil } from "./ContinuosScale";
-import { BaseColorScale, APalette } from "../../Ducks/ColorScalesDuck";
+import * as d3v5 from 'd3v5';
+import { SchemeColor } from './SchemeColor';
+import { AShallowSet } from '../ShallowSet';
+import { BaseColorScale } from '../../../model/Palette';
+import { APalette } from '../../../model/palettes';
+import { getMinMaxOfChannel } from '../../WebGLView/UtilityFunctions';
+import { Dataset } from '../../../model/Dataset';
 
-export abstract class Mapping {
+// Color to use when the mapping is incomplete or impossible to map
+const FALLBACK_COLOR = new SchemeColor('#000000');
+
+export interface DiscreteMapping {
   scale: BaseColorScale;
-
-  constructor(scale) {
-    this.scale = scale;
-  }
-
-  abstract map(value): any;
+  values: any[];
+  type: 'categorical';
 }
 
-
-export class DiscreteMapping extends Mapping {
-  values: ShallowSet;
-
-  constructor(scale, values) {
-    super(scale);
-
-    this.values = values;
-  }
-
-  index(value) {
-    return this.values.indexOf(value);
-  }
-
-  map(value) {
-    const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette
-    return ScaleUtil.mapScale(this.scale, this.values.indexOf(value) % palette.length);
-  }
+export interface ContinuousMapping {
+  scale: BaseColorScale;
+  type: 'sequential';
+  range: [number, number];
 }
 
+export interface DivergingMapping {
+  scale: BaseColorScale;
+  range: [number, number, number];
+  type: 'diverging';
+}
 
-export class ContinuousMapping extends Mapping {
-  range: any;
+/**
+ * Helper function that maps a value to a color using a mapping
+ *
+ * @param mapping a mapping object
+ * @param value any value
+ * @returns a color
+ */
+export function mapValueToColor(mapping: ContinuousMapping | DivergingMapping | DiscreteMapping, value): SchemeColor {
+  switch (mapping.type) {
+    case 'sequential': {
+      const [min, max] = mapping.range;
 
-  constructor(scale, range) {
-    super(scale);
+      const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
 
-    this.range = range;
-  }
+      if (min === max) {
+        return palette[0];
+      }
 
-  map(value) {
-    if (this.range.max == this.range.min) {
-      const palette = typeof this.scale.palette === 'string' ? APalette.getByName(this.scale.palette) : this.scale.palette
-      return palette[0];
+      const normalized = (value - min) / (max - min);
+
+      const interpolator = d3v5
+        .scaleLinear()
+        .domain(palette.map((stop, index) => (1 / (palette.length - 1)) * index))
+        // @ts-ignore
+        .range(palette.map((stop) => stop.hex));
+      // @ts-ignore
+      const d3color = d3v5.color(interpolator(normalized));
+      // @ts-ignore
+      return d3color ? SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b) : FALLBACK_COLOR;
     }
-    
-    var normalized = (value - this.range.min) / (this.range.max - this.range.min);
+    case 'diverging': {
+      const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
 
-    return ScaleUtil.mapScale(this.scale, normalized);
+      if (mapping.range[0] === mapping.range[1]) {
+        return palette[1];
+      }
+
+      const paletteInterpolate = d3v5
+        .scaleLinear()
+        .domain(palette.map((stop, index) => (1 / (palette.length - 1)) * index))
+        // @ts-ignore
+        .range(palette.map((stop) => stop.hex));
+
+      const interpolator = d3v5.scaleDiverging(paletteInterpolate).domain(mapping.range);
+
+      // @ts-ignore
+      const d3color = d3v5.color(interpolator(value)) as d3v5.RGBColor;
+
+      return d3color ? SchemeColor.rgbToHex(d3color.r, d3color.g, d3color.b) : FALLBACK_COLOR;
+    }
+    case 'categorical': {
+      const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
+      return palette[AShallowSet.indexOf(mapping.values, value) % palette.length] ?? FALLBACK_COLOR;
+    }
+    default: {
+      return FALLBACK_COLOR;
+    }
   }
+}
+
+/**
+ * Helper type that contains a union over all mappings
+ */
+export type Mapping = DiscreteMapping | DivergingMapping | ContinuousMapping;
+
+/**
+ *
+ * @param scale the color scale
+ * @param key the key for the data values
+ * @param dataset the dataset
+ * @returns a mapping object
+ */
+export const mappingFromScale = (scale: BaseColorScale, key: string, dataset: Dataset, additionalColumns?: { [key: string]: { [key: number]: number[] } }) => {
+  if (scale.type === 'categorical') {
+    if (additionalColumns && key in additionalColumns) {
+      const elements = additionalColumns[key];
+
+      return {
+        scale,
+        values: AShallowSet.create(dataset.vectors.map((vector) => elements[vector.__meta__.meshIndex])),
+        type: 'categorical',
+      } as DiscreteMapping;
+    }
+    return {
+      scale,
+      values: AShallowSet.create(dataset.vectors.map((vector) => vector[key])),
+      type: 'categorical',
+    } as DiscreteMapping;
+  }
+  if (scale.type === 'sequential') {
+    const { min, max } = getMinMaxOfChannel(dataset, key);
+
+    return {
+      scale,
+      type: 'sequential',
+      range: [min, max],
+    } as ContinuousMapping;
+  }
+  if (scale.type === 'diverging') {
+    const { min, max, center } = getMinMaxOfChannel(dataset, key);
+
+    return {
+      scale,
+      type: 'diverging',
+      range: [min, center ?? (min + max) / 2, max],
+    } as DivergingMapping;
+  }
+  return null;
+};
+
+/**
+ *
+ * @param mapping a mapping object
+ * @returns true if the given value is a numeric one
+ */
+export function isNumericMapping(mapping: Mapping): mapping is DivergingMapping | ContinuousMapping {
+  return mapping?.type === 'diverging' || mapping?.type === 'sequential';
 }

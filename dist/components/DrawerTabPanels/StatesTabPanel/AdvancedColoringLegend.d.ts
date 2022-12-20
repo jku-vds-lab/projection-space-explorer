@@ -1,8 +1,9 @@
-declare type ShowColorLegendProps = {
-    mapping: any;
+import { Mapping } from '../../Utility/Colors/Mapping';
+type ShowColorLegendProps = {
+    pointColorMapping: Mapping;
     advancedColoringSelection: boolean[];
     setAdvancedColoringSelection: Function;
 };
-export declare var AdvancedColoringLegendFull: ({ mapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps) => JSX.Element;
-export declare const AdvancedColoringLegend: import("react-redux").ConnectedComponent<({ mapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps) => JSX.Element, Pick<ShowColorLegendProps, never>>;
+export declare function AdvancedColoringLegendFull({ pointColorMapping, advancedColoringSelection, setAdvancedColoringSelection }: ShowColorLegendProps): JSX.Element;
+export declare const AdvancedColoringLegend: import("react-redux").ConnectedComponent<typeof AdvancedColoringLegendFull, import("react-redux").Omit<ShowColorLegendProps, "advancedColoringSelection" | "setAdvancedColoringSelection">>;
 export {};
