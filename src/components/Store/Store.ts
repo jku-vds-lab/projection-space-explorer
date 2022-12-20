@@ -221,7 +221,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
           groupLabel: {},
         };
       }
-    } else{
+    } else {
       // if we don't have clusteredges, we want to create stories without connections
 
       const story = transformIndicesToHandles(dataset.clusters);
@@ -238,7 +238,6 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
         activeTraceState: null,
         groupLabel: {},
       };
-      
     }
   } else {
     stories = AStorytelling.createEmpty();

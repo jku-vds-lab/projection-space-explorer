@@ -298,8 +298,6 @@ export const Application = connector(
                 />
               </Tooltip>
 
-
-
               {this.props.overrideComponents?.tabs?.map((tab, i) => {
                 return (
                   <Tooltip

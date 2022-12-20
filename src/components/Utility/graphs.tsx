@@ -28,7 +28,7 @@ export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult?
 
     story.clusters.entities[handle] = cluster;
 
-    if(edgeResult != null){
+    if (edgeResult != null) {
       edgeResult.forEach((edge) => {
         if (edge.source === clusterIndex.toString()) {
           edge.source = handle;
@@ -40,10 +40,10 @@ export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult?
     }
   });
 
-  if(edgeResult != null){
+  if (edgeResult != null) {
     edgeResult.forEach((edge, i) => {
       const handle = i;
-  
+
       story.edges.entities[handle] = edge;
     });
   }

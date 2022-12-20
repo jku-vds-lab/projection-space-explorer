@@ -1,8 +1,5 @@
 import * as React from 'react';
 import { ConnectedComponent, useDispatch, useSelector } from 'react-redux';
-import { ComponentConfig } from '../../../BaseConfig';
-import { DetailViewActions } from '../../Ducks/DetailViewDuck';
-import type { RootState } from '../../Store/Store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -10,6 +7,9 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import StarIcon from '@mui/icons-material/Star';
 import Split from 'react-split';
+import type { RootState } from '../../Store/Store';
+import { DetailViewActions } from '../../Ducks/DetailViewDuck';
+import { ComponentConfig } from '../../../BaseConfig';
 
 type DetailViewChooserProps = {
   overrideComponents: ComponentConfig;

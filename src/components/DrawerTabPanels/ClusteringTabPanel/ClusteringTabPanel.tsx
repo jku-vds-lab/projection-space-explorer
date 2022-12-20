@@ -58,7 +58,7 @@ const mapStateToProps = (state: RootState) => ({
   currentAggregation: state.currentAggregation,
   groupVisualizationMode: state.groupVisualizationMode,
   workspace: ViewSelector.getWorkspace(state),
-  globalLabels: state.globalLabels
+  globalLabels: state.globalLabels,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -101,7 +101,7 @@ export const ClusteringTabPanel = connector(
     setGroupVisualizationMode,
     setSelectedClusters,
     baseUrl,
-    globalLabels
+    globalLabels,
   }: Props) => {
     const categoryOptions = dataset?.categories;
 
@@ -609,7 +609,10 @@ function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStor
             setSelectedCluster([key], event.ctrlKey);
           }}
         >
-          <ListItemText primary={ACluster.getTextRepresentation(cluster)} secondary={`${cluster.indices.length} ${capitalizeFirstLetter(globalLabels.itemLabelPlural)}`} />
+          <ListItemText
+            primary={ACluster.getTextRepresentation(cluster)}
+            secondary={`${cluster.indices.length} ${capitalizeFirstLetter(globalLabels.itemLabelPlural)}`}
+          />
           <ListItemSecondaryAction>
             <IconButton
               edge="end"

@@ -2,7 +2,6 @@ import { ConnectedComponent } from 'react-redux';
 import { EncodingChannel } from './model/EncodingChannel';
 import { EmbeddingController } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingController';
 import { ProjectionMethod, TypedObject } from './model';
-import { EntityId } from '@reduxjs/toolkit';
 
 export type BaseConfig = Partial<{
   baseUrl: string;
@@ -64,7 +63,7 @@ export type ComponentConfig = Partial<{
   layers: Array<LayerSpec>;
   tabs: Array<TabSpec>;
   // contextMenuItems: Array<ContextMenuItem>;
-  contextMenuItems: Array<(props: {handleClose: () => void, pos_x: number, pos_y: number, menuTarget: TypedObject}) => JSX.Element>
+  contextMenuItems: Array<(props: { handleClose: () => void; pos_x: number; pos_y: number; menuTarget: TypedObject }) => JSX.Element>;
   mouseInteractionCallbacks: MouseInteractions;
 }>;
 
@@ -76,8 +75,8 @@ export type ComponentConfig = Partial<{
 
 export type DetailViewSpec = {
   name: string;
-  view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>
-  settings: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>
+  view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
+  settings: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
 };
 
 export type TabSpec = {
