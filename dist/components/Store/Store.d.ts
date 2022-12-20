@@ -31,11 +31,11 @@ declare const allReducers: {
             square: boolean;
         };
     }, import("redux").AnyAction>;
-    activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
+    activeLine: Reducer<string, import("redux").AnyAction>;
     dataset: typeof dataset;
     highlightedSequence: (state: any, action: any) => any;
     advancedColoringSelection: (state: any[], action: any) => any;
-    projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("../Ducks/ProjectionColumnsDuck").ProjectionColumn[]>;
+    projectionColumns: Reducer<import("../Ducks/ProjectionColumnsDuck").ProjectionColumn[], import("redux").AnyAction>;
     projectionOpen: (state: boolean, action: any) => any;
     projectionParams: (state: {
         perplexity: number;
@@ -75,10 +75,10 @@ declare const allReducers: {
     groupVisualizationMode: (state: GroupVisualizationMode, action: any) => any;
     genericFingerprintAttributes: (state: any[], action: any) => any[];
     hoverStateOrientation: (state: import("../Ducks/HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
-    detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+    detailView: Reducer<{
         open: boolean;
         active: number;
-    }>;
+    }, import("redux").AnyAction>;
     datasetEntries: typeof datasetEntries;
     globalLabels: Reducer<import("../Ducks/GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
     colorScales: typeof colorScales;

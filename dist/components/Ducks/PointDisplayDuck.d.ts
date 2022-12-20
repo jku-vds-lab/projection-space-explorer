@@ -14,6 +14,6 @@ export declare const PointDisplayActions: import("@reduxjs/toolkit").CaseReducer
         key: string;
         value: boolean;
     }>): void;
-}, "pointDisplay">;
+}>;
 export declare const PointDisplayReducer: import("redux").Reducer<IPointDisplay, import("redux").AnyAction>;
 export {};

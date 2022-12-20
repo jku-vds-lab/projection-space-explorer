@@ -111,15 +111,7 @@ function WebView({
       </div>
       <div style={{ flexGrow: 1 }}>
         {positions && projection ? (
-          <WebGLView
-            overrideComponents={overrideComponents}
-            multipleId={id}
-            {...value.attributes}
-            projection={projection}
-            workspace={positions}
-            xChannel={projection.xChannel}
-            yChannel={projection.yChannel}
-          />
+          <WebGLView overrideComponents={overrideComponents} multipleId={id} {...value.attributes} projection={projection} workspace={positions} />
         ) : null}
       </div>
     </div>

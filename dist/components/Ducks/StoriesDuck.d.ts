@@ -36,25 +36,25 @@ export declare const StoriesActions: {
     changeClusterName: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         cluster: EntityId;
         name: string;
-    }, "stories/changeClusterName">;
-    selectSideBranch: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<number, "stories/selectSideBranch">;
-    addEdgeToActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IEdge, "stories/addEdgeToActive">;
-    setActiveTraceState: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "stories/setActiveTraceState">;
-    setActiveTrace: import("@reduxjs/toolkit").ActionCreatorWithPayload<any, "stories/setActiveTrace">;
-    removeEdgeFromActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "stories/removeEdgeFromActive">;
+    }, string>;
+    selectSideBranch: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<number, string>;
+    addEdgeToActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IEdge, string>;
+    setActiveTraceState: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    setActiveTrace: import("@reduxjs/toolkit").ActionCreatorWithPayload<any, string>;
+    removeEdgeFromActive: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
     changeBookName: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         id: EntityId;
         name: string;
-    }, "stories/changeBookName">;
+    }, string>;
     addBookAsync: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
         book: any;
         activate: any;
-    }, "stories/addBookAsync">;
-    addCluster: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<ICluster, "stories/addCluster">;
-    deleteBookAsync: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "stories/deleteBookAsync">;
-    deleteCluster: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<ICluster, "stories/deleteCluster">;
-    setActiveStoryBook: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, "stories/setActiveStoryBook">;
-    addClusterToTrace: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<ICluster, "stories/addClusterToTrace">;
-    set: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IBook[], "stories/set">;
+    }, string>;
+    addCluster: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<ICluster, string>;
+    deleteBookAsync: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    deleteCluster: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<ICluster, string>;
+    setActiveStoryBook: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;
+    addClusterToTrace: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<ICluster, string>;
+    set: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IBook[], string>;
 };
 export declare const stories: import("redux").Reducer<IStorytelling, import("redux").AnyAction>;
