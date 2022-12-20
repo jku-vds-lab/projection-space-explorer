@@ -172,3 +172,10 @@ https://www.npmjs.com/package/graphology-layout-forceatlas2
 
 
 
+
+
+# how to build:
+node version: 16
+install packages: "npm i --legacy-peer-deps"
+build code: "npm run build"
+

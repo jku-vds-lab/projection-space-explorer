@@ -1,30 +1,36 @@
-const SET = "ducks/projectionParams/SET"
+import { NormalizationMethod } from '../../model/NormalizationMethod';
+import { DistanceMetric } from '../../model/DistanceMetric';
+import { EncodingMethod } from '../../model/EncodingMethod';
 
-export const setProjectionParamsAction = projectionParams => ({
-    type: SET,
-    projectionParams: projectionParams
+const SET = 'ducks/projectionParams/SET';
+
+export const setProjectionParamsAction = (projectionParams) => ({
+  type: SET,
+  projectionParams,
 });
 
 const initialState = {
-    perplexity: 50,
-    learningRate: 50,
-    nNeighbors: 15,
-    iterations: 1000,
-    seeded: false,
-    useSelection: false,
-    method: '',
-    distanceMetric: 'euclidean'
-}
+  perplexity: 50, // 50,
+  learningRate: 50, // 50,
+  nNeighbors: 15,
+  iterations: 500, // 1000,
+  seeded: false,
+  useSelection: false,
+  method: '',
+  distanceMetric: DistanceMetric.EUCLIDEAN,
+  normalizationMethod: NormalizationMethod.STANDARDIZE,
+  encodingMethod: EncodingMethod.ONEHOT,
+};
 
-type ProjectionParamsState = typeof initialState
+export type ProjectionParamsType = typeof initialState;
 
-const projectionParams = (state = initialState, action): ProjectionParamsState => {
-    switch (action.type) {
-        case SET:
-            return action.projectionParams
-        default:
-            return state
-    }
-}
+const projectionParams = (state = initialState, action): ProjectionParamsType => {
+  switch (action.type) {
+    case SET:
+      return action.projectionParams;
+    default:
+      return state;
+  }
+};
 
-export default projectionParams
+export default projectionParams;

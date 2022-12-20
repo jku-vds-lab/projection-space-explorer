@@ -2,72 +2,71 @@
  * Advanced RenderingContext that takes into account a specific pixel ratio.
  */
 export class RenderingContextEx {
-    context: CanvasRenderingContext2D = null
-    pixelRatio: number = 1
+  context: CanvasRenderingContext2D = null;
 
-    constructor(context, pixelRatio) {
-        this.context = context
-        this.pixelRatio = pixelRatio
-    }
+  pixelRatio = 1;
 
-    set lineWidth(value) {
-        this.context.lineWidth = value
-    }
+  constructor(context, pixelRatio) {
+    this.context = context;
+    this.pixelRatio = pixelRatio;
+  }
 
-    set lineDashOffset(value) {
-        this.context.lineDashOffset = value
-    }
+  set lineWidth(value) {
+    this.context.lineWidth = value;
+  }
 
-    set strokeStyle(value) {
-        this.context.strokeStyle = value
-    }
+  set lineDashOffset(value) {
+    this.context.lineDashOffset = value;
+  }
 
-    set lineCap(value) {
-        this.context.lineCap = value
-    }
+  set strokeStyle(value) {
+    this.context.strokeStyle = value;
+  }
 
-    setLineDash(value) {
-        this.context.setLineDash(value)
-    }
+  set lineCap(value) {
+    this.context.lineCap = value;
+  }
 
-    beginPath() {
-        this.context.beginPath()
-    }
+  setLineDash(value) {
+    this.context.setLineDash(value);
+  }
 
-    closePath() {
-        this.context.closePath()
-    }
+  beginPath() {
+    this.context.beginPath();
+  }
 
-    arc(x, y, radius, startAngle, endAngle, anticlockwise) {
-        this.context.arc(x * this.pixelRatio, y * this.pixelRatio, radius * this.pixelRatio, startAngle, endAngle, anticlockwise)
-    }
+  closePath() {
+    this.context.closePath();
+  }
 
-    lineTo(x, y) {
-        this.context.lineTo(x * this.pixelRatio, y * this.pixelRatio)
-    }
+  arc(x, y, radius, startAngle, endAngle, anticlockwise) {
+    this.context.arc(x * this.pixelRatio, y * this.pixelRatio, radius * this.pixelRatio, startAngle, endAngle, anticlockwise);
+  }
 
-    arrowTo(fromX, fromY, toX, toY, headlen = 50) {
-        var lineCap = this.context.lineCap
-        this.lineCap = 'round'
-        var dx = toX - fromX;
-        var dy = toY - fromY;
-        var angle = Math.atan2(dy, dx);
-        this.lineTo(toX, toY);
-        this.moveTo(toX, toY)
-        this.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
-        this.moveTo(toX, toY);
-        this.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
-        this.moveTo(toX, toY)
-        this.lineCap = lineCap
-    }
+  lineTo(x, y) {
+    this.context.lineTo(x * this.pixelRatio, y * this.pixelRatio);
+  }
 
-    stroke() {
-        this.context.stroke()
-    }
+  arrowTo(fromX, fromY, toX, toY, headlen = 50) {
+    const { lineCap } = this.context;
+    this.lineCap = 'round';
+    const dx = toX - fromX;
+    const dy = toY - fromY;
+    const angle = Math.atan2(dy, dx);
+    this.lineTo(toX, toY);
+    this.moveTo(toX, toY);
+    this.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+    this.moveTo(toX, toY);
+    this.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+    this.moveTo(toX, toY);
+    this.lineCap = lineCap;
+  }
 
-    moveTo(x, y) {
-        this.context.moveTo(x * this.pixelRatio, y * this.pixelRatio)
-    }
+  stroke() {
+    this.context.stroke();
+  }
 
-    
+  moveTo(x, y) {
+    this.context.moveTo(x * this.pixelRatio, y * this.pixelRatio);
+  }
 }

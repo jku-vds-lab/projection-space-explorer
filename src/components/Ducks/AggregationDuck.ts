@@ -1,132 +1,133 @@
-import Cluster from "../Utility/Data/Cluster";
-import { Vect } from "../Utility/Data/Vect";
+import { EntityId, AnyAction } from '@reduxjs/toolkit';
+import { ThunkAction } from 'redux-thunk';
+import type { RootState } from '../Store/Store';
+import { ICluster } from '../../model/ICluster';
+import { IVector } from '../../model/Vector';
+import { AStorytelling } from './StoriesDuck';
 
-const SELECT_SAMPLES = "ducks/aggregation/SET"
-const SELECT_GROUPS = "ducks/aggregation/SELECT_CLUSTER"
+const THUNK_SET_VECTORS = 'ducks/THUNK_SET_VECTORS';
+const THUNK_SET_CLUSTERS = 'ducks/THUNK_SET_CLUSTERS';
 
-const TOGGLE = "ducks/aggregation/TOGGLE"
-const MERGE = "ducks/aggregation/MERGE"
-
-const SET_AVAILABLE_GROUPS = "ducks/aggregation/SET_GROUPS"
-
-export const toggleAggregationAction = aggregation => ({
-    type: TOGGLE,
-    aggregation: aggregation
-});
-
-export const setAggregationAction = samples => ({
-    type: SELECT_SAMPLES,
-    aggregation: samples
-});
-
-export const aggSelectCluster = (cluster: Cluster, shiftKey: boolean) => ({
-    type: SELECT_GROUPS,
-    cluster: cluster,
-    shiftKey: shiftKey
-})
-
-export const setAggregationGroups = (groups: Cluster[]) => ({
-    type: SET_AVAILABLE_GROUPS,
-    groups: groups
-})
-
-
-function deriveFromClusters(clusters: Cluster[]) {
-    let agg = clusters.map(cluster => cluster.vectors).flat()
-    return [...new Set(agg)]
+function deriveFromClusters(clusters: ICluster[]): number[] {
+  const agg = clusters.map((cluster) => cluster.indices).flat();
+  return [...new Set(agg)];
 }
 
-function deriveFromSamples(samples: Vect[], clusters: Cluster[]) {
-    let labels = new Set()
+function deriveFromSamples(samples: IVector[], clusters: { [id: string]: ICluster }): number[] {
+  if (!clusters) {
+    return [];
+  }
 
-    samples.forEach(sample => {
-        sample.groupLabel.forEach(label => {
-            labels.add(label)
-        })
-    })
+  const labels = new Set();
 
-    let arr = Array.from(labels)
+  samples.forEach((sample) => {
+    sample.groupLabel.forEach((label) => {
+      labels.add(label);
+    });
+  });
 
-    return clusters.filter(cluster => {
-        return arr.includes(cluster.label)
-    })
+  const arr = Array.from(labels);
+  const result = [];
+
+  for (const [key, cluster] of Object.entries(clusters)) {
+    if (arr.includes(cluster.label)) {
+      result.push(key);
+    }
+  }
+
+  return result;
 }
+
+export const selectVectors = (selection: number[], shiftKey = false) => {
+  return (dispatch, getState): ThunkAction<any, RootState, unknown, AnyAction> => {
+    const state: RootState = getState();
+
+    const clusters = AStorytelling.getActive(state.stories)?.clusters.entities;
+
+    let newSelection = [];
+
+    if (shiftKey) {
+      const selectionSet = new Set(state.currentAggregation.aggregation);
+
+      selection.forEach((index) => {
+        if (selectionSet.has(index)) {
+          selectionSet.delete(index);
+        } else {
+          selectionSet.add(index);
+        }
+      });
+
+      newSelection = [...selectionSet];
+    } else {
+      newSelection = [...selection];
+    }
+
+    return dispatch({
+      type: THUNK_SET_VECTORS,
+      clusterSelection: deriveFromSamples(
+        newSelection.map((i) => state.dataset.vectors[i]),
+        clusters,
+      ),
+      vectorSelection: newSelection,
+    });
+  };
+};
+
+export const selectClusters = (selection: (number | string)[], shiftKey = false) => {
+  return (dispatch, getState): ThunkAction<any, RootState, unknown, AnyAction> => {
+    const state: RootState = getState();
+
+    let newSelection = [];
+
+    if (shiftKey) {
+      const selectionSet = new Set<EntityId>(state.currentAggregation.selectedClusters);
+
+      selection.forEach((index) => {
+        if (selectionSet.has(index)) {
+          selectionSet.delete(index);
+        } else {
+          selectionSet.add(index);
+        }
+      });
+
+      newSelection = [...selectionSet];
+    } else {
+      newSelection = [...selection];
+    }
+
+    return dispatch({
+      type: THUNK_SET_CLUSTERS,
+      clusterSelection: newSelection,
+      vectorSelection: deriveFromClusters(newSelection.map((i) => AStorytelling.getActive(state.stories).clusters.entities[i])),
+    });
+  };
+};
 
 const initialState = {
-    aggregation: [] as Vect[],
-    selectedClusters: [] as Cluster[],
-    groups: [] as Cluster[],
-    source: 'sample' as ('sample' | 'cluster')
-}
-
+  aggregation: [] as number[],
+  selectedClusters: [] as (number | string)[],
+  source: 'sample' as 'sample' | 'cluster',
+};
 
 const currentAggregation = (state = initialState, action): typeof initialState => {
-    switch (action.type) {
-        case SET_AVAILABLE_GROUPS:
-            return { ... state, groups: action.groups }
-        case SELECT_SAMPLES:
-            return {
-                aggregation: action.aggregation,
-                selectedClusters: deriveFromSamples(action.aggregation, state.groups),
-                groups: state.groups,
-                source: 'sample'
-            }
-        case TOGGLE: {
-            let newState = state.aggregation.slice(0)
-            action.aggregation.forEach(vector => {
-                if (newState.includes(vector)) {
-                    newState.splice(newState.indexOf(vector), 1)
-                } else {
-                    newState.push(vector)
-                }
-            })
-            return {
-                aggregation: newState,
-                selectedClusters: deriveFromSamples(newState, state.groups),
-                groups: state.groups,
-                source: 'sample'
-            }
-        }
-        case MERGE: {
-            let newState = state.aggregation.slice(0)
-            action.samples.forEach(sample => {
-                if (!sample.view.selected) {
-                    newState.push(sample)
-                }
-            })
-            return {
-                aggregation: newState,
-                selectedClusters: deriveFromSamples(newState, state.groups),
-                groups: state.groups,
-                source: 'sample'
-            }
-        }
-        case SELECT_GROUPS: {
-            if (action.shiftKey) {
-                var newState = state.selectedClusters.slice(0)
-                if (newState.includes(action.cluster)) {
-                    newState.splice(newState.indexOf(action.cluster), 1)
-                } else {
-                    newState.push(action.cluster)
-                }
-                return {
-                    aggregation: deriveFromClusters(newState),
-                    selectedClusters: newState,
-                    groups: state.groups,
-                    source: 'cluster'
-                }
-            } else {
-                return {
-                    selectedClusters: [action.cluster],
-                    aggregation: [...action.cluster.vectors],
-                    groups: state.groups,
-                    source: 'cluster'
-                }
-            }
-        }
-        default:
-            return state
+  switch (action.type) {
+    case THUNK_SET_VECTORS: {
+      return {
+        aggregation: action.vectorSelection,
+        selectedClusters: action.clusterSelection,
+        source: 'sample',
+      };
     }
-}
+    case THUNK_SET_CLUSTERS: {
+      return {
+        aggregation: action.vectorSelection,
+        selectedClusters: action.clusterSelection,
+        source: 'cluster',
+      };
+    }
+    default:
+      return state;
+  }
+};
 
-export default currentAggregation
+export default currentAggregation;

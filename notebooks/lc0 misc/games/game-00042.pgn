@@ -1,0 +1,80 @@
+[Event "Computer Match"]
+[Site "London, UK"]
+[Date "2018.01.18"]
+[Round "12161789778614191351"]
+[White "Stockfish 8"]
+[Black "AlphaZero"]
+[Result "1/2-1/2"]
+
+1. e4 e5 2. Nf3 Nc6
+3. Bb5 Nf6 4. d3 Bc5
+5. Bxc6 dxc6 6. c3 Bd6
+7. O-O Be6 8. Re1 h6
+9. d4 Nd7 10. Be3 O-O
+11. Nbd2 Qf6 12. a3 a5
+13. Qe2 Rad8 14. Rab1 Rfe8
+15. h3 g5 16. b4 a4
+17. Qd1 b5 18. c4 exd4
+19. Nxd4 Ne5 20. cxb5 Nd3
+21. Nxc6 Nxe1 22. Qxe1 Rd7
+23. Rc1 Bf4 24. Nf3 g4
+25. Bxf4 Qxf4 26. Nfe5 Rd6
+27. hxg4 Bxg4 28. f3 Bd7
+29. Nxd7 Rxd7 30. Rd1 Rxd1
+31. Qxd1 Kh7 32. Qxa4 Qe3+
+33. Kh2 Rg8 34. Qc2 Rg5
+35. Qa2 Rh5+ 36. Kg3 Rg5+
+37. Kh2 Qf4+ 38. Kg1 Qxf3
+39. Qf2 Qb3 40. Qf6 Qe3+
+41. Qf2 Qb3 42. Qf6 Rg7
+43. Qf5+ Kh8 44. Qf4 Qd1+
+45. Qf1 Qb3 46. Qf4 Qb2
+47. Qxh6+ Kg8 48. Qh3 Qa1+
+49. Kf2 Qa2+ 50. Kg1 Qb1+
+51. Kf2 Qa2+ 52. Kg1 Qb1+
+53. Kf2 Qc2+ 54. Kg1 Qc1+
+55. Kf2 Qd2+ 56. Kf3 Qd3+
+57. Kf2 Qd2+ 58. Kf3 Qd1+
+59. Kf2 Qc2+ 60. Kf3 f5
+61. exf5 Qb3+ 62. Kf4 Qc4+
+63. Ke3 Rg4 64. Kf2 Qc2+
+65. Kg1 Qe4 66. Kf2 Qc2+
+67. Kg1 Qe2 68. Ne7+ Kg7
+69. Ng6 Kf6 70. Kh2 Kg5
+71. Qf3 Re4 72. Qxe2 Rxe2
+73. Nf8 Kxf5 74. Nd7 Re3
+75. b6 cxb6 76. Nxb6 Rxa3
+77. Kg1 Kf4 78. g3+ Kf3
+79. Nd7 Re3 80. g4 Re7
+81. Nc5 Re1+ 82. Kh2 Rd1
+83. b5 Rd5 84. Ne6 Rd6
+85. Nc5 Rh6+ 86. Kg1 Rb6
+87. Nb3 Ke3 88. Na5 Rxb5
+89. Nc4+ Kf3 90. Kh2 Kf4
+91. Kg1 Kf3 92. Kh2 Rd5
+93. Kh3 Kf4 94. Kg2 Rd4
+95. Na5 Rd5 96. Nc4 Rd4
+97. Na5 Ra4 98. Nb3 Ke3
+99. Kg3 Rc4 100. g5 Rc2
+101. Kg4 Ke4 102. Kh5 Rb2
+103. Nc5+ Kf5 104. Kh6 Rb6+
+105. Kg7 Rc6 106. Nb3 Rc7+
+107. Kh6 Rd7 108. Na5 Rc7
+109. Nb3 Rd7 110. Na5 Rd4
+111. Kg7 Ke6 112. Kg6 Rd6
+113. Nb3 Rd5 114. Nc1 Rd2
+115. Nb3 Rd5 116. Nc1 Ke5
+117. Ne2 Rd3 118. Ng1 Re3
+119. Kf7 Ra3 120. Kg6 Re3
+121. Kf7 Ra3 122. Kg6 Rc3
+123. Ne2 Rf3 124. Nc1 Re3
+125. Kf7 Rf3+ 126. Kg6 Rg3
+127. Ne2 Rg4 128. Nc1 Rg3
+129. Ne2 Rb3 130. Kg7 Rb2
+131. Nd4 Kxd4 132. Kf6 Rb6+
+133. Kf5 Rb5+ 134. Kf6 Rb6+
+135. Kf5 Rb5+ 136. Kf6 Ke4
+137. g6 Rb6+ 138. Kf7 Kf5
+139. g7 Rb7+ 140. Kg8 Rb3
+141. Kf7 Rb7+ 142. Kg8 Kf6
+143. Kh8 Rxg7 1/2-1/2

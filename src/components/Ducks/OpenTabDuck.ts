@@ -1,18 +1,17 @@
-const SET = "ducks/openTab/SET"
+const SET = 'ducks/openTab/SET';
 
-export const setOpenTabAction = openTab => ({
-    type: SET,
-    openTab: openTab
+export const setOpenTabAction = (openTab) => ({
+  type: SET,
+  openTab,
 });
 
 const openTab = (state = 0, action) => {
+  switch (action.type) {
+    case SET:
+      return action.openTab;
+    default:
+      return state;
+  }
+};
 
-    switch (action.type) {
-        case SET:
-            return action.openTab
-        default:
-            return state
-    }
-}
-
-export default openTab
+export default openTab;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // https://rajeshnaroth.medium.com/writing-a-react-hook-to-cancel-promises-when-a-component-unmounts-526efabf251f
 import { useRef, useEffect } from 'react';
 
@@ -6,8 +7,8 @@ export function makeCancelable(promise) {
 
   const wrappedPromise = new Promise((resolve, reject) => {
     promise
-      .then(val => (isCanceled ? reject(new Error("Promise is canceled: " + isCanceled)) : resolve(val)))
-      .catch(error => (isCanceled ? reject(new Error("Promise is canceled: " + isCanceled)) : reject(error)));
+      .then((val) => (isCanceled ? reject(new Error(`Promise is canceled: ${isCanceled}`)) : resolve(val)))
+      .catch((error) => (isCanceled ? reject(new Error(`Promise is canceled: ${isCanceled}`)) : reject(error)));
   });
 
   return {
@@ -18,53 +19,52 @@ export function makeCancelable(promise) {
   };
 }
 
-export default function useCancellablePromise(cancelable = makeCancelable) {
+export function useCancellablePromise(cancelable = makeCancelable) {
   const emptyPromise = Promise.resolve(true);
 
   // test if the input argument is a cancelable promise generator
   if (cancelable(emptyPromise).cancel === undefined) {
-    throw new Error('promise wrapper argument must provide a cancel() function')
+    throw new Error('promise wrapper argument must provide a cancel() function');
   }
 
   const promises = useRef();
   const controllers = useRef();
 
-  useEffect(
-    () => {
-        // @ts-ignore
-      promises.current = promises.current || [];
+  useEffect(() => {
+    // @ts-ignore
+    promises.current = promises.current || [];
+    // @ts-ignore
+    controllers.current = controllers.current || [];
+    return function cancel() {
       // @ts-ignore
-      controllers.current = controllers.current || [];
-      return function cancel() {
-        // @ts-ignore
-        controllers.current.forEach(p => p.abort());
-        // @ts-ignore
-        controllers.current = [];
-        // @ts-ignore
-        promises.current.forEach(p => p.cancel());
-        // @ts-ignore
-        promises.current = [];
-      };
-    }, []
-  );
+      controllers.current.forEach((p) => p.abort());
+      // @ts-ignore
+      controllers.current = [];
+      // @ts-ignore
+      promises.current.forEach((p) => p.cancel());
+      // @ts-ignore
+      promises.current = [];
+    };
+  }, []);
 
-  function cancellablePromise(p, controller?) {
+  function cancellablePromise<T = any>(p: Promise<T>, controller?: AbortController): Promise<T> {
     const cPromise = cancelable(p);
     // @ts-ignore
     promises.current.push(cPromise);
-    if(controller)
+    if (controller)
       // @ts-ignore
       controllers.current.push(controller);
+    // @ts-ignore
     return cPromise.promise;
   }
 
-  function cancelPromises(){
+  function cancelPromises() {
     // @ts-ignore
-    controllers.current?.forEach(p => p.abort());
+    controllers.current?.forEach((p) => p.abort());
     // @ts-ignore
     controllers.current = [];
     // @ts-ignore
-    promises.current?.forEach(p => p.cancel());
+    promises.current?.forEach((p) => p.cancel());
     // @ts-ignore
     promises.current = [];
   }

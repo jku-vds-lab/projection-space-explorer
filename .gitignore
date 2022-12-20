@@ -6,6 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+package-lock.json
+
 # Dist
 # dist/
 
@@ -92,3 +94,15 @@ typings/
 
 # temp files
 /backend/temp-files
+/backend/session_data
+
+# large dataset
+/datasets/chemvis
+/dist/datasets/chemvis
+/datasets/reaction_optimization
+/dist/datasets/reaction_optimization
+
+# Backend
+__pycache__/
+*.egg-info/
+*.egg

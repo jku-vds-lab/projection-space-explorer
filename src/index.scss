@@ -1,0 +1,22 @@
+.gutter {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 5px;
+    position: relative;
+  }
+  
+.gutter:hover {
+    background-color: #007dad;
+}
+
+.gutter:after {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 50px;
+    top: 0px;
+    background-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.12) 3px, transparent 3px);
+    background-size: 10px 12px;
+    background-position: center;
+    left:50%;
+    transform:translate(-50%,0%);
+}

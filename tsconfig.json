@@ -1,11 +1,19 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "outDir": "dist/",
     "noImplicitAny": false,
-    "module": "commonjs",
-    "target": "es2016",
-    "jsx": "react",
-    "lib": ["ESNext","DOM"]
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "target": "ES2021",
+    "jsx": "react-jsx",
+    "lib": ["ESNext","DOM"],
+    "declaration": true,
+    "sourceMap": true,
+    "preserveSymlinks": true,
+    "declarationDir": "dist",
+    "importHelpers": true,
+    "allowSyntheticDefaultImports": true,
   },
   "include": [
     "./src/**/*"

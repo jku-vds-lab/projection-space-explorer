@@ -1,0 +1,35 @@
+name: Build
+
+on: 
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 1 * * *" # "At 01:15 on every day.”, see: https://crontab.guru/#15_1_*_*_*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node 16.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.x
+
+    - name: Install dependencies
+      run: |
+        npm install --legacy-peer-deps
+
+    - name: Run test
+      run: |
+        npm run test
+
+    - name: Run lint
+      run: |
+        npm run lint
+
+    - name: Run build
+      run: |
+        npm run build

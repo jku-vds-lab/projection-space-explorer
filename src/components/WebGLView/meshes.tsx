@@ -1,208 +1,214 @@
-import { valueInRange } from './UtilityFunctions'
-import { ContinuousMapping } from "../Utility/Colors/ContinuousMapping"
-import * as THREE from 'three'
-import { DataLine } from "../Utility/Data/DataLine"
-import { Vect } from "../Utility/Data/Vect"
-import { Dataset } from "../Utility/Data/Dataset"
-import { LayeringSystem } from './LayeringSystem/LayeringSystem'
-import { StoriesType } from '../Ducks/StoriesDuck'
+/* eslint-disable prefer-destructuring */
+/* eslint-disable @typescript-eslint/no-var-requires */
+import * as THREE from 'three';
+import { BufferAttribute } from 'three';
+import { getMinMaxOfChannel, valueInRange } from './UtilityFunctions';
+import { isNumericMapping, Mapping, mapValueToColor } from '../Utility/Colors/Mapping';
+import { DataLine } from '../../model/DataLine';
+import { IVector } from '../../model/Vector';
+import { Dataset } from '../../model/Dataset';
+import { LayeringSystem } from './LayeringSystem';
 
-/**
- * Generates a line mesh
- */
-var convex = require('three/examples/jsm/geometries/ConvexGeometry')
+// @ts-ignore
+import SpriteAtlas from '../../../textures/sprites/atlas.png';
+import { IBaseProjection } from '../../model/ProjectionInterfaces';
+import { createLinearRangeScaler } from '../Utility/ScalingAndAxes';
+import { Shapes } from './Shapes';
+import { IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 
-var fragmentShader = require('../../shaders/fragment.glsl')
-var vertexShader = require('../../shaders/vertex.glsl')
+// @ts-ignore
+import fragmentShader from '../../shaders/fragment.glsl?raw';
+// @ts-ignore
+import vertexShader from '../../shaders/vertex.glsl?raw';
 
-
-var override = require('./meshline')
-
-export enum Shapes {
-  Circle = 'circle',
-  Star = 'star',
-  Square = 'square',
-  Cross = 'cross'
-}
-
+import override from './meshline';
+import { CategoryOption } from './CategoryOptions';
+import { AShallowSet } from '../Utility/ShallowSet';
 
 export function imageFromShape(value) {
   switch (value) {
     case Shapes.Cross:
-      return "./textures/sprites/cross.png"
+      return './textures/sprites/cross.png';
     case Shapes.Square:
-      return "./textures/sprites/square.png"
+      return './textures/sprites/square.png';
     case Shapes.Circle:
-      return "./textures/sprites/circle.png"
+      return './textures/sprites/circle.png';
     case Shapes.Star:
-      return "./textures/sprites/star.png"
+      return './textures/sprites/star.png';
+    default:
+      return '';
   }
 }
 
 function shapeFromInt(value) {
-  if (value == 0) {
-    return Shapes.Cross
+  if (value === 0) {
+    return Shapes.Cross;
   }
-  if (value == 1) {
-    return Shapes.Square
+  if (value === 1) {
+    return Shapes.Square;
   }
-  if (value == 2) {
-    return Shapes.Circle
+  if (value === 2) {
+    return Shapes.Circle;
   }
-  if (value == 3) {
-    return Shapes.Star
+  if (value === 3) {
+    return Shapes.Star;
   }
+
+  return Shapes.Circle;
 }
 
 function shapeToInt(value) {
   switch (value) {
     case Shapes.Cross:
-      return 0
+      return 0;
     case Shapes.Square:
-      return 1
+      return 1;
     case Shapes.Circle:
-      return 2
+      return 2;
     case Shapes.Star:
-      return 3
+      return 3;
+    default:
+      return 2;
   }
 }
 
-
 class LineVis {
-  line: any
-  color: any
+  line: any;
+
+  color: any;
 
   constructor(line) {
-    this.line = line
-    this.color = this.line.material.color
+    this.line = line;
+    this.color = this.line.material.color;
   }
 
   dispose() {
-    this.line.material.dispose()
-    this.line.geometry.dispose()
+    this.line.material.dispose();
+    this.line.geometry.dispose();
 
-    this.line = null
+    this.line = null;
   }
 }
 
-
-
-
-
 export class LineVisualization {
-  segments: DataLine[]
-  highlightIndices: any
-  lineColorScheme: any
-  meshes: any
-  zoom: any
-  highlightMeshes
+  segments: DataLine[];
 
-  grayedLayerSystem: LayeringSystem
+  highlightIndices: any;
+
+  lineColorScheme: any;
+
+  meshes: any;
+
+  zoom: any;
+
+  highlightMeshes;
+
+  grayedLayerSystem: LayeringSystem;
+
+  pathLengthRange: any;
 
   constructor(segments, lineColorScheme) {
-    this.segments = segments
-    this.highlightIndices = null
-    this.lineColorScheme = lineColorScheme
+    this.segments = segments;
+    this.highlightIndices = null;
+    this.lineColorScheme = lineColorScheme;
 
-    this.grayedLayerSystem = new LayeringSystem(this.segments.length)
+    this.grayedLayerSystem = new LayeringSystem(this.segments.length);
 
     // selection layer
-    this.grayedLayerSystem.registerLayer(5, true)
-    this.grayedLayerSystem.setLayerActive(5, false)
+    this.grayedLayerSystem.registerLayer(5, true);
+    this.grayedLayerSystem.setLayerActive(5, false);
 
     // trace layer
-    this.grayedLayerSystem.registerLayer(4, true)
+    this.grayedLayerSystem.registerLayer(4, true);
 
     // storybook layer
-    this.grayedLayerSystem.registerLayer(3, true)
+    this.grayedLayerSystem.registerLayer(3, true);
   }
 
   setBrightness(brightness: number) {
-    this.segments.forEach(segment => {
-      segment.view.lineMesh.material.opacity = brightness / 100
-    })
+    this.segments.forEach((segment) => {
+      segment.__meta__.lineMesh.material.opacity = brightness / 100;
+    });
   }
 
   dispose(scene) {
-    this.meshes.forEach(mesh => {
-      scene.remove(mesh.line)
-      mesh.dispose()
-    })
+    this.meshes.forEach((mesh) => {
+      scene.remove(mesh.line);
+      mesh.dispose();
+    });
   }
 
   setZoom(zoom) {
-    this.zoom = zoom
+    this.zoom = zoom;
 
     if (this.highlightMeshes != null) {
-      this.highlightMeshes.forEach(mesh => {
-        mesh.material.lineWidth = 0.005
-      })
+      this.highlightMeshes.forEach((mesh) => {
+        mesh.material.lineWidth = 0.005;
+      });
     }
   }
 
   groupHighlight(indices) {
     if (indices != null && indices.length > 0) {
-      this.grayedLayerSystem.setLayerActive(5, true)
-      this.grayedLayerSystem.clearLayer(5, true)
+      this.grayedLayerSystem.setLayerActive(5, true);
+      this.grayedLayerSystem.clearLayer(5, true);
 
-      indices.forEach(index => {
-        this.grayedLayerSystem.setValue(this.segments.findIndex(e => e.lineKey == index), 5, false)
-      })
+      indices.forEach((index) => {
+        this.grayedLayerSystem.setValue(
+          this.segments.findIndex((e) => e.lineKey === index),
+          5,
+          false,
+        );
+      });
     } else {
-      this.grayedLayerSystem.clearLayer(5, false)
-      this.grayedLayerSystem.setLayerActive(5, false)
+      this.grayedLayerSystem.clearLayer(5, false);
+      this.grayedLayerSystem.setLayerActive(5, false);
     }
 
-    this.update()
+    this.update();
   }
 
-
-
-
-  storyTelling(stories: StoriesType) {
+  storyTelling(stories: IStorytelling, vectors: IVector[]) {
     if (stories && stories.active) {
-      this.grayedLayerSystem.clearLayer(3, true)
+      this.grayedLayerSystem.clearLayer(3, true);
 
-      let lineIndices = new Set<number>()
-      stories.active.clusters.forEach(cluster => {
-        cluster.vectors.forEach(sample => {
-          lineIndices.add(sample.view.lineIndex)
-        })
-      })
+      const lineIndices = new Set<number>();
 
-      lineIndices.forEach(lineIndex => {
-        this.grayedLayerSystem.setValue(lineIndex, 3, false)
-      })
+      for (const [, cluster] of Object.entries(AStorytelling.getActive(stories).clusters.entities)) {
+        cluster.indices.forEach((i) => {
+          lineIndices.add(vectors[i].__meta__.lineIndex);
+        });
+      }
 
-      this.grayedLayerSystem.setLayerActive(3, true)
+      lineIndices.forEach((lineIndex) => {
+        this.grayedLayerSystem.setValue(lineIndex, 3, false);
+      });
+
+      this.grayedLayerSystem.setLayerActive(3, true);
     } else {
-      this.grayedLayerSystem.clearLayer(3, false)
-      this.grayedLayerSystem.setLayerActive(3, false)
+      this.grayedLayerSystem.clearLayer(3, false);
+      this.grayedLayerSystem.setLayerActive(3, false);
     }
 
     if (stories && stories.trace) {
-      this.grayedLayerSystem.clearLayer(4, true)
-      this.grayedLayerSystem.setLayerActive(4, true)
+      this.grayedLayerSystem.clearLayer(4, true);
+      this.grayedLayerSystem.setLayerActive(4, true);
 
-      let lineIndices = new Set<number>()
-      stories.trace.mainPath.forEach(cluster => {
-        cluster.vectors.forEach(sample => {
-          lineIndices.add(sample.view.lineIndex)
-        })
-      })
+      const lineIndices = new Set<number>();
+      stories.trace.mainPath.forEach((cluster) => {
+        AStorytelling.retrieveCluster(stories, cluster).indices.forEach((i) => {
+          lineIndices.add(vectors[i].__meta__.lineIndex);
+        });
+      });
 
-      lineIndices.forEach(lineIndex => {
-        this.grayedLayerSystem.setValue(lineIndex, 4, false)
-      })
+      lineIndices.forEach((lineIndex) => {
+        this.grayedLayerSystem.setValue(lineIndex, 4, false);
+      });
     } else {
-      this.grayedLayerSystem.clearLayer(4, false)
-      this.grayedLayerSystem.setLayerActive(4, false)
+      this.grayedLayerSystem.clearLayer(4, false);
+      this.grayedLayerSystem.setLayerActive(4, false);
     }
-
   }
-
-
-
 
   /**
    * Highlights the given lines that correspond to the indices
@@ -213,204 +219,218 @@ export class LineVisualization {
    * @param {*} scene
    */
   highlight(indices, width, height, scene, grayout = false) {
-
     // Gray other lines if needed
     if (grayout) {
-      this.groupHighlight(indices)
+      this.groupHighlight(indices);
     }
 
     // Undo previous highlight
     if (this.highlightIndices != null) {
-      this.highlightIndices.forEach(index => {
-        this.segments.find(e => e.lineKey == index).view.highlighted = false
-      })
-      this.highlightMeshes.forEach(mesh => {
-        mesh.material.dispose()
-        mesh.geometry.dispose()
-        scene.remove(mesh)
-      })
+      this.highlightIndices.forEach((index) => {
+        this.segments.find((e) => e.lineKey === index).__meta__.highlighted = false;
+      });
+      this.highlightMeshes.forEach((mesh) => {
+        mesh.material.dispose();
+        mesh.geometry.dispose();
+        scene.remove(mesh);
+      });
     }
 
-    this.highlightIndices = indices
-    this.highlightMeshes = []
-    this.highlightIndices.forEach(index => {
-      var findSeg = this.segments.find(e => e.lineKey == index)
-      findSeg.view.highlighted = true
+    this.highlightIndices = indices;
+    this.highlightMeshes = [];
+    this.highlightIndices.forEach((index) => {
+      const findSeg = this.segments.find((e) => e.lineKey === index);
+      findSeg.__meta__.highlighted = true;
 
-      var geometry = new THREE.Geometry();
-      findSeg.view.lineMesh.geometry.vertices.forEach((vertex, i) => {
-        geometry.vertices.push(vertex)
-      })
+      const geometry = new THREE.Geometry();
+      findSeg.__meta__.lineMesh.geometry.vertices.forEach((vertex) => {
+        geometry.vertices.push(vertex);
+      });
 
-
-      var line = new override.MeshLine();
-      line.setGeometry(geometry, function (p) { return 1; });
-      var material = new override.MeshLineMaterial({
-        color: new THREE.Color(findSeg.view.lineMesh.material.color),
+      const line = new override.MeshLine();
+      line.setGeometry(geometry, function () {
+        return 1;
+      });
+      const material = new override.MeshLineMaterial({
+        color: new THREE.Color(findSeg.__meta__.lineMesh.material.color),
         resolution: new THREE.Vector2(width, height),
         lineWidth: 0.005,
         sizeAttenuation: true,
         transparent: true,
         opacity: 0.5,
-        depthTest: false
+        depthTest: false,
       });
 
-      var m = new THREE.Mesh(line.geometry, material)
+      const m = new THREE.Mesh(line.geometry, material);
       this.highlightMeshes.push(m);
       scene.add(m);
-    })
+    });
 
-    this.update()
+    this.update();
   }
 
-
   createMesh(lineBrightness: number) {
-    var lines = []
+    const lines = [];
 
+    console.log(this.lineColorScheme);
     this.segments.forEach((segment, index) => {
+      segment.__meta__.intrinsicColor = mapValueToColor(this.lineColorScheme, segment.vectors[0].algo);
 
-      segment.view.intrinsicColor = this.lineColorScheme.map(segment.vectors[0].algo)
-
-      var geometry = new THREE.Geometry();
-      var material = new THREE.LineBasicMaterial({
-        color: segment.view.intrinsicColor.hex,
+      const geometry = new THREE.Geometry();
+      const material = new THREE.LineBasicMaterial({
+        color: segment.__meta__.intrinsicColor.hex,
         transparent: true,
 
         // Calculate opacity
-        opacity: lineBrightness / 100
+        opacity: lineBrightness / 100,
         // 1 - 1     100 - 0.1    200 - 0.05      50 - 0.2     25 - 0.4
       });
 
+      const da = [];
+      segment.vectors.forEach(function (vector) {
+        da.push(new THREE.Vector2(vector.x, vector.y));
+        vector.__meta__.lineIndex = index;
+      });
 
+      const curve = new THREE.SplineCurve(da);
 
-      var da = []
-      segment.vectors.forEach(function (vector, vi) {
-        da.push(new THREE.Vector2(vector.x, vector.y))
-        vector.view.lineIndex = index
-      })
-
-      var curve = new THREE.SplineCurve(da)
-
-      curve.getPoints(700).forEach(function (p, i) {
-        geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
-      })
-      var line = new THREE.Line(geometry, material);
+      curve.getPoints(700).forEach(function (p) {
+        geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0));
+      });
+      const line = new THREE.Line(geometry, material);
 
       // Store line data in segment...
-      segment.view.lineMesh = line
+      segment.__meta__.lineMesh = line;
 
+      lines.push(new LineVis(line));
+    });
 
-      lines.push(new LineVis(line))
-    })
-
-    this.meshes = lines
-    return lines
+    this.meshes = lines;
+    return lines;
   }
 
+  updatePosition(positions: IBaseProjection) {
+    this.segments.forEach((segment) => {
+      const da = [];
 
-  updatePosition() {
-    this.segments.forEach((segment, index) => {
-      var da = []
+      segment.vectors.forEach(function (v) {
+        const vector = positions[v.__meta__.meshIndex];
+        da.push(new THREE.Vector2(vector.x, vector.y));
+      });
 
-      segment.vectors.forEach(function (vector, vi) {
-        da.push(new THREE.Vector2(vector.x, vector.y))
-      })
+      const geometry = new THREE.Geometry();
+      const curve = new THREE.SplineCurve(da);
 
-      var geometry = new THREE.Geometry();
-      var curve = new THREE.SplineCurve(da)
+      curve.getPoints(700).forEach(function (p) {
+        geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0));
+      });
 
-
-      curve.getPoints(700).forEach(function (p, i) {
-        geometry.vertices.push(new THREE.Vector3(p.x, p.y, -1.0))
-      })
-
-      segment.view.lineMesh.geometry.dispose()
-      segment.view.lineMesh.geometry = geometry
-      segment.view.lineMesh.geometry.verticesNeedUpdate = true
-    })
+      segment.__meta__.lineMesh.geometry.dispose();
+      segment.__meta__.lineMesh.geometry = geometry;
+      segment.__meta__.lineMesh.geometry.verticesNeedUpdate = true;
+    });
   }
-
 
   /**
    * Updates visibility based on settings in the lines
    */
   update() {
     this.segments.forEach((segment, si) => {
-      segment.view.lineMesh.material.color.setStyle(this.grayedLayerSystem.getValue(si) ? '#C0C0C0' : segment.view.intrinsicColor.hex)
+      segment.__meta__.lineMesh.material.color.setStyle(this.grayedLayerSystem.getValue(si) ? '#C0C0C0' : segment.__meta__.intrinsicColor.hex);
 
-      segment.view.lineMesh.visible = segment.view.detailVisible
-        && segment.view.globalVisible
-        && !segment.view.highlighted
-        && valueInRange(segment.vectors.length, segment.view.pathLengthRange)
-    })
+      segment.__meta__.lineMesh.visible =
+        segment.__meta__.detailVisible &&
+        segment.__meta__.globalVisible &&
+        !segment.__meta__.highlighted &&
+        valueInRange(segment.vectors.length, this.pathLengthRange);
+    });
   }
 }
 
-
-
 export class PointVisualization {
-  highlightIndex: any
-  particleSize: any
-  vectorColorScheme: any
-  dataset: Dataset
-  showSymbols: any
-  colorsChecked: any
-  segments: DataLine[]
-  vectors: Vect[]
-  mesh: any
-  sizeAttribute: any
-  colorAttribute
+  highlightIndex: any;
 
-  grayedLayerSystem: LayeringSystem
-  lineLayerSystem: LayeringSystem
+  particleSize: any;
 
-  constructor(vectorColorScheme, dataset, size, lineLayerSystem: LayeringSystem) {
-    this.highlightIndex = null
-    this.particleSize = size
-    this.vectorColorScheme = vectorColorScheme
-    this.dataset = dataset
+  vectorMapping: Mapping;
 
-    this.showSymbols = { 'cross': true, 'square': true, 'circle': true, 'star': true }
-    this.colorsChecked = null
+  dataset: Dataset;
 
-    this.grayedLayerSystem = new LayeringSystem(dataset.vectors.length)
+  showSymbols: any;
+
+  colorsChecked: any;
+
+  segments: DataLine[];
+
+  vectors: IVector[];
+
+  vectorSegmentLookup: DataLine[];
+
+  mesh: THREE.Points<THREE.BufferGeometry, THREE.ShaderMaterial>;
+
+  sizeAttribute: any;
+
+  colorAttribute;
+
+  grayedLayerSystem: LayeringSystem;
+
+  lineLayerSystem: LayeringSystem;
+
+  pathLengthRange: any;
+
+  baseSize: number[];
+
+  constructor(vectorMapping: Mapping, dataset: Dataset, size, lineLayerSystem: LayeringSystem, segments) {
+    this.highlightIndex = null;
+    this.particleSize = size;
+    this.vectorMapping = vectorMapping;
+    this.dataset = dataset;
+
+    this.showSymbols = { cross: true, square: true, circle: true, star: true };
+    this.colorsChecked = null;
+
+    this.grayedLayerSystem = new LayeringSystem(dataset.vectors.length);
+    this.baseSize = new Array<number>(dataset.vectors.length);
 
     // selection layer
-    this.grayedLayerSystem.registerLayer(5, true)
-    this.grayedLayerSystem.setLayerActive(5, false)
+    this.grayedLayerSystem.registerLayer(5, true);
+    this.grayedLayerSystem.setLayerActive(5, false);
 
     // trace layer
-    this.grayedLayerSystem.registerLayer(4, true)
+    this.grayedLayerSystem.registerLayer(4, true);
 
     // story layer
-    this.grayedLayerSystem.registerLayer(3, true)
+    this.grayedLayerSystem.registerLayer(3, true);
 
+    this.lineLayerSystem = lineLayerSystem;
 
-    this.lineLayerSystem = lineLayerSystem
+    this.vectorSegmentLookup = new Array(this.dataset.vectors.length);
+    if (dataset.isSequential) {
+      for (const [i, v] of this.dataset.vectors.entries()) {
+        this.vectorSegmentLookup[i] = segments.find((seg) => seg.lineKey === v.line);
+      }
+    }
   }
 
-  createMesh(data, segments) {
-    this.segments = segments
-    this.vectors = data
+  createMesh(data, segments, onUpload) {
+    this.segments = segments;
+    this.vectors = data;
 
-    var positions = new Float32Array(data.length * 3);
-    var colors = new Float32Array(data.length * 4);
-    var sizes = new Float32Array(data.length);
-    var types = new Float32Array(data.length);
-    var show = new Float32Array(data.length)
-    var selected = new Float32Array(data.length);
-    var i = 0
+    const positions = new Float32Array(data.length * 3);
+    const colors = new Float32Array(data.length * 4);
+    const sizes = new Float32Array(data.length);
+    const types = new Float32Array(data.length);
+    const show = new Float32Array(data.length);
+    const selected = new Float32Array(data.length);
+    let i = 0;
 
     if (this.dataset.isSequential) {
-      segments.forEach(segment => {
+      this.segments.forEach((segment) => {
         segment.vectors.forEach((vector, idx) => {
           new THREE.Vector3(vector.x, vector.y, 0.0).toArray(positions, i * 3);
 
           // Set the globalIndex which belongs to a specific vertex
-          vector.view.meshIndex = i
-
-          // Set segment information
-          vector.view.segment = segment
+          vector.__meta__.meshIndex = i;
 
           colors[i * 4] = 0;
           colors[i * 4 + 1] = 0;
@@ -419,32 +439,32 @@ export class PointVisualization {
 
           selected[i] = 0.0;
 
-          show[i] = 1.0
+          show[i] = 1.0;
 
-          //color.toArray( colors, i * 4 );
-          vector.view.baseSize = this.particleSize
+          // color.toArray( colors, i * 4 );
+          this.baseSize[vector.__meta__.meshIndex] = this.particleSize;
 
-          if (vector.age == 0) {
+          if (vector.age === 0) {
             // Starting point
-            types[i] = 0
-          } else if (idx == segment.vectors.length - 1) {
+            types[i] = 0;
+          } else if (idx === segment.vectors.length - 1) {
             // Ending point
-            types[i] = 3
+            types[i] = 3;
           } else {
             // Intermediate
-            types[i] = 2
+            types[i] = 2;
           }
-          vector.view.shapeType = shapeFromInt(types[i])
-          vector.view.highlighted = false
+          vector.__meta__.shapeType = shapeFromInt(types[i]);
+          vector.__meta__.highlighted = false;
 
-          i++
-        })
-      })
+          i++;
+        });
+      });
     } else {
       this.vectors.forEach((vector, i) => {
-        new THREE.Vector3(vector.x, vector.y, 0.0).toArray(positions, i * 3)
+        new THREE.Vector3(vector.x, vector.y, 0.0).toArray(positions, i * 3);
 
-        vector.view.meshIndex = i
+        vector.__meta__.meshIndex = i;
         colors[i * 4] = 0;
         colors[i * 4 + 1] = 0;
         colors[i * 4 + 2] = 0;
@@ -452,464 +472,386 @@ export class PointVisualization {
 
         selected[i] = 0.0;
 
-        show[i] = 1.0
-        vector.view.baseSize = this.particleSize
-        types[i] = 2
-        vector.view.shapeType = shapeFromInt(types[i])
-        vector.view.highlighted = false
-      })
+        show[i] = 1.0;
+        this.baseSize[vector.__meta__.meshIndex] = this.particleSize;
+        types[i] = 2;
+        vector.__meta__.shapeType = shapeFromInt(types[i]);
+        vector.__meta__.highlighted = false;
+      });
     }
 
+    const pointGeometry = new THREE.BufferGeometry();
 
+    const attributes = {
+      position: new THREE.BufferAttribute(positions, 3),
+      customColor: new THREE.BufferAttribute(colors, 4),
+      size: new THREE.BufferAttribute(sizes, 1),
+      type: new THREE.BufferAttribute(types, 1),
+      show: new THREE.BufferAttribute(show, 1),
+      selected: new THREE.BufferAttribute(selected, 1),
+    };
 
-
-    var pointGeometry = new THREE.BufferGeometry();
-    pointGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    pointGeometry.setAttribute('customColor', new THREE.BufferAttribute(colors, 4));
-    pointGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-    pointGeometry.setAttribute('type', new THREE.BufferAttribute(types, 1));
-    pointGeometry.setAttribute('show', new THREE.BufferAttribute(show, 1))
-    pointGeometry.setAttribute('selected', new THREE.BufferAttribute(selected, 1))
+    for (const [key, attribute] of Object.entries(attributes)) {
+      attribute.onUpload(onUpload);
+      pointGeometry.setAttribute(key, attribute);
+    }
 
     //
-    var pointMaterial = new THREE.ShaderMaterial({
+    const pointMaterial = new THREE.ShaderMaterial({
       uniforms: {
         zoom: { value: 1.0 },
         color: { value: new THREE.Color(0xffffff) },
         scale: { value: 1.0 },
         atlas: {
-          value: new THREE.TextureLoader().load("textures/sprites/atlas.png")
-        }
+          value: new THREE.TextureLoader().load(SpriteAtlas),
+        },
       },
       transparent: true,
-      vertexShader: vertexShader,
-      fragmentShader: fragmentShader,
-      alphaTest: 0.05
-    })
+      vertexShader,
+      fragmentShader,
+      alphaTest: 0.05,
+    });
 
     this.mesh = new THREE.Points(pointGeometry, pointMaterial);
 
-    this.sizeAttribute = this.mesh.geometry.attributes.size
+    this.sizeAttribute = this.mesh.geometry.attributes.size;
   }
-
-
 
   /**
    * Applies the gray-out effect on the particles based on the given story model
-   * 
+   *
    * @param stories The story model
    */
-  storyTelling(stories: StoriesType) {
+  storyTelling(stories: IStorytelling) {
     if (stories && stories.active) {
-      this.grayedLayerSystem.setLayerActive(3, true)
+      this.grayedLayerSystem.setLayerActive(3, true);
 
-      let vecIndices = new Set<number>()
-      stories.active.clusters.forEach(cluster => {
-        cluster.vectors.forEach(sample => {
-          vecIndices.add(sample.view.meshIndex)
-        })
-      })
+      const vecIndices = new Set<number>();
+      for (const [, cluster] of Object.entries(AStorytelling.getActive(stories).clusters.entities)) {
+        cluster.indices.forEach((sample) => {
+          vecIndices.add(sample);
+        });
+      }
 
-      vecIndices.forEach(value => {
-        this.grayedLayerSystem.setValue(value, 3, false)
-      })
+      vecIndices.forEach((value) => {
+        this.grayedLayerSystem.setValue(value, 3, false);
+      });
     } else {
-      this.grayedLayerSystem.setLayerActive(3, false)
+      this.grayedLayerSystem.setLayerActive(3, false);
     }
-
 
     if (stories && stories.trace) {
-      this.grayedLayerSystem.clearLayer(4, true)
-      this.grayedLayerSystem.setLayerActive(4, true)
+      this.grayedLayerSystem.clearLayer(4, true);
+      this.grayedLayerSystem.setLayerActive(4, true);
 
-      let vecIndices = new Set<number>()
-      stories.trace.mainPath.forEach(cluster => {
-        cluster.vectors.forEach(sample => {
-          vecIndices.add(sample.view.meshIndex)
-        })
-      })
+      const vecIndices = new Set<number>();
+      stories.trace.mainPath.forEach((cluster) => {
+        AStorytelling.retrieveCluster(stories, cluster).indices.forEach((i) => {
+          vecIndices.add(i);
+        });
+      });
 
-      vecIndices.forEach(value => {
-        this.grayedLayerSystem.setValue(value, 4, false)
-      })
+      vecIndices.forEach((value) => {
+        this.grayedLayerSystem.setValue(value, 4, false);
+      });
     } else {
-      this.grayedLayerSystem.clearLayer(4, false)
-      this.grayedLayerSystem.setLayerActive(4, false)
+      this.grayedLayerSystem.clearLayer(4, false);
+      this.grayedLayerSystem.setLayerActive(4, false);
     }
   }
 
-
-
-  groupHighlight(samples: Vect[]) {
+  groupHighlight(samples: number[]) {
     if (samples && samples.length > 0) {
-      this.grayedLayerSystem.clearLayer(5, true)
-      this.grayedLayerSystem.setLayerActive(5, true)
+      this.grayedLayerSystem.clearLayer(5, true);
+      this.grayedLayerSystem.setLayerActive(5, true);
 
-      samples?.forEach(sample => {
-        this.grayedLayerSystem.setValue(sample.view.meshIndex, 5, null)
-      })
+      samples?.forEach((sample) => {
+        this.grayedLayerSystem.setValue(sample, 5, null);
+      });
     } else {
-      this.grayedLayerSystem.clearLayer(5, null)
-      this.grayedLayerSystem.setLayerActive(5, false)
+      this.grayedLayerSystem.clearLayer(5, null);
+      this.grayedLayerSystem.setLayerActive(5, false);
     }
   }
-
 
   setPointScaling(pointScaling) {
-    this.mesh.material.uniforms.scale.value = pointScaling
+    this.mesh.material.uniforms.scale.value = pointScaling;
   }
-
 
   /**
    * @param {*} category a feature to select the shape for
    */
-  shapeCat(category) {
-    var type = this.mesh.geometry.attributes.type.array
+  setShapeByChannel(category: CategoryOption) {
+    const type = this.mesh.geometry.attributes.type as BufferAttribute;
 
     // default shapes used
     if (category == null) {
       if (this.dataset.isSequential) {
-        this.segments.forEach(segment => {
+        this.segments.forEach((segment) => {
           segment.vectors.forEach((vector, index) => {
-            var shape = 2
-            if (vector.age == 0) {
+            let shape = 2;
+            if (vector.age === 0) {
               // Starting point
-              shape = 0
-            } else if (index == segment.vectors.length - 1) {
+              shape = 0;
+            } else if (index === segment.vectors.length - 1) {
               // Ending point
-              shape = 3
+              shape = 3;
             } else {
               // Intermediate
-              shape = 2
+              shape = 2;
             }
 
-            vector.view.shapeType = shapeFromInt(shape)
-            type[vector.view.meshIndex] = shape
-          })
-        })
-      } else {
-        this.vectors.forEach(vector => {
-          vector.view.shapeType = Shapes.Circle
-          type[vector.view.meshIndex] = shapeToInt(vector.view.shapeType)
-        })
-      }
+            vector.__meta__.shapeType = shapeFromInt(shape);
 
-    } else {
-      if (category.type == 'categorical') {
-        this.vectors.forEach((vector, index) => {
-          var select = category.values.filter(value => value.from == vector[category.key])[0]
-          type[index] = shapeToInt(select.to)
-          vector.view.shapeType = select.to
-        })
+            type.setX(vector.__meta__.meshIndex, shape);
+          });
+        });
+      } else {
+        this.vectors.forEach((vector) => {
+          vector.__meta__.shapeType = Shapes.Circle;
+          type.setX(vector.__meta__.meshIndex, shapeToInt(vector.__meta__.shapeType));
+        });
       }
+    } else if (category.type === 'categorical') {
+      this.vectors.forEach((vector, index) => {
+        const select = category.values.filter((value) => value.from === vector[category.key])[0];
+        type.setX(index, shapeToInt(select.to));
+        vector.__meta__.shapeType = select.to;
+      });
     }
 
     // mark types array to receive an update
-    this.mesh.geometry.attributes.type.needsUpdate = true
+    type.needsUpdate = true;
   }
 
-  colorCat(category, scale) {
-
-    this.colorAttribute = category
+  setColorByChannel(category: CategoryOption, scale, additionalColumns?) {
+    this.colorAttribute = category;
 
     if (category == null) {
-      this.vectorColorScheme = null
+      this.vectorMapping = null;
     } else {
-      if (category.type == 'categorical') {
-        this.vectorColorScheme = scale
-      } else {
-        var min = null, max = null
-        if (this.dataset.columns[category.key].range) {
-          min = this.dataset.columns[category.key].range.min
-          max = this.dataset.columns[category.key].range.max
-        } else {
-          var filtered = this.vectors.map(vector => vector[category.key])
-          max = Math.max(...filtered)
-          min = Math.min(...filtered)
-        }
-
-        if (category.type != 'categorical') {
-
-          this.vectorColorScheme = scale
-          //this.vectorColorScheme = new ContinuousMapping(scale, { min: min, max: max })
-        }
-      }
+      this.vectorMapping = scale;
     }
 
-    this.updateColor()
+    this.updateColor(additionalColumns);
   }
 
   colorFilter(colorsChecked) {
-    this.colorsChecked = colorsChecked
+    this.colorsChecked = colorsChecked;
 
-    this.update()
+    this.update();
   }
 
   getMapping() {
-    return this.vectorColorScheme
+    return this.vectorMapping;
   }
 
   setColorScale(colorScale) {
-    if (this.vectorColorScheme != null) {
-      this.vectorColorScheme.scale = colorScale
+    if (this.vectorMapping != null) {
+      this.vectorMapping.scale = colorScale;
     }
   }
 
-  transparencyCat(category, range) {
-    //var color = this.mesh.geometry.attributes.customColor.array
+  setBrightnessByChannel(channel: CategoryOption, range) {
+    // var color = this.mesh.geometry.attributes.customColor.array
 
-    if (category == null) {
+    if (channel == null) {
       // default transparency
-      //this.vectors.forEach(vector => color[vector.view.meshIndex * 4 + 3] = 1.0)
-      this.vectors.forEach(sample => sample.view.brightness = range[0])
-    } else {
-      if (category.type == 'sequential') {
+      this.vectors.forEach((sample) => {
+        sample.__meta__.brightness = range[0];
+      });
+    } else if (channel.type === 'sequential') {
+      if (this.dataset.isSequential) {
+        this.segments.forEach((segment) => {
+          const { min, max } = getMinMaxOfChannel(this.dataset, channel.key, segment);
 
-        if (this.dataset.isSequential) {
-          this.segments.forEach(segment => {
-            var min = null, max = null
-            if (this.dataset.columns[category.key].range) {
-              min = this.dataset.columns[category.key].range.min
-              max = this.dataset.columns[category.key].range.max
-            } else {
-              var filtered = segment.vectors.map(vector => vector[category.key])
-              max = Math.max(...filtered)
-              min = Math.min(...filtered)
-            }
+          const scaler = createLinearRangeScaler(range, min, max);
 
-            segment.vectors.forEach(vector => {
-              if (min == max) {
-                vector.view.brightness = range[0]
-              } else {
-                vector.view.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
-              }
-             
-            })
-          })
-        } else {
-          var min = null, max = null
-          if (this.dataset.columns[category.key].range) {
-            min = this.dataset.columns[category.key].range.min
-            max = this.dataset.columns[category.key].range.max
-          } else {
-            var filtered = this.vectors.map(vector => vector[category.key])
-            max = Math.max(...filtered)
-            min = Math.min(...filtered)
-          }
+          segment.vectors.forEach((vector) => {
+            vector.__meta__.brightness = scaler(vector[channel.key]);
+          });
+        });
+      } else {
+        const { min, max } = getMinMaxOfChannel(this.dataset, channel.key);
 
-          this.vectors.forEach(vector => {
-            if (min == max) {
-              vector.view.brightness = range[0]
-            } else {
-              vector.view.brightness = range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min))
-            }
-            
-          })
-        }
+        const scaler = createLinearRangeScaler(range, min, max);
+
+        this.vectors.forEach((vector) => {
+          vector.__meta__.brightness = scaler(vector[channel.key]);
+        });
       }
     }
 
-    this.updateColor()
+    this.updateColor();
   }
 
-  sizeCat(category, range) {
+  sizeCat(category: CategoryOption, range) {
     if (category == null) {
-      this.vectors.forEach(vector => {
-        vector.view.baseSize = this.particleSize * range[0]
-      })
-    } else {
-      if (category.type == 'sequential') {
-        if (this.dataset.isSequential) {
-          // dataset with lines, we have segments
-          this.segments.forEach(segment => {
-            var min = null, max = null
-            if (this.dataset.columns[category.key].range) {
-              min = this.dataset.columns[category.key].range.min
-              max = this.dataset.columns[category.key].range.max
-            } else {
-              var filtered = segment.vectors.map(vector => vector[category.key])
-              max = Math.max(...filtered)
-              min = Math.min(...filtered)
-            }
+      this.vectors.forEach((vector) => {
+        this.baseSize[vector.__meta__.meshIndex] = this.particleSize * range[0];
+      });
+    } else if (category.type === 'sequential') {
+      if (this.dataset.isSequential) {
+        // dataset with lines, we have segments
+        this.segments.forEach((segment) => {
+          const { min, max } = getMinMaxOfChannel(this.dataset, category.key, segment);
 
-            segment.vectors.forEach(vector => {
-              if (min == max) {
-                vector.view.baseSize = this.particleSize * range[0]
-              } else {
-                vector.view.baseSize = this.particleSize * (range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min)))
-              }
-            })
-          })
-        } else {
-          // for state based data, min and max is based on whole dataset
-          var min = null, max = null
-          if (this.dataset.columns[category.key].range) {
-            min = this.dataset.columns[category.key].range.min
-            max = this.dataset.columns[category.key].range.max
-          } else {
-            var filtered = this.vectors.map(vector => vector[category.key])
-            max = Math.max(...filtered)
-            min = Math.min(...filtered)
-          }
+          const sizeScaler = createLinearRangeScaler(range, min, max);
 
-          this.vectors.forEach(vector => {
-            if (min == max) {
-              vector.view.baseSize = this.particleSize * range[0]
-            } else {
-              vector.view.baseSize = this.particleSize * (range[0] + (range[1] - range[0]) * ((vector[category.key] - min) / (max - min)))
-            }
-          })
-        }
-      }
-      if (category.type == 'categorical') {
-        this.vectors.forEach(vector => {
-          vector.view.baseSize = this.particleSize * category.values.filter(v => v.from == vector[category.key])[0].to
-        })
+          segment.vectors.forEach((vector) => {
+            this.baseSize[vector.__meta__.meshIndex] = this.particleSize * sizeScaler(vector[category.key]);
+          });
+        });
+      } else {
+        // for state based data, min and max is based on whole dataset
+        const { min, max } = getMinMaxOfChannel(this.dataset, category.key);
+
+        const sizeScaler = createLinearRangeScaler(range, min, max);
+
+        this.vectors.forEach((vector) => {
+          this.baseSize[vector.__meta__.meshIndex] = this.particleSize * sizeScaler(vector[category.key]);
+        });
       }
     }
 
-    this.mesh.geometry.attributes.size.needsUpdate = true
-
-    this.updateSize()
+    this.updateSize();
   }
 
   updateSize() {
-    var size = this.mesh.geometry.attributes.size.array
+    const size = this.mesh.geometry.attributes.size as BufferAttribute;
 
-    this.vectors.forEach(vector => {
-      size[vector.view.meshIndex] = vector.view.baseSize * (vector.view.highlighted ? 2.0 : 1.0) * (vector.view.selected ? 1.2 : 1.0)
-    })
+    this.vectors.forEach((vector) => {
+      size.setX(
+        vector.__meta__.meshIndex,
+        this.baseSize[vector.__meta__.meshIndex] * (vector.__meta__.highlighted ? 2.0 : 1.0) * (vector.__meta__.selected ? 1.2 : 1.0),
+      );
+    });
 
-    this.mesh.geometry.attributes.size.needsUpdate = true
+    size.needsUpdate = true;
   }
 
-  updateColor() {
-    var color = this.mesh.geometry.attributes.customColor.array
+  updateColor(additionalColumns?: { [key: string]: { [key: number]: number[] } }) {
+    const color = this.mesh.geometry.attributes.customColor as BufferAttribute;
 
-    this.vectors.forEach(vector => {
-      var i = vector.view.meshIndex
-      var rgb = null
+    const gray = { r: 192, g: 192, b: 192 };
+    const defaultColor = { r: 127.0, g: 201, b: 127 };
+
+    this.vectors.forEach((vector) => {
+      const i = vector.__meta__.meshIndex;
+      let rgb = null;
+
+      let vectorValue;
+
+      if (additionalColumns && this.colorAttribute && additionalColumns[this.colorAttribute.key]) {
+        vectorValue = additionalColumns[this.colorAttribute.key][i];
+      } else if (this.colorAttribute) {
+        vectorValue = vector[this.colorAttribute.key];
+      }
 
       if (this.dataset.isSequential) {
+        // sequential
+        if (this.lineLayerSystem.getValue(vector.__meta__.lineIndex)) {
+          rgb = gray;
+        } else if (this.colorAttribute != null) {
+          const m = mapValueToColor(this.vectorMapping, vectorValue);
+          rgb = m.rgb;
 
-        if (this.lineLayerSystem.getValue(vector.view.lineIndex)) {
-          rgb = {
-            r: 192.0,
-            g: 192.0,
-            b: 192.0
+          if (isNumericMapping(this.vectorMapping)) {
+            vector.__meta__.intrinsicColor = null;
+          } else {
+            vector.__meta__.intrinsicColor = AShallowSet.indexOf(this.vectorMapping.values, vectorValue);
           }
         } else {
-          if (this.colorAttribute != null) {
-            var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
-            rgb = m.rgb
-            //vector.view.intrinsicColor = this.vectorColorScheme.scale.stops.indexOf(m)
+          const col = this.vectorSegmentLookup[i].__meta__.lineMesh.material.color;
+          rgb = {
+            r: col.r * 255.0,
+            g: col.g * 255.0,
+            b: col.b * 255.0,
+          };
+          vector.__meta__.intrinsicColor = null;
+        }
+      } else if (this.grayedLayerSystem.getValue(vector.__meta__.meshIndex)) {
+        rgb = gray;
+      } else if (this.colorAttribute != null) {
+        const m = mapValueToColor(this.vectorMapping, vectorValue);
+        rgb = m.rgb;
 
-            if (this.vectorColorScheme instanceof ContinuousMapping) {
-              vector.view.intrinsicColor = null
-            } else {
-              vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
-            }
-
-          } else {
-            var col = vector.view.segment.view.lineMesh.material.color
-            rgb = {
-              r: col.r * 255.0,
-              g: col.g * 255.0,
-              b: col.b * 255.0
-            }
-            vector.view.intrinsicColor = null
-          }
+        if (isNumericMapping(this.vectorMapping)) {
+          vector.__meta__.intrinsicColor = null;
+        } else {
+          vector.__meta__.intrinsicColor = AShallowSet.indexOf(this.vectorMapping.values, vectorValue);
         }
       } else {
-        if (this.grayedLayerSystem.getValue(vector.view.meshIndex)) {
-          rgb = {
-            r: 192.0,
-            g: 192.0,
-            b: 192.0
-          }
-        } else {
-          if (this.colorAttribute != null) {
-            var m = this.vectorColorScheme.map(vector[this.colorAttribute.key])
-            rgb = m.rgb
-
-            if (this.vectorColorScheme instanceof ContinuousMapping) {
-              vector.view.intrinsicColor = null
-            } else {
-              vector.view.intrinsicColor = this.vectorColorScheme.index(vector[this.colorAttribute.key])
-            }
-          } else {
-            rgb = { r: 0, g: 0, b: 0 }
-          }
-        }
+        rgb = defaultColor;
       }
 
-      color[i * 4 + 0] = rgb.r / 255.0
-      color[i * 4 + 1] = rgb.g / 255.0
-      color[i * 4 + 2] = rgb.b / 255.0
+      color.setXYZ(i, rgb.r / 255.0, rgb.g / 255.0, rgb.b / 255.0);
 
       if (this.dataset.isSequential) {
-        if (this.lineLayerSystem.getValue(vector.view.lineIndex)) {
-          color[i * 4 + 3] = vector.view.brightness * 0.4
+        if (this.lineLayerSystem.getValue(vector.__meta__.lineIndex)) {
+          color.setW(i, vector.__meta__.brightness * 0.4);
         } else {
-          color[i * 4 + 3] = vector.view.brightness
+          color.setW(i, vector.__meta__.brightness);
         }
+      } else if (this.grayedLayerSystem.getValue(vector.__meta__.meshIndex)) {
+        color.setW(i, vector.__meta__.brightness * 0.4);
       } else {
-        if (this.grayedLayerSystem.getValue(vector.view.meshIndex)) {
-          color[i * 4 + 3] = vector.view.brightness * 0.4
-        } else {
-          color[i * 4 + 3] = vector.view.brightness
-        }
+        color.setW(i, vector.__meta__.brightness);
       }
-    })
+    });
 
-    this.mesh.geometry.attributes.customColor.needsUpdate = true
+    color.needsUpdate = true;
   }
 
-  isPointVisible(vector: Vect) {
-    return (vector.view.segment == null || vector.view.segment.view.detailVisible)
-      && (vector.view.segment == null || vector.view.segment.view.globalVisible)
-      && vector.view.visible
-      && this.showSymbols[vector.view.shapeType]
-      && (vector.view.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.view.intrinsicColor] : true)
-      && (vector.view.segment == null || valueInRange(vector.view.segment.vectors.length, vector.view.segment.view.pathLengthRange))
-      && !vector.view.lineUpFiltered
+  isPointVisible(vector: IVector) {
+    const i = vector.__meta__.meshIndex;
+
+    return (
+      (this.vectorSegmentLookup[i] == null || this.vectorSegmentLookup[i].__meta__.detailVisible) &&
+      (this.vectorSegmentLookup[i] == null || this.vectorSegmentLookup[i].__meta__.globalVisible) &&
+      vector.__meta__.visible &&
+      this.showSymbols[vector.__meta__.shapeType] &&
+      (vector.__meta__.intrinsicColor != null && this.colorsChecked != null ? this.colorsChecked[vector.__meta__.intrinsicColor] : true) &&
+      (this.vectorSegmentLookup[i] == null || valueInRange(this.vectorSegmentLookup[i].vectors.length, this.pathLengthRange)) &&
+      !vector.__meta__.lineUpFiltered
+    );
   }
 
-
-  updatePosition() {
-    var position = this.mesh.geometry.attributes.position.array
-
-    this.vectors.forEach(vector => {
-      let z = 0.0
-      if ((!this.dataset.isSequential && this.grayedLayerSystem.getValue(vector.view.meshIndex)) || (this.dataset.isSequential && this.lineLayerSystem.getValue(vector.view.lineIndex))) {
-        z = -0.1
+  updatePosition(projection: IBaseProjection) {
+    const position = this.mesh.geometry.attributes.position as BufferAttribute;
+    this.vectors.forEach((vector, i) => {
+      let z = 0.0;
+      if (
+        (!this.dataset.isSequential && this.grayedLayerSystem.getValue(vector.__meta__.meshIndex)) ||
+        (this.dataset.isSequential && this.lineLayerSystem.getValue(vector.__meta__.lineIndex))
+      ) {
+        z = -0.1;
       }
-      new THREE.Vector3(vector.x, vector.y, z).toArray(position, vector.view.meshIndex * 3);
-    })
+      position.setXYZ(vector.__meta__.meshIndex, projection[i].x, projection[i].y, z);
+      // new THREE.Vector3().toArray(position, vector.__meta__.meshIndex * 3);
+    });
 
-    this.mesh.geometry.attributes.position.needsUpdate = true
+    position.needsUpdate = true;
   }
-
 
   update() {
-    var show = this.mesh.geometry.attributes.show.array
-    var selected = this.mesh.geometry.attributes.selected.array
+    const show = this.mesh.geometry.attributes.show as BufferAttribute;
+    const selected = this.mesh.geometry.attributes.selected as BufferAttribute;
 
-    this.vectors.forEach(vector => {
+    this.vectors.forEach((vector) => {
       if (this.isPointVisible(vector)) {
-        show[vector.view.meshIndex] = 1.0
+        show.setX(vector.__meta__.meshIndex, 1.0);
       } else {
-        show[vector.view.meshIndex] = 0.0
+        show.setX(vector.__meta__.meshIndex, 0.0);
       }
-      selected[vector.view.meshIndex] = vector.view.selected ? 1.0 : 0.0
-    })
+      selected.setX(vector.__meta__.meshIndex, vector.__meta__.selected ? 1.0 : 0.0);
+    });
 
-    //this.updateColor()
-    this.updateSize()
-    this.updatePosition()
+    // this.updateColor()
+    this.updateSize();
 
-    this.mesh.geometry.attributes.show.needsUpdate = true;
-    this.mesh.geometry.attributes.selected.needsUpdate = true
+    show.needsUpdate = true;
+    selected.needsUpdate = true;
   }
 
   /**
@@ -917,69 +859,37 @@ export class PointVisualization {
    */
   highlight(index) {
     if (this.highlightIndex != null && this.highlightIndex >= 0) {
-      this.vectors[this.highlightIndex].view.highlighted = false
+      this.vectors[this.highlightIndex].__meta__.highlighted = false;
     }
 
-    this.highlightIndex = index
+    this.highlightIndex = index;
 
     if (this.highlightIndex != null && this.highlightIndex >= 0) {
-      this.vectors[this.highlightIndex].view.highlighted = true
+      this.vectors[this.highlightIndex].__meta__.highlighted = true;
     }
 
-    this.updateSize()
+    this.updateSize();
   }
-
-
 
   /**
    * Updates the zoom level.
    */
-  zoom(zoom) {
-    this.mesh.material.uniforms.zoom.value = zoom * this.dataset.bounds.scaleFactor
+  zoom(zoom, projection) {
+    this.mesh.material.uniforms.zoom.value = zoom * projection.bounds.scaleFactor;
   }
-
-
 
   /**
    * Cleans this object.
    */
   dispose() {
-    this.segments = null
-    this.vectors = null
+    this.segments = null;
+    this.vectors = null;
 
-    this.mesh.material.uniforms.atlas.value.dispose()
+    this.mesh.material.uniforms.atlas.value.dispose();
 
-    this.mesh.geometry.dispose()
-    this.mesh.material.dispose()
+    this.mesh.geometry.dispose();
+    this.mesh.material.dispose();
 
-    this.mesh = null
-  }
-}
-
-
-
-
-
-
-
-
-
-
-export class ConvexHull {
-  vectors: any
-  geometry: any
-  material: any
-  mesh: any
-
-  constructor(vectors) {
-    this.vectors = vectors
-  }
-
-  createMesh() {
-    this.geometry = new convex.ConvexBufferGeometry(this.vectors)
-    this.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-    this.mesh = new THREE.Mesh(this.geometry, this.material)
-
-    return this.mesh
+    this.mesh = null;
   }
 }

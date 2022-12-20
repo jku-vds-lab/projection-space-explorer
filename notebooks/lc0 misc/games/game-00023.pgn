@@ -1,0 +1,29 @@
+[Event "Computer Match"]
+[Site "London, UK"]
+[Date "2018.01.18"]
+[Round "3283815011293825606"]
+[White "AlphaZero"]
+[Black "Stockfish 8"]
+[Result "1-0"]
+
+1. d4 Nf6 2. Nf3 e6
+3. c4 b6 4. g3 Be7
+5. Nc3 Bb7 6. Bg2 O-O
+7. O-O Ne4 8. Bd2 d5
+9. cxd5 exd5 10. Qb3 Na6
+11. Rfd1 c5 12. Bf4 c4
+13. Qc2 Nb4 14. Qc1 f6
+15. Nd2 f5 16. Nf1 Rc8
+17. Ne3 Qd7 18. Be5 Na6
+19. f3 Nxc3 20. bxc3 Nc7
+21. f4 Ne8 22. a4 Nf6
+23. Rf1 Rf7 24. Bf3 Rcf8
+25. h3 Ne4 26. Bxe4 fxe4
+27. g4 Bc6 28. Qe1 Bxa4
+29. Qg3 a5 30. h4 b5
+31. f5 h6 32. Rf2 Qd8
+33. g5 hxg5 34. Qg4 b4
+35. Rxa4 bxc3 36. Ra1 c2
+37. hxg5 Bxg5 38. Nxc2 e3
+39. Rf3 Bh6 40. f6 Rxf6
+41. Bxf6 Rxf6 42. Raf1 1-0

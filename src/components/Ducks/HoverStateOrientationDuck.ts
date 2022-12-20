@@ -1,23 +1,22 @@
-const SET = "hoverStateOrientation/SET"
+const SET = 'hoverStateOrientation/SET';
 
 export enum HoverStateOrientation {
-    SouthWest,
-    NorthEast
+  SouthWest,
+  NorthEast,
 }
 
 const hoverStateOrientation = (state = HoverStateOrientation.NorthEast, action) => {
-    switch (action.type) {
-        case SET:
-            return action.hoverStateOrientation
-        default:
-            return state
-    }
-}
+  switch (action.type) {
+    case SET:
+      return action.hoverStateOrientation;
+    default:
+      return state;
+  }
+};
 
 export const setHoverStateOrientation = (hoverStateOrientation) => ({
-    type: SET,
-    hoverStateOrientation: hoverStateOrientation
-})
+  type: SET,
+  hoverStateOrientation,
+});
 
-
-export default hoverStateOrientation
+export default hoverStateOrientation;

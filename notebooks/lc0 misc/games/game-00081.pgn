@@ -1,0 +1,80 @@
+[Event "Computer Match"]
+[Site "London, UK"]
+[Date "2018.01.18"]
+[Round "15299213940181686048"]
+[White "AlphaZero"]
+[Black "Stockfish 8"]
+[Result "1/2-1/2"]
+
+1. Nf3 e6 2. c4 Nf6
+3. Nc3 Bb4 4. Qc2 O-O
+5. a3 Bxc3 6. Qxc3 d6
+7. b4 e5 8. e3 Bg4
+9. Be2 Bh5 10. d3 Re8
+11. Bb2 Nbd7 12. O-O Qe7
+13. h3 a6 14. a4 a5
+15. b5 Nc5 16. Ra3 e4
+17. dxe4 Ncxe4 18. Qc1 Nd7
+19. Nd4 Bg6 20. Bf3 Nec5
+21. Rd1 h6 22. Ba1 Ne5
+23. Be2 Ned7 24. Qd2 Nb6
+25. Qa2 Qg5 26. Nf3 Qe7
+27. Nd2 Nbd7 28. Nf1 Kh7
+29. Bd4 Rf8 30. Ng3 Ne4
+31. Nxe4 Bxe4 32. f3 Bg6
+33. e4 Nc5 34. Qd2 Ne6
+35. Bb2 b6 36. Bd3 Nc5
+37. Bc2 f6 38. Re3 Rae8
+39. Rde1 Qf7 40. Qd5 Kg8
+41. f4 Bh7 42. f5 Re7
+43. g4 Rfe8 44. Kf2 Kf8
+45. h4 Bg8 46. Bd4 Nd7
+47. Rg1 g5 48. Qxf7+ Bxf7
+49. Rh3 Rxe4 50. Bxe4 Rxe4
+51. Bb2 Kg7 52. hxg5 hxg5
+53. Rgh1 Rxg4 54. Ke3 Rxc4
+55. Rh8 Bg8 56. R8h6 Bf7
+57. Bd4 Rxa4 58. Rh7+ Kf8
+59. R1h6 Ra3+ 60. Ke2 Rb3
+61. Bxf6 Rxb5 62. Rh8+ Bg8
+63. Bd4 Re5+ 64. Kd2 Kg7
+65. Bxe5+ Nxe5 66. f6+ Kf8
+67. Rh1 b5 68. Kc1 a4
+69. Rg1 g4 70. Rf1 a3
+71. f7 Nxf7 72. Rh4 c5
+73. Kb1 Ke7 74. Rxg4 Bh7+
+75. Ka2 Bd3 76. Rd1 Ne5
+77. Rg3 Bc4+ 78. Kxa3 Kd7
+79. Kb2 b4 80. Rh1 Kc6
+81. Rh8 Be2 82. Rb8 Kd5
+83. Rh3 Bd1 84. Kc1 Bg4
+85. Rh4 Bf5 86. Kb2 Nc4+
+87. Kb3 Nd2+ 88. Ka2 Bb1+
+89. Ka1 Be4 90. Rd8 c4
+91. Rh6 c3 92. Rhxd6+ Kc5
+93. Rxd2 cxd2 94. Rxd2 b3
+95. Rd7 Bc2 96. Rg7 Kb6
+97. Rg5 Ka7 98. Rb5 Ka6
+99. Rb4 Ka5 100. Rb8 Ka4
+101. Kb2 Bd1 102. Kc3 Bc2
+103. Rb4+ Ka5 104. Kc4 Ka6
+105. Kc5 Bd1 106. Rb5 Bc2
+107. Rb8 Bd1 108. Rb4 Bc2
+109. Rb5 Bd1 110. Kc6 Bf3+
+111. Kc5 Bd1 112. Rb6+ Ka5
+113. Rd6 Bc2 114. Rb6 Bd1
+115. Rb7 Ka6 116. Rb8 Bc2
+117. Kd5 Ka7 118. Rb4 Ka6
+119. Kc4 Bd1 120. Kd4 Ka5
+121. Kc4 Bc2 122. Rb8 Ka6
+123. Rb4 Bd1 124. Kd4 Bc2
+125. Kd5 Ka5 126. Kc4 Ka6
+127. Kd4 Ka5 128. Kc5 Bd1
+129. Rb6 Bc2 130. Rb7 Ka6
+131. Rb8 Bd1 132. Kd4 Ka5
+133. Kc4 Ka6 134. Kd3 Bc2+
+135. Kd4 Ka7 136. Rb4 Ka6
+137. Kd5 Bd1 138. Rb8 Ka7
+139. Rb5 Ka6 140. Rb8 Bf3+
+141. Kc4 Bd1 142. Kc3 Bc2
+143. Rb4 Ka5 144. Rxb3 Bxb3 1/2-1/2

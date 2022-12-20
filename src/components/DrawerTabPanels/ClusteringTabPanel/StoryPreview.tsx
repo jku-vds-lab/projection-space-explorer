@@ -1,111 +1,122 @@
-import * as React from 'react'
-import { Button, FormControl, Grid, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, MenuItem, Select } from '@material-ui/core';
-import { connect, ConnectedProps } from 'react-redux'
-import './StoryPreview.scss'
-import DeleteIcon from '@material-ui/icons/Delete';
-import { Story } from '../../Utility/Data/Story';
-import { addStory, deleteStory, setActiveStory } from '../../Ducks/StoriesDuck';
-import { RootState } from '../../Store/Store';
-import { openStoryEditor } from '../../Ducks/StoryEditorDuck';
+import { EntityId } from '@reduxjs/toolkit';
+import { useState } from 'react';
+import * as React from 'react';
+import { Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select } from '@mui/material';
+import { connect, ConnectedProps, useDispatch } from 'react-redux';
+import { IBook } from '../../../model/Book';
+import type { RootState } from '../../Store/Store';
+import { StoriesActions, AStorytelling } from '../../Ducks/StoriesDuck';
+import { EditBookDialog } from '../EmbeddingTabPanel/EditBookDialog';
 
 const mapStateToProps = (state: RootState) => ({
-    stories: state.stories,
-    storyEditor: state.storyEditor
-})
+  stories: state.stories,
+});
 
-const mapDispatchToProps = dispatch => ({
-    setActiveStory: activeStory => dispatch(setActiveStory(activeStory)),
-    deleteStory: story => dispatch(deleteStory(story)),
-    addStory: story => dispatch(addStory(story)),
-    openStoryEditor: visible => dispatch(openStoryEditor(visible))
-})
+const mapDispatchToProps = (dispatch) => ({
+  setActiveStory: (book: EntityId) => dispatch(StoriesActions.setActiveStoryBook(book)),
+  deleteStory: (book: EntityId) => dispatch(StoriesActions.deleteBookAsync(book)),
+  addStory: (book: IBook) => dispatch(StoriesActions.addBookAsync({ book, activate: true })),
+});
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-type PropsFromRedux = ConnectedProps<typeof connector>
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & {
-    addStory: any
-}
+type Props = PropsFromRedux;
 
-export const StoryPreview = connector(({
-    stories,
-    setActiveStory,
-    deleteStory,
-    addStory,
-    storyEditor,
-    openStoryEditor }: Props) => {
-    const deleteHandler = (story) => {
-        if (stories.active == story) {
-            setActiveStory(null)
-        }
+export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, addStory }: Props) => {
+  const [editBook, setEditBook] = useState<IBook>(null);
 
-        deleteStory(story)
+  const deleteHandler = (story) => {
+    if (stories.active === story) {
+      setActiveStory(null);
     }
 
-    const addHandler = () => {
-        addStory(new Story([], []))
-    }
-    
-    return <div className="StoryPreviewContent">
-        <FormControl>
-            <InputLabel id="demo-simple-select-label">Active Story Book</InputLabel>
-            <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={stories.active ? stories.active.getId() : ''}
-                onChange={(event) => {
-                    setActiveStory(stories.stories.find(story => story.getId() == event.target.value))
-                }}
-            >
-                <ListItem
-                    key={-1}
-                    {...{ value: '' }}
-                    button
-                >
-                    <ListItemText primary={"None"} />
-                </ListItem>
-                {
-                    stories.stories && stories.stories.map((story, key) => {
-                        return <ListItem
-                            key={key}
-                            button
-                            {...{ value: story.getId() }}
-                        >
-                            <ListItemText primary={"Story Book"} secondary={`${story.clusters.length} nodes`} />
-                            <ListItemSecondaryAction>
-                                <IconButton edge="end" aria-label="delete" onClick={() => {
-                                    deleteHandler(story)
-                                }}>
-                                    <DeleteIcon />
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                        </ListItem>
-                    })
-                }
-            </Select>
-        </FormControl>
+    deleteStory(story);
+  };
 
-        <Grid container direction="row" alignItems="center" justify="space-between">
-            <Button
-                style={{
-                    marginTop: '16px'
-                }}
-                onClick={() => addHandler()}
-                variant="outlined"
-                size="small"
-                aria-label="move selected left"
-            >Add Empty</Button>
+  const addHandler = () => {
+    addStory(AStorytelling.emptyStory());
+  };
 
+  const dispatch = useDispatch();
 
-            {stories.active && stories.active.clusters.length > 0 && false && <Grid item>
-                <Button style={{
-                    marginTop: '16px'
-                }}
-                    onClick={() => openStoryEditor(!storyEditor.visible)}
-                    size="small"
-                    variant="outlined">{`${storyEditor.visible ? 'Close' : 'Open'} Story Editor`}</Button>
-            </Grid>}
-        </Grid>
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignContent: 'stretch',
+      }}
+    >
+      <FormControl>
+        <FormHelperText>Active Story Book</FormHelperText>
+        <Select
+          displayEmpty
+          size="small"
+          value={stories.active ?? ''}
+          onChange={(event) => {
+            setActiveStory(event.target.value);
+          }}
+        >
+          <ListItem key="" {...{ value: '' }} button>
+            <ListItemText primary="None" />
+          </ListItem>
+          {stories.stories &&
+            stories.stories.ids
+              .map((id) => stories.stories.entities[id])
+              .map((story) => {
+                return (
+                  <ListItem key={story.id} button {...{ value: story.id }}>
+                    <ListItemText primary={story.name ?? 'Storybook'} secondary={`${Object.keys(story.clusters.entities).length} nodes`} />
+                  </ListItem>
+                );
+              })}
+        </Select>
+      </FormControl>
+
+      <Grid container direction="row" alignItems="center" justifyContent="space-between">
+        <Button
+          style={{
+            marginTop: '16px',
+          }}
+          onClick={() => addHandler()}
+          variant="outlined"
+          size="small"
+        >
+          Add Empty
+        </Button>
+
+        {stories.active ? (
+          <Button
+            style={{
+              marginTop: '16px',
+            }}
+            variant="outlined"
+            size="small"
+            onClick={() => {
+              setEditBook(stories.stories.entities[stories.active]);
+            }}
+          >
+            Edit Selected
+          </Button>
+        ) : null}
+      </Grid>
+
+      <EditBookDialog
+        book={editBook}
+        onClose={() => {
+          setEditBook(null);
+        }}
+        onSave={(id: EntityId, changes: any) => {
+          dispatch(StoriesActions.changeBookName({ id: editBook.id, name: changes.name }));
+          setEditBook(null);
+        }}
+        onDelete={() => {
+          deleteHandler(editBook.id);
+          setEditBook(null);
+        }}
+      />
     </div>
-})
+  );
+});

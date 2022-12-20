@@ -1,0 +1,93 @@
+[Event "Computer Match"]
+[Site "London, UK"]
+[Date "2018.01.18"]
+[Round "1263475964711098102"]
+[White "Stockfish 8"]
+[Black "AlphaZero"]
+[Result "1/2-1/2"]
+
+1. e4 e5 2. Nf3 Nc6
+3. Bb5 Nf6 4. O-O Nxe4
+5. Re1 Nd6 6. Nxe5 Nxe5
+7. Rxe5+ Be7 8. Bf1 O-O
+9. Nc3 Bf6 10. Re1 Re8
+11. Nd5 Rxe1 12. Qxe1 b6
+13. Nxf6+ Qxf6 14. d3 Bb7
+15. Qd2 c5 16. Qf4 Qxf4
+17. Bxf4 Nf5 18. a4 f6
+19. a5 g5 20. Bd2 Nd4
+21. axb6 axb6 22. Rxa8+
+Bxa8 23. c3 Ne6 24. d4
+cxd4 25. cxd4 Kf7 26. Bc4
+Ke7 27. Bd3 h6 28. f3
+d6 29. h4 Nf4 30. Bxf4
+gxf4 31. Kf2 Bc6 32. Ke2
+Kd8 33. Ke1 Kc7 34. Kd2
+Ba4 35. Bc4 Bc6 36. d5
+Bd7 37. Kc3 f5 38. Bd3
+Bc8 39. Kd4 Kb8 40. Bb5
+Kc7 41. Kc4 Bb7 42. b3
+Kd8 43. h5 Kc7 44. Kd4
+Bc8 45. b4 Bb7 46. Ba4
+Ba6 47. Bc2 Bc8 48. Ba4
+Kd8 49. Bb5 Bb7 50. Bc6
+Ba6 51. b5 Bc8 52. Kc3
+Ke7 53. Kc4 Kf8 54. Kc3
+Kg7 55. Be8 Kg8 56. Kd4
+Kg7 57. Bc6 Kf8 58. Kc3
+Kf7 59. Kc2 Ke7 60. Kd3
+Kf7 61. Kc2 Kf6 62. Kd3
+Kg7 63. Be8 Kf8 64. Bc6
+Kg7 65. Be8 Kf8 66. Bc6
+Ke7 67. Kc4 Kf7 68. Kc3
+Kg7 69. Be8 Kf6 70. Kd2
+Ke5 71. Bc6 Kd4 72. Ke1
+Ke5 73. Ke2 Kd4 74. Kf2
+Ke5 75. Kg1 Kf6 76. Kf1
+Ke5 77. Kg1 Kd4 78. Kf2
+Kd3 79. Ke1 Kc3 80. Ke2
+Kc2 81. Kf2 Kd2 82. Kg1
+Ke2 83. Be8 Kd1 84. Kf1
+Kc1 85. Kf2 Kb1 86. Ke2
+Kc2 87. Kf2 Kc1 88. g3
+fxg3+ 89. Kxg3 Kd2 90. Kf4
+Kc3 91. Ke3 Kc4 92. Bc6
+Kc3 93. Be8 Kc4 94. Bc6
+Kb3 95. Kd4 Kc2 96. Ke3
+Kb2 97. Kd3 f4 98. Ke4
+Kc3 99. Kxf4 Kd4 100. Ba8
+Bd7 101. Bc6 Bh3 102. Bb7
+Kc4 103. Bc6 Kd3 104. Bb7
+Bd7 105. Bc6 Bh3 106. Bb7
+Bd7 107. Bc6 Bc8 108. Be8
+Kd4 109. Bc6 Bh3 110. Bb7
+Bf1 111. Kf5 Bxb5 112. Kg6
+Ke5 113. Kxh6 Kf6 114. f4
+Be2 115. Bc6 Bd3 116. Bb7
+Be2 117. Bc6 Bf3 118. f5
+Kxf5 119. Be8 Kf6 120. Bb5
+Be4 121. Bc6 Bb1 122. Be8
+Be4 123. Bc6 Bd3 124. Be8
+Bc2 125. Bb5 Bd1 126. Bc6
+Bf3 127. Bb5 Bxd5 128. Kh7
+Kf7 129. h6 Bf3 130. Kh8
+Kf8 131. h7 Bg4 132. Bf1
+d5 133. Bd3 Bd1 134. Bb1
+Be2 135. Ba2 d4 136. Bb1
+Bg4 137. Be4 b5 138. Bf5
+Bf3 139. Be4 Bh5 140. Bf3
+Bg6 141. Be2 b4 142. Bh5
+Be4 143. Bf3 Bf5 144. Bg4
+Be4 145. Bf3 Bd3 146. Be2
+Bf5 147. Bg4 Bd3 148. Be2
+Bc2 149. Bd1 Bg6 150. Bh5
+Bxh7 151. Kxh7 d3 152. Bg6
+d2 153. Bc2 Kf7 154. Kh6
+Kf6 155. Bd1 Kf5 156. Kh5
+Kf4 157. Kh4 Ke4 158. Kg4
+Ke3 159. Kg3 Ke4 160. Kg2
+Ke3 161. Kg3 Ke4 162. Kg4
+Kd4 163. Kf4 Kd3 164. Kf3
+Kd4 165. Kf4 Kd3 166. Kf3
+Kc4 167. Ke2 Kc3 168. Ba4
+b3 169. Bxb3 d1=R 170. Bxd1 1/2-1/2

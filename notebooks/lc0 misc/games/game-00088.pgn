@@ -1,0 +1,36 @@
+[Event "Computer Match"]
+[Site "London, UK"]
+[Date "2018.01.18"]
+[Round "17454695395454774250"]
+[White "AlphaZero"]
+[Black "Stockfish 8"]
+[Result "1/2-1/2"]
+
+1. d4 Nf6 2. c4 e6
+3. Nc3 Bb4 4. e3 O-O
+5. Bd3 d5 6. Nf3 c5
+7. cxd5 exd5 8. dxc5 Nbd7
+9. Bd2 Nxc5 10. Be2 Ne6
+11. a3 Bd6 12. Nb5 Bb8
+13. Bb4 Re8 14. O-O a6
+15. Nbd4 Ne4 16. Nxe6 Bxe6
+17. Rc1 h6 18. Qa4 Ba7
+19. Bc3 b5 20. Qd1 Nxc3
+21. Rxc3 Qf6 22. Qd2 d4
+23. Nxd4 Rad8 24. Rd1 Rd7
+25. h3 Red8 26. Qc1 Bxd4
+27. Rxd4 Rxd4 28. exd4 Qxd4
+29. Rd3 Qh4 30. Qe3 Rxd3
+31. Bxd3 Qd8 32. b4 Bd5
+33. Kh2 h5 34. Qg3 Bb7
+35. h4 g6 36. f4 Qe7
+37. f5 Be4 38. fxg6 Bxd3
+39. gxf7+ Kxf7 40. Qxd3
+Qxh4+ 41. Kg1 Qe1+ 42. Kh2
+Qh4+ 43. Qh3 Qf4+ 44. Kh1
+Qe5 45. Qf3+ Ke6 46. Qc6+
+Kf5 47. Qh6 Qe1+ 48. Kh2
+Qe5+ 49. Kh3 Qe2 50. Qxa6
+Qg4+ 51. Kh2 Qh4+ 52. Kg1
+Qe1+ 53. Kh2 Qh4+ 54. Kg1
+Qe1+ 55. Kh2 Qh4+ 1/2-1/2
