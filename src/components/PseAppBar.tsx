@@ -1,10 +1,10 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
-import React = require("react");
+import { AppBar, Toolbar } from '@mui/material';
+import * as React from 'react';
 
-export function PseAppBar({ children }) {
-    return <AppBar variant="outlined" position="relative" color="transparent" elevation={0}>
-        <Toolbar>
-            {children}
-        </Toolbar>
+export function PseAppBar({ children, style }) {
+  return (
+    <AppBar variant="outlined" position="relative" color="transparent" elevation={0} style={style}>
+      <Toolbar>{children}</Toolbar>
     </AppBar>
+  );
 }

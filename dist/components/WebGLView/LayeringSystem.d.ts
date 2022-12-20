@@ -1,3 +1,10 @@
+declare class Layer {
+    values: boolean[];
+    active: boolean;
+    constructor(size: number, active: boolean);
+    setValue(index: number, value: boolean): void;
+    getValue(index: number): boolean;
+}
 /**
  * Helper class for cases where cross interaction could occur, one example would be that in the storytelling
  * the other lines should be grayed out, but a selection should overwrite this. This is solved by having 'layers'
@@ -15,13 +22,6 @@ export declare class LayeringSystem {
     setLayerActive(layer: number, active: boolean): void;
     registerLayer(layer: number, active: boolean): void;
     setValue(index: number, layer: number, value: boolean): void;
-    getValue(index: number): boolean;
-}
-declare class Layer {
-    values: boolean[];
-    active: boolean;
-    constructor(size: number, active: boolean);
-    setValue(index: number, value: boolean): void;
     getValue(index: number): boolean;
 }
 export {};

@@ -1,4 +1,4 @@
-export declare var GoLegend: ({ selection, aggregate }: {
+export declare function GoLegend({ selection, aggregate }: {
     selection: any;
     aggregate: any;
-}) => JSX.Element;
+}): JSX.Element;

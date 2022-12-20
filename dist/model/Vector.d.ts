@@ -1,5 +1,5 @@
-import { Shapes } from "../components/WebGLView/meshes";
-import { TypedObject } from "./TypedObject";
+import { Shapes } from '../components/WebGLView/Shapes';
+import { TypedObject } from './TypedObject';
 /**
  * Vector type.
  */
@@ -16,9 +16,6 @@ export interface IVector extends TypedObject {
 /**
  * Vector methods.
  */
-export declare class AVector {
-    static create(dict: any): IVector;
-}
 /**
  * View information for a vector, this contains all attributes that are not data related, for
  * example the color or the index to the mesh vertex
@@ -52,17 +49,15 @@ export declare class VectView {
      * Currently displayed shape of the vector.
      */
     shapeType: Shapes;
-    /**
-     * Base size scaling for this point
-     */
-    baseSize: number;
     highlighted: boolean;
     duplicateOf: any;
     brightness: number;
     lineUpFiltered: boolean;
-    constructor();
 }
 /**
  * Vector type guard.
  */
 export declare function isVector(object: TypedObject): object is IVector;
+export declare class AVector {
+    static create(dict: any): IVector;
+}

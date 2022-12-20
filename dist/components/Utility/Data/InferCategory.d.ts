@@ -1,5 +1,5 @@
-import { DatasetType } from "../../../model/DatasetType";
-import { IVector } from "../../../model/Vector";
+import { DatasetType } from '../../../model/DatasetType';
+import { IVector } from '../../../model/Vector';
 /**
  * Object responsible for infering things from the data structure of a csv file.
  * For example this class can infer the

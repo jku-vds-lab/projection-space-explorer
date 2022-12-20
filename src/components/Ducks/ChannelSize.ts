@@ -1,18 +1,10 @@
-const SET = "ducks/channelSize/SET"
+import { createAction, createReducer } from '@reduxjs/toolkit';
+import { CategoryOption } from '../WebGLView/CategoryOptions';
 
-const channelSize = (state = null, action) => {
-    switch (action.type) {
-        case SET:
-            return action.channelSize
-        default:
-            return state
-    }
-}
+export const setChannelSize = createAction<CategoryOption>('ducks/channelSize/SET');
 
-
-export const setChannelSize = channelSize => ({
-    type: SET,
-    channelSize: channelSize
-})
-
-export default channelSize
+export const channelSize = createReducer<CategoryOption>(null, (builder) => {
+  builder.addCase(setChannelSize, (_, action) => {
+    return action.payload;
+  });
+});

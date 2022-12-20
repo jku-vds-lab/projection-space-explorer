@@ -1,18 +1,13 @@
 import * as THREE from 'three';
-import { DataLine } from "../../model/DataLine";
-import { IVector } from "../../model/Vector";
-import { Dataset } from "../../model/Dataset";
-import { LayeringSystem } from './LayeringSystem';
-import { IStorytelling } from '../Ducks/StoriesDuck';
 import { Mapping } from '../Utility/Colors/Mapping';
-import { IBaseProjection } from '../../model/Projection';
-export declare enum Shapes {
-    Circle = "circle",
-    Star = "star",
-    Square = "square",
-    Cross = "cross"
-}
-export declare function imageFromShape(value: any): "./textures/sprites/cross.png" | "./textures/sprites/square.png" | "./textures/sprites/circle.png" | "./textures/sprites/star.png";
+import { DataLine } from '../../model/DataLine';
+import { IVector } from '../../model/Vector';
+import { Dataset } from '../../model/Dataset';
+import { LayeringSystem } from './LayeringSystem';
+import { IBaseProjection } from '../../model/ProjectionInterfaces';
+import { IStorytelling } from '../Ducks/StoriesDuck';
+import { CategoryOption } from './CategoryOptions';
+export declare function imageFromShape(value: any): "" | "./textures/sprites/cross.png" | "./textures/sprites/square.png" | "./textures/sprites/circle.png" | "./textures/sprites/star.png";
 export declare class LineVisualization {
     segments: DataLine[];
     highlightIndices: any;
@@ -38,7 +33,7 @@ export declare class LineVisualization {
      */
     highlight(indices: any, width: any, height: any, scene: any, grayout?: boolean): void;
     createMesh(lineBrightness: number): any[];
-    updatePosition(workspace: IBaseProjection): void;
+    updatePosition(positions: IBaseProjection): void;
     /**
      * Updates visibility based on settings in the lines
      */
@@ -47,7 +42,7 @@ export declare class LineVisualization {
 export declare class PointVisualization {
     highlightIndex: any;
     particleSize: any;
-    vectorColorScheme: Mapping;
+    vectorMapping: Mapping;
     dataset: Dataset;
     showSymbols: any;
     colorsChecked: any;
@@ -60,7 +55,8 @@ export declare class PointVisualization {
     grayedLayerSystem: LayeringSystem;
     lineLayerSystem: LayeringSystem;
     pathLengthRange: any;
-    constructor(vectorColorScheme: any, dataset: Dataset, size: any, lineLayerSystem: LayeringSystem, segments: any);
+    baseSize: number[];
+    constructor(vectorMapping: Mapping, dataset: Dataset, size: any, lineLayerSystem: LayeringSystem, segments: any);
     createMesh(data: any, segments: any, onUpload: any): void;
     /**
      * Applies the gray-out effect on the particles based on the given story model
@@ -73,15 +69,19 @@ export declare class PointVisualization {
     /**
      * @param {*} category a feature to select the shape for
      */
-    shapeCat(category: any): void;
-    colorCat(category: any, scale: any): void;
+    setShapeByChannel(category: CategoryOption): void;
+    setColorByChannel(category: CategoryOption, scale: any, additionalColumns?: any): void;
     colorFilter(colorsChecked: any): void;
     getMapping(): Mapping;
     setColorScale(colorScale: any): void;
-    transparencyCat(category: any, range: any): void;
-    sizeCat(category: any, range: any): void;
+    setBrightnessByChannel(channel: CategoryOption, range: any): void;
+    sizeCat(category: CategoryOption, range: any): void;
     updateSize(): void;
-    updateColor(): void;
+    updateColor(additionalColumns?: {
+        [key: string]: {
+            [key: number]: number[];
+        };
+    }): void;
     isPointVisible(vector: IVector): boolean;
     updatePosition(projection: IBaseProjection): void;
     update(): void;
@@ -92,7 +92,7 @@ export declare class PointVisualization {
     /**
      * Updates the zoom level.
      */
-    zoom(zoom: any): void;
+    zoom(zoom: any, projection: any): void;
     /**
      * Cleans this object.
      */

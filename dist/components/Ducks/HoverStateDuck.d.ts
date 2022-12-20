@@ -1,5 +1,5 @@
-import { ICluster } from "../../model/Cluster";
-import { IVector } from "../../model/Vector";
+import { ICluster } from '../../model/ICluster';
+import { IVector } from '../../model/Vector';
 export declare const setHoverState: (hoverState: any, updater: any) => {
     type: string;
     input: {
@@ -7,9 +7,9 @@ export declare const setHoverState: (hoverState: any, updater: any) => {
         updater: any;
     };
 };
-export declare type HoverStateType = {
+export type HoverStateType = {
     data: IVector | ICluster;
-    updater: String;
+    updater: string;
 };
 declare const hoverState: (state: HoverStateType, action: any) => HoverStateType;
 export default hoverState;

@@ -1,7 +1,9 @@
-export declare const BrightnessSlider: import("react-redux").ConnectedComponent<({ brightnessScale, setRange }: {
-    brightnessScale: any;
+declare function BrightnessSliderFull({ globalPointBrightness, setRange }: {
+    globalPointBrightness: any;
     setRange: any;
-}) => JSX.Element, Pick<{
-    brightnessScale: any;
+}): JSX.Element;
+export declare const BrightnessSlider: import("react-redux").ConnectedComponent<typeof BrightnessSliderFull, import("react-redux").Omit<{
+    globalPointBrightness: any;
     setRange: any;
-}, never>>;
+}, "setRange">>;
+export {};

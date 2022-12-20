@@ -1,6 +1,6 @@
-import { IVector } from "../../../model/Vector";
-import React = require("react");
-declare type RubikChangesProps = {
+import * as React from 'react';
+import { IVector } from '../../../model/Vector';
+type RubikChangesProps = {
     vectorsA: Array<IVector>;
     vectorsB: Array<IVector>;
     width?: number;

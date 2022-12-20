@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 
 module.exports = {
   mode: "development",
@@ -24,15 +23,28 @@ module.exports = {
     libraryTarget: 'umd'
   },
   resolve: {
+    alias: {
+      "react/jsx-dev-runtime": "react/jsx-dev-runtime.js",
+      "react/jsx-runtime": "react/jsx-runtime.js",
+    },
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
   devtool: "source-map",
   module: {
     rules: [
       {
-        test: /\.worker\.ts$/,
-        loader: 'worker-loader',
-        options: { inline: "no-fallback" }
+        resourceQuery: /raw/,
+        type: 'asset/source',
+      },
+      {
+        resourceQuery: /inline/,
+        type: 'asset/inline',
+      },
+      {
+        test: /\.svg(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        // css-loader is messing up SVGs: https://github.com/webpack/webpack/issues/13835
+        // Pin css-loader and always load them as file-resource.
+        type: 'asset/inline',
       },
       { test: /\.scss$/, use: [
         "style-loader",
@@ -41,14 +53,6 @@ module.exports = {
       ] },
       { test: /\.tsx?$/, loader: "babel-loader" },
       { test: /\.tsx?$/, loader: "ts-loader" },
-      {
-        test: /\.(glsl|vs|fs)$/,
-        loader: 'shader-loader'
-      },
-      {
-        test: /\.svg$/,
-        use: ['@svgr/webpack'],
-      },
       {
         test: /\.(png|jpg)$/i,
         use: [

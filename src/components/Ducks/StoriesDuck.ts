@@ -1,481 +1,270 @@
-import { getSyncNodesAlt } from "../NumTs/NumTs";
-import { ACluster, ICluster } from "../../model/Cluster";
-import { IEdge } from "../../model/Edge";
-import { IBook, ABook } from "../../model/Book";
-import { ObjectTypes } from "../../model/ObjectType";
-import { ANormalized } from "../Utility/NormalizedState";
-import { RootState } from "../Store";
+/* eslint-disable spaced-comment */
+import { v4 as uuidv4 } from 'uuid';
+import { createSlice, PayloadAction, createAsyncThunk, EntityId, createEntityAdapter, EntityState } from '@reduxjs/toolkit';
+import { getSyncNodesAlt } from '../NumTs/NumTs';
+import { ICluster } from '../../model/ICluster';
+import { IEdge } from '../../model/Edge';
+import { IBook } from '../../model/Book';
+import { ObjectTypes } from '../../model/ObjectType';
 
+export const bookAdapter = createEntityAdapter<IBook>({
+  selectId: (book) => book.id,
+});
 
-const enum ActionTypes {
-    ADD_BOOK = "ducks/stories/ADD",
-    DELETE_BOOK = "ducks/stories/DELETE",
+export const edgeAdapter = createEntityAdapter<IEdge>({
+  selectId: (edge) => edge.id,
+});
 
-    ADD_CLUSTER = "ducks/stories/ADD_CLUSTER",
-    DELETE_CLUSTER = "ducks/stories/REMOVE_CLUSTER_FROM_STORIES",
+export const clusterAdapter = createEntityAdapter<ICluster>({
+  selectId: (cluster) => cluster.id,
+  sortComparer: (a, b) => {
+    return b.indices.length - a.indices.length;
+  },
+});
 
-    SET = "ducks/stories/SET",
+function createGroupLabels(clusters: ICluster[]) {
+  const groupLabels: { [key: number]: number[] } = {};
 
-    SET_ACTIVE_STORY_BOOK = "ducks/stories/SET_ACTIVE",
+  // Create new labels from clusters
+  clusters.forEach((cluster) => {
+    cluster.indices.forEach((label) => {
+      const labelGroup = groupLabels[label];
+      if (labelGroup) {
+        labelGroup.push(cluster.label);
+      } else {
+        groupLabels[label] = [cluster.label];
+      }
+    });
+  });
 
-    ADD_EDGE_TO_ACTIVE = "ducks/stories/ADD_EDGE_TO_ACTIVE",
-    SET_ACTIVE_TRACE = "ducks/stories/SET_ACTIVE_TRACE",
-    ADD_CLUSTER_TO_TRACE = "ducks/stories/ADD_CLUSTER_TO_TRACE",
-    SET_ACTIVE_TRACE_STATE = "ducks/stories/SET_ACTIVE_TRACE_STATE",
-    SELECT_SIDE_BRANCH = "ducks/stories/SELECT_SIDE_BRANCH",
-    REMOVE_EDGE_FROM_ACTIVE = "ducks/stories/REMOVE_EDGE_FROM_ACTIVE"
+  return groupLabels;
 }
-
-
-/**type AddStoryAction = {
-    type: ActionTypes.ADD_STORY_BOOK
-    story: IBook
-    activate: boolean
-}**/
-
-//type Action = AddStoryAction
-
-export function addBook(story: IBook, activate: boolean = false) {
-    return (dispatch, getState) => {
-        const { dataset } = getState() as RootState
-
-        return dispatch({
-            type: ActionTypes.ADD_BOOK,
-            story: story,
-            activate: activate,
-            vectors: dataset.vectors
-        })
-    }
-}
-
-
-export function deleteBook(story: IBook) {
-    return (dispatch, getState) => {
-        const { dataset } = getState() as RootState
-
-        return dispatch({
-            type: ActionTypes.DELETE_BOOK,
-            story: story,
-            vectors: dataset.vectors
-        })
-    }
-}
-
-
-
-
-
-export function addCluster(cluster: ICluster) {
-    return (dispatch, getState) => {
-        const { dataset } = getState() as RootState
-
-        return dispatch({
-            type: ActionTypes.ADD_CLUSTER,
-            cluster: cluster,
-            vectors: dataset.vectors
-        })
-    }
-}
-
-export function deleteCluster(cluster: ICluster) {
-    return (dispatch, getState) => {
-        const { dataset } = getState() as RootState
-
-        return dispatch({
-            type: ActionTypes.DELETE_CLUSTER,
-            cluster: cluster,
-            vectors: dataset.vectors
-        })
-    }
-}
-
-
-
-
-
-
-
-export function setStories(stories: IBook[]) {
-    return (dispatch, getState) => {
-        const { dataset } = getState() as RootState
-
-        return dispatch({
-            type: ActionTypes.SET,
-            stories: stories,
-            vectors: dataset.vectors
-        })
-    }
-}
-
-
-
-
-export function setActiveStory(activeStory: IBook) {
-    return (dispatch, getState) => {
-        const { dataset } = getState() as RootState
-
-        return dispatch({
-            type: ActionTypes.SET_ACTIVE_STORY_BOOK,
-            activeStory: activeStory,
-            vectors: dataset.vectors
-        })
-    }
-}
-
-
-
-export function addEdgeToActive(edge) {
-    return {
-        type: ActionTypes.ADD_EDGE_TO_ACTIVE,
-        edge: edge
-    }
-}
-
-export function removeEdgeFromActive(edge) {
-    return {
-        type: ActionTypes.REMOVE_EDGE_FROM_ACTIVE,
-        edge: edge
-    }
-}
-
-export const setActiveTrace = (activeTrace: number) => ({
-    type: ActionTypes.SET_ACTIVE_TRACE,
-    activeTrace: activeTrace
-})
-
-
-export const addClusterToTrace = (cluster) => {
-    return (dispatch, getState) => {
-        const { dataset } = getState() as RootState
-
-        return dispatch({
-            type: ActionTypes.ADD_CLUSTER_TO_TRACE,
-            cluster: cluster,
-            vectors: dataset.vectors
-        })
-    }
-}
-
-
-export function setActiveTraceState(cluster: string) {
-    return {
-        type: ActionTypes.SET_ACTIVE_TRACE_STATE,
-        cluster: cluster
-    }
-}
-
-export function selectSideBranch(i: number) {
-    return {
-        type: ActionTypes.SELECT_SIDE_BRANCH,
-        index: i
-    }
-}
-
 
 export class AStorytelling {
-    static createEmpty(): IStorytelling {
-        return {
-            stories: [],
-            active: null,
-            trace: null,
-            activeTraceState: null
-        }
+  static createEmpty(): IStorytelling {
+    return {
+      stories: bookAdapter.getInitialState(),
+      active: null,
+      trace: null,
+      activeTraceState: null,
+      groupLabel: {},
+    };
+  }
+
+  static emptyStory(metadata?): IBook {
+    const story: IBook = {
+      id: uuidv4(),
+      clusters: clusterAdapter.getInitialState(),
+      edges: edgeAdapter.getInitialState(),
+      metadata: metadata ?? { method: 'custom' },
+    };
+
+    return story;
+  }
+
+  static getActive(stories: IStorytelling): IBook {
+    if (stories && stories.stories) {
+      return stories.stories.entities[stories.active];
     }
 
-    static emptyStory(): IBook {
-        const story: IBook = {
-            clusters: ANormalized.create<ICluster>(),
-            edges: ANormalized.create<IEdge>()
-        }
+    return null;
+  }
 
-        return story
-    }
+  static retrieveCluster(stories: IStorytelling, clusterIndex: EntityId): ICluster {
+    return stories.stories.entities[stories.active].clusters.entities[clusterIndex];
+  }
 
-    static getActive(stories: IStorytelling): IBook {
-        if (stories && stories.stories) {
-            return stories.stories[stories.active]
-        } else {
-            return null
-        }
-    }
-
-    static retrieveCluster(stories: IStorytelling, clusterIndex: string): ICluster {
-        return stories.stories[stories.active].clusters.byId[clusterIndex]
-    }
-
-    static retreiveEdge(stories: IStorytelling, edgeIndex: string): IEdge {
-        return stories.stories[stories.active].edges.byId[edgeIndex]
-    }
+  static retreiveEdge(stories: IStorytelling, edgeIndex: EntityId): IEdge {
+    return stories.stories.entities[stories.active].edges.entities[edgeIndex];
+  }
 }
 
-const initialState = AStorytelling.createEmpty()
+const initialState = AStorytelling.createEmpty();
+
+const bookSlice = createSlice({
+  name: 'stories',
+  initialState,
+  reducers: {
+    changeClusterName(state, action: PayloadAction<{ cluster: EntityId; name: string }>) {
+      const { name, cluster } = action.payload;
+      const story = state.stories.entities[state.active];
+      const entity = story.clusters.entities[cluster];
+
+      entity.label = name;
+
+      state.groupLabel = createGroupLabels(Object.values(story.clusters.entities));
+    },
+    selectSideBranch(state, action: PayloadAction<number>) {
+      const index = action.payload;
+
+      const sidePath = { mainEdges: state.trace.mainEdges, mainPath: state.trace.mainPath };
+
+      state.trace = {
+        mainPath: state.trace.sidePaths[index].nodes,
+        mainEdges: state.trace.sidePaths[index].edges,
+        sidePaths: [...state.trace.sidePaths.slice(0, index), ...state.trace.sidePaths.slice(index + 1)],
+      };
+
+      state.trace.sidePaths.push({
+        nodes: sidePath.mainPath,
+        edges: sidePath.mainEdges,
+        syncNodes: [],
+      });
+
+      state.trace.sidePaths.forEach((sidePath) => {
+        sidePath.syncNodes = getSyncNodesAlt(state.trace.mainPath, sidePath.nodes);
+      });
+
+      state.activeTraceState = state.trace.mainPath[0];
+    },
+    addEdgeToActive(state, action: PayloadAction<IEdge>) {
+      const active = state.stories.entities[state.active];
+      edgeAdapter.addOne(active.edges, action.payload);
+    },
+    setActiveTraceState(state, action: PayloadAction<EntityId>) {
+      state.activeTraceState = action.payload;
+    },
+    setActiveTrace(state, action: PayloadAction<any>) {
+      state.trace = action.payload;
+    },
+    removeEdgeFromActive(state, action: PayloadAction<EntityId>) {
+      const active = state.stories.entities[state.active];
+      edgeAdapter.removeOne(active.edges, action.payload);
+      if (state.trace?.mainEdges?.includes(action.payload)) {
+        state.activeTraceState = null;
+        state.trace = null;
+      }
+    },
+    changeBookName(state, action: PayloadAction<{ id: EntityId; name: string }>) {
+      const { id, name } = action.payload;
+      bookAdapter.updateOne(state.stories, { id, changes: { name } });
+    },
+    addBookAsync(state, action: PayloadAction<{ book; activate }>) {
+      const { book, activate } = action.payload;
+
+      bookAdapter.addOne(state.stories, book);
+
+      state.trace = null;
+      state.activeTraceState = null;
+
+      if (activate) {
+        state.active = book.id;
+      }
+
+      state.groupLabel = createGroupLabels(Object.values(book.clusters.entities));
+    },
+    addCluster(state, action: PayloadAction<ICluster>) {
+      const active = state.stories.entities[state.active];
+
+      action.payload.indices.forEach((i) => {
+        if (Array.isArray(state.groupLabel[i])) {
+          state.groupLabel[i].push(action.payload.label);
+        } else {
+          state.groupLabel[i] = [action.payload.label];
+        }
+      });
+
+      clusterAdapter.addOne(active.clusters, action.payload);
+    },
+    deleteBookAsync(state, action: PayloadAction<EntityId>) {
+      bookAdapter.removeOne(state.stories, action.payload);
+      if (state.active === action.payload) {
+        state.trace = null;
+        state.activeTraceState = null;
+      }
+
+      state.groupLabel = createGroupLabels([]);
+    },
+
+    deleteCluster(state, action: PayloadAction<ICluster>) {
+      const active = state.stories.entities[state.active];
+      clusterAdapter.removeOne(active.clusters, action.payload.id);
+
+      const entries = Object.entries(active.edges.entities).filter(([, edge]) => {
+        return edge.source === action.payload.id || edge.destination === action.payload.id;
+      });
+
+      for (const [, edge] of entries) {
+        edgeAdapter.removeOne(active.edges, edge.id);
+      }
+
+      if (state.trace?.mainPath?.includes(action.payload.id)) {
+        state.trace = null;
+        state.activeTraceState = null;
+      }
+
+      action.payload.indices.forEach((vectorIndex) => {
+        if (Array.isArray(state.groupLabel[vectorIndex])) {
+          state.groupLabel[vectorIndex].splice(state.groupLabel[vectorIndex].indexOf(action.payload.label), 1);
+        }
+      });
+    },
+
+    setActiveStoryBook(state, action: PayloadAction<EntityId>) {
+      const storyBook = state.stories.entities[action.payload];
+
+      state.trace = null;
+      state.activeTraceState = null;
+
+      if (storyBook && storyBook.clusters) {
+        state.groupLabel = createGroupLabels(Object.values(storyBook.clusters.entities));
+        state.active = storyBook.id;
+      } else {
+        state.groupLabel = createGroupLabels([]);
+        state.active = null;
+      }
+    },
+
+    addClusterToTrace(state, action: PayloadAction<ICluster>) {
+      const active = state.stories.entities[state.active];
+      clusterAdapter.addOne(active.clusters, action.payload);
+
+      // Add edge that connects the active trace state with the current cluster
+      if (state.trace.mainPath.length > 0) {
+        const edge: IEdge = {
+          id: uuidv4(),
+          source: state.trace.mainPath[state.trace.mainPath.length - 1],
+          destination: action.payload.id,
+          objectType: ObjectTypes.Edge,
+        };
+
+        edgeAdapter.addOne(active.edges, edge);
+
+        state.trace.mainEdges.push(edge.id);
+      }
+
+      // Add cluster to current trace
+      state.trace.mainPath.push(action.payload.id);
+
+      // Generate group labels
+      state.groupLabel = createGroupLabels(Object.values(active.clusters.entities));
+    },
+    set(state, action: PayloadAction<IBook[]>) {
+      bookAdapter.addMany(state.stories, action.payload);
+      const active = state.stories.entities[state.active];
+      if (active) {
+        state.groupLabel = createGroupLabels(Object.values(active.clusters.entities));
+      }
+    },
+  },
+});
 
 /**
  * Type interface for stories slace of the redux store.
  */
 export type IStorytelling = {
-    stories: IBook[]
+  stories: EntityState<IBook>;
 
-    active: number
+  active: EntityId;
 
-    trace: { mainPath: string[], mainEdges: string[], sidePaths: { nodes: string[], edges: string[], syncNodes: number[] }[] }
+  trace: { mainPath: EntityId[]; mainEdges: EntityId[]; sidePaths: { nodes: EntityId[]; edges: EntityId[]; syncNodes: number[] }[] };
 
-    activeTraceState: string
-}
+  activeTraceState: EntityId;
 
-export default function stories(state: IStorytelling = initialState, action): IStorytelling {
-    switch (action.type) {
-        case ActionTypes.SELECT_SIDE_BRANCH: {
-            let sidePaths = state.trace.sidePaths.slice(0)
+  groupLabel: { [key: number]: number[] };
+};
 
-            sidePaths.splice(action.index, 1)
-            sidePaths.push({
-                nodes: state.trace.mainPath,
-                edges: state.trace.mainEdges,
-                syncNodes: []
-            })
-
-            let trace = {
-                mainPath: state.trace.sidePaths[action.index].nodes,
-                mainEdges: state.trace.sidePaths[action.index].edges,
-                sidePaths: sidePaths
-            }
-
-            trace.sidePaths.forEach(sidePath => {
-                sidePath.syncNodes = getSyncNodesAlt(trace.mainPath, sidePath.nodes)
-            })
-
-            return {
-                stories: state.stories,
-                active: state.active,
-                trace: trace,
-                activeTraceState: state.activeTraceState
-            }
-        }
-        case ActionTypes.SET_ACTIVE_TRACE_STATE: {
-
-            return {
-                stories: state.stories,
-                active: state.active,
-                trace: state.trace,
-                activeTraceState: action.cluster
-            }
-        }
-        case ActionTypes.ADD_CLUSTER_TO_TRACE: {
-            let cluster = action.cluster
-
-            // Add cluster to active story book
-            const activeStory = AStorytelling.getActive(state)
-
-            ABook.addCluster(activeStory, cluster)
-
-            // Add edge that connects the active trace state with the current cluster
-            if (state.trace.mainPath.length > 0) {
-                let edge: IEdge = {
-                    source: state.trace.mainPath[state.trace.mainPath.length - 1],
-                    destination: cluster,
-                    objectType: ObjectTypes.Edge
-                }
-
-                const handle = ABook.addEdge(activeStory, edge)
-
-                state.trace.mainEdges.push(handle)
-            }
-
-            // Add cluster to current trace
-            state.trace.mainPath.push(cluster)
-
-            ACluster.deriveVectorLabelsFromClusters(action.vectors, Object.values(activeStory.clusters.byId))
-
-            return {
-                stories: state.stories,
-                active: state.active,
-                trace: state.trace,
-                activeTraceState: state.activeTraceState
-            }
-        }
-        case ActionTypes.SET_ACTIVE_TRACE: {
-            return {
-                stories: state.stories,
-                active: state.active,
-                trace: action.activeTrace,
-                activeTraceState: state.activeTraceState
-            }
-        }
-        case ActionTypes.SET:
-            if (state.active !== null) {
-                ACluster.deriveVectorLabelsFromClusters(action.vectors, Object.values(AStorytelling.getActive(state).clusters.byId))
-            }
-
-            return {
-                stories: action.stories,
-                active: state.active,
-                trace: state.trace,
-                activeTraceState: state.activeTraceState
-            }
-        case ActionTypes.DELETE_BOOK:
-            const newState = state.stories.slice(0)
-            newState.splice(newState.indexOf(action.story), 1)
-
-            if (state.active == action.story) {
-                ACluster.deriveVectorLabelsFromClusters(action.vectors, [])
-
-                return {
-                    stories: newState,
-                    active: null,
-                    trace: null,
-                    activeTraceState: null
-                }
-            }
-
-            return {
-                stories: newState,
-                active: state.active,
-                trace: state.trace,
-                activeTraceState: state.activeTraceState
-            }
-        case ActionTypes.ADD_BOOK: {
-            let storyBook = action.story as IBook
-            let trace = state.trace
-            let activeTraceState = state.activeTraceState
-
-
-            if (storyBook.clusters.allIds.length == 0) {
-                trace = {
-                    mainEdges: [],
-                    mainPath: [],
-                    sidePaths: []
-                }
-                activeTraceState = null
-            }
-
-            ACluster.deriveVectorLabelsFromClusters(action.vectors, Object.values(storyBook.clusters.byId))
-
-            if (state && state.stories.length > 0) {
-                const newState = state.stories.slice(0)
-                const i = newState.push(storyBook) - 1
-
-                return {
-                    stories: newState,
-                    active: action.activate ? i : state.active,
-                    trace: trace,
-                    activeTraceState: activeTraceState
-                }
-            } else {
-                return {
-                    stories: [storyBook],
-                    active: 0,
-                    trace: trace,
-                    activeTraceState: activeTraceState
-                }
-            }
-        }
-        case ActionTypes.SET_ACTIVE_STORY_BOOK: {
-            let storyBook = state.stories[action.activeStory]
-
-            let trace = state.trace
-            let activeTraceState = state.activeTraceState
-
-            if (storyBook && storyBook.clusters.allIds.length == 0) {
-                trace = {
-                    mainPath: [],
-                    mainEdges: [],
-                    sidePaths: []
-                }
-                activeTraceState = null
-            } else {
-                trace = null
-            }
-
-            if (storyBook && storyBook.clusters) {
-                ACluster.deriveVectorLabelsFromClusters(action.vectors, Object.values(storyBook.clusters.byId))
-            } else {
-                ACluster.deriveVectorLabelsFromClusters(action.vectors, [])
-            }
-
-            return {
-                stories: state.stories,
-                active: action.activeStory,
-                trace: trace,
-                activeTraceState: activeTraceState
-            }
-        }
-        case ActionTypes.DELETE_CLUSTER: {
-            const cluster = action.cluster as ICluster
-
-            const activeStory = AStorytelling.getActive(state)
-
-            const handle = ABook.deleteCluster(activeStory, cluster)
-
-            const entries = Object.entries(activeStory.edges.byId).filter(([edgeHandle, edge]) => {
-                return edge.source === handle || edge.destination === handle
-            })
-
-            for (const [handle, edge] of entries) {
-                ABook.deleteEdge(activeStory, edge)
-            }
-
-            // Remove cluster labels from samples
-            // TODO: check if this is ok in a reducer
-            cluster.indices.map(i => action.vectors[i]).forEach(sample => {
-                if (Array.isArray(sample.groupLabel)) {
-                    sample.groupLabel.splice(sample.groupLabel.indexOf(cluster.label), 1)
-                } else {
-                    sample.groupLabel = []
-                }
-            })
-
-            return {
-                stories: state.stories,
-                active: state.active,
-                trace: state.trace,
-                activeTraceState: state.activeTraceState
-            }
-        }
-        case ActionTypes.ADD_EDGE_TO_ACTIVE: {
-            const activeStory = AStorytelling.getActive(state)
-
-            ANormalized.add(activeStory.edges, action.edge)
-
-            return {
-                stories: state.stories,
-                active: state.active,
-                trace: state.trace,
-                activeTraceState: state.activeTraceState
-            }
-        }
-        case ActionTypes.ADD_CLUSTER: {
-            let cluster = action.cluster as ICluster
-
-            const story = AStorytelling.getActive(state)
-
-            ABook.addCluster(story, cluster)
-
-            // Add cluster labels to samples
-            // TODO: check if this is ok in a reducer
-            cluster.indices.forEach(i => {
-                const sample = action.vectors[i]
-                if (Array.isArray(sample.groupLabel)) {
-                    sample.groupLabel.push(cluster.label)
-                } else {
-                    sample.groupLabel = [cluster.label]
-                }
-            })
-
-            return {
-                stories: state.stories,
-                active: state.active,
-                trace: state.trace,
-                activeTraceState: state.activeTraceState
-            }
-        }
-        case ActionTypes.REMOVE_EDGE_FROM_ACTIVE: {
-            const activeStory = AStorytelling.getActive(state)
-            ANormalized.deleteByRef(activeStory.edges, action.edge)
-
-            return { ...state }
-        }
-        default:
-            return state
-    }
-}
+export const StoriesActions = {
+  ...bookSlice.actions,
+};
+export const stories = bookSlice.reducer;

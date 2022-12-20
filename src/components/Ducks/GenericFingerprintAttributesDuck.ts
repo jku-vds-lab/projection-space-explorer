@@ -1,17 +1,17 @@
-const SET = "ducks/genericFingerprintAttributes/SET"
+const SET = 'ducks/genericFingerprintAttributes/SET';
 
-export const setGenericFingerprintAttributes = genericFingerprintAttributes => ({
-    type: SET,
-    genericFingerprintAttributes: genericFingerprintAttributes
+export const setGenericFingerprintAttributes = (genericFingerprintAttributes) => ({
+  type: SET,
+  genericFingerprintAttributes,
 });
 
 const genericFingerprintAttributes = (state = [], action): any[] => {
-    switch (action.type) {
-        case SET:
-            return action.genericFingerprintAttributes
-        default:
-            return state
-    }
-}
+  switch (action.type) {
+    case SET:
+      return action.genericFingerprintAttributes;
+    default:
+      return state;
+  }
+};
 
-export default genericFingerprintAttributes
+export default genericFingerprintAttributes;

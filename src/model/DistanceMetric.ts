@@ -1,9 +1,7 @@
-
-
-export enum DistanceMetric{
-    EUCLIDEAN="euclidean",
-    JACCARD="jaccard",
-    GOWER="gower",
-    COSINE="cosine",
-    MANHATTAN="manhattan"
+export enum DistanceMetric {
+  EUCLIDEAN = 'euclidean',
+  JACCARD = 'jaccard',
+  GOWER = 'gower',
+  COSINE = 'cosine',
+  MANHATTAN = 'manhattan',
 }

@@ -17,11 +17,11 @@
  * ==============================================================================
  */
 import * as matrix from './matrix';
-export declare type DistanceFn = (x: Vector, y: Vector) => number;
-export declare type RandomFn = () => number;
-export declare type EpochCallback = (epoch: number) => boolean | void;
-export declare type Vector = number[];
-export declare type Vectors = Vector[];
+export type DistanceFn = (x: Vector, y: Vector) => number;
+export type RandomFn = () => number;
+export type EpochCallback = (epoch: number) => boolean | void;
+export type Vector = number[];
+export type Vectors = Vector[];
 export declare const enum TargetMetric {
     categorical = "categorical",
     l1 = "l1",

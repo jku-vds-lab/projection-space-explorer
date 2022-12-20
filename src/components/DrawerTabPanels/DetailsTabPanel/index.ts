@@ -1,1 +1,2 @@
-export * from './DetailsTabPanel'
+export * from './DetailsTabPanel';
+export * from './AttributeSelectionTable';

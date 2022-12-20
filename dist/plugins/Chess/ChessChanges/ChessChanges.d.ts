@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { IVector } from "../../../model/Vector";
-declare type ChessChangesProps = {
+import { IVector } from '../../../model/Vector';
+type ChessChangesProps = {
     vectorsA: Array<IVector>;
     vectorsB: Array<IVector>;
     width?: number;

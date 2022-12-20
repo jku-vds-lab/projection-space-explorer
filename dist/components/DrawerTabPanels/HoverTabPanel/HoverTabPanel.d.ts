@@ -1,32 +1,34 @@
-import { ConnectedProps } from "react-redux";
+import { ConnectedProps } from 'react-redux';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     hoverSettings: {
         windowMode: any;
     };
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: string[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;
+    globalLabels: import("../..").GlobalLabelsState;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
 }, {}>;
-declare type PropsFromRedux = ConnectedProps<typeof connector>;
-declare type Props = PropsFromRedux & {};
-export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset }: Props) => JSX.Element, Pick<{
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type Props = PropsFromRedux & {};
+export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, globalLabels }: Props) => JSX.Element, import("react-redux").Omit<{
     hoverSettings: {
         windowMode: any;
     };
     currentAggregation: {
         aggregation: number[];
-        selectedClusters: string[];
+        selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
     dataset: import("../../..").Dataset;
+    globalLabels: import("../..").GlobalLabelsState;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
-}, never>>;
+}, "globalLabels" | "currentAggregation" | "dataset" | "hoverSettings" | "setHoverWindowMode" | "setAggregation">>;
 export {};

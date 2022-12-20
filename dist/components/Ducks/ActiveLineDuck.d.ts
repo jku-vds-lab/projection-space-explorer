@@ -1,6 +1,2 @@
-declare const activeLine: (state: any, action: any) => string;
-export declare const setActiveLine: (activeLine: any) => {
-    type: string;
-    activeLine: any;
-};
-export default activeLine;
+export declare const setActiveLine: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<string, string>;
+export declare const activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;

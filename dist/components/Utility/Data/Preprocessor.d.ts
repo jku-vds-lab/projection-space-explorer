@@ -1,4 +1,4 @@
-import { IVector } from "../../../model/Vector";
+import { IVector } from '../../../model/Vector';
 export declare class Preprocessor {
     vectors: IVector[];
     constructor(vectors: any);
@@ -14,5 +14,5 @@ export declare class Preprocessor {
      * Infers the multiplicity attribute for this dataset.
      */
     inferMultiplicity(): void;
-    preprocess(ranges: any): any;
+    preprocess(ranges: any): any[];
 }

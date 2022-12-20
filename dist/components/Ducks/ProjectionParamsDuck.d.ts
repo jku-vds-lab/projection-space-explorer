@@ -1,6 +1,6 @@
-import { NormalizationMethod } from "../../model/NormalizationMethod";
-import { DistanceMetric } from "../../model/DistanceMetric";
-import { EncodingMethod } from "../../model/EncodingMethod";
+import { NormalizationMethod } from '../../model/NormalizationMethod';
+import { DistanceMetric } from '../../model/DistanceMetric';
+import { EncodingMethod } from '../../model/EncodingMethod';
 export declare const setProjectionParamsAction: (projectionParams: any) => {
     type: string;
     projectionParams: any;
@@ -17,7 +17,7 @@ declare const initialState: {
     normalizationMethod: NormalizationMethod;
     encodingMethod: EncodingMethod;
 };
-export declare type ProjectionParamsType = typeof initialState;
+export type ProjectionParamsType = typeof initialState;
 declare const projectionParams: (state: {
     perplexity: number;
     learningRate: number;

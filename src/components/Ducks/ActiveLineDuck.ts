@@ -1,17 +1,9 @@
-const SET = "ducks/activeLine/SET"
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
-const activeLine = (state = null, action): string => {
-    switch (action.type) {
-        case SET:
-            return action.activeLine
-        default:
-            return state
-    }
-}
+export const setActiveLine = createAction<string>('ducks/activeLine/SET');
 
-export const setActiveLine = activeLine => ({
-    type: SET,
-    activeLine: activeLine
-})
-
-export default activeLine
+export const activeLine = createReducer<string>(null, (builder) => {
+  builder.addCase(setActiveLine, (_, action) => {
+    return action.payload;
+  });
+});
