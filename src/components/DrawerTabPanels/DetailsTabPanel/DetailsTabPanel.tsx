@@ -11,6 +11,7 @@ import './DatasetTabPanel.scss';
 import { AttributeSelectionTable } from './AttributeSelectionTable';
 import { AStorytelling } from '../../Ducks/StoriesDuck';
 import { FeatureConfig } from '../../../BaseConfig';
+import { setGenericFingerprintAttributes } from '../../Ducks';
 
 const mapStateToProps = (state: RootState) => ({
   genericFingerprintAttributes: state.genericFingerprintAttributes,
@@ -26,6 +27,7 @@ const mapDispatchToProps = (dispatch) => ({
   setHoverWindowMode: (value) => dispatch(setHoverWindowMode(value)),
   setAggregation: (value) => dispatch(selectVectors(value, false)),
   setHoverStateOrientation: (value) => dispatch(setHoverStateOrientation(value)),
+  setGenericFingerprintAttributes: (value) => dispatch(setGenericFingerprintAttributes(value)),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -47,6 +49,8 @@ export const DetailsTabPanel = connector(
     setHoverStateOrientation,
     activeStorybook,
     globalLabels,
+    genericFingerprintAttributes,
+    setGenericFingerprintAttributes
   }: Props) => {
     const handleChange = (_, value) => {
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
@@ -85,7 +89,7 @@ export const DetailsTabPanel = connector(
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
-          <AttributeSelectionTable />
+          <AttributeSelectionTable attributes={genericFingerprintAttributes} setAttributes={setGenericFingerprintAttributes} />
         </Box>
 
         <Box paddingX={2} paddingTop={1}>

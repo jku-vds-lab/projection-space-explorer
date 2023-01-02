@@ -1,26 +1,20 @@
-import { Box, Button, Dialog, DialogContent, DialogTitle, DialogActions } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, DialogActions } from '@mui/material';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import DataGrid, { SelectColumn } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
-import { RootState, usePSESelector } from '../../Store/Store';
-import genericFingerprintAttributes, { setGenericFingerprintAttributes } from '../../Ducks/GenericFingerprintAttributesDuck';
+import { usePSESelector } from '../../Store/Store';
 import { DefaultFeatureLabel } from '../../../model';
 
-export function AttributeSelectionTable() {
+export function AttributeSelectionTable(props: { attributes: any[]; setAttributes: (attributes: any[]) => void }) {
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);
-  const attributes = usePSESelector((state) => state.genericFingerprintAttributes);
-  const dispatch = useDispatch();
+  // const attributes = usePSESelector((state) => state.genericFingerprintAttributes);
+  // const dispatch = useDispatch();
 
   const openAttributes = (event) => {
     setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    dispatch(setGenericFingerprintAttributes([...localAttributes]));
   };
 
   const [localAttributes, setLocalAttributes] = React.useState<any>([]);
@@ -29,6 +23,12 @@ export function AttributeSelectionTable() {
   const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(() => new Set<unknown>([]));
 
   const columnsSelected = [SelectColumn, { key: 'feature', name: 'Selected' }, { key: 'group', name: 'Group' }];
+
+  const handleClose = () => {
+    setOpen(false);
+    props.setAttributes([...localAttributes]);
+    // dispatch(setGenericFingerprintAttributes([...localAttributes]));
+  };
 
   const groupMapping = (r, i) => {
     return {
@@ -40,17 +40,13 @@ export function AttributeSelectionTable() {
   };
 
   React.useEffect(() => {
-    setLocalAttributes(attributes.map(groupMapping));
-    setRows(attributes.map(groupMapping));
-  }, [attributes]);
+    setLocalAttributes(props.attributes.map(groupMapping));
+    setRows(props.attributes.map(groupMapping));
+  }, [props.attributes]);
 
   function rowKeyGetter(row: any) {
     return row.feature;
   }
-
-  console.log(dataset?.columns);
-  console.log(genericFingerprintAttributes);
-  console.log(rows);
 
   return (
     <div>

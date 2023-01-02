@@ -1,4 +1,4 @@
-import { EntityId, Update, ReducersMapObject, EntityState, ActionReducerMapBuilder } from '@reduxjs/toolkit';
+import { EntityId, Update, ReducersMapObject, EntityState, Reducer, ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { ViewTransformType } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, IPosition, Dataset } from '../../model';
@@ -109,29 +109,44 @@ export declare const ViewActions: {
     changeDivergingRange: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<[number, number, number] | [number, number], string>;
 };
 export declare const ViewSelector: {
-    selectAll: ((state: {
-        currentAggregation: {
+    selectAll: ((state: import("../Store").ReducerValues<{
+        currentAggregation: (state: {
+            aggregation: number[];
+            selectedClusters: (string | number)[];
+            source: "sample" | "cluster";
+        }, action: any) => {
             aggregation: number[];
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: import("./StoriesDuck").IStorytelling;
-        openTab: any;
-        pointDisplay: {
+        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
+        openTab: (state: number, action: any) => any;
+        pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
                 cross: boolean;
                 circle: boolean;
                 square: boolean;
             };
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
+        }, import("redux").AnyAction>;
+        activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
+        dataset: typeof import("./DatasetDuck").default;
+        highlightedSequence: (state: any, action: any) => any;
+        advancedColoringSelection: (state: any[], action: any) => any;
+        projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("./ProjectionColumnsDuck").ProjectionColumn[]>;
+        projectionOpen: (state: boolean, action: any) => any;
+        projectionParams: (state: {
+            perplexity: number;
+            learningRate: number;
+            nNeighbors: number;
+            iterations: number;
+            seeded: boolean;
+            useSelection: boolean;
+            method: string;
+            distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
+            normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
+            encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
+        }, action: any) => {
             perplexity: number;
             learningRate: number;
             nNeighbors: number;
@@ -143,47 +158,30 @@ export declare const ViewSelector: {
             normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
             encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
         };
-        projectionWorker: Worker;
-        clusterMode: import("./ClusterModeDuck").ClusterMode;
-        displayMode: import("./DisplayModeDuck").DisplayMode;
-        hoverState: import("./HoverStateDuck").HoverStateType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        differenceThreshold: any;
-        hoverSettings: {
+        projectionWorker: typeof import("./ProjectionWorkerDuck").default;
+        clusterMode: typeof import("./ClusterModeDuck").default;
+        displayMode: typeof import("./DisplayModeDuck").default;
+        hoverState: (state: import("./HoverStateDuck").HoverStateType, action: any) => import("./HoverStateDuck").HoverStateType;
+        trailSettings: typeof import("./TrailSettingsDuck").default;
+        differenceThreshold: (state: number, action: any) => any;
+        hoverSettings: (state: {
+            windowMode: import("./HoverSettingsDuck").WindowMode;
+        }, action: any) => {
             windowMode: any;
         };
-        selectedLineBy: {
-            options: any[];
-            value: any;
-        } | {
-            options: any;
-            value: string;
-        };
-        groupVisualizationMode: any;
-        genericFingerprintAttributes: any[];
-        hoverStateOrientation: any;
-        detailView: {
+        selectedLineBy: typeof import("./SelectedLineByDuck").selectedLineBy;
+        groupVisualizationMode: (state: import("./GroupVisualizationMode").GroupVisualizationMode, action: any) => any;
+        genericFingerprintAttributes: (state: any[], action: any) => any[];
+        hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
+        detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             open: boolean;
             active: number;
-        };
-        datasetEntries: {
-            values: {
-                byId: {
-                    [id: string]: import("../../model").DatasetEntry;
-                };
-                allIds: string[];
-            };
-        };
-        globalLabels: import("./GlobalLabelsDuck").GlobalLabelsState;
-        colorScales: import("./ColorScalesDuck").ColorScalesType;
-        multiples: StateType<unknown>;
-    }) => StateType<unknown>) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>) => StateType<unknown> & {
+        }>;
+        datasetEntries: typeof import("./DatasetEntriesDuck").default;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+        colorScales: typeof import("./ColorScalesDuck").default;
+        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
+    }>) => StateType<unknown>) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>) => StateType<unknown> & {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
@@ -192,108 +190,49 @@ export declare const ViewSelector: {
         id: EntityId;
         attributes: SingleMultipleAttributes;
     };
-    getWorkspaceById: ((state: {
-        currentAggregation: {
-            aggregation: number[];
-            selectedClusters: (string | number)[];
-            source: "sample" | "cluster";
-        };
-        stories: import("./StoriesDuck").IStorytelling;
-        openTab: any;
-        pointDisplay: {
-            checkedShapes: {
-                star: boolean;
-                cross: boolean;
-                circle: boolean;
-                square: boolean;
-            };
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
-            perplexity: number;
-            learningRate: number;
-            nNeighbors: number;
-            iterations: number;
-            seeded: boolean;
-            useSelection: boolean;
-            method: string;
-            distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
-            normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
-            encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
-        };
-        projectionWorker: Worker;
-        clusterMode: import("./ClusterModeDuck").ClusterMode;
-        displayMode: import("./DisplayModeDuck").DisplayMode;
-        hoverState: import("./HoverStateDuck").HoverStateType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        differenceThreshold: any;
-        hoverSettings: {
-            windowMode: any;
-        };
-        selectedLineBy: {
-            options: any[];
-            value: any;
-        } | {
-            options: any;
-            value: string;
-        };
-        groupVisualizationMode: any;
-        genericFingerprintAttributes: any[];
-        hoverStateOrientation: any;
-        detailView: {
-            open: boolean;
-            active: number;
-        };
-        datasetEntries: {
-            values: {
-                byId: {
-                    [id: string]: import("../../model").DatasetEntry;
-                };
-                allIds: string[];
-            };
-        };
-        globalLabels: import("./GlobalLabelsDuck").GlobalLabelsState;
-        colorScales: import("./ColorScalesDuck").ColorScalesType;
-        multiples: StateType<unknown>;
-    }, params_0: EntityId) => IProjection) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>, args_1: EntityId) => IProjection & {
+    getWorkspaceById: ((state: any, multipleId: EntityId) => IProjection) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>, args_1: EntityId) => IProjection & {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
     };
-    getWorkspace: ((state: {
-        currentAggregation: {
+    getWorkspace: ((state: import("../Store").ReducerValues<{
+        currentAggregation: (state: {
+            aggregation: number[];
+            selectedClusters: (string | number)[];
+            source: "sample" | "cluster";
+        }, action: any) => {
             aggregation: number[];
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: import("./StoriesDuck").IStorytelling;
-        openTab: any;
-        pointDisplay: {
+        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
+        openTab: (state: number, action: any) => any;
+        pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
                 cross: boolean;
                 circle: boolean;
                 square: boolean;
             };
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
+        }, import("redux").AnyAction>;
+        activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
+        dataset: typeof import("./DatasetDuck").default;
+        highlightedSequence: (state: any, action: any) => any;
+        advancedColoringSelection: (state: any[], action: any) => any;
+        projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("./ProjectionColumnsDuck").ProjectionColumn[]>;
+        projectionOpen: (state: boolean, action: any) => any;
+        projectionParams: (state: {
+            perplexity: number;
+            learningRate: number;
+            nNeighbors: number;
+            iterations: number;
+            seeded: boolean;
+            useSelection: boolean;
+            method: string;
+            distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
+            normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
+            encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
+        }, action: any) => {
             perplexity: number;
             learningRate: number;
             nNeighbors: number;
@@ -305,74 +244,72 @@ export declare const ViewSelector: {
             normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
             encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
         };
-        projectionWorker: Worker;
-        clusterMode: import("./ClusterModeDuck").ClusterMode;
-        displayMode: import("./DisplayModeDuck").DisplayMode;
-        hoverState: import("./HoverStateDuck").HoverStateType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        differenceThreshold: any;
-        hoverSettings: {
+        projectionWorker: typeof import("./ProjectionWorkerDuck").default;
+        clusterMode: typeof import("./ClusterModeDuck").default;
+        displayMode: typeof import("./DisplayModeDuck").default;
+        hoverState: (state: import("./HoverStateDuck").HoverStateType, action: any) => import("./HoverStateDuck").HoverStateType;
+        trailSettings: typeof import("./TrailSettingsDuck").default;
+        differenceThreshold: (state: number, action: any) => any;
+        hoverSettings: (state: {
+            windowMode: import("./HoverSettingsDuck").WindowMode;
+        }, action: any) => {
             windowMode: any;
         };
-        selectedLineBy: {
-            options: any[];
-            value: any;
-        } | {
-            options: any;
-            value: string;
-        };
-        groupVisualizationMode: any;
-        genericFingerprintAttributes: any[];
-        hoverStateOrientation: any;
-        detailView: {
+        selectedLineBy: typeof import("./SelectedLineByDuck").selectedLineBy;
+        groupVisualizationMode: (state: import("./GroupVisualizationMode").GroupVisualizationMode, action: any) => any;
+        genericFingerprintAttributes: (state: any[], action: any) => any[];
+        hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
+        detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             open: boolean;
             active: number;
-        };
-        datasetEntries: {
-            values: {
-                byId: {
-                    [id: string]: import("../../model").DatasetEntry;
-                };
-                allIds: string[];
-            };
-        };
-        globalLabels: import("./GlobalLabelsDuck").GlobalLabelsState;
-        colorScales: import("./ColorScalesDuck").ColorScalesType;
-        multiples: StateType<unknown>;
-    }) => IProjection) & import("reselect").OutputSelectorFields<(args_0: IProjection) => IProjection & {
+        }>;
+        datasetEntries: typeof import("./DatasetEntriesDuck").default;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+        colorScales: typeof import("./ColorScalesDuck").default;
+        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
+    }>) => IProjection) & import("reselect").OutputSelectorFields<(args_0: IProjection) => IProjection & {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
     };
-    workspaceIsTemporal: ((state: {
-        currentAggregation: {
+    workspaceIsTemporal: ((state: import("../Store").ReducerValues<{
+        currentAggregation: (state: {
+            aggregation: number[];
+            selectedClusters: (string | number)[];
+            source: "sample" | "cluster";
+        }, action: any) => {
             aggregation: number[];
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: import("./StoriesDuck").IStorytelling;
-        openTab: any;
-        pointDisplay: {
+        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
+        openTab: (state: number, action: any) => any;
+        pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
                 cross: boolean;
                 circle: boolean;
                 square: boolean;
             };
-        };
-        activeLine: string;
-        dataset: Dataset;
-        highlightedSequence: any;
-        advancedColoringSelection: any;
-        projectionColumns: import("./ProjectionColumnsDuck").ProjectionColumn[];
-        projectionOpen: any;
-        projectionParams: {
+        }, import("redux").AnyAction>;
+        activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
+        dataset: typeof import("./DatasetDuck").default;
+        highlightedSequence: (state: any, action: any) => any;
+        advancedColoringSelection: (state: any[], action: any) => any;
+        projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<import("./ProjectionColumnsDuck").ProjectionColumn[]>;
+        projectionOpen: (state: boolean, action: any) => any;
+        projectionParams: (state: {
+            perplexity: number;
+            learningRate: number;
+            nNeighbors: number;
+            iterations: number;
+            seeded: boolean;
+            useSelection: boolean;
+            method: string;
+            distanceMetric: import("../../model/DistanceMetric").DistanceMetric;
+            normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
+            encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
+        }, action: any) => {
             perplexity: number;
             learningRate: number;
             nNeighbors: number;
@@ -384,47 +321,30 @@ export declare const ViewSelector: {
             normalizationMethod: import("../../model/NormalizationMethod").NormalizationMethod;
             encodingMethod: import("../../model/EncodingMethod").EncodingMethod;
         };
-        projectionWorker: Worker;
-        clusterMode: import("./ClusterModeDuck").ClusterMode;
-        displayMode: import("./DisplayModeDuck").DisplayMode;
-        hoverState: import("./HoverStateDuck").HoverStateType;
-        trailSettings: {
-            show: boolean;
-            length: any;
-        } | {
-            show: any;
-            length: number;
-        };
-        differenceThreshold: any;
-        hoverSettings: {
+        projectionWorker: typeof import("./ProjectionWorkerDuck").default;
+        clusterMode: typeof import("./ClusterModeDuck").default;
+        displayMode: typeof import("./DisplayModeDuck").default;
+        hoverState: (state: import("./HoverStateDuck").HoverStateType, action: any) => import("./HoverStateDuck").HoverStateType;
+        trailSettings: typeof import("./TrailSettingsDuck").default;
+        differenceThreshold: (state: number, action: any) => any;
+        hoverSettings: (state: {
+            windowMode: import("./HoverSettingsDuck").WindowMode;
+        }, action: any) => {
             windowMode: any;
         };
-        selectedLineBy: {
-            options: any[];
-            value: any;
-        } | {
-            options: any;
-            value: string;
-        };
-        groupVisualizationMode: any;
-        genericFingerprintAttributes: any[];
-        hoverStateOrientation: any;
-        detailView: {
+        selectedLineBy: typeof import("./SelectedLineByDuck").selectedLineBy;
+        groupVisualizationMode: (state: import("./GroupVisualizationMode").GroupVisualizationMode, action: any) => any;
+        genericFingerprintAttributes: (state: any[], action: any) => any[];
+        hoverStateOrientation: (state: import("./HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
+        detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             open: boolean;
             active: number;
-        };
-        datasetEntries: {
-            values: {
-                byId: {
-                    [id: string]: import("../../model").DatasetEntry;
-                };
-                allIds: string[];
-            };
-        };
-        globalLabels: import("./GlobalLabelsDuck").GlobalLabelsState;
-        colorScales: import("./ColorScalesDuck").ColorScalesType;
-        multiples: StateType<unknown>;
-    }) => boolean) & import("reselect").OutputSelectorFields<(args_0: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean & {
+        }>;
+        datasetEntries: typeof import("./DatasetEntriesDuck").default;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+        colorScales: typeof import("./ColorScalesDuck").default;
+        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
+    }>) => boolean) & import("reselect").OutputSelectorFields<(args_0: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean & {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
