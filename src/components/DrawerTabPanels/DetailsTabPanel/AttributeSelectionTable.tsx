@@ -7,6 +7,7 @@ import { usePSESelector } from '../../Store/Store';
 import { DefaultFeatureLabel } from '../../../model';
 
 export function AttributeSelectionTable(props: { attributes: any[]; setAttributes: (attributes: any[]) => void }) {
+  console.log(props.attributes);
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);
