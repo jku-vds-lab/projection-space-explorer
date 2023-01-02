@@ -298,6 +298,32 @@ export const Application = connector(
                 />
               </Tooltip>
 
+              {this.props.overrideComponents?.detailViews?.length > 0 ? (
+                <Tooltip
+                  placement="right"
+                  title={
+                    <>
+                      <Typography variant="subtitle2">{`Tabular views of the ${this.props.globalLabels.itemLabelPlural} `}</Typography>
+                      <Typography variant="body2">
+                        {toSentenceCase(`Contains settings of the tabular views for the ${this.props.globalLabels.itemLabelPlural}.`)}
+                      </Typography>
+                    </>
+                  }
+                >
+                  <Tab
+                    value={4}
+                    data-cy="details-tab"
+                    icon={<img src={PSEIcons.PseLineup} />}
+                    style={{
+                      minWidth: 0,
+                      flexGrow: 1,
+                      padding: 12,
+                      borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                    }}
+                  />
+                </Tooltip>
+              ) : null}
+
               {this.props.overrideComponents?.tabs?.map((tab, i) => {
                 return (
                   <Tooltip
@@ -311,7 +337,7 @@ export const Application = connector(
                     }
                   >
                     <Tab
-                      value={5 + i}
+                      value={6 + i}
                       icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon as any} />}
                       style={{
                         minWidth: 0,
