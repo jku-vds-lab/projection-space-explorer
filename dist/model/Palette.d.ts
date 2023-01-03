@@ -6,3 +6,4 @@ export type BaseColorScale = {
     dataClasses?: number;
 };
 export {};
+//# sourceMappingURL=Palette.d.ts.map

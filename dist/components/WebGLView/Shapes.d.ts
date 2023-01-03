@@ -4,3 +4,4 @@ export declare enum Shapes {
     Square = "square",
     Cross = "cross"
 }
+//# sourceMappingURL=Shapes.d.ts.map

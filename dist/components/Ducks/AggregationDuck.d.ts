@@ -14,3 +14,4 @@ declare const currentAggregation: (state: {
     source: "sample" | "cluster";
 }, action: any) => typeof initialState;
 export default currentAggregation;
+//# sourceMappingURL=AggregationDuck.d.ts.map

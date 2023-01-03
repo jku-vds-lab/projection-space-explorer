@@ -46,3 +46,4 @@ export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<(
     config: FeatureConfig;
 }, "globalLabels" | "currentAggregation" | "dataset" | "hoverSettings" | "genericFingerprintAttributes" | "hoverStateOrientation" | "setHoverWindowMode" | "setAggregation" | "setHoverStateOrientation" | "activeStorybook">>;
 export {};
+//# sourceMappingURL=DetailsTabPanel.d.ts.map

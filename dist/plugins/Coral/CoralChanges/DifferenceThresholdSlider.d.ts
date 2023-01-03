@@ -15,9 +15,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 } & {
     setDifferenceThreshold: (differenceThreshold: any) => any;
 }, {}>;
-export declare const DifferenceThresholdSlider: import("react-redux").ConnectedComponent<typeof simpleSlider, import("react-redux").Omit<React.ClassAttributes<simpleSlider> & {
-    differenceThreshold: any;
-} & {
-    setDifferenceThreshold: (differenceThreshold: any) => any;
-}, "differenceThreshold" | "setDifferenceThreshold">>;
+export declare const DifferenceThresholdSlider: import("react-redux").ConnectedComponent<typeof simpleSlider, import("react-redux").Omit<any, "differenceThreshold" | "setDifferenceThreshold">>;
 export {};
+//# sourceMappingURL=DifferenceThresholdSlider.d.ts.map

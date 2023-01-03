@@ -16,3 +16,4 @@ export declare class ChessChanges extends React.Component<ChessChangesProps> {
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=ChessChanges.d.ts.map

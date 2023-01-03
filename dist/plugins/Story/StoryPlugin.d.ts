@@ -6,3 +6,4 @@ export declare class GoPlugin extends PSEPlugin {
     type: DatasetType;
     createFingerprint(dataset: Dataset, vectors: IVector[]): JSX.Element;
 }
+//# sourceMappingURL=StoryPlugin.d.ts.map

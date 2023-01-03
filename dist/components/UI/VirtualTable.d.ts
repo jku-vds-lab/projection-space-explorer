@@ -21,3 +21,4 @@ export declare class VirtualTable extends React.Component<VirtualTableProps, any
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=VirtualTable.d.ts.map

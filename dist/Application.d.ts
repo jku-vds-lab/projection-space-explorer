@@ -76,61 +76,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<React.ClassAttributes<{
-    splitRef: React.LegacyRef<Split>;
-    componentDidMount(): void;
-    /**
-     * Main callback when the dataset changes
-     * @param dataset
-     * @param json
-     */
-    onDataSelected(dataset: Dataset): void;
-    onChangeTab(newTab: any): void;
-    render(): JSX.Element;
-    context: any;
-    setState<K extends string | number | symbol>(state: any, callback?: () => void): void;
-    forceUpdate(callback?: () => void): void;
-    readonly props: Readonly<Props> & Readonly<{
-        children?: React.ReactNode;
-    }>;
-    state: Readonly<any>;
-    refs: {
-        [key: string]: React.ReactInstance;
-    };
-    shouldComponentUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): boolean;
-    componentWillUnmount?(): void;
-    componentDidCatch?(error: Error, errorInfo: React.ErrorInfo): void;
-    getSnapshotBeforeUpdate?(prevProps: Readonly<Props>, prevState: Readonly<any>): any;
-    componentDidUpdate?(prevProps: Readonly<Props>, prevState: Readonly<any>, snapshot?: any): void;
-    componentWillMount?(): void;
-    UNSAFE_componentWillMount?(): void;
-    componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
-    UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
-    componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
-    UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
-}> & {
-    openTab: any;
-    dataset: Dataset;
-    hoverStateOrientation: any;
-    datasetEntries: {
-        values: {
-            byId: {
-                [id: string]: import("./model").DatasetEntry;
-            };
-            allIds: string[];
-        };
-    };
-    globalLabels: import(".").GlobalLabelsState;
-} & {
-    setOpenTab: (openTab: any) => any;
-    setLineByOptions: (options: any) => any;
-    setGlobalPointBrightness: (value: any) => any;
-    setGroupVisualizationMode: (value: any) => any;
-    setLineUpInput_visibility: (open: any) => any;
-    loadDataset: (dataset: Dataset) => any;
-} & {
-    config?: BaseConfig;
-    features?: FeatureConfig;
-    overrideComponents?: ComponentConfig;
-}, "globalLabels" | "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
+}, import("react-redux").Omit<any, "globalLabels" | "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
 export {};
+//# sourceMappingURL=Application.d.ts.map

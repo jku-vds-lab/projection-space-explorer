@@ -7,3 +7,4 @@ interface SelectFeatureComponentProps {
 }
 export declare function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info }: SelectFeatureComponentProps): JSX.Element;
 export {};
+//# sourceMappingURL=SelectFeatureComponent.d.ts.map

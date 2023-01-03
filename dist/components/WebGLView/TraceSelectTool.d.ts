@@ -14,3 +14,4 @@ export declare class TraceSelectTool implements Tool {
     constructor(workspace: IBaseProjection, cluster: ICluster);
     renderToContext(context: RenderingContextEx): void;
 }
+//# sourceMappingURL=TraceSelectTool.d.ts.map

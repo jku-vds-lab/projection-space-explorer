@@ -14,3 +14,4 @@ export declare class SchemeColor {
     static componentToHex(c: any): any;
     static rgbToHex(r: any, g: any, b: any): SchemeColor;
 }
+//# sourceMappingURL=SchemeColor.d.ts.map

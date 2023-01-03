@@ -40,3 +40,4 @@ export declare class CameraTransformations {
     };
     static pixelToWorldCoordinates(pixel: number, transform: ViewTransformType): number;
 }
+//# sourceMappingURL=CameraTransformations.d.ts.map

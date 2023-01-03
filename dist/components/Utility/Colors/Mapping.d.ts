@@ -46,3 +46,4 @@ export declare const mappingFromScale: (scale: BaseColorScale, key: string, data
  * @returns true if the given value is a numeric one
  */
 export declare function isNumericMapping(mapping: Mapping): mapping is DivergingMapping | ContinuousMapping;
+//# sourceMappingURL=Mapping.d.ts.map

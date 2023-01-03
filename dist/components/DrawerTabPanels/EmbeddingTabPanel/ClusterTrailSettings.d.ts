@@ -26,3 +26,4 @@ export declare const ClusterTrailSettings: import("react-redux").ConnectedCompon
     setTrailLength: (length: any) => any;
 }, "trailSettings" | "setTrailVisibility" | "setTrailLength">>;
 export {};
+//# sourceMappingURL=ClusterTrailSettings.d.ts.map

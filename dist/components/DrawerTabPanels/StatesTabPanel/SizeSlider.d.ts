@@ -11,3 +11,4 @@ export declare const SizeSlider: import("react-redux").ConnectedComponent<typeof
     setRange: any;
 }, "setRange">>;
 export {};
+//# sourceMappingURL=SizeSlider.d.ts.map

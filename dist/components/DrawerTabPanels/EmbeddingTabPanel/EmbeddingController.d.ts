@@ -4,3 +4,4 @@ export declare class EmbeddingController {
     notifier: any;
     terminate(): void;
 }
+//# sourceMappingURL=EmbeddingController.d.ts.map

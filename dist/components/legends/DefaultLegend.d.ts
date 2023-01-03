@@ -8,3 +8,4 @@ export declare var DefaultLegend: import("react-redux").ConnectedComponent<({ gl
     globalLabels: import("..").GlobalLabelsState;
 }, "globalLabels">>;
 export {};
+//# sourceMappingURL=DefaultLegend.d.ts.map

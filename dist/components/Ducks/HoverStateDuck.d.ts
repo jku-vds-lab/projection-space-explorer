@@ -13,3 +13,4 @@ export type HoverStateType = {
 };
 declare const hoverState: (state: HoverStateType, action: any) => HoverStateType;
 export default hoverState;
+//# sourceMappingURL=HoverStateDuck.d.ts.map

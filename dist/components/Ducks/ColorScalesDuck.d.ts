@@ -7,3 +7,4 @@ export type ColorScalesType = {
     scales: NormalizedDictionary<BaseColorScale>;
 };
 export default function colorScales(state?: ColorScalesType, action?: any): ColorScalesType;
+//# sourceMappingURL=ColorScalesDuck.d.ts.map

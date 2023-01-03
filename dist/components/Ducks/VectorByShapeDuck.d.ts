@@ -4,3 +4,4 @@ export declare const setVectorByShapeAction: (vectorByShape: any) => {
 };
 declare const vectorByShape: (state: any, action: any) => any;
 export default vectorByShape;
+//# sourceMappingURL=VectorByShapeDuck.d.ts.map

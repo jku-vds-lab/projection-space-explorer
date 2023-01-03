@@ -32,3 +32,4 @@ export * from './DatasetEntriesDuck';
 export * from './GlobalLabelsDuck';
 export * from './StoriesDuck';
 export * from './ViewDuck';
+//# sourceMappingURL=index.d.ts.map

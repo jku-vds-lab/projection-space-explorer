@@ -7,3 +7,4 @@ export declare const BrightnessSlider: import("react-redux").ConnectedComponent<
     setRange: any;
 }, "setRange">>;
 export {};
+//# sourceMappingURL=BrightnessSlider.d.ts.map

@@ -18,3 +18,4 @@ export declare var CoralLegend: import("react-redux").ConnectedComponent<({ sele
     selection: IVector[];
 }, "dataset" | "legendAttributes">>;
 export {};
+//# sourceMappingURL=CoralDetail.d.ts.map

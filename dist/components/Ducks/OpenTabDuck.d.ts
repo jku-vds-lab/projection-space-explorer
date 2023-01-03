@@ -4,3 +4,4 @@ export declare const setOpenTabAction: (openTab: any) => {
 };
 declare const openTab: (state: number, action: any) => any;
 export default openTab;
+//# sourceMappingURL=OpenTabDuck.d.ts.map

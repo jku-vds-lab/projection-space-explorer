@@ -7,7 +7,7 @@ import { RootState, usePSESelector } from '../../Store/Store';
 import genericFingerprintAttributes, { setGenericFingerprintAttributes } from '../../Ducks/GenericFingerprintAttributesDuck';
 import { DefaultFeatureLabel } from '../../../model';
 
-export function AttributeSelectionTable() {
+export function AttributeSelectionTable(props: any) {
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);

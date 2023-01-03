@@ -97,3 +97,4 @@ export declare class Dataset {
         attributes: any[];
     }[];
 }
+//# sourceMappingURL=Dataset.d.ts.map

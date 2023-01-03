@@ -18,3 +18,4 @@ export declare function setTrailVisibility(show: boolean): {
     show: boolean;
 };
 export {};
+//# sourceMappingURL=TrailSettingsDuck.d.ts.map

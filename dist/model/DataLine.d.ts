@@ -33,3 +33,4 @@ export declare class DataLine {
     __meta__: DataLineView;
     constructor(lineKey: any, vectors: any);
 }
+//# sourceMappingURL=DataLine.d.ts.map

@@ -1,1 +1,2 @@
-export declare function AttributeSelectionTable(): JSX.Element;
+export declare function AttributeSelectionTable(props: any): JSX.Element;
+//# sourceMappingURL=AttributeSelectionTable.d.ts.map

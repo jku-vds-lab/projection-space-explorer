@@ -16,3 +16,4 @@ export declare class RubikChanges extends React.Component<RubikChangesProps> {
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=RubikChanges.d.ts.map

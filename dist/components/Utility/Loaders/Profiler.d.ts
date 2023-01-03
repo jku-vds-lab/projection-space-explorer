@@ -7,3 +7,4 @@ export declare class Profiler {
     constructor();
     profile(label: string): void;
 }
+//# sourceMappingURL=Profiler.d.ts.map

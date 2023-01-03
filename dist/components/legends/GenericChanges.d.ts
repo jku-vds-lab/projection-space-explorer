@@ -8,3 +8,4 @@ type GenericChangesType = {
 };
 export declare const GenericChanges: import("react-redux").ConnectedComponent<({ vectorsA, vectorsB, dataset, scale }: GenericChangesType) => JSX.Element, import("react-redux").Omit<GenericChangesType, "dataset">>;
 export {};
+//# sourceMappingURL=GenericChanges.d.ts.map

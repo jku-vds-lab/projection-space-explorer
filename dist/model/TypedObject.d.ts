@@ -4,3 +4,4 @@
 export interface TypedObject {
     objectType: string;
 }
+//# sourceMappingURL=TypedObject.d.ts.map

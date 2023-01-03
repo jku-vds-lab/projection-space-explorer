@@ -15,3 +15,4 @@ export declare class InferCategory {
      */
     inferType(): DatasetType.Rubik | DatasetType.Chess | DatasetType.Neural | DatasetType.Go | DatasetType.Story | DatasetType.Trrack | DatasetType.None | DatasetType.Sound;
 }
+//# sourceMappingURL=InferCategory.d.ts.map

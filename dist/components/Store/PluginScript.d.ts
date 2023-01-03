@@ -11,3 +11,4 @@ export declare class PluginRegistry {
     registerReducer(reducer: any): void;
     removePlugin(type: string): void;
 }
+//# sourceMappingURL=PluginScript.d.ts.map

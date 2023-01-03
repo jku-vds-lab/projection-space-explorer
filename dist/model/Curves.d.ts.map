@@ -1,0 +1,1 @@
+{"version":3,"file":"Curves.d.ts","sourceRoot":"","sources":["../../src/model/Curves.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,wBAAwB,CAAC;AAEnD,MAAM,MAAM,gBAAgB,GAAG;IAC7B,KAAK,EAAE,SAAS,CAAC;IACjB,GAAG,EAAE,SAAS,CAAC;IACf,GAAG,EAAE,SAAS,CAAC;IACf,GAAG,EAAE,SAAS,CAAC;CAChB,CAAC"}

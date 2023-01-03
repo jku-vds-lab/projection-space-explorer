@@ -7,3 +7,4 @@ type DetailViewChooserProps = {
 };
 export declare function ViewsTabPanel({ overrideComponents, splitRef }: DetailViewChooserProps): JSX.Element;
 export {};
+//# sourceMappingURL=ViewsTabPanel.d.ts.map

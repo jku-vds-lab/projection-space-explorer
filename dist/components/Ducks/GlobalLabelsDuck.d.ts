@@ -5,5 +5,6 @@ export interface GlobalLabelsState {
 export declare const setItemLabel: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
     label: string;
     label_plural?: string;
-}, string>;
+}, "globalLabels/setItemLabel">;
 export declare const globalLabels: import("redux").Reducer<GlobalLabelsState, import("redux").AnyAction>;
+//# sourceMappingURL=GlobalLabelsDuck.d.ts.map

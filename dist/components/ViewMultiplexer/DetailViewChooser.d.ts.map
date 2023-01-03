@@ -1,0 +1,1 @@
+{"version":3,"file":"DetailViewChooser.d.ts","sourceRoot":"","sources":["../../../src/components/ViewMultiplexer/DetailViewChooser.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,eAAe,EAAE,MAAM,kBAAkB,CAAC;AAInD,KAAK,sBAAsB,GAAG;IAC5B,kBAAkB,EAAE,eAAe,CAAC;CACrC,CAAC;AAMF,wBAAgB,iBAAiB,CAAC,EAAE,kBAAkB,EAAE,EAAE,sBAAsB,eAU/E"}

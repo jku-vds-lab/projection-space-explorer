@@ -6,3 +6,4 @@ export declare class ClusterDragTool implements Tool {
     constructor(cluster: any);
     renderToContext(context: RenderingContextEx, start: any, end: any): void;
 }
+//# sourceMappingURL=ClusterDragTool.d.ts.map

@@ -6,3 +6,4 @@ export declare abstract class PSEPlugin {
     abstract createFingerprint(dataset: Dataset, vectors: IVector[], scale: number, aggregate: boolean): JSX.Element;
     hasLayout(header: string[], columns: string[]): boolean;
 }
+//# sourceMappingURL=PSEPlugin.d.ts.map

@@ -4,3 +4,4 @@ type DetailViewChooserProps = {
 };
 export declare function DetailViewChooser({ overrideComponents }: DetailViewChooserProps): JSX.Element;
 export {};
+//# sourceMappingURL=DetailViewChooser.d.ts.map

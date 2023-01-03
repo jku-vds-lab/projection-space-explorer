@@ -17,3 +17,4 @@ export declare function selectedLineBy(state: {
     value: string;
 };
 export default selectedLineBy;
+//# sourceMappingURL=SelectedLineByDuck.d.ts.map

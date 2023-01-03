@@ -8,3 +8,4 @@ export declare function getCountryName(countryCode: any): any;
  * @param {*} countryName the name of the country
  */
 export declare function getCountryCode(countryName: any): any;
+//# sourceMappingURL=CountryCodes.d.ts.map

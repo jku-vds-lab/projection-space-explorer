@@ -13,3 +13,4 @@ export declare class UtilityActions {
     };
     static generateImage(state: RootState, width: number, height: number, padding: number, options: any, ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): Promise<string>;
 }
+//# sourceMappingURL=Utility.d.ts.map

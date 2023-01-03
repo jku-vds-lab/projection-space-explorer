@@ -355,3 +355,4 @@ export declare function resetLocalConnectivity(simplicialSet: matrix.SparseMatri
  * indices and weights (of their neighbors in the source data).
  */
 export declare function initTransform(indices: number[][], weights: number[][], embedding: Vectors): number[][];
+//# sourceMappingURL=umap.d.ts.map

@@ -7,3 +7,4 @@ export declare const PathBrightnessSlider: import("react-redux").ConnectedCompon
     setLineBrightness: any;
 }, "setLineBrightness">>;
 export {};
+//# sourceMappingURL=PathBrightnessSlider.d.ts.map

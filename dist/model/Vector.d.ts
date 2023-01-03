@@ -61,3 +61,4 @@ export declare function isVector(object: TypedObject): object is IVector;
 export declare class AVector {
     static create(dict: any): IVector;
 }
+//# sourceMappingURL=Vector.d.ts.map

@@ -28,3 +28,4 @@ export declare class MouseController {
     mouseMove(event: MouseEvent): void;
 }
 export {};
+//# sourceMappingURL=MouseController.d.ts.map

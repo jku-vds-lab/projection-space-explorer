@@ -4,3 +4,4 @@ export * from './DetailsTabPanel';
 export * from './EmbeddingTabPanel';
 export * from './HoverTabPanel';
 export * from './StatesTabPanel';
+//# sourceMappingURL=index.d.ts.map

@@ -29,3 +29,4 @@ export declare class API<T extends RootState> {
     differenceMiddleware: (store: any) => (next: any) => (action: any) => any;
     generateImage(width: number, height: number, padding: number, options: any, ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): Promise<string>;
 }
+//# sourceMappingURL=API.d.ts.map

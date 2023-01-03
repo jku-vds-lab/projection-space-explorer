@@ -7,3 +7,4 @@ export declare class ChessPlugin extends PSEPlugin {
     hasFileLayout(header: string[]): boolean;
     createFingerprint(dataset: Dataset, vectors: IVector[], scale: number, aggregate: boolean): JSX.Element;
 }
+//# sourceMappingURL=ChessPlugin.d.ts.map

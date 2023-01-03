@@ -58,3 +58,4 @@ export declare const ClusteringTabPanel: import("react-redux").ConnectedComponen
     baseUrl: string;
 }, "stories" | "globalLabels" | "currentAggregation" | "dataset" | "displayMode" | "groupVisualizationMode" | "setGroupVisualizationMode" | "workspace" | "setChannelColor" | "setStories" | "setDisplayMode" | "addStory" | "removeClusterFromStories" | "setSelectedClusters" | "setActiveStory">>;
 export {};
+//# sourceMappingURL=ClusteringTabPanel.d.ts.map

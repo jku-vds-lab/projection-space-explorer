@@ -20,3 +20,4 @@ export declare enum DatasetType {
     Parameterspace_and_Experiments = "parameterspace_and_experiments",
     Sound = "sound"
 }
+//# sourceMappingURL=DatasetType.d.ts.map

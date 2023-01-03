@@ -18,3 +18,4 @@ export declare class RenderingContextEx {
     stroke(): void;
     moveTo(x: any, y: any): void;
 }
+//# sourceMappingURL=RenderingContextEx.d.ts.map

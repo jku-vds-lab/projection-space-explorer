@@ -79,3 +79,4 @@ export declare function rejectionSample(nSamples: number, poolSize: number, rand
  * Reshapes a 1d array into a 2D of given dimensions.
  */
 export declare function reshape2d<T>(x: T[], a: number, b: number): T[][];
+//# sourceMappingURL=utils.d.ts.map

@@ -5,3 +5,4 @@ export type CubicBezierCurve = {
     cp2: IPosition;
     end: IPosition;
 };
+//# sourceMappingURL=Curves.d.ts.map

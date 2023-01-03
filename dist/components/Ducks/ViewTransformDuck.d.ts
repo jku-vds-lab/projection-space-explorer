@@ -20,3 +20,4 @@ export type ViewTransformType = {
     zoom: number;
 };
 export declare const viewTransform: (state: ViewTransformType, action: any) => ViewTransformType;
+//# sourceMappingURL=ViewTransformDuck.d.ts.map

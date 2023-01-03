@@ -4,3 +4,4 @@ export declare const setLineBrightness: (lineBrightness: any) => {
     lineBrightness: any;
 };
 export default lineBrightness;
+//# sourceMappingURL=LineBrightnessDuck.d.ts.map

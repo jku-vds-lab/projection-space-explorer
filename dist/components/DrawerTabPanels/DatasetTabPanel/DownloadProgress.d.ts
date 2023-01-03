@@ -9,3 +9,4 @@ type Props = PropsFromRedux & {
 };
 export declare function DownloadProgress({ job, onFinish, onCancel }: Props): JSX.Element;
 export {};
+//# sourceMappingURL=DownloadProgress.d.ts.map

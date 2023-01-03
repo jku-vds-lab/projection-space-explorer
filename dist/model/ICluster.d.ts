@@ -16,3 +16,4 @@ export interface ICluster extends TypedObject {
      */
     indices: number[];
 }
+//# sourceMappingURL=ICluster.d.ts.map

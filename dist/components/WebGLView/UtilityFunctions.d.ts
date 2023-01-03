@@ -32,3 +32,4 @@ export declare function getMinMaxOfChannel(dataset: Dataset, key: string, segmen
     max: any;
     center: any;
 };
+//# sourceMappingURL=UtilityFunctions.d.ts.map

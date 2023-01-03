@@ -93,3 +93,4 @@ export declare function getCSR(x: SparseMatrix): {
     values: number[];
     indptr: number[];
 };
+//# sourceMappingURL=matrix.d.ts.map

@@ -20,3 +20,4 @@ export declare class DatasetEntriesAPI {
 }
 export default function datasetEntries(state: InitialType, action: any): InitialType;
 export {};
+//# sourceMappingURL=DatasetEntriesDuck.d.ts.map

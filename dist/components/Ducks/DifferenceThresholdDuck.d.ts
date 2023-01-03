@@ -4,3 +4,4 @@ export declare const setDifferenceThreshold: (differenceThreshold: any) => {
     differenceThreshold: any;
 };
 export default differenceThreshold;
+//# sourceMappingURL=DifferenceThresholdDuck.d.ts.map
