@@ -186,7 +186,7 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">Load Dataset</Typography>
+                    <Typography variant="subtitle2">Load Test</Typography>
                     <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
                   </>
                 }
@@ -311,7 +311,7 @@ export const Application = connector(
                   }
                 >
                   <Tab
-                    value={4}
+                    value={5}
                     data-cy="details-tab"
                     icon={<img src={PSEIcons.PseLineup} />}
                     style={{
