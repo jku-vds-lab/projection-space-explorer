@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck';
 import { HoverStateOrientation, setHoverStateOrientation } from '../../Ducks/HoverStateOrientationDuck';
 import { SelectionClusters } from '../../Overlays/SelectionClusters';
-import type { RootState } from '../../Store/Store';
+import { RootState, usePSESelector } from '../../Store/Store';
 import { selectVectors } from '../../Ducks/AggregationDuck';
 import './DatasetTabPanel.scss';
 import { AttributeSelectionTable } from './AttributeSelectionTable';
@@ -14,7 +14,6 @@ import { FeatureConfig } from '../../../BaseConfig';
 import { setGenericFingerprintAttributes } from '../../Ducks';
 
 const mapStateToProps = (state: RootState) => ({
-  genericFingerprintAttributes: state.genericFingerprintAttributes,
   hoverSettings: state.hoverSettings,
   currentAggregation: state.currentAggregation,
   dataset: state.dataset,
@@ -27,7 +26,6 @@ const mapDispatchToProps = (dispatch) => ({
   setHoverWindowMode: (value) => dispatch(setHoverWindowMode(value)),
   setAggregation: (value) => dispatch(selectVectors(value, false)),
   setHoverStateOrientation: (value) => dispatch(setHoverStateOrientation(value)),
-  setGenericFingerprintAttributes: (value) => dispatch(setGenericFingerprintAttributes(value)),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -49,8 +47,6 @@ export const DetailsTabPanel = connector(
     setHoverStateOrientation,
     activeStorybook,
     globalLabels,
-    genericFingerprintAttributes,
-    setGenericFingerprintAttributes
   }: Props) => {
     const handleChange = (_, value) => {
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
@@ -89,7 +85,7 @@ export const DetailsTabPanel = connector(
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
-          <AttributeSelectionTable attributes={genericFingerprintAttributes} setAttributes={setGenericFingerprintAttributes} />
+          <AttributeSelectionTable attributes={usePSESelector((state) => state.genericFingerprintAttributes)} setAttributes={setGenericFingerprintAttributes} />
         </Box>
 
         <Box paddingX={2} paddingTop={1}>

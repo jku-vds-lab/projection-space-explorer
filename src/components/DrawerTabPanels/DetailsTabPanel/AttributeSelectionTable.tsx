@@ -7,10 +7,13 @@ import { usePSESelector } from '../../Store/Store';
 import { DefaultFeatureLabel } from '../../../model';
 import { setFips } from 'crypto';
 
-export function AttributeSelectionTable(props: { attributes: any[]; setAttributes: (attributes: any[]) => void }) {
+// props: { attributes: any[]; setAttributes: (attributes: any[]) => void }
+export function AttributeSelectionTable({attributes, setAttributes}) {
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);
+  const dispatch = useDispatch();
+
   const openAttributes = (event) => {
     setOpen(true);
   };
@@ -23,8 +26,8 @@ export function AttributeSelectionTable(props: { attributes: any[]; setAttribute
 
   const handleClose = () => {
     setOpen(false);
-    const localAttributes = props.attributes.map((r) => ({ ...r, show: selectedRows.has(r.feature) }));
-    props.setAttributes([...localAttributes]);
+    const localAttributes = attributes.map((r) => ({ ...r, show: selectedRows.has(r.feature) }));
+    dispatch(setAttributes([...localAttributes]));
   };
 
   const groupMapping = (r, i) => {
@@ -37,9 +40,9 @@ export function AttributeSelectionTable(props: { attributes: any[]; setAttribute
   };
 
   React.useEffect(() => {
-    setSelectedRows(new Set(props.attributes.filter((r) => r.show).map((r) => r.feature)));
-    setRows(props.attributes.map(groupMapping));
-  }, [props.attributes]);
+    setSelectedRows(new Set(attributes.filter((r) => r.show).map((r) => r.feature)));
+    setRows(attributes.map(groupMapping));
+  }, [attributes]);
 
   function rowKeyGetter(row: any) {
     return row.feature;
