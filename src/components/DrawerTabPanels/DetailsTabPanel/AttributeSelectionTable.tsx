@@ -5,30 +5,26 @@ import DataGrid, { SelectColumn } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
 import { usePSESelector } from '../../Store/Store';
 import { DefaultFeatureLabel } from '../../../model';
+import { setFips } from 'crypto';
 
 export function AttributeSelectionTable(props: { attributes: any[]; setAttributes: (attributes: any[]) => void }) {
-  console.log(props.attributes);
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);
-  // const attributes = usePSESelector((state) => state.genericFingerprintAttributes);
-  // const dispatch = useDispatch();
-
   const openAttributes = (event) => {
     setOpen(true);
   };
 
-  const [localAttributes, setLocalAttributes] = React.useState<any>([]);
   const [rows, setRows] = React.useState<any>([]);
-  const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<number>>(() => new Set());
+  const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<string>>(() => new Set());
   const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(() => new Set<unknown>([]));
 
   const columnsSelected = [SelectColumn, { key: 'feature', name: 'Selected' }, { key: 'group', name: 'Group' }];
 
   const handleClose = () => {
     setOpen(false);
+    const localAttributes = props.attributes.map((r) => ({ ...r, show: selectedRows.has(r.feature) }));
     props.setAttributes([...localAttributes]);
-    // dispatch(setGenericFingerprintAttributes([...localAttributes]));
   };
 
   const groupMapping = (r, i) => {
@@ -41,7 +37,7 @@ export function AttributeSelectionTable(props: { attributes: any[]; setAttribute
   };
 
   React.useEffect(() => {
-    setLocalAttributes(props.attributes.map(groupMapping));
+    setSelectedRows(new Set(props.attributes.filter((r) => r.show).map((r) => r.feature)));
     setRows(props.attributes.map(groupMapping));
   }, [props.attributes]);
 
