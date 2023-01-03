@@ -186,7 +186,7 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">Load Test</Typography>
+                    <Typography variant="subtitle2">Load Dataset</Typography>
                     <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
                   </>
                 }
