@@ -7,3 +7,4 @@ export declare const setClusterModeAction: (clusterMode: any) => {
     clusterMode: any;
 };
 export default function clusterMode(state: ClusterMode, action: any): ClusterMode;
+//# sourceMappingURL=ClusterModeDuck.d.ts.map

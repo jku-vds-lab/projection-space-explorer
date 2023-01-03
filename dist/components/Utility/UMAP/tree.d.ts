@@ -42,3 +42,4 @@ export declare function makeLeafArray(rpForest: FlatTree[]): number[][];
  * Searches a flattened rp-tree for a point.
  */
 export declare function searchFlatTree(point: Vector, tree: FlatTree, random: RandomFn): number[];
+//# sourceMappingURL=tree.d.ts.map

@@ -17,3 +17,4 @@ export declare const PointDisplayActions: import("@reduxjs/toolkit").CaseReducer
 }, "pointDisplay">;
 export declare const PointDisplayReducer: import("redux").Reducer<IPointDisplay, import("redux").AnyAction>;
 export {};
+//# sourceMappingURL=PointDisplayDuck.d.ts.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"Tool.d.ts","sourceRoot":"","sources":["../../../src/components/WebGLView/Tool.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,+BAA+B,CAAC;AAEnE;;GAEG;AACH,MAAM,WAAW,IAAI;IACnB,eAAe,CAAC,OAAO,EAAE,kBAAkB,EAAE,KAAK,KAAA,EAAE,GAAG,KAAA,GAAG,IAAI,CAAC;CAChE"}

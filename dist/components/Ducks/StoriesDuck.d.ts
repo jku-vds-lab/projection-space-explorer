@@ -58,3 +58,4 @@ export declare const StoriesActions: {
     set: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IBook[], "stories/set">;
 };
 export declare const stories: import("redux").Reducer<IStorytelling, import("redux").AnyAction>;
+//# sourceMappingURL=StoriesDuck.d.ts.map

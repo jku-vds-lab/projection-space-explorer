@@ -109,3 +109,4 @@ export declare function deheapSort(heap: Heap): {
  * Search the heap for the smallest element that is still flagged.
  */
 export declare function smallestFlagged(heap: Heap, row: number): number;
+//# sourceMappingURL=heap.d.ts.map

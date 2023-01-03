@@ -5,3 +5,4 @@ export declare class ColorScheme {
     getMapping(): any;
     map(value: any): any;
 }
+//# sourceMappingURL=ColorScheme.d.ts.map

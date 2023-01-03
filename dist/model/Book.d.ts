@@ -69,3 +69,4 @@ export interface IBook {
         [id: string]: any;
     };
 }
+//# sourceMappingURL=Book.d.ts.map

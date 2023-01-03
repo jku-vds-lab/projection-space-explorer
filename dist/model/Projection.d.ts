@@ -39,3 +39,4 @@ export declare class AProjection {
         };
     };
 }
+//# sourceMappingURL=Projection.d.ts.map

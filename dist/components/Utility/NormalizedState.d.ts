@@ -36,3 +36,4 @@ export declare const ANormalized: {
     map: <T_7>(dict: NormalizedDictionary<T_7>, callbackfn: (value: [string, T_7]) => any) => any[];
     filter: <T_8>(dict: NormalizedDictionary<T_8>, callbackfn: (value: [string, T_8]) => any) => (string | T_8)[][];
 };
+//# sourceMappingURL=NormalizedState.d.ts.map

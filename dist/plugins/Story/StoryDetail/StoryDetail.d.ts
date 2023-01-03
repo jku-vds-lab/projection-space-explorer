@@ -10,3 +10,4 @@ type StoryLegendProps = {
 };
 export declare function StoryLegend({ selection }: StoryLegendProps): JSX.Element;
 export {};
+//# sourceMappingURL=StoryDetail.d.ts.map

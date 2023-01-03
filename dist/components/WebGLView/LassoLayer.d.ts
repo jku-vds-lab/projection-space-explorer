@@ -39,3 +39,4 @@ declare const LassoLayer: import("react-redux").ConnectedComponent<{
     contextType?: React.Context<any>;
 }, import("react-redux").Omit<any, "dispatch">>;
 export { LassoLayer };
+//# sourceMappingURL=LassoLayer.d.ts.map

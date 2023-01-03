@@ -13,3 +13,4 @@ declare const hoverSettings: (state: HoverSettingsType, action: any) => {
     windowMode: any;
 };
 export default hoverSettings;
+//# sourceMappingURL=HoverSettingsDuck.d.ts.map

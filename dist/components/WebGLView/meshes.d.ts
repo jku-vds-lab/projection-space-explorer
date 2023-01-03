@@ -98,3 +98,4 @@ export declare class PointVisualization {
      */
     dispose(): void;
 }
+//# sourceMappingURL=meshes.d.ts.map

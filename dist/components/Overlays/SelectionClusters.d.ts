@@ -30,3 +30,4 @@ export declare const SelectionClusters: import("react-redux").ConnectedComponent
     setHoverWindowMode: (value: any) => any;
 }, "currentAggregation" | "dataset" | "hoverState" | "hoverSettings" | "setHoverWindowMode">>;
 export {};
+//# sourceMappingURL=SelectionClusters.d.ts.map

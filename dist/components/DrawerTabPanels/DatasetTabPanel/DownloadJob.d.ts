@@ -20,3 +20,4 @@ export declare class DownloadJob {
      */
     terminate(): void;
 }
+//# sourceMappingURL=DownloadJob.d.ts.map

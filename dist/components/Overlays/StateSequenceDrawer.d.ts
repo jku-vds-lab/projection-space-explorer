@@ -13,3 +13,4 @@ type StateSequenceDrawerProps = {
 declare function StateSequenceDrawer({ activeLine, setHighlightedSequence, dataset, setActiveLine, setCurrentAggregation }: StateSequenceDrawerProps): JSX.Element;
 export declare const StateSequenceDrawerRedux: import("react-redux").ConnectedComponent<typeof StateSequenceDrawer, import("react-redux").Omit<StateSequenceDrawerProps, "activeLine" | "dataset" | "setHighlightedSequence" | "setActiveLine" | "setCurrentAggregation">>;
 export {};
+//# sourceMappingURL=StateSequenceDrawer.d.ts.map

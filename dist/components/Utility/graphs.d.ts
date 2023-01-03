@@ -15,3 +15,4 @@ export declare function transformIndicesToHandles(clusterResult: ICluster[], edg
  */
 export declare function graphLayout(dataset: Dataset, clusters: ICluster[]): IEdge[][];
 export declare function storyLayout(clusterInstances: ICluster[], edges: IEdge[]): IBook[];
+//# sourceMappingURL=graphs.d.ts.map

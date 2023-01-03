@@ -1,0 +1,1 @@
+{"version":3,"file":"DatasetEntry.d.ts","sourceRoot":"","sources":["../../src/model/DatasetEntry.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,eAAe,CAAC;AAE5C,MAAM,MAAM,YAAY,GAAG;IACzB,OAAO,EAAE,MAAM,CAAC;IAChB,IAAI,EAAE,MAAM,CAAC;IACb,IAAI,EAAE,WAAW,CAAC;IAClB,QAAQ,CAAC,EAAE,OAAO,CAAC;CACpB,CAAC"}

@@ -16,3 +16,4 @@ export * from './Palette';
 export * from './ProjectionInterfaces';
 export * from './ICluster';
 export * from './Curves';
+//# sourceMappingURL=index.d.ts.map

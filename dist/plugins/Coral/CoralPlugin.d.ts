@@ -6,3 +6,4 @@ export declare class CoralPlugin extends PSEPlugin {
     type: DatasetType;
     createFingerprint(dataset: Dataset, vectors: IVector[], scale: number, aggregate: boolean): JSX.Element;
 }
+//# sourceMappingURL=CoralPlugin.d.ts.map

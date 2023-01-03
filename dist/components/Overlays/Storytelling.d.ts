@@ -42,3 +42,4 @@ export declare const Storytelling: import("react-redux").ConnectedComponent<({ d
     dataset: Dataset;
 }, "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "addClusterToTrace" | "currentAggregation" | "dataset" | "genericFingerprintAttributes" | "setSelectedCluster">>;
 export {};
+//# sourceMappingURL=Storytelling.d.ts.map

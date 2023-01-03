@@ -3,3 +3,4 @@ export declare enum ObjectTypes {
     Vector = "vector",
     Edge = "edge"
 }
+//# sourceMappingURL=ObjectType.d.ts.map

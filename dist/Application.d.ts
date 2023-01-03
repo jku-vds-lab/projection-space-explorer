@@ -78,3 +78,4 @@ export declare const Application: import("react-redux").ConnectedComponent<{
     contextType?: React.Context<any>;
 }, import("react-redux").Omit<any, "globalLabels" | "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
 export {};
+//# sourceMappingURL=Application.d.ts.map

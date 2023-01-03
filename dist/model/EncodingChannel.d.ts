@@ -4,3 +4,4 @@ export declare enum EncodingChannel {
     Shape = "shape",
     Size = "size"
 }
+//# sourceMappingURL=EncodingChannel.d.ts.map

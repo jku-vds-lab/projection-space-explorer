@@ -19,3 +19,4 @@ export declare class DragAndDrop extends React.Component<DragAndDropProps, DragA
     render(): JSX.Element;
 }
 export default DragAndDrop;
+//# sourceMappingURL=DragAndDrop.d.ts.map

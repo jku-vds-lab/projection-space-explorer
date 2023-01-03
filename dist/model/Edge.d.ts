@@ -26,3 +26,4 @@ export interface IEdge extends TypedObject {
  * Edge type guard.
  */
 export declare function isEdge(value: TypedObject): value is IEdge;
+//# sourceMappingURL=Edge.d.ts.map

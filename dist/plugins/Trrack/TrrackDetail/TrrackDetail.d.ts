@@ -15,3 +15,4 @@ export declare const TrrackLegend: import("react-redux").ConnectedComponent<({ s
     selection: IVector[];
 }, "dataset">>;
 export {};
+//# sourceMappingURL=TrrackDetail.d.ts.map

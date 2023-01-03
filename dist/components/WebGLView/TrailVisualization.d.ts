@@ -7,3 +7,4 @@ export declare class TrailVisualization {
     setVisible(show: boolean): void;
     setLength(length: number): void;
 }
+//# sourceMappingURL=TrailVisualization.d.ts.map

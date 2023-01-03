@@ -8,3 +8,4 @@ type GenericLegendProps = {
 };
 export declare function GenericLegend({ type, vectors, aggregate, scale }: GenericLegendProps): JSX.Element;
 export {};
+//# sourceMappingURL=Generic.d.ts.map

@@ -13,3 +13,4 @@ export * from './TrailVisualization';
 export * from './UtilityFunctions';
 export * from './WebGLView';
 export * from './Shapes';
+//# sourceMappingURL=index.d.ts.map

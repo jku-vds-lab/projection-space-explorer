@@ -7,3 +7,4 @@ export declare const setItemLabel: import("@reduxjs/toolkit").ActionCreatorWithO
     label_plural?: string;
 }, "globalLabels/setItemLabel">;
 export declare const globalLabels: import("redux").Reducer<GlobalLabelsState, import("redux").AnyAction>;
+//# sourceMappingURL=GlobalLabelsDuck.d.ts.map

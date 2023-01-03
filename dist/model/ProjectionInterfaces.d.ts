@@ -36,3 +36,4 @@ export type IProjection = {
  * Base type for projections
  */
 export type IBaseProjection = IPosition[];
+//# sourceMappingURL=ProjectionInterfaces.d.ts.map

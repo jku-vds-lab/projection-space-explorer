@@ -7,3 +7,4 @@ export declare class ForceAtlas2EmbeddingController extends EmbeddingController 
     init(dataset: Dataset, selection: any, params: any): void;
     step(): void;
 }
+//# sourceMappingURL=ForceAtlas2EmbeddingController.d.ts.map

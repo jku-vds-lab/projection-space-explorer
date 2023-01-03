@@ -18,3 +18,4 @@ export declare class JSONLoader implements Loader {
     getFeatureType(x: any): "number" | "date" | "arbitrary";
     resolve(content: any, finished: any, datasetType: any, entry: any): Promise<void>;
 }
+//# sourceMappingURL=JSONLoader.d.ts.map

@@ -17,3 +17,4 @@ export declare class ChessFingerprint extends React.Component<ChessFingerprintPr
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=ChessFingerprint.d.ts.map

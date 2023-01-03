@@ -6,3 +6,4 @@
  * @param maxValue the maximum value of the mapping
  */
 export declare function createLinearRangeScaler(range: [number] | [number, number], minValue: number, maxValue: number): (value: number) => number;
+//# sourceMappingURL=ScalingAndAxes.d.ts.map

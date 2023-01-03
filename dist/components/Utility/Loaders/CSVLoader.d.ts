@@ -18,3 +18,4 @@ export declare class CSVLoader implements Loader {
     getClusters(vectors: IVector[], callback: any): void;
     resolve(finished: any, vectors: any, datasetType: any, entry: DatasetEntry, p_metaInformation?: any): Promise<Dataset>;
 }
+//# sourceMappingURL=CSVLoader.d.ts.map

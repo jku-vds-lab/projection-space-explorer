@@ -24,3 +24,4 @@ export type CategoryOptions = {
     category: string;
     attributes: CategoryOption[];
 }[];
+//# sourceMappingURL=CategoryOptions.d.ts.map

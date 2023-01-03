@@ -4,3 +4,4 @@ export declare const setGlobalPointBrightness: (globalPointBrightness: any) => {
 };
 declare const globalPointBrightness: (state: number[], action: any) => number[];
 export default globalPointBrightness;
+//# sourceMappingURL=GlobalPointBrightnessDuck.d.ts.map

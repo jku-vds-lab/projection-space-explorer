@@ -6,3 +6,4 @@ export * from './GenericSettings';
 export * from './ProjectionControlCard';
 export * from './TSNEEmbeddingController';
 export * from './UMAPEmbeddingController';
+//# sourceMappingURL=index.d.ts.map

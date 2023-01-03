@@ -29,3 +29,4 @@ export declare class ACluster {
  * Cluster type guard.
  */
 export declare function isCluster(object: TypedObject): object is ICluster;
+//# sourceMappingURL=Cluster.d.ts.map

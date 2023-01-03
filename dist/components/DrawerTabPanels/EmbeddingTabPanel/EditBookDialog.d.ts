@@ -6,3 +6,4 @@ export declare function EditBookDialog({ book, onClose, onSave, onDelete, }: {
     onSave: (id: EntityId, changes: any) => void;
     onDelete: (id: EntityId) => void;
 }): JSX.Element;
+//# sourceMappingURL=EditBookDialog.d.ts.map

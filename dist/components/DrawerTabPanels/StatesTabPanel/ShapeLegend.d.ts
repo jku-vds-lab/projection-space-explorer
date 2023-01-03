@@ -7,3 +7,4 @@ export declare function ShapeLegend({ dataset, category, onChange }: {
     category: any;
     onChange: any;
 }): JSX.Element;
+//# sourceMappingURL=ShapeLegend.d.ts.map

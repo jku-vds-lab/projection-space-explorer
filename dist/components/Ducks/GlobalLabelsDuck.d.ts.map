@@ -1,0 +1,1 @@
+{"version":3,"file":"GlobalLabelsDuck.d.ts","sourceRoot":"","sources":["../../../src/components/Ducks/GlobalLabelsDuck.ts"],"names":[],"mappings":"AAEA,MAAM,WAAW,iBAAiB;IAChC,SAAS,EAAE,MAAM,CAAC;IAClB,eAAe,EAAE,MAAM,CAAC;CACzB;AAeD,eAAO,MAAQ,YAAY;WAP4B,MAAM;mBAAiB,MAAM;+BAO3B,CAAC;AAC1D,eAAO,MAAM,YAAY,uEAA4B,CAAC"}

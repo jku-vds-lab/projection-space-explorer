@@ -25,3 +25,4 @@ export declare class LayeringSystem {
     getValue(index: number): boolean;
 }
 export {};
+//# sourceMappingURL=LayeringSystem.d.ts.map

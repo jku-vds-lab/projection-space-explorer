@@ -4,3 +4,4 @@ export declare const setAdvancedColoringSelectionAction: (advancedColoringSelect
     type: string;
     advancedColoringSelection: any;
 };
+//# sourceMappingURL=AdvancedColoringSelectionDuck.d.ts.map

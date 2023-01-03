@@ -31,3 +31,4 @@ export declare class VectBase implements VectorType {
 }
 export declare function std(array: any): number;
 export declare function mean(array: any): number;
+//# sourceMappingURL=NumTs.d.ts.map

@@ -18,3 +18,4 @@ export declare const StoryPreview: import("react-redux").ConnectedComponent<({ s
     addStory: (book: IBook) => any;
 }, "stories" | "addStory" | "setActiveStory" | "deleteStory">>;
 export {};
+//# sourceMappingURL=StoryPreview.d.ts.map

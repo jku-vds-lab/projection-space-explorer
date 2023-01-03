@@ -47,3 +47,4 @@ export declare const CoralChanges: import("react-redux").ConnectedComponent<{
     contextType?: React.Context<any>;
 }, import("react-redux").Omit<any, "dataset" | "differenceThreshold" | "legendAttributes">>;
 export {};
+//# sourceMappingURL=CoralChanges.d.ts.map

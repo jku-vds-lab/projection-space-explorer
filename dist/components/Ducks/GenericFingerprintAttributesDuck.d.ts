@@ -4,3 +4,4 @@ export declare const setGenericFingerprintAttributes: (genericFingerprintAttribu
 };
 declare const genericFingerprintAttributes: (state: any[], action: any) => any[];
 export default genericFingerprintAttributes;
+//# sourceMappingURL=GenericFingerprintAttributesDuck.d.ts.map

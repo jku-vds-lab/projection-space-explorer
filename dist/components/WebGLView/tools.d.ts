@@ -16,3 +16,4 @@ export declare class LassoSelection {
     selection(dataset: Dataset, positions: IBaseProjection, visible: any): any[];
     intersects: (seat: any) => boolean;
 }
+//# sourceMappingURL=tools.d.ts.map

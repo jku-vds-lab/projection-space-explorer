@@ -5,3 +5,4 @@ import { RenderingContextEx } from '../Utility/RenderingContextEx';
 export interface Tool {
     renderToContext(context: RenderingContextEx, start: any, end: any): void;
 }
+//# sourceMappingURL=Tool.d.ts.map

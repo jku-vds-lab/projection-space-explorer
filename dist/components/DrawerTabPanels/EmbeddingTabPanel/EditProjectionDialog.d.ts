@@ -6,3 +6,4 @@ export declare function EditProjectionDialog({ projection, onClose, onSave, onDe
     onSave: (id: EntityId, changes: any) => void;
     onDelete: (id: EntityId) => void;
 }): JSX.Element;
+//# sourceMappingURL=EditProjectionDialog.d.ts.map

@@ -76,3 +76,4 @@ export type TabSpec = {
     title: string;
     description: string;
 };
+//# sourceMappingURL=BaseConfig.d.ts.map

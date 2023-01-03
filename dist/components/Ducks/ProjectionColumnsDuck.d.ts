@@ -8,3 +8,4 @@ export interface ProjectionColumn {
 export declare const setProjectionColumnsAction: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<ProjectionColumn[], string>;
 export declare const projectionColumns: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<ProjectionColumn[]>;
 export default projectionColumns;
+//# sourceMappingURL=ProjectionColumnsDuck.d.ts.map

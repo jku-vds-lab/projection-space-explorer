@@ -63,3 +63,4 @@ export declare const ColorScaleSelect: import("react-redux").ConnectedComponent<
     channelColor: CategoryOption;
     active: any;
 }, never>>;
+//# sourceMappingURL=ColorScaleSelect.d.ts.map

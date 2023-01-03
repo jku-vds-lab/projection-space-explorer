@@ -20,3 +20,4 @@ export declare class Legend extends React.Component<LegendProps, LegendState> {
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=LineSelection.d.ts.map

@@ -5,3 +5,4 @@ export declare enum DistanceMetric {
     COSINE = "cosine",
     MANHATTAN = "manhattan"
 }
+//# sourceMappingURL=DistanceMetric.d.ts.map

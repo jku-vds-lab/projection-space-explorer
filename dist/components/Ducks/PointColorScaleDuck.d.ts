@@ -20,3 +20,4 @@ type Action = PickAction;
 export type ColorScalesType = EntityId;
 export default function colorScales(state?: EntityId, action?: Action): ColorScalesType;
 export {};
+//# sourceMappingURL=PointColorScaleDuck.d.ts.map

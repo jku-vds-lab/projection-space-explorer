@@ -8,3 +8,4 @@ export declare const setHoverStateOrientation: (hoverStateOrientation: any) => {
     hoverStateOrientation: any;
 };
 export default hoverStateOrientation;
+//# sourceMappingURL=HoverStateOrientationDuck.d.ts.map

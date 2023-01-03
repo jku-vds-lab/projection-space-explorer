@@ -5,3 +5,4 @@ export declare function FeaturePicker({ selection, setSelection, selectedRows, s
     selectedRows: any;
     setSelectedRows: any;
 }): JSX.Element;
+//# sourceMappingURL=FeaturePicker.d.ts.map

@@ -17,3 +17,4 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 }, {}>;
 export declare const DifferenceThresholdSlider: import("react-redux").ConnectedComponent<typeof simpleSlider, import("react-redux").Omit<any, "differenceThreshold" | "setDifferenceThreshold">>;
 export {};
+//# sourceMappingURL=DifferenceThresholdSlider.d.ts.map

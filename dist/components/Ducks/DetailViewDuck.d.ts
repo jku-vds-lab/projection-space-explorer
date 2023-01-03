@@ -6,3 +6,4 @@ export declare const DetailViewActions: {
     setDetailVisibility: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<boolean, string>;
     setDetailView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<number, string>;
 };
+//# sourceMappingURL=DetailViewDuck.d.ts.map

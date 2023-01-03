@@ -7,3 +7,4 @@ export declare class ChiSquareTest {
     };
     getSum(total: number, numb: number): number;
 }
+//# sourceMappingURL=ChiSquare.d.ts.map

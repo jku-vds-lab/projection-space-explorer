@@ -105,3 +105,4 @@ export declare function createRootReducer<T>(reducers?: ReducersMapObject<T, any
 export type RootState = ReducerValues<typeof allReducers>;
 export declare const usePSESelector: <T>(fn: (state: RootState) => T) => T;
 export {};
+//# sourceMappingURL=Store.d.ts.map

@@ -4,3 +4,4 @@
 export declare function PSELayer({ children }: {
     children: any;
 }): JSX.Element;
+//# sourceMappingURL=PSELayer.d.ts.map

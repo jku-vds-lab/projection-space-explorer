@@ -31,3 +31,4 @@ declare const projectionParams: (state: {
     encodingMethod: EncodingMethod;
 }, action: any) => ProjectionParamsType;
 export default projectionParams;
+//# sourceMappingURL=ProjectionParamsDuck.d.ts.map

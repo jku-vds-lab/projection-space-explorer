@@ -74,3 +74,4 @@ export declare function makeInitializations(distanceFn: DistanceFn): {
 export type SearchFn = (data: Vectors, graph: matrix.SparseMatrix, initialization: heap.Heap, queryPoints: Vectors) => heap.Heap;
 export declare function makeInitializedNNSearch(distanceFn: DistanceFn): (data: Vectors, graph: matrix.SparseMatrix, initialization: heap.Heap, queryPoints: Vectors) => heap.Heap;
 export declare function initializeSearch(forest: tree.FlatTree[], data: Vectors, queryPoints: Vectors, nNeighbors: number, initFromRandom: InitFromRandomFn, initFromTree: InitFromTreeFn, random: RandomFn): heap.Heap;
+//# sourceMappingURL=nn_descent.d.ts.map

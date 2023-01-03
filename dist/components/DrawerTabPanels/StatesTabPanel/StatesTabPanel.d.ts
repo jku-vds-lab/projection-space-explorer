@@ -44,3 +44,4 @@ export declare const StatesTabPanel: import("react-redux").ConnectedComponent<ty
     encodings: EncodingChannel[];
 }, "dataset" | "selectedLineBy" | "setGlobalPointBrightness" | "setVectorByShape" | "setSelectedLineBy" | "setChannelBrightness" | "setChannelSize" | "setGlobalPointSize" | "setAdvancedColoringSelection">>;
 export {};
+//# sourceMappingURL=StatesTabPanel.d.ts.map

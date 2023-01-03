@@ -11,3 +11,4 @@ export declare const setDisplayMode: (displayMode: any) => {
     type: string;
     displayMode: any;
 };
+//# sourceMappingURL=DisplayModeDuck.d.ts.map

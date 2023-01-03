@@ -16,3 +16,4 @@ export declare class Preprocessor {
     inferMultiplicity(): void;
     preprocess(ranges: any): any[];
 }
+//# sourceMappingURL=Preprocessor.d.ts.map
