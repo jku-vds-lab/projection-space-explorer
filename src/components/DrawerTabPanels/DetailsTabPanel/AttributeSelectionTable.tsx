@@ -5,7 +5,6 @@ import DataGrid, { SelectColumn } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
 import { usePSESelector } from '../../Store/Store';
 import { DefaultFeatureLabel } from '../../../model';
-import { setFips } from 'crypto';
 
 type AttributeType = { feature: string; show: boolean };
 
@@ -14,7 +13,7 @@ type Props = {
   setAttributes: (attributes: AttributeType[]) => void;
 };
 
-export function AttributeSelectionTable({attributes, setAttributes}: Props) {
+export function AttributeSelectionTable({ attributes, setAttributes }: Props) {
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);
