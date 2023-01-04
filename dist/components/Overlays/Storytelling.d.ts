@@ -40,6 +40,6 @@ export declare const Storytelling: import("react-redux").ConnectedComponent<({ d
     setSelectedCluster: (clusters: EntityId[], shift: any) => any;
 } & {
     dataset: Dataset;
-}, "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "addClusterToTrace" | "currentAggregation" | "dataset" | "genericFingerprintAttributes" | "setSelectedCluster">>;
+}, "dataset" | "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "addClusterToTrace" | "currentAggregation" | "genericFingerprintAttributes" | "setSelectedCluster">>;
 export {};
 //# sourceMappingURL=Storytelling.d.ts.map

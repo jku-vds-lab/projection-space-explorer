@@ -231,6 +231,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "currentAggregation" | "activeLine" | "dataset" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "activateView" | "addView" | "selectVectors" | "setViewTransform" | "setHoverState" | "setPointColorMapping" | "addClusterToStory">>;
+}, import("react-redux").Omit<any, "dataset" | "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "currentAggregation" | "activeLine" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "activateView" | "addView" | "selectVectors" | "setViewTransform" | "setHoverState" | "setPointColorMapping" | "addClusterToStory">>;
 export {};
 //# sourceMappingURL=WebGLView.d.ts.map
