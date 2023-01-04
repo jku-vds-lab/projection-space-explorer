@@ -7,7 +7,8 @@ import { usePSESelector } from '../../Store/Store';
 import { DefaultFeatureLabel } from '../../../model';
 import { setFips } from 'crypto';
 
-// props: { attributes: any[]; setAttributes: (attributes: any[]) => void }
+
+
 export function AttributeSelectionTable({attributes, setAttributes}) {
   const [open, setOpen] = React.useState(false);
 
