@@ -30,6 +30,6 @@ export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ 
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
-}, "dataset" | "globalLabels" | "currentAggregation" | "hoverSettings" | "setHoverWindowMode" | "setAggregation">>;
+}, "globalLabels" | "currentAggregation" | "dataset" | "hoverSettings" | "setHoverWindowMode" | "setAggregation">>;
 export {};
 //# sourceMappingURL=HoverTabPanel.d.ts.map

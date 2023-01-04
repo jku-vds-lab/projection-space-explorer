@@ -1,10 +1,10 @@
-import { Box, Button, Dialog, DialogContent, DialogTitle, DialogActions } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, DialogActions } from '@mui/material';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import DataGrid, { SelectColumn } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
-import { RootState, usePSESelector } from '../../Store/Store';
-import genericFingerprintAttributes, { setGenericFingerprintAttributes } from '../../Ducks/GenericFingerprintAttributesDuck';
+import { usePSESelector } from '../../Store/Store';
+import { setGenericFingerprintAttributes } from '../../Ducks/GenericFingerprintAttributesDuck';
 import { DefaultFeatureLabel } from '../../../model';
 
 export function AttributeSelectionTable(props: any) {
@@ -13,6 +13,13 @@ export function AttributeSelectionTable(props: any) {
   const dataset = usePSESelector((state) => state.dataset);
   const attributes = usePSESelector((state) => state.genericFingerprintAttributes);
   const dispatch = useDispatch();
+
+  const [localAttributes, setLocalAttributes] = React.useState<any>([]);
+  const [rows, setRows] = React.useState<any>([]);
+  const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<number>>(() => new Set());
+  const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(() => new Set<unknown>([]));
+
+  const columnsSelected = [SelectColumn, { key: 'feature', name: 'Selected' }, { key: 'group', name: 'Group' }];
 
   const openAttributes = (event) => {
     setOpen(true);
@@ -23,34 +30,26 @@ export function AttributeSelectionTable(props: any) {
     dispatch(setGenericFingerprintAttributes([...localAttributes]));
   };
 
-  const [localAttributes, setLocalAttributes] = React.useState<any>([]);
-  const [rows, setRows] = React.useState<any>([]);
-  const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<number>>(() => new Set());
-  const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(() => new Set<unknown>([]));
-
-  const columnsSelected = [SelectColumn, { key: 'feature', name: 'Selected' }, { key: 'group', name: 'Group' }];
-
-  const groupMapping = (r, i) => {
-    return {
-      id: i,
-      feature: r.feature,
-      show: r.show,
-      group: dataset.columns[r.feature].featureLabel ? dataset.columns[r.feature].featureLabel : DefaultFeatureLabel,
-    };
-  };
+  const groupMapping = React.useCallback(
+    (r, i) => {
+      return {
+        id: i,
+        feature: r.feature,
+        show: r.show,
+        group: dataset.columns[r.feature].featureLabel ? dataset.columns[r.feature].featureLabel : DefaultFeatureLabel,
+      };
+    },
+    [dataset],
+  );
 
   React.useEffect(() => {
     setLocalAttributes(attributes.map(groupMapping));
     setRows(attributes.map(groupMapping));
-  }, [attributes]);
+  }, [attributes, groupMapping]);
 
-  function rowKeyGetter(row: any) {
+  const rowKeyGetter = (row: any) => {
     return row.feature;
-  }
-
-  console.log(dataset?.columns);
-  console.log(genericFingerprintAttributes);
-  console.log(rows);
+  };
 
   return (
     <div>

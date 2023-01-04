@@ -1,7 +1,14 @@
-import { requiredChessColumns } from '../../../plugins/Chess/ChessFingerprint/ChessFingerprint';
 import { requiredRubikColumns } from '../../../plugins/Rubik/RubikFingerprint/RubikFingerprint';
 import { DatasetType } from '../../../model/DatasetType';
 import { IVector } from '../../../model/Vector';
+
+const requiredChessColumns = [];
+
+['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].forEach((c) => {
+  [1, 2, 3, 4, 5, 6, 7, 8].forEach((n) => {
+    requiredChessColumns.push(`${c}${n}`);
+  });
+});
 
 /**
  * Object responsible for infering things from the data structure of a csv file.
