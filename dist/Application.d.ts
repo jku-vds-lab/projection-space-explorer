@@ -76,6 +76,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "dataset" | "globalLabels" | "openTab" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
+}, import("react-redux").Omit<any, "globalLabels" | "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
 export {};
 //# sourceMappingURL=Application.d.ts.map

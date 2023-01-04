@@ -1,5 +1,4 @@
-import { ADataset, ColumnType, Dataset, IBaseProjection } from '../../model';
-import { IVector } from '../../model/Vector';
+import { ADataset, Dataset, IBaseProjection } from '../../model';
 
 /**
  * Calculates the default zoom factor by examining the bounds of the data set

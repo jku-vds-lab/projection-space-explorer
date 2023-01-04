@@ -24,8 +24,6 @@ import BK from '../../../../textures/chess/Chess_kdt45.png';
 import BQ from '../../../../textures/chess/Chess_qdt45.png';
 // @ts-ignore
 import BP from '../../../../textures/chess/Chess_pdt45.png';
-import { DefaultLegend } from '../../../components/legends/DefaultLegend';
-// @ts-ignore
 
 // Lookup table for chess UNICODE symbols
 const symbols = {
@@ -46,14 +44,6 @@ const symbols = {
 
 export const CHESS_TILE_BLACK = '#edeeef';
 export const CHESS_TILE_WHITE = '#ffffff';
-
-export const requiredChessColumns = [];
-
-['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].forEach((c) => {
-  [1, 2, 3, 4, 5, 6, 7, 8].forEach((n) => {
-    requiredChessColumns.push(`${c}${n}`);
-  });
-});
 
 Object.keys(symbols)
   .filter((key) => key != '')

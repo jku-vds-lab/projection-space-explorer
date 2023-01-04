@@ -39,7 +39,7 @@ export declare const mappingFromScale: (scale: BaseColorScale, key: string, data
     [key: string]: {
         [key: number]: number[];
     };
-}) => DiscreteMapping | ContinuousMapping | DivergingMapping;
+}) => DiscreteMapping | DivergingMapping | ContinuousMapping;
 /**
  *
  * @param mapping a mapping object

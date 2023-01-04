@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { Dataset } from './Dataset';
 import { ObjectTypes } from './ObjectType';
 import { TypedObject } from './TypedObject';
-import { IVector } from './Vector';
 import { IBaseProjection } from './ProjectionInterfaces';
 import { ICluster } from './ICluster';
 

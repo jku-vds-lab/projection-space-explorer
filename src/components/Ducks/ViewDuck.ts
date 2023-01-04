@@ -26,7 +26,7 @@ import globalPointSize from './GlobalPointSizeDuck';
 import { ViewTransformType, viewTransform } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, ProjectionMethod, IPosition, Dataset, AProjection } from '../../model';
-import { ContinuousMapping, DiscreteMapping, Mapping } from '../Utility';
+import { ContinuousMapping, DiscreteMapping, Mapping } from '../Utility/Colors';
 import { CategoryOption } from '../WebGLView/CategoryOptions';
 
 export const setWorkspaceAction = createAction<EntityId | IProjection>('set/workspace');

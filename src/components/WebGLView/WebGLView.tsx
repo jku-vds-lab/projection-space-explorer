@@ -1506,6 +1506,7 @@ export const WebGLView = connector(
             {this.props.overrideComponents?.contextMenuItems?.map(
               (item, i) =>
                 React.createElement(item, {
+                  // eslint-disable-next-line react/no-array-index-key
                   key: `contextmenuitem${i}`,
                   menuTarget: this.state.menuTarget,
                   pos_x: this.mouseController.currentMousePosition.x,

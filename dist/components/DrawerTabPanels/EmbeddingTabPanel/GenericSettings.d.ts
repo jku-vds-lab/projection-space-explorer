@@ -55,6 +55,6 @@ export declare const GenericSettings: import("react-redux").ConnectedComponent<t
     open: boolean;
     onClose: any;
     onStart: any;
-}, "projectionColumns" | "projectionParams" | "columns" | "setProjectionParams">>;
+}, "columns" | "projectionColumns" | "projectionParams" | "setProjectionParams">>;
 export {};
 //# sourceMappingURL=GenericSettings.d.ts.map

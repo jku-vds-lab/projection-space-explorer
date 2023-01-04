@@ -38,7 +38,7 @@ export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
     sx?: import("@mui/material").SxProps<import("@mui/material").Theme>;
 } & Omit<import("@mui/base").SliderUnstyledOwnProps, "isRtl"> & Omit<Pick<React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, "key" | keyof React.HTMLAttributes<HTMLSpanElement>> & {
     ref?: React.Ref<HTMLSpanElement>;
-}, "name" | "value" | "size" | "track" | "classes" | "color" | "scale" | "sx" | "defaultValue" | "tabIndex" | "aria-label" | "aria-labelledby" | "aria-valuetext" | "onChange" | "max" | "min" | "orientation" | "disabled" | "step" | "components" | "componentsProps" | "slotProps" | "slots" | "disableSwap" | "getAriaLabel" | "getAriaValueText" | "marks" | "onChangeCommitted" | "valueLabelDisplay" | "valueLabelFormat"> & import("@mui/system").MUIStyledCommonProps<import("@mui/material").Theme>, {}, {}>;
+}, "aria-label" | "aria-labelledby" | "aria-valuetext" | "classes" | "defaultValue" | "disabled" | "disableSwap" | "getAriaLabel" | "getAriaValueText" | "marks" | "max" | "min" | "name" | "onChange" | "onChangeCommitted" | "orientation" | "scale" | "slotProps" | "slots" | "step" | "tabIndex" | "track" | "value" | "valueLabelDisplay" | "valueLabelFormat" | "color" | "components" | "componentsProps" | "size" | "sx"> & import("@mui/system").MUIStyledCommonProps<import("@mui/material").Theme>, {}, {}>;
 /**
  * Renders one color scale with an optional center point.
  */

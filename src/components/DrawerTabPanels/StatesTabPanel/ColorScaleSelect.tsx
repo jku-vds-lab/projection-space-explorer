@@ -1,18 +1,19 @@
 import * as React from 'react';
 import { Button, List, ListItem, Menu, MenuItem, Slider, TextField } from '@mui/material';
 import { connect, useSelector, useDispatch } from 'react-redux';
-import { css, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { clone } from 'lodash';
 import * as d3v5 from 'd3v5';
-import { RootState } from '../../Store';
-import { ANormalized, ContinuousMapping, DivergingMapping, isNumericMapping, Mapping, mapValueToColor, NormalizedDictionary } from '../../Utility';
+import type { RootState } from '../../Store';
+import { ContinuousMapping, DivergingMapping, isNumericMapping, Mapping, mapValueToColor } from '../../Utility/Colors';
 import { BaseColorScale } from '../../../model/Palette';
 import { APalette } from '../../../model/palettes';
-import { PointColorScaleActions } from '../../Ducks';
+import { PointColorScaleActions } from '../../Ducks/PointColorScaleDuck';
 import { CategoryOption } from '../../WebGLView/CategoryOptions';
 import { ViewActions, ViewSelector } from '../../Ducks/ViewDuck';
 import { Dataset } from '../../../model/Dataset';
 import { getMinMaxOfChannel } from '../../WebGLView/UtilityFunctions';
+import { ANormalized, NormalizedDictionary } from '../../Utility/NormalizedState';
 
 const SVG_ID = 'mapping_svghistogram';
 const WIDTH = 288 - 32;
@@ -151,7 +152,7 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
   const scales = useSelector<RootState, NormalizedDictionary<BaseColorScale>>((state) => state.colorScales.scales);
   const mapping = useSelector(ViewSelector.defaultSelector).attributes.pointColorMapping as Mapping;
 
-  const [tempMapping, setTempMapping] = React.useState<[number, number, number]>([0, 0, 0]);
+  const [tempMapping, setTempMapping] = React.useState<[number, number, number] | [number, number]>([0, 0, 0]);
   let min = 0;
   let max = 0;
   let mid = 0;
