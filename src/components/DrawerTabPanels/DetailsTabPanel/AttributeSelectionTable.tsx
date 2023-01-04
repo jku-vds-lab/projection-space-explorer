@@ -7,9 +7,14 @@ import { usePSESelector } from '../../Store/Store';
 import { DefaultFeatureLabel } from '../../../model';
 import { setFips } from 'crypto';
 
+type AttributeType = { feature: string; show: boolean };
 
+type Props = {
+  attributes: AttributeType[];
+  setAttributes: (attributes: AttributeType[]) => void;
+};
 
-export function AttributeSelectionTable({attributes, setAttributes}) {
+export function AttributeSelectionTable({attributes, setAttributes}: Props) {
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);

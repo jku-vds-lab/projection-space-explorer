@@ -48,6 +48,7 @@ export const DetailsTabPanel = connector(
     activeStorybook,
     globalLabels,
   }: Props) => {
+    const attributes = usePSESelector((state) => state.genericFingerprintAttributes);
     const handleChange = (_, value) => {
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
     };
@@ -85,7 +86,7 @@ export const DetailsTabPanel = connector(
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
-          <AttributeSelectionTable attributes={usePSESelector((state) => state.genericFingerprintAttributes)} setAttributes={setGenericFingerprintAttributes} />
+          <AttributeSelectionTable attributes={attributes} setAttributes={setGenericFingerprintAttributes} />
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
