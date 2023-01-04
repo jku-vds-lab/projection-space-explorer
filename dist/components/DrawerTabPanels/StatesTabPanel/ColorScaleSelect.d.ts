@@ -18,6 +18,9 @@ export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
     };
     componentsProps?: {
         root?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
+        /**
+         * Component that lets user pick from a list of color scales.
+         */
         track?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
         rail?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
         thumb?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;

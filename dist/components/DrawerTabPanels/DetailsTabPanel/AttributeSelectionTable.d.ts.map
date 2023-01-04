@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-{"version":3,"file":"AttributeSelectionTable.d.ts","sourceRoot":"","sources":["../../../../src/components/DrawerTabPanels/DetailsTabPanel/AttributeSelectionTable.tsx"],"names":[],"mappings":"AAQA,wBAAgB,uBAAuB,CAAC,KAAK,EAAE;IAAE,UAAU,EAAE,GAAG,EAAE,CAAC;IAAC,aAAa,EAAE,CAAC,UAAU,EAAE,GAAG,EAAE,KAAK,IAAI,CAAA;CAAE,eAuE/G"}
-=======
-{"version":3,"file":"AttributeSelectionTable.d.ts","sourceRoot":"","sources":["../../../../src/components/DrawerTabPanels/DetailsTabPanel/AttributeSelectionTable.tsx"],"names":[],"mappings":"AASA,wBAAgB,uBAAuB,CAAC,KAAK,EAAE,GAAG,eAwEjD"}
->>>>>>> develop
+{"version":3,"file":"AttributeSelectionTable.d.ts","sourceRoot":"","sources":["../../../../src/components/DrawerTabPanels/DetailsTabPanel/AttributeSelectionTable.tsx"],"names":[],"mappings":"AAQA,KAAK,aAAa,GAAG;IAAE,OAAO,EAAE,MAAM,CAAC;IAAC,IAAI,EAAE,OAAO,CAAA;CAAE,CAAC;AAExD,KAAK,KAAK,GAAG;IACX,UAAU,EAAE,aAAa,EAAE,CAAC;IAC5B,aAAa,EAAE,CAAC,UAAU,EAAE,aAAa,EAAE,KAAK,IAAI,CAAC;CACtD,CAAC;AAEF,wBAAgB,uBAAuB,CAAC,EAAE,UAAU,EAAE,aAAa,EAAE,EAAE,KAAK,eAuE3E"}

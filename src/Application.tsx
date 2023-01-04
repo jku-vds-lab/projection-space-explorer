@@ -39,7 +39,7 @@ import { capitalizeFirstLetter, toSentenceCase } from './utils/helpers';
 import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChooser';
 import { DetailViewActions } from './components/Ducks/DetailViewDuck';
 import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
-import 'react-data-grid/lib/styles.css';
+// import 'react-data-grid/lib/styles.css';
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
