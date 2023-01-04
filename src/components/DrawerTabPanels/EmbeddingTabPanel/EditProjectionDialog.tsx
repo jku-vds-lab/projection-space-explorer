@@ -4,7 +4,7 @@ import * as React from 'react';
 import { EntityId } from '@reduxjs/toolkit';
 import type { IProjection } from '../../../model';
 
-function FeatureList({}) {
+function FeatureList() {
   return null;
 }
 

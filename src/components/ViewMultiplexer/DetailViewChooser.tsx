@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { ConnectedComponent, useDispatch, useSelector } from 'react-redux';
+import { ConnectedComponent, useSelector } from 'react-redux';
 import { ComponentConfig } from '../../BaseConfig';
-import { DetailViewActions } from '../Ducks';
 import type { RootState } from '../Store';
 
 type DetailViewChooserProps = {

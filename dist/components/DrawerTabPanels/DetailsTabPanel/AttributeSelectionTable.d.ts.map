@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":3,"file":"AttributeSelectionTable.d.ts","sourceRoot":"","sources":["../../../../src/components/DrawerTabPanels/DetailsTabPanel/AttributeSelectionTable.tsx"],"names":[],"mappings":"AAQA,wBAAgB,uBAAuB,CAAC,KAAK,EAAE;IAAE,UAAU,EAAE,GAAG,EAAE,CAAC;IAAC,aAAa,EAAE,CAAC,UAAU,EAAE,GAAG,EAAE,KAAK,IAAI,CAAA;CAAE,eAuE/G"}
+=======
+{"version":3,"file":"AttributeSelectionTable.d.ts","sourceRoot":"","sources":["../../../../src/components/DrawerTabPanels/DetailsTabPanel/AttributeSelectionTable.tsx"],"names":[],"mappings":"AASA,wBAAgB,uBAAuB,CAAC,KAAK,EAAE,GAAG,eAwEjD"}
+>>>>>>> develop

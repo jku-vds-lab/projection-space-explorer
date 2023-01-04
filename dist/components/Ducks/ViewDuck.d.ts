@@ -2,7 +2,7 @@ import { EntityId, Update, ReducersMapObject, EntityState, Reducer, ActionReduce
 import { ViewTransformType } from './ViewTransformDuck';
 import type { RootState } from '../Store';
 import { IProjection, IPosition, Dataset } from '../../model';
-import { ContinuousMapping, DiscreteMapping, Mapping } from '../Utility';
+import { ContinuousMapping, DiscreteMapping, Mapping } from '../Utility/Colors';
 import { CategoryOption } from '../WebGLView/CategoryOptions';
 export declare const setWorkspaceAction: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId | IProjection, string>;
 export declare const projectionAdapter: import("@reduxjs/toolkit").EntityAdapter<IProjection>;

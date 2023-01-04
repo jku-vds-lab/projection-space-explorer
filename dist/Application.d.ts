@@ -20,7 +20,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
             allIds: string[];
         };
     };
-    globalLabels: import(".").GlobalLabelsState;
+    globalLabels: import("./components").GlobalLabelsState;
 } & {
     setOpenTab: (openTab: any) => any;
     setLineByOptions: (options: any) => any;

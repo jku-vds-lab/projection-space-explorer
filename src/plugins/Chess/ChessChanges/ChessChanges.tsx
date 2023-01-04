@@ -216,13 +216,13 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
       // collect fieldKeys that exist in both selections
       const keysA = [];
       const numsA = Object.keys(countA[key]);
-      for (let num = 0; num < numsA.length; num++) {
-        keysA.push(countA[key][numsA[num]].key);
+      for (let num in numsA) {
+        keysA.push(countA[key][num].key);
       }
       const keysB = [];
       const numsB = Object.keys(countB[key]);
-      for (let num = 0; num < numsB.length; num++) {
-        keysB.push(countB[key][numsB[num]].key);
+      for (let num in numsB) {
+        keysB.push(countB[key][num].key);
       }
       let allKeys = keysA.concat(keysB);
       allKeys = allKeys.filter((item, pos) => allKeys.indexOf(item) === pos);

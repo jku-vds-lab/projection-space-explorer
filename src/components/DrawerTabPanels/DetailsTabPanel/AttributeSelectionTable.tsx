@@ -31,23 +31,24 @@ export function AttributeSelectionTable({attributes, setAttributes}) {
     dispatch(setAttributes([...localAttributes]));
   };
 
-  const groupMapping = (r, i) => {
+  
+  const groupMapping = React.useCallback((r, i) => {
     return {
       id: i,
       feature: r.feature,
       show: r.show,
       group: dataset.columns[r.feature].featureLabel ? dataset.columns[r.feature].featureLabel : DefaultFeatureLabel,
     };
-  };
+  }, [dataset]);
 
   React.useEffect(() => {
     setSelectedRows(new Set(attributes.filter((r) => r.show).map((r) => r.feature)));
     setRows(attributes.map(groupMapping));
-  }, [attributes]);
+  }, [attributes, groupMapping]);
 
-  function rowKeyGetter(row: any) {
+  const rowKeyGetter = (row: any) => {
     return row.feature;
-  }
+  };
 
   return (
     <div>

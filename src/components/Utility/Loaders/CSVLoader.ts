@@ -239,7 +239,7 @@ export class CSVLoader implements Loader {
         dataset.clusters = clusters;
 
         // Reset cluster label after extraction
-        dataset.vectors.forEach((vector) => {
+        dataset.vectors.forEach(() => {
           // vector.groupLabel = [];
         });
 
