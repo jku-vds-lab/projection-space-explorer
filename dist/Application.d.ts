@@ -5,7 +5,6 @@ import { ConnectedProps } from 'react-redux';
 import Split from 'react-split';
 import { Dataset } from './model/Dataset';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
-import 'react-data-grid/lib/styles.css';
 /**
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
  */
