@@ -5,15 +5,15 @@ import { connect, ConnectedProps } from 'react-redux';
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck';
 import { HoverStateOrientation, setHoverStateOrientation } from '../../Ducks/HoverStateOrientationDuck';
 import { SelectionClusters } from '../../Overlays/SelectionClusters';
-import type { RootState } from '../../Store/Store';
+import { RootState, usePSESelector } from '../../Store/Store';
 import { selectVectors } from '../../Ducks/AggregationDuck';
 import './DatasetTabPanel.scss';
 import { AttributeSelectionTable } from './AttributeSelectionTable';
 import { AStorytelling } from '../../Ducks/StoriesDuck';
 import { FeatureConfig } from '../../../BaseConfig';
+import { setGenericFingerprintAttributes } from '../../Ducks';
 
 const mapStateToProps = (state: RootState) => ({
-  genericFingerprintAttributes: state.genericFingerprintAttributes,
   hoverSettings: state.hoverSettings,
   currentAggregation: state.currentAggregation,
   dataset: state.dataset,
@@ -48,6 +48,7 @@ export const DetailsTabPanel = connector(
     activeStorybook,
     globalLabels,
   }: Props) => {
+    const attributes = usePSESelector((state) => state.genericFingerprintAttributes);
     const handleChange = (_, value) => {
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
     };
@@ -85,7 +86,7 @@ export const DetailsTabPanel = connector(
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
-          <AttributeSelectionTable />
+          <AttributeSelectionTable attributes={attributes} setAttributes={setGenericFingerprintAttributes} />
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
