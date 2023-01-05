@@ -27,6 +27,6 @@ export const PSEIcons = {
   PseLineup: () => <SVG src={PseLineup} />,
 };
 
-export function PSESvgIcon ({ component }: { component: React.ElementType }) {
+export function PSESvgIcon({ component }: { component: React.ElementType }) {
   return <SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={component} />;
 }
