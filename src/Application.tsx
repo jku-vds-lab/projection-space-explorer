@@ -278,9 +278,7 @@ export const Application = connector(
                   <>
                     <Typography variant="subtitle2">{`Hovered and Selected ${capitalizeFirstLetter(this.props.globalLabels.itemLabelPlural)}`}</Typography>
                     <Typography variant="body2">
-                      {toSentenceCase(
-                        `Contains information about the hovered or selected ${this.props.globalLabels.itemLabelPlural}.`,
-                      )}
+                      {toSentenceCase(`Contains information about the hovered or selected ${this.props.globalLabels.itemLabelPlural}.`)}
                     </Typography>
                   </>
                 }

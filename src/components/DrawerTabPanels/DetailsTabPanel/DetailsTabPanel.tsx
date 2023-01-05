@@ -86,7 +86,9 @@ export const DetailsTabPanel = connector(
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
-          <AttributeSelectionTable attributes={attributes} setAttributes={setGenericFingerprintAttributes}>Choose Attributes</AttributeSelectionTable>
+          <AttributeSelectionTable attributes={attributes} setAttributes={setGenericFingerprintAttributes}>
+            Choose Attributes
+          </AttributeSelectionTable>
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
