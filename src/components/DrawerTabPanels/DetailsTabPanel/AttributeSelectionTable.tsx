@@ -13,7 +13,7 @@ type Props = {
   setAttributes: (attributes: AttributeType[]) => void;
 };
 
-export function AttributeSelectionTable({ attributes, setAttributes }: Props) {
+export function AttributeSelectionTable({ attributes, setAttributes, children }: React.PropsWithChildren<Props>) {
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);
@@ -59,7 +59,7 @@ export function AttributeSelectionTable({ attributes, setAttributes }: Props) {
   return (
     <div>
       <Button fullWidth variant="outlined" onClick={openAttributes}>
-        Summary Attributes
+        {children}
       </Button>
 
       <Dialog fullWidth maxWidth="xl" open={open} onClose={handleClose}>

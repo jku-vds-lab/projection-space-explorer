@@ -20,7 +20,7 @@ export const DefaultLegend = connector(({ globalLabels }: Props) => {
   return (
     <Box paddingLeft={2}>
       <Typography color="textSecondary">
-        Select {capitalizeFirstLetter(globalLabels.itemLabel)} in the Embedding Space to show a Summary Visualization.
+        Select {capitalizeFirstLetter(globalLabels.itemLabelPlural)} in the Scatter Plot to show a Summary Visualization.
       </Typography>
     </Box>
   );
