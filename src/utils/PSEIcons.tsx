@@ -14,7 +14,6 @@ import PseProject from '../../textures/icons/pse-icon-project.svg';
 // @ts-ignore
 import PseLineup from '../../textures/icons/pse-icon-lineup.svg';
 
-
 /**
  * Makes the inlined base64 icons accessible in apps that use PSE as a library.
  */
