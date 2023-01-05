@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as React from 'react';
 import SVG from 'react-inlinesvg';
+import { SvgIcon } from '@mui/material';
 // @ts-ignore
 import PseDataset from '../../textures/icons/pse-icon-dataset.svg';
 // @ts-ignore
@@ -13,7 +14,6 @@ import PseEncoding from '../../textures/icons/pse-icon-encoding.svg';
 import PseProject from '../../textures/icons/pse-icon-project.svg';
 // @ts-ignore
 import PseLineup from '../../textures/icons/pse-icon-lineup.svg';
-import { SvgIcon } from '@mui/material';
 
 /**
  * Makes the inlined base64 icons accessible in apps that use PSE as a library.
@@ -27,7 +27,6 @@ export const PSEIcons = {
   PseLineup: () => <SVG src={PseLineup} />,
 };
 
-export const PSESvgIcon = ({ component }: { component: React.ElementType }) => {
-
-  return <SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={component} />
+export function PSESvgIcon ({ component }: { component: React.ElementType }) {
+  return <SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={component} />;
 }
