@@ -193,7 +193,7 @@ export const Application = connector(
               >
                 <Tab
                   value={0}
-                  icon={<img src={PSEIcons.Dataset} />}
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Dataset} />}
                   data-cy="dataset-tab"
                   style={{
                     minWidth: 0,
@@ -216,7 +216,7 @@ export const Application = connector(
                 <Tab
                   value={1}
                   data-cy="projection-tab"
-                  icon={<img src={PSEIcons.Project} />}
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Project} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -240,7 +240,7 @@ export const Application = connector(
                 <Tab
                   value={2}
                   data-cy="encoding-tab"
-                  icon={<img src={PSEIcons.Encoding} />}
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Encoding} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -262,7 +262,7 @@ export const Application = connector(
                 <Tab
                   value={3}
                   data-cy="groups-tab"
-                  icon={<img src={PSEIcons.Clusters} />}
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Clusters} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -276,10 +276,10 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">{`Hover ${capitalizeFirstLetter(this.props.globalLabels.itemLabel)} and Selection Summary`}</Typography>
+                    <Typography variant="subtitle2">{`Hovered and Selected ${capitalizeFirstLetter(this.props.globalLabels.itemLabelPlural)}`}</Typography>
                     <Typography variant="body2">
                       {toSentenceCase(
-                        `Contains information about the currently hovered ${this.props.globalLabels.itemLabel} and the currently selected summary.`,
+                        `Contains information about the hovered or selected ${this.props.globalLabels.itemLabelPlural}.`,
                       )}
                     </Typography>
                   </>
@@ -288,7 +288,7 @@ export const Application = connector(
                 <Tab
                   value={4}
                   data-cy="details-tab"
-                  icon={<img src={PSEIcons.Details} />}
+                  icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.Details} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -303,7 +303,7 @@ export const Application = connector(
                   placement="right"
                   title={
                     <>
-                      <Typography variant="subtitle2">{`Tabular views of the ${this.props.globalLabels.itemLabelPlural} `}</Typography>
+                      <Typography variant="subtitle2">{`Tabular Views of the ${capitalizeFirstLetter(this.props.globalLabels.itemLabelPlural)} `}</Typography>
                       <Typography variant="body2">
                         {toSentenceCase(`Contains settings of the tabular views for the ${this.props.globalLabels.itemLabelPlural}.`)}
                       </Typography>
@@ -313,7 +313,7 @@ export const Application = connector(
                   <Tab
                     value={5}
                     data-cy="details-tab"
-                    icon={<img src={PSEIcons.PseLineup} />}
+                    icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={PSEIcons.PseLineup} />}
                     style={{
                       minWidth: 0,
                       flexGrow: 1,
