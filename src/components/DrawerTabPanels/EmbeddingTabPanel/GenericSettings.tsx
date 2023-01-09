@@ -230,6 +230,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                   >
                     <TextField
                       id="textIterations"
+                      data-cy="projection-iterations-number-input"
                       label="Iterations"
                       type="number"
                       value={tempProjectionParams.iterations}
