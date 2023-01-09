@@ -2,7 +2,6 @@ import { ConnectedProps } from 'react-redux';
 import './DatasetTabPanel.scss';
 import { FeatureConfig } from '../../../BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    genericFingerprintAttributes: any[];
     hoverSettings: {
         windowMode: any;
     };
@@ -14,7 +13,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     dataset: import("../../..").Dataset;
     hoverStateOrientation: any;
     activeStorybook: import("../../..").IBook;
-    globalLabels: import("../..").GlobalLabelsState;
+    globalLabels: import("../../Ducks").GlobalLabelsState;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
@@ -25,7 +24,6 @@ type Props = PropsFromRedux & {
     config: FeatureConfig;
 };
 export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook, globalLabels, }: Props) => JSX.Element, import("react-redux").Omit<{
-    genericFingerprintAttributes: any[];
     hoverSettings: {
         windowMode: any;
     };
@@ -37,13 +35,13 @@ export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<(
     dataset: import("../../..").Dataset;
     hoverStateOrientation: any;
     activeStorybook: import("../../..").IBook;
-    globalLabels: import("../..").GlobalLabelsState;
+    globalLabels: import("../../Ducks").GlobalLabelsState;
 } & {
     setHoverWindowMode: (value: any) => any;
     setAggregation: (value: any) => any;
     setHoverStateOrientation: (value: any) => any;
 } & {
     config: FeatureConfig;
-}, "globalLabels" | "currentAggregation" | "dataset" | "hoverSettings" | "genericFingerprintAttributes" | "hoverStateOrientation" | "setHoverWindowMode" | "setAggregation" | "setHoverStateOrientation" | "activeStorybook">>;
+}, "globalLabels" | "currentAggregation" | "dataset" | "hoverSettings" | "hoverStateOrientation" | "setHoverWindowMode" | "setAggregation" | "setHoverStateOrientation" | "activeStorybook">>;
 export {};
 //# sourceMappingURL=DetailsTabPanel.d.ts.map

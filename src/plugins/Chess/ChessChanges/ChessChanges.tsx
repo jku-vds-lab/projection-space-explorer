@@ -230,7 +230,7 @@ export class ChessChanges extends React.Component<ChessChangesProps> {
       let diffSum = 0;
 
       // iterate over all keys
-      for (const n in allKeys) {
+      for (let n = 0; n < allKeys.length; n++) {
         var fieldKey = allKeys[n];
 
         const entryA = countA[key].filter((e) => e.key == fieldKey);

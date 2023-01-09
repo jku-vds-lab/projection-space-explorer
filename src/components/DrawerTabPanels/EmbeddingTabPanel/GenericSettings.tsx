@@ -158,8 +158,8 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
   const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<string>>(() => new Set(selection.filter((row) => row.checked).map((row) => row.name)));
 
   const intermediateSetSelection = (selectedFeatures) => {
-    const filteredFeatures = selectedFeatures.filter((s) => s.checked).map((s) => s.name);
-    const nonNumericSelectedColumns = filteredFeatures.filter((col) => !columns[col].isNumeric);
+    const filteredFeatures = Array.from(selectedFeatures);
+    const nonNumericSelectedColumns = filteredFeatures.filter((col: string) => !columns[col].isNumeric);
 
     if (nonNumericSelectedColumns.length === filteredFeatures.length) {
       // set default metric to Jaccard, if only non-numeric datatypes are selected
@@ -171,7 +171,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
       // set default metric to euclidean, if we only have numeric datatypes
       changeDistanceMetric(DistanceMetric.EUCLIDEAN);
     }
-    setSelection(selectedFeatures);
+    setSelectedRows(selectedFeatures);
   };
 
   const ref = React.useRef<any>();
@@ -179,8 +179,8 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
 
   React.useEffect(() => {
     if (open) {
-      ref.current(cloneColumns(projectionColumns));
-      setSelectedRows(new Set(projectionColumns.filter((row) => row.checked).map((row) => row.name)));
+      setSelection(cloneColumns(projectionColumns));
+      ref.current(new Set(projectionColumns.filter((row) => row.checked).map((row) => row.name)));
     }
   }, [projectionColumns, open]);
 
@@ -194,7 +194,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
         ) : (
           <Container>
             {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
-              <FeaturePicker selection={selection} setSelection={intermediateSetSelection} setSelectedRows={setSelectedRows} selectedRows={selectedRows} />
+              <FeaturePicker selection={selection} setSelection={setSelection} setSelectedRows={intermediateSetSelection} selectedRows={selectedRows} />
             )}
 
             <Grid container justifyContent="center" style={{ width: '100%' }}>
