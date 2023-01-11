@@ -100,7 +100,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     // When the dataset has initial positions, add this as a projection
     const initialProjection = AProjection.createProjection(
       dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y })),
-      'Initial Projection',
+      'Initial projection',
       { method: ProjectionMethod.DATASET },
     );
 
@@ -115,7 +115,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     // When the dataset has initial positions, add this as a projection
     const initialProjection = AProjection.createProjection(
       dataset.vectors.map((vector) => ({ x: vector.x, y: vector.y })),
-      'Random Initialisation',
+      'Random initialisation',
       { method: ProjectionMethod.RANDOM },
     );
 

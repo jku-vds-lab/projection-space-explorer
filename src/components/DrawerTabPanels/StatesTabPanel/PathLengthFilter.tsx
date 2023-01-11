@@ -22,7 +22,7 @@ export function PathLengthFilterFull({ pathLengthRange, setPathLengthRange }) {
   return (
     <div style={{ margin: '0 16px', padding: '0 8px' }}>
       <Typography id="range-slider" gutterBottom>
-        Path Length Filter
+        Path length filter
       </Typography>
       <Slider
         min={0}

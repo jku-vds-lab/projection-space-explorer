@@ -59,7 +59,7 @@ export function AttributeSelectionTable({ attributes, setAttributes }: Props) {
   return (
     <div>
       <Button fullWidth variant="outlined" onClick={openAttributes}>
-        Summary Attributes
+        Summary attributes
       </Button>
 
       <Dialog fullWidth maxWidth="xl" open={open} onClose={handleClose}>

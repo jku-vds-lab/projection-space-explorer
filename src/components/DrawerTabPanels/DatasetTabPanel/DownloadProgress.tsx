@@ -38,7 +38,7 @@ export function DownloadProgress({ job, onFinish, onCancel }: Props) {
 
   return (
     <Dialog disableEscapeKeyDown maxWidth="xs" aria-labelledby="confirmation-dialog-title" open={job != null} fullWidth>
-      <DialogTitle id="confirmation-dialog-title">Download Progress</DialogTitle>
+      <DialogTitle id="confirmation-dialog-title">Download progress</DialogTitle>
       <DialogContent dividers>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Box position="relative" display="inline-flex" m={2}>

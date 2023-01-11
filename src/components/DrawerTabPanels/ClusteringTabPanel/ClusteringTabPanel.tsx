@@ -280,18 +280,18 @@ export const ClusteringTabPanel = connector(
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box paddingLeft={2} paddingTop={2}>
           <Typography variant="subtitle2" gutterBottom>
-            Group Settings
+            Group settings
           </Typography>
         </Box>
 
         <Box paddingLeft={2} paddingRight={2}>
           <FormControlLabel
             control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyClusters && displayMode !== DisplayMode.None} onChange={onCheckItems} />}
-            label={`Show ${capitalizeFirstLetter(globalLabels.itemLabelPlural)}`}
+            label={`Show ${globalLabels.itemLabelPlural}`}
           />
           <FormControlLabel
             control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyStates && displayMode !== DisplayMode.None} onChange={onCheckClusters} />}
-            label="Show Group Centers"
+            label="Show group centers"
           />
 
           <div style={{ width: '100%' }}>
@@ -308,8 +308,8 @@ export const ClusteringTabPanel = connector(
                 <MenuItem value={GroupVisualizationMode.None}>
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={GroupVisualizationMode.ConvexHull}>Contour Plot</MenuItem>
-                <MenuItem value={GroupVisualizationMode.StarVisualization}>Star Visualization</MenuItem>
+                <MenuItem value={GroupVisualizationMode.ConvexHull}>Contour plot</MenuItem>
+                <MenuItem value={GroupVisualizationMode.StarVisualization}>Star visualization</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -317,7 +317,7 @@ export const ClusteringTabPanel = connector(
 
         <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
           <Button variant="outlined" fullWidth ref={anchorRef} onClick={() => setOpenClusterPanel(true)}>
-            Define Groups by Clustering <ChevronRightIcon />
+            Define groups by clustering <ChevronRightIcon />
           </Button>
         </Box>
         <Popover
@@ -335,7 +335,7 @@ export const ClusteringTabPanel = connector(
         >
           <Box paddingLeft={2} paddingTop={2} width={300}>
             <Typography variant="subtitle2" gutterBottom>
-              Clustering Settings
+              Clustering settings
             </Typography>
           </Box>
 
@@ -368,7 +368,7 @@ export const ClusteringTabPanel = connector(
                       name="selectionClustering"
                     />
                   }
-                  label={`Cluster only Selected ${capitalizeFirstLetter(globalLabels.itemLabelPlural)}`}
+                  label={`Cluster only selected ${globalLabels.itemLabelPlural}`}
                 />
               </Box>
               <Box>
@@ -383,7 +383,7 @@ export const ClusteringTabPanel = connector(
                       name="addClusterToCurrentStory"
                     />
                   }
-                  label="Add Cluster to current Story"
+                  label="Add cluster to current story"
                 />
               </Box>
               <TextField
@@ -401,7 +401,7 @@ export const ClusteringTabPanel = connector(
               <br />
               <TextField
                 fullWidth
-                label="Min Cluster Samples"
+                label="Min cluster samples"
                 type="number"
                 InputLabelProps={{
                   shrink: true,
@@ -422,7 +422,7 @@ export const ClusteringTabPanel = connector(
                     }}
                   />
                 }
-                label="Allow Single Cluster"
+                label="Allow single cluster"
               />
             </Box>
           ) : (
@@ -451,14 +451,14 @@ export const ClusteringTabPanel = connector(
                 setOpenClusterPanel(false);
               }}
             >
-              Run Clustering{/* Projection-based Clustering */}
+              Run clustering
             </Button>
           </Box>
         </Popover>
 
         <Box paddingLeft={2} paddingTop={2}>
           <Typography variant="subtitle2" gutterBottom>
-            Groups and Stories
+            Groups and stories
           </Typography>
         </Box>
 

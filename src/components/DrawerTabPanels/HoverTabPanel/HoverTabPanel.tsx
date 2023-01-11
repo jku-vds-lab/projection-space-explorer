@@ -40,7 +40,7 @@ export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, set
 
         <FormControlLabel
           control={<Switch color="primary" checked={hoverSettings.windowMode === WindowMode.Extern} onChange={handleChange} name="checkedA" />}
-          label="External Selection Summary"
+          label="External selection summary"
         />
 
         <Button
@@ -49,7 +49,7 @@ export const HoverTabPanel = connector(({ hoverSettings, setHoverWindowMode, set
             setAggregation([]);
           }}
         >
-          Clear Selection
+          Clear selection
         </Button>
       </Box>
 
