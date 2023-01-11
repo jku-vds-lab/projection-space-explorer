@@ -63,7 +63,7 @@ export function DatasetTabPanel({ onDataSelected }: { onDataSelected(dataset: Da
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Box paddingLeft={2} paddingTop={2}>
         <Typography variant="subtitle2" gutterBottom>
-          Custom Datasets (Drag and Drop)
+          Custom datasets (drag and drop)
         </Typography>
       </Box>
 
@@ -76,7 +76,7 @@ export function DatasetTabPanel({ onDataSelected }: { onDataSelected(dataset: Da
 
       <Box paddingLeft={2} paddingTop={2}>
         <Typography variant="subtitle2" gutterBottom>
-          Predefined Datasets
+          Predefined datasets
         </Typography>
       </Box>
 

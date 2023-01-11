@@ -36,7 +36,7 @@ export function EditProjectionDialog({
   return (
     <Dialog open={projection !== null} onClose={onClose}>
       <Box component="form" onSubmit={onSubmit}>
-        <DialogTitle>{`Edit Projection ${projection?.name}`}</DialogTitle>
+        <DialogTitle>{`Edit projection ${projection?.name}`}</DialogTitle>
 
         <DialogContent>
           <TextField required label="Name" fullWidth value={name} onChange={(event) => setName(event.target.value)} sx={{ mt: 1 }} />

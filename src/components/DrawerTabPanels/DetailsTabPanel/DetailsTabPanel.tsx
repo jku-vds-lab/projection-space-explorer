@@ -70,7 +70,7 @@ export const DetailsTabPanel = connector(
         <Box paddingX={2} paddingTop={1}>
           <FormControlLabel
             control={<Switch color="primary" checked={hoverSettings.windowMode === WindowMode.Extern} onChange={handleChange} name="checkedA" />}
-            label="External Selection View"
+            label="External selection view"
           />
         </Box>
         <Box paddingX={2} paddingTop={1}>
@@ -81,20 +81,20 @@ export const DetailsTabPanel = connector(
               setAggregation([]);
             }}
           >
-            Clear Selection
+            Clear selection
           </Button>
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
           <AttributeSelectionTable attributes={attributes} setAttributes={setGenericFingerprintAttributes}>
-            Choose Attributes
+            Choose attributes
           </AttributeSelectionTable>
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
           <div style={{ width: '100%' }}>
             <FormControl style={{ width: '100%' }}>
-              <FormHelperText>Hover Position</FormHelperText>
+              <FormHelperText>Hover position</FormHelperText>
               <Select
                 displayEmpty
                 size="small"
@@ -103,8 +103,8 @@ export const DetailsTabPanel = connector(
                   setHoverStateOrientation(event.target.value);
                 }}
               >
-                <MenuItem value={HoverStateOrientation.NorthEast}>Top Right</MenuItem>
-                <MenuItem value={HoverStateOrientation.SouthWest}>Bottom Left</MenuItem>
+                <MenuItem value={HoverStateOrientation.NorthEast}>Top right</MenuItem>
+                <MenuItem value={HoverStateOrientation.SouthWest}>Bottom left </MenuItem>
               </Select>
             </FormControl>
           </div>

@@ -27,7 +27,7 @@ export const ClusterTrailSettings = connector(({ trailSettings, setTrailVisibili
         label="Show Group Trail"
       />
       <Typography id="discrete-slider" gutterBottom>
-        Trail Length
+        Trail length
       </Typography>
       <Slider
         value={trailSettings.length}

@@ -110,7 +110,7 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
     if (step === 0) {
       return (
         <div>
-          <div>Initializing Projection ...</div>
+          <div>Initializing projection ...</div>
           {msg && <div>Server: {msg}</div>}
         </div>
       );

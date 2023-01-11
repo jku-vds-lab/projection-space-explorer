@@ -22,7 +22,7 @@ function PathBrightnessSliderFull({ lineBrightness, setLineBrightness }) {
   return (
     <div style={{ margin: '0 16px', padding: '0 8px' }}>
       <Typography id="range-slider" gutterBottom>
-        Line Opacity
+        Line opacity
       </Typography>
       <Slider
         min={0}

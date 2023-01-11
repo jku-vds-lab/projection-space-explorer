@@ -297,7 +297,7 @@ class ProvenanceGraph extends React.PureComponent<any, any> {
                       Select points and
                     </tspan>
                     <tspan x="60" dy="1.2em">
-                      start a story
+                      Start a story
                     </tspan>
                   </text>
                 </g>

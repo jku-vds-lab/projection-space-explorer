@@ -186,7 +186,7 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">Load Dataset</Typography>
+                    <Typography variant="subtitle2">Load dataset</Typography>
                     <Typography variant="body2">Upload a new dataset or choose a predefined one.</Typography>
                   </>
                 }
@@ -208,7 +208,7 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">Embedding and Projection</Typography>
+                    <Typography variant="subtitle2">Embedding and projection</Typography>
                     <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
                   </>
                 }
@@ -230,7 +230,7 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">Point and Line Channels</Typography>
+                    <Typography variant="subtitle2">Point and line channels</Typography>
                     <Typography variant="body2">
                       Contains settings that let you map different channels like brightness and color on point and line attributes.
                     </Typography>
@@ -276,7 +276,7 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">{`Hovered and Selected ${capitalizeFirstLetter(this.props.globalLabels.itemLabelPlural)}`}</Typography>
+                    <Typography variant="subtitle2">{`Hovered and selected ${this.props.globalLabels.itemLabel}`}</Typography>
                     <Typography variant="body2">
                       {toSentenceCase(`Contains information about the hovered or selected ${this.props.globalLabels.itemLabelPlural}.`)}
                     </Typography>
@@ -301,7 +301,7 @@ export const Application = connector(
                   placement="right"
                   title={
                     <>
-                      <Typography variant="subtitle2">{`Tabular Views of the ${capitalizeFirstLetter(this.props.globalLabels.itemLabelPlural)} `}</Typography>
+                      <Typography variant="subtitle2">{`Tabular views of the ${this.props.globalLabels.itemLabelPlural}`}</Typography>
                       <Typography variant="body2">
                         {toSentenceCase(`Contains settings of the tabular views for the ${this.props.globalLabels.itemLabelPlural}.`)}
                       </Typography>
@@ -342,8 +342,6 @@ export const Application = connector(
                         flexGrow: 1,
                         padding: 12,
                         borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-                        // paddingTop: 16,
-                        // paddingBottom: 16,
                       }}
                     />
                   </Tooltip>
