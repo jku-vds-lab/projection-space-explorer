@@ -19,7 +19,7 @@ export function AdvancedColoringPopover({ pointColorMapping }) {
   return (
     <div>
       <Button style={{ margin: '0px 16px' }} aria-describedby={id} variant="outlined" onClick={handleClick}>
-        Advanced Coloring
+        Advanced coloring
       </Button>
       <Popover
         id={id}

@@ -1445,7 +1445,7 @@ export const WebGLView = connector(
                 this.props.addView(this.props.dataset);
               }}
             >
-              Create View
+              Create view
             </MenuItem>
 
             <MenuItem
@@ -1477,7 +1477,7 @@ export const WebGLView = connector(
                 handleClose();
               }}
             >
-              Create Group from Selection
+              Create group from selection
             </MenuItem>
 
             {this.props.dataset?.isSequential && (
@@ -1499,7 +1499,7 @@ export const WebGLView = connector(
                   handleClose();
                 }}
               >
-                Investigate Line
+                Investigate line
               </MenuItem>
             )}
 
@@ -1548,7 +1548,7 @@ export const WebGLView = connector(
                 handleClose();
               }}
             >
-              Delete Group
+              Delete group
             </MenuItem>
 
             <MenuItem
@@ -1596,7 +1596,7 @@ export const WebGLView = connector(
                 handleClose();
               }}
             >
-              Stories ... Starting from this Group
+              Stories ... starting from this group
             </MenuItem>
 
             <MenuItem
@@ -1610,7 +1610,7 @@ export const WebGLView = connector(
                 handleClose();
               }}
             >
-              Stories ... Between 2 Groups
+              Stories ... between 2 groups
             </MenuItem>
           </Menu>
 
@@ -1628,7 +1628,7 @@ export const WebGLView = connector(
                 handleClose();
               }}
             >
-              Delete Edge
+              Delete edge
             </MenuItem>
           </Menu>
         </div>

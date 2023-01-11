@@ -305,18 +305,7 @@ export function StatesTabPanelFull({
           {dataset && dataset.isSequential && (
             <div>
               <Grid container justifyContent="center" alignItems="stretch" direction="column" style={{ padding: '0 16px' }}>
-                {
-                  // <Legend
-                  //   ref={this.legend}
-                  //   onLineSelect={this.onLineSelect}></Legend>
-                }
-
                 <Box p={1} />
-
-                {/** <LineTreePopover
-                            webGlView={webGLView}
-                            dataset={dataset}
-                        colorScale={lineColorScheme} />* */}
               </Grid>
 
               <div style={{ margin: '8px 0px' }} />

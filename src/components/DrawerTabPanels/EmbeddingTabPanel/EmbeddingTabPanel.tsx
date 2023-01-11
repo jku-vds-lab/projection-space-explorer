@@ -148,7 +148,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
       <Box paddingLeft={2} paddingTop={2}>
         <Typography variant="subtitle2" gutterBottom>
-          Projection Methods
+          Projection methods
         </Typography>
       </Box>
 
@@ -268,7 +268,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
       <Box paddingLeft={2} paddingTop={2}>
         <Typography variant="subtitle2" gutterBottom>
-          Projection Settings
+          Projection settings
         </Typography>
       </Box>
 
@@ -304,7 +304,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
       <Box padding={1}>
         <Typography variant="subtitle2" gutterBottom>
-          Visible Projection
+          Visible projection
         </Typography>
         <ListItem
           key={workspace?.hash}
@@ -321,13 +321,13 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
       <Box paddingLeft={2} paddingRight={2}>
         <Button onClick={() => onSaveProjectionClick()} variant="outlined" size="small">
-          Store Visible Projection
+          Store visible projection
         </Button>
       </Box>
 
       <Box paddingLeft={2} paddingTop={2}>
         <Typography variant="subtitle2" gutterBottom>
-          Stored Projections
+          Stored projections
         </Typography>
       </Box>
 

@@ -39,7 +39,7 @@ function SizeSliderFull({ globalPointSize, setRange }) {
       }}
     >
       <Typography id="range-slider" gutterBottom>
-        Size Scale
+        Size scale
       </Typography>
 
       <Slider

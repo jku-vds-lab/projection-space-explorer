@@ -131,7 +131,7 @@ export class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropSt
                 }}
               />
               <Button variant="outlined" component="span" onClick={() => this.fileInput.current.click()}>
-                Open File
+                Open file
               </Button>
 
               <div

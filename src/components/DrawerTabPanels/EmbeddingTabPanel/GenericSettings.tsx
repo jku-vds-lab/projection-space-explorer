@@ -66,7 +66,7 @@ function CustomSettings({ tempProjectionParams, setTempProjectionParams, inputDi
       {inputDict.learningRate && (
         <TextField
           id="textLearningRate"
-          label="Learning Rate"
+          label="Learning rate"
           type="number"
           value={tempProjectionParams.learningRate}
           onChange={(event) => {
@@ -78,7 +78,7 @@ function CustomSettings({ tempProjectionParams, setTempProjectionParams, inputDi
         <TextField
           id="textNNeighbors"
           data-cy="projection-neighbors-number-input"
-          label="n Neighbors"
+          label="n neighbors"
           type="number"
           value={tempProjectionParams.nNeighbors}
           onChange={(event) => {
@@ -206,7 +206,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                     '& .MuiFormControl-root': { m: 1 },
                   }}
                 >
-                  <FormLabel component="legend">Projection Parameters</FormLabel>
+                  <FormLabel component="legend">Projection parameters</FormLabel>
                   {/* TODO: add also make parameters customizable; currently only a fixed set of parameters can set to be shown or not */}
                   <CustomSettings
                     tempProjectionParams={tempProjectionParams}
@@ -220,7 +220,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
 
               <Grid item>
                 <FormControl>
-                  <FormLabel component="legend">General Parameters</FormLabel>
+                  <FormLabel component="legend">General parameters</FormLabel>
                   <FormGroup
                     sx={{
                       '& .MuiTextField-root': { m: 1 },
@@ -247,7 +247,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                           name="jason"
                         />
                       }
-                      label="Seed Position"
+                      label="Seed position"
                     />
                     <FormControlLabel
                       control={
@@ -257,7 +257,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                           onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, useSelection: checked })}
                         />
                       }
-                      label="Project Selection Only"
+                      label="Project selection only"
                     />
                     {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
                       <FormControl>
@@ -265,7 +265,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                         <Select
                           labelId="demo-controlled-open-select-label"
                           id="demo-controlled-open-select"
-                          label="Distance Metric"
+                          label="Distance metric"
                           value={tempProjectionParams.distanceMetric}
                           onChange={(event) => {
                             changeDistanceMetric(event.target.value);
