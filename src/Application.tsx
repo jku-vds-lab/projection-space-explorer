@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import 'regenerator-runtime/runtime';
 import './index.scss';
-import { Divider, Drawer, Paper, SvgIcon, Tooltip, Typography, Tab, Tabs, Box, Grid } from '@mui/material';
+import { Divider, Drawer, Paper, Tooltip, Typography, Tab, Tabs, Box, Grid } from '@mui/material';
 import * as React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Split from 'react-split';
@@ -25,7 +25,7 @@ import { RubikPlugin } from './plugins/Rubik/RubikPlugin';
 import { ChessPlugin } from './plugins/Chess/ChessPlugin';
 import { GoPlugin } from './plugins/Go/GoPlugin';
 import { PseAppBar } from './components/PseAppBar';
-import { PSEIcons } from './utils/PSEIcons';
+import { PSEIcons, PSESvgIcon } from './utils/PSEIcons';
 // @ts-ignore
 import VDSLogo from '../textures/vds-lab-logo-notext.svg';
 import { CoralPlugin } from './plugins/Coral/CoralPlugin';
@@ -193,7 +193,7 @@ export const Application = connector(
               >
                 <Tab
                   value={0}
-                  icon={<img src={PSEIcons.Dataset} />}
+                  icon={<PSESvgIcon component={PSEIcons.Dataset} />}
                   data-cy="dataset-tab"
                   style={{
                     minWidth: 0,
@@ -216,7 +216,7 @@ export const Application = connector(
                 <Tab
                   value={1}
                   data-cy="projection-tab"
-                  icon={<img src={PSEIcons.Project} />}
+                  icon={<PSESvgIcon component={PSEIcons.Project} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -240,7 +240,7 @@ export const Application = connector(
                 <Tab
                   value={2}
                   data-cy="encoding-tab"
-                  icon={<img src={PSEIcons.Encoding} />}
+                  icon={<PSESvgIcon component={PSEIcons.Encoding} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -262,7 +262,7 @@ export const Application = connector(
                 <Tab
                   value={3}
                   data-cy="groups-tab"
-                  icon={<img src={PSEIcons.Clusters} />}
+                  icon={<PSESvgIcon component={PSEIcons.Clusters} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -276,11 +276,9 @@ export const Application = connector(
                 placement="right"
                 title={
                   <>
-                    <Typography variant="subtitle2">{`Hover ${this.props.globalLabels.itemLabel} and selection summary`}</Typography>
+                    <Typography variant="subtitle2">{`Hovered and selected ${this.props.globalLabels.itemLabel}`}</Typography>
                     <Typography variant="body2">
-                      {toSentenceCase(
-                        `Contains information about the currently hovered ${this.props.globalLabels.itemLabel} and the currently selected summary.`,
-                      )}
+                      {toSentenceCase(`Contains information about the hovered or selected ${this.props.globalLabels.itemLabelPlural}.`)}
                     </Typography>
                   </>
                 }
@@ -288,7 +286,7 @@ export const Application = connector(
                 <Tab
                   value={4}
                   data-cy="details-tab"
-                  icon={<img src={PSEIcons.Details} />}
+                  icon={<PSESvgIcon component={PSEIcons.Details} />}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
@@ -313,7 +311,7 @@ export const Application = connector(
                   <Tab
                     value={5}
                     data-cy="details-tab"
-                    icon={<img src={PSEIcons.PseLineup} />}
+                    icon={<PSESvgIcon component={PSEIcons.PseLineup} />}
                     style={{
                       minWidth: 0,
                       flexGrow: 1,
@@ -338,7 +336,7 @@ export const Application = connector(
                   >
                     <Tab
                       value={6 + i}
-                      icon={<SvgIcon style={{ fontSize: 64 }} viewBox="0 0 18.521 18.521" component={tab.icon as any} />}
+                      icon={<PSESvgIcon component={tab.icon as any} />}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,
