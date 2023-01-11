@@ -19,9 +19,7 @@ type Props = PropsFromRedux & {};
 export const DefaultLegend = connector(({ globalLabels }: Props) => {
   return (
     <Box paddingLeft={2}>
-      <Typography color="textSecondary">
-        Select {globalLabels.itemLabel} in the embedding space to show a summary visualization.
-      </Typography>
+      <Typography color="textSecondary">Select {globalLabels.itemLabel} in the embedding space to show a summary visualization.</Typography>
     </Box>
   );
 });
