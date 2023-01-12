@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { Box, Button, Divider, FormControl, FormControlLabel, FormHelperText, MenuItem, Select, Switch, Typography } from '@mui/material';
 import * as React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck';
 import { HoverStateOrientation, setHoverStateOrientation } from '../../Ducks/HoverStateOrientationDuck';
 import { SelectionClusters } from '../../Overlays/SelectionClusters';
@@ -53,6 +53,8 @@ export const DetailsTabPanel = connector(
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
     };
 
+    const dispatch = useDispatch();
+
     return (
       <div key={dataset?.info?.path} style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
         <Box paddingX={2} paddingTop={1}>
@@ -86,7 +88,12 @@ export const DetailsTabPanel = connector(
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
-          <AttributeSelectionTable attributes={attributes} setAttributes={setGenericFingerprintAttributes}>
+          <AttributeSelectionTable
+            attributes={attributes}
+            setAttributes={(attributes) => {
+              dispatch(setGenericFingerprintAttributes(attributes));
+            }}
+          >
             Choose attributes
           </AttributeSelectionTable>
         </Box>
