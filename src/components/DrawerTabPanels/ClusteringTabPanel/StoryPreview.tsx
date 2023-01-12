@@ -50,7 +50,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
       }}
     >
       <FormControl>
-        <FormHelperText>Active Story Book</FormHelperText>
+        <FormHelperText>Active story book</FormHelperText>
         <Select
           displayEmpty
           size="small"
