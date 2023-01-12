@@ -1,11 +1,12 @@
+import * as React from 'react';
 type AttributeType = {
     feature: string;
     show: boolean;
 };
-type Props = {
+export declare function AttributeSelectionTable({ attributes, setAttributes, children, }: {
     attributes: AttributeType[];
     setAttributes: (attributes: AttributeType[]) => void;
-};
-export declare function AttributeSelectionTable({ attributes, setAttributes }: Props): JSX.Element;
+    children?: React.ReactNode;
+}): JSX.Element;
 export {};
 //# sourceMappingURL=AttributeSelectionTable.d.ts.map

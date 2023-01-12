@@ -8,12 +8,15 @@ import { DefaultFeatureLabel } from '../../../model';
 
 type AttributeType = { feature: string; show: boolean };
 
-type Props = {
+export function AttributeSelectionTable({
+  attributes,
+  setAttributes,
+  children,
+}: {
   attributes: AttributeType[];
   setAttributes: (attributes: AttributeType[]) => void;
-};
-
-export function AttributeSelectionTable({ attributes, setAttributes, children }: React.PropsWithChildren<Props>) {
+  children?: React.ReactNode;
+}) {
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);
