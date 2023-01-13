@@ -49,6 +49,8 @@ export type FeatureConfig = Partial<{
   embeddings: EmbeddingMethod[]; // array can either contain strings of predefined embedding methods, or functions
   encodings: EncodingChannel[];
   showSummaryAttributes: boolean;
+  showTrailSettings: boolean;
+  showVisibleProjections: boolean;
 }>;
 
 export type LayerSpec = {

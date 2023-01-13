@@ -266,15 +266,19 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         }}
       />
 
-      <Box paddingLeft={2} paddingTop={2}>
-        <Typography variant="subtitle2" gutterBottom>
-          Projection settings
-        </Typography>
-      </Box>
+      {props.config?.showTrailSettings !== false ? (
+        <>
+          <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>
+              Projection settings
+            </Typography>
+          </Box>
 
-      <Box paddingLeft={2} paddingRight={2}>
-        <ClusterTrailSettings />
-      </Box>
+          <Box paddingLeft={2} paddingRight={2}>
+            <ClusterTrailSettings />
+          </Box>
+        </>
+      ) : null}
 
       <Box paddingLeft={2} paddingRight={2} display="flex" style={{ flexDirection: 'column', gap: '8px' }}>
         {dataset && numericFeatures && workspace ? (
@@ -302,64 +306,68 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         ) : null}
       </Box>
 
-      <Box padding={1}>
-        <Typography variant="subtitle2" gutterBottom>
-          Visible projection
-        </Typography>
-        <ListItem
-          key={workspace?.hash}
-          selected={workspaceIsTemporal === true}
-          secondaryAction={workspaceIsTemporal ? <Chip label="Temporal" variant="outlined" /> : <Chip label="Stored" />}
-        >
-          {workspaceIsTemporal ? (
-            <ListItemText primary={<strong>{workspace?.metadata.method.toUpperCase()}</strong>} secondary={`Iteration ${step}`} />
-          ) : (
-            <ListItemText primary={<strong>{workspace?.metadata.method.toUpperCase()}</strong>} secondary={`loaded from ${workspace?.name}`} />
-          )}
-        </ListItem>
-      </Box>
+      {props.config?.showVisibleProjections !== false ? (
+        <>
+          <Box padding={1}>
+            <Typography variant="subtitle2" gutterBottom>
+              Visible projection
+            </Typography>
+            <ListItem
+              key={workspace?.hash}
+              selected={workspaceIsTemporal === true}
+              secondaryAction={workspaceIsTemporal ? <Chip label="Temporal" variant="outlined" /> : <Chip label="Stored" />}
+            >
+              {workspaceIsTemporal ? (
+                <ListItemText primary={<strong>{workspace?.metadata.method.toUpperCase()}</strong>} secondary={`Iteration ${step}`} />
+              ) : (
+                <ListItemText primary={<strong>{workspace?.metadata.method.toUpperCase()}</strong>} secondary={`loaded from ${workspace?.name}`} />
+              )}
+            </ListItem>
+          </Box>
 
-      <Box paddingLeft={2} paddingRight={2}>
-        <Button onClick={() => onSaveProjectionClick()} variant="outlined" size="small">
-          Store visible projection
-        </Button>
-      </Box>
+          <Box paddingLeft={2} paddingRight={2}>
+            <Button onClick={() => onSaveProjectionClick()} variant="outlined" size="small">
+              Store visible projection
+            </Button>
+          </Box>
 
-      <Box paddingLeft={2} paddingTop={2}>
-        <Typography variant="subtitle2" gutterBottom>
-          Stored projections
-        </Typography>
-      </Box>
+          <Box paddingLeft={2} paddingTop={2}>
+            <Typography variant="subtitle2" gutterBottom>
+              Stored projections
+            </Typography>
+          </Box>
 
-      <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
-        <List dense>
-          {props.projections.ids.map((key) => {
-            const projection = props.projections.entities[key];
-            return (
-              <ListItem
-                key={projection.hash}
-                button
-                onClick={() => onProjectionClick(projection)}
-                selected={workspaceIsTemporal === false && workspace?.hash === projection.hash}
-              >
-                <ListItemText
-                  primary={`${projection.name}`}
-                  secondary={
-                    projection.metadata.method === ProjectionMethod.RANDOM || projection.metadata.method === ProjectionMethod.DATASET
-                      ? 'loaded from dataset'
-                      : `${projection.metadata?.iterations} iterations`
-                  }
-                />
-                <ListItemSecondaryAction>
-                  <IconButton onClick={() => setProjectionToEdit(props.projections.entities[key])}>
-                    <SettingsIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            );
-          })}
-        </List>
-      </div>
+          <div style={{ overflowY: 'auto', height: '100px', flex: '1 1 auto' }}>
+            <List dense>
+              {props.projections.ids.map((key) => {
+                const projection = props.projections.entities[key];
+                return (
+                  <ListItem
+                    key={projection.hash}
+                    button
+                    onClick={() => onProjectionClick(projection)}
+                    selected={workspaceIsTemporal === false && workspace?.hash === projection.hash}
+                  >
+                    <ListItemText
+                      primary={`${projection.name}`}
+                      secondary={
+                        projection.metadata.method === ProjectionMethod.RANDOM || projection.metadata.method === ProjectionMethod.DATASET
+                          ? 'loaded from dataset'
+                          : `${projection.metadata?.iterations} iterations`
+                      }
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton onClick={() => setProjectionToEdit(props.projections.entities[key])}>
+                        <SettingsIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 });
