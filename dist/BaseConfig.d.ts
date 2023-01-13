@@ -45,6 +45,8 @@ export type FeatureConfig = Partial<{
     embeddings: EmbeddingMethod[];
     encodings: EncodingChannel[];
     showSummaryAttributes: boolean;
+    showTrailSettings: boolean;
+    showVisibleProjections: boolean;
 }>;
 export type LayerSpec = {
     order: number;
