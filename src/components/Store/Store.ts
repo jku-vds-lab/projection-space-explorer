@@ -130,6 +130,7 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
   const genericFingerprintAttributes = ADataset.getColumns(dataset, true).map((column) => ({
     feature: column,
     show: dataset.columns[column].project,
+    group: dataset.columns[column].featureLabel ? dataset.columns[column].featureLabel : DefaultFeatureLabel,
   }));
 
   const formatRange = (range) => {
