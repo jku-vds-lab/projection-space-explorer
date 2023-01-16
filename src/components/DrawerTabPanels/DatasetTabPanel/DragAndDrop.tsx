@@ -124,6 +124,7 @@ export class DragAndDrop extends React.Component<DragAndDropProps, DragAndDropSt
                 style={{ display: 'none' }}
                 accept={this.props.accept}
                 ref={this.fileInput}
+                data-cy="upload-file-input"
                 // multiple
                 type="file"
                 onChange={(e) => {

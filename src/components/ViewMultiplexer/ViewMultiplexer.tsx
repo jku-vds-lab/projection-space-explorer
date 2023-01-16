@@ -97,6 +97,7 @@ function WebView({
           {value.id === multiples.multiples.ids[0] ? (
             <IconButton
               size="small"
+              data-cy="split-view-button"
               onClick={() => dispatch(ViewActions.addView(dataset))}
               style={{ visibility: value.id === multiples.multiples.ids[0] ? 'visible' : 'hidden' }}
             >
