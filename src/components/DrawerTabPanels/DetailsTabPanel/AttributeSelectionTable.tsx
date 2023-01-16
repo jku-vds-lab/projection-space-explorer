@@ -35,7 +35,7 @@ export function AttributeSelectionTable({
   const handleClose = () => {
     setOpen(false);
     const localAttributes = attributes.map((r) => ({ ...r, show: selectedRows.has(r.feature) }));
-    dispatch(setAttributes([...localAttributes]));
+    setAttributes([...localAttributes]);
   };
 
   const groupMapping = React.useCallback(
