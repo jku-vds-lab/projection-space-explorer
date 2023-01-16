@@ -211,7 +211,7 @@ export const WebGLView = connector(
     chooseCluster(screenPosition: { x: number; y: number }): ICluster {
       if (this.props.displayMode !== DisplayMode.OnlyClusters && this.props.displayMode !== DisplayMode.StatesAndClusters) {
         return null;
-      }      
+      }
 
       let nearest: ICluster = null;
       let min = Number.MAX_SAFE_INTEGER;
