@@ -49,7 +49,7 @@ const hoverLabel = (hoverState: ICluster, viewTransform: ViewTransformType, work
         fontSize: '16px',
       }}
     >
-      {hoverState.name}
+      {ACluster.getTextRepresentation(hoverState)}
     </Typography>
   );
 };
@@ -663,7 +663,7 @@ export const MultivariateClustering = connector(
 
           {this.props.hoverState.data &&
             isCluster(this.props.hoverState.data) &&
-            this.props.hoverState.data.name &&
+            // this.props.hoverState.data.name &&
             hoverLabel(this.props.hoverState.data as ICluster, this.props.viewTransform, this.props.workspace)}
 
           {this.props.stories.trace &&
