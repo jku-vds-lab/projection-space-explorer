@@ -239,6 +239,10 @@ export const WebGLView = connector(
     }
 
     chooseEdge(position) {
+      if (this.props.displayMode !== DisplayMode.OnlyClusters && this.props.displayMode !== DisplayMode.StatesAndClusters) {
+        return null;
+      }
+
       if (this.props.stories.active === null) {
         return null;
       }
