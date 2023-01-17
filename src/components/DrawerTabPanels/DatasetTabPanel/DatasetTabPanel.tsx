@@ -69,11 +69,6 @@ export function DatasetTabPanel({ onDataSelected }: { onDataSelected(dataset: Da
 
       <DatasetDrop onChange={onDataSelected} />
 
-      <Box sx={{ display: 'flex' }}>
-        <Button onClick={onClickPersist}>Persist</Button>
-        <Button onClick={onClickHydrate}>Hydrate</Button>
-      </Box>
-
       <Box paddingLeft={2} paddingTop={2}>
         <Typography variant="subtitle2" gutterBottom>
           Predefined datasets
