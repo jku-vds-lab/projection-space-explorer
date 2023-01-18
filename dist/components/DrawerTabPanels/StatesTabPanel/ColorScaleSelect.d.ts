@@ -18,9 +18,6 @@ export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
     };
     componentsProps?: {
         root?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
-        /**
-         * Component that lets user pick from a list of color scales.
-         */
         track?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
         rail?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
         thumb?: import("@mui/base").SlotComponentProps<"span", import("@mui/base").SliderUnstyledComponentsPropsOverrides, import("@mui/base").SliderUnstyledOwnerState>;
@@ -39,9 +36,9 @@ export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
     };
     size?: "small" | "medium";
     sx?: import("@mui/material").SxProps<import("@mui/material").Theme>;
-} & import("@mui/base").SliderUnstyledOwnProps & Omit<Pick<React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, "key" | keyof React.HTMLAttributes<HTMLSpanElement>> & {
+} & Omit<import("@mui/base").SliderUnstyledOwnProps, "isRtl"> & Omit<Pick<React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, "key" | keyof React.HTMLAttributes<HTMLSpanElement>> & {
     ref?: React.Ref<HTMLSpanElement>;
-}, "size" | "color" | "sx" | "components" | "componentsProps" | keyof import("@mui/base").SliderUnstyledOwnProps> & import("@mui/system").MUIStyledCommonProps<import("@mui/material").Theme>, {}, {}>;
+}, "value" | "size" | "track" | "name" | "classes" | "color" | "scale" | "sx" | "defaultValue" | "tabIndex" | "aria-label" | "aria-labelledby" | "aria-valuetext" | "onChange" | "max" | "min" | "orientation" | "disabled" | "step" | "components" | "componentsProps" | "slotProps" | "slots" | "disableSwap" | "getAriaLabel" | "getAriaValueText" | "marks" | "onChangeCommitted" | "valueLabelDisplay" | "valueLabelFormat"> & import("@mui/system").MUIStyledCommonProps<import("@mui/material").Theme>, {}, {}>;
 /**
  * Renders one color scale with an optional center point.
  */

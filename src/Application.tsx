@@ -337,6 +337,7 @@ export const Application = connector(
                     <Tab
                       value={6 + i}
                       icon={<PSESvgIcon component={tab.icon as any} />}
+                      data-cy={`custom-tab-${i}`}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,

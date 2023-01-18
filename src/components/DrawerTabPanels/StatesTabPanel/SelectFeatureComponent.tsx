@@ -7,9 +7,10 @@ interface SelectFeatureComponentProps {
   categoryOptions: string[];
   onChange: (value: string) => void;
   column_info;
+  datacy?: string;
 }
 
-export function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info }: SelectFeatureComponentProps) {
+export function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info, datacy }: SelectFeatureComponentProps) {
   let autocomplete_options = [];
   let autocomplete_filterOptions = null;
   if (categoryOptions != null) {
@@ -34,6 +35,7 @@ export function SelectFeatureComponent({ label, default_val, categoryOptions, on
 
   return (
     <Autocomplete
+      data-cy={datacy}
       filterOptions={autocomplete_filterOptions}
       onChange={(event, newValue) => {
         onChange((newValue as any)?.value ?? null);
