@@ -2,6 +2,10 @@
 import { Dataset } from '../../model/Dataset';
 import { IVector } from '../../model/Vector';
 
+export type FPOptions = {
+  root: 'storytelling' | 'detail' | 'sequence';
+}
+
 export abstract class PSEPlugin {
   type: string;
 
@@ -9,7 +13,7 @@ export abstract class PSEPlugin {
     return false;
   }
 
-  abstract createFingerprint(dataset: Dataset, vectors: IVector[], scale: number, aggregate: boolean): JSX.Element;
+  abstract createFingerprint(dataset: Dataset, vectors: IVector[], scale: number, aggregate: boolean, options: FPOptions): JSX.Element;
 
   // Checks if the header has all the required columns
   hasLayout(header: string[], columns: string[]) {

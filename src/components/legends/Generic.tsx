@@ -9,22 +9,24 @@ import { PluginRegistry } from '../Store/PluginScript';
 import { DatasetType } from '../../model/DatasetType';
 import { GoLegend } from '../../plugins/Go/GoLegend';
 import { usePSESelector } from '../Store';
+import { FPOptions } from '../Store/PSEPlugin';
 
 type GenericLegendProps = {
   type: DatasetType;
   vectors: IVector[];
   aggregate: boolean;
   scale?: number;
+  options?: FPOptions
 };
 
 // shows single and aggregated view
-export function GenericLegend({ type, vectors, aggregate, scale = 2 }: GenericLegendProps) {
+export function GenericLegend({ type, vectors, aggregate, scale = 2, options }: GenericLegendProps) {
   const dataset = usePSESelector((state) => state.dataset);
 
   const plugin = PluginRegistry.getInstance().getPlugin(type);
   if (plugin) {
     // use plugin before defaults
-    return plugin.createFingerprint(dataset, vectors, scale, aggregate);
+    return plugin.createFingerprint(dataset, vectors, scale, aggregate, options);
   }
   // --deprecated-- defaults... in case no plugin is specific
   switch (type) {

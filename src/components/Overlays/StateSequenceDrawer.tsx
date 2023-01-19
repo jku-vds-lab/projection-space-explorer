@@ -318,7 +318,7 @@ function StateSequenceDrawer({ activeLine, setHighlightedSequence, dataset, setA
                         display: 'flex',
                       }}
                     >
-                      <GenericLegend aggregate={false} type={dataset.type} vectors={[vector]} scale={1} />
+                      <GenericLegend aggregate={false} type={dataset.type} vectors={[vector]} scale={1} options={{ root: 'sequence' }} />
                     </div>
                   </div>
                 );
