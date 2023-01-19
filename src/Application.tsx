@@ -35,7 +35,7 @@ import { DatasetType } from './model/DatasetType';
 import { RootActions } from './components/Store/RootActions';
 import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
 import { ViewMultiplexer } from './components/ViewMultiplexer/ViewMultiplexer';
-import { capitalizeFirstLetter, toSentenceCase } from './utils/helpers';
+import { toSentenceCase } from './utils/helpers';
 import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChooser';
 import { DetailViewActions } from './components/Ducks/DetailViewDuck';
 import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
@@ -472,7 +472,7 @@ export const Application = connector(
                 }}
               >
                 <div style={{ flexGrow: 0.9, display: 'flex' }}>
-                  <ViewMultiplexer overrideComponents={this.props.overrideComponents} />
+                  <ViewMultiplexer featureConfig={this.props.features} overrideComponents={this.props.overrideComponents} />
                 </div>
                 <div style={{ flexGrow: 0.1 }}>
                   <DetailViewChooser overrideComponents={this.props.overrideComponents} />
@@ -480,7 +480,7 @@ export const Application = connector(
               </Split>
             ) : (
               <div style={{ flexGrow: 1, display: 'flex' }}>
-                <ViewMultiplexer overrideComponents={this.props.overrideComponents} />
+                <ViewMultiplexer featureConfig={this.props.features} overrideComponents={this.props.overrideComponents} />
               </div>
             )}
           </div>

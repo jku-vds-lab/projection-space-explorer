@@ -17,7 +17,7 @@ import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
 import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
-import { ComponentConfig } from '../../BaseConfig';
+import { ComponentConfig, FeatureConfig } from '../../BaseConfig';
 import { Mapping } from '../Utility';
 import { SingleMultipleAttributes } from '../Ducks/ViewDuck';
 import { IPosition, IProjection } from '../../model';
@@ -77,6 +77,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
     overrideComponents: ComponentConfig;
+    featureConfig: FeatureConfig;
     multipleId: EntityId;
     workspace: IPosition[];
     projection: IProjection;

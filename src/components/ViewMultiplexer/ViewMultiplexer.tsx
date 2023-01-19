@@ -9,6 +9,7 @@ import { ViewSelector, ViewActions, SingleMultiple } from '../Ducks/ViewDuck';
 import { IProjection } from '../../model/ProjectionInterfaces';
 import type { RootState } from '../Store';
 import { Dataset } from '../../model/Dataset';
+import { FeatureConfig } from '../../BaseConfig';
 
 function selectPositions(dataset: Dataset, projection: IProjection) {
   if (projection.xChannel || projection.yChannel) {
@@ -26,6 +27,7 @@ function WebView({
   multiples,
   overrideComponents,
   onCloseView,
+  featureConfig,
 }: {
   multiples: {
     multiples: EntityState<SingleMultiple>;
@@ -35,6 +37,7 @@ function WebView({
   id: EntityId;
   overrideComponents;
   onCloseView;
+  featureConfig: FeatureConfig;
 }) {
   const value = multiples.multiples.entities[id];
 
@@ -112,14 +115,21 @@ function WebView({
       </div>
       <div style={{ flexGrow: 1 }}>
         {positions && projection ? (
-          <WebGLView overrideComponents={overrideComponents} multipleId={id} {...value.attributes} projection={projection} workspace={positions} />
+          <WebGLView
+            overrideComponents={overrideComponents}
+            featureConfig={featureConfig}
+            multipleId={id}
+            {...value.attributes}
+            projection={projection}
+            workspace={positions}
+          />
         ) : null}
       </div>
     </div>
   );
 }
 
-export function ViewMultiplexer({ overrideComponents }) {
+export function ViewMultiplexer({ overrideComponents, featureConfig }) {
   const multiples = useSelector(ViewSelector.selectAll);
   const dispatch = useDispatch();
 
@@ -133,14 +143,22 @@ export function ViewMultiplexer({ overrideComponents }) {
     <div style={{ width: '100%', height: 'calc(100% - 8px)', display: 'flex', gap: '4px', margin: '4px' }}>
       {count > 0 ? (
         <div style={{ flexGrow: 1, display: 'flex', width: 0, flexDirection: 'column' }}>
-          <WebView id={multiples.multiples.ids[0]} multiples={multiples} overrideComponents={overrideComponents} onCloseView={onCloseView} />
+          <WebView
+            id={multiples.multiples.ids[0]}
+            multiples={multiples}
+            overrideComponents={overrideComponents}
+            featureConfig={featureConfig}
+            onCloseView={onCloseView}
+          />
         </div>
       ) : null}
 
       {count > 1 ? (
         <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '4px', width: 0 }}>
           {multiples.multiples.ids.slice(1).map((id) => {
-            return <WebView key={id} id={id} multiples={multiples} overrideComponents={overrideComponents} onCloseView={onCloseView} />;
+            return (
+              <WebView key={id} id={id} multiples={multiples} overrideComponents={overrideComponents} featureConfig={featureConfig} onCloseView={onCloseView} />
+            );
           })}
         </div>
       ) : null}

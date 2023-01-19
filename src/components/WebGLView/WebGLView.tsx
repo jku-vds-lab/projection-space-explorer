@@ -40,7 +40,7 @@ import { pointInHull } from '../Utility/Geometry/Intersection';
 import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ObjectTypes } from '../../model/ObjectType';
-import { ComponentConfig } from '../../BaseConfig';
+import { ComponentConfig, FeatureConfig } from '../../BaseConfig';
 import { ANormalized } from '../Utility/NormalizedState';
 import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck';
 import { Mapping, mappingFromScale } from '../Utility';
@@ -93,6 +93,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
   overrideComponents: ComponentConfig;
+  featureConfig: FeatureConfig;
 
   // The id for this visualization, important for selecting the correct slice
   multipleId: EntityId;
@@ -1559,67 +1560,71 @@ export const WebGLView = connector(
               Delete group
             </MenuItem>
 
-            <MenuItem
-              onClick={() => {
-                if (!isCluster(this.state.menuTarget)) {
-                  handleClose();
-                  return;
-                }
+            {this.props.featureConfig.enableStorytelling !== false ? (
+              <>
+                <MenuItem
+                  onClick={() => {
+                    if (!isCluster(this.state.menuTarget)) {
+                      handleClose();
+                      return;
+                    }
 
-                const activeStory = AStorytelling.getActive(this.props.stories);
+                    const activeStory = AStorytelling.getActive(this.props.stories);
 
-                const paths = ABook.getAllStoriesFromSource(
-                  activeStory,
-                  Object.entries(activeStory.clusters.entities).find(([key, val]) => val === this.state.menuTarget)[0],
-                );
-
-                if (paths.length > 0) {
-                  const mainPath = paths[0];
-                  const mainEdges = mainPath.slice(1).map((item, index) => {
-                    const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
-                      ([key, edge]) => edge.source === mainPath[index] && edge.destination === item,
+                    const paths = ABook.getAllStoriesFromSource(
+                      activeStory,
+                      Object.entries(activeStory.clusters.entities).find(([key, val]) => val === this.state.menuTarget)[0],
                     );
-                    return resultEdgeKey;
-                  });
-                  this.props.setActiveTrace({
-                    mainPath,
-                    mainEdges,
-                    sidePaths: paths.slice(1).map((ids) => {
-                      const path = ids;
-                      const edges = path.slice(1).map((item, index) => {
+
+                    if (paths.length > 0) {
+                      const mainPath = paths[0];
+                      const mainEdges = mainPath.slice(1).map((item, index) => {
                         const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
-                          ([key, edge]) => edge.source === path[index] && edge.destination === item,
+                          ([key, edge]) => edge.source === mainPath[index] && edge.destination === item,
                         );
                         return resultEdgeKey;
                       });
-                      return {
-                        nodes: path,
-                        edges,
-                        syncNodes: getSyncNodesAlt(mainPath, path),
-                      };
-                    }),
-                  });
-                }
+                      this.props.setActiveTrace({
+                        mainPath,
+                        mainEdges,
+                        sidePaths: paths.slice(1).map((ids) => {
+                          const path = ids;
+                          const edges = path.slice(1).map((item, index) => {
+                            const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
+                              ([key, edge]) => edge.source === path[index] && edge.destination === item,
+                            );
+                            return resultEdgeKey;
+                          });
+                          return {
+                            nodes: path,
+                            edges,
+                            syncNodes: getSyncNodesAlt(mainPath, path),
+                          };
+                        }),
+                      });
+                    }
 
-                handleClose();
-              }}
-            >
-              Stories ... starting from this group
-            </MenuItem>
+                    handleClose();
+                  }}
+                >
+                  Stories ... starting from this group
+                </MenuItem>
 
-            <MenuItem
-              onClick={() => {
-                if (!isCluster(this.state.menuTarget)) {
-                  handleClose();
-                  return;
-                }
+                <MenuItem
+                  onClick={() => {
+                    if (!isCluster(this.state.menuTarget)) {
+                      handleClose();
+                      return;
+                    }
 
-                this.traceSelect = new TraceSelectTool(this.props.workspace, this.state.menuTarget);
-                handleClose();
-              }}
-            >
-              Stories ... between 2 groups
-            </MenuItem>
+                    this.traceSelect = new TraceSelectTool(this.props.workspace, this.state.menuTarget);
+                    handleClose();
+                  }}
+                >
+                  Stories ... between 2 groups
+                </MenuItem>
+              </>
+            ) : null}
           </Menu>
 
           <Menu

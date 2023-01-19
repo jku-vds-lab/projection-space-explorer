@@ -51,6 +51,7 @@ export type FeatureConfig = Partial<{
   showSummaryAttributes: boolean;
   showTrailSettings: boolean;
   showVisibleProjections: boolean;
+  enableStorytelling: boolean;
 }>;
 
 export type LayerSpec = {
