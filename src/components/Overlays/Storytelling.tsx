@@ -585,6 +585,9 @@ export const Storytelling = connector(function ({
                         vectors={AStorytelling.retrieveCluster(stories, cluster).indices.map((i) => dataset.vectors[i])}
                         scale={1}
                         aggregate
+                        options={{
+                          root: 'storytelling'
+                        }}
                       />
                     </div>
                   </div>

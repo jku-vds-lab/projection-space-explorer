@@ -69,7 +69,7 @@ export class RubikPlugin extends PSEPlugin {
     return this.hasLayout(header, requiredRubikColumns);
   }
 
-  createFingerprint(dataset: Dataset, vectors: IVector[], scale = 1, aggregate: boolean): JSX.Element {
+  override createFingerprint(dataset: Dataset, vectors: IVector[], scale = 1, aggregate: boolean): JSX.Element {
     return <RubikFingerprint vectors={vectors} width={81 * scale} height={108 * scale} />;
   }
 }
