@@ -43,7 +43,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 function SelectFeatureComponent({ label, default_val, categoryOptions, onChange, column_info, datacy }) {
-  let autocomplete_options = [{ value: 'None', inputValue: 'None', group: null }];
+  let autocomplete_options = [];
   let autocomplete_filterOptions = null;
   if (categoryOptions != null) {
     autocomplete_options = autocomplete_options.concat(
@@ -72,8 +72,7 @@ function SelectFeatureComponent({ label, default_val, categoryOptions, onChange,
       data-cy={datacy}
       filterOptions={autocomplete_filterOptions}
       onChange={(event, newValue) => {
-        // @ts-ignore
-        if (newValue) onChange(newValue.value);
+        onChange(newValue?.value ?? null);
       }}
       options={autocomplete_options.sort((a, b) => {
         if (a.value === 'None') return -1;
@@ -84,14 +83,14 @@ function SelectFeatureComponent({ label, default_val, categoryOptions, onChange,
         }
         return -b.group.localeCompare(a.group);
       })}
+      multiple={false}
       size="small"
       groupBy={(option: any) => option.group}
       getOptionLabel={(option: any) => option.inputValue}
       isOptionEqualToValue={(option: any, value) => {
         return option.value === value.value;
       }}
-      // @ts-ignore
-      value={default_val ? autocomplete_options.filter((option: any) => option.value === default_val.key)[0] : autocomplete_options[0]}
+      value={autocomplete_options.find((option: any) => option.value === default_val?.key) ?? null}
       renderInput={(params) => <TextField {...params} label={`${label} by`} />}
     />
   );
