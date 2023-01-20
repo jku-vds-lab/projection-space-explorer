@@ -3,6 +3,7 @@ import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';
 import { EncodingMethod } from '../../../model/EncodingMethod';
 import type { ProjectionColumn } from '../../Ducks';
+import { EmbeddingMethod } from '../../../BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     projectionColumns: ProjectionColumn[];
     projectionParams: {
@@ -25,7 +26,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 }, {}>;
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
-    domainSettings: any;
+    domainSettings: EmbeddingMethod;
     open: boolean;
     onClose: any;
     onStart: any;
@@ -51,7 +52,7 @@ export declare const GenericSettings: import("react-redux").ConnectedComponent<t
 } & {
     setProjectionParams: (value: any) => any;
 } & {
-    domainSettings: any;
+    domainSettings: EmbeddingMethod;
     open: boolean;
     onClose: any;
     onStart: any;

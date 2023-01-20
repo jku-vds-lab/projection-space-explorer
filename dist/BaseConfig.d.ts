@@ -18,6 +18,7 @@ export type EmbeddingMethod = {
         learningRate?: boolean;
         nneighbors?: boolean;
     };
+    description?: JSX.Element | string;
     embController?: EmbeddingController;
 };
 export declare const DEFAULT_UMAP_SETTINGS: {
@@ -28,11 +29,7 @@ export declare const DEFAULT_TSNE_SETTINGS: {
     learningRate: boolean;
 };
 export declare const DEFAULT_FA2_SETTINGS: {};
-export declare const DEFAULT_EMBEDDINGS: {
-    id: string;
-    name: string;
-    settings: {};
-}[];
+export declare const DEFAULT_EMBEDDINGS: EmbeddingMethod[];
 export type CoordinatesType = {
     x: number;
     y: number;

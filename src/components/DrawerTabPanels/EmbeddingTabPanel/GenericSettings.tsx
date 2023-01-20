@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   FormControl,
   FormControlLabel,
@@ -27,6 +28,7 @@ import { FeaturePicker } from './FeaturePicker';
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck';
 import { ProjectionMethod } from '../../../model';
 import type { ProjectionColumn } from '../../Ducks';
+import { EmbeddingMethod } from '../../../BaseConfig';
 
 const mapState = (state: RootState) => ({
   projectionColumns: state.projectionColumns,
@@ -43,7 +45,7 @@ const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
-  domainSettings: any;
+  domainSettings: EmbeddingMethod;
   open: boolean;
   onClose: any;
   onStart: any;
@@ -185,13 +187,15 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
   }, [projectionColumns, open]);
 
   return (
-    <Dialog maxWidth="xl" open={open} onClose={onClose} fullWidth>
-      <DialogContent>
-        {domainSettings?.settings?.hideSettings ? (
-          <Container>
-            <DialogTitle>{domainSettings.name}</DialogTitle>
-          </Container>
-        ) : (
+    <Dialog maxWidth={domainSettings?.settings?.hideSettings !== true ? 'xl' : 'md'} open={open} onClose={onClose} fullWidth>
+      <DialogTitle>{domainSettings.name}</DialogTitle>
+
+      {domainSettings?.settings?.hideSettings ? (
+        <DialogContent>
+          <DialogContentText>{domainSettings?.description}</DialogContentText>
+        </DialogContent>
+      ) : (
+        <DialogContent>
           <Container>
             {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
               <FeaturePicker selection={selection} setSelection={setSelection} setSelectedRows={intermediateSetSelection} selectedRows={selectedRows} />
@@ -282,8 +286,8 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
               </Grid>
             </Grid>
           </Container>
-        )}
-      </DialogContent>
+        </DialogContent>
+      )}
       <DialogActions>
         <Button color="primary" onClick={onClose}>
           Cancel

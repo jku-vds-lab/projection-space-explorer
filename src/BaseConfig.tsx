@@ -20,6 +20,7 @@ export type EmbeddingMethod = {
     learningRate?: boolean;
     nneighbors?: boolean;
   };
+  description?: JSX.Element | string;
   embController?: EmbeddingController;
 };
 
@@ -33,7 +34,7 @@ export const DEFAULT_EMBEDDINGS = [
   { id: ProjectionMethod.UMAP, name: 'UMAP', settings: DEFAULT_UMAP_SETTINGS },
   { id: ProjectionMethod.TSNE, name: 't-SNE', settings: DEFAULT_TSNE_SETTINGS },
   { id: ProjectionMethod.FORCEATLAS2, name: 'ForceAtlas2', settings: DEFAULT_FA2_SETTINGS },
-];
+] as EmbeddingMethod[];
 
 export type CoordinatesType = {
   x: number;

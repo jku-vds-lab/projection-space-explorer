@@ -85,10 +85,11 @@ function EmbeddingMethodButtons(props: { setOpen; setDomainSettings; embeddings?
 
 export const EmbeddingTabPanel = connector((props: Props) => {
   const [open, setOpen] = React.useState(false);
-  const [domainSettings, setDomainSettings] = React.useState({
+  const [domainSettings, setDomainSettings] = React.useState<EmbeddingMethod>({
     id: '',
     name: '',
     embController: null,
+    settings: {},
   });
   const [controller, setController] = React.useState(null);
   const [projectionToEdit, setProjectionToEdit] = React.useState<IProjection>(null);
@@ -253,6 +254,8 @@ export const EmbeddingTabPanel = connector((props: Props) => {
               if (domainSettings.embController) {
                 const controller = domainSettings.embController;
                 const paramsCopy = { ...params };
+                // TODO: type this explicitely
+                // @ts-ignore
                 controller.init(props.dataset, selection, params, workspace);
                 controller.stepper = (Y: IBaseProjection) => {
                   props.updateWorkspace(Y, { ...paramsCopy, method: ProjectionMethod.CUSTOM, iterations: stepRef.current, features: [...selection] });
