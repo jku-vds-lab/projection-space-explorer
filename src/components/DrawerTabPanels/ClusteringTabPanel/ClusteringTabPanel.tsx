@@ -316,7 +316,7 @@ export const ClusteringTabPanel = connector(
         </Box>
 
         <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
-          <Button variant="outlined" fullWidth ref={anchorRef} onClick={() => setOpenClusterPanel(true)}>
+          <Button variant="outlined" fullWidth ref={anchorRef} onClick={() => setOpenClusterPanel(true)} data-cy="define-groups-by-clustering-button">
             Define groups by clustering <ChevronRightIcon />
           </Button>
         </Box>
