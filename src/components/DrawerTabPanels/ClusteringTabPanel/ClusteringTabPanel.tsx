@@ -442,6 +442,7 @@ export const ClusteringTabPanel = connector(
           )}
           <Box p={2}>
             <Button
+              data-cy="run-clustering-button"
               variant="outlined"
               style={{
                 width: '100%',
