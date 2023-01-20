@@ -261,6 +261,7 @@ export class LineVisualization {
         depthTest: false,
       });
 
+      // @ts-ignore
       const m = new THREE.Mesh(line.geometry, material);
       this.highlightMeshes.push(m);
       scene.add(m);
