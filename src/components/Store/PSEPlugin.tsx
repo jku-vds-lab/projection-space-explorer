@@ -4,7 +4,7 @@ import { IVector } from '../../model/Vector';
 
 export type FPOptions = {
   root: 'storytelling' | 'detail' | 'sequence';
-}
+};
 
 export abstract class PSEPlugin {
   type: string;

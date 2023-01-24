@@ -16,7 +16,7 @@ type GenericLegendProps = {
   vectors: IVector[];
   aggregate: boolean;
   scale?: number;
-  options?: FPOptions
+  options?: FPOptions;
 };
 
 // shows single and aggregated view
