@@ -52,6 +52,13 @@ export type FeatureConfig = Partial<{
   showSummaryAttributes: boolean;
   showTrailSettings: boolean;
   showVisibleProjections: boolean;
+  showTabularTab: boolean;
+  detailsTab: Partial<{
+    showHoverPositionSelect: boolean;
+    showClearSelectionButton: boolean;
+    showChooseAttributesButton: boolean;
+    showDivider: boolean;
+  }>;
   enableStorytelling: boolean;
 }>;
 

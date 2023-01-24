@@ -174,7 +174,7 @@ export const ClusteringTabPanel = connector(
               dispatch(PointColorScaleActions.initScaleByType(clusterAttribute.type));
             }
           })
-          .catch((error) => console.log(error)),
+          .catch((error) => console.error(error)),
         loading_area,
       );
     }
@@ -296,7 +296,7 @@ export const ClusteringTabPanel = connector(
 
           <div style={{ width: '100%' }}>
             <FormControl style={{ width: '100%' }}>
-              <FormHelperText>Group Visualization</FormHelperText>
+              <FormHelperText>Group visualization</FormHelperText>
               <Select
                 value={groupVisualizationMode}
                 onChange={(event) => {
@@ -543,19 +543,9 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
         <ContextPaper>
           {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
 
-          <Button
-            variant="outlined"
-            // color="secondary"
-            onClick={onDelete}
-            startIcon={<DeleteIcon />}
-          >
-            Delete Group
-          </Button>
-
           <FormGroup>
             <TextField
-              id="option3"
-              label="Group Name"
+              label="Group name"
               value={name}
               onChange={(event) => {
                 setName(event.target.value);
@@ -563,14 +553,24 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
               margin="normal"
             />
 
-            <div style={{ display: 'flex' }}>
-              <Button color="primary" variant="contained" aria-label="Save" onClick={onSave} startIcon={<SaveIcon />}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Button
+                variant="outlined"
+                color="error"
+                // color="secondary"
+                onClick={onDelete}
+                startIcon={<DeleteIcon />}
+              >
+                Delete
+              </Button>
+
+              <Button color="primary" variant="outlined" aria-label="Save" onClick={onSave} startIcon={<SaveIcon />}>
                 Save
                 {/* Name */}
               </Button>
-              <Button onClick={onLineup} variant="outlined">
+              {/* <Button onClick={onLineup} variant="outlined">
                 Show Group in Table
-              </Button>
+              </Button> */}
             </div>
           </FormGroup>
         </ContextPaper>

@@ -23,7 +23,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
     config: FeatureConfig;
 };
-export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook, globalLabels, }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, hoverStateOrientation, setHoverStateOrientation, activeStorybook, globalLabels, config, }: Props) => JSX.Element, import("react-redux").Omit<{
     hoverSettings: {
         windowMode: any;
     };
@@ -42,6 +42,6 @@ export declare const DetailsTabPanel: import("react-redux").ConnectedComponent<(
     setHoverStateOrientation: (value: any) => any;
 } & {
     config: FeatureConfig;
-}, "globalLabels" | "currentAggregation" | "dataset" | "hoverSettings" | "hoverStateOrientation" | "setHoverWindowMode" | "setAggregation" | "setHoverStateOrientation" | "activeStorybook">>;
+}, "dataset" | "globalLabels" | "currentAggregation" | "hoverSettings" | "hoverStateOrientation" | "setHoverWindowMode" | "setAggregation" | "setHoverStateOrientation" | "activeStorybook">>;
 export {};
 //# sourceMappingURL=DetailsTabPanel.d.ts.map

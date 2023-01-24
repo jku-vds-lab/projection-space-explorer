@@ -296,7 +296,7 @@ export const Application = connector(
                 />
               </Tooltip>
 
-              {this.props.overrideComponents?.detailViews?.length > 0 ? (
+              {this.props.features?.showTabularTab !== false && this.props.overrideComponents?.detailViews?.length > 0 ? (
                 <Tooltip
                   placement="right"
                   title={

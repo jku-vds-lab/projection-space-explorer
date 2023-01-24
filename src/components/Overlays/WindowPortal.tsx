@@ -57,7 +57,7 @@ export class MyWindowPortal extends React.PureComponent<any> {
 
         for (const mutation of mutationList) {
           if (mutation.type === 'childList') {
-            console.log(mutation);
+            // console.log(mutation);
           }
         }
       },

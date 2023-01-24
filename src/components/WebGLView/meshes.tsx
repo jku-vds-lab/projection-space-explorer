@@ -273,7 +273,6 @@ export class LineVisualization {
   createMesh(lineBrightness: number) {
     const lines = [];
 
-    console.log(this.lineColorScheme);
     this.segments.forEach((segment, index) => {
       segment.__meta__.intrinsicColor = mapValueToColor(this.lineColorScheme, segment.vectors[0].algo);
 

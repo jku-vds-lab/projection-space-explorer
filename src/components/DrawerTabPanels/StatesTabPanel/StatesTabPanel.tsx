@@ -286,11 +286,11 @@ export function StatesTabPanelFull({
         <ColorScaleSelect channelColor={channelColor} active={active} />
       </Grid>
 
-      {channelColor != null ? (
+      {/* TODO: This feature is broken {channelColor != null ? (
         <Grid item style={{ padding: '16px 0px' }}>
           {channelColor.type === 'categorical' ? <AdvancedColoringPopover pointColorMapping={pointColorMapping} /> : null}
         </Grid>
-      ) : null}
+      ) : null} */}
     </Box>
   );
 

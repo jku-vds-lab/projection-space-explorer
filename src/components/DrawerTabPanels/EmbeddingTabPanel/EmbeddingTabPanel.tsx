@@ -213,7 +213,6 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             }
 
             case ProjectionMethod.UMAP: {
-              console.log(workspace);
               const controller = new UMAPEmbeddingController();
               const paramsCopy = { ...params };
               controller.init(props.dataset, selection, params, seed);

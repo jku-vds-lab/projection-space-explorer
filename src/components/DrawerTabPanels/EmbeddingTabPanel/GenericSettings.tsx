@@ -80,7 +80,7 @@ function CustomSettings({ tempProjectionParams, setTempProjectionParams, inputDi
         <TextField
           id="textNNeighbors"
           data-cy="projection-neighbors-number-input"
-          label="n neighbors"
+          label="Neighbors"
           type="number"
           value={tempProjectionParams.nNeighbors}
           onChange={(event) => {
@@ -265,7 +265,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
                     />
                     {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
                       <FormControl>
-                        <InputLabel id="demo-controlled-open-select-label">Distance Metric</InputLabel>
+                        <InputLabel id="demo-controlled-open-select-label">Distance metric</InputLabel>
                         <Select
                           labelId="demo-controlled-open-select-label"
                           id="demo-controlled-open-select"

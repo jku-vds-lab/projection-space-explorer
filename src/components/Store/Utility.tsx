@@ -321,7 +321,7 @@ export class UtilityActions {
         }
       });
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return new Promise<string>((resolve) => {
         resolve('');
       });
