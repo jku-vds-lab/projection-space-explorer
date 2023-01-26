@@ -452,7 +452,7 @@ export const Application = connector(
                   height: '100%',
                 }}
                 ref={this.splitRef}
-                sizes={[100, 0]}
+                sizes={this.props.features?.detailViewSplitRatio ?? [100, 0]}
                 minSize={0}
                 expandToMin={false}
                 gutterSize={12}

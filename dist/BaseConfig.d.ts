@@ -52,6 +52,7 @@ export type FeatureConfig = Partial<{
         showDivider: boolean;
     }>;
     enableStorytelling: boolean;
+    detailViewSplitRatio: [number, number];
 }>;
 export type LayerSpec = {
     order: number;

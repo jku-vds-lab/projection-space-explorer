@@ -286,7 +286,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         {dataset && numericFeatures && workspace ? (
           <SelectFeatureComponent
             column_info={dataset.columns}
-            label="x channel"
+            label="x coordinate"
             default_val={workspace.xChannel}
             categoryOptions={numericFeatures}
             onChange={(newValue) => {
@@ -298,7 +298,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         {dataset && numericFeatures && workspace ? (
           <SelectFeatureComponent
             column_info={dataset.columns}
-            label="y channel"
+            label="y coordinate"
             default_val={workspace.yChannel}
             categoryOptions={numericFeatures}
             onChange={(newValue) => {

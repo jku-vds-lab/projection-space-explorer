@@ -106,7 +106,7 @@ export declare const ViewActions: {
         channel: 'x' | 'y';
         value: string;
     }, string>;
-    changeDivergingRange: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<[number, number, number] | [number, number], string>;
+    changeDivergingRange: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<[number, number] | [number, number, number], string>;
 };
 export declare const ViewSelector: {
     selectAll: ((state: import("../Store").ReducerValues<{
