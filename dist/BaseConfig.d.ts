@@ -73,6 +73,10 @@ export type ComponentConfig = Partial<{
 }>;
 export type DetailViewSpec = {
     name: string;
+    /**
+     * If true, always render this detail view regardless of being visible/resized.
+     */
+    alwaysRender?: boolean;
     view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
     settings: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
 };

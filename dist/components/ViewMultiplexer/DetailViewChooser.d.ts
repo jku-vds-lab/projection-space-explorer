@@ -1,7 +1,5 @@
 import { ComponentConfig } from '../../BaseConfig';
-type DetailViewChooserProps = {
+export declare function DetailViewChooser({ overrideComponents }: {
     overrideComponents: ComponentConfig;
-};
-export declare function DetailViewChooser({ overrideComponents }: DetailViewChooserProps): JSX.Element;
-export {};
+}): JSX.Element;
 //# sourceMappingURL=DetailViewChooser.d.ts.map
