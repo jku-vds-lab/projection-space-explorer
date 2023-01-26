@@ -388,7 +388,7 @@ export const ClusteringTabPanel = connector(
               </Box>
               <TextField
                 fullWidth
-                label="Min Cluster Size"
+                label="Min cluster size"
                 type="number"
                 InputLabelProps={{
                   shrink: true,
@@ -397,6 +397,7 @@ export const ClusteringTabPanel = connector(
                 onChange={(event) => {
                   set_min_cluster_size(Math.max(parseInt(event.target.value, 10), 2));
                 }}
+                margin="normal"
               />
               <br />
               <TextField
@@ -410,6 +411,7 @@ export const ClusteringTabPanel = connector(
                 onChange={(event) => {
                   set_min_cluster_samples(Math.max(parseInt(event.target.value, 10), 1));
                 }}
+                margin="normal"
               />
               <br />
               <FormControlLabel
