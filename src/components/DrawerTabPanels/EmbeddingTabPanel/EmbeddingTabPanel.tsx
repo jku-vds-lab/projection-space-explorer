@@ -157,7 +157,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         <EmbeddingMethodButtons setOpen={setOpen} setDomainSettings={setDomainSettings} embeddings={props.config?.embeddings} />
       </Box>
 
-      <Box p={1}>
+      <Box paddingLeft={2} paddingTop={2}>
         <ProjectionControlCard
           dataset_name={props.dataset?.info?.path}
           controller={controller}
@@ -310,7 +310,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
       {props.config?.showVisibleProjections !== false ? (
         <>
-          <Box padding={1}>
+          <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>
               Visible projection
             </Typography>
@@ -327,7 +327,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             </ListItem>
           </Box>
 
-          <Box paddingLeft={2} paddingRight={2}>
+          <Box paddingLeft={2} paddingTop={2}>
             <Button onClick={() => onSaveProjectionClick()} variant="outlined" size="small">
               Store visible projection
             </Button>
