@@ -147,6 +147,10 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     normalized: true,
     range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : 'unknown',
     featureLabel: dataset.columns[column].featureLabel ? dataset.columns[column].featureLabel : DefaultFeatureLabel,
+    useWeight: false,
+    weight: dataset.columns[column].featureLabel
+      ? 1 / Object.keys(dataset.columns).filter((cur_col) => dataset.columns[cur_col].featureLabel === dataset.columns[column].featureLabel).length
+      : 1,
   }));
 
   const defaultSizeAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, 'size', 'multiplicity', 'sequential');

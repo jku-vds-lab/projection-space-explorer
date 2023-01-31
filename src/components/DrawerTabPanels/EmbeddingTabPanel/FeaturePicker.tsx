@@ -3,7 +3,7 @@
 /* eslint-disable react/no-this-in-sfc */
 /* eslint-disable react/function-component-definition */
 import * as React from 'react';
-import DataGrid, { SelectColumn, SelectCellFormatter, GroupFormatterProps, Column } from 'react-data-grid';
+import DataGrid, { SelectColumn, SelectCellFormatter, GroupFormatterProps, Column, textEditor } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
 import { DefaultFeatureLabel } from '../../../model/Dataset';
 import type { ProjectionColumn } from '../../Ducks';
@@ -66,6 +66,46 @@ export function FeaturePicker({
         key: 'range',
         name: 'Range',
         width: 250,
+      },
+      {
+        key: 'useWeight',
+        name: '(beta) Use weight',
+        width: 80,
+        formatter({ row, onRowChange, isCellSelected }) {
+          return (
+            <SelectCellFormatter
+              value={row.useWeight}
+              onChange={(checked) => {
+                onRowChange({ ...row, useWeight: checked });
+                if (checked) {
+                  alert("Note that weights are currently in beta and are only implemented for Gower's distance at the moment.");
+                }
+              }}
+              isCellSelected={isCellSelected}
+            />
+          );
+        },
+        groupFormatter(props: GroupFormatterProps<ProjectionColumn>) {
+          return (
+            <SelectCellFormatter
+              aria-label="Select Group"
+              isCellSelected={props.isCellSelected}
+              value={props.childRows.filter((row) => row.useWeight).length === props.childRows.length}
+              onChange={(checked) => {
+                props.childRows.forEach((row) => {
+                  row.useWeight = checked;
+                });
+                ref.current();
+              }}
+            />
+          );
+        },
+      },
+      {
+        key: 'weight',
+        name: 'Weight',
+        width: 100,
+        editor: textEditor,
       },
     ],
     [],
