@@ -296,7 +296,7 @@ export const Application = connector(
                 />
               </Tooltip>
 
-              {this.props.overrideComponents?.detailViews?.length > 0 ? (
+              {this.props.features?.showTabularTab !== false && this.props.overrideComponents?.detailViews?.length > 0 ? (
                 <Tooltip
                   placement="right"
                   title={
@@ -452,7 +452,7 @@ export const Application = connector(
                   height: '100%',
                 }}
                 ref={this.splitRef}
-                sizes={[100, 0]}
+                sizes={this.props.features?.detailViewSplitRatio ?? [100, 0]}
                 minSize={0}
                 expandToMin={false}
                 gutterSize={12}

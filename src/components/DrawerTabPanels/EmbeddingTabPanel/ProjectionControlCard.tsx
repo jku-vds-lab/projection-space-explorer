@@ -133,6 +133,7 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
           action={
             <IconButton
               aria-label="settings"
+              data-cy="projection-control-card-close-button"
               onClick={() => {
                 console.timeEnd(`time elapsed to project the file ${dataset_name}`);
                 onClose();

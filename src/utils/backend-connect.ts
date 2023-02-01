@@ -28,6 +28,6 @@ export async function calculate_hdbscan_clusters(X, min_cluster_size, min_cluste
     .then(handle_errors_json)
     .catch((error) => {
       // alert('error when calculating clusters');
-      console.log(error);
+      console.error(error);
     });
 }

@@ -44,7 +44,15 @@ export type FeatureConfig = Partial<{
     showSummaryAttributes: boolean;
     showTrailSettings: boolean;
     showVisibleProjections: boolean;
+    showTabularTab: boolean;
+    detailsTab: Partial<{
+        showHoverPositionSelect: boolean;
+        showClearSelectionButton: boolean;
+        showChooseAttributesButton: boolean;
+        showDivider: boolean;
+    }>;
     enableStorytelling: boolean;
+    detailViewSplitRatio: [number, number];
 }>;
 export type LayerSpec = {
     order: number;
@@ -66,6 +74,10 @@ export type ComponentConfig = Partial<{
 }>;
 export type DetailViewSpec = {
     name: string;
+    /**
+     * If true, always render this detail view regardless of being visible/resized.
+     */
+    alwaysRender?: boolean;
     view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
     settings: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>;
 };

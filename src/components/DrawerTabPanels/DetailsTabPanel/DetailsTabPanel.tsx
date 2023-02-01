@@ -47,6 +47,7 @@ export const DetailsTabPanel = connector(
     setHoverStateOrientation,
     activeStorybook,
     globalLabels,
+    config,
   }: Props) => {
     const attributes = usePSESelector((state) => state.genericFingerprintAttributes);
     const handleChange = (_, value) => {
@@ -75,51 +76,59 @@ export const DetailsTabPanel = connector(
             label="External selection view"
           />
         </Box>
-        <Box paddingX={2} paddingTop={1}>
-          <Button
-            variant="outlined"
-            style={{ width: '100%' }}
-            onClick={() => {
-              setAggregation([]);
-            }}
-          >
-            Clear selection
-          </Button>
-        </Box>
+        {config?.detailsTab?.showClearSelectionButton !== false ? (
+          <Box paddingX={2} paddingTop={1}>
+            <Button
+              variant="outlined"
+              style={{ width: '100%' }}
+              onClick={() => {
+                setAggregation([]);
+              }}
+            >
+              Clear selection
+            </Button>
+          </Box>
+        ) : null}
 
-        <Box paddingX={2} paddingTop={1}>
-          <AttributeSelectionTable
-            attributes={attributes}
-            setAttributes={(attributes) => {
-              dispatch(setGenericFingerprintAttributes(attributes));
-            }}
-          >
-            Choose attributes
-          </AttributeSelectionTable>
-        </Box>
+        {config?.detailsTab?.showChooseAttributesButton !== false ? (
+          <Box paddingX={2} paddingTop={1}>
+            <AttributeSelectionTable
+              attributes={attributes}
+              setAttributes={(attributes) => {
+                dispatch(setGenericFingerprintAttributes(attributes));
+              }}
+            >
+              Choose attributes
+            </AttributeSelectionTable>
+          </Box>
+        ) : null}
 
-        <Box paddingX={2} paddingTop={1}>
-          <div style={{ width: '100%' }}>
-            <FormControl style={{ width: '100%' }}>
-              <FormHelperText>Hover position</FormHelperText>
-              <Select
-                displayEmpty
-                size="small"
-                value={hoverStateOrientation}
-                onChange={(event) => {
-                  setHoverStateOrientation(event.target.value);
-                }}
-              >
-                <MenuItem value={HoverStateOrientation.NorthEast}>Top right</MenuItem>
-                <MenuItem value={HoverStateOrientation.SouthWest}>Bottom left </MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-        </Box>
+        {config?.detailsTab?.showHoverPositionSelect !== false ? (
+          <Box paddingX={2} paddingTop={1}>
+            <div style={{ width: '100%' }}>
+              <FormControl style={{ width: '100%' }}>
+                <FormHelperText>Hover position</FormHelperText>
+                <Select
+                  displayEmpty
+                  size="small"
+                  value={hoverStateOrientation}
+                  onChange={(event) => {
+                    setHoverStateOrientation(event.target.value);
+                  }}
+                >
+                  <MenuItem value={HoverStateOrientation.NorthEast}>Top right</MenuItem>
+                  <MenuItem value={HoverStateOrientation.SouthWest}>Bottom left </MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </Box>
+        ) : null}
 
-        <Box paddingY={2}>
-          <Divider orientation="horizontal" />
-        </Box>
+        {config?.detailsTab?.showDivider !== false ? (
+          <Box paddingY={2}>
+            <Divider orientation="horizontal" />
+          </Box>
+        ) : null}
 
         <SelectionClusters />
       </div>

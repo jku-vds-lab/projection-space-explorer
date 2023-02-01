@@ -586,7 +586,7 @@ export const Storytelling = connector(function ({
                         scale={1}
                         aggregate
                         options={{
-                          root: 'storytelling'
+                          root: 'storytelling',
                         }}
                       />
                     </div>

@@ -157,7 +157,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         <EmbeddingMethodButtons setOpen={setOpen} setDomainSettings={setDomainSettings} embeddings={props.config?.embeddings} />
       </Box>
 
-      <Box p={1}>
+      <Box paddingLeft={2} paddingTop={2}>
         <ProjectionControlCard
           dataset_name={props.dataset?.info?.path}
           controller={controller}
@@ -213,7 +213,6 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             }
 
             case ProjectionMethod.UMAP: {
-              console.log(workspace);
               const controller = new UMAPEmbeddingController();
               const paramsCopy = { ...params };
               controller.init(props.dataset, selection, params, seed);
@@ -287,7 +286,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         {dataset && numericFeatures && workspace ? (
           <SelectFeatureComponent
             column_info={dataset.columns}
-            label="x channel"
+            label="x coordinate"
             default_val={workspace.xChannel}
             categoryOptions={numericFeatures}
             onChange={(newValue) => {
@@ -299,7 +298,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         {dataset && numericFeatures && workspace ? (
           <SelectFeatureComponent
             column_info={dataset.columns}
-            label="y channel"
+            label="y coordinate"
             default_val={workspace.yChannel}
             categoryOptions={numericFeatures}
             onChange={(newValue) => {
@@ -311,7 +310,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
 
       {props.config?.showVisibleProjections !== false ? (
         <>
-          <Box padding={1}>
+          <Box paddingLeft={2} paddingTop={2}>
             <Typography variant="subtitle2" gutterBottom>
               Visible projection
             </Typography>
@@ -328,7 +327,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
             </ListItem>
           </Box>
 
-          <Box paddingLeft={2} paddingRight={2}>
+          <Box paddingLeft={2} paddingTop={2}>
             <Button onClick={() => onSaveProjectionClick()} variant="outlined" size="small">
               Store visible projection
             </Button>
