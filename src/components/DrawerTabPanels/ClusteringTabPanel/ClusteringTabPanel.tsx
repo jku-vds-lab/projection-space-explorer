@@ -45,7 +45,7 @@ import { setChannelColor } from '../../Ducks/ChannelColorDuck';
 import { GroupVisualizationMode, setGroupVisualizationMode } from '../../Ducks/GroupVisualizationMode';
 import { selectClusters } from '../../Ducks/AggregationDuck';
 import { CategoryOptionsAPI } from '../../WebGLView/CategoryOptions';
-import { Dataset } from '../../../model/Dataset';
+import { ADataset, Dataset } from '../../../model/Dataset';
 import { StoriesActions, AStorytelling, IStorytelling, clusterAdapter } from '../../Ducks/StoriesDuck';
 import { PointColorScaleActions } from '../../Ducks';
 import { ViewSelector } from '../../Ducks/ViewDuck';
@@ -110,13 +110,15 @@ export const ClusteringTabPanel = connector(
     function calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory) {
       const loading_area = 'global_loading_indicator';
 
+      const spatial = ADataset.getSpatialData(dataset, workspace.xChannel, workspace.yChannel, workspace.positions);
+
       const data_points =
         clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0
           ? currentAggregation.aggregation.map((i) => ({
               ...workspace.positions[i],
               meshIndex: i,
             }))
-          : dataset.vectors.map((v, i) => ({ ...workspace.positions[i], meshIndex: i }));
+          : dataset.vectors.map((v, i) => ({ ...spatial[i], meshIndex: i }));
 
       const points = data_points.map((point) => [point.x, point.y]);
 
