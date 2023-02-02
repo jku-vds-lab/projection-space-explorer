@@ -1142,6 +1142,7 @@ export const WebGLView = connector(
             ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
             this.props.channelColor.key,
             this.props.dataset,
+            this.createAdditionalColumns(),
           );
           this.props.setPointColorMapping(this.props.multipleId, mapping);
 
