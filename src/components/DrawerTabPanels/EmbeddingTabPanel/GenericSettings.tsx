@@ -209,7 +209,13 @@ function GenericSettingsComp({
         <DialogContent>
           <Container>
             {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
-              <FeaturePicker selection={selection} setSelection={setSelection} setSelectedRows={intermediateSetSelection} selectedRows={selectedRows} featureConfig={featureConfig} />
+              <FeaturePicker
+                selection={selection}
+                setSelection={setSelection}
+                setSelectedRows={intermediateSetSelection}
+                selectedRows={selectedRows}
+                featureConfig={featureConfig}
+              />
             )}
 
             <Grid container justifyContent="center" style={{ width: '100%' }}>
