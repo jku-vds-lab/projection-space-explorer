@@ -181,6 +181,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
       <GenericSettings
         // projectionParams={props.projectionParams}
         domainSettings={domainSettings}
+        featureConfig={props.config}
         open={open}
         onClose={() => setOpen(false)}
         onStart={(params, selection) => {

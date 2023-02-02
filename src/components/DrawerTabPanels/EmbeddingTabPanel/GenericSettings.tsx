@@ -28,7 +28,7 @@ import { FeaturePicker } from './FeaturePicker';
 import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck';
 import { ProjectionMethod } from '../../../model';
 import type { ProjectionColumn } from '../../Ducks';
-import { EmbeddingMethod } from '../../../BaseConfig';
+import { EmbeddingMethod, FeatureConfig } from '../../../BaseConfig';
 
 const mapState = (state: RootState) => ({
   projectionColumns: state.projectionColumns,
@@ -46,6 +46,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {
   domainSettings: EmbeddingMethod;
+  featureConfig: FeatureConfig;
   open: boolean;
   onClose: any;
   onStart: any;
@@ -131,7 +132,17 @@ function CustomSettings({ tempProjectionParams, setTempProjectionParams, inputDi
 //     </FormGroup>
 // }
 
-function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns, columns }: Props) {
+function GenericSettingsComp({
+  domainSettings,
+  open,
+  onClose,
+  onStart,
+  projectionParams,
+  setProjectionParams,
+  projectionColumns,
+  columns,
+  featureConfig,
+}: Props) {
   const [tempProjectionParams, setTempProjectionParams] = React.useState({ ...projectionParams });
 
   const changeDistanceMetric = (value) => {
@@ -198,7 +209,7 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
         <DialogContent>
           <Container>
             {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
-              <FeaturePicker selection={selection} setSelection={setSelection} setSelectedRows={intermediateSetSelection} selectedRows={selectedRows} />
+              <FeaturePicker selection={selection} setSelection={setSelection} setSelectedRows={intermediateSetSelection} selectedRows={selectedRows} featureConfig={featureConfig} />
             )}
 
             <Grid container justifyContent="center" style={{ width: '100%' }}>

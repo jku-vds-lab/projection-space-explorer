@@ -7,17 +7,20 @@ import DataGrid, { SelectColumn, SelectCellFormatter, GroupFormatterProps, Colum
 import { groupBy as rowGrouper } from 'lodash';
 import { DefaultFeatureLabel } from '../../../model/Dataset';
 import type { ProjectionColumn } from '../../Ducks';
+import { FeatureConfig } from '../../../BaseConfig';
 
 export function FeaturePicker({
   selection,
   setSelection,
   selectedRows,
   setSelectedRows,
+  featureConfig,
 }: {
   selection: ProjectionColumn[];
   setSelection;
   selectedRows;
   setSelectedRows;
+  featureConfig: FeatureConfig;
 }) {
   const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(
     () => new Set<unknown>(Object.keys(rowGrouper(selection, 'featureLabel')).includes(DefaultFeatureLabel) ? [DefaultFeatureLabel] : []),
@@ -26,8 +29,8 @@ export function FeaturePicker({
   const ref = React.useRef<any>();
   ref.current = () => setSelection([...selection]);
 
-  const columns = React.useMemo<Column<ProjectionColumn>[]>(
-    () => [
+  const columns = React.useMemo<Column<ProjectionColumn>[]>(() => {
+    const colLst = [
       SelectColumn,
       { key: 'featureLabel', name: 'Group', width: 250 },
       { key: 'name', name: 'Name' },
@@ -67,7 +70,9 @@ export function FeaturePicker({
         name: 'Range',
         width: 250,
       },
-      {
+    ];
+    if (featureConfig?.enableFeatureWeighing) {
+      colLst.push({
         key: 'useWeight',
         name: '(beta) Use weight',
         width: 80,
@@ -100,16 +105,17 @@ export function FeaturePicker({
             />
           );
         },
-      },
-      {
+      });
+
+      colLst.push({
         key: 'weight',
         name: 'Weight',
         width: 100,
         editor: textEditor,
-      },
-    ],
-    [],
-  );
+      });
+    }
+    return colLst;
+  }, [featureConfig?.enableFeatureWeighing]);
 
   return (
     <DataGrid

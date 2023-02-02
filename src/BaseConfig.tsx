@@ -53,6 +53,7 @@ export type FeatureConfig = Partial<{
   showTrailSettings: boolean;
   showVisibleProjections: boolean;
   showTabularTab: boolean;
+  enableFeatureWeighing?: boolean;
   detailsTab: Partial<{
     showHoverPositionSelect: boolean;
     showClearSelectionButton: boolean;
