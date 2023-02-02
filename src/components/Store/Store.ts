@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import projectionOpen from '../Ducks/ProjectionOpenDuck';
 import highlightedSequence from '../Ducks/HighlightedSequenceDuck';
 import dataset from '../Ducks/DatasetDuck';
-import openTab from '../Ducks/OpenTabDuck';
 import clusterMode, { ClusterMode } from '../Ducks/ClusterModeDuck';
 import advancedColoringSelection from '../Ducks/AdvancedColoringSelectionDuck';
 import projectionColumns from '../Ducks/ProjectionColumnsDuck';
@@ -36,6 +35,7 @@ import { BaseColorScale } from '../../model/Palette';
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multipleAdapter, defaultAttributes, createViewDuckReducer } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
+import { openTab } from '../Ducks/OpenTabDuck';
 
 /**
  * Match all cases of view constants eg x1, y1, x2, y2...

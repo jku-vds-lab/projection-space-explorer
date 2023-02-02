@@ -22,7 +22,10 @@ declare const allReducers: {
         source: "sample" | "cluster";
     };
     stories: Reducer<IStorytelling, import("redux").AnyAction>;
-    openTab: (state: number, action: any) => any;
+    openTab: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+        openTab: number;
+        focusedTab: number[];
+    }>;
     pointDisplay: Reducer<{
         checkedShapes: {
             star: boolean;

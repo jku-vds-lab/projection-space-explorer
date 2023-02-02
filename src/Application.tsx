@@ -10,7 +10,7 @@ import { Storytelling } from './components/Overlays/Storytelling';
 import { ClusteringTabPanel } from './components/DrawerTabPanels/ClusteringTabPanel/ClusteringTabPanel';
 import { StatesTabPanel } from './components/DrawerTabPanels/StatesTabPanel/StatesTabPanel';
 import { StateSequenceDrawerRedux } from './components/Overlays/StateSequenceDrawer';
-import { setOpenTabAction } from './components/Ducks/OpenTabDuck';
+import { TabActions } from './components/Ducks/OpenTabDuck';
 import { EmbeddingTabPanel } from './components/DrawerTabPanels/EmbeddingTabPanel/EmbeddingTabPanel';
 import { CSVLoader } from './components/Utility/Loaders/CSVLoader';
 import { DatasetTabPanel } from './components/DrawerTabPanels/DatasetTabPanel/DatasetTabPanel';
@@ -40,6 +40,23 @@ import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChoose
 import { DetailViewActions } from './components/Ducks/DetailViewDuck';
 import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
 
+function TabContainer({ value, icon, dataCy, focusedTab }: { value: number; icon: JSX.Element; dataCy: any; focusedTab: number[] }) {
+  return (
+    <Tab
+      value={value}
+      icon={icon}
+      data-cy={dataCy}
+      style={{
+        minWidth: 0,
+        flexGrow: 1,
+        padding: 12,
+        filter: focusedTab?.length > 0 && !focusedTab?.includes(value) ? 'saturate(0)' : '',
+        // borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+      }}
+    />
+  );
+}
+
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
  */
@@ -62,7 +79,7 @@ function FixedHeightTabPanel(props) {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  openTab: state.openTab,
+  tab: state.openTab,
   dataset: state.dataset,
   hoverStateOrientation: state.hoverStateOrientation,
   datasetEntries: state.datasetEntries,
@@ -70,7 +87,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setOpenTab: (openTab) => dispatch(setOpenTabAction(openTab)),
+  setOpenTab: (openTab) => dispatch(TabActions.setOpenTab(openTab)),
   setLineByOptions: (options) => dispatch(setLineByOptions(options)),
   setGlobalPointBrightness: (value) => dispatch(setGlobalPointBrightness(value)),
   setGroupVisualizationMode: (value) => dispatch(setGroupVisualizationMode(value)),
@@ -139,11 +156,7 @@ export const Application = connector(
     }
 
     onChangeTab(newTab) {
-      if (newTab === this.props.openTab) {
-        this.props.setOpenTab(false);
-      } else {
-        this.props.setOpenTab(newTab);
-      }
+      this.props.setOpenTab(newTab);
     }
 
     render() {
@@ -175,7 +188,7 @@ export const Application = connector(
               style={{
                 width: 88,
               }}
-              value={this.props.openTab}
+              value={this.props.tab.openTab}
               orientation="vertical"
               indicatorColor="primary"
               textColor="primary"
@@ -195,10 +208,12 @@ export const Application = connector(
                   value={0}
                   icon={<PSESvgIcon component={PSEIcons.Dataset} />}
                   data-cy="dataset-tab"
+                  disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(0)}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
+                    filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(0) ? 'saturate(0)' : '',
                     // borderTop: '1px solid rgba(0, 0, 0, 0.12)',
                   }}
                 />
@@ -217,11 +232,13 @@ export const Application = connector(
                   value={1}
                   data-cy="projection-tab"
                   icon={<PSESvgIcon component={PSEIcons.Project} />}
+                  disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(1)}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
                     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                    filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(1) ? 'saturate(0)' : '',
                   }}
                 />
               </Tooltip>
@@ -241,11 +258,13 @@ export const Application = connector(
                   value={2}
                   data-cy="encoding-tab"
                   icon={<PSESvgIcon component={PSEIcons.Encoding} />}
+                  disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(2)}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
                     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                    filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(2) ? 'saturate(0)' : '',
                   }}
                 />
               </Tooltip>
@@ -263,11 +282,13 @@ export const Application = connector(
                   value={3}
                   data-cy="groups-tab"
                   icon={<PSESvgIcon component={PSEIcons.Clusters} />}
+                  disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(3)}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
                     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                    filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(3) ? 'saturate(0)' : '',
                   }}
                 />
               </Tooltip>
@@ -287,11 +308,14 @@ export const Application = connector(
                   value={4}
                   data-cy="details-tab"
                   icon={<PSESvgIcon component={PSEIcons.Details} />}
+                  disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(4)}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
                     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+
+                    filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(4) ? 'saturate(0)' : '',
                   }}
                 />
               </Tooltip>
@@ -312,11 +336,13 @@ export const Application = connector(
                     value={5}
                     data-cy="details-tab"
                     icon={<PSESvgIcon component={PSEIcons.PseLineup} />}
+                    disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(5)}
                     style={{
                       minWidth: 0,
                       flexGrow: 1,
                       padding: 12,
                       borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                      filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(5) ? 'saturate(0)' : '',
                     }}
                   />
                 </Tooltip>
@@ -338,11 +364,13 @@ export const Application = connector(
                       value={6 + i}
                       icon={<PSESvgIcon component={tab.icon as any} />}
                       data-cy={`custom-tab-${i}`}
+                      disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(6 + i)}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,
                         padding: 12,
                         borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+                        filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(6 + i) ? 'saturate(0)' : '',
                       }}
                     />
                   </Tooltip>
@@ -354,7 +382,7 @@ export const Application = connector(
           <Box
             style={{
               flexShrink: 0,
-              width: this.props.openTab === false ? '0rem' : '18rem',
+              width: '18rem',
               height: '100%',
               overflowX: 'hidden',
               overflowY: 'hidden',
@@ -371,7 +399,7 @@ export const Application = connector(
               }}
             >
               <Grid container justifyContent="center" alignItems="stretch" direction="row" height="100%">
-                <FixedHeightTabPanel value={this.props.openTab} index={0}>
+                <FixedHeightTabPanel value={this.props.tab.openTab} index={0}>
                   {
                     /** predefined dataset */
                     this.props.overrideComponents?.datasetTab ? (
@@ -386,31 +414,31 @@ export const Application = connector(
                   }
                 </FixedHeightTabPanel>
 
-                <FixedHeightTabPanel value={this.props.openTab} index={1}>
+                <FixedHeightTabPanel value={this.props.tab.openTab} index={1}>
                   <EmbeddingTabPanel config={this.props.features} />
                 </FixedHeightTabPanel>
 
-                <FixedHeightTabPanel value={this.props.openTab} index={2}>
+                <FixedHeightTabPanel value={this.props.tab.openTab} index={2}>
                   <StatesTabPanel encodings={this.props.features?.encodings} />
                 </FixedHeightTabPanel>
 
-                <FixedHeightTabPanel value={this.props.openTab} index={3}>
+                <FixedHeightTabPanel value={this.props.tab.openTab} index={3}>
                   {this.props.dataset != null ? <ClusteringTabPanel splitRef={this.splitRef} baseUrl={this.props.config?.baseUrl} /> : <div />}
                 </FixedHeightTabPanel>
 
-                <FixedHeightTabPanel value={this.props.openTab} index={4}>
+                <FixedHeightTabPanel value={this.props.tab.openTab} index={4}>
                   <DetailsTabPanel config={this.props.features} />
                 </FixedHeightTabPanel>
 
                 {this.props.overrideComponents?.detailViews?.length > 0 ? (
-                  <FixedHeightTabPanel value={this.props.openTab} index={5}>
+                  <FixedHeightTabPanel value={this.props.tab.openTab} index={5}>
                     <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} />
                   </FixedHeightTabPanel>
                 ) : null}
 
                 {this.props.overrideComponents?.tabs?.map((tab, i) => {
                   return (
-                    <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.openTab} index={6 + i}>
+                    <FixedHeightTabPanel key={`fixed${tab.name}`} value={this.props.tab.openTab} index={6 + i}>
                       {React.isValidElement(tab.tab) ? tab.tab : React.createElement(tab.tab as () => JSX.Element, { key: `tab${tab.name}i` })}
                     </FixedHeightTabPanel>
                   );

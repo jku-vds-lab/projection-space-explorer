@@ -120,7 +120,10 @@ export declare const ViewSelector: {
             source: "sample" | "cluster";
         };
         stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
-        openTab: (state: number, action: any) => any;
+        openTab: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+            openTab: number;
+            focusedTab: number[];
+        }>;
         pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
@@ -206,7 +209,10 @@ export declare const ViewSelector: {
             source: "sample" | "cluster";
         };
         stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
-        openTab: (state: number, action: any) => any;
+        openTab: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+            openTab: number;
+            focusedTab: number[];
+        }>;
         pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
@@ -283,7 +289,10 @@ export declare const ViewSelector: {
             source: "sample" | "cluster";
         };
         stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
-        openTab: (state: number, action: any) => any;
+        openTab: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+            openTab: number;
+            focusedTab: number[];
+        }>;
         pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
