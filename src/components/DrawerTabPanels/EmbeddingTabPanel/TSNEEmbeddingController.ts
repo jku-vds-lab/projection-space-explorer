@@ -34,6 +34,12 @@ export class TSNEEmbeddingController extends EmbeddingController {
       },
       false,
     );
+
+    this.worker.addEventListener('error', (e) => {
+      if (this.error) {
+        this.error(e);
+      }
+    });
   }
 
   step() {

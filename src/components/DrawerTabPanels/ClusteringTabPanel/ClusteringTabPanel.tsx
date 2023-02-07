@@ -115,7 +115,7 @@ export const ClusteringTabPanel = connector(
       const data_points =
         clusterSelectionOnly && currentAggregation.aggregation && currentAggregation.aggregation.length > 0
           ? currentAggregation.aggregation.map((i) => ({
-              ...workspace.positions[i],
+              ...spatial[i],
               meshIndex: i,
             }))
           : dataset.vectors.map((v, i) => ({ ...spatial[i], meshIndex: i }));

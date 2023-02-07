@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { Card, CardHeader, IconButton } from '@mui/material';
+import { Card, CardHeader, IconButton, Alert } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import CloseIcon from '@mui/icons-material/Close';
@@ -73,6 +73,8 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
   const [msg, setMsg] = React.useState('');
   const ref = React.useRef(step);
 
+  const [errornous, setErrornous] = React.useState<ErrorEvent>();
+
   if (step === 0) {
     console.time(`time elapsed to project the file ${dataset_name}`);
   }
@@ -95,13 +97,17 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
       new_step = step;
     }
     updateState(new_step);
-    if (onStep) {
+    if (onStep && !errornous) {
       onStep(new_step);
     }
   };
 
+  controller.error = (msg) => {
+    setErrornous(msg);
+  };
+
   React.useEffect(() => {
-    if (step < projectionParams.iterations && computing) {
+    if (step < projectionParams.iterations && computing && !errornous) {
       controller.step();
     }
   }, [step, computing]);
@@ -125,7 +131,7 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
     );
   };
 
-  return (
+  return !errornous ? (
     <Card className={classes.root}>
       <div className={classes.details}>
         <CardHeader
@@ -145,6 +151,7 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
           title={projectionParams.method}
           subheader={genlabel(step)}
         />
+
         <div className={classes.controls}>
           <IconButton
             aria-label="play/pause"
@@ -161,5 +168,9 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
         </div>
       </div>
     </Card>
+  ) : (
+    <Alert variant="outlined" severity="error" onClose={onClose} style={{ marginRight: 16, marginBottom: 8 }}>
+      Projection failed - {errornous.message}
+    </Alert>
   );
 });
