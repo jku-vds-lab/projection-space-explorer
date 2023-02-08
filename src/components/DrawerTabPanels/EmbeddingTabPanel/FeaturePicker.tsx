@@ -73,45 +73,44 @@ export function FeaturePicker({
     ];
     if (featureConfig?.enableFeatureWeighing) {
       colLst.push({
-        key: 'useWeight',
-        name: '(beta) Use weight',
-        width: 80,
-        formatter({ row, onRowChange, isCellSelected }) {
-          return (
-            <SelectCellFormatter
-              value={row.useWeight}
-              onChange={(checked) => {
-                onRowChange({ ...row, useWeight: checked });
-                if (checked) {
-                  alert("Note that weights are currently in beta and are only implemented for Gower's distance at the moment.");
-                }
-              }}
-              isCellSelected={isCellSelected}
-            />
-          );
-        },
-        groupFormatter(props: GroupFormatterProps<ProjectionColumn>) {
-          return (
-            <SelectCellFormatter
-              aria-label="Select Group"
-              isCellSelected={props.isCellSelected}
-              value={props.childRows.filter((row) => row.useWeight).length === props.childRows.length}
-              onChange={(checked) => {
-                props.childRows.forEach((row) => {
-                  row.useWeight = checked;
-                });
-                ref.current();
-              }}
-            />
-          );
-        },
-      });
-
-      colLst.push({
         key: 'weight',
         name: 'Weight',
         width: 100,
         editor: textEditor,
+        groupFormatter(props: GroupFormatterProps<ProjectionColumn>) {
+          const [t, setT] = React.useState(Date.now());
+          const inputRef = React.useRef<HTMLInputElement>();
+
+          const value = Math.round(props.childRows.reduce((acc, row) => acc + Number.parseFloat(row.weight), 0) * 1000) / 1000;
+
+          return (
+            <input
+              ref={inputRef}
+              style={{ width: 70 }}
+              onFocus={(event) => {
+                setT(Date.now());
+              }}
+              value={value}
+              type={'number'}
+              onChange={(event) => {
+                const value = Number.parseFloat(event.target.value);
+                if (!Number.isNaN(value)) {
+                  props.childRows.forEach((row) => {
+                    row.weight = value / props.childRows.length;
+                  });
+                  ref.current();
+                }
+              }}
+              onBlur={(event) => {
+                const delta = (Date.now() - t) / 1000;
+                if (delta < 0.25) {
+                  inputRef.current.focus();
+                  inputRef.current.select();
+                }
+              }}
+            ></input>
+          );
+        },
       });
     }
     return colLst;
