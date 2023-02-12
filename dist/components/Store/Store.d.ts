@@ -76,7 +76,7 @@ declare const allReducers: {
     };
     selectedLineBy: typeof selectedLineBy;
     groupVisualizationMode: (state: GroupVisualizationMode, action: any) => any;
-    genericFingerprintAttributes: (state: any[], action: any) => any[];
+    genericFingerprintAttributes: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<any[]>;
     hoverStateOrientation: (state: import("../Ducks/HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
     detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
         open: boolean;

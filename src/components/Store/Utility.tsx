@@ -6,6 +6,7 @@ import { CubicBezierCurve } from '../../model/Curves';
 import type { RootState } from './Store';
 import { Dataset } from '../../model/Dataset';
 import { mapValueToColor } from '../Utility';
+import { IVector } from '../../model/Vector';
 
 function calcBounds(positions: IBaseProjection) {
   // Get rectangle that fits around data set
@@ -193,6 +194,20 @@ export class UtilityActions {
       const { channelColor, channelSize, globalPointSize, pointColorMapping, workspace } =
         state.multiples.multiples.entities[state.multiples.multiples.ids[0]].attributes;
 
+      const additionalColumns = {
+        groupLabel: state.stories.groupLabel,
+      };
+
+      const getValue = (vector: IVector) => {
+        if (additionalColumns && channelColor && additionalColumns[channelColor.key]) {
+          return additionalColumns[channelColor.key][vector.__meta__.meshIndex];
+        }
+        if (channelColor) {
+          return vector[channelColor.key];
+        }
+        return undefined;
+      };
+
       let canvas = null;
       if (!ctx) {
         canvas = new OffscreenCanvas(width, height);
@@ -285,7 +300,7 @@ export class UtilityActions {
 
         const color = isSelected(index)
           ? mapping
-            ? mapValueToColor(mapping, state.dataset.vectors[index][channelColor.key])
+            ? mapValueToColor(mapping, getValue(state.dataset.vectors[index]))
             : new SchemeColor('#7fc97f')
           : new SchemeColor('#c0c0c0');
 

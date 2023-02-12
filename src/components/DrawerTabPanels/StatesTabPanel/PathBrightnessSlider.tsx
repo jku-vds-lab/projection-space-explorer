@@ -39,7 +39,7 @@ function PathBrightnessSliderFull({ lineBrightness, setLineBrightness }) {
   );
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch) => ({
   setLineBrightness: (lineBrightness) => dispatch(setLineBrightness(lineBrightness)),

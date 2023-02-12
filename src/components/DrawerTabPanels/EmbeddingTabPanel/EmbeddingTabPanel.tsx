@@ -1,6 +1,6 @@
 import { connect, ConnectedProps, useDispatch, useSelector } from 'react-redux';
 import * as React from 'react';
-import { Box, Button, Chip, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography } from '@mui/material';
+import { Box, Button, Chip, Grid, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Tooltip, Typography } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { EntityId } from '@reduxjs/toolkit';
 import { ProjectionControlCard } from './ProjectionControlCard';
@@ -14,7 +14,7 @@ import { UMAPEmbeddingController } from './UMAPEmbeddingController';
 import { ClusterTrailSettings } from './ClusterTrailSettings';
 import { setTrailVisibility } from '../../Ducks/TrailSettingsDuck';
 import { ForceAtlas2EmbeddingController } from './ForceAtlas2EmbeddingController';
-import { IProjection, IBaseProjection, ProjectionMethod, IPosition } from '../../../model/ProjectionInterfaces';
+import { IProjection, IBaseProjection, ProjectionMethod } from '../../../model/ProjectionInterfaces';
 import { FeatureConfig, DEFAULT_EMBEDDINGS, EmbeddingMethod } from '../../../BaseConfig';
 import { EditProjectionDialog } from './EditProjectionDialog';
 import { ViewActions, ViewSelector } from '../../Ducks/ViewDuck';
@@ -60,10 +60,12 @@ type Props = PropsFromRedux & {
 function EmbeddingMethodButtons(props: { setOpen; setDomainSettings; embeddings?: EmbeddingMethod[] }) {
   const embeddings = props.embeddings ?? DEFAULT_EMBEDDINGS;
 
+  console.log(embeddings);
+
   return (
     <Grid container direction="column" spacing={1}>
-      {embeddings.map((emb) => (
-        <Grid key={emb.id} item>
+      {embeddings.map((emb) => {
+        const button = (
           <Button
             data-cy={`embedding-${emb.id}`}
             style={{
@@ -77,8 +79,32 @@ function EmbeddingMethodButtons(props: { setOpen; setDomainSettings; embeddings?
           >
             {emb.name}
           </Button>
-        </Grid>
-      ))}
+        );
+
+        return (
+          <Grid key={emb.id} item>
+            {emb.tooltip ? (
+              <Tooltip placement="right" title={emb.tooltip}>
+                <Button
+                  data-cy={`embedding-${emb.id}`}
+                  style={{
+                    width: '100%',
+                  }}
+                  variant="outlined"
+                  onClick={() => {
+                    props.setDomainSettings(emb);
+                    props.setOpen(true);
+                  }}
+                >
+                  {emb.name}
+                </Button>
+              </Tooltip>
+            ) : (
+              button
+            )}
+          </Grid>
+        );
+      })}
     </Grid>
   );
 }

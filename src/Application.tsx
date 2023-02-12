@@ -40,23 +40,6 @@ import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChoose
 import { DetailViewActions } from './components/Ducks/DetailViewDuck';
 import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
 
-function TabContainer({ value, icon, dataCy, focusedTab }: { value: number; icon: JSX.Element; dataCy: any; focusedTab: number[] }) {
-  return (
-    <Tab
-      value={value}
-      icon={icon}
-      data-cy={dataCy}
-      style={{
-        minWidth: 0,
-        flexGrow: 1,
-        padding: 12,
-        filter: focusedTab?.length > 0 && !focusedTab?.includes(value) ? 'saturate(0)' : '',
-        // borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-      }}
-    />
-  );
-}
-
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
  */

@@ -20,7 +20,7 @@ import hoverSettings from '../Ducks/HoverSettingsDuck';
 import hoverState from '../Ducks/HoverStateDuck';
 import { selectedLineBy } from '../Ducks/SelectedLineByDuck';
 import groupVisualizationMode, { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
-import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
+import { genericFingerprintAttributes } from '../Ducks/GenericFingerprintAttributesDuck';
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 import { detailView } from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';

@@ -1,5 +1,4 @@
 import { SchemeColor } from '../components/Utility/Colors/SchemeColor';
-import { BaseColorScale } from './Palette';
 
 const palettes = {
   // categorical

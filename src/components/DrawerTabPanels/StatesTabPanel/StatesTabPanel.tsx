@@ -15,7 +15,6 @@ import { setChannelSize } from '../../Ducks/ChannelSize';
 import { setGlobalPointSize } from '../../Ducks/GlobalPointSizeDuck';
 import { SizeSlider } from './SizeSlider';
 import { ColorScaleSelect } from './ColorScaleSelect';
-import { AdvancedColoringPopover } from './AdvancedColoringPopover';
 import { setChannelColor } from '../../Ducks/ChannelColorDuck';
 import { setAdvancedColoringSelectionAction } from '../../Ducks/AdvancedColoringSelectionDuck';
 import { PathLengthFilter } from './PathLengthFilter';
@@ -144,7 +143,6 @@ export function StatesTabPanelFull({
     channelBrightness,
     channelSize,
     channelColor,
-    pointColorMapping,
     pointColorScale,
     lineBrightness,
     pathLengthRange,
