@@ -60,10 +60,6 @@ export function mapValueToColor(mapping: ContinuousMapping | DivergingMapping | 
     case 'diverging': {
       const palette = typeof mapping.scale.palette === 'string' ? APalette.getByName(mapping.scale.palette) : mapping.scale.palette;
 
-      if (mapping.range[0] === mapping.range[1]) {
-        return palette[1];
-      }
-
       const paletteInterpolate = d3v5
         .scaleLinear()
         .domain(palette.map((stop, index) => (1 / (palette.length - 1)) * index))
