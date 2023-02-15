@@ -120,7 +120,7 @@ export declare const ViewSelector: {
             source: "sample" | "cluster";
         };
         stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
-        openTab: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+        tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             openTab: number;
             focusedTab: number[];
         }>;
@@ -209,7 +209,7 @@ export declare const ViewSelector: {
             source: "sample" | "cluster";
         };
         stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
-        openTab: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+        tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             openTab: number;
             focusedTab: number[];
         }>;
@@ -289,7 +289,7 @@ export declare const ViewSelector: {
             source: "sample" | "cluster";
         };
         stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
-        openTab: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+        tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             openTab: number;
             focusedTab: number[];
         }>;

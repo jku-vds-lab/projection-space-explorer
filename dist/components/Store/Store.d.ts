@@ -22,7 +22,7 @@ declare const allReducers: {
         source: "sample" | "cluster";
     };
     stories: Reducer<IStorytelling, import("redux").AnyAction>;
-    openTab: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+    tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
         openTab: number;
         focusedTab: number[];
     }>;

@@ -62,7 +62,7 @@ function FixedHeightTabPanel(props) {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  tab: state.openTab,
+  tab: state.tabSettings,
   dataset: state.dataset,
   hoverStateOrientation: state.hoverStateOrientation,
   datasetEntries: state.datasetEntries,
