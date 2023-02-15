@@ -27,6 +27,12 @@ export class UMAPEmbeddingController extends EmbeddingController {
       featureTypes: tensor.featureTypes,
     });
 
+    this.worker.addEventListener('error', (e) => {
+      if (this.error) {
+        this.error(e);
+      }
+    });
+
     this.worker.addEventListener(
       'message',
       (e) => {

@@ -1,7 +1,7 @@
 import { EntityId } from '@reduxjs/toolkit';
 import { useState } from 'react';
 import * as React from 'react';
-import { Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select } from '@mui/material';
+import { Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select, Tooltip } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { IBook } from '../../../model/Book';
 import type { RootState } from '../../Store/Store';
@@ -76,30 +76,34 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
       </FormControl>
 
       <Grid container direction="row" alignItems="center" justifyContent="space-between">
-        <Button
-          style={{
-            marginTop: '16px',
-          }}
-          onClick={() => addHandler()}
-          variant="outlined"
-          size="small"
-        >
-          Add Empty
-        </Button>
-
-        {stories.active ? (
+        <Tooltip placement="bottom" title="Creates an empty storybook (group and edge container) that can be used to save groups">
           <Button
             style={{
               marginTop: '16px',
             }}
+            onClick={() => addHandler()}
             variant="outlined"
             size="small"
-            onClick={() => {
-              setEditBook(stories.stories.entities[stories.active]);
-            }}
           >
-            Edit Selected
+            Add empty
           </Button>
+        </Tooltip>
+
+        {stories.active ? (
+          <Tooltip placement="bottom" title="Opens a dialog that allows to edit the currently selected storybook (group and edge container)">
+            <Button
+              style={{
+                marginTop: '16px',
+              }}
+              variant="outlined"
+              size="small"
+              onClick={() => {
+                setEditBook(stories.stories.entities[stories.active]);
+              }}
+            >
+              Edit Selected
+            </Button>
+          </Tooltip>
         ) : null}
       </Grid>
 

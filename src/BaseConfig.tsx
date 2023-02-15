@@ -21,6 +21,7 @@ export type EmbeddingMethod = {
     nneighbors?: boolean;
   };
   description?: JSX.Element | string;
+  tooltip?: string;
   embController?: EmbeddingController;
 };
 
@@ -31,9 +32,25 @@ export const DEFAULT_TSNE_SETTINGS = { perplexity: true, learningRate: true };
 export const DEFAULT_FA2_SETTINGS = {};
 
 export const DEFAULT_EMBEDDINGS = [
-  { id: ProjectionMethod.UMAP, name: 'UMAP', settings: DEFAULT_UMAP_SETTINGS },
-  { id: ProjectionMethod.TSNE, name: 't-SNE', settings: DEFAULT_TSNE_SETTINGS },
-  { id: ProjectionMethod.FORCEATLAS2, name: 'ForceAtlas2', settings: DEFAULT_FA2_SETTINGS },
+  {
+    id: ProjectionMethod.UMAP,
+    name: 'UMAP',
+    settings: DEFAULT_UMAP_SETTINGS,
+    tooltip:
+      'Performs Uniform Manifold Approximation (UMAP) on the whole dataset using the chosen feature columns. This method scales better than t-SNE with an increasing number of points.',
+  },
+  {
+    id: ProjectionMethod.TSNE,
+    name: 't-SNE',
+    settings: DEFAULT_TSNE_SETTINGS,
+    tooltip: 'Performs t-distributed stochastic neighbor embedding (t-SNE) on the whole dataset using the chosen feature columns.',
+  },
+  {
+    id: ProjectionMethod.FORCEATLAS2,
+    name: 'ForceAtlas2',
+    settings: DEFAULT_FA2_SETTINGS,
+    tooltip: 'Performs the d3 force atlas algorithm. This method only works with sequential data that has duplicates in it (nodes)',
+  },
 ] as EmbeddingMethod[];
 
 export type CoordinatesType = {

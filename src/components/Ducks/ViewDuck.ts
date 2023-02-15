@@ -38,7 +38,7 @@ const workspaceReducer = createReducer<EntityId | IProjection>(null, (builder) =
 });
 
 const pointColorMappingReducer = createReducer<Mapping>(null, (builder) => {
-  builder.addDefaultCase((state, action) => {
+  builder.addDefaultCase((state) => {
     return state;
   });
 });

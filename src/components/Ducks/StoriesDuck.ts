@@ -1,6 +1,6 @@
 /* eslint-disable spaced-comment */
 import { v4 as uuidv4 } from 'uuid';
-import { createSlice, PayloadAction, createAsyncThunk, EntityId, createEntityAdapter, EntityState } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, EntityId, createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 import { getSyncNodesAlt } from '../NumTs/NumTs';
 import { ICluster } from '../../model/ICluster';
 import { IEdge } from '../../model/Edge';

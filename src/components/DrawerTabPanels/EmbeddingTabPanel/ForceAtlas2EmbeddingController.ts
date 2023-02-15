@@ -87,6 +87,12 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
           break;
       }
     };
+    this.worker.addEventListener('error', (e) => {
+      if (this.error) {
+        this.error(e);
+      }
+    });
+
     this.worker.postMessage({
       nodes: nodes.map((e) => ({ x: e.x, y: e.y, meshIndex: e.__meta__.meshIndex })),
       edges,
