@@ -60,8 +60,6 @@ type Props = PropsFromRedux & {
 function EmbeddingMethodButtons(props: { setOpen; setDomainSettings; embeddings?: EmbeddingMethod[] }) {
   const embeddings = props.embeddings ?? DEFAULT_EMBEDDINGS;
 
-  console.log(embeddings);
-
   return (
     <Grid container direction="column" spacing={1}>
       {embeddings.map((emb) => {
