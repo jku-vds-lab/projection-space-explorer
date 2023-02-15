@@ -3,7 +3,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 const setOpenTab = createAction<number>('setopentab');
 const disableOthers = createAction<{ tabs: number[] }>('disableothers');
 
-export const openTab = createReducer({ openTab: 0, focusedTab: [] } as { openTab: number; focusedTab: number[] }, (builder) => {
+export const tabSettings = createReducer({ openTab: 0, focusedTab: [] } as { openTab: number; focusedTab: number[] }, (builder) => {
   builder.addCase(setOpenTab, (state, action) => {
     state.openTab = action.payload;
   });
