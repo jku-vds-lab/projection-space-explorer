@@ -1,4 +1,4 @@
-export declare const openTab: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+export declare const tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
     openTab: number;
     focusedTab: number[];
 }>;
