@@ -1,7 +1,11 @@
-export declare const setOpenTabAction: (openTab: any) => {
-    type: string;
-    openTab: any;
+export declare const tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+    openTab: number;
+    focusedTab: number[];
+}>;
+export declare const TabActions: {
+    setOpenTab: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<number, string>;
+    disableOthers: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
+        tabs: number[];
+    }, string>;
 };
-declare const openTab: (state: number, action: any) => any;
-export default openTab;
 //# sourceMappingURL=OpenTabDuck.d.ts.map

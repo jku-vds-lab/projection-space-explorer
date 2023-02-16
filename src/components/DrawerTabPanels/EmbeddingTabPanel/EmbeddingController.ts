@@ -1,9 +1,11 @@
 export class EmbeddingController {
   worker: Worker;
 
-  stepper: any;
+  stepper: (Y) => void;
 
-  notifier: any;
+  notifier: () => void;
+
+  error: (error: ErrorEvent) => void;
 
   terminate() {
     this.worker.terminate();

@@ -52,7 +52,7 @@ export class MyWindowPortal extends React.PureComponent<any> {
 
     // Callback function to execute when mutations are observed
     const callback = debounce(
-      (mutationList, observer) => {
+      (mutationList) => {
         copyStyles(document, this.externalWindow.document);
 
         for (const mutation of mutationList) {

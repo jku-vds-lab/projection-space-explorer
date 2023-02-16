@@ -55,7 +55,7 @@ function SizeSliderFull({ globalPointSize, setRange }) {
   );
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch) => ({
   setRange: (value) => dispatch(setGlobalPointSize(value)),

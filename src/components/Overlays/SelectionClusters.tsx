@@ -73,6 +73,7 @@ const SelectionClustersFull = function ({ dataset, currentAggregation, hoverStat
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              position: 'relative',
             }}
           >
             <GenericLegend aggregate={false} type={dataset.type} vectors={[hoverState.data]} options={{ root: 'detail' }} />

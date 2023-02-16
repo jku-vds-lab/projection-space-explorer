@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import projectionOpen from '../Ducks/ProjectionOpenDuck';
 import highlightedSequence from '../Ducks/HighlightedSequenceDuck';
 import dataset from '../Ducks/DatasetDuck';
-import openTab from '../Ducks/OpenTabDuck';
 import clusterMode, { ClusterMode } from '../Ducks/ClusterModeDuck';
 import advancedColoringSelection from '../Ducks/AdvancedColoringSelectionDuck';
 import projectionColumns from '../Ducks/ProjectionColumnsDuck';
@@ -21,7 +20,7 @@ import hoverSettings from '../Ducks/HoverSettingsDuck';
 import hoverState from '../Ducks/HoverStateDuck';
 import { selectedLineBy } from '../Ducks/SelectedLineByDuck';
 import groupVisualizationMode, { GroupVisualizationMode } from '../Ducks/GroupVisualizationMode';
-import genericFingerprintAttributes from '../Ducks/GenericFingerprintAttributesDuck';
+import { genericFingerprintAttributes } from '../Ducks/GenericFingerprintAttributesDuck';
 import hoverStateOrientation from '../Ducks/HoverStateOrientationDuck';
 import { detailView } from '../Ducks/DetailViewDuck';
 import datasetEntries from '../Ducks/DatasetEntriesDuck';
@@ -36,6 +35,7 @@ import { BaseColorScale } from '../../model/Palette';
 import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multipleAdapter, defaultAttributes, createViewDuckReducer } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
+import { tabSettings } from '../Ducks/OpenTabDuck';
 
 /**
  * Match all cases of view constants eg x1, y1, x2, y2...
@@ -45,7 +45,7 @@ const viewRegexp = /^(x|y)[0-9]$/;
 const allReducers = {
   currentAggregation,
   stories,
-  openTab,
+  tabSettings,
   pointDisplay: PointDisplayReducer,
   activeLine,
   dataset,
@@ -352,14 +352,14 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
 
   return (state: Parameters<typeof combined>[0] & T, action: Parameters<typeof combined>[1]) => {
     if (action.type === RootActionTypes.RESET) {
-      const { dataset, openTab, datasetEntries, globalLabels } = state;
+      const { dataset, tabSettings, datasetEntries, globalLabels } = state;
 
       for (const key in state) {
         state[key] = undefined;
       }
 
       state.dataset = dataset;
-      state.openTab = openTab;
+      state.tabSettings = tabSettings;
       state.datasetEntries = datasetEntries;
       state.globalLabels = globalLabels;
     }

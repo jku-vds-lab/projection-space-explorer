@@ -1,28 +1,25 @@
-import { Button, Dialog, DialogContent, DialogTitle, DialogActions } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, DialogActions, Tooltip } from '@mui/material';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import DataGrid, { SelectColumn } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
 import { usePSESelector } from '../../Store/Store';
 import { DefaultFeatureLabel } from '../../../model';
-
-type AttributeType = { feature: string; show: boolean };
+import { GenericFingerprintAttribute } from '../../Ducks';
 
 export function AttributeSelectionTable({
   attributes,
   setAttributes,
   children,
 }: {
-  attributes: AttributeType[];
-  setAttributes: (attributes: AttributeType[]) => void;
+  attributes: GenericFingerprintAttribute[];
+  setAttributes: (attributes: GenericFingerprintAttribute[]) => void;
   children?: React.ReactNode;
 }) {
   const [open, setOpen] = React.useState(false);
 
   const dataset = usePSESelector((state) => state.dataset);
-  const dispatch = useDispatch();
 
-  const openAttributes = (event) => {
+  const openAttributes = () => {
     setOpen(true);
   };
 
@@ -61,9 +58,11 @@ export function AttributeSelectionTable({
 
   return (
     <div>
-      <Button fullWidth variant="outlined" onClick={openAttributes}>
-        {children}
-      </Button>
+      <Tooltip placement="right" title="These attributes determine what is shown in the hover images when performing a selection">
+        <Button fullWidth variant="outlined" onClick={openAttributes}>
+          {children}
+        </Button>
+      </Tooltip>
 
       <Dialog fullWidth maxWidth="xl" open={open} onClose={handleClose}>
         <DialogTitle>Select features you want to be present in the selection view</DialogTitle>

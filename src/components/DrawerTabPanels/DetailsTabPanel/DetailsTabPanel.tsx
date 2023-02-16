@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { Box, Button, Divider, FormControl, FormControlLabel, FormHelperText, MenuItem, Select, Switch, Typography } from '@mui/material';
+import { Box, Button, Divider, FormControl, FormControlLabel, FormHelperText, MenuItem, Select, Switch, Tooltip, Typography } from '@mui/material';
 import * as React from 'react';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck';
@@ -71,10 +71,12 @@ export const DetailsTabPanel = connector(
         </Box>
 
         <Box paddingX={2} paddingTop={1}>
-          <FormControlLabel
-            control={<Switch color="primary" checked={hoverSettings.windowMode === WindowMode.Extern} onChange={handleChange} name="checkedA" />}
-            label="External selection view"
-          />
+          <Tooltip placement="right" title="This opens a new window that offers more space for the selection detail image">
+            <FormControlLabel
+              control={<Switch color="primary" checked={hoverSettings.windowMode === WindowMode.Extern} onChange={handleChange} name="checkedA" />}
+              label="External selection view"
+            />
+          </Tooltip>
         </Box>
         {config?.detailsTab?.showClearSelectionButton !== false ? (
           <Box paddingX={2} paddingTop={1}>

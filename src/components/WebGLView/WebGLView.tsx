@@ -34,7 +34,7 @@ import { IEdge, isEdge } from '../../model/Edge';
 import { getSyncNodesAlt } from '../NumTs/NumTs';
 import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
-import { setOpenTabAction } from '../Ducks/OpenTabDuck';
+import { TabActions } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
 import { Dataset } from '../../model/Dataset';
@@ -82,7 +82,7 @@ const mapDispatchToProps = (dispatch) => ({
   addClusterToStory: (cluster: ICluster) => dispatch(StoriesActions.addCluster(cluster)),
   addEdgeToActive: (edge: IEdge) => dispatch(StoriesActions.addEdgeToActive(edge)),
   setActiveTrace: (trace) => dispatch(StoriesActions.setActiveTrace(trace)),
-  setOpenTab: (tab) => dispatch(setOpenTabAction(tab)),
+  setOpenTab: (tab) => dispatch(TabActions.setOpenTab(tab)),
   setSelectedCluster: (clusters: string[], shiftKey: boolean) => dispatch(selectClusters(clusters, shiftKey)),
   removeEdgeFromActive: (edge) => dispatch(StoriesActions.removeEdgeFromActive(edge)),
 });
@@ -1142,6 +1142,7 @@ export const WebGLView = connector(
             ANormalized.get(this.props.colorScales.scales, this.props.pointColorScale as string),
             this.props.channelColor.key,
             this.props.dataset,
+            this.createAdditionalColumns(),
           );
           this.props.setPointColorMapping(this.props.multipleId, mapping);
 

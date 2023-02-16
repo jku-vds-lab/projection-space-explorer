@@ -9,7 +9,10 @@ import { BaseConfig, FeatureConfig, ComponentConfig } from './BaseConfig';
  * Factory method which is declared here so we can get a static type in 'ConnectedProps'
  */
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
-    openTab: any;
+    tab: {
+        openTab: number;
+        focusedTab: number[];
+    };
     dataset: Dataset;
     hoverStateOrientation: any;
     datasetEntries: {
@@ -76,6 +79,6 @@ export declare const Application: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<any>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "globalLabels" | "openTab" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
+}, import("react-redux").Omit<any, "globalLabels" | "dataset" | "hoverStateOrientation" | "datasetEntries" | "tab" | "setOpenTab" | "setLineByOptions" | "setGlobalPointBrightness" | "setGroupVisualizationMode" | "setLineUpInput_visibility" | "loadDataset">>;
 export {};
 //# sourceMappingURL=Application.d.ts.map

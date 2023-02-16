@@ -1,1 +1,1 @@
-{"version":3,"file":"OpenTabDuck.d.ts","sourceRoot":"","sources":["../../../src/components/Ducks/OpenTabDuck.ts"],"names":[],"mappings":"AAEA,eAAO,MAAM,gBAAgB;;;CAG3B,CAAC;AAEH,QAAA,MAAM,OAAO,qCAOZ,CAAC;AAEF,eAAe,OAAO,CAAC"}
+{"version":3,"file":"OpenTabDuck.d.ts","sourceRoot":"","sources":["../../../src/components/Ducks/OpenTabDuck.ts"],"names":[],"mappings":"AAKA,eAAO,MAAM,WAAW;aAA8D,MAAM;gBAAc,MAAM,EAAE;EAYhH,CAAC;AAEH,eAAO,MAAM,UAAU;;;cAhBoB,MAAM,EAAE;;CAmBlD,CAAC"}

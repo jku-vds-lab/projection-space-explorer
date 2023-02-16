@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Typography, Slider } from '@mui/material';
 import { connect } from 'react-redux';
 import { makeStyles } from '@mui/styles';
-import type { RootState } from '../../Store/Store';
 import { setGlobalPointBrightness } from '../../Ducks/GlobalPointBrightnessDuck';
 
 const useStyles = makeStyles(() => ({
@@ -48,7 +47,7 @@ function BrightnessSliderFull({ globalPointBrightness, setRange }) {
   );
 }
 
-const mapStateToProps = (state: RootState) => ({});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch) => ({
   setRange: (value) => dispatch(setGlobalPointBrightness(value)),

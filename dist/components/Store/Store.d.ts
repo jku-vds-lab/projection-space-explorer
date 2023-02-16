@@ -22,7 +22,10 @@ declare const allReducers: {
         source: "sample" | "cluster";
     };
     stories: Reducer<IStorytelling, import("redux").AnyAction>;
-    openTab: (state: number, action: any) => any;
+    tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+        openTab: number;
+        focusedTab: number[];
+    }>;
     pointDisplay: Reducer<{
         checkedShapes: {
             star: boolean;
@@ -73,7 +76,7 @@ declare const allReducers: {
     };
     selectedLineBy: typeof selectedLineBy;
     groupVisualizationMode: (state: GroupVisualizationMode, action: any) => any;
-    genericFingerprintAttributes: (state: any[], action: any) => any[];
+    genericFingerprintAttributes: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<any[]>;
     hoverStateOrientation: (state: import("../Ducks/HoverStateOrientationDuck").HoverStateOrientation, action: any) => any;
     detailView: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
         open: boolean;

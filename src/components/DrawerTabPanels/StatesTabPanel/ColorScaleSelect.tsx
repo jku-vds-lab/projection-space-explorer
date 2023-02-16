@@ -337,7 +337,7 @@ export function ColorScaleSelectFull({ channelColor, active }: { channelColor: C
   );
 }
 
-const mapStateToProps = (state: RootState) => ({});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = () => ({});
 

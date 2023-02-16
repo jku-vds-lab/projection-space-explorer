@@ -1,4 +1,4 @@
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import * as React from 'react';
 import * as d3v5 from 'd3v5';
 import { Dataset } from '../../../model/Dataset';
@@ -9,38 +9,6 @@ import { DatasetDrop } from './DatasetDrop';
 import { DownloadJob } from './DownloadJob';
 import { DownloadProgress } from './DownloadProgress';
 import { PredefinedDatasets } from './PredefinedDatasets';
-
-const onClickPersist = async () => {
-  const content = '';
-
-  // @ts-ignore
-  const handle = await window.showSaveFilePicker({
-    suggestedName: 'session.pse',
-    types: [
-      {
-        description: 'PSE Session',
-        accept: {
-          'text/plain': ['.pse'],
-        },
-      },
-    ],
-  });
-
-  const writable = await handle.createWritable();
-  writable.write(content);
-  await writable.close();
-
-  return handle;
-};
-
-const onClickHydrate = async () => {
-  // @ts-ignore
-  const [fileHandle] = await window.showOpenFilePicker();
-  const file = await fileHandle.getFile();
-  const contents = await file.text();
-
-  return contents;
-};
 
 function convertFromCSV(vectors) {
   return vectors.map((vector) => {

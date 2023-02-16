@@ -1,17 +1,15 @@
-const SET = 'ducks/genericFingerprintAttributes/SET';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
-export const setGenericFingerprintAttributes = (genericFingerprintAttributes) => ({
-  type: SET,
-  genericFingerprintAttributes,
+export interface GenericFingerprintAttribute {
+  feature: string;
+  show: boolean;
+  group: string;
+}
+
+export const setGenericFingerprintAttributes = createAction<GenericFingerprintAttribute[]>('setgenericfingerprint');
+
+export const genericFingerprintAttributes = createReducer([], (builder) => {
+  builder.addCase(setGenericFingerprintAttributes, (state, action) => {
+    return action.payload;
+  });
 });
-
-const genericFingerprintAttributes = (state = [], action): any[] => {
-  switch (action.type) {
-    case SET:
-      return action.genericFingerprintAttributes;
-    default:
-      return state;
-  }
-};
-
-export default genericFingerprintAttributes;

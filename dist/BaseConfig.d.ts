@@ -19,6 +19,7 @@ export type EmbeddingMethod = {
         nneighbors?: boolean;
     };
     description?: JSX.Element | string;
+    tooltip?: string;
     embController?: EmbeddingController;
 };
 export declare const DEFAULT_UMAP_SETTINGS: {
