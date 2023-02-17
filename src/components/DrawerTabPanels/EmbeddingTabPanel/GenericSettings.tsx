@@ -139,15 +139,15 @@ function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectio
     // TODO: maybe it would make sense to make a user input for normalization and encoding methods...
     switch (value) {
       case DistanceMetric.GOWER:
-        setTempProjectionParams({ ...tempProjectionParams, normalizationMethod: NormalizationMethod.NORMALIZE01 });
-        setTempProjectionParams({ ...tempProjectionParams, encodingMethod: EncodingMethod.NUMERIC });
+        setTempProjectionParams({ ...tempProjectionParams, normalizationMethod: NormalizationMethod.NORMALIZE01, encodingMethod: EncodingMethod.NUMERIC, distanceMetric: value });
+        break;
+      case DistanceMetric.JACCARD:
+        setTempProjectionParams({ ...tempProjectionParams, normalizationMethod: NormalizationMethod.NORMALIZE01, encodingMethod: EncodingMethod.NONE, distanceMetric: value });
         break;
       default:
-        setTempProjectionParams({ ...tempProjectionParams, normalizationMethod: NormalizationMethod.STANDARDIZE });
-        setTempProjectionParams({ ...tempProjectionParams, encodingMethod: EncodingMethod.ONEHOT });
+        setTempProjectionParams({ ...tempProjectionParams, normalizationMethod: NormalizationMethod.STANDARDIZE, encodingMethod: EncodingMethod.ONEHOT, distanceMetric: value });
         break;
     }
-    setTempProjectionParams({ ...tempProjectionParams, distanceMetric: value });
   };
 
   const cloneColumns = (projectionColumns) => {

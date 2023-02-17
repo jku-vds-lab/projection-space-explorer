@@ -1,1 +1,1 @@
-{"version":3,"file":"EncodingMethod.d.ts","sourceRoot":"","sources":["../../src/model/EncodingMethod.ts"],"names":[],"mappings":"AAAA,oBAAY,cAAc;IACxB,MAAM,WAAW;IACjB,OAAO,YAAY;CACpB"}
+{"version":3,"file":"EncodingMethod.d.ts","sourceRoot":"","sources":["../../src/model/EncodingMethod.ts"],"names":[],"mappings":"AAAA,oBAAY,cAAc;IACxB,MAAM,WAAW;IACjB,OAAO,YAAY;IACnB,IAAI,SAAS;CACd"}
