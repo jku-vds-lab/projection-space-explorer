@@ -324,7 +324,6 @@ export declare class UMAP {
      */
     private getNEpochs;
 }
-export declare function jaccard(x: Vector, y: Vector): any;
 export declare function euclidean(x: Vector, y: Vector): number;
 export declare function cosine(x: Vector, y: Vector): number;
 /**
