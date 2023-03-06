@@ -33,7 +33,7 @@ export function gower(featureTypes: []) {
 export function jaccard(x: number[], y: number[]) {
   let sum = 0;
   x.forEach((x_i, i) => (x_i === y[i] ? sum++ : 0));
-  return 1-(sum / x.length);
+  return 1 - sum / x.length;
   // TODO: This jaccard does not work at all here, as it transform the vectors into sets --> per row, which doesn't make any sense as you want to compare columns!
   // return jaccard_dist.distance(x, y);
 }

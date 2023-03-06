@@ -215,13 +215,14 @@ export const Application = connector(
                   value={1}
                   data-cy="projection-tab"
                   icon={<PSESvgIcon component={PSEIcons.Project} />}
-                  disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(1)}
+                  disabled={(this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(1)) || this.props.dataset === null}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
                     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-                    filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(1) ? 'saturate(0)' : '',
+                    filter:
+                      (this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(1)) || this.props.dataset === null ? 'saturate(0)' : '',
                   }}
                 />
               </Tooltip>
@@ -241,13 +242,14 @@ export const Application = connector(
                   value={2}
                   data-cy="encoding-tab"
                   icon={<PSESvgIcon component={PSEIcons.Encoding} />}
-                  disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(2)}
+                  disabled={(this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(2)) || this.props.dataset === null}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
                     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-                    filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(2) ? 'saturate(0)' : '',
+                    filter:
+                      (this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(2)) || this.props.dataset === null ? 'saturate(0)' : '',
                   }}
                 />
               </Tooltip>
@@ -265,13 +267,14 @@ export const Application = connector(
                   value={3}
                   data-cy="groups-tab"
                   icon={<PSESvgIcon component={PSEIcons.Clusters} />}
-                  disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(3)}
+                  disabled={(this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(3)) || this.props.dataset === null}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
                     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-                    filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(3) ? 'saturate(0)' : '',
+                    filter:
+                      (this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(3)) || this.props.dataset === null ? 'saturate(0)' : '',
                   }}
                 />
               </Tooltip>
@@ -291,14 +294,15 @@ export const Application = connector(
                   value={4}
                   data-cy="details-tab"
                   icon={<PSESvgIcon component={PSEIcons.Details} />}
-                  disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(4)}
+                  disabled={(this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(4)) || this.props.dataset === null}
                   style={{
                     minWidth: 0,
                     flexGrow: 1,
                     padding: 12,
                     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
 
-                    filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(4) ? 'saturate(0)' : '',
+                    filter:
+                      (this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(4)) || this.props.dataset === null ? 'saturate(0)' : '',
                   }}
                 />
               </Tooltip>
@@ -319,13 +323,14 @@ export const Application = connector(
                     value={5}
                     data-cy="details-tab"
                     icon={<PSESvgIcon component={PSEIcons.PseLineup} />}
-                    disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(5)}
+                    disabled={(this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(5)) || this.props.dataset === null}
                     style={{
                       minWidth: 0,
                       flexGrow: 1,
                       padding: 12,
                       borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-                      filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(5) ? 'saturate(0)' : '',
+                      filter:
+                        (this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(5)) || this.props.dataset === null ? 'saturate(0)' : '',
                     }}
                   />
                 </Tooltip>
@@ -347,13 +352,16 @@ export const Application = connector(
                       value={6 + i}
                       icon={<PSESvgIcon component={tab.icon as any} />}
                       data-cy={`custom-tab-${i}`}
-                      disabled={this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(6 + i)}
+                      disabled={(this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(6 + i)) || this.props.dataset === null}
                       style={{
                         minWidth: 0,
                         flexGrow: 1,
                         padding: 12,
                         borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-                        filter: this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(6 + i) ? 'saturate(0)' : '',
+                        filter:
+                          (this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(6 + i)) || this.props.dataset === null
+                            ? 'saturate(0)'
+                            : '',
                       }}
                     />
                   </Tooltip>
