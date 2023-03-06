@@ -147,10 +147,10 @@ export function createInitialReducerState(dataset: Dataset): Partial<RootState> 
     normalized: true,
     range: dataset.columns[column].range ? formatRange(dataset.columns[column].range) : 'unknown',
     featureLabel: dataset.columns[column].featureLabel ? dataset.columns[column].featureLabel : DefaultFeatureLabel,
-    useWeight: false,
-    weight: dataset.columns[column].featureLabel
-      ? 1 / Object.keys(dataset.columns).filter((cur_col) => dataset.columns[cur_col].featureLabel === dataset.columns[column].featureLabel).length
-      : 1,
+    weight: 1, // should be 1 for each column by default; if users decide that certain columns are more important, they can change this; when changing the value for a whole group, the weights are evenly distributed among the columns in that group and add up to the value set by the user
+    // weight: dataset.columns[column].featureLabel
+    //   ? 1 / Object.keys(dataset.columns).filter((cur_col) => dataset.columns[cur_col].featureLabel === dataset.columns[column].featureLabel).length
+    //   : 1,
   }));
 
   const defaultSizeAttribute = CategoryOptionsAPI.getAttribute(categoryOptions, 'size', 'multiplicity', 'sequential');

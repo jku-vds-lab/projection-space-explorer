@@ -74,8 +74,8 @@ export function FeaturePicker({
     if (featureConfig?.enableFeatureWeighing) {
       colLst.push({
         key: 'weight',
-        name: 'Weight',
-        width: 100,
+        name: 'Weight (beta: only for Gower)',
+        width: 200,
         editor: textEditor,
         groupFormatter(props: GroupFormatterProps<ProjectionColumn>) {
           const [t, setT] = React.useState(Date.now());
@@ -91,7 +91,7 @@ export function FeaturePicker({
                 setT(Date.now());
               }}
               value={value}
-              type={'number'}
+              type="number"
               onChange={(event) => {
                 const value = Number.parseFloat(event.target.value);
                 if (!Number.isNaN(value)) {
@@ -108,7 +108,7 @@ export function FeaturePicker({
                   inputRef.current.select();
                 }
               }}
-            ></input>
+            />
           );
         },
       });

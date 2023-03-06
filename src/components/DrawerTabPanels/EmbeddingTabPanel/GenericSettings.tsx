@@ -150,13 +150,28 @@ function GenericSettingsComp({
     // TODO: maybe it would make sense to make a user input for normalization and encoding methods...
     switch (value) {
       case DistanceMetric.GOWER:
-        setTempProjectionParams({ ...tempProjectionParams, normalizationMethod: NormalizationMethod.NORMALIZE01, encodingMethod: EncodingMethod.NUMERIC, distanceMetric: value });
+        setTempProjectionParams({
+          ...tempProjectionParams,
+          normalizationMethod: NormalizationMethod.NORMALIZE01,
+          encodingMethod: EncodingMethod.NUMERIC,
+          distanceMetric: value,
+        });
         break;
       case DistanceMetric.JACCARD:
-        setTempProjectionParams({ ...tempProjectionParams, normalizationMethod: NormalizationMethod.NORMALIZE01, encodingMethod: EncodingMethod.NONE, distanceMetric: value });
+        setTempProjectionParams({
+          ...tempProjectionParams,
+          normalizationMethod: NormalizationMethod.NORMALIZE01,
+          encodingMethod: EncodingMethod.NONE,
+          distanceMetric: value,
+        });
         break;
       default:
-        setTempProjectionParams({ ...tempProjectionParams, normalizationMethod: NormalizationMethod.STANDARDIZE, encodingMethod: EncodingMethod.ONEHOT, distanceMetric: value });
+        setTempProjectionParams({
+          ...tempProjectionParams,
+          normalizationMethod: NormalizationMethod.STANDARDIZE,
+          encodingMethod: EncodingMethod.ONEHOT,
+          distanceMetric: value,
+        });
         break;
     }
   };
@@ -171,6 +186,8 @@ function GenericSettingsComp({
   const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<string>>(() => new Set(selection.filter((row) => row.checked).map((row) => row.name)));
 
   const intermediateSetSelection = (selectedFeatures) => {
+    console.log('intermediateSetSelection');
+    console.log(selectedFeatures);
     const filteredFeatures = Array.from(selectedFeatures);
     const nonNumericSelectedColumns = filteredFeatures.filter((col: string) => !columns[col].isNumeric);
 
