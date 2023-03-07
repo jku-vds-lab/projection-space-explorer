@@ -96,16 +96,18 @@ export const DetailsTabPanel = connector(
               {config?.detailsTab?.showClearSelectionButton !== false && (
                 <Box>
                   <Tooltip placement="bottom" title="Clear current selection">
-                    <IconButton
-                      disabled={currentAggregation.aggregation.length <= 0}
-                      onClick={() => {
-                        setAggregation([]);
-                      }}
-                      color="primary"
-                      aria-label="Clear current selection"
-                    >
-                      <Deselect />
-                    </IconButton>
+                    <span>
+                      <IconButton
+                        disabled={currentAggregation.aggregation.length <= 0}
+                        onClick={() => {
+                          setAggregation([]);
+                        }}
+                        color="primary"
+                        aria-label="Clear current selection"
+                      >
+                        <Deselect />
+                      </IconButton>
+                    </span>
                   </Tooltip>
                 </Box>
               )}
@@ -114,15 +116,17 @@ export const DetailsTabPanel = connector(
             <Grid item xs={2}>
               {config?.detailsTab?.showChooseAttributesButton !== false && config?.detailsTab?.showHoverPositionSelect !== false && (
                 <Tooltip placement="bottom" title="Change settings for selection and hover views">
-                  <IconButton
-                    disabled={hoverSettings.windowMode === WindowMode.Extern}
-                    ref={anchorRef}
-                    onClick={() => setOpenSettingsPanel(true)}
-                    color="primary"
-                    aria-label="Open summary visualization in new window"
-                  >
-                    <Settings />
-                  </IconButton>
+                  <span>
+                    <IconButton
+                      disabled={hoverSettings.windowMode === WindowMode.Extern}
+                      ref={anchorRef}
+                      onClick={() => setOpenSettingsPanel(true)}
+                      color="primary"
+                      aria-label="Open summary visualization in new window"
+                    >
+                      <Settings />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               )}
             </Grid>
