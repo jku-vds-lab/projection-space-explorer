@@ -116,17 +116,9 @@ export const DetailsTabPanel = connector(
             <Grid item xs={2}>
               {config?.detailsTab?.showChooseAttributesButton !== false && config?.detailsTab?.showHoverPositionSelect !== false && (
                 <Tooltip placement="bottom" title="Change settings for selection and hover views">
-                  <span>
-                    <IconButton
-                      disabled={hoverSettings.windowMode === WindowMode.Extern}
-                      ref={anchorRef}
-                      onClick={() => setOpenSettingsPanel(true)}
-                      color="primary"
-                      aria-label="Open summary visualization in new window"
-                    >
-                      <Settings />
-                    </IconButton>
-                  </span>
+                  <IconButton ref={anchorRef} onClick={() => setOpenSettingsPanel(true)} color="primary" aria-label="Open summary visualization in new window">
+                    <Settings />
+                  </IconButton>
                 </Tooltip>
               )}
             </Grid>
