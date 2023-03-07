@@ -58,14 +58,14 @@ export function AttributeSelectionTable({
 
   return (
     <div>
-      <Tooltip placement="right" title="These attributes determine what is shown in the hover images when performing a selection">
+      <Tooltip placement="right" title="Choose attributes that are shown in the visualization">
         <Button fullWidth variant="outlined" onClick={openAttributes}>
           {children}
         </Button>
       </Tooltip>
 
       <Dialog fullWidth maxWidth="xl" open={open} onClose={handleClose}>
-        <DialogTitle>Select features you want to be present in the selection view</DialogTitle>
+        <DialogTitle>Choose attributes you want to show in the visualization</DialogTitle>
         <DialogContent>
           <DataGrid
             className="rdg-light"
