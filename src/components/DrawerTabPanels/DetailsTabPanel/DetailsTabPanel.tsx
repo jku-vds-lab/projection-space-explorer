@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { Box, Button, Divider, FormControl, FormControlLabel, FormHelperText, MenuItem, Select, Switch, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Divider, FormControl, FormHelperText, Grid, IconButton, MenuItem, Popover, Select, Switch, Tooltip, Typography } from '@mui/material';
+import { Deselect, OpenInNew, OpenInNewOff, Settings } from '@mui/icons-material';
 import * as React from 'react';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { setHoverWindowMode, WindowMode } from '../../Ducks/HoverSettingsDuck';
@@ -54,6 +55,9 @@ export const DetailsTabPanel = connector(
       setHoverWindowMode(value ? WindowMode.Extern : WindowMode.Embedded);
     };
 
+    const [openSettingsPanel, setOpenSettingsPanel] = React.useState(false);
+    const anchorRef = React.useRef();
+
     const dispatch = useDispatch();
 
     return (
@@ -70,15 +74,110 @@ export const DetailsTabPanel = connector(
           )}
         </Box>
 
-        <Box paddingX={2} paddingTop={1}>
-          <Tooltip placement="right" title="This opens a new window that offers more space for the selection detail image">
+        <Box paddingX={1} paddingTop={1}>
+          <Grid container>
+            <Grid item xs={2}>
+              {hoverSettings.windowMode === WindowMode.Embedded && (
+                <Tooltip placement="bottom" title="This opens a new window that offers more space for the selection detail image">
+                  <IconButton onClick={(e) => handleChange(e, true)} color="primary" aria-label="Open summary visualization in new window">
+                    <OpenInNew />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {hoverSettings.windowMode === WindowMode.Extern && (
+                <Tooltip placement="bottom" title="Close external window">
+                  <IconButton onClick={(e) => handleChange(e, false)} color="primary" aria-label="Open summary visualization in new window">
+                    <OpenInNewOff />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Grid>
+            <Grid item xs={2}>
+              {config?.detailsTab?.showClearSelectionButton !== false && (
+                <Box>
+                  <Tooltip placement="bottom" title="Clear current selection">
+                    <span>
+                      <IconButton
+                        disabled={currentAggregation.aggregation.length <= 0}
+                        onClick={() => {
+                          setAggregation([]);
+                        }}
+                        color="primary"
+                        aria-label="Clear current selection"
+                      >
+                        <Deselect />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </Box>
+              )}
+            </Grid>
+            <Grid item xs={6} />
+            <Grid item xs={2}>
+              {config?.detailsTab?.showChooseAttributesButton !== false && config?.detailsTab?.showHoverPositionSelect !== false && (
+                <Tooltip placement="bottom" title="Change settings for selection and hover views">
+                  <IconButton ref={anchorRef} onClick={() => setOpenSettingsPanel(true)} color="primary" aria-label="Open summary visualization in new window">
+                    <Settings />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Grid>
+          </Grid>
+          <Popover
+            open={openSettingsPanel}
+            anchorEl={anchorRef.current}
+            onClose={() => setOpenSettingsPanel(false)}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+          >
+            <Box paddingX={2} paddingY={2} width={300}>
+              {config?.detailsTab?.showChooseAttributesButton !== false ? (
+                <Box paddingBottom={2}>
+                  <Typography variant="body1">Choose the attributes you want to show in the selection view.</Typography>
+                  <AttributeSelectionTable
+                    attributes={attributes}
+                    setAttributes={(attributes) => {
+                      dispatch(setGenericFingerprintAttributes(attributes));
+                    }}
+                  >
+                    Choose attributes
+                  </AttributeSelectionTable>
+                </Box>
+              ) : null}
+              {config?.detailsTab?.showHoverPositionSelect !== false ? (
+                <FormControl fullWidth style={{ width: '100%' }}>
+                  <Typography variant="body1">Change the position of hover view.</Typography>
+                  {/* <FormHelperText>Hover position</FormHelperText> */}
+                  <Select
+                    color="primary"
+                    displayEmpty
+                    size="small"
+                    value={hoverStateOrientation}
+                    onChange={(event) => {
+                      setHoverStateOrientation(event.target.value);
+                    }}
+                  >
+                    <MenuItem value={HoverStateOrientation.NorthEast}>Top right</MenuItem>
+                    <MenuItem value={HoverStateOrientation.SouthWest}>Bottom left </MenuItem>
+                  </Select>
+                </FormControl>
+              ) : null}
+            </Box>
+          </Popover>
+        </Box>
+        {/* <Box paddingX={2} paddingTop={1}>
             <FormControlLabel
               control={<Switch color="primary" checked={hoverSettings.windowMode === WindowMode.Extern} onChange={handleChange} name="checkedA" />}
               label="External selection view"
             />
-          </Tooltip>
-        </Box>
-        {config?.detailsTab?.showClearSelectionButton !== false ? (
+        </Box> */}
+        {/* {config?.detailsTab?.showClearSelectionButton !== false ? (
           <Box paddingX={2} paddingTop={1}>
             <Button
               variant="outlined"
@@ -90,44 +189,10 @@ export const DetailsTabPanel = connector(
               Clear selection
             </Button>
           </Box>
-        ) : null}
-
-        {config?.detailsTab?.showChooseAttributesButton !== false ? (
-          <Box paddingX={2} paddingTop={1}>
-            <AttributeSelectionTable
-              attributes={attributes}
-              setAttributes={(attributes) => {
-                dispatch(setGenericFingerprintAttributes(attributes));
-              }}
-            >
-              Choose attributes
-            </AttributeSelectionTable>
-          </Box>
-        ) : null}
-
-        {config?.detailsTab?.showHoverPositionSelect !== false ? (
-          <Box paddingX={2} paddingTop={1}>
-            <div style={{ width: '100%' }}>
-              <FormControl style={{ width: '100%' }}>
-                <FormHelperText>Hover position</FormHelperText>
-                <Select
-                  displayEmpty
-                  size="small"
-                  value={hoverStateOrientation}
-                  onChange={(event) => {
-                    setHoverStateOrientation(event.target.value);
-                  }}
-                >
-                  <MenuItem value={HoverStateOrientation.NorthEast}>Top right</MenuItem>
-                  <MenuItem value={HoverStateOrientation.SouthWest}>Bottom left </MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-          </Box>
-        ) : null}
+        ) : null} */}
 
         {config?.detailsTab?.showDivider !== false ? (
-          <Box paddingY={2}>
+          <Box paddingBottom={1} paddingX={0}>
             <Divider orientation="horizontal" />
           </Box>
         ) : null}
