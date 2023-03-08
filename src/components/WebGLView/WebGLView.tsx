@@ -46,6 +46,7 @@ import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck';
 import { Mapping, mappingFromScale } from '../Utility';
 import { ViewActions, SingleMultipleAttributes } from '../Ducks/ViewDuck';
 import { IPosition, IProjection } from '../../model';
+import { toSentenceCase } from '../../utils/helpers';
 
 type ViewState = {
   camera: Camera;
@@ -67,6 +68,7 @@ const mapStateToProps = (state: RootState) => ({
   hoverState: state.hoverState,
   colorScales: state.colorScales,
   pointDisplay: state.pointDisplay,
+  globalLabels: state.globalLabels,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -1611,7 +1613,7 @@ export const WebGLView = connector(
                     handleClose();
                   }}
                 >
-                  Stories ... starting from this group
+                  {toSentenceCase(this.props.globalLabels.storyLabelPlural)} ... starting from this group
                 </MenuItem>
               </>
             ) : null}
@@ -1627,7 +1629,7 @@ export const WebGLView = connector(
                   handleClose();
                 }}
               >
-                Stories ... between 2 groups
+                {toSentenceCase(this.props.globalLabels.storyLabelPlural)} ... between 2 groups
               </MenuItem>
             ) : null}
           </Menu>

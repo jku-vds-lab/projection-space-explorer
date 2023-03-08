@@ -3,9 +3,20 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface GlobalLabelsState {
   itemLabel: string;
   itemLabelPlural: string;
+  storyLabel: string;
+  storyLabelPlural: string;
+  storyBookLabel: string;
+  storyBookLabelPlural: string;
 }
 
-const initialState = { itemLabel: 'item', itemLabelPlural: 'items' } as GlobalLabelsState;
+const initialState = {
+  itemLabel: 'item',
+  itemLabelPlural: 'items',
+  storyLabel: 'story',
+  storyLabelPlural: 'stories',
+  storyBookLabel: 'storybook',
+  storyBookLabelPlural: 'storybooks',
+} as GlobalLabelsState;
 
 const globalLabelsSlice = createSlice({
   name: 'globalLabels',
