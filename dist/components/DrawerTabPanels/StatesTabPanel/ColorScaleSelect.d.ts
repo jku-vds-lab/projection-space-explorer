@@ -73,7 +73,7 @@ export declare const ThumbSlider: import("@emotion/styled").StyledComponent<{
     valueLabelFormat?: string | ((value: number, index: number) => React.ReactNode);
 } & import("@mui/material/OverridableComponent").CommonProps & Omit<Pick<React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, "key" | keyof React.HTMLAttributes<HTMLSpanElement>> & {
     ref?: React.Ref<HTMLSpanElement>;
-}, "name" | "value" | "size" | "track" | keyof import("@mui/material/OverridableComponent").CommonProps | "color" | "scale" | "sx" | "defaultValue" | "tabIndex" | "aria-label" | "aria-labelledby" | "aria-valuetext" | "onChange" | "max" | "min" | "orientation" | "disabled" | "step" | "slotProps" | "slots" | "components" | "componentsProps" | "disableSwap" | "getAriaLabel" | "getAriaValueText" | "marks" | "onChangeCommitted" | "valueLabelDisplay" | "valueLabelFormat"> & import("@mui/system").MUIStyledCommonProps<import("@mui/material").Theme>, {}, {}>;
+}, "value" | "size" | "track" | "name" | keyof import("@mui/material/OverridableComponent").CommonProps | "color" | "scale" | "sx" | "defaultValue" | "tabIndex" | "aria-label" | "aria-labelledby" | "aria-valuetext" | "onChange" | "max" | "min" | "orientation" | "disabled" | "step" | "slotProps" | "slots" | "components" | "componentsProps" | "disableSwap" | "getAriaLabel" | "getAriaValueText" | "marks" | "onChangeCommitted" | "valueLabelDisplay" | "valueLabelFormat"> & import("@mui/system").MUIStyledCommonProps<import("@mui/material").Theme>, {}, {}>;
 /**
  * Renders one color scale with an optional center point.
  */

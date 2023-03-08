@@ -6,6 +6,7 @@ export interface ProjectionColumn {
   normalized: boolean;
   range: string;
   featureLabel: string;
+  weight: number;
 }
 
 const initialState = [] as ProjectionColumn[];
