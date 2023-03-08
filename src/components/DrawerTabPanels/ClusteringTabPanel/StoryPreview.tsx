@@ -106,7 +106,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
                 setEditBook(stories.stories.entities[stories.active]);
               }}
             >
-              Edit Selected
+              Edit selected
             </Button>
           </Tooltip>
         ) : null}
