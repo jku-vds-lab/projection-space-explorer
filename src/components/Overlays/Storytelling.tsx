@@ -19,6 +19,7 @@ import { ACluster } from '../../model/Cluster';
 import { selectClusters } from '../Ducks/AggregationDuck';
 import { StoriesActions, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 import { ICluster } from '../../model/ICluster';
+import { toSentenceCase } from '../../utils/helpers';
 
 const mainColor = '#007dad';
 
@@ -27,6 +28,7 @@ const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
   currentAggregation: state.currentAggregation,
   genericFingerprintAttributes: state.genericFingerprintAttributes,
+  globalLabels: state.globalLabels,
 });
 
 const mapDispatch = (dispatch) => ({
@@ -348,6 +350,7 @@ export const Storytelling = connector(function ({
   setActiveTrace,
   selectSideBranch,
   setSelectedCluster,
+  globalLabels,
 }: Props) {
   if (stories.trace === null || stories.active === null) {
     return null;
@@ -442,7 +445,7 @@ export const Storytelling = connector(function ({
               <CloseIcon />
             </IconButton>
           }
-          title="Storytelling"
+          title={toSentenceCase(globalLabels.storyTellingLabel)}
         />
 
         <div
