@@ -9,7 +9,7 @@ import * as React from 'react';
 import * as THREE from 'three';
 import { connect, ConnectedProps } from 'react-redux';
 import { Camera } from 'three';
-import { Menu, MenuItem } from '@mui/material';
+import { Divider, Menu, MenuItem } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import { getDefaultZoom, arraysEqual, normalizeWheel, interpolateLinear } from './UtilityFunctions';
 import { LassoSelection } from './tools';
@@ -1449,17 +1449,18 @@ export const WebGLView = connector(
             anchorReference="anchorPosition"
             anchorPosition={this.state.menuY !== null && this.state.menuX !== null ? { top: this.state.menuY, left: this.state.menuX } : undefined}
           >
-            <MenuItem
+            {/* <MenuItem
               onClick={() => {
                 handleClose();
                 this.props.addView(this.props.dataset);
               }}
             >
               Create view
-            </MenuItem>
+            </MenuItem> */}
 
             <MenuItem
               data-cy="create-group-from-selection-context-entry"
+              disabled={this.props.currentAggregation.aggregation == null || this.props.currentAggregation.aggregation.length === 0}
               onClick={() => {
                 if (this.props.currentAggregation.aggregation.length > 0) {
                   const cluster = ACluster.fromSamples(this.props.dataset, this.props.currentAggregation.aggregation);
@@ -1487,7 +1488,7 @@ export const WebGLView = connector(
                 handleClose();
               }}
             >
-              Create group from selection
+              Define group from selection
             </MenuItem>
 
             {this.props.dataset?.isSequential && (
@@ -1513,6 +1514,7 @@ export const WebGLView = connector(
               </MenuItem>
             )}
 
+            {this.props.overrideComponents?.contextMenuItems?.length > 0 && <Divider />}
             {this.props.overrideComponents?.contextMenuItems?.map(
               (item, i) =>
                 React.createElement(item, {
@@ -1562,53 +1564,56 @@ export const WebGLView = connector(
             </MenuItem>
 
             {this.props.featureConfig.enableStorytelling !== false ? (
-              <MenuItem
-                onClick={() => {
-                  if (!isCluster(this.state.menuTarget)) {
+              <>
+                <Divider />
+                <MenuItem
+                  onClick={() => {
+                    if (!isCluster(this.state.menuTarget)) {
+                      handleClose();
+                      return;
+                    }
+
+                    const activeStory = AStorytelling.getActive(this.props.stories);
+
+                    const paths = ABook.getAllStoriesFromSource(
+                      activeStory,
+                      Object.entries(activeStory.clusters.entities).find(([key, val]) => val === this.state.menuTarget)[0],
+                    );
+
+                    if (paths.length > 0) {
+                      const mainPath = paths[0];
+                      const mainEdges = mainPath.slice(1).map((item, index) => {
+                        const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
+                          ([key, edge]) => edge.source === mainPath[index] && edge.destination === item,
+                        );
+                        return resultEdgeKey;
+                      });
+                      this.props.setActiveTrace({
+                        mainPath,
+                        mainEdges,
+                        sidePaths: paths.slice(1).map((ids) => {
+                          const path = ids;
+                          const edges = path.slice(1).map((item, index) => {
+                            const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
+                              ([key, edge]) => edge.source === path[index] && edge.destination === item,
+                            );
+                            return resultEdgeKey;
+                          });
+                          return {
+                            nodes: path,
+                            edges,
+                            syncNodes: getSyncNodesAlt(mainPath, path),
+                          };
+                        }),
+                      });
+                    }
+
                     handleClose();
-                    return;
-                  }
-
-                  const activeStory = AStorytelling.getActive(this.props.stories);
-
-                  const paths = ABook.getAllStoriesFromSource(
-                    activeStory,
-                    Object.entries(activeStory.clusters.entities).find(([key, val]) => val === this.state.menuTarget)[0],
-                  );
-
-                  if (paths.length > 0) {
-                    const mainPath = paths[0];
-                    const mainEdges = mainPath.slice(1).map((item, index) => {
-                      const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
-                        ([key, edge]) => edge.source === mainPath[index] && edge.destination === item,
-                      );
-                      return resultEdgeKey;
-                    });
-                    this.props.setActiveTrace({
-                      mainPath,
-                      mainEdges,
-                      sidePaths: paths.slice(1).map((ids) => {
-                        const path = ids;
-                        const edges = path.slice(1).map((item, index) => {
-                          const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
-                            ([key, edge]) => edge.source === path[index] && edge.destination === item,
-                          );
-                          return resultEdgeKey;
-                        });
-                        return {
-                          nodes: path,
-                          edges,
-                          syncNodes: getSyncNodesAlt(mainPath, path),
-                        };
-                      }),
-                    });
-                  }
-
-                  handleClose();
-                }}
-              >
-                Stories ... starting from this group
-              </MenuItem>
+                  }}
+                >
+                  Stories ... starting from this group
+                </MenuItem>
+              </>
             ) : null}
             {this.props.featureConfig.enableStorytelling !== false ? (
               <MenuItem
