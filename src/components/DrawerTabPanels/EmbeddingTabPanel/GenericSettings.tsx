@@ -186,8 +186,6 @@ function GenericSettingsComp({
   const [selectedRows, setSelectedRows] = React.useState<ReadonlySet<string>>(() => new Set(selection.filter((row) => row.checked).map((row) => row.name)));
 
   const intermediateSetSelection = (selectedFeatures) => {
-    console.log('intermediateSetSelection');
-    console.log(selectedFeatures);
     const filteredFeatures = Array.from(selectedFeatures);
     const nonNumericSelectedColumns = filteredFeatures.filter((col: string) => !columns[col].isNumeric);
 

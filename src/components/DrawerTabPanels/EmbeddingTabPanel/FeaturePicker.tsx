@@ -81,7 +81,7 @@ export function FeaturePicker({
           const [t, setT] = React.useState(Date.now());
           const inputRef = React.useRef<HTMLInputElement>();
 
-          const value = Math.round(props.childRows.reduce((acc, row) => acc + Number.parseFloat(row.weight), 0) * 1000) / 1000;
+          const value = Math.round(props.childRows.reduce((acc, row) => acc + +row.weight, 0) * 1000) / 1000;
 
           return (
             <input
