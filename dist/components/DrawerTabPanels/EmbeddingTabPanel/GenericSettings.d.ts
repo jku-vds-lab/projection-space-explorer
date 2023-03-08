@@ -3,7 +3,7 @@ import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';
 import { EncodingMethod } from '../../../model/EncodingMethod';
 import type { ProjectionColumn } from '../../Ducks';
-import { EmbeddingMethod } from '../../../BaseConfig';
+import { EmbeddingMethod, FeatureConfig } from '../../../BaseConfig';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     projectionColumns: ProjectionColumn[];
     projectionParams: {
@@ -27,11 +27,12 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
     domainSettings: EmbeddingMethod;
+    featureConfig: FeatureConfig;
     open: boolean;
     onClose: any;
     onStart: any;
 };
-declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns, columns }: Props): JSX.Element;
+declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns, columns, featureConfig, }: Props): JSX.Element;
 export declare const GenericSettings: import("react-redux").ConnectedComponent<typeof GenericSettingsComp, import("react-redux").Omit<{
     projectionColumns: ProjectionColumn[];
     projectionParams: {
@@ -53,6 +54,7 @@ export declare const GenericSettings: import("react-redux").ConnectedComponent<t
     setProjectionParams: (value: any) => any;
 } & {
     domainSettings: EmbeddingMethod;
+    featureConfig: FeatureConfig;
     open: boolean;
     onClose: any;
     onStart: any;

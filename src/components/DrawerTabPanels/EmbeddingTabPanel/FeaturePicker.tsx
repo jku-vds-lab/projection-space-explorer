@@ -3,21 +3,24 @@
 /* eslint-disable react/no-this-in-sfc */
 /* eslint-disable react/function-component-definition */
 import * as React from 'react';
-import DataGrid, { SelectColumn, SelectCellFormatter, GroupFormatterProps, Column } from 'react-data-grid';
+import DataGrid, { SelectColumn, SelectCellFormatter, GroupFormatterProps, Column, textEditor } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
 import { DefaultFeatureLabel } from '../../../model/Dataset';
 import type { ProjectionColumn } from '../../Ducks';
+import { FeatureConfig } from '../../../BaseConfig';
 
 export function FeaturePicker({
   selection,
   setSelection,
   selectedRows,
   setSelectedRows,
+  featureConfig,
 }: {
   selection: ProjectionColumn[];
   setSelection;
   selectedRows;
   setSelectedRows;
+  featureConfig: FeatureConfig;
 }) {
   const [expandedGroupIds, setExpandedGroupIds] = React.useState<ReadonlySet<unknown>>(
     () => new Set<unknown>(Object.keys(rowGrouper(selection, 'featureLabel')).includes(DefaultFeatureLabel) ? [DefaultFeatureLabel] : []),
@@ -26,8 +29,8 @@ export function FeaturePicker({
   const ref = React.useRef<any>();
   ref.current = () => setSelection([...selection]);
 
-  const columns = React.useMemo<Column<ProjectionColumn>[]>(
-    () => [
+  const columns = React.useMemo<Column<ProjectionColumn>[]>(() => {
+    const colLst = [
       SelectColumn,
       { key: 'featureLabel', name: 'Group', width: 250 },
       { key: 'name', name: 'Name' },
@@ -67,9 +70,51 @@ export function FeaturePicker({
         name: 'Range',
         width: 250,
       },
-    ],
-    [],
-  );
+    ];
+    if (featureConfig?.enableFeatureWeighing) {
+      colLst.push({
+        key: 'weight',
+        name: 'Weight (beta: only for Gower)',
+        width: 200,
+        editor: textEditor,
+        groupFormatter(props: GroupFormatterProps<ProjectionColumn>) {
+          const [t, setT] = React.useState(Date.now());
+          const inputRef = React.useRef<HTMLInputElement>();
+
+          const value = Math.round(props.childRows.reduce((acc, row) => acc + +row.weight, 0) * 1000) / 1000;
+
+          return (
+            <input
+              ref={inputRef}
+              style={{ width: 70 }}
+              onFocus={(event) => {
+                setT(Date.now());
+              }}
+              value={value}
+              type="number"
+              onChange={(event) => {
+                const value = Number.parseFloat(event.target.value);
+                if (!Number.isNaN(value)) {
+                  props.childRows.forEach((row) => {
+                    row.weight = value / props.childRows.length;
+                  });
+                  ref.current();
+                }
+              }}
+              onBlur={(event) => {
+                const delta = (Date.now() - t) / 1000;
+                if (delta < 0.25) {
+                  inputRef.current.focus();
+                  inputRef.current.select();
+                }
+              }}
+            />
+          );
+        },
+      });
+    }
+    return colLst;
+  }, [featureConfig?.enableFeatureWeighing]);
 
   return (
     <DataGrid
