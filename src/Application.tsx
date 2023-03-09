@@ -204,11 +204,15 @@ export const Application = connector(
 
               <Tooltip
                 placement="right"
-                title={this.props.dataset !== null ?
-                  <>
-                    <Typography variant="subtitle2">Embedding and projection</Typography>
-                    <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
-                  </> : ""
+                title={
+                  this.props.dataset !== null ? (
+                    <>
+                      <Typography variant="subtitle2">Embedding and projection</Typography>
+                      <Typography variant="body2">Perform projection techniques like t-SNE, UMAP, or a force-directly layout with your data.</Typography>
+                    </>
+                  ) : (
+                    ''
+                  )
                 }
               >
                 <Tab
@@ -229,13 +233,17 @@ export const Application = connector(
 
               <Tooltip
                 placement="right"
-                title={this.props.dataset !== null ?
-                  <>
-                    <Typography variant="subtitle2">Point and line channels</Typography>
-                    <Typography variant="body2">
-                      Contains settings that let you map different channels like brightness and color on point and line attributes.
-                    </Typography>
-                  </> : ""
+                title={
+                  this.props.dataset !== null ? (
+                    <>
+                      <Typography variant="subtitle2">Point and line channels</Typography>
+                      <Typography variant="body2">
+                        Contains settings that let you map different channels like brightness and color on point and line attributes.
+                      </Typography>
+                    </>
+                  ) : (
+                    ''
+                  )
                 }
               >
                 <Tab
@@ -256,11 +264,15 @@ export const Application = connector(
 
               <Tooltip
                 placement="right"
-                title={this.props.dataset !== null ?
-                  <>
-                    <Typography variant="subtitle2">Groups</Typography>
-                    <Typography variant="body2">Contains options for displaying and navigating groups in the dataset.</Typography>
-                  </> : ""
+                title={
+                  this.props.dataset !== null ? (
+                    <>
+                      <Typography variant="subtitle2">Groups</Typography>
+                      <Typography variant="body2">Contains options for displaying and navigating groups in the dataset.</Typography>
+                    </>
+                  ) : (
+                    ''
+                  )
                 }
               >
                 <Tab
@@ -281,13 +293,17 @@ export const Application = connector(
 
               <Tooltip
                 placement="right"
-                title={this.props.dataset !== null ?
-                  <>
-                    <Typography variant="subtitle2">{`Hovered and selected ${this.props.globalLabels.itemLabel}`}</Typography>
-                    <Typography variant="body2">
-                      {toSentenceCase(`Contains information about the hovered or selected ${this.props.globalLabels.itemLabelPlural}.`)}
-                    </Typography>
-                  </> : ""
+                title={
+                  this.props.dataset !== null ? (
+                    <>
+                      <Typography variant="subtitle2">{`Hovered and selected ${this.props.globalLabels.itemLabel}`}</Typography>
+                      <Typography variant="body2">
+                        {toSentenceCase(`Contains information about the hovered or selected ${this.props.globalLabels.itemLabelPlural}.`)}
+                      </Typography>
+                    </>
+                  ) : (
+                    ''
+                  )
                 }
               >
                 <Tab
@@ -308,15 +324,19 @@ export const Application = connector(
               </Tooltip>
 
               {this.props.features?.showTabularTab !== false && this.props.overrideComponents?.detailViews?.length > 0 ? (
-                <Tooltip 
+                <Tooltip
                   placement="right"
-                  title={this.props.dataset !== null ?
-                    <>
-                      <Typography variant="subtitle2">{`Tabular views of the ${this.props.globalLabels.itemLabelPlural}`}</Typography>
-                      <Typography variant="body2">
-                        {toSentenceCase(`Contains settings of the tabular views for the ${this.props.globalLabels.itemLabelPlural}.`)}
-                      </Typography>
-                    </> : ""
+                  title={
+                    this.props.dataset !== null ? (
+                      <>
+                        <Typography variant="subtitle2">{`Tabular views of the ${this.props.globalLabels.itemLabelPlural}`}</Typography>
+                        <Typography variant="body2">
+                          {toSentenceCase(`Contains settings of the tabular views for the ${this.props.globalLabels.itemLabelPlural}.`)}
+                        </Typography>
+                      </>
+                    ) : (
+                      ''
+                    )
                   }
                 >
                   <Tab
@@ -341,11 +361,15 @@ export const Application = connector(
                   <Tooltip
                     key={`tooltip${tab.name}`}
                     placement="right"
-                    title={ this.props.dataset !== null ?
-                      <>
-                        <Typography variant="subtitle2">{tab.title}</Typography>
-                        <Typography variant="body2">{tab.description}</Typography>
-                      </> : ""
+                    title={
+                      this.props.dataset !== null ? (
+                        <>
+                          <Typography variant="subtitle2">{tab.title}</Typography>
+                          <Typography variant="body2">{tab.description}</Typography>
+                        </>
+                      ) : (
+                        ''
+                      )
                     }
                   >
                     <Tab

@@ -1564,9 +1564,7 @@ export const WebGLView = connector(
             >
               Delete group
             </MenuItem>
-            {this.props.featureConfig.enableStorytelling !== false ? (
-              <Divider />
-            ) : null}
+            {this.props.featureConfig.enableStorytelling !== false ? <Divider /> : null}
             {this.props.featureConfig.enableStorytelling !== false ? (
               <MenuItem
                 onClick={() => {
