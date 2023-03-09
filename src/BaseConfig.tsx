@@ -77,7 +77,7 @@ export type FeatureConfig = Partial<{
     showChooseAttributesButton: boolean;
     showDivider: boolean;
   }>;
-  enableStorytelling: boolean;
+  enableStorytelling?: boolean;
   detailViewSplitRatio: [number, number];
 }>;
 

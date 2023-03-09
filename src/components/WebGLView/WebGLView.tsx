@@ -1564,58 +1564,57 @@ export const WebGLView = connector(
             >
               Delete group
             </MenuItem>
-
             {this.props.featureConfig.enableStorytelling !== false ? (
-              <>
-                <Divider />
-                <MenuItem
-                  onClick={() => {
-                    if (!isCluster(this.state.menuTarget)) {
-                      handleClose();
-                      return;
-                    }
-
-                    const activeStory = AStorytelling.getActive(this.props.stories);
-
-                    const paths = ABook.getAllStoriesFromSource(
-                      activeStory,
-                      Object.entries(activeStory.clusters.entities).find(([key, val]) => val === this.state.menuTarget)[0],
-                    );
-
-                    if (paths.length > 0) {
-                      const mainPath = paths[0];
-                      const mainEdges = mainPath.slice(1).map((item, index) => {
-                        const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
-                          ([key, edge]) => edge.source === mainPath[index] && edge.destination === item,
-                        );
-                        return resultEdgeKey;
-                      });
-                      this.props.setActiveTrace({
-                        mainPath,
-                        mainEdges,
-                        sidePaths: paths.slice(1).map((ids) => {
-                          const path = ids;
-                          const edges = path.slice(1).map((item, index) => {
-                            const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
-                              ([key, edge]) => edge.source === path[index] && edge.destination === item,
-                            );
-                            return resultEdgeKey;
-                          });
-                          return {
-                            nodes: path,
-                            edges,
-                            syncNodes: getSyncNodesAlt(mainPath, path),
-                          };
-                        }),
-                      });
-                    }
-
+              <Divider />
+            ) : null}
+            {this.props.featureConfig.enableStorytelling !== false ? (
+              <MenuItem
+                onClick={() => {
+                  if (!isCluster(this.state.menuTarget)) {
                     handleClose();
-                  }}
-                >
-                  {toSentenceCase(this.props.globalLabels.storyLabelPlural)} ... starting from this group
-                </MenuItem>
-              </>
+                    return;
+                  }
+
+                  const activeStory = AStorytelling.getActive(this.props.stories);
+
+                  const paths = ABook.getAllStoriesFromSource(
+                    activeStory,
+                    Object.entries(activeStory.clusters.entities).find(([key, val]) => val === this.state.menuTarget)[0],
+                  );
+
+                  if (paths.length > 0) {
+                    const mainPath = paths[0];
+                    const mainEdges = mainPath.slice(1).map((item, index) => {
+                      const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
+                        ([key, edge]) => edge.source === mainPath[index] && edge.destination === item,
+                      );
+                      return resultEdgeKey;
+                    });
+                    this.props.setActiveTrace({
+                      mainPath,
+                      mainEdges,
+                      sidePaths: paths.slice(1).map((ids) => {
+                        const path = ids;
+                        const edges = path.slice(1).map((item, index) => {
+                          const [resultEdgeKey, _] = Object.entries(activeStory.edges.entities).find(
+                            ([key, edge]) => edge.source === path[index] && edge.destination === item,
+                          );
+                          return resultEdgeKey;
+                        });
+                        return {
+                          nodes: path,
+                          edges,
+                          syncNodes: getSyncNodesAlt(mainPath, path),
+                        };
+                      }),
+                    });
+                  }
+
+                  handleClose();
+                }}
+              >
+                {toSentenceCase(this.props.globalLabels.storyLabelPlural)} ... starting from this group
+              </MenuItem>
             ) : null}
             {this.props.featureConfig.enableStorytelling !== false ? (
               <MenuItem
