@@ -151,7 +151,7 @@ export const DetailsTabPanel = connector(
                 </Box>
               ) : null}
               {config?.detailsTab?.showHoverPositionSelect !== false ? (
-                <FormControl fullWidth style={{ width: '100%' }}>
+                <FormControl style={{ width: '100%' }}>
                   <Typography variant="body1">Change the position of hover view.</Typography>
                   {/* <FormHelperText>Hover position</FormHelperText> */}
                   <Select

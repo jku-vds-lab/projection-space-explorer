@@ -12,6 +12,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         source: "sample" | "cluster";
     };
     genericFingerprintAttributes: any[];
+    globalLabels: import("..").GlobalLabelsState;
 } & {
     addClusterToTrace: (cluster: ICluster) => any;
     setActiveTraceState: (cluster: EntityId) => any;
@@ -23,7 +24,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
     dataset: Dataset;
 };
-export declare const Storytelling: import("react-redux").ConnectedComponent<({ dataset, stories, currentAggregation, addClusterToTrace, setActiveTraceState, setActiveTrace, selectSideBranch, setSelectedCluster, }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const Storytelling: import("react-redux").ConnectedComponent<({ dataset, stories, currentAggregation, addClusterToTrace, setActiveTraceState, setActiveTrace, selectSideBranch, setSelectedCluster, globalLabels, }: Props) => JSX.Element, import("react-redux").Omit<{
     dataset: Dataset;
     stories: IStorytelling;
     currentAggregation: {
@@ -32,6 +33,7 @@ export declare const Storytelling: import("react-redux").ConnectedComponent<({ d
         source: "sample" | "cluster";
     };
     genericFingerprintAttributes: any[];
+    globalLabels: import("..").GlobalLabelsState;
 } & {
     addClusterToTrace: (cluster: ICluster) => any;
     setActiveTraceState: (cluster: EntityId) => any;
@@ -40,6 +42,6 @@ export declare const Storytelling: import("react-redux").ConnectedComponent<({ d
     setSelectedCluster: (clusters: EntityId[], shift: any) => any;
 } & {
     dataset: Dataset;
-}, "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "addClusterToTrace" | "currentAggregation" | "dataset" | "genericFingerprintAttributes" | "setSelectedCluster">>;
+}, "dataset" | "stories" | "selectSideBranch" | "setActiveTraceState" | "setActiveTrace" | "addClusterToTrace" | "globalLabels" | "currentAggregation" | "genericFingerprintAttributes" | "setSelectedCluster">>;
 export {};
 //# sourceMappingURL=Storytelling.d.ts.map

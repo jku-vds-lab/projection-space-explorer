@@ -9,6 +9,40 @@ import { DefaultFeatureLabel } from '../../../model/Dataset';
 import type { ProjectionColumn } from '../../Ducks';
 import { FeatureConfig } from '../../../BaseConfig';
 
+function WeightFormatter(props: GroupFormatterProps<ProjectionColumn> & { updateRef: React.RefObject<() => void> }) {
+  const [t, setT] = React.useState(Date.now());
+  const inputRef = React.useRef<HTMLInputElement>();
+  const value = Math.round(props.childRows.reduce((acc, row) => acc + +row.weight, 0) * 1000) / 1000;
+
+  return (
+    <input
+      ref={inputRef}
+      style={{ width: 70 }}
+      onFocus={(event) => {
+        setT(Date.now());
+      }}
+      value={value}
+      type="number"
+      onChange={(event) => {
+        const value = Number.parseFloat(event.target.value);
+        if (!Number.isNaN(value)) {
+          props.childRows.forEach((row) => {
+            row.weight = value / props.childRows.length;
+          });
+          props.updateRef.current();
+        }
+      }}
+      onBlur={(event) => {
+        const delta = (Date.now() - t) / 1000;
+        if (delta < 0.25) {
+          inputRef.current.focus();
+          inputRef.current.select();
+        }
+      }}
+    />
+  );
+}
+
 export function FeaturePicker({
   selection,
   setSelection,
@@ -77,40 +111,7 @@ export function FeaturePicker({
         name: 'Weight (beta: only for Gower)',
         width: 200,
         editor: textEditor,
-        groupFormatter(props: GroupFormatterProps<ProjectionColumn>) {
-          const [t, setT] = React.useState(Date.now());
-          const inputRef = React.useRef<HTMLInputElement>();
-
-          const value = Math.round(props.childRows.reduce((acc, row) => acc + +row.weight, 0) * 1000) / 1000;
-
-          return (
-            <input
-              ref={inputRef}
-              style={{ width: 70 }}
-              onFocus={(event) => {
-                setT(Date.now());
-              }}
-              value={value}
-              type="number"
-              onChange={(event) => {
-                const value = Number.parseFloat(event.target.value);
-                if (!Number.isNaN(value)) {
-                  props.childRows.forEach((row) => {
-                    row.weight = value / props.childRows.length;
-                  });
-                  ref.current();
-                }
-              }}
-              onBlur={(event) => {
-                const delta = (Date.now() - t) / 1000;
-                if (delta < 0.25) {
-                  inputRef.current.focus();
-                  inputRef.current.select();
-                }
-              }}
-            />
-          );
-        },
+        groupFormatter: (props) => <WeightFormatter {...props} updateRef={ref} />,
       });
     }
     return colLst;

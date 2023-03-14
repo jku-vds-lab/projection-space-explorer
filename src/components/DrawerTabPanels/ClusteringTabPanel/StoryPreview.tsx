@@ -7,9 +7,11 @@ import { IBook } from '../../../model/Book';
 import type { RootState } from '../../Store/Store';
 import { StoriesActions, AStorytelling } from '../../Ducks/StoriesDuck';
 import { EditBookDialog } from '../EmbeddingTabPanel/EditBookDialog';
+import { toSentenceCase } from '../../../utils/helpers';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
+  globalLabels: state.globalLabels,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -24,7 +26,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux;
 
-export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, addStory }: Props) => {
+export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, addStory, globalLabels }: Props) => {
   const [editBook, setEditBook] = useState<IBook>(null);
 
   const deleteHandler = (story) => {
@@ -50,7 +52,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
       }}
     >
       <FormControl>
-        <FormHelperText>Active story book</FormHelperText>
+        <FormHelperText>Active {globalLabels.storyBookLabel}</FormHelperText>
         <Select
           displayEmpty
           size="small"
@@ -68,7 +70,10 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
               .map((story) => {
                 return (
                   <ListItem key={story.id} button {...{ value: story.id }}>
-                    <ListItemText primary={story.name ?? 'Storybook'} secondary={`${Object.keys(story.clusters.entities).length} nodes`} />
+                    <ListItemText
+                      primary={toSentenceCase(story.name ?? globalLabels.storyBookLabel)}
+                      secondary={`${Object.keys(story.clusters.entities).length} nodes`}
+                    />
                   </ListItem>
                 );
               })}
@@ -76,7 +81,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
       </FormControl>
 
       <Grid container direction="row" alignItems="center" justifyContent="space-between">
-        <Tooltip placement="bottom" title="Creates an empty storybook (group and edge container) that can be used to save groups">
+        <Tooltip placement="bottom" title={`Creates an empty ${globalLabels.storyBookLabel} (group and edge container) that can be used to save groups`}>
           <Button
             style={{
               marginTop: '16px',
@@ -90,7 +95,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
         </Tooltip>
 
         {stories.active ? (
-          <Tooltip placement="bottom" title="Opens a dialog that allows to edit the currently selected storybook (group and edge container)">
+          <Tooltip placement="bottom" title={`Opens a dialog that allows to edit the currently selected ${globalLabels.storyBookLabel}`}>
             <Button
               style={{
                 marginTop: '16px',
@@ -101,7 +106,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
                 setEditBook(stories.stories.entities[stories.active]);
               }}
             >
-              Edit Selected
+              Edit selected
             </Button>
           </Tooltip>
         ) : null}
