@@ -5,9 +5,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         learningRate: number;
         nNeighbors: number;
         iterations: number;
-        /**
-         * Styles for the projection card that allows to stop/resume projection steps.
-         */
         seeded: boolean;
         useSelection: boolean;
         method: string;
@@ -34,9 +31,6 @@ export declare const ProjectionControlCard: import("react-redux").ConnectedCompo
         learningRate: number;
         nNeighbors: number;
         iterations: number;
-        /**
-         * Styles for the projection card that allows to stop/resume projection steps.
-         */
         seeded: boolean;
         useSelection: boolean;
         method: string;
