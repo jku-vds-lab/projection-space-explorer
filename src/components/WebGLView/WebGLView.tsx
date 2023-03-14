@@ -71,7 +71,6 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   activateView: (id: EntityId) => dispatch(ViewActions.activateView(id)),
-  addView: (dataset: Dataset) => dispatch(ViewActions.addView(dataset)),
   selectVectors: (vectors: number[], shiftKey: boolean) => dispatch(selectVectors(vectors, shiftKey)),
   setActiveLine: (activeLine) => dispatch(setActiveLine(activeLine)),
   setViewTransform: (camera, width, height, multipleId) => dispatch(setViewTransform(camera, width, height, multipleId)),
@@ -1449,15 +1448,6 @@ export const WebGLView = connector(
             anchorReference="anchorPosition"
             anchorPosition={this.state.menuY !== null && this.state.menuX !== null ? { top: this.state.menuY, left: this.state.menuX } : undefined}
           >
-            {/* <MenuItem
-              onClick={() => {
-                handleClose();
-                this.props.addView(this.props.dataset);
-              }}
-            >
-              Create view
-            </MenuItem> */}
-
             <MenuItem
               data-cy="create-group-from-selection-context-entry"
               disabled={this.props.currentAggregation.aggregation == null || this.props.currentAggregation.aggregation.length === 0}

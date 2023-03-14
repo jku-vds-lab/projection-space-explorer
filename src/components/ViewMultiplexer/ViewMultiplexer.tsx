@@ -101,7 +101,7 @@ function WebView({
             <IconButton
               size="small"
               data-cy="split-view-button"
-              onClick={() => dispatch(ViewActions.addView(dataset))}
+              onClick={() => dispatch(ViewActions.addView({ id, dataset }))}
               style={{ visibility: value.id === multiples.multiples.ids[0] ? 'visible' : 'hidden' }}
             >
               <SplitscreenIcon />

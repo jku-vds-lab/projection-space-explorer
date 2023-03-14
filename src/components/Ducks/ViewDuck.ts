@@ -134,11 +134,10 @@ const allReducers = {
   workspace: workspaceReducer,
 };
 
-const addView = createAction<Dataset>('view/addView');
+const addView = createAction<{ dataset: Dataset; id: EntityId }>('view/addView');
 const activateView = createAction<EntityId>('view/activateView');
 const deleteView = createAction<EntityId>('view/deleteView');
 const loadById = createAction<EntityId>('view/loadById');
-const add = createAction<IProjection>('view/add');
 const copyFromWorkspace = createAction('view/copyFromWorkspace');
 const updateActive = createAction<{ positions: IPosition[]; metadata: any }>('view/updateActive');
 const remove = createAction<EntityId>('view/remove');
@@ -179,14 +178,18 @@ export function createViewDuckReducer<T>(
           }
         })
         .addCase(addView, (state, action) => {
-          const defaultAtts = defaultAttributes(action.payload);
-          // if(state.multiples.ids.length > 0){ // if there is a default view, initialize the viewTransform with those
-          //   defaultAtts.viewTransform = state.multiples.entities[state.multiples.ids[0]].attributes.viewTransform
-          // }
-          multipleAdapter.addOne(state.multiples, {
+          const defaultAtts = defaultAttributes(action.payload.dataset);
+          
+          const copyFrom = state.multiples.entities[action.payload.id];
+
+          const newView = {
             id: uuidv4(),
             attributes: viewReducer(defaultAtts, { type: '' }),
-          });
+          };
+
+          newView.attributes.workspace = copyFrom.attributes.workspace;
+
+          multipleAdapter.addOne(state.multiples, newView);
         })
         .addCase(activateView, (state, action) => {
           state.active = action.payload;
@@ -200,9 +203,6 @@ export function createViewDuckReducer<T>(
         .addCase(loadById, (state, action) => {
           const active = state.multiples.entities[state.active];
           active.attributes.workspace = action.payload;
-        })
-        .addCase(add, (state, action) => {
-          projectionAdapter.addOne(state.projections, action.payload);
         })
         .addCase(copyFromWorkspace, (state) => {
           const active = state.multiples.entities[state.active];
@@ -322,7 +322,6 @@ export const ViewActions = {
   activateView,
   deleteView,
   loadById,
-  add,
   copyFromWorkspace,
   updateActive,
   remove,
