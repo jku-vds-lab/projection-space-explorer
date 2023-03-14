@@ -9,7 +9,7 @@ import { ADataset, Dataset } from './Dataset';
 export class AProjection {
   static createProjection(positions: IBaseProjection, name, metadata?: any): IProjection {
     const hash = uuidv4();
-    const bounds = this.calculateBoundsFromPositions(positions);
+    const bounds = AProjection.calculateBoundsFromPositions(positions);
 
     const deriveName = (metadata: ProjectionParamsType) => {
       const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
@@ -91,7 +91,7 @@ export class AProjection {
    */
   static calculateBounds(dataset: Dataset, xChannel, yChannel, positions?) {
     const spatial = ADataset.getSpatialData(dataset, xChannel, yChannel, positions);
-
-    return this.calculateBoundsFromPositions(spatial);
+    
+    return AProjection.calculateBoundsFromPositions(spatial);
   }
 }

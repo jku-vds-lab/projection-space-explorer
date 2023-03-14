@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { createEntityAdapter, EntityState, EntityId } from '@reduxjs/toolkit';
+import { createEntityAdapter, EntityState, EntityId, createReducer } from '@reduxjs/toolkit';
 import { combineReducers, Reducer, ReducersMapObject } from 'redux';
 import clone from 'fast-clone';
 import { useSelector } from 'react-redux';
@@ -364,30 +364,37 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
       state.globalLabels = globalLabels;
     }
 
-    if (action.type === RootActionTypes.HYDRATE) {
-      const newState = { ...state };
+    switch (action.type) {
+      case RootActionTypes.HYDRATE: {
+        const newState = { ...state };
 
-      Object.assign(newState, action.dump);
+        Object.assign(newState, action.dump);
 
-      return newState;
-    }
-
-    if (action.type === RootActionTypes.DATASET) {
-      const newState = { ...state };
-
-      const partialRootState = createInitialReducerState(action.dataset);
-      partialRootState.dataset = action.dataset;
-      Object.assign(newState, partialRootState);
-
-      return newState;
-    }
-
-    if (action.type === RootActionTypes.HARD_RESET) {
-      const clone = { ...state };
-      for (const key of Object.keys(allReducers)) {
-        clone[key] = undefined;
+        return newState;
       }
-      state = clone;
+      case RootActionTypes.DATASET: {
+        const newState = { ...state };
+
+        const partialRootState = createInitialReducerState(action.dataset);
+        partialRootState.dataset = action.dataset;
+        Object.assign(newState, partialRootState);
+
+        return newState;
+      }
+      case RootActionTypes.HARD_RESET: {
+        const clone = { ...state };
+        for (const key of Object.keys(allReducers)) {
+          clone[key] = undefined;
+        }
+        state = clone;
+      }
+      case RootActionTypes.ADD_DATA: {
+        const newState = { ...state };
+
+        newState.dataset = { ...newState.dataset, vectors: [...newState.dataset.vectors, ...action.payload.data] };
+
+        return newState;
+      }
     }
 
     return combined(state, action) as RootState & T;

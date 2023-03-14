@@ -282,10 +282,10 @@ export function createViewDuckReducer<T>(
 
           if (action.payload.channel === 'x') {
             active.workspace.xChannel = action.payload.value;
-            active.workspace.bounds = AProjection.calculateBounds(action.payload.dataset, action.payload.value, undefined, undefined);
-          } else {
+            active.workspace.bounds = AProjection.calculateBounds(action.payload.dataset, action.payload.value, active.workspace.yChannel, active.workspace.positions);
+          } else if (action.payload.channel === 'y') {
             active.workspace.yChannel = action.payload.value;
-            active.workspace.bounds = AProjection.calculateBounds(action.payload.dataset, undefined, action.payload.value, undefined);
+            active.workspace.bounds = AProjection.calculateBounds(action.payload.dataset, active.workspace.xChannel, action.payload.value, active.workspace.positions);
           }
 
           if (!active.workspace.xChannel && !active.workspace.yChannel) {

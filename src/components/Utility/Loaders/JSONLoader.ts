@@ -6,7 +6,7 @@ import { DatasetType } from '../../../model/DatasetType';
 import { AVector, IVector } from '../../../model/Vector';
 import { InferCategory } from '../Data/InferCategory';
 import { Preprocessor } from '../Data/Preprocessor';
-import { Dataset } from '../../../model/Dataset';
+import { ADataset, Dataset } from '../../../model/Dataset';
 import { ICluster } from '../../../model/ICluster';
 import { IEdge } from '../../../model/Edge';
 import { ObjectTypes } from '../../../model/ObjectType';
@@ -195,13 +195,13 @@ export class JSONLoader implements Loader {
     const hasScalarTypes = header.includes('x') && header.includes('y');
     [ranges, inferredColumns] = preprocessor.preprocess(ranges);
 
-    const dataset = new Dataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation);
+    const dataset = ADataset.createDataset(this.vectors, ranges, { type: this.datasetType, path: entry.path }, types, metaInformation);
     dataset.hasInitialScalarTypes = hasScalarTypes;
 
     dataset.clusters = clusters;
     dataset.clusterEdges = edges;
     dataset.inferredColumns = inferredColumns;
-    dataset.categories = dataset.extractEncodingFeatures();
+    dataset.categories = ADataset.extractEncodingFeatures(dataset.columns);
 
     finished(dataset);
   }

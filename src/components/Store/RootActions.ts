@@ -1,10 +1,11 @@
-import { Dataset } from '../../model';
+import { Dataset, IVector } from '../../model';
 
 export enum RootActionTypes {
   RESET = 'root/RESET',
   HYDRATE = 'root/HYDRATE',
   DATASET = 'root/DATASET',
   HARD_RESET = 'root/HARD_RESET',
+  ADD_DATA = 'root/ADD_DATA',
 }
 
 export const RootActions = {
@@ -16,6 +17,11 @@ export const RootActions = {
   hydrate: (dump: any) => ({
     type: RootActionTypes.HYDRATE,
     dump,
+  }),
+
+  addData: <T extends IVector>(data: T) => ({
+    type: RootActionTypes.ADD_DATA,
+    data,
   }),
 
   loadDataset: (dataset: Dataset) => ({
