@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogTitle, DialogActions, Tooltip } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, DialogActions, Tooltip, DialogContentText } from '@mui/material';
 import * as React from 'react';
 import DataGrid, { SelectColumn } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
@@ -81,6 +81,9 @@ export function AttributeSelectionTable({
           />
         </DialogContent>
         <DialogActions>
+          <Button color="primary" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
           <Button onClick={handleClose}>Save</Button>
         </DialogActions>
       </Dialog>
