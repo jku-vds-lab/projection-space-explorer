@@ -1,13 +1,14 @@
 import { EntityId } from '@reduxjs/toolkit';
 import { useState } from 'react';
 import * as React from 'react';
-import { Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select, Tooltip } from '@mui/material';
+import { Box, Button, FormControl, FormHelperText, Grid, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Select, Tooltip } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { IBook } from '../../../model/Book';
 import type { RootState } from '../../Store/Store';
 import { StoriesActions, AStorytelling } from '../../Ducks/StoriesDuck';
 import { EditBookDialog } from '../EmbeddingTabPanel/EditBookDialog';
 import { toSentenceCase } from '../../../utils/helpers';
+import { Add, AddCircleOutline, Delete, Edit, OpenInNew } from '@mui/icons-material';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -79,50 +80,48 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
               })}
         </Select>
       </FormControl>
-
-      <Grid container direction="row" alignItems="center" justifyContent="space-between">
-        <Tooltip placement="bottom" title={`Creates an empty ${globalLabels.storyBookLabel} (group and edge container) that can be used to save groups`}>
-          <Button
-            style={{
-              marginTop: '16px',
-            }}
-            onClick={() => addHandler()}
-            variant="outlined"
-            size="small"
-          >
-            Add empty
-          </Button>
-        </Tooltip>
-
-        {stories.active ? (
-          <Tooltip placement="bottom" title={`Opens a dialog that allows to edit the currently selected ${globalLabels.storyBookLabel}`}>
-            <Button
-              style={{
-                marginTop: '16px',
-              }}
-              variant="outlined"
-              size="small"
-              onClick={() => {
-                setEditBook(stories.stories.entities[stories.active]);
-              }}
-            >
-              Edit selected
-            </Button>
-          </Tooltip>
-        ) : null}
-      </Grid>
+      <Box paddingX={1} paddingTop={1}>
+          <Grid container>
+            <Grid item xs={2}>
+              <Tooltip placement="bottom" title={`Creates an empty ${globalLabels.storyBookLabel} that can be used to save groups and edges`}>
+                <IconButton onClick={(e) => addHandler()} color="primary" aria-label={`Add empty ${globalLabels.storyBookLabel}`}>
+                  <Add />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={6}></Grid>
+            <Grid item xs={2}>
+              <Tooltip placement="bottom" title={`Edit the name of the selected ${globalLabels.storyBookLabel}`}>
+                <span>
+                  <IconButton disabled={stories.active == null} onClick={(e) => {setEditBook(stories.stories.entities[stories.active])}} color="primary" aria-label={`Edit selected ${globalLabels.storyBookLabel}`}>
+                    <Edit />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={2}>
+              <Tooltip placement="bottom" title={`Delete the selected ${globalLabels.storyBookLabel}`}>
+                <span>
+                  <IconButton disabled={stories.active == null} onClick={(e) => {
+                    deleteHandler(stories.stories.entities[stories.active].id);
+                    setEditBook(null);
+                    }} color="primary" aria-label={`Delete selected ${globalLabels.storyBookLabel}`}>
+                    <Delete />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            </Grid>
+          </Grid>
+      </Box>
 
       <EditBookDialog
+        storyBookLabel={globalLabels.storyBookLabel}
         book={editBook}
         onClose={() => {
           setEditBook(null);
         }}
         onSave={(id: EntityId, changes: any) => {
           dispatch(StoriesActions.changeBookName({ id: editBook.id, name: changes.name }));
-          setEditBook(null);
-        }}
-        onDelete={() => {
-          deleteHandler(editBook.id);
           setEditBook(null);
         }}
       />
