@@ -88,8 +88,8 @@ const bookSlice = createSlice({
     changeClusterName(state, action: PayloadAction<{ cluster: EntityId; name: string }>) {
       const { name, cluster } = action.payload;
       const story = state.stories.entities[state.active];
-      const entity = story.clusters.entities[cluster];
-
+      // const entity = story.clusters.entities[cluster];
+      const entity = AStorytelling.retrieveCluster(state, cluster)
       entity.label = name;
 
       state.groupLabel = createGroupLabels(Object.values(story.clusters.entities));

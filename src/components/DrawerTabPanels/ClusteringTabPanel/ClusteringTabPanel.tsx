@@ -26,6 +26,8 @@ import {
   TextField,
   Typography,
   FormHelperText,
+  Tooltip,
+  DialogTitle,
 } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -37,7 +39,7 @@ import { ACluster } from '../../../model/Cluster';
 import { ICluster } from '../../../model/ICluster';
 import { IBook } from '../../../model/Book';
 import { DisplayMode, setDisplayMode } from '../../Ducks/DisplayModeDuck';
-import type { RootState } from '../../Store/Store';
+import { RootState, usePSESelector } from '../../Store/Store';
 import { StoryPreview } from './StoryPreview';
 import * as backend_utils from '../../../utils/backend-connect';
 import { useCancellablePromise } from '../../../utils/promise-helpers';
@@ -492,15 +494,16 @@ type ClusterPopoverProps = {
   setAnchorEl: any;
   cluster: ICluster;
   removeClusterFromStories: any;
-  splitRef: any;
   dataset: Dataset;
 };
 
-function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeClusterFromStories, splitRef }: ClusterPopoverProps) {
+function ClusterPopover({ anchorEl, setAnchorEl, cluster, removeClusterFromStories, dataset }: ClusterPopoverProps) {
   if (!cluster) return null;
 
   const [name, setName] = React.useState(cluster.label);
   const dispatch = useDispatch();
+
+  const stories = usePSESelector((state) => state.stories);
 
   React.useEffect(() => {
     if (cluster && anchorEl) {
@@ -509,6 +512,10 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
   }, [anchorEl, cluster]);
 
   const onSave = () => {
+    console.log("onSave")
+    console.log(cluster.id)
+    console.log(stories.stories.entities[stories.active].clusters.entities)
+    console.log(stories.stories.entities[stories.active].clusters.entities[cluster.id])
     dispatch(StoriesActions.changeClusterName({ cluster: cluster.id, name }));
 
     setAnchorEl(null);
@@ -517,15 +524,6 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
   const onDelete = () => {
     setAnchorEl(null);
     removeClusterFromStories(cluster);
-  };
-
-  const onLineup = () => {
-    setAnchorEl(null);
-
-    const curr_sizes = splitRef.current.split.getSizes();
-    if (curr_sizes[1] < 2) {
-      splitRef.current.split.setSizes([30, 70]);
-    }
   };
 
   return (
@@ -543,6 +541,7 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
         horizontal: 'center',
       }}
     >
+      <DialogTitle>Choose attributes you want to show in the visualization</DialogTitle>
       <div>
         <ContextPaper>
           {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
@@ -559,7 +558,7 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
 
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Button
-                variant="outlined"
+                // variant="outlined"
                 color="error"
                 // color="secondary"
                 onClick={onDelete}
@@ -568,7 +567,21 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
                 Delete
               </Button>
 
-              <Button color="primary" variant="outlined" aria-label="Save" onClick={onSave} startIcon={<SaveIcon />}>
+              <Button 
+                color="primary" 
+                aria-label="Close" 
+                onClick={() => setAnchorEl(null)} 
+              >
+                Close
+                {/* Name */}
+              </Button>
+              <Button 
+                color="primary" 
+                // variant="outlined" 
+                aria-label="Save" 
+                onClick={onSave} 
+                // startIcon={<SaveIcon />}
+              >
                 Save
                 {/* Name */}
               </Button>
@@ -619,17 +632,19 @@ function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStor
             secondary={`${cluster.indices.length} ${capitalizeFirstLetter(globalLabels.itemLabelPlural)}`}
           />
           <ListItemSecondaryAction>
-            <IconButton
-              edge="end"
-              aria-label="delete"
-              onClick={(event) => {
-                // removeClusterFromStories(cluster)
-                setPopoverCluster(cluster);
-                setAnchorEl(event.target);
-              }}
-            >
-              <SettingsIcon />
-            </IconButton>
+            <Tooltip title={`Change settings for this group`}>
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={(event) => {
+                  // removeClusterFromStories(cluster)
+                  setPopoverCluster(cluster);
+                  setAnchorEl(event.target);
+                }}
+              >
+                <SettingsIcon />
+              </IconButton>
+            </Tooltip>
           </ListItemSecondaryAction>
         </ListItem>,
       );
@@ -644,7 +659,6 @@ function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStor
         setAnchorEl={setAnchorEl}
         cluster={popoverCluster}
         removeClusterFromStories={removeClusterFromStories}
-        splitRef={splitRef}
       />
 
       <List>{storyItems}</List>
