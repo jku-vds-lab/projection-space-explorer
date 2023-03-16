@@ -367,7 +367,7 @@ export class ADataset {
    * Creates a map which shows the distinct types and data types of the columns.
    */
   static calculateColumnTypes(vectors: IVector[], ranges, featureTypes, metaInformation) {
-    let columns: { [name: string]: ColumnType } = {};
+    const columns: { [name: string]: ColumnType } = {};
 
     const columnNames = Object.keys(vectors[0]);
 
@@ -460,10 +460,10 @@ export class ADataset {
     const isSequential = ADataset.isDatasetSequential(vectors);
 
     return {
-      vectors: vectors,
-      info: info,
+      vectors,
+      info,
       type: info.type,
-      metaInformation: metaInformation,
+      metaInformation,
       hasInitialScalarTypes: false,
       columns: ADataset.calculateColumnTypes(vectors, ranges, featureTypes, metaInformation),
       multivariateLabels: ADataset.hasMultivariateLabels(vectors),
