@@ -38,6 +38,8 @@ import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 import { tabSettings } from '../Ducks/OpenTabDuck';
 import { setAutoFreeze } from 'immer';
 
+// This disables the auto freeze freature of immer which is necessary for the root reducers
+// See https://immerjs.github.io/immer/freezing/ for details
 setAutoFreeze(false);
 
 /**
