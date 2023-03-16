@@ -627,8 +627,6 @@ export class PointVisualization {
   setColorByChannel(category: CategoryOption, scale, additionalColumns?) {
     this.colorAttribute = category;
 
-    console.log(category, scale, additionalColumns);
-
     if (category == null) {
       this.vectorMapping = null;
     } else {
