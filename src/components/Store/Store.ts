@@ -36,6 +36,9 @@ import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multipleAdapter, defaultAttributes, createViewDuckReducer } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 import { tabSettings } from '../Ducks/OpenTabDuck';
+import { setAutoFreeze } from 'immer';
+
+setAutoFreeze(false);
 
 /**
  * Match all cases of view constants eg x1, y1, x2, y2...
@@ -376,6 +379,11 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
         const newState = { ...state };
 
         const partialRootState = createInitialReducerState(action.dataset);
+
+        if (action.dump) {
+          Object.assign(partialRootState, action.dump);
+        }
+        
         partialRootState.dataset = action.dataset;
         Object.assign(newState, partialRootState);
 
@@ -388,13 +396,16 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
         }
         state = clone;
       }
-      case RootActionTypes.ADD_DATA: {
+      /** case RootActionTypes.ADD_DATA: {
         const newState = { ...state };
+        const active = newState.multiples.multiples.entities[newState.multiples.active].attributes;
 
-        newState.dataset = { ...newState.dataset, vectors: [...newState.dataset.vectors, ...action.payload.data] };
+        active.workspace.positions = [...active.workspace.positions, ...action.data.map(() => ({x: Math.random() * 10, y: Math.random() * 10}))];
+ 
+        newState.dataset = { ...newState.dataset, vectors: [...newState.dataset.vectors, ...action.data] };
 
         return newState;
-      }
+      } */
     }
 
     return combined(state, action) as RootState & T;

@@ -385,7 +385,7 @@ export const ClusteringTabPanel = connector(
                       name="addClusterToCurrentStory"
                     />
                   }
-                  label="Add cluster to current story"
+                  label={`Add cluster to current ${globalLabels.storyLabel}`}
                 />
               </Box>
               <TextField
@@ -463,7 +463,7 @@ export const ClusteringTabPanel = connector(
 
         <Box paddingLeft={2} paddingTop={2}>
           <Typography variant="subtitle2" gutterBottom>
-            Groups and stories
+            Groups and {globalLabels.storyBookLabelPlural}
           </Typography>
         </Box>
 

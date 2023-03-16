@@ -1,10 +1,16 @@
-import { Dataset } from '../../model';
+import { Dataset, IVector } from '../../model';
 export declare enum RootActionTypes {
     RESET = "root/RESET",
     HYDRATE = "root/HYDRATE",
     DATASET = "root/DATASET",
-    HARD_RESET = "root/HARD_RESET"
+    HARD_RESET = "root/HARD_RESET",
+    ADD_DATA = "root/ADD_DATA"
 }
+/** const reset = createAction('root/RESET');
+const hydrate = createAction<any>('root/HYDRATE');
+const addData = createAction<IVector[]>('root/ADD_DATA');
+const loadDataset = createAction<{ dataset: Dataset; dump?: any }>('root/DATASET');
+const hardReset = createAction('root/HARD_RESET'); */
 export declare const RootActions: {
     reset: () => {
         type: RootActionTypes;
@@ -13,9 +19,14 @@ export declare const RootActions: {
         type: RootActionTypes;
         dump: any;
     };
-    loadDataset: (dataset: Dataset) => {
+    addData: <T extends IVector>(data: T) => {
+        type: RootActionTypes;
+        data: T;
+    };
+    loadDataset: (dataset: Dataset, dump?: any) => {
         type: RootActionTypes;
         dataset: Dataset;
+        dump: any;
     };
     hardReset: () => {
         type: RootActionTypes;
