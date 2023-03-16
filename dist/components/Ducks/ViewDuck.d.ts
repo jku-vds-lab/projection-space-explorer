@@ -86,7 +86,6 @@ type StateType<T> = {
 export declare function createViewDuckReducer<T>(additionalViewReducer?: ReducersMapObject<T, any>, additionalCustomCases?: (builder: ActionReducerMapBuilder<StateType<T>>) => void): import("@reduxjs/toolkit").Slice<StateType<T>, {}, "multiples">;
 export declare const ViewActions: {
     addView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
-        dataset: Dataset;
         id: EntityId;
     }, string>;
     activateView: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<EntityId, string>;

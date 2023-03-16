@@ -3,6 +3,7 @@ import { createEntityAdapter, EntityState, EntityId, createReducer } from '@redu
 import { combineReducers, Reducer, ReducersMapObject } from 'redux';
 import clone from 'fast-clone';
 import { useSelector } from 'react-redux';
+import { setAutoFreeze } from 'immer';
 import projectionOpen from '../Ducks/ProjectionOpenDuck';
 import highlightedSequence from '../Ducks/HighlightedSequenceDuck';
 import dataset from '../Ducks/DatasetDuck';
@@ -36,7 +37,6 @@ import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multipleAdapter, defaultAttributes, createViewDuckReducer } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 import { tabSettings } from '../Ducks/OpenTabDuck';
-import { setAutoFreeze } from 'immer';
 
 // This disables the auto freeze freature of immer which is necessary for the root reducers
 // See https://immerjs.github.io/immer/freezing/ for details
@@ -356,20 +356,20 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
   const combined = combineReducers(reducers ? { ...allReducers, ...reducers } : { ...allReducers });
 
   return (state: Parameters<typeof combined>[0] & T, action: Parameters<typeof combined>[1]) => {
-    if (action.type === RootActionTypes.RESET) {
-      const { dataset, tabSettings, datasetEntries, globalLabels } = state;
-
-      for (const key in state) {
-        state[key] = undefined;
-      }
-
-      state.dataset = dataset;
-      state.tabSettings = tabSettings;
-      state.datasetEntries = datasetEntries;
-      state.globalLabels = globalLabels;
-    }
-
     switch (action.type) {
+      case RootActionTypes.RESET: {
+        const { dataset, tabSettings, datasetEntries, globalLabels } = state;
+
+        for (const key in state) {
+          state[key] = undefined;
+        }
+
+        state.dataset = dataset;
+        state.tabSettings = tabSettings;
+        state.datasetEntries = datasetEntries;
+        state.globalLabels = globalLabels;
+        break;
+      }
       case RootActionTypes.HYDRATE: {
         const newState = { ...state };
 
@@ -385,7 +385,7 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
         if (action.dump) {
           Object.assign(partialRootState, action.dump);
         }
-        
+
         partialRootState.dataset = action.dataset;
         Object.assign(newState, partialRootState);
 
@@ -397,6 +397,7 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
           clone[key] = undefined;
         }
         state = clone;
+        break;
       }
       /** case RootActionTypes.ADD_DATA: {
         const newState = { ...state };
@@ -408,6 +409,8 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
 
         return newState;
       } */
+      default:
+        break;
     }
 
     return combined(state, action) as RootState & T;

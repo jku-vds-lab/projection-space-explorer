@@ -91,7 +91,7 @@ export class AProjection {
    */
   static calculateBounds(dataset: Dataset, xChannel, yChannel, positions?) {
     const spatial = ADataset.getSpatialData(dataset, xChannel, yChannel, positions);
-    
+
     return AProjection.calculateBoundsFromPositions(spatial);
   }
 }

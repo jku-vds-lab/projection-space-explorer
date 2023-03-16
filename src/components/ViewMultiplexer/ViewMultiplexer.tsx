@@ -139,8 +139,6 @@ export function ViewMultiplexer({ overrideComponents, featureConfig }) {
     dispatch(ViewActions.deleteView(id));
   };
 
-  
-
   return (
     <div style={{ width: '100%', height: 'calc(100% - 8px)', display: 'flex', gap: '4px', margin: '4px' }}>
       {count > 0 ? (
