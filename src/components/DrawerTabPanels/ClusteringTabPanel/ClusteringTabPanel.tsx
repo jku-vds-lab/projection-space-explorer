@@ -353,7 +353,7 @@ export const ClusteringTabPanel = connector(
 
 
           <Box paddingLeft={2}>
-            <Tooltip placement='top' title={<Typography variant="subtitle2">Use advanced parameter settings, if you know what you are doing.</Typography>}>
+            <Tooltip placement='left' title={<Typography variant="subtitle2">Use advanced parameter settings, if you know what you are doing.</Typography>}>
               <FormControlLabel
                 control={
                   <Switch
@@ -371,7 +371,7 @@ export const ClusteringTabPanel = connector(
           </Box>
           {clusterAdvancedMode ? (
             <Box paddingLeft={2} paddingRight={2}>
-              <Tooltip placement='top'
+              <Tooltip placement='left'
                     title={
                       <Typography variant="subtitle2">
                         The minimum number of {globalLabels.itemLabelPlural} in a cluster. 
@@ -393,36 +393,40 @@ export const ClusteringTabPanel = connector(
                 />
               </Tooltip>
               <br />
-              <TextField
-                fullWidth
-                label="Min cluster samples"
-                type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={min_cluster_samples}
-                onChange={(event) => {
-                  set_min_cluster_samples(Math.max(parseInt(event.target.value, 10), 1));
-                }}
-                margin="normal"
-              />
+              <Tooltip title={<Typography variant="subtitle2">This parameter determines the number of neighboring {globalLabels.itemLabelPlural}' distance to estimate cluster densities.</Typography>} placement='left'>
+                <TextField
+                  fullWidth
+                  label="Min samples"
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={min_cluster_samples}
+                  onChange={(event) => {
+                    set_min_cluster_samples(Math.max(parseInt(event.target.value, 10), 1));
+                  }}
+                  margin="normal"
+                />
+              </Tooltip>
               <br />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                    checked={allow_single_cluster}
-                    onChange={(event) => {
-                      set_allow_single_cluster(event.target.checked);
-                    }}
-                  />
-                }
-                label="Allow single cluster"
-              />
+              <Tooltip placement='left' title={<Typography variant="subtitle2">If activated, HDBSCAN is allowed to return a single cluster. Otherwise, this is restricted.</Typography>}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      color="primary"
+                      checked={allow_single_cluster}
+                      onChange={(event) => {
+                        set_allow_single_cluster(event.target.checked);
+                      }}
+                    />
+                  }
+                  label="Allow single cluster"
+                />
+              </Tooltip>
             </Box>
           ) : (
             <Box paddingLeft={7} paddingRight={7}>
-              <Tooltip placement='top' 
+              <Tooltip placement='left' 
               title={<Typography variant="subtitle2">
                 Choose how many groups should approximately be derived.
               </Typography>}
@@ -446,7 +450,7 @@ export const ClusteringTabPanel = connector(
             <Divider></Divider>
           </Box>
           <Box paddingLeft={2} paddingRight={2}>
-            <Tooltip placement='top' title={<Typography variant="subtitle2">If activated, only selected {globalLabels.itemLabelPlural} will be clustered. Otherwise, all {globalLabels.itemLabelPlural} will be clustered.</Typography>}>
+            <Tooltip placement='left' title={<Typography variant="subtitle2">If activated, only selected {globalLabels.itemLabelPlural} will be clustered. Otherwise, all {globalLabels.itemLabelPlural} will be clustered.</Typography>}>
               <FormControlLabel
                 control={
                   <Switch
@@ -463,7 +467,7 @@ export const ClusteringTabPanel = connector(
             </Tooltip>
           </Box>
           <Box paddingLeft={2} paddingRight={2}>
-            <Tooltip placement='top' title={<Typography variant="subtitle2">If activated, the derived groups are added to the active {globalLabels.storyBookLabel}. Otherwise, a new {globalLabels.storyBookLabel} is created where the groups are added.</Typography>}>
+            <Tooltip placement='left' title={<Typography variant="subtitle2">If activated, the derived groups are added to the active {globalLabels.storyBookLabel}. Otherwise, a new {globalLabels.storyBookLabel} is created where the groups are added.</Typography>}>
               <FormControlLabel
                 control={
                   <Switch
@@ -479,19 +483,18 @@ export const ClusteringTabPanel = connector(
               />
             </Tooltip>
           </Box>
-          <Box p={2}>
+          <Box p={2} textAlign="right">
+            <Button onClick={() => setOpenClusterPanel(false)}>
+              Cancel
+            </Button>
             <Button
               data-cy="run-clustering-button"
-              variant="outlined"
-              style={{
-                width: '100%',
-              }}
               onClick={() => {
                 calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory);
                 setOpenClusterPanel(false);
               }}
             >
-              Run clustering
+              Start
             </Button>
           </Box>
         </Popover>
