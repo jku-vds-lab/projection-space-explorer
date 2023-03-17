@@ -177,11 +177,11 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         </Typography>
       </Box>
 
-      <Box paddingLeft={2} paddingRight={2}>
+      <Box px={2}>
         <EmbeddingMethodButtons setOpen={setOpen} setDomainSettings={setDomainSettings} embeddings={props.config?.embeddings} />
       </Box>
 
-      <Box paddingLeft={2} paddingTop={2}>
+      <Box px={2} pt={2}>
         <ProjectionControlCard
           dataset_name={props.dataset?.info?.path}
           controller={controller}

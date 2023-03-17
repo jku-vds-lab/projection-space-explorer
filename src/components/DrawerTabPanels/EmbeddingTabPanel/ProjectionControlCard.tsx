@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { Card, CardHeader, IconButton, Alert, LinearProgress } from '@mui/material';
+import { Card, CardHeader, IconButton, Alert, LinearProgress, CardContent, Box, Typography } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import CloseIcon from '@mui/icons-material/Close';
@@ -113,20 +113,22 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
     }
   }, [step, computing]);
 
+  const percent = Math.min((step / projectionParams.iterations) * 100, 100);
+
   const genlabel = (step) => {
     if (step === 0) {
       return (
-        <div>
+        <Typography variant="caption">
           <div>Initializing projection ...</div>
           {msg && <div>Server: {msg}</div>}
-        </div>
+        </Typography>
       );
     }
-    const percent = Math.min((step / projectionParams.iterations) * 100, 100).toFixed(1);
+
     return (
       <div>
         <div>{`${Math.min(step, projectionParams.iterations)}/${projectionParams.iterations}`}</div>
-        <div>{`${percent}%`}</div>
+        <div>{`${percent.toFixed(1)}%`}</div>
         {msg && <div>Server: {msg}</div>}
       </div>
     );
@@ -150,10 +152,12 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
             </IconButton>
           }
           title={projectionParams.method}
-          subheader={genlabel(step)}
         />
 
-        {computing ? <LinearProgress /> : null}
+        <Box px={3} pb={1}>
+          {percent < 100 ? <LinearProgress style={{ marginBottom: '4px' }} /> : null}
+          {genlabel(step)}
+        </Box>
 
         {controller.supportsPause() ? (
           <div className={classes.controls}>

@@ -162,7 +162,7 @@ export function StatesTabPanelFull({
   };
 
   const categoryOptions = dataset?.categories;
-
+  console.log(dataset.inferredColumns);
   const points_box = (
     <Box
       sx={{
