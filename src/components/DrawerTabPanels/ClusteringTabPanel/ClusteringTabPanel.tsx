@@ -322,7 +322,14 @@ export const ClusteringTabPanel = connector(
         </Box>
 
         <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
-          <Tooltip title={<Typography variant="subtitle2">Automatically derive groups using the HDBSCAN clustering algorithm. The clustering alogrithm takes the two-dimensional coordinates as input and returns density-based group affiliations for each {globalLabels.itemLabel}.</Typography>}>
+          <Tooltip
+            title={
+              <Typography variant="subtitle2">
+                Automatically derive groups using the HDBSCAN clustering algorithm. The clustering alogrithm takes the two-dimensional coordinates as input and
+                returns density-based group affiliations for each {globalLabels.itemLabel}.
+              </Typography>
+            }
+          >
             <Button variant="outlined" fullWidth ref={anchorRef} onClick={() => setOpenClusterPanel(true)} data-cy="define-groups-by-clustering-button">
               Define groups by clustering <ChevronRightIcon />
             </Button>
@@ -341,9 +348,7 @@ export const ClusteringTabPanel = connector(
             horizontal: 'left',
           }}
         >
-          <DialogTitle>
-              Clustering settings
-          </DialogTitle>
+          <DialogTitle>Clustering settings</DialogTitle>
 
           <Box paddingLeft={2} width={300}>
             <Typography variant="body2" gutterBottom>
@@ -351,9 +356,8 @@ export const ClusteringTabPanel = connector(
             </Typography>
           </Box>
 
-
           <Box paddingLeft={2}>
-            <Tooltip placement='left' title={<Typography variant="subtitle2">Use advanced parameter settings, if you know what you are doing.</Typography>}>
+            <Tooltip placement="left" title={<Typography variant="subtitle2">Use advanced parameter settings, if you know what you are doing.</Typography>}>
               <FormControlLabel
                 control={
                   <Switch
@@ -371,13 +375,7 @@ export const ClusteringTabPanel = connector(
           </Box>
           {clusterAdvancedMode ? (
             <Box paddingLeft={2} paddingRight={2}>
-              <Tooltip placement='left'
-                    title={
-                      <Typography variant="subtitle2">
-                        The minimum number of {globalLabels.itemLabelPlural} in a cluster. 
-                      </Typography>
-                    }
-                  >
+              <Tooltip placement="left" title={<Typography variant="subtitle2">The minimum number of {globalLabels.itemLabelPlural} in a cluster.</Typography>}>
                 <TextField
                   fullWidth
                   label="Min cluster size"
@@ -393,7 +391,14 @@ export const ClusteringTabPanel = connector(
                 />
               </Tooltip>
               <br />
-              <Tooltip title={<Typography variant="subtitle2">This parameter determines the number of neighboring {globalLabels.itemLabelPlural}' distance to estimate cluster densities.</Typography>} placement='left'>
+              <Tooltip
+                title={
+                  <Typography variant="subtitle2">
+                    This parameter determines the number of neighboring {globalLabels.itemLabelPlural}&apos; distance to estimate cluster densities.
+                  </Typography>
+                }
+                placement="left"
+              >
                 <TextField
                   fullWidth
                   label="Min samples"
@@ -409,7 +414,10 @@ export const ClusteringTabPanel = connector(
                 />
               </Tooltip>
               <br />
-              <Tooltip placement='left' title={<Typography variant="subtitle2">If activated, HDBSCAN is allowed to return a single cluster. Otherwise, this is restricted.</Typography>}>
+              <Tooltip
+                placement="left"
+                title={<Typography variant="subtitle2">If activated, HDBSCAN is allowed to return a single cluster. Otherwise, this is restricted.</Typography>}
+              >
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -426,11 +434,7 @@ export const ClusteringTabPanel = connector(
             </Box>
           ) : (
             <Box paddingLeft={7} paddingRight={7}>
-              <Tooltip placement='left' 
-              title={<Typography variant="subtitle2">
-                Choose how many groups should approximately be derived.
-              </Typography>}
-              >
+              <Tooltip placement="left" title={<Typography variant="subtitle2">Choose how many groups should approximately be derived.</Typography>}>
                 <Slider
                   track={false}
                   defaultValue={1}
@@ -445,12 +449,19 @@ export const ClusteringTabPanel = connector(
               </Tooltip>
             </Box>
           )}
-          
+
           <Box padding={2}>
-            <Divider></Divider>
+            <Divider />
           </Box>
           <Box paddingLeft={2} paddingRight={2}>
-            <Tooltip placement='left' title={<Typography variant="subtitle2">If activated, only selected {globalLabels.itemLabelPlural} will be clustered. Otherwise, all {globalLabels.itemLabelPlural} will be clustered.</Typography>}>
+            <Tooltip
+              placement="left"
+              title={
+                <Typography variant="subtitle2">
+                  If activated, only selected {globalLabels.itemLabelPlural} will be clustered. Otherwise, all {globalLabels.itemLabelPlural} will be clustered.
+                </Typography>
+              }
+            >
               <FormControlLabel
                 control={
                   <Switch
@@ -467,7 +478,15 @@ export const ClusteringTabPanel = connector(
             </Tooltip>
           </Box>
           <Box paddingLeft={2} paddingRight={2}>
-            <Tooltip placement='left' title={<Typography variant="subtitle2">If activated, the derived groups are added to the active {globalLabels.storyBookLabel}. Otherwise, a new {globalLabels.storyBookLabel} is created where the groups are added.</Typography>}>
+            <Tooltip
+              placement="left"
+              title={
+                <Typography variant="subtitle2">
+                  If activated, the derived groups are added to the active {globalLabels.storyBookLabel}. Otherwise, a new {globalLabels.storyBookLabel} is
+                  created where the groups are added.
+                </Typography>
+              }
+            >
               <FormControlLabel
                 control={
                   <Switch
@@ -484,9 +503,7 @@ export const ClusteringTabPanel = connector(
             </Tooltip>
           </Box>
           <Box p={2} textAlign="right">
-            <Button onClick={() => setOpenClusterPanel(false)}>
-              Cancel
-            </Button>
+            <Button onClick={() => setOpenClusterPanel(false)}>Cancel</Button>
             <Button
               data-cy="run-clustering-button"
               onClick={() => {

@@ -1,7 +1,20 @@
 import { EntityId } from '@reduxjs/toolkit';
 import { useState } from 'react';
 import * as React from 'react';
-import { Box, Button, FormControl, FormHelperText, Grid, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Select, Tooltip, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormHelperText,
+  Grid,
+  IconButton,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  Select,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { Add, AddCircleOutline, Delete, Edit, OpenInNew } from '@mui/icons-material';
 import { IBook } from '../../../model/Book';
@@ -83,7 +96,10 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
       <Box paddingX={1} paddingTop={1}>
         <Grid container>
           <Grid item xs={2}>
-            <Tooltip placement="bottom" title={<Typography variant="subtitle2">Creates an empty {globalLabels.storyBookLabel} that can be used to save groups and edges</Typography>}>
+            <Tooltip
+              placement="bottom"
+              title={<Typography variant="subtitle2">Creates an empty {globalLabels.storyBookLabel} that can be used to save groups and edges</Typography>}
+            >
               <IconButton onClick={(e) => addHandler()} color="primary" aria-label={`Add empty ${globalLabels.storyBookLabel}`}>
                 <Add />
               </IconButton>

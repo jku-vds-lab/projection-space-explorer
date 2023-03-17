@@ -78,7 +78,10 @@ export const DetailsTabPanel = connector(
           <Grid container>
             <Grid item xs={2}>
               {hoverSettings.windowMode === WindowMode.Embedded && (
-                <Tooltip placement="bottom" title={<Typography variant="subtitle2">This opens a new window that offers more space for the selection detail image</Typography>}>
+                <Tooltip
+                  placement="bottom"
+                  title={<Typography variant="subtitle2">This opens a new window that offers more space for the selection detail image</Typography>}
+                >
                   <IconButton onClick={(e) => handleChange(e, true)} color="primary" aria-label="Open summary visualization in new window">
                     <OpenInNew />
                   </IconButton>
