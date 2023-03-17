@@ -238,7 +238,7 @@ export const Application = connector(
                     <>
                       <Typography variant="subtitle2">Point and line channels</Typography>
                       <Typography variant="body2">
-                        Contains settings that let you map different channels like brightness and color on point and line attributes.
+                        Contains settings that let you map different channels like opacity and color on point and line attributes.
                       </Typography>
                     </>
                   ) : (
