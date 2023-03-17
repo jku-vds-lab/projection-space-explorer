@@ -100,7 +100,7 @@ export class ForceAtlas2EmbeddingController extends EmbeddingController {
     });
   }
 
-  step() {
+  override step() {
     // this.worker.postMessage({
     //    messageType: 'step'
     // })
