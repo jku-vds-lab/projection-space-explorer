@@ -1,14 +1,14 @@
 import { EntityId } from '@reduxjs/toolkit';
 import { useState } from 'react';
 import * as React from 'react';
-import { Box, Button, FormControl, FormHelperText, Grid, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Select, Tooltip } from '@mui/material';
+import { Box, Button, FormControl, FormHelperText, Grid, IconButton, ListItem, ListItemSecondaryAction, ListItemText, Select, Tooltip, Typography } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
+import { Add, AddCircleOutline, Delete, Edit, OpenInNew } from '@mui/icons-material';
 import { IBook } from '../../../model/Book';
 import type { RootState } from '../../Store/Store';
 import { StoriesActions, AStorytelling } from '../../Ducks/StoriesDuck';
 import { EditBookDialog } from '../EmbeddingTabPanel/EditBookDialog';
 import { toSentenceCase } from '../../../utils/helpers';
-import { Add, AddCircleOutline, Delete, Edit, OpenInNew } from '@mui/icons-material';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -81,37 +81,49 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
         </Select>
       </FormControl>
       <Box paddingX={1} paddingTop={1}>
-          <Grid container>
-            <Grid item xs={2}>
-              <Tooltip placement="bottom" title={`Creates an empty ${globalLabels.storyBookLabel} that can be used to save groups and edges`}>
-                <IconButton onClick={(e) => addHandler()} color="primary" aria-label={`Add empty ${globalLabels.storyBookLabel}`}>
-                  <Add />
+        <Grid container>
+          <Grid item xs={2}>
+            <Tooltip placement="bottom" title={<Typography variant="subtitle2">Creates an empty {globalLabels.storyBookLabel} that can be used to save groups and edges</Typography>}>
+              <IconButton onClick={(e) => addHandler()} color="primary" aria-label={`Add empty ${globalLabels.storyBookLabel}`}>
+                <Add />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          <Grid item xs={6} />
+          <Grid item xs={2}>
+            <Tooltip placement="bottom" title={<Typography variant="subtitle2">Edit the name of the selected {globalLabels.storyBookLabel}</Typography>}>
+              <span>
+                <IconButton
+                  disabled={stories.active == null}
+                  onClick={(e) => {
+                    setEditBook(stories.stories.entities[stories.active]);
+                  }}
+                  color="primary"
+                  aria-label={`Edit selected ${globalLabels.storyBookLabel}`}
+                >
+                  <Edit />
                 </IconButton>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={6}></Grid>
-            <Grid item xs={2}>
-              <Tooltip placement="bottom" title={`Edit the name of the selected ${globalLabels.storyBookLabel}`}>
-                <span>
-                  <IconButton disabled={stories.active == null} onClick={(e) => {setEditBook(stories.stories.entities[stories.active])}} color="primary" aria-label={`Edit selected ${globalLabels.storyBookLabel}`}>
-                    <Edit />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            </Grid>
-            <Grid item xs={2}>
-              <Tooltip placement="bottom" title={`Delete the selected ${globalLabels.storyBookLabel}`}>
-                <span>
-                  <IconButton disabled={stories.active == null} onClick={(e) => {
+              </span>
+            </Tooltip>
+          </Grid>
+          <Grid item xs={2}>
+            <Tooltip placement="bottom" title={<Typography variant="subtitle2">Delete the selected {globalLabels.storyBookLabel}</Typography>}>
+              <span>
+                <IconButton
+                  disabled={stories.active == null}
+                  onClick={(e) => {
                     deleteHandler(stories.stories.entities[stories.active].id);
                     setEditBook(null);
-                    }} color="primary" aria-label={`Delete selected ${globalLabels.storyBookLabel}`}>
-                    <Delete />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            </Grid>
+                  }}
+                  color="primary"
+                  aria-label={`Delete selected ${globalLabels.storyBookLabel}`}
+                >
+                  <Delete />
+                </IconButton>
+              </span>
+            </Tooltip>
           </Grid>
+        </Grid>
       </Box>
 
       <EditBookDialog

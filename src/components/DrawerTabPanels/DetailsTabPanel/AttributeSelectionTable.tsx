@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogTitle, DialogActions, Tooltip, DialogContentText } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, DialogActions, Tooltip, DialogContentText, Typography } from '@mui/material';
 import * as React from 'react';
 import DataGrid, { SelectColumn } from 'react-data-grid';
 import { groupBy as rowGrouper } from 'lodash';
@@ -58,7 +58,7 @@ export function AttributeSelectionTable({
 
   return (
     <div>
-      <Tooltip placement="right" title="Choose attributes that are shown in the visualization">
+      <Tooltip placement="right" title={<Typography variant="subtitle2">Choose attributes that are shown in the visualization</Typography>}>
         <Button fullWidth variant="outlined" onClick={openAttributes}>
           {children}
         </Button>

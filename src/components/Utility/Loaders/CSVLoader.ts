@@ -74,7 +74,7 @@ export class CSVLoader implements Loader {
       Object.keys(e.data).forEach((k, index) => {
         const t = e.data[k];
         clusters.push({
-          id: index, //uuidv4(), // need to use index because we use a list and not a map
+          id: index, // uuidv4(), // need to use index because we use a list and not a map
           objectType: ObjectTypes.Cluster,
           indices: t.points.map((i) => i.meshIndex),
           label: k,

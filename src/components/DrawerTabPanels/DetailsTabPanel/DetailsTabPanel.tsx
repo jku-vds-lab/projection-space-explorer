@@ -78,14 +78,14 @@ export const DetailsTabPanel = connector(
           <Grid container>
             <Grid item xs={2}>
               {hoverSettings.windowMode === WindowMode.Embedded && (
-                <Tooltip placement="bottom" title="This opens a new window that offers more space for the selection detail image">
+                <Tooltip placement="bottom" title={<Typography variant="subtitle2">This opens a new window that offers more space for the selection detail image</Typography>}>
                   <IconButton onClick={(e) => handleChange(e, true)} color="primary" aria-label="Open summary visualization in new window">
                     <OpenInNew />
                   </IconButton>
                 </Tooltip>
               )}
               {hoverSettings.windowMode === WindowMode.Extern && (
-                <Tooltip placement="bottom" title="Close external window">
+                <Tooltip placement="bottom" title={<Typography variant="subtitle2">Close external window</Typography>}>
                   <IconButton onClick={(e) => handleChange(e, false)} color="primary" aria-label="Open summary visualization in new window">
                     <OpenInNewOff />
                   </IconButton>
@@ -95,7 +95,7 @@ export const DetailsTabPanel = connector(
             <Grid item xs={2}>
               {config?.detailsTab?.showClearSelectionButton !== false && (
                 <Box>
-                  <Tooltip placement="bottom" title="Clear current selection">
+                  <Tooltip placement="bottom" title={<Typography variant="subtitle2">Clear current selection</Typography>}>
                     <span>
                       <IconButton
                         disabled={currentAggregation.aggregation.length <= 0}
@@ -115,7 +115,7 @@ export const DetailsTabPanel = connector(
             <Grid item xs={6} />
             <Grid item xs={2}>
               {config?.detailsTab?.showChooseAttributesButton !== false && config?.detailsTab?.showHoverPositionSelect !== false && (
-                <Tooltip placement="bottom" title="Change settings for selection and hover views">
+                <Tooltip placement="bottom" title={<Typography variant="subtitle2">Change settings for selection and hover views</Typography>}>
                   <IconButton ref={anchorRef} onClick={() => setOpenSettingsPanel(true)} color="primary" aria-label="Open summary visualization in new window">
                     <Settings />
                   </IconButton>
@@ -152,7 +152,7 @@ export const DetailsTabPanel = connector(
               ) : null}
               {config?.detailsTab?.showHoverPositionSelect !== false ? (
                 <FormControl style={{ width: '100%' }}>
-                  <Typography variant="body1">Change the position of hover view.</Typography>
+                  <Typography variant="body1">Change the position of the hover view.</Typography>
                   {/* <FormHelperText>Hover position</FormHelperText> */}
                   <Select
                     color="primary"

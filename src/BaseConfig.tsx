@@ -36,7 +36,8 @@ export const DEFAULT_EMBEDDINGS = [
     id: ProjectionMethod.UMAP,
     name: 'UMAP',
     settings: DEFAULT_UMAP_SETTINGS,
-    description: 'Performs Uniform Manifold Approximation (UMAP) on the whole dataset using the chosen feature columns. This projects the high-dimensional dataset to a two-dimensional space that will then be shown as a scatterplot.',
+    description:
+      'Performs Uniform Manifold Approximation (UMAP) on the whole dataset using the chosen feature columns. This projects the high-dimensional dataset to a two-dimensional space that will then be shown as a scatterplot.',
     tooltip:
       'Performs Uniform Manifold Approximation (UMAP) on the whole dataset using the chosen feature columns. This method scales better than t-SNE with an increasing number of points.',
   },
@@ -44,7 +45,8 @@ export const DEFAULT_EMBEDDINGS = [
     id: ProjectionMethod.TSNE,
     name: 't-SNE',
     settings: DEFAULT_TSNE_SETTINGS,
-    description: 'Performs t-distributed stochastic neighbor embedding (t-SNE) on the whole dataset using the chosen feature columns. This projects the high-dimensional dataset to a two-dimensional space that will then be shown as a scatterplot.',
+    description:
+      'Performs t-distributed stochastic neighbor embedding (t-SNE) on the whole dataset using the chosen feature columns. This projects the high-dimensional dataset to a two-dimensional space that will then be shown as a scatterplot.',
     tooltip: 'Performs t-distributed stochastic neighbor embedding (t-SNE) on the whole dataset using the chosen feature columns.',
   },
   {

@@ -39,7 +39,7 @@ export function EditBookDialog({
         </DialogContent>
 
         <DialogActions>
-          <Button sx={{ ml: 'auto' }} onClick={ () => onClose()}>
+          <Button sx={{ ml: 'auto' }} onClick={() => onClose()}>
             Close
           </Button>
           <Button sx={{ ml: 'auto' }} type="submit">
