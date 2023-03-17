@@ -28,6 +28,7 @@ import {
   FormHelperText,
   Tooltip,
   DialogTitle,
+  Grid,
 } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -512,10 +513,6 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, removeClusterFromStori
   }, [anchorEl, cluster]);
 
   const onSave = () => {
-    console.log("onSave")
-    console.log(cluster.id)
-    console.log(stories.stories.entities[stories.active].clusters.entities)
-    console.log(stories.stories.entities[stories.active].clusters.entities[cluster.id])
     dispatch(StoriesActions.changeClusterName({ cluster: cluster.id, name }));
 
     setAnchorEl(null);
@@ -541,32 +538,35 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, removeClusterFromStori
         horizontal: 'center',
       }}
     >
-      <DialogTitle>Choose attributes you want to show in the visualization</DialogTitle>
+      <DialogTitle>Settings for group {ACluster.getTextRepresentation(cluster)}</DialogTitle>
       <div>
         <ContextPaper>
           {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
 
           <FormGroup>
             <TextField
-              label="Group name"
+              label="Rename group"
               value={name}
               onChange={(event) => {
                 setName(event.target.value);
               }}
               margin="normal"
             />
-
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Button
-                // variant="outlined"
-                color="error"
-                // color="secondary"
-                onClick={onDelete}
-                startIcon={<DeleteIcon />}
-              >
-                Delete
-              </Button>
-
+          <Grid container>
+            <Grid item xs={3}>
+              <Tooltip title={`Delete group ${ACluster.getTextRepresentation(cluster)}`}>
+                <Button
+                  // variant="outlined"
+                  color="secondary"
+                  onClick={onDelete}
+                  // startIcon={<DeleteIcon />}
+                >
+                  Delete
+                </Button>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={3}></Grid>
+            <Grid item xs={3} alignContent="right">
               <Button 
                 color="primary" 
                 aria-label="Close" 
@@ -575,20 +575,19 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, removeClusterFromStori
                 Close
                 {/* Name */}
               </Button>
+            </Grid>
+            <Grid item xs={3} alignContent="right">
               <Button 
-                color="primary" 
-                // variant="outlined" 
-                aria-label="Save" 
-                onClick={onSave} 
-                // startIcon={<SaveIcon />}
-              >
-                Save
-                {/* Name */}
+                  color="primary" 
+                  // variant="outlined" 
+                  aria-label="Save" 
+                  onClick={onSave} 
+                  // startIcon={<SaveIcon />}
+                >
+                  Save
               </Button>
-              {/* <Button onClick={onLineup} variant="outlined">
-                Show Group in Table
-              </Button> */}
-            </div>
+            </Grid>
+          </Grid>
           </FormGroup>
         </ContextPaper>
       </div>

@@ -236,8 +236,6 @@ export class CSVLoader implements Loader {
 
     const promise = new Promise<Dataset>((resolve) => {
       this.getClusters(vectors, (clusters) => {
-        console.log('---init')
-        console.log(clusters)
         dataset.clusters = clusters;
 
         // Reset cluster label after extraction
