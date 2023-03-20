@@ -28,6 +28,7 @@ declare const allReducers: {
     }>;
     datasetLoader: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
         isFetching: boolean;
+        progress: number;
         entry: import("../../model").DatasetEntry;
     }>;
     pointDisplay: Reducer<{

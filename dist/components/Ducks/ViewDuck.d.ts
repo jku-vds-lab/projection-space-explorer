@@ -127,6 +127,7 @@ export declare const ViewSelector: {
         }>;
         datasetLoader: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             isFetching: boolean;
+            progress: number;
             entry: import("../../model").DatasetEntry;
         }>;
         pointDisplay: Reducer<{
@@ -220,6 +221,7 @@ export declare const ViewSelector: {
         }>;
         datasetLoader: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             isFetching: boolean;
+            progress: number;
             entry: import("../../model").DatasetEntry;
         }>;
         pointDisplay: Reducer<{
@@ -304,6 +306,7 @@ export declare const ViewSelector: {
         }>;
         datasetLoader: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             isFetching: boolean;
+            progress: number;
             entry: import("../../model").DatasetEntry;
         }>;
         pointDisplay: Reducer<{

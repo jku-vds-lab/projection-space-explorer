@@ -1,6 +1,7 @@
 import { DatasetEntry } from '../../model';
 export declare const datasetLoader: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
     isFetching: boolean;
+    progress: number;
     entry: DatasetEntry;
 }>;
 export declare const DatasetLoaderActions: {
