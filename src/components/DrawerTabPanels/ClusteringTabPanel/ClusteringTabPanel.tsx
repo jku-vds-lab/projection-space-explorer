@@ -592,46 +592,40 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, removeClusterFromStori
     >
       <DialogTitle>Settings for group {ACluster.getTextRepresentation(cluster)}</DialogTitle>
       <Box paddingLeft={2} paddingRight={2} paddingBottom={2} width={300}>
-          {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
-          <Box paddingBottom={0}>
-            <Tooltip title={<Typography variant="subtitle2">Delete group {ACluster.getTextRepresentation(cluster)}</Typography>}>
-              <Button
-                variant="outlined"
-                fullWidth
-                color="error"
-                onClick={onDelete}
-                startIcon={<DeleteIcon />}
-              >
-                Delete
-              </Button>
-            </Tooltip>
-          </Box>
-          <FormGroup>
-            <TextField
-              label="Rename group"
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value);
-              }}
-              margin="normal"
-            />
-            <Box paddingTop={1} textAlign="right">
-                <Button color="primary" aria-label="Close" onClick={() => setAnchorEl(null)}>
-                  Close
-                  {/* Name */}
-                </Button>
-                <Button
-                  color="primary"
-                  // variant="outlined"
-                  aria-label="Save"
-                  onClick={onSave}
-                  // startIcon={<SaveIcon />}
-                >
-                  Save
-                </Button>
-            </Box>
-          </FormGroup>
+        {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
+        <Box paddingBottom={0}>
+          <Tooltip title={<Typography variant="subtitle2">Delete group {ACluster.getTextRepresentation(cluster)}</Typography>}>
+            <Button variant="outlined" fullWidth color="error" onClick={onDelete} startIcon={<DeleteIcon />}>
+              Delete
+            </Button>
+          </Tooltip>
         </Box>
+        <FormGroup>
+          <TextField
+            label="Rename group"
+            value={name}
+            onChange={(event) => {
+              setName(event.target.value);
+            }}
+            margin="normal"
+          />
+          <Box paddingTop={1} textAlign="right">
+            <Button color="primary" aria-label="Close" onClick={() => setAnchorEl(null)}>
+              Close
+              {/* Name */}
+            </Button>
+            <Button
+              color="primary"
+              // variant="outlined"
+              aria-label="Save"
+              onClick={onSave}
+              // startIcon={<SaveIcon />}
+            >
+              Save
+            </Button>
+          </Box>
+        </FormGroup>
+      </Box>
     </Popover>
   );
 }

@@ -43,7 +43,7 @@ export function EditBookDialog({
               fullWidth
               color="error"
               onClick={() => {
-                onDelete(book.id); 
+                onDelete(book.id);
                 onClose();
               }}
               startIcon={<DeleteIcon />}

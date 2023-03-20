@@ -1,6 +1,7 @@
 import { EntityId } from '@reduxjs/toolkit';
-import type { IBook } from '../../../model';
-export declare function EditBookDialog({ book, onClose, onSave, onDelete, }: {
+import { IBook } from '../../../model';
+export declare function EditBookDialog({ storyBookLabel, book, onClose, onSave, onDelete, }: {
+    storyBookLabel: string;
     book: IBook;
     onClose: () => void;
     onSave: (id: EntityId, changes: any) => void;

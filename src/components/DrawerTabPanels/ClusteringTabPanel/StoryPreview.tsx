@@ -1,18 +1,7 @@
 import { EntityId } from '@reduxjs/toolkit';
 import { useState } from 'react';
 import * as React from 'react';
-import {
-  Box,
-  Button,
-  FormControl,
-  FormHelperText,
-  Grid,
-  ListItem,
-  ListItemText,
-  Select,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Box, Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select, Tooltip, Typography } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { Add, Settings } from '@mui/icons-material';
 import { IBook } from '../../../model/Book';
@@ -96,25 +85,34 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
           placement="bottom"
           title={<Typography variant="subtitle2">Creates an empty {globalLabels.storyBookLabel} that can be used to save groups and edges</Typography>}
         >
-          <Button style={{marginRight:"2px"}} variant='outlined' startIcon={<Add />} onClick={(e) => addHandler()} color="primary" aria-label={`Add empty ${globalLabels.storyBookLabel}`}>
-            New 
+          <Button
+            style={{ marginRight: '2px' }}
+            variant="outlined"
+            startIcon={<Add />}
+            onClick={(e) => addHandler()}
+            color="primary"
+            aria-label={`Add empty ${globalLabels.storyBookLabel}`}
+          >
+            New
             {/* {globalLabels.storyBookLabel} */}
           </Button>
         </Tooltip>
         <Tooltip placement="bottom" title={<Typography variant="subtitle2">Change settings for active {globalLabels.storyBookLabel}</Typography>}>
           <span>
-            <Button variant='outlined' startIcon={<Settings />} 
+            <Button
+              variant="outlined"
+              startIcon={<Settings />}
               disabled={stories.active == null}
               onClick={(e) => {
                 setEditBook(stories.stories.entities[stories.active]);
               }}
               color="primary"
-              aria-label={`Edit selected ${globalLabels.storyBookLabel}`}>
+              aria-label={`Edit selected ${globalLabels.storyBookLabel}`}
+            >
               Settings
             </Button>
           </span>
         </Tooltip>
-
       </Box>
 
       <EditBookDialog
