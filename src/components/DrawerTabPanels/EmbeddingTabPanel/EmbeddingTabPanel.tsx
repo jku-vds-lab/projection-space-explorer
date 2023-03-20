@@ -81,7 +81,7 @@ function EmbeddingMethodButtons(props: { setOpen; setDomainSettings; embeddings?
         return (
           <Grid key={emb.id} item>
             {emb.tooltip ? (
-              <Tooltip placement="right" title={emb.tooltip}>
+              <Tooltip placement="right" title={<Typography variant="subtitle2">{emb.tooltip}</Typography>}>
                 <Button
                   data-cy={`embedding-${emb.id}`}
                   style={{

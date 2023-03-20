@@ -23,28 +23,24 @@ export function transformIndicesToHandles(clusterResult: ICluster[], edgeResult?
     edges: edgeAdapter.getInitialState(),
   };
 
-  clusterResult.forEach((cluster, clusterIndex) => {
-    const handle = clusterIndex.toString();
-
-    story.clusters.entities[handle] = cluster;
+  clusterResult.forEach((cluster) => {
+    story.clusters.entities[cluster.id] = cluster;
 
     if (edgeResult != null) {
       edgeResult.forEach((edge) => {
-        if (edge.source === clusterIndex.toString()) {
-          edge.source = handle;
+        if (edge.source === cluster.label) {
+          edge.source = cluster.id;
         }
-        if (edge.destination === clusterIndex.toString()) {
-          edge.destination = handle;
+        if (edge.destination === cluster.label) {
+          edge.destination = cluster.id;
         }
       });
     }
   });
 
   if (edgeResult != null) {
-    edgeResult.forEach((edge, i) => {
-      const handle = i;
-
-      story.edges.entities[handle] = edge;
+    edgeResult.forEach((edge) => {
+      story.edges.entities[edge.id] = edge;
     });
   }
 

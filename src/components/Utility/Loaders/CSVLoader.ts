@@ -71,7 +71,7 @@ export class CSVLoader implements Loader {
     worker.onmessage = (e) => {
       // Point clustering
       const clusters = new Array<ICluster>();
-      Object.keys(e.data).forEach((k) => {
+      Object.keys(e.data).forEach((k, index) => {
         const t = e.data[k];
         clusters.push({
           id: uuidv4(),

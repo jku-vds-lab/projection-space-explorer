@@ -89,7 +89,6 @@ const bookSlice = createSlice({
       const { name, cluster } = action.payload;
       const story = state.stories.entities[state.active];
       const entity = story.clusters.entities[cluster];
-
       entity.label = name;
 
       state.groupLabel = createGroupLabels(Object.values(story.clusters.entities));

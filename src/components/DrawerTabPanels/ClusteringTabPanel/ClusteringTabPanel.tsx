@@ -26,6 +26,10 @@ import {
   TextField,
   Typography,
   FormHelperText,
+  Tooltip,
+  DialogTitle,
+  Grid,
+  Divider,
 } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -37,7 +41,7 @@ import { ACluster } from '../../../model/Cluster';
 import { ICluster } from '../../../model/ICluster';
 import { IBook } from '../../../model/Book';
 import { DisplayMode, setDisplayMode } from '../../Ducks/DisplayModeDuck';
-import type { RootState } from '../../Store/Store';
+import { RootState, usePSESelector } from '../../Store/Store';
 import { StoryPreview } from './StoryPreview';
 import * as backend_utils from '../../../utils/backend-connect';
 import { useCancellablePromise } from '../../../utils/promise-helpers';
@@ -242,11 +246,11 @@ export const ClusteringTabPanel = connector(
     const marks = [
       {
         value: 0,
-        label: 'Few clusters',
+        label: 'Few groups',
       },
       {
         value: 2,
-        label: 'Many clusters',
+        label: 'Many groups',
       },
     ];
     // React.useEffect(() => toggleClusters(), [dataset])
@@ -318,9 +322,18 @@ export const ClusteringTabPanel = connector(
         </Box>
 
         <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
-          <Button variant="outlined" fullWidth ref={anchorRef} onClick={() => setOpenClusterPanel(true)} data-cy="define-groups-by-clustering-button">
-            Define groups by clustering <ChevronRightIcon />
-          </Button>
+          <Tooltip
+            title={
+              <Typography variant="subtitle2">
+                Automatically derive groups using the HDBSCAN clustering algorithm. The clustering alogrithm takes the two-dimensional coordinates as input and
+                returns density-based group affiliations for each {globalLabels.itemLabel}.
+              </Typography>
+            }
+          >
+            <Button variant="outlined" fullWidth ref={anchorRef} onClick={() => setOpenClusterPanel(true)} data-cy="define-groups-by-clustering-button">
+              Define groups by clustering <ChevronRightIcon />
+            </Button>
+          </Tooltip>
         </Box>
         <Popover
           open={openClusterPanel}
@@ -335,128 +348,170 @@ export const ClusteringTabPanel = connector(
             horizontal: 'left',
           }}
         >
-          <Box paddingLeft={2} paddingTop={2} width={300}>
-            <Typography variant="subtitle2" gutterBottom>
-              Clustering settings
+          <DialogTitle>Clustering settings</DialogTitle>
+
+          <Box paddingLeft={2} width={300}>
+            <Typography variant="body2" gutterBottom>
+              Adjust parameters used for HDBSCAN clustering.
             </Typography>
           </Box>
 
           <Box paddingLeft={2}>
-            <FormControlLabel
-              control={
-                <Switch
-                  color="primary"
-                  checked={clusterAdvancedMode}
-                  onChange={(event, newValue) => {
-                    setClusterAdvancedMode(newValue);
-                  }}
-                  name="advancedClustering"
-                />
-              }
-              label="Advanced"
-            />
+            <Tooltip placement="left" title={<Typography variant="subtitle2">Use advanced parameter settings, if you know what you are doing.</Typography>}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                    checked={clusterAdvancedMode}
+                    onChange={(event, newValue) => {
+                      setClusterAdvancedMode(newValue);
+                    }}
+                    name="advancedClustering"
+                  />
+                }
+                label="Advanced"
+              />
+            </Tooltip>
           </Box>
           {clusterAdvancedMode ? (
             <Box paddingLeft={2} paddingRight={2}>
-              <Box>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      color="primary"
-                      checked={clusterSelectionOnly}
-                      onChange={(event, newValue) => {
-                        setClusterSelectionOnly(newValue);
-                      }}
-                      name="selectionClustering"
-                    />
-                  }
-                  label={`Cluster only selected ${globalLabels.itemLabelPlural}`}
+              <Tooltip placement="left" title={<Typography variant="subtitle2">The minimum number of {globalLabels.itemLabelPlural} in a cluster.</Typography>}>
+                <TextField
+                  fullWidth
+                  label="Min cluster size"
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={min_cluster_size}
+                  onChange={(event) => {
+                    set_min_cluster_size(Math.max(parseInt(event.target.value, 10), 2));
+                  }}
+                  margin="normal"
                 />
-              </Box>
-              <Box>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      color="primary"
-                      checked={addClusterToCurrentStory}
-                      onChange={(event, newValue) => {
-                        setAddClusterToCurrentStory(newValue);
-                      }}
-                      name="addClusterToCurrentStory"
-                    />
-                  }
-                  label={`Add cluster to current ${globalLabels.storyLabel}`}
-                />
-              </Box>
-              <TextField
-                fullWidth
-                label="Min cluster size"
-                type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={min_cluster_size}
-                onChange={(event) => {
-                  set_min_cluster_size(Math.max(parseInt(event.target.value, 10), 2));
-                }}
-                margin="normal"
-              />
+              </Tooltip>
               <br />
-              <TextField
-                fullWidth
-                label="Min cluster samples"
-                type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={min_cluster_samples}
-                onChange={(event) => {
-                  set_min_cluster_samples(Math.max(parseInt(event.target.value, 10), 1));
-                }}
-                margin="normal"
-              />
-              <br />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    color="primary"
-                    checked={allow_single_cluster}
-                    onChange={(event) => {
-                      set_allow_single_cluster(event.target.checked);
-                    }}
-                  />
+              <Tooltip
+                title={
+                  <Typography variant="subtitle2">
+                    This parameter determines the number of neighboring {globalLabels.itemLabelPlural}&apos; distance to estimate cluster densities.
+                  </Typography>
                 }
-                label="Allow single cluster"
-              />
+                placement="left"
+              >
+                <TextField
+                  fullWidth
+                  label="Min samples"
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={min_cluster_samples}
+                  onChange={(event) => {
+                    set_min_cluster_samples(Math.max(parseInt(event.target.value, 10), 1));
+                  }}
+                  margin="normal"
+                />
+              </Tooltip>
+              <br />
+              <Tooltip
+                placement="left"
+                title={<Typography variant="subtitle2">If activated, HDBSCAN is allowed to return a single cluster. Otherwise, this is restricted.</Typography>}
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      color="primary"
+                      checked={allow_single_cluster}
+                      onChange={(event) => {
+                        set_allow_single_cluster(event.target.checked);
+                      }}
+                    />
+                  }
+                  label="Allow single cluster"
+                />
+              </Tooltip>
             </Box>
           ) : (
             <Box paddingLeft={7} paddingRight={7}>
-              <Slider
-                track={false}
-                defaultValue={1}
-                aria-labelledby="discrete-slider-custom"
-                step={1}
-                marks={marks}
-                min={0}
-                max={2}
-                value={clusterSliderValue}
-                onChange={(event, newValue) => handleClusterSliderChange(newValue, clusterSelectionOnly)}
-              />
+              <Tooltip placement="left" title={<Typography variant="subtitle2">Choose how many groups should approximately be derived.</Typography>}>
+                <Slider
+                  track={false}
+                  defaultValue={1}
+                  aria-labelledby="discrete-slider-custom"
+                  step={1}
+                  marks={marks}
+                  min={0}
+                  max={2}
+                  value={clusterSliderValue}
+                  onChange={(event, newValue) => handleClusterSliderChange(newValue, clusterSelectionOnly)}
+                />
+              </Tooltip>
             </Box>
           )}
-          <Box p={2}>
+
+          <Box padding={2}>
+            <Divider />
+          </Box>
+          <Box paddingLeft={2} paddingRight={2}>
+            <Tooltip
+              placement="left"
+              title={
+                <Typography variant="subtitle2">
+                  If activated, only selected {globalLabels.itemLabelPlural} will be clustered. Otherwise, all {globalLabels.itemLabelPlural} will be clustered.
+                </Typography>
+              }
+            >
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                    checked={clusterSelectionOnly}
+                    onChange={(event, newValue) => {
+                      setClusterSelectionOnly(newValue);
+                    }}
+                    name="selectionClustering"
+                  />
+                }
+                label={`Cluster selected ${globalLabels.itemLabelPlural} only`}
+              />
+            </Tooltip>
+          </Box>
+          <Box paddingLeft={2} paddingRight={2}>
+            <Tooltip
+              placement="left"
+              title={
+                <Typography variant="subtitle2">
+                  If activated, the derived groups are added to the active {globalLabels.storyBookLabel}. Otherwise, a new {globalLabels.storyBookLabel} is
+                  created where the groups are added.
+                </Typography>
+              }
+            >
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                    checked={addClusterToCurrentStory}
+                    onChange={(event, newValue) => {
+                      setAddClusterToCurrentStory(newValue);
+                    }}
+                    name="addClusterToCurrentStory"
+                  />
+                }
+                label={`Add groups to current ${globalLabels.storyLabel}`}
+              />
+            </Tooltip>
+          </Box>
+          <Box p={2} textAlign="right">
+            <Button onClick={() => setOpenClusterPanel(false)}>Cancel</Button>
             <Button
               data-cy="run-clustering-button"
-              variant="outlined"
-              style={{
-                width: '100%',
-              }}
               onClick={() => {
                 calc_hdbscan(min_cluster_size, min_cluster_samples, allow_single_cluster, cancellablePromise, clusterSelectionOnly, addClusterToCurrentStory);
                 setOpenClusterPanel(false);
               }}
             >
-              Run clustering
+              Start
             </Button>
           </Box>
         </Popover>
@@ -492,15 +547,16 @@ type ClusterPopoverProps = {
   setAnchorEl: any;
   cluster: ICluster;
   removeClusterFromStories: any;
-  splitRef: any;
   dataset: Dataset;
 };
 
-function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeClusterFromStories, splitRef }: ClusterPopoverProps) {
+function ClusterPopover({ anchorEl, setAnchorEl, cluster, removeClusterFromStories, dataset }: ClusterPopoverProps) {
   if (!cluster) return null;
 
   const [name, setName] = React.useState(cluster.label);
   const dispatch = useDispatch();
+
+  const stories = usePSESelector((state) => state.stories);
 
   React.useEffect(() => {
     if (cluster && anchorEl) {
@@ -519,15 +575,6 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
     removeClusterFromStories(cluster);
   };
 
-  const onLineup = () => {
-    setAnchorEl(null);
-
-    const curr_sizes = splitRef.current.split.getSizes();
-    if (curr_sizes[1] < 2) {
-      splitRef.current.split.setSizes([30, 70]);
-    }
-  };
-
   return (
     <Popover
       id="dialog to open"
@@ -543,42 +590,42 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, dataset, removeCluster
         horizontal: 'center',
       }}
     >
-      <div>
-        <ContextPaper>
-          {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
-
-          <FormGroup>
-            <TextField
-              label="Group name"
-              value={name}
-              onChange={(event) => {
-                setName(event.target.value);
-              }}
-              margin="normal"
-            />
-
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Button
-                variant="outlined"
-                color="error"
-                // color="secondary"
-                onClick={onDelete}
-                startIcon={<DeleteIcon />}
-              >
-                Delete
-              </Button>
-
-              <Button color="primary" variant="outlined" aria-label="Save" onClick={onSave} startIcon={<SaveIcon />}>
-                Save
-                {/* Name */}
-              </Button>
-              {/* <Button onClick={onLineup} variant="outlined">
-                Show Group in Table
-              </Button> */}
-            </div>
-          </FormGroup>
-        </ContextPaper>
-      </div>
+      <DialogTitle>Settings for group {ACluster.getTextRepresentation(cluster)}</DialogTitle>
+      <Box paddingLeft={2} paddingRight={2} paddingBottom={2} width={300}>
+        {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
+        <Box paddingBottom={0}>
+          <Tooltip title={<Typography variant="subtitle2">Delete group {ACluster.getTextRepresentation(cluster)}</Typography>}>
+            <Button variant="outlined" fullWidth color="error" onClick={onDelete} startIcon={<DeleteIcon />}>
+              Delete
+            </Button>
+          </Tooltip>
+        </Box>
+        <FormGroup>
+          <TextField
+            label="Rename group"
+            value={name}
+            onChange={(event) => {
+              setName(event.target.value);
+            }}
+            margin="normal"
+          />
+          <Box paddingTop={1} textAlign="right">
+            <Button color="primary" aria-label="Close" onClick={() => setAnchorEl(null)}>
+              Close
+              {/* Name */}
+            </Button>
+            <Button
+              color="primary"
+              // variant="outlined"
+              aria-label="Save"
+              onClick={onSave}
+              // startIcon={<SaveIcon />}
+            >
+              Save
+            </Button>
+          </Box>
+        </FormGroup>
+      </Box>
     </Popover>
   );
 }
@@ -619,17 +666,19 @@ function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStor
             secondary={`${cluster.indices.length} ${capitalizeFirstLetter(globalLabels.itemLabelPlural)}`}
           />
           <ListItemSecondaryAction>
-            <IconButton
-              edge="end"
-              aria-label="delete"
-              onClick={(event) => {
-                // removeClusterFromStories(cluster)
-                setPopoverCluster(cluster);
-                setAnchorEl(event.target);
-              }}
-            >
-              <SettingsIcon />
-            </IconButton>
+            <Tooltip title={<Typography variant="subtitle2">Change settings for this group</Typography>}>
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={(event) => {
+                  // removeClusterFromStories(cluster)
+                  setPopoverCluster(cluster);
+                  setAnchorEl(event.target);
+                }}
+              >
+                <SettingsIcon />
+              </IconButton>
+            </Tooltip>
           </ListItemSecondaryAction>
         </ListItem>,
       );
@@ -644,7 +693,6 @@ function ClusterList({ selectedClusters, stories, dataset, removeClusterFromStor
         setAnchorEl={setAnchorEl}
         cluster={popoverCluster}
         removeClusterFromStories={removeClusterFromStories}
-        splitRef={splitRef}
       />
 
       <List>{storyItems}</List>

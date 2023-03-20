@@ -1,8 +1,9 @@
 import { EntityId } from '@reduxjs/toolkit';
 import { useState } from 'react';
 import * as React from 'react';
-import { Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select, Tooltip } from '@mui/material';
+import { Box, Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select, Tooltip, Typography } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
+import { Add, Settings } from '@mui/icons-material';
 import { IBook } from '../../../model/Book';
 import type { RootState } from '../../Store/Store';
 import { StoriesActions, AStorytelling } from '../../Ducks/StoriesDuck';
@@ -79,40 +80,43 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
               })}
         </Select>
       </FormControl>
-
-      <Grid container direction="row" alignItems="center" justifyContent="space-between">
-        <Tooltip placement="bottom" title={`Creates an empty ${globalLabels.storyBookLabel} (group and edge container) that can be used to save groups`}>
+      <Box paddingX={0} paddingTop={1}>
+        <Tooltip
+          placement="bottom"
+          title={<Typography variant="subtitle2">Creates an empty {globalLabels.storyBookLabel} that can be used to save groups and edges</Typography>}
+        >
           <Button
-            style={{
-              marginTop: '16px',
-            }}
-            onClick={() => addHandler()}
+            style={{ marginRight: '2px' }}
             variant="outlined"
-            size="small"
+            startIcon={<Add />}
+            onClick={(e) => addHandler()}
+            color="primary"
+            aria-label={`Add empty ${globalLabels.storyBookLabel}`}
           >
-            Add empty
+            New
+            {/* {globalLabels.storyBookLabel} */}
           </Button>
         </Tooltip>
-
-        {stories.active ? (
-          <Tooltip placement="bottom" title={`Opens a dialog that allows to edit the currently selected ${globalLabels.storyBookLabel}`}>
+        <Tooltip placement="bottom" title={<Typography variant="subtitle2">Change settings for active {globalLabels.storyBookLabel}</Typography>}>
+          <span>
             <Button
-              style={{
-                marginTop: '16px',
-              }}
               variant="outlined"
-              size="small"
-              onClick={() => {
+              startIcon={<Settings />}
+              disabled={stories.active == null}
+              onClick={(e) => {
                 setEditBook(stories.stories.entities[stories.active]);
               }}
+              color="primary"
+              aria-label={`Edit selected ${globalLabels.storyBookLabel}`}
             >
-              Edit selected
+              Settings
             </Button>
-          </Tooltip>
-        ) : null}
-      </Grid>
+          </span>
+        </Tooltip>
+      </Box>
 
       <EditBookDialog
+        storyBookLabel={globalLabels.storyBookLabel}
         book={editBook}
         onClose={() => {
           setEditBook(null);
@@ -121,8 +125,8 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
           dispatch(StoriesActions.changeBookName({ id: editBook.id, name: changes.name }));
           setEditBook(null);
         }}
-        onDelete={() => {
-          deleteHandler(editBook.id);
+        onDelete={(e) => {
+          deleteHandler(stories.stories.entities[stories.active].id);
           setEditBook(null);
         }}
       />

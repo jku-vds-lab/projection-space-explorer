@@ -214,7 +214,7 @@ function GenericSettingsComp({
 
   return (
     <Dialog maxWidth={domainSettings?.settings?.hideSettings !== true ? 'xl' : 'md'} open={open} onClose={onClose} fullWidth>
-      <DialogTitle>{domainSettings.name}</DialogTitle>
+      <DialogTitle>Project dataset with {domainSettings.name}</DialogTitle>
 
       {domainSettings?.settings?.hideSettings ? (
         <DialogContent>
@@ -222,6 +222,7 @@ function GenericSettingsComp({
         </DialogContent>
       ) : (
         <DialogContent>
+          <DialogContentText>{domainSettings?.description}</DialogContentText>
           <Container>
             {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
               <FeaturePicker
