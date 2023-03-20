@@ -1556,8 +1556,8 @@ export const WebGLView = connector(
             >
               Delete group
             </MenuItem>
-            {this.props.featureConfig.enableStorytelling !== false ? <Divider /> : null}
-            {this.props.featureConfig.enableStorytelling !== false ? (
+            {this.props.featureConfig?.enableStorytelling !== false ? <Divider /> : null}
+            {this.props.featureConfig?.enableStorytelling !== false ? (
               <MenuItem
                 onClick={() => {
                   if (!isCluster(this.state.menuTarget)) {
@@ -1606,7 +1606,7 @@ export const WebGLView = connector(
                 {toSentenceCase(this.props.globalLabels.storyLabelPlural)} ... starting from this group
               </MenuItem>
             ) : null}
-            {this.props.featureConfig.enableStorytelling !== false ? (
+            {this.props.featureConfig?.enableStorytelling !== false ? (
               <MenuItem
                 onClick={() => {
                   if (!isCluster(this.state.menuTarget)) {
