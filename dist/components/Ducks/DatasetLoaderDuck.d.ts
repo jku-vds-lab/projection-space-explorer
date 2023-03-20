@@ -4,7 +4,7 @@ export declare const datasetLoader: import("@reduxjs/toolkit/dist/createReducer"
     entry: DatasetEntry;
 }>;
 export declare const DatasetLoaderActions: {
-    fetchDatasetByPath: import("@reduxjs/toolkit").AsyncThunk<void, DatasetEntry, {
+    fetchDatasetByPath: import("@reduxjs/toolkit").AsyncThunk<string, DatasetEntry, {
         state?: unknown;
         dispatch?: import("redux").Dispatch<import("redux").AnyAction>;
         extra?: unknown;

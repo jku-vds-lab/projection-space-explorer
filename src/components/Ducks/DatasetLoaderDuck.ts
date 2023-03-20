@@ -18,6 +18,7 @@ const fetchDatasetByPath = createAsyncThunk('dataset/fetchByPath', async (entry:
   );
 
   console.log(result);
+  return result;
 });
 
 export const datasetLoader = createReducer(initialState, (builder) => {
