@@ -591,10 +591,21 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, removeClusterFromStori
       }}
     >
       <DialogTitle>Settings for group {ACluster.getTextRepresentation(cluster)}</DialogTitle>
-      <div>
-        <ContextPaper>
+      <Box paddingLeft={2} paddingRight={2} paddingBottom={2} width={300}>
           {/* <Typography variant="h6" className={classes.button} gutterBottom>Settings</Typography> */}
-
+          <Box paddingBottom={0}>
+            <Tooltip title={<Typography variant="subtitle2">Delete group {ACluster.getTextRepresentation(cluster)}</Typography>}>
+              <Button
+                variant="outlined"
+                fullWidth
+                color="error"
+                onClick={onDelete}
+                startIcon={<DeleteIcon />}
+              >
+                Delete
+              </Button>
+            </Tooltip>
+          </Box>
           <FormGroup>
             <TextField
               label="Rename group"
@@ -604,27 +615,11 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, removeClusterFromStori
               }}
               margin="normal"
             />
-            <Grid container>
-              <Grid item xs={3}>
-                <Tooltip title={<Typography variant="subtitle2">Delete group {ACluster.getTextRepresentation(cluster)}</Typography>}>
-                  <Button
-                    // variant="outlined"
-                    color="secondary"
-                    onClick={onDelete}
-                    // startIcon={<DeleteIcon />}
-                  >
-                    Delete
-                  </Button>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={3} />
-              <Grid item xs={3} alignContent="right">
+            <Box paddingTop={1} textAlign="right">
                 <Button color="primary" aria-label="Close" onClick={() => setAnchorEl(null)}>
                   Close
                   {/* Name */}
                 </Button>
-              </Grid>
-              <Grid item xs={3} alignContent="right">
                 <Button
                   color="primary"
                   // variant="outlined"
@@ -634,11 +629,9 @@ function ClusterPopover({ anchorEl, setAnchorEl, cluster, removeClusterFromStori
                 >
                   Save
                 </Button>
-              </Grid>
-            </Grid>
+            </Box>
           </FormGroup>
-        </ContextPaper>
-      </div>
+        </Box>
     </Popover>
   );
 }
