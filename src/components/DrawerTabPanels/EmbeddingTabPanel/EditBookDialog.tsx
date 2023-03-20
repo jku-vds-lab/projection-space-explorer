@@ -1,19 +1,21 @@
 import * as React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Tooltip, Typography } from '@mui/material';
 import { EntityId } from '@reduxjs/toolkit';
-import type { IBook } from '../../../model';
+import { ACluster, IBook } from '../../../model';
 
 export function EditBookDialog({
   storyBookLabel,
   book,
   onClose,
   onSave,
+  onDelete,
 }: {
   storyBookLabel: string;
   book: IBook;
   onClose: () => void;
   onSave: (id: EntityId, changes: any) => void;
+  onDelete: (id: EntityId) => void;
 }) {
   const [name, setName] = React.useState(book?.name);
 
@@ -32,10 +34,24 @@ export function EditBookDialog({
   return (
     <Dialog open={book !== null} onClose={onClose}>
       <Box component="form" onSubmit={onSubmit}>
-        <DialogTitle>{`Rename ${storyBookLabel} ${book?.name ? book.name : ''}`}</DialogTitle>
+        <DialogTitle>{`Settings for active ${storyBookLabel} ${book?.name ? book.name : ''}`}</DialogTitle>
 
         <DialogContent>
-          <TextField required label="Name" fullWidth value={name ?? ''} onChange={(event) => setName(event.target.value)} sx={{ mt: 1 }} />
+          <Tooltip title={<Typography variant="subtitle2">Delete the selected {storyBookLabel}</Typography>}>
+            <Button
+              variant="outlined"
+              fullWidth
+              color="error"
+              onClick={() => {
+                onDelete(book.id); 
+                onClose();
+              }}
+              startIcon={<DeleteIcon />}
+            >
+              Delete
+            </Button>
+          </Tooltip>
+          <TextField label={`Rename ${storyBookLabel}`} fullWidth value={name ?? ''} onChange={(event) => setName(event.target.value)} sx={{ mt: 1 }} />
         </DialogContent>
 
         <DialogActions>
