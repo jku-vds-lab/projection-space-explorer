@@ -39,6 +39,7 @@ import { toSentenceCase } from './utils/helpers';
 import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChooser';
 import { DetailViewActions } from './components/Ducks/DetailViewDuck';
 import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
+import { IVector } from './model/Vector';
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.

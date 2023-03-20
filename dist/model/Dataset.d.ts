@@ -51,11 +51,37 @@ export declare class ADataset {
         tensor: any[];
         featureTypes: any[];
     };
+    /**
+     * Infers an array of attributes that can be filtered after, these can be
+     * categorical, sequential or continuous attribues.
+     * @param {*} ranges
+     */
+    static extractEncodingFeatures(columns: {
+        [name: string]: ColumnType;
+    }): {
+        category: string;
+        attributes: any[];
+    }[];
+    static hasMultivariateLabels(vectors: IVector[]): boolean;
+    static inferRangeForAttribute(vectors: IVector[], key: string): {
+        min: number;
+        max: number;
+        inferred: boolean;
+    };
+    /**
+     * Creates a map which shows the distinct types and data types of the columns.
+     */
+    static calculateColumnTypes(vectors: IVector[], ranges: any, featureTypes: any, metaInformation: any): {
+        [name: string]: ColumnType;
+    };
+    static isDatasetSequential(vectors: IVector[]): boolean;
+    static getSegs(vectors: IVector[], key?: string): DataLine[];
+    static createDataset(vectors: IVector[], ranges: any, info: any, featureTypes: any, metaInformation?: {}): Dataset;
 }
 /**
  * Dataset class that holds all data, the ranges and additional stuff
  */
-export declare class Dataset {
+export interface Dataset {
     vectors: IVector[];
     segments: DataLine[];
     info: {
@@ -74,27 +100,5 @@ export declare class Dataset {
     inferredColumns: string[];
     metaInformation: any;
     categories: any;
-    constructor(vectors: any, ranges: any, info: any, featureTypes: any, metaInformation?: {});
-    getSegs(key?: string): DataLine[];
-    checkSequential(): boolean;
-    checkLabels(): void;
-    inferRangeForAttribute(key: string): {
-        min: number;
-        max: number;
-        inferred: boolean;
-    };
-    /**
-     * Creates a map which shows the distinct types and data types of the columns.
-     */
-    calculateColumnTypes(ranges: any, featureTypes: any, metaInformation: any): void;
-    /**
-     * Infers an array of attributes that can be filtered after, these can be
-     * categorical, sequential or continuous attribues.
-     * @param {*} ranges
-     */
-    extractEncodingFeatures(): {
-        category: string;
-        attributes: any[];
-    }[];
 }
 //# sourceMappingURL=Dataset.d.ts.map

@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import { createEntityAdapter, EntityState, EntityId } from '@reduxjs/toolkit';
+import { createEntityAdapter, EntityState, EntityId, createReducer } from '@reduxjs/toolkit';
 import { combineReducers, Reducer, ReducersMapObject } from 'redux';
 import clone from 'fast-clone';
 import { useSelector } from 'react-redux';
+import { setAutoFreeze } from 'immer';
 import projectionOpen from '../Ducks/ProjectionOpenDuck';
 import highlightedSequence from '../Ducks/HighlightedSequenceDuck';
 import dataset from '../Ducks/DatasetDuck';
@@ -36,6 +37,10 @@ import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multipleAdapter, defaultAttributes, createViewDuckReducer } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 import { tabSettings } from '../Ducks/OpenTabDuck';
+
+// This disables the auto freeze freature of immer which is necessary for the root reducers
+// See https://immerjs.github.io/immer/freezing/ for details
+setAutoFreeze(false);
 
 /**
  * Match all cases of view constants eg x1, y1, x2, y2...
@@ -351,43 +356,61 @@ export function createRootReducer<T>(reducers?: ReducersMapObject<T, any>): Redu
   const combined = combineReducers(reducers ? { ...allReducers, ...reducers } : { ...allReducers });
 
   return (state: Parameters<typeof combined>[0] & T, action: Parameters<typeof combined>[1]) => {
-    if (action.type === RootActionTypes.RESET) {
-      const { dataset, tabSettings, datasetEntries, globalLabels } = state;
+    switch (action.type) {
+      case RootActionTypes.RESET: {
+        const { dataset, tabSettings, datasetEntries, globalLabels } = state;
 
-      for (const key in state) {
-        state[key] = undefined;
+        for (const key in state) {
+          state[key] = undefined;
+        }
+
+        state.dataset = dataset;
+        state.tabSettings = tabSettings;
+        state.datasetEntries = datasetEntries;
+        state.globalLabels = globalLabels;
+        break;
       }
+      case RootActionTypes.HYDRATE: {
+        const newState = { ...state };
 
-      state.dataset = dataset;
-      state.tabSettings = tabSettings;
-      state.datasetEntries = datasetEntries;
-      state.globalLabels = globalLabels;
-    }
+        Object.assign(newState, action.dump);
 
-    if (action.type === RootActionTypes.HYDRATE) {
-      const newState = { ...state };
-
-      Object.assign(newState, action.dump);
-
-      return newState;
-    }
-
-    if (action.type === RootActionTypes.DATASET) {
-      const newState = { ...state };
-
-      const partialRootState = createInitialReducerState(action.dataset);
-      partialRootState.dataset = action.dataset;
-      Object.assign(newState, partialRootState);
-
-      return newState;
-    }
-
-    if (action.type === RootActionTypes.HARD_RESET) {
-      const clone = { ...state };
-      for (const key of Object.keys(allReducers)) {
-        clone[key] = undefined;
+        return newState;
       }
-      state = clone;
+      case RootActionTypes.DATASET: {
+        const newState = { ...state };
+
+        const partialRootState = createInitialReducerState(action.dataset);
+
+        if (action.dump) {
+          Object.assign(partialRootState, action.dump);
+        }
+
+        partialRootState.dataset = action.dataset;
+        Object.assign(newState, partialRootState);
+
+        return newState;
+      }
+      case RootActionTypes.HARD_RESET: {
+        const clone = { ...state };
+        for (const key of Object.keys(allReducers)) {
+          clone[key] = undefined;
+        }
+        state = clone;
+        break;
+      }
+      /** case RootActionTypes.ADD_DATA: {
+        const newState = { ...state };
+        const active = newState.multiples.multiples.entities[newState.multiples.active].attributes;
+
+        active.workspace.positions = [...active.workspace.positions, ...action.data.map(() => ({x: Math.random() * 10, y: Math.random() * 10}))];
+ 
+        newState.dataset = { ...newState.dataset, vectors: [...newState.dataset.vectors, ...action.data] };
+
+        return newState;
+      } */
+      default:
+        break;
     }
 
     return combined(state, action) as RootState & T;

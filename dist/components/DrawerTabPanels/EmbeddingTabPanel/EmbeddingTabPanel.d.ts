@@ -25,7 +25,6 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     setProjectionWorker: (value: any) => any;
     setProjectionColumns: (value: any) => any;
     setTrailVisibility: (visibility: any) => any;
-    addProjection: (embedding: any) => any;
     deleteProjection: (handle: string) => any;
     updateWorkspace: (workspace: IBaseProjection, metadata?: any) => any;
 }, {}>;
@@ -61,7 +60,6 @@ export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent
     setProjectionWorker: (value: any) => any;
     setProjectionColumns: (value: any) => any;
     setTrailVisibility: (visibility: any) => any;
-    addProjection: (embedding: any) => any;
     deleteProjection: (handle: string) => any;
     updateWorkspace: (workspace: IBaseProjection, metadata?: any) => any;
 } & {
@@ -71,6 +69,6 @@ export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent
     setProjectionOpen?: any;
     setProjectionWorker?: any;
     dataset?: Dataset;
-}, "dataset" | "stories" | "projectionOpen" | "projectionParams" | "projectionWorker" | "projections" | "setProjectionOpen" | "setProjectionWorker" | "setProjectionColumns" | "setTrailVisibility" | "addProjection" | "deleteProjection" | "updateWorkspace">>;
+}, "stories" | "dataset" | "projectionOpen" | "projectionParams" | "projectionWorker" | "projections" | "setProjectionOpen" | "setProjectionWorker" | "setProjectionColumns" | "setTrailVisibility" | "deleteProjection" | "updateWorkspace">>;
 export {};
 //# sourceMappingURL=EmbeddingTabPanel.d.ts.map
