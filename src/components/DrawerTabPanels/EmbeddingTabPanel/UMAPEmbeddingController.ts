@@ -44,7 +44,7 @@ export class UMAPEmbeddingController extends EmbeddingController {
     );
   }
 
-  step() {
+  override step() {
     this.worker.postMessage({
       messageType: 'step',
     });

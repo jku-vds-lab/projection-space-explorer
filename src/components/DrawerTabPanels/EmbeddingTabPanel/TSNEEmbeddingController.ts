@@ -42,7 +42,7 @@ export class TSNEEmbeddingController extends EmbeddingController {
     });
   }
 
-  step() {
+  override step() {
     this.worker.postMessage({
       messageType: 'step',
     });
