@@ -33,7 +33,7 @@ const fetchDatasetByPath = createAsyncThunk('dataset/fetchByPath', async (entry:
   );
 
   const onDataSelected = (dataset: Dataset) => {
-    RootActions.loadDataset(dataset);
+    dispatch(RootActions.loadDataset(dataset));
   };
 
   if (entry.path.endsWith('json')) {
