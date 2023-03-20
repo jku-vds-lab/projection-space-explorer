@@ -155,7 +155,7 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
         />
 
         <Box px={3} pb={1}>
-          {percent < 100 ? <LinearProgress style={{ marginBottom: '4px' }} /> : null}
+          {percent < 100 && computing ? <LinearProgress style={{ marginBottom: '4px' }} /> : null}
           {genlabel(step)}
         </Box>
 
