@@ -26,6 +26,10 @@ declare const allReducers: {
         openTab: number;
         focusedTab: number[];
     }>;
+    datasetLoader: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+        isFetching: boolean;
+        entry: import("../../model").DatasetEntry;
+    }>;
     pointDisplay: Reducer<{
         checkedShapes: {
             star: boolean;

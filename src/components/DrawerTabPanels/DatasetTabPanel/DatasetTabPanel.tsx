@@ -9,6 +9,7 @@ import { DatasetDrop } from './DatasetDrop';
 import { DownloadJob } from './DownloadJob';
 import { DownloadProgress } from './DownloadProgress';
 import { PredefinedDatasets } from './PredefinedDatasets';
+import { usePSESelector } from '../../Store/Store';
 
 function convertFromCSV(vectors) {
   return vectors.map((vector) => {
@@ -18,6 +19,10 @@ function convertFromCSV(vectors) {
 
 export function DatasetTabPanel({ onDataSelected }: { onDataSelected(dataset: Dataset): void }) {
   const [job, setJob] = React.useState(null);
+
+  const datasetLoader = usePSESelector((state) => state.datasetLoader);
+
+  console.log(datasetLoader);
 
   const predefined = (
     <PredefinedDatasets
