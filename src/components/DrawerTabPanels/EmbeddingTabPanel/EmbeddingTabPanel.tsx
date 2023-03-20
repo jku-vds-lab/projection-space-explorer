@@ -39,7 +39,6 @@ const mapDispatchToProps = (dispatch) => ({
   // setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
   setProjectionColumns: (value) => dispatch(setProjectionColumnsAction(value)),
   setTrailVisibility: (visibility) => dispatch(setTrailVisibility(visibility)),
-  addProjection: (embedding) => dispatch(ViewActions.add(embedding)),
   deleteProjection: (handle: string) => dispatch(ViewActions.remove(handle)),
   updateWorkspace: (workspace: IBaseProjection, metadata?) => dispatch(ViewActions.updateActive({ positions: workspace, metadata })),
 });
