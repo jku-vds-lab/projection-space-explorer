@@ -39,7 +39,6 @@ const mapDispatchToProps = (dispatch) => ({
   // setProjectionParams: value => dispatch(setProjectionParamsAction(value)),
   setProjectionColumns: (value) => dispatch(setProjectionColumnsAction(value)),
   setTrailVisibility: (visibility) => dispatch(setTrailVisibility(visibility)),
-  addProjection: (embedding) => dispatch(ViewActions.add(embedding)),
   deleteProjection: (handle: string) => dispatch(ViewActions.remove(handle)),
   updateWorkspace: (workspace: IBaseProjection, metadata?) => dispatch(ViewActions.updateActive({ positions: workspace, metadata })),
 });
@@ -177,11 +176,11 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         </Typography>
       </Box>
 
-      <Box paddingLeft={2} paddingRight={2}>
+      <Box px={2}>
         <EmbeddingMethodButtons setOpen={setOpen} setDomainSettings={setDomainSettings} embeddings={props.config?.embeddings} />
       </Box>
 
-      <Box paddingLeft={2} paddingTop={2}>
+      <Box px={2} pt={2}>
         <ProjectionControlCard
           dataset_name={props.dataset?.info?.path}
           controller={controller}

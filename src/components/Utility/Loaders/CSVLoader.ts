@@ -8,7 +8,7 @@ import { DatasetType } from '../../../model/DatasetType';
 import { IVector, AVector } from '../../../model/Vector';
 import { InferCategory } from '../Data/InferCategory';
 import { Preprocessor } from '../Data/Preprocessor';
-import { Dataset, DefaultFeatureLabel } from '../../../model/Dataset';
+import { ADataset, Dataset, DefaultFeatureLabel } from '../../../model/Dataset';
 import { Loader } from './Loader';
 import { ICluster } from '../../../model/ICluster';
 import { ObjectTypes } from '../../../model/ObjectType';
@@ -227,7 +227,7 @@ export class CSVLoader implements Loader {
 
     profiler.profile('Preprocessing');
 
-    const dataset = new Dataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation);
+    const dataset = ADataset.createDataset(vectors, ranges, { type: datasetType, path: entry.path }, types, metaInformation);
 
     dataset.hasInitialScalarTypes = hasScalarTypes;
     dataset.inferredColumns = inferredColumns;
@@ -243,7 +243,7 @@ export class CSVLoader implements Loader {
           // vector.groupLabel = [];
         });
 
-        dataset.categories = dataset.extractEncodingFeatures();
+        dataset.categories = ADataset.extractEncodingFeatures(dataset.columns);
 
         profiler.profile('Extract encoding features');
 

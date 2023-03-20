@@ -73,7 +73,6 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   activateView: (id: EntityId) => dispatch(ViewActions.activateView(id)),
-  addView: (dataset: Dataset) => dispatch(ViewActions.addView(dataset)),
   selectVectors: (vectors: number[], shiftKey: boolean) => dispatch(selectVectors(vectors, shiftKey)),
   setActiveLine: (activeLine) => dispatch(setActiveLine(activeLine)),
   setViewTransform: (camera, width, height, multipleId) => dispatch(setViewTransform(camera, width, height, multipleId)),
@@ -281,7 +280,7 @@ export const WebGLView = connector(
       let best = 30 / (this.camera.zoom * 2.0);
       let res = -1;
 
-      for (let index = 0; index < this.props.dataset.vectors.length; index++) {
+      for (let index = 0; index < Math.min(this.props.dataset.vectors.length, this.props.workspace.length); index++) {
         const value = this.props.workspace[index];
 
         // Skip points matching some criteria
@@ -1166,7 +1165,8 @@ export const WebGLView = connector(
       if (
         prevProps.pointColorScale !== this.props.pointColorScale ||
         prevProps.stories !== this.props.stories ||
-        prevProps.channelColor !== this.props.channelColor
+        prevProps.channelColor !== this.props.channelColor ||
+        prevProps.dataset !== this.props.dataset
       ) {
         if (this.props.channelColor && this.props.pointColorScale) {
           const mapping = mappingFromScale(
@@ -1178,6 +1178,7 @@ export const WebGLView = connector(
           this.props.setPointColorMapping(this.props.multipleId, mapping);
         } else {
           this.props.setPointColorMapping(this.props.multipleId, null);
+          this.particles?.setColorByChannel(this.props.channelColor, null, this.createAdditionalColumns());
         }
       }
 
@@ -1451,15 +1452,6 @@ export const WebGLView = connector(
             anchorReference="anchorPosition"
             anchorPosition={this.state.menuY !== null && this.state.menuX !== null ? { top: this.state.menuY, left: this.state.menuX } : undefined}
           >
-            {/* <MenuItem
-              onClick={() => {
-                handleClose();
-                this.props.addView(this.props.dataset);
-              }}
-            >
-              Create view
-            </MenuItem> */}
-
             <MenuItem
               data-cy="create-group-from-selection-context-entry"
               disabled={this.props.currentAggregation.aggregation == null || this.props.currentAggregation.aggregation.length === 0}

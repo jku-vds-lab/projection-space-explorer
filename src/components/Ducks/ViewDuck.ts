@@ -134,11 +134,10 @@ const allReducers = {
   workspace: workspaceReducer,
 };
 
-const addView = createAction<Dataset>('view/addView');
+const addView = createAction<{ id: EntityId }>('view/addView');
 const activateView = createAction<EntityId>('view/activateView');
 const deleteView = createAction<EntityId>('view/deleteView');
 const loadById = createAction<EntityId>('view/loadById');
-const add = createAction<IProjection>('view/add');
 const copyFromWorkspace = createAction('view/copyFromWorkspace');
 const updateActive = createAction<{ positions: IPosition[]; metadata: any }>('view/updateActive');
 const remove = createAction<EntityId>('view/remove');
@@ -179,14 +178,14 @@ export function createViewDuckReducer<T>(
           }
         })
         .addCase(addView, (state, action) => {
-          const defaultAtts = defaultAttributes(action.payload);
-          // if(state.multiples.ids.length > 0){ // if there is a default view, initialize the viewTransform with those
-          //   defaultAtts.viewTransform = state.multiples.entities[state.multiples.ids[0]].attributes.viewTransform
-          // }
-          multipleAdapter.addOne(state.multiples, {
+          const copyFrom = action.payload?.id ? state.multiples.entities[action.payload.id] : state.multiples.entities[state.multiples.ids[0]];
+
+          const newView = {
             id: uuidv4(),
-            attributes: viewReducer(defaultAtts, { type: '' }),
-          });
+            attributes: copyFrom.attributes,
+          };
+
+          multipleAdapter.addOne(state.multiples, newView);
         })
         .addCase(activateView, (state, action) => {
           state.active = action.payload;
@@ -200,9 +199,6 @@ export function createViewDuckReducer<T>(
         .addCase(loadById, (state, action) => {
           const active = state.multiples.entities[state.active];
           active.attributes.workspace = action.payload;
-        })
-        .addCase(add, (state, action) => {
-          projectionAdapter.addOne(state.projections, action.payload);
         })
         .addCase(copyFromWorkspace, (state) => {
           const active = state.multiples.entities[state.active];
@@ -282,10 +278,20 @@ export function createViewDuckReducer<T>(
 
           if (action.payload.channel === 'x') {
             active.workspace.xChannel = action.payload.value;
-            active.workspace.bounds = AProjection.calculateBounds(action.payload.dataset, action.payload.value, undefined, undefined);
-          } else {
+            active.workspace.bounds = AProjection.calculateBounds(
+              action.payload.dataset,
+              action.payload.value,
+              active.workspace.yChannel,
+              active.workspace.positions,
+            );
+          } else if (action.payload.channel === 'y') {
             active.workspace.yChannel = action.payload.value;
-            active.workspace.bounds = AProjection.calculateBounds(action.payload.dataset, undefined, action.payload.value, undefined);
+            active.workspace.bounds = AProjection.calculateBounds(
+              action.payload.dataset,
+              active.workspace.xChannel,
+              action.payload.value,
+              active.workspace.positions,
+            );
           }
 
           if (!active.workspace.xChannel && !active.workspace.yChannel) {
@@ -322,7 +328,6 @@ export const ViewActions = {
   activateView,
   deleteView,
   loadById,
-  add,
   copyFromWorkspace,
   updateActive,
   remove,

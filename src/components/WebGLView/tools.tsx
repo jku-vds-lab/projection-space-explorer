@@ -44,11 +44,11 @@ export class LassoSelection {
 
   selection(dataset: Dataset, positions: IBaseProjection, visible) {
     const indices = [];
-    dataset.vectors.forEach((vector, index) => {
-      if (visible(vector) && this.intersects(positions[index])) {
-        indices.push(index);
+    for (let i = 0; i < Math.min(dataset.vectors.length, positions.length); i++) {
+      if (visible(dataset.vectors[i]) && this.intersects(positions[i])) {
+        indices.push(i);
       }
-    });
+    }
     return indices;
   }
 

@@ -205,7 +205,7 @@ export function StatesTabPanelFull({
         <SelectFeatureComponent
           column_info={dataset?.columns}
           datacy="brightness-encoding-select"
-          label="brightness"
+          label="opacity"
           default_val={channelBrightness}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'transparency')}
           onChange={(newValue) => {

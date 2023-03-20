@@ -67,7 +67,7 @@ export function FeaturePicker({
     const colLst = [
       SelectColumn,
       { key: 'featureLabel', name: 'Group', width: 250 },
-      { key: 'name', name: 'Name' },
+      { key: 'name', name: 'Feature' },
       {
         key: 'normalized',
         name: 'Normalized',
