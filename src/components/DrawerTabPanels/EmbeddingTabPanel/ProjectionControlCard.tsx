@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { Card, CardHeader, IconButton, Alert } from '@mui/material';
+import { Card, CardHeader, IconButton, Alert, LinearProgress, CardContent, Box, Typography } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import CloseIcon from '@mui/icons-material/Close';
 import { connect, ConnectedProps } from 'react-redux';
 import { makeStyles } from '@mui/styles';
 import type { RootState } from '../../Store/Store';
+import { EmbeddingController } from './EmbeddingController';
 
 /**
  * Styles for the projection card that allows to stop/resume projection steps.
@@ -56,7 +57,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
   onClose: any;
   onComputingChanged: any;
-  controller: any;
+  controller: EmbeddingController;
   dataset_name: string;
   onStep?: any;
 };
@@ -112,20 +113,22 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
     }
   }, [step, computing]);
 
+  const percent = Math.min((step / projectionParams.iterations) * 100, 100);
+
   const genlabel = (step) => {
     if (step === 0) {
       return (
-        <div>
+        <Typography variant="caption">
           <div>Initializing projection ...</div>
           {msg && <div>Server: {msg}</div>}
-        </div>
+        </Typography>
       );
     }
-    const percent = Math.min((step / projectionParams.iterations) * 100, 100).toFixed(1);
+
     return (
       <div>
         <div>{`${Math.min(step, projectionParams.iterations)}/${projectionParams.iterations}`}</div>
-        <div>{`${percent}%`}</div>
+        <div>{`${percent.toFixed(1)}%`}</div>
         {msg && <div>Server: {msg}</div>}
       </div>
     );
@@ -149,23 +152,28 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
             </IconButton>
           }
           title={projectionParams.method}
-          subheader={genlabel(step)}
         />
 
-        <div className={classes.controls}>
-          <IconButton
-            aria-label="play/pause"
-            data-cy="projection-card-play-pause-button"
-            onClick={() => {
-              const newVal = !computing;
-              setComputing(newVal);
-              onComputingChanged(null, newVal);
-            }}
-          >
-            {/* TODO: don't show play/pause for back-end projection, since it does not do anything */}
-            {computing ? <StopIcon className={classes.playIcon} /> : <PlayArrowIcon className={classes.playIcon} />}
-          </IconButton>
-        </div>
+        <Box px={3} pb={1}>
+          {percent < 100 && computing ? <LinearProgress style={{ marginBottom: '4px' }} /> : null}
+          {genlabel(step)}
+        </Box>
+
+        {controller.supportsPause() ? (
+          <div className={classes.controls}>
+            <IconButton
+              aria-label="play/pause"
+              data-cy="projection-card-play-pause-button"
+              onClick={() => {
+                const newVal = !computing;
+                setComputing(newVal);
+                onComputingChanged(null, newVal);
+              }}
+            >
+              {computing ? <StopIcon className={classes.playIcon} /> : <PlayArrowIcon className={classes.playIcon} />}
+            </IconButton>
+          </div>
+        ) : null}
       </div>
     </Card>
   ) : (

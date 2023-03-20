@@ -50,7 +50,7 @@ export class ADataset {
    * Reads out spatial information using the supplied channels.
    */
   static getSpatialData(dataset: Dataset, xChannel?: string, yChannel?: string, positions?: IBaseProjection) {
-    if (positions) {
+    if (positions && !xChannel && !yChannel) {
       return positions;
     }
     return dataset.vectors.map((vector) => ({
@@ -181,204 +181,19 @@ export class ADataset {
 
     return { tensor, featureTypes };
   }
-}
-
-/**
- * Dataset class that holds all data, the ranges and additional stuff
- */
-export class Dataset {
-  vectors: IVector[];
-
-  segments: DataLine[];
-
-  info: { path: string; type: DatasetType };
-
-  columns: { [name: string]: ColumnType };
-
-  // The type of the dataset (or unknown if not possible to derive)
-  type: DatasetType;
-
-  // True if the dataset has multiple labels per sample
-  multivariateLabels: boolean;
-
-  // True if the dataset has sequential information (line attribute)
-  isSequential: boolean;
-
-  // True if the dataset has a projection provided
-  hasInitialScalarTypes: boolean;
-
-  clusters: ICluster[];
-
-  // The edges between clusters.
-  clusterEdges: IEdge[];
-
-  inferredColumns: string[];
-
-  // Dictionary containing the key/value pairs for each column
-  metaInformation;
-
-  categories: any;
-
-  constructor(vectors, ranges, info, featureTypes, metaInformation = {}) {
-    this.vectors = vectors;
-    this.info = info;
-    this.columns = {};
-    this.type = this.info.type;
-    this.metaInformation = metaInformation;
-    this.hasInitialScalarTypes = false;
-
-    this.calculateColumnTypes(ranges, featureTypes, metaInformation);
-    this.checkLabels();
-
-    // If the dataset is sequential, calculate the segments
-    this.isSequential = this.checkSequential();
-    if (this.isSequential) {
-      this.segments = this.getSegs();
-    }
-  }
-
-  getSegs(key = 'line') {
-    const { vectors } = this;
-
-    // Get a list of lines that are in the set
-    const lineKeys = [...new Set(vectors.map((vector) => vector[key]))];
-
-    const segments = lineKeys.map((lineKey) => {
-      const l = new DataLine(
-        lineKey,
-        vectors.filter((vector) => vector[key] === lineKey).sort((a, b) => a.age - b.age),
-      );
-      // Set segment of vectors
-      l.vectors.forEach((v, vi) => {
-        v.__meta__.sequenceIndex = vi;
-      });
-      return l;
-    });
-
-    return segments;
-  }
-
-  // Checks if the dataset contains sequential data
-  checkSequential() {
-    const header = ADataset.getColumns(this);
-
-    // If we have no line attribute, its not sequential
-    if (!header.includes(PrebuiltFeatures.Line)) {
-      return false;
-    }
-
-    // If each sample is a different line, its not sequential either
-    const set = new Set(this.vectors.map((vector) => vector.line));
-
-    return set.size !== this.vectors.length;
-  }
-
-  checkLabels() {
-    this.multivariateLabels = false;
-    this.vectors.forEach((vector) => {
-      if (vector.groupLabel.length > 1) {
-        this.multivariateLabels = true;
-      }
-    });
-  }
-
-  inferRangeForAttribute(key: string) {
-    const values = this.vectors.map((sample) => sample[key]);
-    let numeric = true;
-    let min = Number.MAX_SAFE_INTEGER;
-    let max = Number.MIN_SAFE_INTEGER;
-
-    values.forEach((value) => {
-      value = parseFloat(value);
-      if (Number.isNaN(value)) {
-        numeric = false;
-      } else if (numeric) {
-        if (value < min) {
-          min = value;
-        }
-        if (value > max) {
-          max = value;
-        }
-      }
-    });
-
-    return numeric ? { min, max, inferred: true } : null; // false
-  }
-
-  /**
-   * Creates a map which shows the distinct types and data types of the columns.
-   */
-  calculateColumnTypes(ranges, featureTypes, metaInformation) {
-    const columnNames = Object.keys(this.vectors[0]);
-
-    if ('algo' in this.columns) this.columns.algo.featureType = FeatureType.Categorical;
-    if ('groupLabel' in this.columns) this.columns.groupLabel.featureType = FeatureType.Categorical;
-    if ('x' in this.columns) this.columns.x.featureType = FeatureType.Quantitative;
-    if ('y' in this.columns) this.columns.y.featureType = FeatureType.Quantitative;
-
-    featureTypes.algo = FeatureType.Categorical;
-    delete ranges.algo;
-
-    featureTypes.groupLabel = FeatureType.Categorical;
-    delete ranges.groupLabel;
-
-    columnNames.forEach((columnName) => {
-      this.columns[columnName] = {} as any;
-
-      this.columns[columnName].featureType = featureTypes[columnName];
-
-      // Store dictionary with key/value pairs in column
-      const columnMetaInformation = metaInformation[columnName] ?? {};
-      this.columns[columnName].metaInformation = columnMetaInformation;
-
-      // Extract featureLabel from dictionary
-      if ('featureLabel' in columnMetaInformation) {
-        this.columns[columnName].featureLabel = columnMetaInformation.featureLabel;
-      } else {
-        this.columns[columnName].featureLabel = DefaultFeatureLabel;
-      }
-
-      // Extract included
-      if ('project' in columnMetaInformation) {
-        this.columns[columnName].project = columnMetaInformation.project;
-      } else {
-        this.columns[columnName].project = true;
-      }
-
-      // Check data type
-      if (columnName in ranges) {
-        this.columns[columnName].range = ranges[columnName];
-        this.columns[columnName].isNumeric = true;
-      } else if (this.columns[columnName].featureType === FeatureType.Array) {
-        this.columns[columnName].isNumeric = false;
-      } else if (this.vectors.find((vector) => Number.isNaN(vector[columnName])) || this.columns[columnName].featureType === FeatureType.Categorical) {
-        this.columns[columnName].isNumeric = false;
-        this.columns[columnName].distinct = Array.from(new Set([...this.vectors.map((vector) => vector[columnName])]));
-      } else {
-        this.columns[columnName].isNumeric = true;
-        this.columns[columnName].range = this.inferRangeForAttribute(columnName);
-      }
-    });
-  }
 
   /**
    * Infers an array of attributes that can be filtered after, these can be
    * categorical, sequential or continuous attribues.
    * @param {*} ranges
    */
-  extractEncodingFeatures() {
-    if (this.vectors.length <= 0) {
-      return [];
-    }
-
+  static extractEncodingFeatures(columns: { [name: string]: ColumnType }) {
     const shape_options = [];
     const size_options = [];
     const transparency_options = [];
     const color_options = [];
 
-    const { columns } = this;
     const header = Object.keys(columns);
-    // var header = Object.keys(this.vectors[0]).filter(a => a != "line");
 
     header.forEach((key) => {
       if (key === PrebuiltFeatures.ClusterLabel) {
@@ -512,4 +327,186 @@ export class Dataset {
 
     return options;
   }
+
+  static hasMultivariateLabels(vectors: IVector[]) {
+    let multivariateLabels = false;
+
+    vectors.forEach((vector) => {
+      if (vector.groupLabel.length > 1) {
+        multivariateLabels = true;
+      }
+    });
+
+    return multivariateLabels;
+  }
+
+  static inferRangeForAttribute(vectors: IVector[], key: string) {
+    const values = vectors.map((sample) => sample[key]);
+    let numeric = true;
+    let min = Number.MAX_SAFE_INTEGER;
+    let max = Number.MIN_SAFE_INTEGER;
+
+    values.forEach((value) => {
+      value = parseFloat(value);
+      if (Number.isNaN(value)) {
+        numeric = false;
+      } else if (numeric) {
+        if (value < min) {
+          min = value;
+        }
+        if (value > max) {
+          max = value;
+        }
+      }
+    });
+
+    return numeric ? { min, max, inferred: true } : null; // false
+  }
+
+  /**
+   * Creates a map which shows the distinct types and data types of the columns.
+   */
+  static calculateColumnTypes(vectors: IVector[], ranges, featureTypes, metaInformation) {
+    const columns: { [name: string]: ColumnType } = {};
+
+    const columnNames = Object.keys(vectors[0]);
+
+    if ('algo' in columns) columns.algo.featureType = FeatureType.Categorical;
+    if ('groupLabel' in columns) columns.groupLabel.featureType = FeatureType.Categorical;
+    if ('x' in columns) columns.x.featureType = FeatureType.Quantitative;
+    if ('y' in columns) columns.y.featureType = FeatureType.Quantitative;
+
+    featureTypes.algo = FeatureType.Categorical;
+    delete ranges.algo;
+
+    featureTypes.groupLabel = FeatureType.Categorical;
+    delete ranges.groupLabel;
+
+    columnNames.forEach((columnName) => {
+      columns[columnName] = {} as any;
+
+      columns[columnName].featureType = featureTypes[columnName];
+
+      // Store dictionary with key/value pairs in column
+      const columnMetaInformation = metaInformation[columnName] ?? {};
+      columns[columnName].metaInformation = columnMetaInformation;
+
+      // Extract featureLabel from dictionary
+      if ('featureLabel' in columnMetaInformation) {
+        columns[columnName].featureLabel = columnMetaInformation.featureLabel;
+      } else {
+        columns[columnName].featureLabel = DefaultFeatureLabel;
+      }
+
+      // Extract included
+      if ('project' in columnMetaInformation) {
+        columns[columnName].project = columnMetaInformation.project;
+      } else {
+        columns[columnName].project = true;
+      }
+
+      // Check data type
+      if (columnName in ranges) {
+        columns[columnName].range = ranges[columnName];
+        columns[columnName].isNumeric = true;
+      } else if (columns[columnName].featureType === FeatureType.Array) {
+        columns[columnName].isNumeric = false;
+      } else if (vectors.find((vector) => Number.isNaN(vector[columnName])) || columns[columnName].featureType === FeatureType.Categorical) {
+        columns[columnName].isNumeric = false;
+        columns[columnName].distinct = Array.from(new Set([...vectors.map((vector) => vector[columnName])]));
+      } else {
+        columns[columnName].isNumeric = true;
+        columns[columnName].range = ADataset.inferRangeForAttribute(vectors, columnName);
+      }
+    });
+
+    return columns;
+  }
+
+  static isDatasetSequential(vectors: IVector[]) {
+    const header = Object.keys(vectors[0]);
+
+    // If we have no line attribute, its not sequential
+    if (!header.includes(PrebuiltFeatures.Line)) {
+      return false;
+    }
+
+    // If each sample is a different line, its not sequential either
+    const set = new Set(vectors.map((vector) => vector.line));
+
+    return set.size !== vectors.length;
+  }
+
+  static getSegs(vectors: IVector[], key = 'line') {
+    // Get a list of lines that are in the set
+    const lineKeys = [...new Set(vectors.map((vector) => vector[key]))];
+
+    const segments = lineKeys.map((lineKey) => {
+      const l = new DataLine(
+        lineKey,
+        vectors.filter((vector) => vector[key] === lineKey).sort((a, b) => a.age - b.age),
+      );
+      // Set segment of vectors
+      l.vectors.forEach((v, vi) => {
+        v.__meta__.sequenceIndex = vi;
+      });
+      return l;
+    });
+
+    return segments;
+  }
+
+  static createDataset(vectors: IVector[], ranges, info, featureTypes, metaInformation = {}): Dataset {
+    const isSequential = ADataset.isDatasetSequential(vectors);
+
+    return {
+      vectors,
+      info,
+      type: info.type,
+      metaInformation,
+      hasInitialScalarTypes: false,
+      columns: ADataset.calculateColumnTypes(vectors, ranges, featureTypes, metaInformation),
+      multivariateLabels: ADataset.hasMultivariateLabels(vectors),
+      // If the dataset is sequential, calculate the segments
+      isSequential,
+      segments: isSequential ? ADataset.getSegs(vectors) : [],
+    } as Dataset;
+  }
+}
+
+/**
+ * Dataset class that holds all data, the ranges and additional stuff
+ */
+export interface Dataset {
+  vectors: IVector[];
+
+  segments: DataLine[];
+
+  info: { path: string; type: DatasetType };
+
+  columns: { [name: string]: ColumnType };
+
+  // The type of the dataset (or unknown if not possible to derive)
+  type: DatasetType;
+
+  // True if the dataset has multiple labels per sample
+  multivariateLabels: boolean;
+
+  // True if the dataset has sequential information (line attribute)
+  isSequential: boolean;
+
+  // True if the dataset has a projection provided
+  hasInitialScalarTypes: boolean;
+
+  clusters: ICluster[];
+
+  // The edges between clusters.
+  clusterEdges: IEdge[];
+
+  inferredColumns: string[];
+
+  // Dictionary containing the key/value pairs for each column
+  metaInformation;
+
+  categories: any;
 }

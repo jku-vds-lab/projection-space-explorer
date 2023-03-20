@@ -1,4 +1,5 @@
 import { ConnectedProps } from 'react-redux';
+import { EmbeddingController } from './EmbeddingController';
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     projectionParams: {
         perplexity: number;
@@ -18,7 +19,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
     onClose: any;
     onComputingChanged: any;
-    controller: any;
+    controller: EmbeddingController;
     dataset_name: string;
     onStep?: any;
 };
@@ -42,7 +43,7 @@ export declare const ProjectionControlCard: import("react-redux").ConnectedCompo
 } & {
     onClose: any;
     onComputingChanged: any;
-    controller: any;
+    controller: EmbeddingController;
     dataset_name: string;
     onStep?: any;
 }, "projectionParams" | "worker">>;
