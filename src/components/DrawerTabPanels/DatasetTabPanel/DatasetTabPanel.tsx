@@ -33,7 +33,7 @@ export function DatasetTabPanel({ onDataSelected }: { onDataSelected(dataset: Da
       .unwrap()
       .then((result) => {
         console.log(result);
-        if (job.entry.path.endsWith('json')) {
+        if (entry.path.endsWith('json')) {
           new JSONLoader().resolve(JSON.parse(result), onDataSelected, entry.type, entry);
         } else {
           new CSVLoader().resolve(onDataSelected, convertFromCSV(d3v5.csvParse(result)), entry.type, entry);
