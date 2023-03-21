@@ -67,6 +67,7 @@ function SelectFeatureComponent({ label, default_val, categoryOptions, onChange,
 
   return (
     <Autocomplete
+      style={{paddingTop: 0}}
       id={`vectorBySelect_${label}`}
       data-cy={datacy}
       filterOptions={autocomplete_filterOptions}
@@ -169,7 +170,16 @@ export function StatesTabPanelFull({
         '& .MuiAutocomplete-root': { p: 2, width: '100%', boxSizing: 'border-box' },
       }}
     >
-      {(!encodings || encodings.includes(EncodingChannel.Shape)) && categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'shape') ? (
+      <Box paddingX={2} paddingTop={2} paddingBottom={1}>
+        <Typography variant="subtitle2" gutterBottom>
+          Scatter plot encoding
+        </Typography>
+        <Typography variant="body2" color="textSecondary" gutterBottom>
+          Change the visual encoding of the points in the scatter plot.
+        </Typography>
+      </Box>
+
+      {(!encodings || encodings.includes(EncodingChannel.Shape)) && categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'shape') && (
         <SelectFeatureComponent
           column_info={dataset?.columns}
           datacy="shape-encoding-select"
@@ -185,8 +195,6 @@ export function StatesTabPanelFull({
             setVectorByShape(attribute);
           }}
         />
-      ) : (
-        <div />
       )}
 
       {(!encodings || encodings.includes(EncodingChannel.Shape)) && vectorByShape && (
@@ -201,7 +209,7 @@ export function StatesTabPanelFull({
         </Grid>
       )}
 
-      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'transparency') ? (
+      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'transparency') && (
         <SelectFeatureComponent
           column_info={dataset?.columns}
           datacy="brightness-encoding-select"
@@ -220,13 +228,11 @@ export function StatesTabPanelFull({
             setChannelBrightness(attribute);
           }}
         />
-      ) : (
-        <div />
       )}
 
       <BrightnessSlider globalPointBrightness={globalPointBrightness} />
 
-      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'size') ? (
+      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'size') && (
         <SelectFeatureComponent
           column_info={dataset?.columns}
           datacy="size-encoding-select"
@@ -246,13 +252,11 @@ export function StatesTabPanelFull({
             setChannelSize(attribute);
           }}
         />
-      ) : (
-        <div />
       )}
 
       <SizeSlider globalPointSize={globalPointSize} />
 
-      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'color') ? (
+      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'color') && (
         <SelectFeatureComponent
           column_info={dataset?.columns}
           datacy="color-encoding-select"
@@ -276,8 +280,6 @@ export function StatesTabPanelFull({
             }
           }}
         />
-      ) : (
-        <div />
       )}
 
       <Grid item>
