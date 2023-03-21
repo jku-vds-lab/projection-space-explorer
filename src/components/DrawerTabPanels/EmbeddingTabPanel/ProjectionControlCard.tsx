@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { Card, CardHeader, IconButton, Alert, LinearProgress, CardContent, Box, Typography } from '@mui/material';
+import { Card, CardHeader, IconButton, Alert, LinearProgress, CardContent, Box, Typography, Tooltip } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import CloseIcon from '@mui/icons-material/Close';
@@ -127,7 +127,7 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
 
     return (
       <div>
-        <div>{`${Math.min(step, projectionParams.iterations)}/${projectionParams.iterations}`}</div>
+        <div>{`${Math.min(step, projectionParams.iterations)}/${projectionParams.iterations} iterations`}</div>
         <div>{`${percent.toFixed(1)}%`}</div>
         {msg && <div>Server: {msg}</div>}
       </div>
@@ -140,16 +140,18 @@ export const ProjectionControlCard = connector(({ onComputingChanged, projection
         <CardHeader
           avatar={<div />}
           action={
-            <IconButton
-              aria-label="settings"
-              data-cy="projection-control-card-close-button"
-              onClick={() => {
-                console.timeEnd(`time elapsed to project the file ${dataset_name}`);
-                onClose();
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
+            <Tooltip title={<Typography variant="subtitle2">Cancel projection</Typography>}>
+              <IconButton
+                aria-label="settings"
+                data-cy="projection-control-card-close-button"
+                onClick={() => {
+                  console.timeEnd(`time elapsed to project the file ${dataset_name}`);
+                  onClose();
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Tooltip>
           }
           title={projectionParams.method}
         />
