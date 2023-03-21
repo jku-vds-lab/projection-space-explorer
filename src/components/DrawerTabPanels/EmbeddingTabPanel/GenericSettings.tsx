@@ -222,7 +222,7 @@ function GenericSettingsComp({
         </DialogContent>
       ) : (
         <DialogContent>
-          <DialogContentText>{domainSettings?.description}</DialogContentText>
+          <DialogContentText paddingBottom={2}>{domainSettings?.description}</DialogContentText>
           <Container>
             {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
               <FeaturePicker

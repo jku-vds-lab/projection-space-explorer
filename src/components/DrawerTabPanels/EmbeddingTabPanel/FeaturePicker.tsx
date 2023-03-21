@@ -8,6 +8,8 @@ import { groupBy as rowGrouper } from 'lodash';
 import { DefaultFeatureLabel } from '../../../model/Dataset';
 import type { ProjectionColumn } from '../../Ducks';
 import { FeatureConfig } from '../../../BaseConfig';
+import { Tooltip, Typography } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
 
 function WeightFormatter(props: GroupFormatterProps<ProjectionColumn> & { updateRef: React.RefObject<() => void> }) {
   const [t, setT] = React.useState(Date.now());
@@ -66,12 +68,63 @@ export function FeaturePicker({
   const columns = React.useMemo<Column<ProjectionColumn>[]>(() => {
     const colLst = [
       SelectColumn,
-      { key: 'featureLabel', name: 'Group', width: 250 },
-      { key: 'name', name: 'Feature' },
+      { key: 'featureLabel', name: 
+      <div style={{
+        display: 'flex',
+        height: '100%',
+        alignItems: 'center',
+      }}>
+        <Typography variant="body1">Group&nbsp;</Typography>
+        <Tooltip
+          title={
+            <Typography variant="subtitle2">
+              Some features belong to a semantic group. You can modify settings for all features in a group at once, or just for individual features. Semantic groups can be collapsed or extended to see all features belonging to a group.
+            </Typography>
+          }
+        >
+          <InfoOutlined fontSize="inherit" style={{ color: "grey" }} />
+        </Tooltip>
+      </div>, 
+      width: 250 },
+      { key: 'name', name: <div style={{
+        display: 'flex',
+        height: '100%',
+        alignItems: 'center',
+      }}>
+        <Typography variant="body1">Feature&nbsp;</Typography>
+        <Tooltip
+          title={
+            <Typography variant="subtitle2">
+              Features are the columns of your dataset. You can select which features to use for the projection, whether or not to normalize the feature values, and how much weight a feature receives during projection.
+            </Typography>
+          }
+        >
+          <InfoOutlined fontSize="inherit" style={{ color: "grey" }} />
+        </Tooltip>
+      </div> },
       {
         key: 'normalized',
-        name: 'Normalized',
-        width: 80,
+        name: <div style={{
+          display: 'flex',
+          height: '100%',
+          alignItems: 'center',
+        }}>
+          <Typography variant="body1" style={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}>Normalize&nbsp;</Typography>
+          <Tooltip
+            title={
+              <Typography variant="subtitle2">
+                Choose which features to normalize. This option brings the feature to a common scale, which is either standardization or [0; 1] scaling, depending on the feature type and distance metric chosen. Normalization is recommended for most use cases.
+              </Typography>
+            }
+          >
+            <InfoOutlined fontSize="inherit" style={{ color: "grey" }} />
+          </Tooltip>
+        </div> ,
+        width: 90,
         formatter({ row, onRowChange, isCellSelected }) {
           return (
             <SelectCellFormatter
@@ -101,15 +154,50 @@ export function FeaturePicker({
       },
       {
         key: 'range',
-        name: 'Range',
-        width: 250,
+        name: <div style={{
+          display: 'flex',
+          height: '100%',
+          alignItems: 'center',
+        }}>
+          <Typography variant="body1">Range&nbsp;</Typography>
+          <Tooltip
+            title={
+              <Typography variant="subtitle2">
+                This column shows the value ranges for numerical features.
+              </Typography>
+            }
+          >
+            <InfoOutlined fontSize="inherit" style={{ color: "grey" }} />
+          </Tooltip>
+        </div>,
+        width: 150,
       },
     ];
     if (featureConfig?.enableFeatureWeighing) {
       colLst.push({
         key: 'weight',
-        name: 'Weight (beta: only for Gower)',
-        width: 200,
+        name: <div style={{
+          display: 'flex',
+          height: '100%',
+          alignItems: 'center',
+        }}>
+          <Typography variant="body1" style={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}>Weight (beta)&nbsp;</Typography>
+          <Tooltip
+            title={
+              <Typography variant="subtitle2">
+                This option is currently in beta and only works for the &quot;Gower&quot; distance metric.
+                Choose how much weight to give each feature. You can specify the weight individually for each feature, or set a cummulated weight for a group of features, which will evenly distribute the given weights among all features in this group.
+              </Typography>
+            }
+          >
+            <InfoOutlined fontSize="inherit" style={{ color: "grey" }} />
+          </Tooltip>
+        </div>,
+        width: 140,
         editor: textEditor,
         groupFormatter: (props) => <WeightFormatter {...props} updateRef={ref} />,
       });
