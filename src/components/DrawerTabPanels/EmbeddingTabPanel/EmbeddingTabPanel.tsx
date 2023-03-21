@@ -170,9 +170,12 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         onDelete={onDeleteEditProjectDialog}
       />
 
-      <Box paddingLeft={2} paddingTop={2}>
+      <Box paddingX={2} paddingTop={2} paddingBottom={1}>
         <Typography variant="subtitle2" gutterBottom>
           Projection methods
+        </Typography>
+        <Typography variant="body2" color="textSecondary" gutterBottom>
+          Choose a projection method to calculate a two-dimensional representation of your data that can be visualized in the scatter plot.
         </Typography>
       </Box>
 
@@ -306,6 +309,14 @@ export const EmbeddingTabPanel = connector((props: Props) => {
         </>
       ) : null}
 
+      <Box paddingX={2} paddingTop={2} paddingBottom={1}>
+        <Typography variant="subtitle2" gutterBottom>
+          Axis settings
+        </Typography>
+        <Typography variant="body2" color="textSecondary" gutterBottom>
+          Select the features to use for the x and y axis of the scatter plot. By default x and y are set to the coordinates calculated by the projection.
+        </Typography>
+      </Box>
       <Box paddingLeft={2} paddingRight={2} display="flex" style={{ flexDirection: 'column', gap: '8px' }}>
         {dataset && numericFeatures && workspace ? (
           <SelectFeatureComponent
