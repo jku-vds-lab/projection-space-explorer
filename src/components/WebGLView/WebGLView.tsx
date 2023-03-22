@@ -531,6 +531,7 @@ export const WebGLView = connector(
 
             this.camera.updateProjectionMatrix();
             this.props.setViewTransform(this.camera, this.getWidth(), this.getHeight(), this.props.multipleId);
+            this.props.setD3Transform(this.props.viewTransform.x + event.movementX, this.props.viewTransform.y + event.movementY, this.props.viewTransform.k);
 
             this.requestRender();
             break;
@@ -1025,7 +1026,27 @@ export const WebGLView = connector(
         }
 
         if (this.pointScene) {
-          this.renderer.render(this.pointScene, this.camera);
+          const { zoom, x, y } = getDefaultZoom(
+            this.props.dataset,
+            this.getWidth(),
+            this.getHeight(),
+            this.props.projection.xChannel,
+            this.props.projection.yChannel,
+            this.props.workspace,
+          );
+          console.log(x);
+          console.log(y);
+          console.log(zoom);
+
+          const c = new THREE.OrthographicCamera((this.getWidth() / -2) / zoom, (this.getWidth() / 2) / zoom, (this.getHeight() / 2) / zoom, (this.getHeight() / -2) / zoom, 1, 1000);
+          c.zoom = this.props.viewTransform.k;
+          c.position.x = -this.props.viewTransform.x / zoom;
+          c.position.y = this.props.viewTransform.y / zoom;
+          c.position.z = this.camera.position.z;
+          c.zoom = this.props.viewTransform.k;
+          c.updateProjectionMatrix();
+
+          this.renderer.render(this.pointScene, c);
         }
 
         if (this.multivariateClusterView.current) {
