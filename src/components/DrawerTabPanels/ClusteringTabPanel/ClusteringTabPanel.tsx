@@ -547,7 +547,20 @@ export const ClusteringTabPanel = connector(
           <Typography variant="subtitle2" gutterBottom>
             Groups and {globalLabels.storyBookLabelPlural}
           </Typography>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            Activate a {globalLabels.storyBookLabel} to view groups and {globalLabels.storyLabelPlural}.{" "}
+            <Tooltip
+              title={
+                <Typography variant="subtitle2">
+                  To manually define {globalLabels.storyLabelPlural}, draw directed edges between group centers in the scatter plot. To activate the {globalLabels.storyTellingLabel} view, right-click on one of the group centers. In the context menu select one of the {globalLabels.storyLabel} options.
+                </Typography>
+              }
+            >
+              <InfoOutlined fontSize="inherit" />
+            </Tooltip>
+          </Typography>
         </Box>
+        
 
         <Box paddingLeft={2} paddingRight={2} paddingBottom={2}>
           <StoryPreview />
