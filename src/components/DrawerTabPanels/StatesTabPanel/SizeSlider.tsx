@@ -38,7 +38,7 @@ function SizeSliderFull({ globalPointSize, setRange }) {
         padding: '0px 8px',
       }}
     >
-      <Typography id="range-slider" variant="body2" color="textSecondary" gutterTop>
+      <Typography id="range-slider" variant="body2" color="textSecondary">
         Size scale
       </Typography>
 

@@ -39,7 +39,7 @@ function BrightnessSliderFull({ globalPointBrightness, setRange }) {
 
   return (
     <Box className={classes.root}>
-      <Typography id="range-slider" variant="body2" color="textSecondary" gutterTop>
+      <Typography id="range-slider" variant="body2" color="textSecondary">
         Opacity scale
       </Typography>
       <Slider min={0} max={1} value={globalPointBrightness} onChange={(_, newValue) => setRange(newValue)} step={0.05} marks={marks} valueLabelDisplay="auto" />
