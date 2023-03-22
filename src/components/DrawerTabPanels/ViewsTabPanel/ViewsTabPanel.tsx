@@ -10,10 +10,13 @@ import Split from 'react-split';
 import type { RootState } from '../../Store/Store';
 import { DetailViewActions } from '../../Ducks/DetailViewDuck';
 import { ComponentConfig } from '../../../BaseConfig';
+import { Box, Typography } from '@mui/material';
+import { GlobalLabelsState } from '../../Ducks';
 
 type DetailViewChooserProps = {
   overrideComponents: ComponentConfig;
   splitRef: React.LegacyRef<Split>;
+  globalLabels: GlobalLabelsState
 };
 
 function instantiateElement(view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>, splitRef: React.LegacyRef<Split>) {
@@ -22,7 +25,7 @@ function instantiateElement(view: JSX.Element | (() => JSX.Element) | ConnectedC
   return React.isValidElement(view) ? view : React.createElement(view as () => JSX.Element, { splitRef });
 }
 
-export function ViewsTabPanel({ overrideComponents, splitRef }: DetailViewChooserProps) {
+export function ViewsTabPanel({ overrideComponents, splitRef, globalLabels }: DetailViewChooserProps) {
   const dispatch = useDispatch();
 
   const detailView = useSelector((state: RootState) => state.detailView);
@@ -39,6 +42,14 @@ export function ViewsTabPanel({ overrideComponents, splitRef }: DetailViewChoose
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <Box paddingX={2} paddingTop={2} paddingBottom={1}>
+        <Typography variant="subtitle2" gutterBottom>
+          Tabular view of {globalLabels.itemLabelPlural}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" gutterBottom>
+          Choose a tabular view from the list below to show it.
+        </Typography>
+      </Box>
       <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} aria-label="tableviews">
         {overrideComponents.detailViews.map((dv, i) => {
           return (
