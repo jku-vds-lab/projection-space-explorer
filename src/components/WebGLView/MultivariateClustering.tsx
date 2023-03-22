@@ -614,7 +614,6 @@ export const MultivariateClustering = connector(
       Object.values(story.edges.entities)
         .filter((edge) => edge.name && edge.name !== '')
         .forEach((edge) => {
-
           const source = CameraTransformations.worldToScreen(
             ACluster.getCenterFromWorkspace(this.props.workspace, AStorytelling.retrieveCluster(this.props.stories, edge.source)),
             this.props.viewTransform,
