@@ -10,8 +10,10 @@ import Split from 'react-split';
 import type { RootState } from '../../Store/Store';
 import { DetailViewActions } from '../../Ducks/DetailViewDuck';
 import { ComponentConfig } from '../../../BaseConfig';
-import { Box, Typography } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import { GlobalLabelsState } from '../../Ducks';
+import { StarBorder } from '@mui/icons-material';
+import { toSentenceCase } from '../../../utils';
 
 type DetailViewChooserProps = {
   overrideComponents: ComponentConfig;
@@ -54,14 +56,18 @@ export function ViewsTabPanel({ overrideComponents, splitRef, globalLabels }: De
         {overrideComponents.detailViews.map((dv, i) => {
           return (
             <ListItem disablePadding key={dv.name}>
-              <ListItemButton selected={detailView.active === i} onClick={() => onViewChange(dv.name)}>
-                {detailView.active === i ? (
-                  <ListItemIcon>
-                    <StarIcon />
-                  </ListItemIcon>
-                ) : null}
-                <ListItemText primary={dv.name} />
-              </ListItemButton>
+              <Tooltip placement="right" title={<Typography variant="subtitle2">Activate {dv.name} view.</Typography>}>
+                <ListItemButton selected={detailView.active === i} onClick={() => onViewChange(dv.name)}>
+                  {detailView.active === i ? (
+                    <ListItemIcon>
+                      <StarIcon />
+                    </ListItemIcon>
+                  ) : (<ListItemIcon>
+                    <StarBorder />
+                  </ListItemIcon>)}
+                  <ListItemText primary={dv.name} />
+                </ListItemButton>
+              </Tooltip>
             </ListItem>
           );
         })}
