@@ -165,8 +165,8 @@ export class JSONLoader implements Loader {
 
       const edge: IEdge = {
         id: uuidv4(),
-        source: clusters.findIndex((cluster) => cluster.label === row[1]).toString(),
-        destination: clusters.findIndex((cluster) => cluster.label === row[2]).toString(),
+        source: clusters.find((cluster) => cluster.label === row[1]).id,
+        destination: clusters.find((cluster) => cluster.label === row[2]).id,
         objectType: ObjectTypes.Edge,
       };
 

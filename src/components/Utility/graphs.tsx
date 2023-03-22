@@ -3,7 +3,7 @@
  * Directed graph library for javascript.
  */
 
-import { createEntityAdapter } from '@reduxjs/toolkit';
+import { createEntityAdapter, EntityId } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 import { ICluster } from '../../model/ICluster';
 import { Dataset } from '../../model/Dataset';
@@ -85,8 +85,8 @@ export function graphLayout(dataset: Dataset, clusters: ICluster[]) {
           const edge: IEdge = {
             id: uuidv4(),
             objectType: ObjectTypes.Edge,
-            source: srcKey.toString(),
-            destination: dstKey.toString(),
+            source: srcCluster.id,
+            destination: dstCluster.id,
             name: null,
           };
           edges.push(edge);
@@ -103,6 +103,10 @@ export function storyLayout(clusterInstances: ICluster[], edges: IEdge[]): IBook
   const copy = edges.slice(0);
   let idx = -1;
 
+  const byId = (id: EntityId) => {
+    return clusterInstances.find((cluster) => cluster.id === id);
+  };
+
   while (copy.length > 0) {
     const toProcess = [copy.splice(0, 1)[0]];
 
@@ -112,16 +116,16 @@ export function storyLayout(clusterInstances: ICluster[], edges: IEdge[]): IBook
     while (toProcess.length > 0) {
       const edge = toProcess.splice(0, 1)[0];
       do {
-        clusterSet.add(clusterInstances[edge.source]);
-        clusterSet.add(clusterInstances[edge.destination]);
+        clusterSet.add(byId(edge.source));
+        clusterSet.add(byId(edge.destination));
 
         edgeSet.add(edge);
 
         idx = copy.findIndex((value) => value.destination === edge.source || value.source === edge.destination);
         if (idx >= 0) {
           const removed = copy.splice(idx, 1)[0];
-          clusterSet.add(clusterInstances[removed.source]);
-          clusterSet.add(clusterInstances[removed.destination]);
+          clusterSet.add(byId(removed.source));
+          clusterSet.add(byId(removed.destination));
 
           edgeSet.add(removed);
           toProcess.push(removed);
@@ -129,17 +133,7 @@ export function storyLayout(clusterInstances: ICluster[], edges: IEdge[]): IBook
       } while (idx >= 0);
     }
 
-    const clusterResult = [...clusterSet];
-    const edgeResult: IEdge[] = [...edgeSet].map((edge) => {
-      return {
-        id: uuidv4(),
-        source: clusterResult.indexOf(clusterInstances[edge.source]).toString(),
-        destination: clusterResult.indexOf(clusterInstances[edge.destination]).toString(),
-        objectType: ObjectTypes.Edge,
-      };
-    });
-
-    const story = transformIndicesToHandles(clusterResult, edgeResult);
+    const story = transformIndicesToHandles([...clusterSet], [...edgeSet]);
 
     stories.push(story);
   }
