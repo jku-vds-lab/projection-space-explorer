@@ -7,18 +7,18 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import StarIcon from '@mui/icons-material/Star';
 import Split from 'react-split';
+import { Box, Tooltip, Typography } from '@mui/material';
+import { StarBorder } from '@mui/icons-material';
 import type { RootState } from '../../Store/Store';
 import { DetailViewActions } from '../../Ducks/DetailViewDuck';
 import { ComponentConfig } from '../../../BaseConfig';
-import { Box, Tooltip, Typography } from '@mui/material';
 import { GlobalLabelsState } from '../../Ducks';
-import { StarBorder } from '@mui/icons-material';
 import { toSentenceCase } from '../../../utils';
 
 type DetailViewChooserProps = {
   overrideComponents: ComponentConfig;
   splitRef: React.LegacyRef<Split>;
-  globalLabels: GlobalLabelsState
+  globalLabels: GlobalLabelsState;
 };
 
 function instantiateElement(view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>, splitRef: React.LegacyRef<Split>) {
@@ -62,9 +62,11 @@ export function ViewsTabPanel({ overrideComponents, splitRef, globalLabels }: De
                     <ListItemIcon>
                       <StarIcon />
                     </ListItemIcon>
-                  ) : (<ListItemIcon>
-                    <StarBorder />
-                  </ListItemIcon>)}
+                  ) : (
+                    <ListItemIcon>
+                      <StarBorder />
+                    </ListItemIcon>
+                  )}
                   <ListItemText primary={dv.name} />
                 </ListItemButton>
               </Tooltip>

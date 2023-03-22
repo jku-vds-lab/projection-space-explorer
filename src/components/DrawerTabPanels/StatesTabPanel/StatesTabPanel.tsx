@@ -67,7 +67,7 @@ function SelectFeatureComponent({ label, default_val, categoryOptions, onChange,
 
   return (
     <Autocomplete
-      style={{paddingTop: 0}}
+      style={{ paddingTop: 0 }}
       id={`vectorBySelect_${label}`}
       data-cy={datacy}
       filterOptions={autocomplete_filterOptions}

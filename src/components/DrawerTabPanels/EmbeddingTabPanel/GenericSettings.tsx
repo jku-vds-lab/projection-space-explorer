@@ -22,6 +22,7 @@ import {
 import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import clone from 'fast-clone';
+import { InfoOutlined } from '@mui/icons-material';
 import type { RootState } from '../../Store/Store';
 import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';
@@ -31,7 +32,6 @@ import { setProjectionParamsAction } from '../../Ducks/ProjectionParamsDuck';
 import { ProjectionMethod } from '../../../model';
 import type { ProjectionColumn } from '../../Ducks';
 import { EmbeddingMethod, FeatureConfig } from '../../../BaseConfig';
-import { InfoOutlined } from '@mui/icons-material';
 
 const mapState = (state: RootState) => ({
   projectionColumns: state.projectionColumns,
@@ -296,7 +296,7 @@ function GenericSettingsComp({
                         </Select>
                       </FormControl>
                     )}
-                    
+
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -306,27 +306,33 @@ function GenericSettingsComp({
                           name="jason"
                         />
                       }
-                      label={<Typography>Seed position <Tooltip
-                        title={
-                          <Typography variant="subtitle2">
-                            If activated, the projection methods uses the current projection positions as a starting point.
-                          </Typography>
-                        }
-                      >
-                        <InfoOutlined fontSize="inherit" style={{ color: "grey" }} />
-                      </Tooltip>
-                      </Typography>}
-                    />
-                    {domainSettings.settings.projectSelectionOnly &&<FormControlLabel
-                      control={
-                        <Checkbox
-                          color="primary"
-                          checked={tempProjectionParams.useSelection}
-                          onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, useSelection: checked })}
-                        />
+                      label={
+                        <Typography>
+                          Seed position{' '}
+                          <Tooltip
+                            title={
+                              <Typography variant="subtitle2">
+                                If activated, the projection methods uses the current projection positions as a starting point.
+                              </Typography>
+                            }
+                          >
+                            <InfoOutlined fontSize="inherit" style={{ color: 'grey' }} />
+                          </Tooltip>
+                        </Typography>
                       }
-                      label="Project selection only"
-                    />}
+                    />
+                    {domainSettings.settings.projectSelectionOnly && (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            color="primary"
+                            checked={tempProjectionParams.useSelection}
+                            onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, useSelection: checked })}
+                          />
+                        }
+                        label="Project selection only"
+                      />
+                    )}
                   </FormGroup>
                 </FormControl>
               </Grid>
