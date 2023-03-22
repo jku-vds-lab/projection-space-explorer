@@ -69,6 +69,6 @@ export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent
     setProjectionOpen?: any;
     setProjectionWorker?: any;
     dataset?: Dataset;
-}, "stories" | "dataset" | "projectionOpen" | "projectionParams" | "projectionWorker" | "projections" | "setProjectionOpen" | "setProjectionWorker" | "setProjectionColumns" | "setTrailVisibility" | "deleteProjection" | "updateWorkspace">>;
+}, "dataset" | "stories" | "projectionOpen" | "projectionParams" | "projectionWorker" | "projections" | "setProjectionOpen" | "setProjectionWorker" | "setProjectionColumns" | "setTrailVisibility" | "deleteProjection" | "updateWorkspace">>;
 export {};
 //# sourceMappingURL=EmbeddingTabPanel.d.ts.map
