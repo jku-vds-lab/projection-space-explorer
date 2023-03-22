@@ -13,7 +13,7 @@ export declare class DownloadJob {
         type: DatasetType;
     });
     sleep(ms: any): Promise<unknown>;
-    download(response: Response, callback: (string: any) => void, onProgress: (number: any) => void): Promise<void>;
+    download(response: Response, callback: (string: any) => void, onProgress: (number: any) => void): Promise<string>;
     start(callback: (string: any) => void, onProgress: (number: any) => void): void;
     /**
      * Terminates this job

@@ -29,6 +29,11 @@ module.exports = {
     },
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
+  devServer: {
+    client: {
+      overlay: false,
+    },
+  },
   devtool: "source-map",
   module: {
     rules: [

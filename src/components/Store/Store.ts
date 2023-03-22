@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { createEntityAdapter, EntityState, EntityId, createReducer } from '@reduxjs/toolkit';
+import { createEntityAdapter, EntityState, EntityId } from '@reduxjs/toolkit';
 import { combineReducers, Reducer, ReducersMapObject } from 'redux';
 import clone from 'fast-clone';
 import { useSelector } from 'react-redux';
@@ -37,6 +37,7 @@ import { PointDisplayReducer } from '../Ducks/PointDisplayDuck';
 import { multipleAdapter, defaultAttributes, createViewDuckReducer } from '../Ducks/ViewDuck';
 import { stories, IStorytelling, AStorytelling } from '../Ducks/StoriesDuck';
 import { tabSettings } from '../Ducks/OpenTabDuck';
+import { datasetLoader } from '../Ducks/DatasetLoaderDuck';
 
 // This disables the auto freeze freature of immer which is necessary for the root reducers
 // See https://immerjs.github.io/immer/freezing/ for details
@@ -51,6 +52,7 @@ const allReducers = {
   currentAggregation,
   stories,
   tabSettings,
+  datasetLoader,
   pointDisplay: PointDisplayReducer,
   activeLine,
   dataset,

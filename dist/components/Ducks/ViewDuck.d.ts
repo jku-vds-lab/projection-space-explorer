@@ -125,6 +125,11 @@ export declare const ViewSelector: {
             openTab: number;
             focusedTab: number[];
         }>;
+        datasetLoader: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+            isFetching: boolean;
+            progress: number;
+            entry: import("../../model").DatasetEntry;
+        }>;
         pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
@@ -214,6 +219,11 @@ export declare const ViewSelector: {
             openTab: number;
             focusedTab: number[];
         }>;
+        datasetLoader: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+            isFetching: boolean;
+            progress: number;
+            entry: import("../../model").DatasetEntry;
+        }>;
         pointDisplay: Reducer<{
             checkedShapes: {
                 star: boolean;
@@ -293,6 +303,11 @@ export declare const ViewSelector: {
         tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             openTab: number;
             focusedTab: number[];
+        }>;
+        datasetLoader: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
+            isFetching: boolean;
+            progress: number;
+            entry: import("../../model").DatasetEntry;
         }>;
         pointDisplay: Reducer<{
             checkedShapes: {
