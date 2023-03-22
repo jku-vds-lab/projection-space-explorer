@@ -11,7 +11,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Camera } from 'three';
 import { Divider, Menu, MenuItem } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
-import { getDefaultZoom, arraysEqual, normalizeWheel, interpolateLinear } from './UtilityFunctions';
+import { getDefaultZoom, arraysEqual, normalizeWheel } from './UtilityFunctions';
 import { LassoSelection } from './tools';
 import { LassoLayer } from './LassoLayer';
 import { ACluster, isCluster } from '../../model/Cluster';
@@ -151,6 +151,9 @@ export const WebGLView = connector(
     invalidated: boolean;
 
     mouseController: MouseController = new MouseController();
+
+    baseK: number = 1;
+    k: number = 1;
 
     constructor(props) {
       super(props);
@@ -348,19 +351,17 @@ export const WebGLView = connector(
 
       const normalized = normalizeWheel(event);
 
-      // AProjection.calculateBounds(this.props.dataset, this.props.projection.xChannel, this.props.projection.yChannel, this.props.workspace);
+      // Calculate a normalized zoom value between 0.5 and 5
+      const wheel = normalized.pixelY * 0.013;
+      const zoomFactor = Math.exp(wheel * 0.1);
+      this.k = Math.max(0.5, Math.min(5.0, zoomFactor * this.k));
 
       // Store world position under mouse
       const bounds = this.containerRef.current.getBoundingClientRect();
       const worldBefore = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform());
       const screenBefore = this.relativeMousePosition(event);
 
-      const newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.props.projection.bounds.scaleFactor;
-      if (newZoom < 1.0 / this.props.projection.bounds.scaleFactor) {
-        this.camera.zoom = 1.0 / this.props.projection.bounds.scaleFactor;
-      } else {
-        this.camera.zoom = newZoom;
-      }
+      this.camera.zoom = this.baseK * this.k;
 
       // Restore camera position
       this.restoreCamera(worldBefore, screenBefore);
@@ -371,6 +372,9 @@ export const WebGLView = connector(
       if (this.props.dataset.isSequential) {
         this.lines.setZoom(this.camera.zoom);
       }
+
+      console.log(this.k);
+
 
       // Update projection matrix
       this.camera.updateProjectionMatrix();
@@ -763,6 +767,8 @@ export const WebGLView = connector(
         this.props.workspace,
       );
 
+      this.baseK = zoom;
+
       // Update camera zoom to fit the problem
       this.camera.zoom = zoom;
       this.camera.position.x = x;
@@ -887,6 +893,7 @@ export const WebGLView = connector(
         );
 
         this.camera.zoom = zoom;
+        this.baseK = zoom;
 
         this.camera.position.x = x;
         this.camera.position.y = y;
@@ -1291,10 +1298,6 @@ export const WebGLView = connector(
       ctx.fill();
       ctx.stroke();
       ctx.closePath();
-    }
-
-    onClusterZoom(cluster) {
-      this.props.setSelectedCluster(cluster, false);
     }
 
     render() {
