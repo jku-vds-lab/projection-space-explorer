@@ -17,7 +17,7 @@ type Props = PropsFromRedux & {};
 
 export const DefaultLegend = connector(({ globalLabels }: Props) => {
   return (
-    <Box paddingLeft={2}>
+    <Box paddingX={2}>
       <Typography color="textSecondary">Select {globalLabels.itemLabelPlural} in the scatter plot to show a summary visualization.</Typography>
     </Box>
   );
