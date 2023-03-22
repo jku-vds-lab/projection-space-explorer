@@ -608,13 +608,13 @@ export const MultivariateClustering = connector(
       if (!story) {
         return [];
       }
-      console.log(story);
+
       const labels = [];
 
       Object.values(story.edges.entities)
         .filter((edge) => edge.name && edge.name !== '')
         .forEach((edge) => {
-          console.log(edge);
+
           const source = CameraTransformations.worldToScreen(
             ACluster.getCenterFromWorkspace(this.props.workspace, AStorytelling.retrieveCluster(this.props.stories, edge.source)),
             this.props.viewTransform,
