@@ -198,7 +198,7 @@ export function StatesTabPanelFull({
       )}
 
       {(!encodings || encodings.includes(EncodingChannel.Shape)) && vectorByShape && (
-        <Grid item style={{ padding: '0 16px' }}>
+        <Grid item paddingX={1} paddingBottom={2}>
           <ShapeLegend
             dataset={dataset}
             category={vectorByShape}
@@ -208,6 +208,8 @@ export function StatesTabPanelFull({
           />
         </Grid>
       )}
+
+      <Box paddingBottom={1} />
 
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'transparency') && (
         <SelectFeatureComponent
@@ -231,6 +233,7 @@ export function StatesTabPanelFull({
       )}
 
       <BrightnessSlider globalPointBrightness={globalPointBrightness} />
+      <Box padding={1} />
 
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'size') && (
         <SelectFeatureComponent
@@ -255,6 +258,8 @@ export function StatesTabPanelFull({
       )}
 
       <SizeSlider globalPointSize={globalPointSize} />
+
+      <Box padding={1} />
 
       {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'color') && (
         <SelectFeatureComponent

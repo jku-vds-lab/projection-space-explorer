@@ -54,6 +54,7 @@ import { StoriesActions, AStorytelling, IStorytelling, clusterAdapter } from '..
 import { PointColorScaleActions } from '../../Ducks';
 import { ViewSelector } from '../../Ducks/ViewDuck';
 import { capitalizeFirstLetter } from '../../../utils/helpers';
+import { InfoOutlined } from '@mui/icons-material';
 
 const mapStateToProps = (state: RootState) => ({
   stories: state.stories,
@@ -284,25 +285,51 @@ export const ClusteringTabPanel = connector(
     };
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box paddingLeft={2} paddingTop={2}>
+        <Box paddingX={2} paddingTop={2} paddingBottom={1}>
           <Typography variant="subtitle2" gutterBottom>
             Group settings
+          </Typography>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            Manually or automatically define groups of {globalLabels.itemLabelPlural}.{" "}
+            <Tooltip
+              title={
+                <Typography variant="subtitle2">
+                  You can visualize the groups in the scatterplot, interact with them, and use them to create {globalLabels.storyLabelPlural}.
+                  To manually define groups, select the {globalLabels.itemLabelPlural} you want to group, right-click to open the context menu and select "Define group from selection".
+                </Typography>
+              }
+            >
+              <InfoOutlined fontSize="inherit" />
+            </Tooltip>
           </Typography>
         </Box>
 
         <Box paddingLeft={2} paddingRight={2}>
-          <FormControlLabel
-            control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyClusters && displayMode !== DisplayMode.None} onChange={onCheckItems} />}
-            label={`Show ${globalLabels.itemLabelPlural}`}
-          />
-          <FormControlLabel
-            control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyStates && displayMode !== DisplayMode.None} onChange={onCheckClusters} />}
-            label="Show group centers"
-          />
+          <Tooltip placement='right' title={<Typography>Turn off toggle to hide {globalLabels.itemLabelPlural} in the scatterplot.</Typography>}>
+            <FormControlLabel
+              control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyClusters && displayMode !== DisplayMode.None} onChange={onCheckItems} />}
+              label={`Show ${globalLabels.itemLabelPlural}`}
+            />
+          </Tooltip>
+          <Tooltip placement='right' title={<Typography>Turn off toggle to hide group centers in the scatterplot.</Typography>}>
+            <FormControlLabel
+              control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyStates && displayMode !== DisplayMode.None} onChange={onCheckClusters} />}
+              label="Show group centers"
+            />
+          </Tooltip>
 
           <div style={{ width: '100%' }}>
             <FormControl style={{ width: '100%' }}>
-              <FormHelperText>Group visualization</FormHelperText>
+              <FormHelperText>Group visualization <Tooltip
+                  title={
+                    <Typography variant="subtitle2">
+                      Choose how a selected group visualizes the membership of its {globalLabels.itemLabelPlural}.
+                    </Typography>
+                  }
+                >
+                  <InfoOutlined fontSize="inherit" />
+                </Tooltip>
+              </FormHelperText>
               <Select
                 value={groupVisualizationMode}
                 onChange={(event) => {
