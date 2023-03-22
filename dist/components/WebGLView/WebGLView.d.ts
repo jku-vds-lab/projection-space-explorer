@@ -6,7 +6,6 @@ import { Camera } from 'three';
 import { LassoSelection } from './tools';
 import { ICluster } from '../../model/ICluster';
 import { TypedObject } from '../../model/TypedObject';
-import { IVector } from '../../model/Vector';
 import { ViewTransformType } from '../Ducks/ViewTransformDuck';
 import { LineVisualization, PointVisualization } from './meshes';
 import { DisplayMode } from '../Ducks/DisplayModeDuck';
@@ -18,7 +17,6 @@ import { TraceSelectTool } from './TraceSelectTool';
 import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ComponentConfig, FeatureConfig } from '../../BaseConfig';
-import { Mapping } from '../Utility';
 import { SingleMultipleAttributes } from '../Ducks/ViewDuck';
 import { IPosition, IProjection } from '../../model';
 type ViewState = {
@@ -62,6 +60,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
     activateView: (id: EntityId) => any;
     selectVectors: (vectors: number[], shiftKey: boolean) => any;
     setActiveLine: (activeLine: any) => any;
+    setD3Transform: (x: any, y: any, k: any) => any;
     setViewTransform: (camera: any, width: any, height: any, multipleId: any) => any;
     setHoverState: (hoverState: any, updater: any) => any;
     setPointColorMapping: (id: EntityId, mapping: any) => any;
@@ -90,34 +89,13 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         particles: PointVisualization;
         containerRef: any;
         selectionRef: any;
-        mouseDown: any;
-        physicsRef: any;
-        mouse: any;
-        mouseDownPosition: any;
-        initialMousePosition: any;
         currentHover: TypedObject;
         camera: THREE.OrthographicCamera;
-        vectors: IVector[];
         renderer: THREE.WebGLRenderer;
         lines: LineVisualization;
         scene: THREE.Scene;
-        dataset: any;
-        lineColorScheme: any;
         segments: DataLine[];
         pointScene: THREE.Scene;
-        vectorMapping: Mapping;
-        prevTime: number;
-        sourcePosition: any;
-        targetPosition: {
-            x: number;
-            y: number;
-        };
-        sourceZoom: any;
-        targetZoom: number;
-        transitionTime: number;
-        trees: any[];
-        edgeClusters: any;
-        lastTime: number;
         mouseMoveListener: any;
         mouseDownListener: any;
         mouseLeaveListener: any;
@@ -159,6 +137,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         onMouseMove(event: any): void;
         onMouseUp(event: MouseEvent): void;
         clearSelection(): void;
+        d3zoomBehavior(pixelY: number, clientX: number, clientY: number, bounds: DOMRect): void;
         onWheel(event: any): void;
         restoreCamera(world: any, screen: any): void;
         getWidth(): any;
@@ -187,7 +166,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
          * Starts the render loop
          */
         startRendering(): void;
-        updateZoom(deltaTime: any): void;
         /**
          * Render function that gets called with the display refresh rate.
          * Only render overlays here like the lasso selection etc.
@@ -232,6 +210,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "dataset" | "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "globalLabels" | "currentAggregation" | "activeLine" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "activateView" | "selectVectors" | "setViewTransform" | "setHoverState" | "setPointColorMapping" | "addClusterToStory">>;
+}, import("react-redux").Omit<any, "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "globalLabels" | "currentAggregation" | "activeLine" | "dataset" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "activateView" | "selectVectors" | "setD3Transform" | "setViewTransform" | "setHoverState" | "setPointColorMapping" | "addClusterToStory">>;
 export {};
 //# sourceMappingURL=WebGLView.d.ts.map

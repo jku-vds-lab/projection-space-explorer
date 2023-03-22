@@ -17,6 +17,9 @@ export declare function defaultAttributes(dataset?: Dataset): {
         height: number;
         centerX: number;
         centerY: number;
+        k: number;
+        x: number;
+        y: number;
     };
     lineBrightness: number;
     pointColorScale: any;
@@ -40,6 +43,9 @@ export declare const attributesSlice: import("@reduxjs/toolkit").Slice<{
         height: number;
         centerX: number;
         centerY: number;
+        k: number;
+        x: number;
+        y: number;
     };
     lineBrightness: number;
     pointColorScale: any;

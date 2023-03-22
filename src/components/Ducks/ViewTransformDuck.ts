@@ -1,17 +1,7 @@
-const SET = 'ducks/viewTransform/SET';
-const INVALIDATE = 'ducks/viewTransform/INVALIDATE';
+import { createAction, createReducer } from "@reduxjs/toolkit";
 
-export const setViewTransform = (camera, width, height, multipleId) => ({
-  type: SET,
-  camera,
-  width,
-  height,
-  multipleId,
-});
-
-export const invalidateTransform = () => ({
-  type: INVALIDATE,
-});
+export const setViewTransform = createAction<{ camera, width, height, multipleId }> ('viewTransform/set');
+export const setD3Transform = createAction<{ x, y, k }> ('viewTransform/setD3Transform');
 
 /**
  * Type specifying the camera transformation that all components should use.
@@ -32,6 +22,11 @@ export type ViewTransformType = {
 
   // Zoom level of the camera
   zoom: number;
+
+  // d3 zoom transformation matrix
+  x: number;
+  y: number;
+  k: number;
 };
 
 const initialState: ViewTransformType = {
@@ -40,21 +35,22 @@ const initialState: ViewTransformType = {
   height: 0,
   centerX: 0,
   centerY: 0,
+  x: 0,
+  y: 0,
+  k: 1,
 };
 
-export const viewTransform = (state = initialState, action): ViewTransformType => {
-  switch (action.type) {
-    case SET:
-      return {
-        centerX: action.camera.position.x,
-        centerY: action.camera.position.y,
-        width: action.width,
-        height: action.height,
-        zoom: action.camera.zoom,
-      };
-    case INVALIDATE:
-      return { ...state };
-    default:
-      return state;
-  }
-};
+export const viewTransform = createReducer(initialState, (builder) => {
+  builder.addCase(setViewTransform, (state, action) => {
+    state.centerX = action.payload.camera.position.x;
+    state.centerY = action.payload.camera.position.y;
+    state.width = action.payload.width;
+    state.height = action.payload.height;
+    state.zoom = action.payload.camera.zoom;
+  })
+  .addCase(setD3Transform, (state, action) => {
+    state.x = action.payload.x;
+    state.y = action.payload.y;
+    state.k = action.payload.k;
+  });
+});

@@ -11,14 +11,14 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Camera } from 'three';
 import { Divider, Menu, MenuItem } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
-import { getDefaultZoom, arraysEqual, normalizeWheel, interpolateLinear } from './UtilityFunctions';
+import { getDefaultZoom, arraysEqual, normalizeWheel } from './UtilityFunctions';
 import { LassoSelection } from './tools';
 import { LassoLayer } from './LassoLayer';
 import { ACluster, isCluster } from '../../model/Cluster';
 import { ICluster } from '../../model/ICluster';
 import { TypedObject } from '../../model/TypedObject';
-import { isVector, IVector } from '../../model/Vector';
-import { setViewTransform, ViewTransformType } from '../Ducks/ViewTransformDuck';
+import { isVector } from '../../model/Vector';
+import { setD3Transform, setViewTransform, ViewTransformType } from '../Ducks/ViewTransformDuck';
 import { selectClusters, selectVectors } from '../Ducks/AggregationDuck';
 import { CameraTransformations } from './CameraTransformations';
 import { LineVisualization, PointVisualization } from './meshes';
@@ -75,7 +75,8 @@ const mapDispatchToProps = (dispatch) => ({
   activateView: (id: EntityId) => dispatch(ViewActions.activateView(id)),
   selectVectors: (vectors: number[], shiftKey: boolean) => dispatch(selectVectors(vectors, shiftKey)),
   setActiveLine: (activeLine) => dispatch(setActiveLine(activeLine)),
-  setViewTransform: (camera, width, height, multipleId) => dispatch(setViewTransform(camera, width, height, multipleId)),
+  setD3Transform: (x, y, k) => dispatch(setD3Transform({ x, y, k })),
+  setViewTransform: (camera, width, height, multipleId) => dispatch(setViewTransform({ camera, width, height, multipleId })),
   setHoverState: (hoverState, updater) => dispatch(setHoverState(hoverState, updater)),
   setPointColorMapping: (id: EntityId, mapping) => dispatch(ViewActions.setPointColorMapping({ multipleId: id, value: mapping })),
   removeClusterFromStories: (cluster: ICluster) => dispatch(StoriesActions.deleteCluster(cluster)),
@@ -339,6 +340,27 @@ export const WebGLView = connector(
       this.particles?.updateColor(this.createAdditionalColumns());
     }
 
+    d3zoomBehavior(pixelY: number, clientX: number, clientY: number, bounds: DOMRect) {
+      const zoom = { ...this.props.viewTransform };
+      const wheel = pixelY < 0 ? 1 : -1;
+
+      const zoomFactor = Math.exp(wheel * 0.1);
+      // absolute mouse coordinates relative to parent container
+      let x = clientX - bounds.left;
+      let y = clientY - bounds.top;
+
+      const newScale = Math.max(0.5, Math.min(5.0, zoomFactor * zoom.k));
+
+      // downscaled coordinates relative to anchor
+      const zoomPointX = (x - zoom.x) / zoom.k;
+      const zoomPointY = (y - zoom.y) / zoom.k;
+
+      const offsetX = -(zoomPointX * (newScale - zoom.k));
+      const offsetY = -(zoomPointY * (newScale - zoom.k));
+      
+      this.props.setD3Transform(zoom.x + offsetX, zoom.y + offsetY, newScale);
+    }
+
     onWheel(event) {
       event.preventDefault();
 
@@ -352,6 +374,9 @@ export const WebGLView = connector(
 
       // Store world position under mouse
       const bounds = this.containerRef.current.getBoundingClientRect();
+      
+      this.d3zoomBehavior(normalized.pixelY, event.clientX, event.clientY, bounds);
+      
       const worldBefore = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform());
       const screenBefore = this.relativeMousePosition(event);
 
@@ -1255,6 +1280,9 @@ export const WebGLView = connector(
         width: this.getWidth(),
         height: this.getHeight(),
         zoom: this.camera.zoom,
+        k: 1,
+        x: 0,
+        y: 0
       };
     }
 
