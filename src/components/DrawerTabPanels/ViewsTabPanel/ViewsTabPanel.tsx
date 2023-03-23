@@ -8,7 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import StarIcon from '@mui/icons-material/Star';
 import Split from 'react-split';
 import { Box, Tooltip, Typography } from '@mui/material';
-import { StarBorder } from '@mui/icons-material';
+import { CheckBox, CheckBoxOutlined, RadioButtonChecked, RadioButtonUnchecked, StarBorder } from '@mui/icons-material';
 import type { RootState } from '../../Store/Store';
 import { DetailViewActions } from '../../Ducks/DetailViewDuck';
 import { ComponentConfig } from '../../../BaseConfig';
@@ -60,11 +60,11 @@ export function ViewsTabPanel({ overrideComponents, splitRef, globalLabels }: De
                 <ListItemButton selected={detailView.active === i} onClick={() => onViewChange(dv.name)}>
                   {detailView.active === i ? (
                     <ListItemIcon>
-                      <StarIcon />
+                      <RadioButtonChecked />
                     </ListItemIcon>
                   ) : (
                     <ListItemIcon>
-                      <StarBorder />
+                      <RadioButtonUnchecked />
                     </ListItemIcon>
                   )}
                   <ListItemText primary={dv.name} />

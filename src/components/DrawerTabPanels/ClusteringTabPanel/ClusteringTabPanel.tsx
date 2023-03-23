@@ -353,7 +353,7 @@ export const ClusteringTabPanel = connector(
           </div>
         </Box>
 
-        <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
+        <Box padding={2}>
           <Tooltip
             title={
               <Typography variant="subtitle2">
