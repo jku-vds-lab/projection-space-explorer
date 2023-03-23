@@ -181,6 +181,17 @@ export function getMinMaxOfChannel(dataset: Dataset, key: string, segment?) {
   return { min, max, center };
 }
 
+export function highlightElement(element: Element) {
+  const keyframes = [{ background: '#007dad' }, { background: 'white' }];
+
+  const timing = {
+    duration: 2000,
+    iterations: 1,
+  };
+
+  element.animate(keyframes, timing);
+}
+
 /**
  * Highlights the nth tab in the tab bar
  */
@@ -189,12 +200,9 @@ export function highlightTab(n: number) {
   const tabRootcontainer = document.getElementById('tabs-container').querySelector('div').querySelector('div');
   const nth = tabRootcontainer.querySelector(`button:nth-child(${n})`);
 
-  const keyframes = [{ background: '#007dad' }, { background: 'white' }];
+  highlightElement(nth);
+}
 
-  const timing = {
-    duration: 2000,
-    iterations: 1,
-  };
-
-  nth.animate(keyframes, timing);
+export function highlightGutter() {
+  highlightElement(document.querySelector('.gutter'));
 }

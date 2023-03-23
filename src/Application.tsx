@@ -40,6 +40,7 @@ import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChoose
 import { DetailViewActions } from './components/Ducks/DetailViewDuck';
 import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
 import { IVector } from './model/Vector';
+import { highlightGutter } from './components';
 
 /**
  * A TabPanel with a fixed height of 100vh which is needed for content with a scrollbar to work.
@@ -141,6 +142,10 @@ export const Application = connector(
 
     onChangeTab(newTab) {
       this.props.setOpenTab(newTab);
+
+      if (this.props.features?.showTabularTab !== false && newTab === 5) {
+        highlightGutter();
+      }
     }
 
     render() {
