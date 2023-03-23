@@ -116,6 +116,8 @@ There are some toy datasets available in this repository under **datasets/toy** 
 
 ## Installation
 
+Install NodeJS Version 16
+
 ### Install npm packages
 
 Use a git tool to clone this repository to your computer.
@@ -130,10 +132,10 @@ Then navigate to this folder in a terminal using
 cd projection-path-explorer
 ```
 
-and run the command to install the required packages
+and run the command to install the required dependencies
 
-```bash
-npm install
+```
+npm i --legacy-peer-deps
 ```
 
 ### Build the application
@@ -141,14 +143,12 @@ npm install
 There is always a valid build in the repository, but in case you want to make changes, you can use the local build server. Start it with the command
 
 ```
-npm run webpack:dev
+npm run build
 ```
 
-Whenever a file is changed while this server is running, it will automatically build a new version and deploy it in the /dist folder.
+### Using the library in an application
 
-### Starting the application
-
-To start the application you just need to start the index.html locally. The easiest way to this is by using the live server provided by either Atom or Visual Studio Code.
+To use the library we provided a template as a starting point. Please visit the repo [projection-space-explorer-app](https://github.com/jku-vds-lab/projection-space-explorer-app) for more information.
 
 
 
@@ -170,12 +170,4 @@ https://github.com/PAIR-code/umap-js
 
 https://www.npmjs.com/package/graphology-layout-forceatlas2
 
-
-
-
-
-# how to build:
-node version: 16
-install packages: "npm i --legacy-peer-deps"
-build code: "npm run build"
 

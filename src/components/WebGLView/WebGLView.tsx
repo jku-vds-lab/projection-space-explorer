@@ -791,13 +791,7 @@ export const WebGLView = connector(
         this.lines.meshes.forEach((line) => this.scene.add(line.line));
       }
 
-      this.particles = new PointVisualization(
-        vectorMapping,
-        this.props.dataset,
-        window.devicePixelRatio * 8,
-        this.lines?.grayedLayerSystem,
-        this.segments,
-      );
+      this.particles = new PointVisualization(vectorMapping, this.props.dataset, window.devicePixelRatio * 8, this.lines?.grayedLayerSystem, this.segments);
       this.particles.createMesh(this.props.dataset.vectors, this.segments, () => {
         this.updateXY();
         this.requestRender();
