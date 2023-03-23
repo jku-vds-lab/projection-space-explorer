@@ -44,7 +44,7 @@ export class DownloadJob {
     }
 
     if (this.terminated) {
-      return;
+      return '';
     }
 
     // Combine all small chunks to one big chunk
@@ -60,6 +60,8 @@ export class DownloadJob {
 
     // call finish
     callback(result);
+
+    return result;
   }
 
   start(callback: (string) => void, onProgress: (number) => void) {

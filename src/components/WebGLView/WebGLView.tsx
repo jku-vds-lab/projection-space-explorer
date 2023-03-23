@@ -118,21 +118,9 @@ export const WebGLView = connector(
 
     selectionRef: any;
 
-    mouseDown: any;
-
-    physicsRef: any;
-
-    mouse: any;
-
-    mouseDownPosition: any;
-
-    initialMousePosition: any;
-
     currentHover: TypedObject;
 
     camera: THREE.OrthographicCamera;
-
-    vectors: IVector[];
 
     renderer: THREE.WebGLRenderer;
 
@@ -140,33 +128,9 @@ export const WebGLView = connector(
 
     scene: THREE.Scene;
 
-    dataset: any;
-
-    lineColorScheme: any;
-
     segments: DataLine[];
 
     pointScene: THREE.Scene;
-
-    vectorMapping: Mapping;
-
-    prevTime: number;
-
-    sourcePosition: any;
-
-    targetPosition: { x: number; y: number };
-
-    sourceZoom: any;
-
-    targetZoom: number;
-
-    transitionTime: number;
-
-    trees: any[];
-
-    edgeClusters: any;
-
-    lastTime: number;
 
     mouseMoveListener: any;
 
@@ -193,11 +157,8 @@ export const WebGLView = connector(
 
       this.containerRef = React.createRef();
       this.selectionRef = React.createRef();
-      this.physicsRef = React.createRef();
 
       this.initMouseController();
-
-      this.mouse = { x: 0, y: 0 };
 
       this.currentHover = null;
 
@@ -784,8 +745,6 @@ export const WebGLView = connector(
       this.camera.updateProjectionMatrix();
 
       this.containerRef.current.appendChild(this.renderer.domElement);
-
-      this.prevTime = performance.now();
     }
 
     createVisualization(dataset, lineColorScheme, vectorMapping) {
@@ -794,8 +753,6 @@ export const WebGLView = connector(
       this.scene = new THREE.Scene();
       this.pointScene = new THREE.Scene();
       this.segments = dataset.segments;
-      this.lineColorScheme = lineColorScheme;
-      this.vectorMapping = vectorMapping;
 
       const { zoom, x, y } = getDefaultZoom(
         dataset,
@@ -820,7 +777,7 @@ export const WebGLView = connector(
       });
 
       if (this.props.dataset.isSequential) {
-        this.lines = new LineVisualization(this.segments, this.lineColorScheme);
+        this.lines = new LineVisualization(this.segments, lineColorScheme);
         this.lines.createMesh(this.props.lineBrightness);
         this.lines.setZoom(this.camera.zoom);
 
@@ -829,7 +786,7 @@ export const WebGLView = connector(
       }
 
       this.particles = new PointVisualization(
-        this.vectorMapping,
+        vectorMapping,
         this.props.dataset,
         window.devicePixelRatio * 8,
         this.lines?.grayedLayerSystem,
@@ -975,30 +932,6 @@ export const WebGLView = connector(
       } catch {}
     }
 
-    updateZoom(deltaTime) {
-      if (this.targetPosition != null && this.targetZoom != null) {
-        // Update transition time, maxing at 1
-        this.transitionTime = Math.min(this.transitionTime + deltaTime, 1);
-
-        // Update zoom level and position
-        this.camera.position.x = interpolateLinear(this.sourcePosition.x, this.targetPosition.x, this.transitionTime);
-        this.camera.position.y = interpolateLinear(this.sourcePosition.y, this.targetPosition.y, this.transitionTime);
-        // this.camera.zoom = interpolateLinear(this.sourceZoom, this.targetZoom, this.transitionTime)
-        this.camera.updateProjectionMatrix();
-
-        this.requestRender();
-
-        // End transition
-        if (this.transitionTime === 1) {
-          this.sourcePosition = null;
-          this.sourceZoom = null;
-          this.targetPosition = null;
-          this.targetZoom = null;
-          this.transitionTime = 0;
-        }
-      }
-    }
-
     /**
      * Render function that gets called with the display refresh rate.
      * Only render overlays here like the lasso selection etc.
@@ -1041,23 +974,13 @@ export const WebGLView = connector(
     renderFrame() {
       this.invalidated = false;
 
-      // Calculate delta time
-      const nextTime = performance.now();
-      const deltaTime = (nextTime - this.lastTime) / 1000;
-      this.lastTime = nextTime;
-
-      // Update zoom in case a target has been set
-      this.updateZoom(deltaTime);
-
       try {
         const camera = new THREE.OrthographicCamera(this.getWidth() / -2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / -2, 1, 1000);
         camera.lookAt(0, 0, 0);
         camera.position.z = 1;
         camera.position.x = this.camera.position.x * this.camera.zoom;
         camera.position.y = this.camera.position.y * this.camera.zoom;
-        // camera.position.x = this.props.viewTransform.centerX
-        // camera.position.y = this.props.viewTransform.centerY
-        // camera.zoom = this.props.viewTransform.zoom
+
         camera.updateProjectionMatrix();
 
         this.renderer.clear();
@@ -1556,8 +1479,8 @@ export const WebGLView = connector(
             >
               Delete group
             </MenuItem>
-            {this.props.featureConfig.enableStorytelling !== false ? <Divider /> : null}
-            {this.props.featureConfig.enableStorytelling !== false ? (
+            {this.props.featureConfig?.enableStorytelling !== false ? <Divider /> : null}
+            {this.props.featureConfig?.enableStorytelling !== false ? (
               <MenuItem
                 onClick={() => {
                   if (!isCluster(this.state.menuTarget)) {
@@ -1606,7 +1529,7 @@ export const WebGLView = connector(
                 {toSentenceCase(this.props.globalLabels.storyLabelPlural)} ... starting from this group
               </MenuItem>
             ) : null}
-            {this.props.featureConfig.enableStorytelling !== false ? (
+            {this.props.featureConfig?.enableStorytelling !== false ? (
               <MenuItem
                 onClick={() => {
                   if (!isCluster(this.state.menuTarget)) {

@@ -235,7 +235,7 @@ export class CSVLoader implements Loader {
     profiler.profile('Creating dataset');
 
     const promise = new Promise<Dataset>((resolve) => {
-      this.getClusters(vectors, (clusters) => {
+      this.getClusters(vectors, (clusters: ICluster[]) => {
         dataset.clusters = clusters;
 
         // Reset cluster label after extraction
@@ -255,8 +255,8 @@ export class CSVLoader implements Loader {
 
             const edge: IEdge = {
               id: uuidv4(),
-              source: clusters.findIndex((cluster) => `${cluster.label}` === `${row[1]}`).toString(),
-              destination: clusters.findIndex((cluster) => `${cluster.label}` === `${row[2]}`).toString(),
+              source: clusters.find((cluster) => `${cluster.label}` === `${row[1]}`).id,
+              destination: clusters.find((cluster) => `${cluster.label}` === `${row[2]}`).id,
               objectType: ObjectTypes.Edge,
             };
 
