@@ -180,3 +180,21 @@ export function getMinMaxOfChannel(dataset: Dataset, key: string, segment?) {
 
   return { min, max, center };
 }
+
+/**
+ * Highlights the nth tab in the tab bar
+ */
+export function highlightTab(n: number) {
+  // Select the nth tab in the tab container
+  const tabRootcontainer = document.getElementById('tabs-container').querySelector('div').querySelector('div');
+  const nth = tabRootcontainer.querySelector(`button:nth-child(${n})`);
+
+  const keyframes = [{ background: '#007dad' }, { background: 'white' }];
+
+  const timing = {
+    duration: 2000,
+    iterations: 1,
+  };
+
+  nth.animate(keyframes, timing);
+}

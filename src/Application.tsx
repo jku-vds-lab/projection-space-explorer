@@ -172,6 +172,7 @@ export const Application = connector(
               style={{
                 width: 88,
               }}
+              id="tabs-container"
               value={this.props.tab.openTab}
               orientation="vertical"
               indicatorColor="primary"
