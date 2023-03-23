@@ -9,7 +9,9 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         seeded: boolean;
         useSelection: boolean;
         method: string;
-        distanceMetric: import("../../../model/DistanceMetric").DistanceMetric;
+        distanceMetric: import("../../../model/DistanceMetric").DistanceMetric; /**
+         * Styles for the projection card that allows to stop/resume projection steps.
+         */
         normalizationMethod: import("../../../model/NormalizationMethod").NormalizationMethod;
         encodingMethod: import("../../../model/EncodingMethod").EncodingMethod;
     };
@@ -35,7 +37,9 @@ export declare const ProjectionControlCard: import("react-redux").ConnectedCompo
         seeded: boolean;
         useSelection: boolean;
         method: string;
-        distanceMetric: import("../../../model/DistanceMetric").DistanceMetric;
+        distanceMetric: import("../../../model/DistanceMetric").DistanceMetric; /**
+         * Styles for the projection card that allows to stop/resume projection steps.
+         */
         normalizationMethod: import("../../../model/NormalizationMethod").NormalizationMethod;
         encodingMethod: import("../../../model/EncodingMethod").EncodingMethod;
     };
