@@ -352,9 +352,9 @@ export const WebGLView = connector(
       const normalized = normalizeWheel(event);
 
       // Calculate a normalized zoom value between 0.5 and 5
-      const wheel = normalized.pixelY * 0.013;
+      const wheel = -normalized.pixelY * 0.01;
       const zoomFactor = Math.exp(wheel * 0.1);
-      this.k = Math.max(0.5, Math.min(5.0, zoomFactor * this.k));
+      this.k = Math.max(0.5, Math.min(10.0, zoomFactor * this.k));
 
       // Store world position under mouse
       const bounds = this.containerRef.current.getBoundingClientRect();
