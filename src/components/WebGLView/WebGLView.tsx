@@ -11,7 +11,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Camera } from 'three';
 import { Divider, Menu, MenuItem } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
-import { getDefaultZoom, arraysEqual, normalizeWheel, interpolateLinear } from './UtilityFunctions';
+import { getDefaultZoom, arraysEqual, normalizeWheel, interpolateLinear, highlightTab } from './UtilityFunctions';
 import { LassoSelection } from './tools';
 import { LassoLayer } from './LassoLayer';
 import { ACluster, isCluster } from '../../model/Cluster';
@@ -479,7 +479,8 @@ export const WebGLView = connector(
               if (indices.length > 0 && wasDrawing && displayModeSupportsStates(this.props.displayMode)) {
                 this.props.selectVectors(indices, event.ctrlKey);
 
-                this.props.setOpenTab(4);
+                highlightTab(5);
+                // this.props.setOpenTab(4);
               } else if (wasDrawing) {
                 this.clearSelection();
               }
@@ -1394,6 +1395,8 @@ export const WebGLView = connector(
                   } else {
                     this.props.addClusterToStory(cluster);
                   }
+
+                  highlightTab(4);
                 }
 
                 handleClose();
