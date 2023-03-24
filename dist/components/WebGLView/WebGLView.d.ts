@@ -14,7 +14,6 @@ import { IBook } from '../../model/Book';
 import { IEdge } from '../../model/Edge';
 import { ClusterDragTool } from './ClusterDragTool';
 import { TraceSelectTool } from './TraceSelectTool';
-import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ComponentConfig, FeatureConfig } from '../../BaseConfig';
 import { SingleMultipleAttributes } from '../Ducks/ViewDuck';
@@ -31,7 +30,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
         selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
-    dataset: Dataset;
+    dataset: import("../../model").Dataset;
     highlightedSequence: any;
     activeLine: string;
     advancedColoringSelection: any;
@@ -105,6 +104,8 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         multivariateClusterView: any;
         invalidated: boolean;
         mouseController: MouseController;
+        baseK: number;
+        k: number;
         chooseCluster(screenPosition: {
             x: number;
             y: number;
@@ -184,7 +185,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         requestRender(): void;
         createTransform(): ViewTransformType;
         renderLasso(ctx: any): void;
-        onClusterZoom(cluster: any): void;
         render(): JSX.Element;
         context: any;
         setState<K extends keyof ViewState>(state: ViewState | ((prevState: Readonly<ViewState>, props: Readonly<Props>) => ViewState | Pick<ViewState, K>) | Pick<ViewState, K>, callback?: () => void): void;

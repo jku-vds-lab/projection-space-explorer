@@ -11,13 +11,13 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Camera } from 'three';
 import { Divider, Menu, MenuItem } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
-import { getDefaultZoom, arraysEqual, normalizeWheel, interpolateLinear, highlightTab } from './UtilityFunctions';
+import { getDefaultZoom, arraysEqual, normalizeWheel, highlightTab } from './UtilityFunctions';
 import { LassoSelection } from './tools';
 import { LassoLayer } from './LassoLayer';
 import { ACluster, isCluster } from '../../model/Cluster';
 import { ICluster } from '../../model/ICluster';
 import { TypedObject } from '../../model/TypedObject';
-import { isVector, IVector } from '../../model/Vector';
+import { isVector } from '../../model/Vector';
 import { setViewTransform, ViewTransformType } from '../Ducks/ViewTransformDuck';
 import { selectClusters, selectVectors } from '../Ducks/AggregationDuck';
 import { CameraTransformations } from './CameraTransformations';
@@ -37,13 +37,12 @@ import { TraceSelectTool } from './TraceSelectTool';
 import { TabActions } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
-import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ObjectTypes } from '../../model/ObjectType';
 import { ComponentConfig, FeatureConfig } from '../../BaseConfig';
 import { ANormalized } from '../Utility/NormalizedState';
 import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck';
-import { Mapping, mappingFromScale } from '../Utility';
+import { mappingFromScale } from '../Utility';
 import { ViewActions, SingleMultipleAttributes } from '../Ducks/ViewDuck';
 import { IPosition, IProjection } from '../../model';
 import { toSentenceCase } from '../../utils/helpers';
@@ -151,6 +150,10 @@ export const WebGLView = connector(
     invalidated: boolean;
 
     mouseController: MouseController = new MouseController();
+
+    baseK = 1;
+
+    k = 1;
 
     constructor(props) {
       super(props);
@@ -348,19 +351,17 @@ export const WebGLView = connector(
 
       const normalized = normalizeWheel(event);
 
-      // AProjection.calculateBounds(this.props.dataset, this.props.projection.xChannel, this.props.projection.yChannel, this.props.workspace);
+      // Calculate a normalized zoom value between 0.5 and 5
+      const wheel = -normalized.pixelY * 0.01;
+      const zoomFactor = Math.exp(wheel * 0.1);
+      this.k = Math.max(0.5, Math.min(10.0, zoomFactor * this.k));
 
       // Store world position under mouse
       const bounds = this.containerRef.current.getBoundingClientRect();
       const worldBefore = CameraTransformations.screenToWorld({ x: event.clientX - bounds.left, y: event.clientY - bounds.top }, this.createTransform());
       const screenBefore = this.relativeMousePosition(event);
 
-      const newZoom = this.camera.zoom - (normalized.pixelY * 0.013) / this.props.projection.bounds.scaleFactor;
-      if (newZoom < 1.0 / this.props.projection.bounds.scaleFactor) {
-        this.camera.zoom = 1.0 / this.props.projection.bounds.scaleFactor;
-      } else {
-        this.camera.zoom = newZoom;
-      }
+      this.camera.zoom = this.baseK * this.k;
 
       // Restore camera position
       this.restoreCamera(worldBefore, screenBefore);
@@ -733,7 +734,7 @@ export const WebGLView = connector(
       this.renderer.sortObjects = false;
       this.renderer.localClippingEnabled = false;
 
-      this.camera = new THREE.OrthographicCamera(this.getWidth() / -2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / -2, 0, 1000);
+      this.camera = new THREE.OrthographicCamera(this.getWidth() / -2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / -2, 0, 5);
       this.camera.position.z = 1;
       this.camera.lookAt(new THREE.Vector3(0, 0, 0));
       this.camera.near = 0;
@@ -763,6 +764,9 @@ export const WebGLView = connector(
         this.props.projection.yChannel,
         this.props.workspace,
       );
+
+      this.baseK = zoom;
+      this.k = 1;
 
       // Update camera zoom to fit the problem
       this.camera.zoom = zoom;
@@ -869,9 +873,6 @@ export const WebGLView = connector(
           this.lines.updatePosition(this.props.workspace);
         }
 
-        // AProjection.calculateBounds(this.props.dataset, this.props.projection.xChannel, this.props.projection.yChannel, this.props.workspace);
-        // ADataset.calculateBounds(this.props.dataset, this.props.projection.xChannel, this.props.projection.yChannel, this.props.workspace);
-
         const { zoom, x, y } = getDefaultZoom(
           this.props.dataset,
           this.getWidth(),
@@ -882,6 +883,9 @@ export const WebGLView = connector(
         );
 
         this.camera.zoom = zoom;
+
+        this.baseK = zoom;
+        this.k = 1;
 
         this.camera.position.x = x;
         this.camera.position.y = y;
@@ -970,13 +974,15 @@ export const WebGLView = connector(
       this.invalidated = false;
 
       try {
-        const camera = new THREE.OrthographicCamera(this.getWidth() / -2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / -2, 1, 1000);
+        const camera = new THREE.OrthographicCamera(this.getWidth() / -2, this.getWidth() / 2, this.getHeight() / 2, this.getHeight() / -2, 0, 5);
         camera.lookAt(0, 0, 0);
         camera.position.z = 1;
         camera.position.x = this.camera.position.x * this.camera.zoom;
         camera.position.y = this.camera.position.y * this.camera.zoom;
 
         camera.updateProjectionMatrix();
+
+        this.camera.updateProjectionMatrix();
 
         this.renderer.clear();
         this.renderer.render(this.scene, this.camera);
@@ -1286,10 +1292,6 @@ export const WebGLView = connector(
       ctx.fill();
       ctx.stroke();
       ctx.closePath();
-    }
-
-    onClusterZoom(cluster) {
-      this.props.setSelectedCluster(cluster, false);
     }
 
     render() {
