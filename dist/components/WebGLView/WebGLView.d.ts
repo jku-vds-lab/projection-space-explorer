@@ -6,7 +6,6 @@ import { Camera } from 'three';
 import { LassoSelection } from './tools';
 import { ICluster } from '../../model/ICluster';
 import { TypedObject } from '../../model/TypedObject';
-import { IVector } from '../../model/Vector';
 import { ViewTransformType } from '../Ducks/ViewTransformDuck';
 import { LineVisualization, PointVisualization } from './meshes';
 import { DisplayMode } from '../Ducks/DisplayModeDuck';
@@ -18,7 +17,6 @@ import { TraceSelectTool } from './TraceSelectTool';
 import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ComponentConfig, FeatureConfig } from '../../BaseConfig';
-import { Mapping } from '../Utility';
 import { SingleMultipleAttributes } from '../Ducks/ViewDuck';
 import { IPosition, IProjection } from '../../model';
 type ViewState = {
@@ -90,34 +88,13 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         particles: PointVisualization;
         containerRef: any;
         selectionRef: any;
-        mouseDown: any;
-        physicsRef: any;
-        mouse: any;
-        mouseDownPosition: any;
-        initialMousePosition: any;
         currentHover: TypedObject;
         camera: THREE.OrthographicCamera;
-        vectors: IVector[];
         renderer: THREE.WebGLRenderer;
         lines: LineVisualization;
         scene: THREE.Scene;
-        dataset: any;
-        lineColorScheme: any;
         segments: DataLine[];
         pointScene: THREE.Scene;
-        vectorMapping: Mapping;
-        prevTime: number;
-        sourcePosition: any;
-        targetPosition: {
-            x: number;
-            y: number;
-        };
-        sourceZoom: any;
-        targetZoom: number;
-        transitionTime: number;
-        trees: any[];
-        edgeClusters: any;
-        lastTime: number;
         mouseMoveListener: any;
         mouseDownListener: any;
         mouseLeaveListener: any;
@@ -187,7 +164,6 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
          * Starts the render loop
          */
         startRendering(): void;
-        updateZoom(deltaTime: any): void;
         /**
          * Render function that gets called with the display refresh rate.
          * Only render overlays here like the lasso selection etc.

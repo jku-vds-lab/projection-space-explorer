@@ -480,8 +480,7 @@ export const WebGLView = connector(
                 this.props.selectVectors(indices, event.ctrlKey);
 
                 highlightTab(5);
-                //this.props.setOpenTab(4);
-
+                // this.props.setOpenTab(4);
               } else if (wasDrawing) {
                 this.clearSelection();
               }
