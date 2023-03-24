@@ -11,13 +11,13 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Camera } from 'three';
 import { Divider, Menu, MenuItem } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
-import { getDefaultZoom, arraysEqual, normalizeWheel } from './UtilityFunctions';
+import { getDefaultZoom, arraysEqual, normalizeWheel, highlightTab } from './UtilityFunctions';
 import { LassoSelection } from './tools';
 import { LassoLayer } from './LassoLayer';
 import { ACluster, isCluster } from '../../model/Cluster';
 import { ICluster } from '../../model/ICluster';
 import { TypedObject } from '../../model/TypedObject';
-import { isVector, IVector } from '../../model/Vector';
+import { isVector } from '../../model/Vector';
 import { setViewTransform, ViewTransformType } from '../Ducks/ViewTransformDuck';
 import { selectClusters, selectVectors } from '../Ducks/AggregationDuck';
 import { CameraTransformations } from './CameraTransformations';
@@ -37,13 +37,12 @@ import { TraceSelectTool } from './TraceSelectTool';
 import { TabActions } from '../Ducks/OpenTabDuck';
 import { setHoverState } from '../Ducks/HoverStateDuck';
 import { pointInHull } from '../Utility/Geometry/Intersection';
-import { Dataset } from '../../model/Dataset';
 import { DataLine } from '../../model/DataLine';
 import { ObjectTypes } from '../../model/ObjectType';
 import { ComponentConfig, FeatureConfig } from '../../BaseConfig';
 import { ANormalized } from '../Utility/NormalizedState';
 import { StoriesActions, AStorytelling } from '../Ducks/StoriesDuck';
-import { Mapping, mappingFromScale } from '../Utility';
+import { mappingFromScale } from '../Utility';
 import { ViewActions, SingleMultipleAttributes } from '../Ducks/ViewDuck';
 import { IPosition, IProjection } from '../../model';
 import { toSentenceCase } from '../../utils/helpers';
@@ -152,8 +151,9 @@ export const WebGLView = connector(
 
     mouseController: MouseController = new MouseController();
 
-    baseK: number = 1;
-    k: number = 1;
+    baseK = 1;
+
+    k = 1;
 
     constructor(props) {
       super(props);
@@ -480,7 +480,8 @@ export const WebGLView = connector(
               if (indices.length > 0 && wasDrawing && displayModeSupportsStates(this.props.displayMode)) {
                 this.props.selectVectors(indices, event.ctrlKey);
 
-                this.props.setOpenTab(4);
+                highlightTab(5);
+                // this.props.setOpenTab(4);
               } else if (wasDrawing) {
                 this.clearSelection();
               }
@@ -1396,6 +1397,8 @@ export const WebGLView = connector(
                   } else {
                     this.props.addClusterToStory(cluster);
                   }
+
+                  highlightTab(4);
                 }
 
                 handleClose();

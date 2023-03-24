@@ -32,4 +32,10 @@ export declare function getMinMaxOfChannel(dataset: Dataset, key: string, segmen
     max: any;
     center: any;
 };
+export declare function highlightElement(element: Element): void;
+/**
+ * Highlights the nth tab in the tab bar
+ */
+export declare function highlightTab(n: number): void;
+export declare function highlightGutter(): void;
 //# sourceMappingURL=UtilityFunctions.d.ts.map
