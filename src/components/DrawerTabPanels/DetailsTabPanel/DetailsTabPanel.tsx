@@ -180,25 +180,6 @@ export const DetailsTabPanel = connector(
             </Box>
           </Popover>
         </Box>
-        {/* <Box paddingX={2} paddingTop={1}>
-            <FormControlLabel
-              control={<Switch color="primary" checked={hoverSettings.windowMode === WindowMode.Extern} onChange={handleChange} name="checkedA" />}
-              label="External selection view"
-            />
-        </Box> */}
-        {/* {config?.detailsTab?.showClearSelectionButton !== false ? (
-          <Box paddingX={2} paddingTop={1}>
-            <Button
-              variant="outlined"
-              style={{ width: '100%' }}
-              onClick={() => {
-                setAggregation([]);
-              }}
-            >
-              Clear selection
-            </Button>
-          </Box>
-        ) : null} */}
 
         {config?.detailsTab?.showDivider !== false ? (
           <Box paddingBottom={1} paddingX={0}>
