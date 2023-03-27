@@ -1,14 +1,7 @@
 import * as React from 'react';
 import { ConnectedComponent, useDispatch, useSelector } from 'react-redux';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import StarIcon from '@mui/icons-material/Star';
 import Split from 'react-split';
-import { Box, Tooltip, Typography } from '@mui/material';
-import { CheckBox, CheckBoxOutlined, RadioButtonChecked, RadioButtonUnchecked, StarBorder } from '@mui/icons-material';
+import { Box, FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
 import type { RootState } from '../../Store/Store';
 import { DetailViewActions } from '../../Ducks/DetailViewDuck';
 import { ComponentConfig } from '../../../BaseConfig';
@@ -51,29 +44,16 @@ export function ViewsTabPanel({ overrideComponents, splitRef, globalLabels }: De
         <Typography variant="body2" color="textSecondary" gutterBottom>
           Choose a tabular view from the list below to show it.
         </Typography>
+
+        <FormControl>
+          <RadioGroup name="radio-buttons-group" value={detailView.active}>
+            {overrideComponents.detailViews.map((dv, i) => {
+              return <FormControlLabel key={dv.name} value={i} control={<Radio />} label={toSentenceCase(dv.name)} onClick={() => onViewChange(dv.name)} />;
+            })}
+          </RadioGroup>
+        </FormControl>
       </Box>
-      <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} aria-label="tableviews">
-        {overrideComponents.detailViews.map((dv, i) => {
-          return (
-            <ListItem disablePadding key={dv.name}>
-              <Tooltip placement="right" title={<Typography variant="subtitle2">Activate {dv.name} view.</Typography>}>
-                <ListItemButton selected={detailView.active === i} onClick={() => onViewChange(dv.name)}>
-                  {detailView.active === i ? (
-                    <ListItemIcon>
-                      <RadioButtonChecked />
-                    </ListItemIcon>
-                  ) : (
-                    <ListItemIcon>
-                      <RadioButtonUnchecked />
-                    </ListItemIcon>
-                  )}
-                  <ListItemText primary={dv.name} />
-                </ListItemButton>
-              </Tooltip>
-            </ListItem>
-          );
-        })}
-      </List>
+
       {instantiateElement(view, splitRef)}
     </div>
   );
