@@ -80,7 +80,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
               })}
         </Select>
       </FormControl>
-      <Box paddingX={0} paddingTop={1}>
+      <Box paddingX={0} paddingTop={1} gap={1}>
         <Tooltip
           placement="bottom"
           title={<Typography variant="subtitle2">Creates an empty {globalLabels.storyBookLabel} that can be used to save groups and edges</Typography>}
@@ -98,20 +98,18 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
           </Button>
         </Tooltip>
         <Tooltip placement="bottom" title={<Typography variant="subtitle2">Change settings for active {globalLabels.storyBookLabel}</Typography>}>
-          <span>
-            <Button
-              variant="outlined"
-              startIcon={<Settings />}
-              disabled={stories.active == null}
-              onClick={(e) => {
-                setEditBook(stories.stories.entities[stories.active]);
-              }}
-              color="primary"
-              aria-label={`Edit selected ${globalLabels.storyBookLabel}`}
-            >
-              Settings
-            </Button>
-          </span>
+          <Button
+            variant="outlined"
+            startIcon={<Settings />}
+            disabled={stories.active == null}
+            onClick={(e) => {
+              setEditBook(stories.stories.entities[stories.active]);
+            }}
+            color="primary"
+            aria-label={`Edit selected ${globalLabels.storyBookLabel}`}
+          >
+            Settings
+          </Button>
         </Tooltip>
       </Box>
 
