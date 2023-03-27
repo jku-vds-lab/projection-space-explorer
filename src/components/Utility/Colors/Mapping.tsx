@@ -35,7 +35,7 @@ export interface DivergingMapping {
  * @returns a color
  */
 export function mapValueToColor(mapping: ContinuousMapping | DivergingMapping | DiscreteMapping, value): SchemeColor {
-  switch (mapping.type) {
+  switch (mapping?.type) {
     case 'sequential': {
       const [min, max] = mapping.range;
 
