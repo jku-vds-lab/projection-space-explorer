@@ -69,7 +69,8 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
               .map((story) => {
                 return (
                   <MenuItem key={story.id} value={story.id} sx={{ display: 'block' }}>
-                    <div>{toSentenceCase(story.name ?? globalLabels.storyBookLabel)}</div><Typography variant="caption">{`${Object.keys(story.clusters.entities).length} nodes`}</Typography>
+                    <div>{toSentenceCase(story.name ?? globalLabels.storyBookLabel)}</div>
+                    <Typography variant="caption">{`${Object.keys(story.clusters.entities).length} nodes`}</Typography>
                   </MenuItem>
                 );
               })}
