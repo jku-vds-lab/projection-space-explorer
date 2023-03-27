@@ -514,6 +514,7 @@ export class PointVisualization {
 
     this.mesh = new THREE.Points(pointGeometry, pointMaterial);
 
+    this.mesh.frustumCulled = false;
     this.sizeAttribute = this.mesh.geometry.attributes.size;
   }
 
