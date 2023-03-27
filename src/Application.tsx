@@ -39,7 +39,6 @@ import { toSentenceCase } from './utils/helpers';
 import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChooser';
 import { DetailViewActions } from './components/Ducks/DetailViewDuck';
 import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
-import { IVector } from './model/Vector';
 import { highlightGutter } from './components';
 
 /**

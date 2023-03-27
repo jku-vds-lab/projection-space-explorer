@@ -314,7 +314,7 @@ export const EmbeddingTabPanel = connector((props: Props) => {
           Axis settings
         </Typography>
         <Typography variant="body2" color="textSecondary" gutterBottom>
-          Select the features to use for the x and y axis of the scatter plot. By default x and y are set to the projection coordinates.
+          Select the features to use for the x and y axis of the scatter plot.
         </Typography>
       </Box>
       <Box paddingLeft={2} paddingRight={2} display="flex" style={{ flexDirection: 'column', gap: '8px' }}>
