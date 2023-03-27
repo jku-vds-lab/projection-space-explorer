@@ -73,6 +73,7 @@ export type ComponentConfig = Partial<{
         menuTarget: TypedObject;
     }) => JSX.Element>;
     mouseInteractionCallbacks: MouseInteractions;
+    tabContainerPrefix: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
 }>;
 export type DetailViewSpec = {
     name: string;

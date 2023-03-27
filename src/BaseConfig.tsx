@@ -100,6 +100,7 @@ export type ComponentConfig = Partial<{
   // contextMenuItems: Array<ContextMenuItem>;
   contextMenuItems: Array<(props: { handleClose: () => void; pos_x: number; pos_y: number; menuTarget: TypedObject }) => JSX.Element>;
   mouseInteractionCallbacks: MouseInteractions;
+  tabContainerPrefix: JSX.Element | ((props: any) => JSX.Element) | ConnectedComponent<any, any>;
 }>;
 
 // export type ContextMenuItem = {
