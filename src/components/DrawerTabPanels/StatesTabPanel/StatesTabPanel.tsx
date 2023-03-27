@@ -67,6 +67,7 @@ function SelectFeatureComponent({ label, default_val, categoryOptions, onChange,
 
   return (
     <Autocomplete
+      style={{ paddingTop: 0 }}
       id={`vectorBySelect_${label}`}
       data-cy={datacy}
       filterOptions={autocomplete_filterOptions}
@@ -169,11 +170,20 @@ export function StatesTabPanelFull({
         '& .MuiAutocomplete-root': { p: 2, width: '100%', boxSizing: 'border-box' },
       }}
     >
-      {(!encodings || encodings.includes(EncodingChannel.Shape)) && categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'shape') ? (
+      <Box paddingX={2} paddingTop={2} paddingBottom={1}>
+        <Typography variant="subtitle2" gutterBottom>
+          Scatter plot encoding
+        </Typography>
+        <Typography variant="body2" color="textSecondary" gutterBottom>
+          Change the visual encoding of the points in the scatter plot.
+        </Typography>
+      </Box>
+
+      {(!encodings || encodings.includes(EncodingChannel.Shape)) && categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'shape') && (
         <SelectFeatureComponent
           column_info={dataset?.columns}
           datacy="shape-encoding-select"
-          label="shape"
+          label="Shape"
           default_val={vectorByShape}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'shape')}
           onChange={(newValue) => {
@@ -185,12 +195,10 @@ export function StatesTabPanelFull({
             setVectorByShape(attribute);
           }}
         />
-      ) : (
-        <div />
       )}
 
       {(!encodings || encodings.includes(EncodingChannel.Shape)) && vectorByShape && (
-        <Grid item style={{ padding: '0 16px' }}>
+        <Grid item paddingX={1} paddingBottom={2}>
           <ShapeLegend
             dataset={dataset}
             category={vectorByShape}
@@ -201,11 +209,13 @@ export function StatesTabPanelFull({
         </Grid>
       )}
 
-      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'transparency') ? (
+      <Box paddingBottom={1} />
+
+      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'transparency') && (
         <SelectFeatureComponent
           column_info={dataset?.columns}
           datacy="brightness-encoding-select"
-          label="opacity"
+          label="Opacity"
           default_val={channelBrightness}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'transparency')}
           onChange={(newValue) => {
@@ -220,17 +230,16 @@ export function StatesTabPanelFull({
             setChannelBrightness(attribute);
           }}
         />
-      ) : (
-        <div />
       )}
 
       <BrightnessSlider globalPointBrightness={globalPointBrightness} />
+      <Box padding={1} />
 
-      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'size') ? (
+      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'size') && (
         <SelectFeatureComponent
           column_info={dataset?.columns}
           datacy="size-encoding-select"
-          label="size"
+          label="Size"
           default_val={channelSize}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'size')}
           onChange={(newValue) => {
@@ -246,17 +255,17 @@ export function StatesTabPanelFull({
             setChannelSize(attribute);
           }}
         />
-      ) : (
-        <div />
       )}
 
       <SizeSlider globalPointSize={globalPointSize} />
 
-      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'color') ? (
+      <Box padding={1} />
+
+      {categoryOptions != null && CategoryOptionsAPI.hasCategory(categoryOptions, 'color') && (
         <SelectFeatureComponent
           column_info={dataset?.columns}
           datacy="color-encoding-select"
-          label="color"
+          label="Color"
           default_val={channelColor}
           categoryOptions={CategoryOptionsAPI.getCategory(categoryOptions, 'color')}
           onChange={(newValue) => {
@@ -276,8 +285,6 @@ export function StatesTabPanelFull({
             }
           }}
         />
-      ) : (
-        <div />
       )}
 
       <Grid item>

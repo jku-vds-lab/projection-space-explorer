@@ -454,7 +454,7 @@ export const Application = connector(
 
                 {this.props.overrideComponents?.detailViews?.length > 0 ? (
                   <FixedHeightTabPanel value={this.props.tab.openTab} index={5}>
-                    <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} />
+                    <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} globalLabels={this.props.globalLabels} />
                   </FixedHeightTabPanel>
                 ) : null}
 

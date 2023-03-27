@@ -1102,7 +1102,7 @@ export const WebGLView = connector(
           this.props.setPointColorMapping(this.props.multipleId, mapping);
         } else {
           this.props.setPointColorMapping(this.props.multipleId, null);
-          this.particles?.setColorByChannel(this.props.channelColor, null, this.createAdditionalColumns());
+          // this.particles?.setColorByChannel(this.props.channelColor, null, this.createAdditionalColumns());
         }
       }
 

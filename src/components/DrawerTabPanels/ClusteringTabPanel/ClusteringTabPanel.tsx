@@ -37,6 +37,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { trackPromise } from 'react-promise-tracker';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { InfoOutlined } from '@mui/icons-material';
 import { ACluster } from '../../../model/Cluster';
 import { ICluster } from '../../../model/ICluster';
 import { IBook } from '../../../model/Book';
@@ -284,25 +285,56 @@ export const ClusteringTabPanel = connector(
     };
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Box paddingLeft={2} paddingTop={2}>
+        <Box paddingX={2} paddingTop={2} paddingBottom={1}>
           <Typography variant="subtitle2" gutterBottom>
             Group settings
+          </Typography>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            Manually or automatically define groups of {globalLabels.itemLabelPlural}.{' '}
+            <Tooltip
+              title={
+                <Typography variant="subtitle2">
+                  You can visualize the groups in the scatterplot, interact with them, and use them to create {globalLabels.storyLabelPlural}. To manually
+                  define groups, select the {globalLabels.itemLabelPlural} you want to group, right-click to open the context menu and select &quot;Define group
+                  from selection&quot;.
+                </Typography>
+              }
+            >
+              <InfoOutlined fontSize="inherit" />
+            </Tooltip>
           </Typography>
         </Box>
 
         <Box paddingLeft={2} paddingRight={2}>
-          <FormControlLabel
-            control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyClusters && displayMode !== DisplayMode.None} onChange={onCheckItems} />}
-            label={`Show ${globalLabels.itemLabelPlural}`}
-          />
-          <FormControlLabel
-            control={<Switch color="primary" checked={displayMode !== DisplayMode.OnlyStates && displayMode !== DisplayMode.None} onChange={onCheckClusters} />}
-            label="Show group centers"
-          />
+          <Tooltip placement="right" title={<Typography>Turn off toggle to hide {globalLabels.itemLabelPlural} in the scatterplot.</Typography>}>
+            <FormControlLabel
+              control={
+                <Switch color="primary" checked={displayMode !== DisplayMode.OnlyClusters && displayMode !== DisplayMode.None} onChange={onCheckItems} />
+              }
+              label={`Show ${globalLabels.itemLabelPlural}`}
+            />
+          </Tooltip>
+          <Tooltip placement="right" title={<Typography>Turn off toggle to hide group centers in the scatterplot.</Typography>}>
+            <FormControlLabel
+              control={
+                <Switch color="primary" checked={displayMode !== DisplayMode.OnlyStates && displayMode !== DisplayMode.None} onChange={onCheckClusters} />
+              }
+              label="Show group centers"
+            />
+          </Tooltip>
 
           <div style={{ width: '100%' }}>
             <FormControl style={{ width: '100%' }}>
-              <FormHelperText>Group visualization</FormHelperText>
+              <FormHelperText>
+                Group visualization{' '}
+                <Tooltip
+                  title={
+                    <Typography variant="subtitle2">Choose how a selected group visualizes the membership of its {globalLabels.itemLabelPlural}.</Typography>
+                  }
+                >
+                  <InfoOutlined fontSize="inherit" />
+                </Tooltip>
+              </FormHelperText>
               <Select
                 value={groupVisualizationMode}
                 onChange={(event) => {
@@ -321,7 +353,7 @@ export const ClusteringTabPanel = connector(
           </div>
         </Box>
 
-        <Box paddingLeft={2} paddingTop={2} paddingRight={2}>
+        <Box padding={2}>
           <Tooltip
             title={
               <Typography variant="subtitle2">
@@ -519,6 +551,20 @@ export const ClusteringTabPanel = connector(
         <Box paddingLeft={2} paddingTop={2}>
           <Typography variant="subtitle2" gutterBottom>
             Groups and {globalLabels.storyBookLabelPlural}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            Activate a {globalLabels.storyBookLabel} to view groups and {globalLabels.storyLabelPlural}.{' '}
+            <Tooltip
+              title={
+                <Typography variant="subtitle2">
+                  To manually define {globalLabels.storyLabelPlural}, draw directed edges between group centers in the scatter plot. To activate the{' '}
+                  {globalLabels.storyTellingLabel} view, right-click on one of the group centers. In the context menu select one of the{' '}
+                  {globalLabels.storyLabel} options.
+                </Typography>
+              }
+            >
+              <InfoOutlined fontSize="inherit" />
+            </Tooltip>
           </Typography>
         </Box>
 

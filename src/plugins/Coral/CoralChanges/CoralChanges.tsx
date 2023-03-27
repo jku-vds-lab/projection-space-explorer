@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Handler } from 'vega-tooltip';
 import { makeStyles } from '@mui/styles';
 import './coral.scss';
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { Dataset } from '../../../model/Dataset';
 import { IVector } from '../../../model/Vector';
 import { FeatureType } from '../../../model/FeatureType';

@@ -62,16 +62,22 @@ export const DetailsTabPanel = connector(
 
     return (
       <div key={dataset?.info?.path} style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
-        <Box paddingX={2} paddingTop={1}>
-          {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ? (
-            <Typography color="textSecondary" variant="body2">
-              Selected <b>{currentAggregation.selectedClusters.length}</b> out of <b>{activeStorybook?.clusters.ids.length}</b> groups
-            </Typography>
-          ) : (
-            <Typography color="textSecondary" variant="body2">
-              Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> {globalLabels.itemLabelPlural}
-            </Typography>
-          )}
+        <Box paddingX={2} paddingTop={2} paddingBottom={1}>
+          <Typography variant="subtitle2" gutterBottom>
+            Visualy summarize {globalLabels.itemLabelPlural}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            Interactively select {globalLabels.itemLabelPlural} to update the summary visualization.{' '}
+            {currentAggregation.selectedClusters && currentAggregation.selectedClusters.length > 0 ? (
+              <>
+                Selected <b>{currentAggregation.selectedClusters.length}</b> out of <b>{activeStorybook?.clusters.ids.length}</b> groups.
+              </>
+            ) : (
+              <>
+                Selected <b>{currentAggregation.aggregation.length}</b> out of <b>{dataset?.vectors.length}</b> {globalLabels.itemLabelPlural}.
+              </>
+            )}
+          </Typography>
         </Box>
 
         <Box paddingX={1} paddingTop={1}>
