@@ -1,7 +1,7 @@
 import { EntityId } from '@reduxjs/toolkit';
 import { useState } from 'react';
 import * as React from 'react';
-import { Box, Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, Select, Tooltip, Typography } from '@mui/material';
+import { Box, Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, MenuItem, Select, Tooltip, Typography } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { Add, Settings } from '@mui/icons-material';
 import { IBook } from '../../../model/Book';
@@ -62,25 +62,20 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
             setActiveStory(event.target.value);
           }}
         >
-          <ListItem key="" {...{ value: '' }} button>
-            <ListItemText primary="None" />
-          </ListItem>
+          <MenuItem value="">None</MenuItem>
           {stories.stories &&
             stories.stories.ids
               .map((id) => stories.stories.entities[id])
               .map((story) => {
                 return (
-                  <ListItem key={story.id} button {...{ value: story.id }}>
-                    <ListItemText
-                      primary={toSentenceCase(story.name ?? globalLabels.storyBookLabel)}
-                      secondary={`${Object.keys(story.clusters.entities).length} nodes`}
-                    />
-                  </ListItem>
+                  <MenuItem key={story.id} value={story.id} sx={{ display: 'block' }}>
+                    <div>{toSentenceCase(story.name ?? globalLabels.storyBookLabel)}</div><Typography variant="caption">{`${Object.keys(story.clusters.entities).length} nodes`}</Typography>
+                  </MenuItem>
                 );
               })}
         </Select>
       </FormControl>
-      <Box paddingX={0} paddingTop={1}>
+      <Box paddingX={0} paddingTop={1} gap={1} sx={{ display: 'flex' }}>
         <Tooltip
           placement="bottom"
           title={<Typography variant="subtitle2">Creates an empty {globalLabels.storyBookLabel} that can be used to save groups and edges</Typography>}
