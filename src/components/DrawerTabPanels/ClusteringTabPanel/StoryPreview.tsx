@@ -1,7 +1,7 @@
 import { EntityId } from '@reduxjs/toolkit';
 import { useState } from 'react';
 import * as React from 'react';
-import { Box, Button, FormControl, FormHelperText, Grid, ListItem, ListItemText, MenuItem, Select, Tooltip, Typography } from '@mui/material';
+import { Box, Button, FormControl, FormHelperText, MenuItem, Select, Tooltip, Typography } from '@mui/material';
 import { connect, ConnectedProps, useDispatch } from 'react-redux';
 import { Add, Settings } from '@mui/icons-material';
 import { IBook } from '../../../model/Book';
@@ -85,7 +85,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
             style={{ marginRight: '2px' }}
             variant="outlined"
             startIcon={<Add />}
-            onClick={(e) => addHandler()}
+            onClick={() => addHandler()}
             color="primary"
             aria-label={`Add empty ${globalLabels.storyBookLabel}`}
           >
@@ -98,7 +98,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
             variant="outlined"
             startIcon={<Settings />}
             disabled={stories.active == null}
-            onClick={(e) => {
+            onClick={() => {
               setEditBook(stories.stories.entities[stories.active]);
             }}
             color="primary"
@@ -119,7 +119,7 @@ export const StoryPreview = connector(({ stories, setActiveStory, deleteStory, a
           dispatch(StoriesActions.changeBookName({ id: editBook.id, name: changes.name }));
           setEditBook(null);
         }}
-        onDelete={(e) => {
+        onDelete={() => {
           deleteHandler(stories.stories.entities[stories.active].id);
           setEditBook(null);
         }}
