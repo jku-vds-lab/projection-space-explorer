@@ -68,6 +68,7 @@ export function AttributeSelectionTable({
         <DialogTitle>Choose attributes you want to show in the visualization</DialogTitle>
         <DialogContent>
           <DataGrid
+            style={{ fontFamily: 'Roboto' }}
             className="rdg-light"
             groupBy={['group']}
             rowGrouper={rowGrouper}
