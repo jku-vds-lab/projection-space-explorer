@@ -39,7 +39,6 @@ import { toSentenceCase } from './utils/helpers';
 import { DetailViewChooser } from './components/ViewMultiplexer/DetailViewChooser';
 import { DetailViewActions } from './components/Ducks/DetailViewDuck';
 import { ViewsTabPanel } from './components/DrawerTabPanels/ViewsTabPanel/ViewsTabPanel';
-import { IVector } from './model/Vector';
 import { highlightGutter } from './components';
 
 /**
@@ -460,7 +459,7 @@ export const Application = connector(
 
                 {this.props.overrideComponents?.detailViews?.length > 0 ? (
                   <FixedHeightTabPanel value={this.props.tab.openTab} index={5}>
-                    <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} />
+                    <ViewsTabPanel overrideComponents={this.props.overrideComponents} splitRef={this.splitRef} globalLabels={this.props.globalLabels} />
                   </FixedHeightTabPanel>
                 ) : null}
 

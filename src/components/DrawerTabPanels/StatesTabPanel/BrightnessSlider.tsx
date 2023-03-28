@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Typography, Slider } from '@mui/material';
+import { Typography, Slider, Box } from '@mui/material';
 import { connect } from 'react-redux';
 import { makeStyles } from '@mui/styles';
 import { setGlobalPointBrightness } from '../../Ducks/GlobalPointBrightnessDuck';
@@ -38,12 +38,12 @@ function BrightnessSliderFull({ globalPointBrightness, setRange }) {
   ];
 
   return (
-    <div className={classes.root}>
-      <Typography id="range-slider" gutterBottom>
+    <Box className={classes.root}>
+      <Typography id="range-slider" variant="body2" color="textSecondary">
         Opacity scale
       </Typography>
       <Slider min={0} max={1} value={globalPointBrightness} onChange={(_, newValue) => setRange(newValue)} step={0.05} marks={marks} valueLabelDisplay="auto" />
-    </div>
+    </Box>
   );
 }
 

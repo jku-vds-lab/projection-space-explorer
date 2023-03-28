@@ -58,7 +58,7 @@ export function AttributeSelectionTable({
 
   return (
     <div>
-      <Tooltip placement="right" title={<Typography variant="subtitle2">Choose attributes that are shown in the visualization</Typography>}>
+      <Tooltip placement="right" title={<Typography variant="subtitle2">Choose attributes that are shown in the visualization.</Typography>}>
         <Button fullWidth variant="outlined" onClick={openAttributes}>
           {children}
         </Button>

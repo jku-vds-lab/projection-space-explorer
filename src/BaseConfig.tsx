@@ -19,17 +19,18 @@ export type EmbeddingMethod = {
     perplexity?: boolean;
     learningRate?: boolean;
     nneighbors?: boolean;
+    projectSelectionOnly?: boolean;
   };
   description?: JSX.Element | string;
   tooltip?: string;
   embController?: EmbeddingController;
 };
 
-export const DEFAULT_UMAP_SETTINGS = { nneighbors: true };
+export const DEFAULT_UMAP_SETTINGS = { nneighbors: true, projectSelectionOnly: true };
 
-export const DEFAULT_TSNE_SETTINGS = { perplexity: true, learningRate: true };
+export const DEFAULT_TSNE_SETTINGS = { perplexity: true, learningRate: true, projectSelectionOnly: true };
 
-export const DEFAULT_FA2_SETTINGS = {};
+export const DEFAULT_FA2_SETTINGS = { projectSelectionOnly: true };
 
 export const DEFAULT_EMBEDDINGS = [
   {

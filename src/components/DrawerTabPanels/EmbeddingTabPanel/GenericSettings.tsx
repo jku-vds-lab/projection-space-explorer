@@ -16,10 +16,13 @@ import {
   MenuItem,
   Select,
   TextField,
+  Tooltip,
+  Typography,
 } from '@mui/material';
 import * as React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import clone from 'fast-clone';
+import { InfoOutlined } from '@mui/icons-material';
 import type { RootState } from '../../Store/Store';
 import { DistanceMetric } from '../../../model/DistanceMetric';
 import { NormalizationMethod } from '../../../model/NormalizationMethod';
@@ -222,7 +225,7 @@ function GenericSettingsComp({
         </DialogContent>
       ) : (
         <DialogContent>
-          <DialogContentText>{domainSettings?.description}</DialogContentText>
+          <DialogContentText paddingBottom={2}>{domainSettings?.description}</DialogContentText>
           <Container>
             {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
               <FeaturePicker
@@ -275,27 +278,6 @@ function GenericSettingsComp({
                         setTempProjectionParams({ ...tempProjectionParams, iterations: parseInt(event.target.value, 10) });
                       }}
                     />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          color="primary"
-                          checked={tempProjectionParams.seeded}
-                          onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, seeded: checked })}
-                          name="jason"
-                        />
-                      }
-                      label="Seed position"
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          color="primary"
-                          checked={tempProjectionParams.useSelection}
-                          onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, useSelection: checked })}
-                        />
-                      }
-                      label="Project selection only"
-                    />
                     {domainSettings.id !== ProjectionMethod.FORCEATLAS2 && (
                       <FormControl>
                         <InputLabel id="demo-controlled-open-select-label">Distance metric</InputLabel>
@@ -313,6 +295,43 @@ function GenericSettingsComp({
                           <MenuItem value={DistanceMetric.GOWER}>Gower</MenuItem>
                         </Select>
                       </FormControl>
+                    )}
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="primary"
+                          checked={tempProjectionParams.seeded}
+                          onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, seeded: checked })}
+                          name="jason"
+                        />
+                      }
+                      label={
+                        <Typography>
+                          Seed position{' '}
+                          <Tooltip
+                            title={
+                              <Typography variant="subtitle2">
+                                If activated, the projection methods uses the current projection positions as a starting point.
+                              </Typography>
+                            }
+                          >
+                            <InfoOutlined fontSize="inherit" style={{ color: 'grey' }} />
+                          </Tooltip>
+                        </Typography>
+                      }
+                    />
+                    {domainSettings.settings.projectSelectionOnly && (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            color="primary"
+                            checked={tempProjectionParams.useSelection}
+                            onChange={(_, checked) => setTempProjectionParams({ ...tempProjectionParams, useSelection: checked })}
+                          />
+                        }
+                        label="Project selection only"
+                      />
                     )}
                   </FormGroup>
                 </FormControl>

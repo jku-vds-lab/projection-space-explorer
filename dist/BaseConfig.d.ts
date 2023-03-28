@@ -17,6 +17,7 @@ export type EmbeddingMethod = {
         perplexity?: boolean;
         learningRate?: boolean;
         nneighbors?: boolean;
+        projectSelectionOnly?: boolean;
     };
     description?: JSX.Element | string;
     tooltip?: string;
@@ -24,12 +25,16 @@ export type EmbeddingMethod = {
 };
 export declare const DEFAULT_UMAP_SETTINGS: {
     nneighbors: boolean;
+    projectSelectionOnly: boolean;
 };
 export declare const DEFAULT_TSNE_SETTINGS: {
     perplexity: boolean;
     learningRate: boolean;
+    projectSelectionOnly: boolean;
 };
-export declare const DEFAULT_FA2_SETTINGS: {};
+export declare const DEFAULT_FA2_SETTINGS: {
+    projectSelectionOnly: boolean;
+};
 export declare const DEFAULT_EMBEDDINGS: EmbeddingMethod[];
 export type CoordinatesType = {
     x: number;

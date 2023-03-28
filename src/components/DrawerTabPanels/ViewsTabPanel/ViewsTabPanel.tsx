@@ -1,19 +1,17 @@
 import * as React from 'react';
 import { ConnectedComponent, useDispatch, useSelector } from 'react-redux';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import StarIcon from '@mui/icons-material/Star';
 import Split from 'react-split';
+import { Box, FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
 import type { RootState } from '../../Store/Store';
 import { DetailViewActions } from '../../Ducks/DetailViewDuck';
 import { ComponentConfig } from '../../../BaseConfig';
+import { GlobalLabelsState } from '../../Ducks';
+import { toSentenceCase } from '../../../utils';
 
 type DetailViewChooserProps = {
   overrideComponents: ComponentConfig;
   splitRef: React.LegacyRef<Split>;
+  globalLabels: GlobalLabelsState;
 };
 
 function instantiateElement(view: JSX.Element | (() => JSX.Element) | ConnectedComponent<any, any>, splitRef: React.LegacyRef<Split>) {
@@ -22,7 +20,7 @@ function instantiateElement(view: JSX.Element | (() => JSX.Element) | ConnectedC
   return React.isValidElement(view) ? view : React.createElement(view as () => JSX.Element, { splitRef });
 }
 
-export function ViewsTabPanel({ overrideComponents, splitRef }: DetailViewChooserProps) {
+export function ViewsTabPanel({ overrideComponents, splitRef, globalLabels }: DetailViewChooserProps) {
   const dispatch = useDispatch();
 
   const detailView = useSelector((state: RootState) => state.detailView);
@@ -39,22 +37,23 @@ export function ViewsTabPanel({ overrideComponents, splitRef }: DetailViewChoose
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} aria-label="tableviews">
-        {overrideComponents.detailViews.map((dv, i) => {
-          return (
-            <ListItem disablePadding key={dv.name}>
-              <ListItemButton selected={detailView.active === i} onClick={() => onViewChange(dv.name)}>
-                {detailView.active === i ? (
-                  <ListItemIcon>
-                    <StarIcon />
-                  </ListItemIcon>
-                ) : null}
-                <ListItemText primary={dv.name} />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
+      <Box paddingX={2} paddingTop={2} paddingBottom={1}>
+        <Typography variant="subtitle2" gutterBottom>
+          Tabular view of {globalLabels.itemLabelPlural}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" gutterBottom>
+          Choose a tabular view from the list below to show it.
+        </Typography>
+
+        <FormControl>
+          <RadioGroup name="radio-buttons-group" value={detailView.active}>
+            {overrideComponents.detailViews.map((dv, i) => {
+              return <FormControlLabel key={dv.name} value={i} control={<Radio />} label={toSentenceCase(dv.name)} onClick={() => onViewChange(dv.name)} />;
+            })}
+          </RadioGroup>
+        </FormControl>
+      </Box>
+
       {instantiateElement(view, splitRef)}
     </div>
   );
