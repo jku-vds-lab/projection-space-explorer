@@ -419,7 +419,13 @@ export const Application = connector(
                 overflowX: 'hidden',
               }}
             >
-              <Grid container justifyContent="center" alignItems="stretch" direction="row" height="100%">
+              <Grid container justifyContent="center" alignItems="stretch" direction="row" height="100%" sx={{ position: 'relative' }}>
+                {this.props.overrideComponents?.tabContainerPrefix
+                  ? React.isValidElement(this.props.overrideComponents.tabContainerPrefix)
+                    ? this.props.overrideComponents.tabContainerPrefix
+                    : React.createElement(this.props.overrideComponents.tabContainerPrefix as () => JSX.Element, { value: this.props.tab.openTab })
+                  : null}
+
                 <FixedHeightTabPanel value={this.props.tab.openTab} index={0}>
                   {
                     /** predefined dataset */

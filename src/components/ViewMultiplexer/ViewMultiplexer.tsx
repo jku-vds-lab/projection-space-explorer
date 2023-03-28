@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import CloseIcon from '@mui/icons-material/Close';
 import SplitscreenIcon from '@mui/icons-material/Splitscreen';
 import { EntityId, EntityState } from '@reduxjs/toolkit';
-import { IconButton, Typography } from '@mui/material';
+import { IconButton, Tooltip, Typography } from '@mui/material';
 import { WebGLView } from '../WebGLView/WebGLView';
 import { ViewSelector, ViewActions, SingleMultiple } from '../Ducks/ViewDuck';
 import { IProjection } from '../../model/ProjectionInterfaces';
@@ -98,19 +98,22 @@ function WebView({
 
         <div style={{ display: 'flex' }}>
           {value.id === multiples.multiples.ids[0] ? (
-            <IconButton
-              size="small"
-              data-cy="split-view-button"
-              onClick={() => dispatch(ViewActions.addView({ id }))}
-              style={{ visibility: value.id === multiples.multiples.ids[0] ? 'visible' : 'hidden' }}
-            >
-              <SplitscreenIcon />
-            </IconButton>
+            <Tooltip title="Opens a new view with the same encodings and settings as this one">
+              <IconButton
+                size="small"
+                data-cy="split-view-button"
+                onClick={() => dispatch(ViewActions.addView({ id }))}
+                style={{ visibility: value.id === multiples.multiples.ids[0] ? 'visible' : 'hidden' }}
+              >
+                <SplitscreenIcon />
+              </IconButton>
+            </Tooltip>
           ) : null}
-
-          <IconButton disabled={value.id === multiples.multiples.ids[0]} size="small" onClick={() => onCloseView(value.id)}>
-            <CloseIcon />
-          </IconButton>
+          <Tooltip title="Closes this view">
+            <IconButton disabled={value.id === multiples.multiples.ids[0]} size="small" onClick={() => onCloseView(value.id)}>
+              <CloseIcon />
+            </IconButton>
+          </Tooltip>
         </div>
       </div>
       <div style={{ flexGrow: 1 }}>
