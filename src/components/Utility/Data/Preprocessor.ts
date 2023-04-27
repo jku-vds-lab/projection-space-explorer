@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable operator-assignment */
 import { IVector } from '../../../model/Vector';
+import { isNumber } from 'lodash/isNumber';
 
 /**
  * Class that preprocesses the data set and checks for validity.
@@ -172,7 +173,7 @@ export class Preprocessor {
           if (Number.isNaN(vector.groupLabel)) {
             // convert string to array
             vector.groupLabel = JSON.parse(vector.groupLabel as never);
-          } else if ((vector.groupLabel as unknown) < 0) {
+          } else if (vector.groupLabel as never < 0) {
             vector.groupLabel = [];
           } else {
             vector.groupLabel = [vector.groupLabel];
