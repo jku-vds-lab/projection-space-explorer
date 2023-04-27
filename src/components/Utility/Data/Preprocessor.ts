@@ -172,7 +172,7 @@ export class Preprocessor {
           if (Number.isNaN(vector.groupLabel)) {
             // convert string to array
             vector.groupLabel = JSON.parse(vector.groupLabel as never);
-          } else if (vector.groupLabel as never < 0) {
+          } else if (vector.groupLabel as any < 0) {
             vector.groupLabel = [];
           } else {
             vector.groupLabel = [vector.groupLabel];

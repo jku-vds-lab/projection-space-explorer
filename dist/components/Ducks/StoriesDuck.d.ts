@@ -57,5 +57,5 @@ export declare const StoriesActions: {
     addClusterToTrace: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<ICluster, "stories/addClusterToTrace">;
     set: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<IBook[], "stories/set">;
 };
-export declare const stories: import("redux").Reducer<IStorytelling, import("redux").AnyAction>;
+export declare const stories: import("redux").Reducer<IStorytelling>;
 //# sourceMappingURL=StoriesDuck.d.ts.map

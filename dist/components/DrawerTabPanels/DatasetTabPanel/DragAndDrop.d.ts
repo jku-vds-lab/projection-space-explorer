@@ -2,6 +2,7 @@ import * as React from 'react';
 export type DragAndDropProps = {
     handleDrop: Function;
     accept: string;
+    children: React.ReactNode;
 };
 export type DragAndDropState = {
     drag: boolean;
