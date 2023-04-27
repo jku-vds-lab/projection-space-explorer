@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable operator-assignment */
 import { IVector } from '../../../model/Vector';
-import { isNumber } from 'lodash/isNumber';
 
 /**
  * Class that preprocesses the data set and checks for validity.
