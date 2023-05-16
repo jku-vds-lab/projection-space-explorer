@@ -120,7 +120,7 @@ export declare const ViewSelector: {
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
+        stories: Reducer<import("./StoriesDuck").IStorytelling>;
         tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             openTab: number;
             focusedTab: number[];
@@ -137,7 +137,7 @@ export declare const ViewSelector: {
                 circle: boolean;
                 square: boolean;
             };
-        }, import("redux").AnyAction>;
+        }>;
         activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
         dataset: typeof import("./DatasetDuck").default;
         highlightedSequence: (state: any, action: any) => any;
@@ -187,10 +187,10 @@ export declare const ViewSelector: {
             active: number;
         }>;
         datasetEntries: typeof import("./DatasetEntriesDuck").default;
-        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState>;
         colorScales: typeof import("./ColorScalesDuck").default;
-        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
-    }>) => StateType<unknown>) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>) => StateType<unknown> & {
+        multiples: Reducer<StateType<unknown>>;
+    }>) => StateType<unknown>) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>) => StateType<unknown>, {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
@@ -199,7 +199,7 @@ export declare const ViewSelector: {
         id: EntityId;
         attributes: SingleMultipleAttributes;
     };
-    getWorkspaceById: ((state: any, multipleId: EntityId) => IProjection) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>, args_1: EntityId) => IProjection & {
+    getWorkspaceById: ((state: any, multipleId: EntityId) => IProjection) & import("reselect").OutputSelectorFields<(args_0: StateType<unknown>, args_1: EntityId) => IProjection, {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
@@ -214,7 +214,7 @@ export declare const ViewSelector: {
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
+        stories: Reducer<import("./StoriesDuck").IStorytelling>;
         tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             openTab: number;
             focusedTab: number[];
@@ -231,7 +231,7 @@ export declare const ViewSelector: {
                 circle: boolean;
                 square: boolean;
             };
-        }, import("redux").AnyAction>;
+        }>;
         activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
         dataset: typeof import("./DatasetDuck").default;
         highlightedSequence: (state: any, action: any) => any;
@@ -281,10 +281,10 @@ export declare const ViewSelector: {
             active: number;
         }>;
         datasetEntries: typeof import("./DatasetEntriesDuck").default;
-        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState>;
         colorScales: typeof import("./ColorScalesDuck").default;
-        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
-    }>) => IProjection) & import("reselect").OutputSelectorFields<(args_0: IProjection) => IProjection & {
+        multiples: Reducer<StateType<unknown>>;
+    }>) => IProjection) & import("reselect").OutputSelectorFields<(args_0: IProjection) => IProjection, {
         clearCache: () => void;
     }> & {
         clearCache: () => void;
@@ -299,7 +299,7 @@ export declare const ViewSelector: {
             selectedClusters: (string | number)[];
             source: "sample" | "cluster";
         };
-        stories: Reducer<import("./StoriesDuck").IStorytelling, import("redux").AnyAction>;
+        stories: Reducer<import("./StoriesDuck").IStorytelling>;
         tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
             openTab: number;
             focusedTab: number[];
@@ -316,7 +316,7 @@ export declare const ViewSelector: {
                 circle: boolean;
                 square: boolean;
             };
-        }, import("redux").AnyAction>;
+        }>;
         activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
         dataset: typeof import("./DatasetDuck").default;
         highlightedSequence: (state: any, action: any) => any;
@@ -366,10 +366,10 @@ export declare const ViewSelector: {
             active: number;
         }>;
         datasetEntries: typeof import("./DatasetEntriesDuck").default;
-        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+        globalLabels: Reducer<import("./GlobalLabelsDuck").GlobalLabelsState>;
         colorScales: typeof import("./ColorScalesDuck").default;
-        multiples: Reducer<StateType<unknown>, import("redux").AnyAction>;
-    }>) => boolean) & import("reselect").OutputSelectorFields<(args_0: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean & {
+        multiples: Reducer<StateType<unknown>>;
+    }>) => boolean) & import("reselect").OutputSelectorFields<(args_0: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function") => boolean, {
         clearCache: () => void;
     }> & {
         clearCache: () => void;

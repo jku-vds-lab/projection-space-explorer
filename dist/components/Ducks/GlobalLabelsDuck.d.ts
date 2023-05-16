@@ -19,5 +19,5 @@ export declare const setItemLabel: import("@reduxjs/toolkit").ActionCreatorWithO
 }, "globalLabels/setStoryBookLabel">, setStoryTellingLabel: import("@reduxjs/toolkit").ActionCreatorWithOptionalPayload<{
     label: string;
 }, "globalLabels/setStoryTellingLabel">;
-export declare const globalLabels: import("redux").Reducer<GlobalLabelsState, import("redux").AnyAction>;
+export declare const globalLabels: import("redux").Reducer<GlobalLabelsState>;
 //# sourceMappingURL=GlobalLabelsDuck.d.ts.map

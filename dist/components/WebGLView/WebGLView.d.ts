@@ -203,11 +203,13 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         componentWillMount?(): void;
         UNSAFE_componentWillMount?(): void;
         componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
-        UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
+        UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void; /**
+         * Starts the render loop
+         */
         componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
     contextType?: React.Context<any>;
-}, import("react-redux").Omit<any, "dataset" | "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "globalLabels" | "currentAggregation" | "activeLine" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "activateView" | "selectVectors" | "setViewTransform" | "setHoverState" | "setPointColorMapping" | "addClusterToStory">>;
+}, import("react-redux").Omit<any, "stories" | "addEdgeToActive" | "setActiveTrace" | "removeEdgeFromActive" | "pointDisplay" | "globalLabels" | "currentAggregation" | "activeLine" | "dataset" | "highlightedSequence" | "advancedColoringSelection" | "clusterMode" | "displayMode" | "hoverState" | "trailSettings" | "colorScales" | "setOpenTab" | "setActiveLine" | "setSelectedCluster" | "addStory" | "removeClusterFromStories" | "activateView" | "selectVectors" | "setViewTransform" | "setHoverState" | "setPointColorMapping" | "addClusterToStory">>;
 export {};
 //# sourceMappingURL=WebGLView.d.ts.map
