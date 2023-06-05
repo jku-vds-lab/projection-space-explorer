@@ -347,7 +347,7 @@ export const Application = connector(
                 >
                   <Tab
                     value={5}
-                    data-cy="details-tab"
+                    data-cy="extra-tab"
                     icon={<PSESvgIcon component={PSEIcons.PseLineup} />}
                     disabled={(this.props.tab.focusedTab?.length > 0 && !this.props.tab.focusedTab.includes(5)) || this.props.dataset === null}
                     style={{

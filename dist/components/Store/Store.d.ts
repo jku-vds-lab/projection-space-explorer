@@ -21,7 +21,7 @@ declare const allReducers: {
         selectedClusters: (string | number)[];
         source: "sample" | "cluster";
     };
-    stories: Reducer<IStorytelling, import("redux").AnyAction>;
+    stories: Reducer<IStorytelling>;
     tabSettings: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<{
         openTab: number;
         focusedTab: number[];
@@ -38,7 +38,7 @@ declare const allReducers: {
             circle: boolean;
             square: boolean;
         };
-    }, import("redux").AnyAction>;
+    }>;
     activeLine: import("@reduxjs/toolkit/dist/createReducer").ReducerWithInitialState<string>;
     dataset: typeof dataset;
     highlightedSequence: (state: any, action: any) => any;
@@ -88,7 +88,7 @@ declare const allReducers: {
         active: number;
     }>;
     datasetEntries: typeof datasetEntries;
-    globalLabels: Reducer<import("../Ducks/GlobalLabelsDuck").GlobalLabelsState, import("redux").AnyAction>;
+    globalLabels: Reducer<import("../Ducks/GlobalLabelsDuck").GlobalLabelsState>;
     colorScales: typeof colorScales;
     multiples: Reducer<{
         multiples: EntityState<{
@@ -97,7 +97,7 @@ declare const allReducers: {
         }>;
         active: EntityId;
         projections: EntityState<IProjection>;
-    }, import("redux").AnyAction>;
+    }>;
 };
 export type ReducerValues<T extends ReducersMapObject> = {
     [K in keyof T]: ReturnType<T[K]>;
