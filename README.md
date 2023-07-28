@@ -79,7 +79,6 @@ When you finished the implementation, create a PR to **develop** with details of
 
 
 # Documentation
-
 ## Data Format
 Files must either be in CSV or JSON format. You can add arbitrarily named features, however, there are a few special names that are recognized by the system:
 - **x** and **y** tells the system to initialize the projection view with the given values. If not provided, the coordinates are randomly initialized.
