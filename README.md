@@ -120,7 +120,7 @@ Minor changes, like renaming labels, can be directly done by updating the store 
 api.store.dispatch(setItemLabel({ label: 'experiment', labelPlural: 'experiments'}));
 ```
 
-Take a look into the (CIME4R implementation)[https://github.com/jku-vds-lab/reaction-cime] for an example of how to use most of these features.
+Take a look into the [CIME4R implementation](https://github.com/jku-vds-lab/reaction-cime) for an example of how to use most of these features.
 
 ## Controls
 This section explains the general layout of the tool and the basic controls with which you can interact with the tool.
