@@ -18,15 +18,22 @@ Check out the [Projection Space Explorer App repository](https://github.com/jku-
 # Getting Started
 You can use the [projection-space-explorer-app repository](https://github.com/jku-vds-lab/projection-space-explorer-app) as a starting point for your own project.
 
-If you want to include the library in an existing React project, you can install it with npm:
+If you want to include the library in an existing React project, you can install it with npm or yarn.
+First, install the required dependencies:
 ```bash
 npm install react react-dom react-redux redux @emotion/react @emotion/styled @mui/material @mui/styles --legacy-peer-deps
-npm install git+https://github.com/jku-vds-lab/projection-space-explorer.git --legacy-peer-deps
 ```
-
-or yarn:
+or
 ```bash
 yarn use react react-dom react-redux redux @emotion/react @emotion/styled @mui/material @mui/styles
+```
+
+Then install the PSE:
+```bash
+npm install git+https://github.com/jku-vds-lab/projection-space-explorer.git --legacy-peer-deps
+```
+or
+```bash
 yarn use git+https://github.com/jku-vds-lab/projection-space-explorer.git
 ```
 
@@ -53,7 +60,6 @@ api.store.dispatch(setDatasetEntriesAction(DATASETCONFIG));
 Installations were tested for Node versions 16 to 18.
 
 ## Build the library from source
-### Install npm packages
 Use a git tool to clone this repository to your computer.
 ```bash
 git clone https://github.com/jku-vds-lab/projection-space-explorer.git
@@ -66,7 +72,6 @@ and run the command to install the required packages
 ```bash
 npm install
 ```
-### Build the code
 There is always a valid build in the repository, but in case you want to make changes, you can use the local build server. Start it with the command
 ```bash
 npm run webpack:dev
