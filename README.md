@@ -79,12 +79,6 @@ When you finished the implementation, create a PR to **develop** with details of
 
 
 # Documentation
-which parts are customizable
-installation at the end (how to use the library)
-dataset structure
-
-the two main ui components (menu drawers -> can have additional drawers, and projection view -> can have several layers)
-additional components: tabular view
 
 ## Data Format
 Files must either be in CSV or JSON format. You can add arbitrarily named features, however, there are a few special names that are recognized by the system:
@@ -120,13 +114,14 @@ There are some toy datasets available in the [Projection Space Explorer App repo
 The PSE library interface allows developers to create custom components and plug it into the existing structure, or change settings for existing components.
 Most configurations can be set using parameters of the Application component. The API for the configuration options is defined in **src/BaseConfig.tsx**.
 There are three parameters that can be set: **config**, **features**, and **overrideComponents**, each providing a different set of configuration options.
-With these, you can define custom projection methods, add new layers to the projection view, add mouse event hooks for the projection view, define custom tab menues, add an additional view to a reserved spot at the bottom of the application, and much more.
+With these, you can define custom projection methods, add new layers to the projection view, add mouse event hooks for the projection view, define custom tab menues, add an additional view to a reserved spot at the bottom of the application, and much more. 
 
 Minor changes, like renaming labels, can be directly done by updating the store using the PSE API (similar to updating the dataset entries shown before):
 ```
 api.store.dispatch(setItemLabel({ label: 'experiment', labelPlural: 'experiments'}));
 ```
 
+Take a look into the (CIME4R implementation)[https://github.com/jku-vds-lab/reaction-cime] for an example of how to use most of these features.
 
 ## Controls
 This section explains the general layout of the tool and the basic controls with which you can interact with the tool.
