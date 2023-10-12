@@ -203,9 +203,7 @@ export declare const WebGLView: import("react-redux").ConnectedComponent<{
         componentWillMount?(): void;
         UNSAFE_componentWillMount?(): void;
         componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
-        UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void; /**
-         * Starts the render loop
-         */
+        UNSAFE_componentWillReceiveProps?(nextProps: Readonly<Props>, nextContext: any): void;
         componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
         UNSAFE_componentWillUpdate?(nextProps: Readonly<Props>, nextState: Readonly<ViewState>, nextContext: any): void;
     };
