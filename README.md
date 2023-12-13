@@ -1,4 +1,4 @@
-# Projection Space Explorer (React Library)
+# Projection Space Explorer (React Library) 
 This repository includes:
 * The implementation of the Projection Space Explorer React Library
 * [Getting Started](#getting-started)
@@ -156,7 +156,8 @@ You may cite the PSE using the following bibtex:
   month = {07},
   title = {{Projection Space Explorer}},
   url = {https://github.com/jku-vds-lab/projection-space-explorer/},
-  version = {1.0.0...tagging a version?}, 
+  version = {v2023.12.13},
+  doi = {https://zenodo.org/doi/10.5281/zenodo.10370919}
   year = {2023}
 }
 ```
