@@ -5,5 +5,5 @@ export declare function EditProjectionDialog({ projection, onClose, onSave, onDe
     onClose: () => void;
     onSave: (id: EntityId, changes: any) => void;
     onDelete: (id: EntityId) => void;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=EditProjectionDialog.d.ts.map

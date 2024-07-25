@@ -3,5 +3,5 @@
  */
 export declare function PSELayer({ children }: {
     children: any;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=PSELayer.d.ts.map

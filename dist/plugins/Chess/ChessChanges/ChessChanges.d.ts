@@ -13,7 +13,7 @@ export declare class ChessChanges extends React.Component<ChessChangesProps> {
     renderToContext(): void;
     componentDidMount(): void;
     componentDidUpdate(prevProps: any): void;
-    render(): JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export {};
 //# sourceMappingURL=ChessChanges.d.ts.map

@@ -13,7 +13,7 @@ export declare class RubikChanges extends React.Component<RubikChangesProps> {
     componentDidMount(): void;
     renderToContext(): void;
     componentDidUpdate(prevProps: any): void;
-    render(): JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export {};
 //# sourceMappingURL=RubikChanges.d.ts.map

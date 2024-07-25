@@ -10,7 +10,7 @@ type Props = PropsFromRedux & {
     aggregate: boolean;
     selection: IVector[];
 };
-export declare var CoralLegend: import("react-redux").ConnectedComponent<({ selection, aggregate, legendAttributes, dataset }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare var CoralLegend: import("react-redux").ConnectedComponent<({ selection, aggregate, legendAttributes, dataset }: Props) => import("react/jsx-runtime").JSX.Element, import("react-redux").Omit<{
     legendAttributes: any[];
     dataset: import("../../..").Dataset;
 } & {

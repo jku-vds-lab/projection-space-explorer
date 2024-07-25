@@ -17,7 +17,7 @@ export declare class DragAndDrop extends React.Component<DragAndDropProps, DragA
     handleDragIn: (e: any) => void;
     handleDragOut: (e: any) => void;
     handleDrop: (e: any) => void;
-    render(): JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export default DragAndDrop;
 //# sourceMappingURL=DragAndDrop.d.ts.map

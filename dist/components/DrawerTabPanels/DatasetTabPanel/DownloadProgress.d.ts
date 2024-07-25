@@ -4,6 +4,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
     onCancel: any;
 };
-export declare function DownloadProgress({ onCancel }: Props): JSX.Element;
+export declare function DownloadProgress({ onCancel }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=DownloadProgress.d.ts.map

@@ -16,7 +16,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 }, {}>;
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
-export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, globalLabels }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const HoverTabPanel: import("react-redux").ConnectedComponent<({ hoverSettings, setHoverWindowMode, setAggregation, currentAggregation, dataset, globalLabels }: Props) => import("react/jsx-runtime").JSX.Element, import("react-redux").Omit<{
     hoverSettings: {
         windowMode: any;
     };

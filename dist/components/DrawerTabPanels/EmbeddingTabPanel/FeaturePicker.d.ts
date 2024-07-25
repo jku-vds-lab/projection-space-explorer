@@ -6,5 +6,5 @@ export declare function FeaturePicker({ selection, setSelection, selectedRows, s
     selectedRows: any;
     setSelectedRows: any;
     featureConfig: FeatureConfig;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=FeaturePicker.d.ts.map

@@ -12,7 +12,7 @@ export declare class RubikFingerprint extends React.Component<RubikFingerprintPr
     componentDidMount(): void;
     componentDidUpdate(prevProps: any): void;
     renderToContext(): void;
-    render(): JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export {};
 //# sourceMappingURL=RubikFingerprint.d.ts.map

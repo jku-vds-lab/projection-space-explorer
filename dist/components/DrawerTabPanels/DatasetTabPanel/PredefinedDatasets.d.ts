@@ -1,7 +1,7 @@
 import { ConnectedProps } from 'react-redux';
 export declare function TypeIcon({ type }: {
     type: any;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 declare const connector: import("react-redux").InferableComponentEnhancerWithProps<{
     datasetEntries: {
         values: {
@@ -15,7 +15,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 type Props = ConnectedProps<typeof connector> & {
     onChange: any;
 };
-export declare const PredefinedDatasets: import("react-redux").ConnectedComponent<({ onChange, datasetEntries }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const PredefinedDatasets: import("react-redux").ConnectedComponent<({ onChange, datasetEntries }: Props) => import("react/jsx-runtime").JSX.Element, import("react-redux").Omit<{
     datasetEntries: {
         values: {
             byId: {

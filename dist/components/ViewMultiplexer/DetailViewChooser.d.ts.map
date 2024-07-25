@@ -1,1 +1,1 @@
-{"version":3,"file":"DetailViewChooser.d.ts","sourceRoot":"","sources":["../../../src/components/ViewMultiplexer/DetailViewChooser.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,eAAe,EAAE,MAAM,kBAAkB,CAAC;AAOnD,wBAAgB,iBAAiB,CAAC,EAAE,kBAAkB,EAAE,EAAE;IAAE,kBAAkB,EAAE,eAAe,CAAA;CAAE,eAehG"}
+{"version":3,"file":"DetailViewChooser.d.ts","sourceRoot":"","sources":["../../../src/components/ViewMultiplexer/DetailViewChooser.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,eAAe,EAAE,MAAM,kBAAkB,CAAC;AAOnD,wBAAgB,iBAAiB,CAAC,EAAE,kBAAkB,EAAE,EAAE;IAAE,kBAAkB,EAAE,eAAe,CAAA;CAAE,2CAehG"}
