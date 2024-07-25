@@ -7,6 +7,6 @@ type DetailViewChooserProps = {
     splitRef: React.LegacyRef<Split>;
     globalLabels: GlobalLabelsState;
 };
-export declare function ViewsTabPanel({ overrideComponents, splitRef, globalLabels }: DetailViewChooserProps): JSX.Element;
+export declare function ViewsTabPanel({ overrideComponents, splitRef, globalLabels }: DetailViewChooserProps): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=ViewsTabPanel.d.ts.map

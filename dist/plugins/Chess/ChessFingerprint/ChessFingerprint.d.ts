@@ -13,7 +13,7 @@ export declare class ChessFingerprint extends React.Component<ChessFingerprintPr
     renderToContext(): void;
     componentDidMount(): void;
     componentDidUpdate(prevProps: any): void;
-    render(): JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export {};
 //# sourceMappingURL=ChessFingerprint.d.ts.map

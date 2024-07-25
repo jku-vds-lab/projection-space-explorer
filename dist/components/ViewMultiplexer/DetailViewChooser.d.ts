@@ -1,5 +1,5 @@
 import { ComponentConfig } from '../../BaseConfig';
 export declare function DetailViewChooser({ overrideComponents }: {
     overrideComponents: ComponentConfig;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=DetailViewChooser.d.ts.map

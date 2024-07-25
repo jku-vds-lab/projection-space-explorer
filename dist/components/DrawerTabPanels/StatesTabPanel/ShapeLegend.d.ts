@@ -6,5 +6,5 @@ export declare function ShapeLegend({ dataset, category, onChange }: {
     dataset: any;
     category: any;
     onChange: any;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=ShapeLegend.d.ts.map

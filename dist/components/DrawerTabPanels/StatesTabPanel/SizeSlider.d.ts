@@ -5,7 +5,7 @@ export declare const SizeSliderMarks: {
 declare function SizeSliderFull({ globalPointSize, setRange }: {
     globalPointSize: any;
     setRange: any;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export declare const SizeSlider: import("react-redux").ConnectedComponent<typeof SizeSliderFull, import("react-redux").Omit<{
     globalPointSize: any;
     setRange: any;

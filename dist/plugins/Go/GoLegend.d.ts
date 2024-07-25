@@ -1,5 +1,5 @@
 export declare function GoLegend({ selection, aggregate }: {
     selection: any;
     aggregate: any;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=GoLegend.d.ts.map

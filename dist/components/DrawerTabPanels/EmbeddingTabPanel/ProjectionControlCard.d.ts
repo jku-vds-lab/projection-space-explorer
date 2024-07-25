@@ -26,7 +26,7 @@ type Props = PropsFromRedux & {
 /**
  * Projection card that allows to start/stop the projection and shows the current steps.
  */
-export declare const ProjectionControlCard: import("react-redux").ConnectedComponent<({ onComputingChanged, projectionParams, controller, onClose, dataset_name, onStep }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const ProjectionControlCard: import("react-redux").ConnectedComponent<({ onComputingChanged, projectionParams, controller, onClose, dataset_name, onStep }: Props) => import("react/jsx-runtime").JSX.Element, import("react-redux").Omit<{
     projectionParams: {
         perplexity: number;
         learningRate: number;

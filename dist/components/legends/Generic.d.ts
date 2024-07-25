@@ -8,6 +8,6 @@ type GenericLegendProps = {
     scale?: number;
     options?: FPOptions;
 };
-export declare function GenericLegend({ type, vectors, aggregate, scale, options }: GenericLegendProps): JSX.Element;
+export declare function GenericLegend({ type, vectors, aggregate, scale, options }: GenericLegendProps): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=Generic.d.ts.map

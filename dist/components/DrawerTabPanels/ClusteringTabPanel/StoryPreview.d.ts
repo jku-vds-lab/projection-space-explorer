@@ -11,7 +11,7 @@ declare const connector: import("react-redux").InferableComponentEnhancerWithPro
 }, {}>;
 type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux;
-export declare const StoryPreview: import("react-redux").ConnectedComponent<({ stories, setActiveStory, deleteStory, addStory, globalLabels }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const StoryPreview: import("react-redux").ConnectedComponent<({ stories, setActiveStory, deleteStory, addStory, globalLabels }: Props) => import("react/jsx-runtime").JSX.Element, import("react-redux").Omit<{
     stories: import("../../Ducks/StoriesDuck").IStorytelling;
     globalLabels: import("../..").GlobalLabelsState;
 } & {

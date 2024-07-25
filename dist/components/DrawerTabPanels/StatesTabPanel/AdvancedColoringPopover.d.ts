@@ -1,4 +1,4 @@
 export declare function AdvancedColoringPopover({ pointColorMapping }: {
     pointColorMapping: any;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=AdvancedColoringPopover.d.ts.map

@@ -22,7 +22,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
     encodings: EncodingChannel[];
 };
-export declare function StatesTabPanelFull({ dataset, setVectorByShape, setChannelBrightness, setGlobalPointBrightness, setChannelSize, setGlobalPointSize, encodings, setAdvancedColoringSelection, }: Props): JSX.Element;
+export declare function StatesTabPanelFull({ dataset, setVectorByShape, setChannelBrightness, setGlobalPointBrightness, setChannelSize, setGlobalPointSize, encodings, setAdvancedColoringSelection, }: Props): import("react/jsx-runtime").JSX.Element;
 export declare const StatesTabPanel: import("react-redux").ConnectedComponent<typeof StatesTabPanelFull, import("react-redux").Omit<{
     selectedLineBy: {
         options: any[];

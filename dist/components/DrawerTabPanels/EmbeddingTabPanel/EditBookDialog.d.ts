@@ -6,5 +6,5 @@ export declare function EditBookDialog({ storyBookLabel, book, onClose, onSave, 
     onClose: () => void;
     onSave: (id: EntityId, changes: any) => void;
     onDelete: (id: EntityId) => void;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=EditBookDialog.d.ts.map

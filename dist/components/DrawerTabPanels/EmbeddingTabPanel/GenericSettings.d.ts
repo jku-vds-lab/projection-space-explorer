@@ -32,7 +32,7 @@ type Props = PropsFromRedux & {
     onClose: any;
     onStart: any;
 };
-declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns, columns, featureConfig, }: Props): JSX.Element;
+declare function GenericSettingsComp({ domainSettings, open, onClose, onStart, projectionParams, setProjectionParams, projectionColumns, columns, featureConfig, }: Props): import("react/jsx-runtime").JSX.Element;
 export declare const GenericSettings: import("react-redux").ConnectedComponent<typeof GenericSettingsComp, import("react-redux").Omit<{
     projectionColumns: ProjectionColumn[];
     projectionParams: {

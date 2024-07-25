@@ -24,7 +24,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
     dataset: Dataset;
 };
-export declare const Storytelling: import("react-redux").ConnectedComponent<({ dataset, stories, currentAggregation, addClusterToTrace, setActiveTraceState, setActiveTrace, selectSideBranch, setSelectedCluster, globalLabels, }: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const Storytelling: import("react-redux").ConnectedComponent<({ dataset, stories, currentAggregation, addClusterToTrace, setActiveTraceState, setActiveTrace, selectSideBranch, setSelectedCluster, globalLabels, }: Props) => import("react/jsx-runtime").JSX.Element, import("react-redux").Omit<{
     dataset: Dataset;
     stories: IStorytelling;
     currentAggregation: {

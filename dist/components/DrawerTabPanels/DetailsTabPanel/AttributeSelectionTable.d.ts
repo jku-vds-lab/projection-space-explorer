@@ -4,5 +4,5 @@ export declare function AttributeSelectionTable({ attributes, setAttributes, chi
     attributes: GenericFingerprintAttribute[];
     setAttributes: (attributes: GenericFingerprintAttribute[]) => void;
     children?: React.ReactNode;
-}): JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=AttributeSelectionTable.d.ts.map

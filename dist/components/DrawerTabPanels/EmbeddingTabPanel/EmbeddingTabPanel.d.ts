@@ -37,7 +37,7 @@ type Props = PropsFromRedux & {
     setProjectionWorker?: any;
     dataset?: Dataset;
 };
-export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => JSX.Element, import("react-redux").Omit<{
+export declare const EmbeddingTabPanel: import("react-redux").ConnectedComponent<(props: Props) => import("react/jsx-runtime").JSX.Element, import("react-redux").Omit<{
     stories: import("../../Ducks").IStorytelling;
     projectionWorker: Worker;
     projectionOpen: any;
