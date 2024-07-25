@@ -242,6 +242,7 @@ export function FeaturePicker({
     <DataGrid
       style={{ fontFamily: 'Roboto' }}
       groupBy={['featureLabel']}
+      className="rdg-light"
       rowGrouper={rowGrouper}
       expandedGroupIds={expandedGroupIds}
       onExpandedGroupIdsChange={setExpandedGroupIds}
