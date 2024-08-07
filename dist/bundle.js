@@ -9921,7 +9921,8 @@ var Application = connector( /*#__PURE__*/function (_React$Component) {
           style: {
             display: 'flex',
             flexDirection: 'column',
-            flexGrow: 1
+            flexGrow: 1,
+            overflow: 'auto'
           },
           children: [(_this$props$overrideC7 = this.props.overrideComponents) !== null && _this$props$overrideC7 !== void 0 && _this$props$overrideC7.appBar ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_4__.isValidElement((_this$props$overrideC8 = this.props.overrideComponents) === null || _this$props$overrideC8 === void 0 ? void 0 : _this$props$overrideC8.appBar) ? (_this$props$overrideC9 = this.props.overrideComponents) === null || _this$props$overrideC9 === void 0 ? void 0 : _this$props$overrideC9.appBar : ( /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_4__.createElement((_this$props$overrideC10 = this.props.overrideComponents) === null || _this$props$overrideC10 === void 0 ? void 0 : _this$props$overrideC10.appBar)) : (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_components_PseAppBar__WEBPACK_IMPORTED_MODULE_24__.PseAppBar, {
             style: undefined,
