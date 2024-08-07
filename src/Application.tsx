@@ -479,6 +479,7 @@ export const Application = connector(
               display: 'flex',
               flexDirection: 'column',
               flexGrow: 1,
+              overflow: 'auto',
             }}
           >
             {this.props.overrideComponents?.appBar ? (
