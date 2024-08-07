@@ -12162,7 +12162,7 @@ var DetailsTabPanel = connector(function (_ref) {
       children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__.Typography, {
         variant: "subtitle2",
         gutterBottom: true,
-        children: ["Visualy summarize ", globalLabels.itemLabelPlural]
+        children: ["Visually summarize ", globalLabels.itemLabelPlural]
       }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_1__.Typography, {
         variant: "body2",
         color: "textSecondary",
