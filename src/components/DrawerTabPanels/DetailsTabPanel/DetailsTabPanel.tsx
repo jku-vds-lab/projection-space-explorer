@@ -64,7 +64,7 @@ export const DetailsTabPanel = connector(
       <div key={dataset?.info?.path} style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingBottom: 1 }}>
         <Box paddingX={2} paddingTop={2} paddingBottom={1}>
           <Typography variant="subtitle2" gutterBottom>
-            Visualy summarize {globalLabels.itemLabelPlural}
+            Visually summarize {globalLabels.itemLabelPlural}
           </Typography>
           <Typography variant="body2" color="textSecondary" gutterBottom>
             Interactively select {globalLabels.itemLabelPlural} to update the summary visualization.{' '}
